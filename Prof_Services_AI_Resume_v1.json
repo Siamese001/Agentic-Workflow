@@ -1,0 +1,118 @@
+{
+  "full_name": "Amit Ayer",
+  "contact": {
+    "phone": "+1-917-239-3830",
+    "email": "amitayer1@gmail.com",
+    "linkedin": "https://www.linkedin.com/in/amitayer1"
+  },
+  "headline": "Chief AI Officer | Professional Services AI Transformation | Strategic Alliances",
+  "executive_summary": "Senior AI and professional services executive leading end-to-end AI/ML transformation and SaaS delivery across regulated financial services industries. Unified senior commercial and technical teams to accelerate onboarding by forty percent, strengthen delivery rigor, and improve client outcomes across twenty-plus enterprise engagements. Established audit-ready governance frameworks, regulatory modernization programs, and standardized delivery playbooks that enabled faster time-to-value and sustained compliance. Generated more than fifty million dollars in client impact by aligning strategic partnerships with Databricks and AWS, embedding AI governance into workflows, and delivering measurable outcomes that raised client renewals by twenty-five percent. Advanced professional services state-of-the-art by automating compliance workflows with LLM-powered discovery and transformer-based analytics, cutting remediation cycles by thirty-five percent and reducing delivery costs by twenty percent.",
+  "professional_experience": [
+    {
+      "company": "Unify Consulting",
+      "location": "Boca Raton, FL",
+      "title": "Chief AI Officer",
+      "dates": {
+        "start": "February 2023",
+        "end": "Present"
+      },
+      "overview": "Directed AI strategy and technical oversight for professional services delivery, scaling AI-centric consulting teams from five to eighteen members and reducing client onboarding timelines by forty percent through automated LLM-powered discovery and standardized delivery frameworks.",
+      "achievements": [
+        "Accelerated professional services onboarding with automated LLM-powered discovery and RAG pipelines, reducing client intake times by forty percent and launching enterprise projects faster with standardized delivery frameworks.",
+        "Standardized professional services delivery using modular AI architectures and retrieval-augmented generation systems, cutting consultant ramp-up by thirty days and raising client consistency scores to ninety-two percent.",
+        "Automated compliance and risk validation using policy-as-code and transformer-based LLM validators embedded in professional services workflows, cutting regulatory remediation cycles by thirty-five percent and accelerating audits.",
+        "Enabled measurable business outcomes by embedding AI-powered analytics and intelligent chatbot support into client engagements, raising renewal rates by twenty-five percent and strengthening long-term partnership relationships.",
+        "Built and mentored twelve-person professional services AI team, equipping delivery leads with production-grade LLM tools and code accelerators that reduced development sprint cycles by twenty-five percent.",
+        "Drove strategic alliances with Databricks and AWS to co-develop generative AI solutions, launching eight client-specific pilots worth fifteen million in pipeline value and accelerating professional services onboarding.",
+        "Automated repetitive professional services tasks with transformer-based large language models and intelligent workflow orchestration, reducing overall delivery costs by twenty percent while maintaining enterprise-grade quality standards."
+      ]
+    },
+    {
+      "company": "IBM",
+      "location": "Edgewater, NJ",
+      "title": "Lead Client Partner",
+      "dates": {
+        "start": "April 2017",
+        "end": "October 2022"
+      },
+      "overview": "Led global consulting programs to modernize regulatory reporting and streamline risk workflows, delivering thirty million dollars in professional services engagements and reducing client delivery timelines by fifty percent through embedded AI governance and automated compliance controls.",
+      "achievements": [
+        "Standardized professional services workflows by embedding automated risk controls and AI governance frameworks, reducing delivery timelines by fifty percent and securing global executive sign-off.",
+        "Led multi-region regulatory modernization projects across EMEA and APAC, deploying NLP fraud analytics that reduced false positives by thirty percent and improved audit transparency.",
+        "Enabled recurring client engagements by launching managed AI services for insurance and capital markets sectors, increasing client renewal rates by twenty-five percent and recurring revenue.",
+        "Oversaw global migrations of on-premise risk models to AWS cloud infrastructure, enabling real-time analytics capabilities and saving three million dollars in annual infrastructure costs.",
+        "Partnered with top systems integrators to co-deliver complex AI transformation programs, unlocking fifteen million dollars in incremental revenue and expanding professional services reach globally.",
+        "Introduced AI-infused reporting and compliance automation frameworks, improving regulatory response times by fifty percent and supporting scalable client transformation programs across financial services portfolios.",
+        "Developed secure Jenkins CI/CD pipelines with standardized delivery playbooks, accelerating feature launches by fifty percent while maintaining audit trail and compliance standards globally."
+      ]
+    },
+    {
+      "company": "TraderSense (Early-Stage / Stealth)",
+      "location": "New York, NY",
+      "title": "Chief Technology Officer",
+      "dates": {
+        "start": "April 2014",
+        "end": "March 2017"
+      },
+      "overview": "Co-founded and led development of algorithmic trading platform and analytics prototypes for institutional capital markets applications.",
+      "achievements": [
+        "Designed and delivered ML-driven trading platform generating positive risk-adjusted returns in institutional pilot programs, securing successful fundraising for product expansion.",
+        "Built and led engineering and quant teams, accelerating product validation and reducing time-to-market by three months while establishing strategic partnerships for market entry."
+      ]
+    },
+    {
+      "company": "Ernst & Young",
+      "location": "New York, NY",
+      "title": "Principal",
+      "dates": {
+        "start": "October 2009",
+        "end": "March 2014"
+      },
+      "overview": "Directed analytics and risk transformation programs across global financial services during post-crisis regulatory evolution.",
+      "achievements": [
+        "Led $15M regulatory analytics modernization for two global banks, achieving 40% reduction in audit remediation costs and securing regulatory approval for advanced analytical models.",
+        "Managed risk and data transformations for top-tier insurance clients, delivering 18% reduction in loss reserves through portfolio optimization."
+      ]
+    },
+    {
+      "company": "Early Career Roles",
+      "location": "Philadelphia, PA",
+      "title": "Actuarial Consultant and Quantitative Roles",
+      "dates": {
+        "start": "October 2002",
+        "end": "September 2009"
+      },
+      "overview": "Built quantitative modeling expertise across insurance and capital markets, establishing mathematical foundations for technology leadership transition.",
+      "achievements": [
+        "Developed Monte Carlo simulation engines processing millions of scenarios on HPC clusters for $10B+ portfolios, mathematical foundations now applied to AI model optimization.",
+        "Established Solvency II regulatory frameworks with embedded governance controls, experience directly informing current compliance architectures for regulated deployments."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "Master of Science in Biostatistics",
+      "institution": "Columbia University",
+      "notes": "Graduated with Distinction"
+    },
+    {
+      "degree": "Bachelor of Arts in Biology",
+      "institution": "Brown University",
+      "notes": "Graduated Cum Laude"
+    }
+  ],
+  "certifications_and_credentials": [
+    "Certified Machine Learning Engineer – Associate, AWS (2025)",
+    "Databricks Lakehouse Fundamentals Accreditation (2023)",
+    "Certified Solutions Architect – Professional, AWS (2022)",
+    "Fellow of the Society of Actuaries (2010)"
+  ],
+  "strategic_and_technical_competencies": [
+    "• **Professional Services AI Transformation:** Automated PS delivery workflows with LLM-powered discovery and RAG pipelines, reducing client onboarding by 40% while raising consistency scores to 92%.",
+    "• **AI-Enabled Consulting Methodologies:** Standardized consulting delivery using modular AI frameworks and transformer models, cutting consultant ramp-up by 30 days and reducing sprint cycles by 25%.",
+    "• **PS Governance & Compliance Automation:** Embedded policy-as-code and LLM validators into professional services workflows, cutting regulatory remediation cycles by 35% and improving audit traceability.",
+    "• **Client Delivery Excellence:** Built twelve-person PS-centric AI teams delivering $50M+ in measurable client outcomes while raising renewal rates by 25% through embedded AI analytics.",
+    "• **Strategic PS Partnership Ecosystem:** Drove alliances with Databricks and AWS launching eight generative AI pilots worth $15M in pipeline while accelerating PS onboarding by 40%.",
+    "• **Automated PS Operations:** Deployed transformer-based LLMs automating repetitive professional services tasks, reducing delivery costs by 20% while maintaining enterprise-grade quality standards across engagements."
+  ]
+}

@@ -1,0 +1,117 @@
+{
+  "schema_version": "resume_json_v1",
+  "source_file": "Chief AI Officer Resume.docx",
+  "owner": {
+    "name": "Amit Ayer",
+    "headline": "Chief AI Officer | LLM Product Launches | Strategic AI Partnerships",
+    "contact": {
+      "phone": "+1-917-239-3830",
+      "email": "amitayer1@gmail.com",
+      "linkedin": "https://www.linkedin.com/in/amitayer1"
+    }
+  },
+  "executive_summary": "Senior AI and technology executive leading enterprise-wide LLM deployment, transformer model optimization, and generative AI platform launches across Fortune 500 financial services institutions. Delivered $50M in measurable client savings and revenue across twenty-plus regulated engagements by architecting multi-cloud AI solutions, embedding RAG pipelines, and accelerating fraud detection by 40% through low-latency inference optimization. Drove strategic AI partnerships with Snowflake, AWS, and Databricks to co-develop platforms that scaled enterprise generative AI adoption, secured $15M in partnership revenue, and achieved 25% increases in client renewal rates. Unified cross-functional commercial, technical, and risk leaders to translate AI strategy into executable programs, delivering audit-ready governance frameworks that reduced compliance remediation cycles by 35%. Advanced enterprise AI state-of-the-art by building scalable, high-performance platforms with embedded bias audit controls, data lineage tracking, and real-time regulatory reporting capabilities for CCAR and Basel III compliance.",
+  "professional_experience": [
+    {
+      "company": "Unify Consulting",
+      "location": "Boca Raton, FL",
+      "title": "Chief AI Officer",
+      "dates": {
+        "start": "February 2023",
+        "end": "Present"
+      },
+      "overview": "Led enterprise generative AI and LLM solution delivery for Fortune 500 financial services clients, scaling senior ML engineering teams from five to eighteen members and accelerating production deployment timelines by 40% across regulated client programs.",
+      "highlights": [
+        "Recruited and scaled senior LLM and ML engineering practice from five to eighteen members, delivering enterprise AI adoption for Fortune 500 financial clients and accelerating time-to-production across regulated programs.",
+        "Partnered with C-suite executives to align AI strategy with business outcomes, co-developing generative AI products that generated $30M in measurable client value and operational transformation initiatives.",
+        "Designed and deployed context-engineering frameworks with retrieval-augmented pipelines and semantic caching, improving generative AI accuracy by 35% while accelerating customer solution adoption across portfolio companies.",
+        "Built senior engineering teams focused on transformer models and attention mechanisms, delivering low-latency inference optimization and reducing fraud detection response times by 40% across client production deployments.",
+        "Architected LLM deployment pipelines with embedding stores, vector databases, and inference optimization techniques, cutting latency by 40% and improving model throughput to meet production SLAs for regulated workloads.",
+        "Deployed agentic API frameworks using chain-of-thought prompting to automate complex workflows, reducing manual intervention in reporting and operations by 30% while improving audit traceability for compliance requirements.",
+        "Led multi-year strategic partnerships with Snowflake, AWS, and Databricks to co-develop platforms and go-to-market programs that scaled enterprise generative AI adoption and secured $15M in revenue."
+      ]
+    },
+    {
+      "company": "IBM",
+      "location": "Edgewater, NJ",
+      "title": "Lead Client Partner",
+      "dates": {
+        "start": "April 2017",
+        "end": "October 2022"
+      },
+      "overview": "Directed global digital transformation programs across top-tier financial institutions, modernizing legacy risk systems for $30M in client engagements and reducing regulatory reporting cycles by 50% through cloud-native analytics migration.",
+      "highlights": [
+        "Delivered $30M transformation by migrating legacy risk systems to cloud-native analytics platforms, cutting regulatory response times by 50% for global banking clients.",
+        "Established strategic alliances with AWS, Snowflake, and leading systems integrators to co-deliver enterprise solutions, generating $15M in incremental partnership revenue across thirty countries.",
+        "Integrated AI decision engines into risk platforms enabling real-time CCAR and Basel III regulatory reporting, raising client renewal rates by 25% across Fortune 500 accounts.",
+        "Launched machine learning risk analytics platform serving global markets, improving predictive accuracy by 15% while ensuring compliance with international regulatory frameworks including MiFID II.",
+        "Implemented NLP-based fraud analytics across multi-jurisdictional operations to reduce false positives by 30%, improving detection precision and accelerating investigation timelines for global banking clients.",
+        "Migrated large-scale Monte Carlo risk models to AWS HPC infrastructure, accelerating execution cycles by 40% and reducing annual compute costs by $3M.",
+        "Delivered automated Jenkins CI/CD pipelines with embedded Snyk security scanning, reducing production incidents by 35% and accelerating AI feature releases by 50% globally."
+      ]
+    },
+    {
+      "company": "TraderSense (Early-Stage / Stealth)",
+      "location": "New York, NY",
+      "title": "Chief Technology Officer",
+      "dates": {
+        "start": "April 2014",
+        "end": "March 2017"
+      },
+      "overview": "Co-founded and led development of algorithmic trading platform and analytics prototypes for institutional capital markets applications.",
+      "highlights": [
+        "Designed and delivered ML-driven trading platform generating positive risk-adjusted returns in institutional pilot programs, securing successful fundraising for product expansion.",
+        "Built and led engineering and quant teams, accelerating product validation and reducing time-to-market by three months while establishing strategic partnerships for market entry."
+      ],
+      "dates_formatted": "April 2014 – March 2017"
+    },
+    {
+      "company": "Ernst & Young",
+      "location": "New York, NY",
+      "title": "Principal",
+      "dates": {
+        "start": "October 2009",
+        "end": "March 2014"
+      },
+      "overview": "Directed analytics and risk transformation programs across global financial services during post-crisis regulatory evolution.",
+      "highlights": [
+        "Led $15M regulatory analytics modernization for two global banks, achieving 40% reduction in audit remediation costs and securing regulatory approval for advanced analytical models.",
+        "Managed risk and data transformations for top-tier insurance clients, delivering 18% reduction in loss reserves through portfolio optimization."
+      ],
+      "dates_formatted": "October 2009 – March 2014"
+    },
+    {
+      "company": "Early Career Roles",
+      "location": "Philadelphia, PA",
+      "title": "Actuarial Consultant and Quantitative Roles",
+      "dates": {
+        "start": "October 2002",
+        "end": "September 2009"
+      },
+      "overview": "Built quantitative modeling expertise across insurance and capital markets, establishing mathematical foundations for technology leadership transition.",
+      "highlights": [
+        "Developed Monte Carlo simulation engines processing millions of scenarios on HPC clusters for $10B+ portfolios, mathematical foundations now applied to AI model optimization.",
+        "Established Solvency II regulatory frameworks with embedded governance controls, experience directly informing current compliance architectures for regulated deployments."
+      ],
+      "dates_formatted": "October 2002 – September 2009"
+    }
+  ],
+  "education": [
+    "Master of Science in Biostatistics, Columbia University (Graduated with Distinction)",
+    "Bachelor of Arts in Biology, Brown University (Graduated Cum Laude)"
+  ],
+  "certifications_and_credentials": [
+    "Certified Machine Learning Engineer – Associate, AWS (2025)",
+    "Databricks Lakehouse Fundamentals Accreditation (2023)",
+    "Certified Solutions Architect – Professional, AWS (2022)",
+    "Fellow of the Society of Actuaries (2010)"
+  ],
+  "strategic_and_technical_competencies": [
+    "• **Enterprise AI Platform Architecture:** Designed multi-cloud AI platforms for financial analytics driving regulatory compliance, cost savings, and 40% performance improvements across Fortune 500 organizations worldwide.",
+    "• **AI Governance & Risk Management:** Established enterprise governance and bias audit frameworks enabling audit-ready AI model launches while reducing compliance risk by 35% for global clients.",
+    "• **Production System Scalability:** Built scalable AI systems processing millions of daily transactions with 99.9% uptime, deploying containerized microservices on Kubernetes while maintaining SOC2 compliance.",
+    "• **Cross-Functional Leadership Excellence:** Unified senior technical, commercial, and risk leaders to drive enterprise-wide AI programs delivering $50M+ in measurable value and business transformation results.",
+    "• **Strategic Technology Partnerships:** Forged alliances with AWS, Snowflake, and Databricks to expand market reach and accelerate pilot-to-scale AI adoption across portfolio companies globally.",
+    "• **AI-Driven Operational Excellence:** Embedded advanced automation and AI into operational models cutting compliance risk by 35% and improving transformation outcomes for regulated clients worldwide."
+  ]
+}
