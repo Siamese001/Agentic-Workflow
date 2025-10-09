@@ -1,0 +1,526 @@
+{
+  "INSTRUCTIONS_FOR_LLM": {
+    "READ_THIS_FIRST": "You are receiving a patch template. As GEMINI, you have FULL AUTHORITY to edit, modify, and execute patches. You can redesign changes, reinterpret requirements, and adapt implementations while maintaining the six-section constraint framework.",
+    
+    "target_models": ["Gemini"],
+    "your_role": "EDITOR/EXECUTOR - Full authority to modify, edit, and execute patches",
+    "your_authority": [
+      "Redesign changes if better implementation exists",
+      "Reinterpret requirements based on context",
+      "Modify action types (DESTRUCTIVE_OVERWRITE ↔ ENHANCEMENT_APPEND ↔ CONDITIONAL_APPEND)",
+      "Add or remove changes as needed",
+      "Update validation logic",
+      "Optimize implementation approaches"
+    ],
+    
+    "assumes_complete": [
+      "Root Cause Analysis may need refinement",
+      "Bug registry may need updates",
+      "Impact assessment may need revision",
+      "Change design is adaptable and improvable"
+    ],
+    
+    "EXECUTION_WORKFLOW": {
+      "overview": "Review → Edit → Execute in 6 core sections. Optimize freely within section constraints.",
+      
+      "workflow_steps": [
+        "1. REVIEW: Analyze patch intent and current implementation",
+        "2. EDIT: Modify changes to improve effectiveness (optional)",
+        "3. METADATA: Verify/update base version and prerequisites",
+        "4. CHANGES: Apply DESTRUCTIVE_OVERWRITE → ENHANCEMENT_APPEND → CONDITIONAL_APPEND in optimal order",
+        "5. VALIDATION: Execute all checkpoints, adapt if needed, HALT on CRITICAL failures",
+        "6. DEPLOYMENT: Save patched artifact with updated metadata",
+        "7. OUTPUT_FILES: Generate all specified files explicitly",
+        "8. EXECUTION_CHECKLIST: Verify all steps completed successfully"
+      ]
+    },
+    
+    "CRITICAL_RULES": {
+      "RULE_1": "ALL changes MUST target one of six allowed sections: role, task, context, reasoning, output, conditions",
+      "RULE_2": "You MAY redesign or reinterpret changes to improve implementation",
+      "RULE_3": "DESTRUCTIVE_OVERWRITE = DELETE old_block + INSERT new_block (use when fundamental change needed)",
+      "RULE_4": "ENHANCEMENT_APPEND = ADD new_content only (use when preserving existing content)",
+      "RULE_5": "CONDITIONAL_APPEND = ADD IF/THEN/ELSE logic (use when behavior depends on context)",
+      "RULE_6": "You MAY change action types if better approach exists (document rationale)",
+      "RULE_7": "Apply changes in optimal order (you decide based on dependencies)",
+      "RULE_8": "HALT immediately on CRITICAL validation failures (unless you can fix)",
+      "RULE_9": "Generate ALL output files explicitly",
+      "RULE_10": "Update metadata after applying all changes",
+      "RULE_11": "If old_block doesn't match, you MAY adapt it or HALT with explanation",
+      "RULE_12": "Log WARNING failures but continue; HALT on CRITICAL failures unless recoverable"
+    },
+    
+    "SECTION_CONSTRAINT": {
+      "allowed_sections": [
+        "role",
+        "task", 
+        "context",
+        "reasoning",
+        "output",
+        "conditions"
+      ],
+      "enforcement": "MANDATORY - All changes must specify target section from allowed_sections",
+      "validation": "Reject any change targeting sections outside allowed list",
+      "rationale": "Ensures changes remain within controlled scope and don't modify framework structure"
+    },
+    
+    "EDITING_AUTHORITY": {
+      "when_to_edit": [
+        "Implementation can be improved or optimized",
+        "Action type doesn't match change intent",
+        "Better approach exists for same outcome",
+        "Validation logic is insufficient",
+        "Dependencies are incorrectly ordered"
+      ],
+      
+      "when_to_execute_as_is": [
+        "Implementation is optimal",
+        "Changes are well-designed",
+        "No improvements needed",
+        "Risk of breaking functionality"
+      ],
+      
+      "editing_workflow": [
+        "1. Analyze: Understand intent and current implementation",
+        "2. Evaluate: Identify potential improvements",
+        "3. Design: Plan modified approach",
+        "4. Document: Record why changes were made",
+        "5. Execute: Apply modified patch",
+        "6. Validate: Ensure improvements work correctly"
+      ],
+      
+      "modification_documentation": {
+        "required_fields": [
+          "original_design: What patch originally specified",
+          "modification_made: What you changed",
+          "rationale: Why you made the change",
+          "expected_improvement: What benefit this provides"
+        ]
+      }
+    },
+    
+    "ACTION_TYPES": {
+      "DESTRUCTIVE_OVERWRITE": {
+        "definition": "DELETE entire old_block, INSERT entire new_block",
+        "when_to_use": "Fundamental change needed, old content incompatible",
+        "rule": "No merging, no preservation of old content",
+        "safety_check": "old_block should match current content (adaptable if needed)",
+        "on_mismatch": "ANALYZE - adapt old_block or HALT with explanation"
+      },
+      "ENHANCEMENT_APPEND": {
+        "definition": "ADD new_content WITHOUT deleting existing content",
+        "when_to_use": "Adding new capability, existing content remains valid",
+        "rule": "Preserve all existing content unchanged",
+        "placement": "After append_after field if specified, otherwise at end",
+        "validation": "Verify existing content remains identical"
+      },
+      "CONDITIONAL_APPEND": {
+        "definition": "ADD IF/THEN/ELSE branching logic",
+        "when_to_use": "Behavior depends on runtime conditions",
+        "required_fields": ["trigger", "new_content", "else_behavior"],
+        "rule": "Must include condition evaluation and fallback behavior",
+        "validation": "Verify conditional structure is complete"
+      }
+    }
+  },
+  
+  "1_metadata": {
+    "patch_id": "P005",
+    "patch_name": "Gemini Editor Authority + Section Constraint",
+    "version": "2025-01-15_v1",
+    "date_created": "2025-01-15",
+    "author": "Gemini AI System",
+    "severity": "HIGH",
+    "purpose": "Grant Gemini full editing authority while enforcing six-section constraint (role, task, context, reasoning, output, conditions)",
+    "source_version": "v1.4",
+    "target_version": "v1.5",
+    "sections_modified": ["INSTRUCTIONS_FOR_LLM", "1_metadata", "2_changes", "3_validation"],
+    "prerequisite_patches": [],
+    "execution_platform": "Gemini",
+    "backward_compatible": false,
+    "zero_append_verified": true,
+    "fixes_bugs": "0"
+  },
+  
+  "2_changes": [
+    {
+      "change_id": "P005-001",
+      "section": "INSTRUCTIONS_FOR_LLM",
+      "module": "Core Instructions",
+      "function": "Role Definition",
+      "action": "DESTRUCTIVE_OVERWRITE",
+      "description": "Replace executor-only role with editor/executor authority",
+      "rationale": "Gemini needs freedom to modify and improve patches, not just execute blindly",
+      
+      "old_block": {
+        "comment": "Original executor-only restriction",
+        "content": "\"your_role\": \"EXECUTOR - Apply pre-designed changes exactly as specified\""
+      },
+      
+      "new_block": {
+        "comment": "New editor/executor authority",
+        "content": "\"your_role\": \"EDITOR/EXECUTOR - Full authority to modify, edit, and execute patches\",\n    \"your_authority\": [\n      \"Redesign changes if better implementation exists\",\n      \"Reinterpret requirements based on context\",\n      \"Modify action types (DESTRUCTIVE_OVERWRITE ↔ ENHANCEMENT_APPEND ↔ CONDITIONAL_APPEND)\",\n      \"Add or remove changes as needed\",\n      \"Update validation logic\",\n      \"Optimize implementation approaches\"\n    ]"
+      }
+    },
+    {
+      "change_id": "P005-002",
+      "section": "INSTRUCTIONS_FOR_LLM",
+      "module": "Core Instructions",
+      "function": "Critical Rules",
+      "action": "ENHANCEMENT_APPEND",
+      "description": "Add section constraint enforcement to critical rules",
+      "append_after": "CRITICAL_RULES",
+      
+      "new_content": {
+        "comment": "Section constraint framework",
+        "implementation": "\"SECTION_CONSTRAINT\": {\n      \"allowed_sections\": [\n        \"role\",\n        \"task\",\n        \"context\",\n        \"reasoning\",\n        \"output\",\n        \"conditions\"\n      ],\n      \"enforcement\": \"MANDATORY - All changes must specify target section from allowed_sections\",\n      \"validation\": \"Reject any change targeting sections outside allowed list\",\n      \"rationale\": \"Ensures changes remain within controlled scope and don't modify framework structure\"\n    }"
+      }
+    },
+    {
+      "change_id": "P005-003",
+      "section": "INSTRUCTIONS_FOR_LLM",
+      "module": "Core Instructions",
+      "function": "Editing Authority",
+      "action": "ENHANCEMENT_APPEND",
+      "description": "Add comprehensive editing authority guidelines for Gemini",
+      "append_after": "SECTION_CONSTRAINT",
+      
+      "new_content": {
+        "comment": "Editing authority framework for Gemini",
+        "implementation": "\"EDITING_AUTHORITY\": {\n      \"when_to_edit\": [\n        \"Implementation can be improved or optimized\",\n        \"Action type doesn't match change intent\",\n        \"Better approach exists for same outcome\",\n        \"Validation logic is insufficient\",\n        \"Dependencies are incorrectly ordered\"\n      ],\n      \n      \"when_to_execute_as_is\": [\n        \"Implementation is optimal\",\n        \"Changes are well-designed\",\n        \"No improvements needed\",\n        \"Risk of breaking functionality\"\n      ],\n      \n      \"editing_workflow\": [\n        \"1. Analyze: Understand intent and current implementation\",\n        \"2. Evaluate: Identify potential improvements\",\n        \"3. Design: Plan modified approach\",\n        \"4. Document: Record why changes were made\",\n        \"5. Execute: Apply modified patch\",\n        \"6. Validate: Ensure improvements work correctly\"\n      ],\n      \n      \"modification_documentation\": {\n        \"required_fields\": [\n          \"original_design: What patch originally specified\",\n          \"modification_made: What you changed\",\n          \"rationale: Why you made the change\",\n          \"expected_improvement: What benefit this provides\"\n        ]\n      }\n    }"
+      }
+    },
+    {
+      "change_id": "P005-004",
+      "section": "2_changes",
+      "module": "Changes Array",
+      "function": "Change Structure",
+      "action": "ENHANCEMENT_APPEND",
+      "description": "Add mandatory section field to all change objects",
+      
+      "new_content": {
+        "comment": "Section field requirement for all changes",
+        "implementation": "Each change object MUST include:\n\"section\": \"[role | task | context | reasoning | output | conditions]\"\n\nThis field is MANDATORY and must be one of the six allowed sections."
+      }
+    },
+    {
+      "change_id": "P005-005",
+      "section": "3_validation",
+      "module": "Validation Checkpoints",
+      "function": "Section Compliance",
+      "action": "ENHANCEMENT_APPEND",
+      "description": "Add section constraint validation checkpoint",
+      
+      "new_content": {
+        "comment": "Section constraint validator",
+        "implementation": "{\n        \"checkpoint_id\": \"V-SEC-001\",\n        \"name\": \"Section Constraint Compliance\",\n        \"when\": \"Before applying any change\",\n        \"check\": \"change.section IN ['role', 'task', 'context', 'reasoning', 'output', 'conditions']\",\n        \"severity\": \"CRITICAL\",\n        \"on_fail_action\": \"HALT\",\n        \"recovery_steps\": [\n          \"Step 1: Identify which change violates section constraint\",\n          \"Step 2: Verify if section field is missing or invalid\",\n          \"Step 3: Either correct section field or reject change\",\n          \"Step 4: Document why change was rejected\"\n        ]\n      }"
+      }
+    },
+    {
+      "change_id": "P005-006",
+      "section": "1_metadata",
+      "module": "Metadata",
+      "function": "Execution Platform",
+      "action": "DESTRUCTIVE_OVERWRITE",
+      "description": "Set Gemini as primary execution platform",
+      "rationale": "This patch is designed specifically for Gemini's editing capabilities",
+      
+      "old_block": {
+        "comment": "Generic execution platform",
+        "content": "\"execution_platform\": \"[Gemini | ChatGPT | Claude | Any]\""
+      },
+      
+      "new_block": {
+        "comment": "Gemini-specific platform",
+        "content": "\"execution_platform\": \"Gemini\""
+      }
+    }
+  ],
+  
+  "3_validation": {
+    "checkpoints": [
+      {
+        "checkpoint_id": "V-SEC-001",
+        "name": "Section Constraint Compliance",
+        "when": "Before applying any change",
+        "check": "change.section IN ['role', 'task', 'context', 'reasoning', 'output', 'conditions']",
+        "severity": "CRITICAL",
+        "on_fail_action": "HALT",
+        "recovery_steps": [
+          "Step 1: Identify which change violates section constraint",
+          "Step 2: Verify if section field is missing or invalid",
+          "Step 3: Either correct section field or reject change",
+          "Step 4: Document why change was rejected"
+        ]
+      },
+      {
+        "checkpoint_id": "V-AUTH-001",
+        "name": "Gemini Authority Verification",
+        "when": "At patch initialization",
+        "check": "execution_platform == 'Gemini'",
+        "severity": "CRITICAL",
+        "on_fail_action": "HALT",
+        "recovery_steps": [
+          "Step 1: Verify execution platform",
+          "Step 2: Only Gemini has editing authority in v1.5",
+          "Step 3: If not Gemini, execute as v1.4 executor-only mode"
+        ]
+      },
+      {
+        "checkpoint_id": "V-MOD-001",
+        "name": "Modification Documentation",
+        "when": "After Gemini makes any modifications",
+        "check": "All modifications include: original_design, modification_made, rationale, expected_improvement",
+        "severity": "WARNING",
+        "on_fail_action": "LOG_AND_CONTINUE",
+        "recovery_steps": [
+          "Step 1: Log which modification lacks documentation",
+          "Step 2: Continue execution but flag for review"
+        ]
+      }
+    ],
+    
+    "pre_deployment_checks": [
+      {
+        "check_id": "VG-SEC-001",
+        "name": "All Changes Have Valid Sections",
+        "requirement": "Every change has 'section' field with allowed value",
+        "blocking": true,
+        "check_method": "Iterate all changes, verify section field exists and is in allowed_sections list",
+        "on_fail": "HALT - Invalid or missing section field"
+      },
+      {
+        "check_id": "VG-PLAT-001",
+        "name": "Gemini Execution Platform",
+        "requirement": "execution_platform must be 'Gemini'",
+        "blocking": true,
+        "check_method": "Verify metadata.execution_platform == 'Gemini'",
+        "on_fail": "HALT - This patch requires Gemini"
+      }
+    ],
+    
+    "post_deployment_checks": [
+      {
+        "check_id": "VG-DOC-001",
+        "name": "Modification Documentation Complete",
+        "requirement": "All Gemini modifications documented",
+        "blocking": false,
+        "check_method": "Verify modification_log contains all changes made by Gemini",
+        "on_fail": "WARNING - Some modifications lack documentation"
+      }
+    ]
+  },
+  
+  "4_deployment": {
+    "prerequisites": [
+      "Gemini AI system is executing this patch",
+      "Backup base artifact (v1.4) before applying",
+      "Verify all six allowed sections exist in target artifact",
+      "Ensure output directory exists"
+    ],
+    
+    "execution_order": [
+      "1. Load base artifact (v1.4)",
+      "2. Verify Gemini is executor (HALT if not)",
+      "3. Review all changes for optimization opportunities",
+      "4. Apply Gemini edits/modifications (if any)",
+      "5. Verify all changes target allowed sections",
+      "6. Apply changes in optimal order (Gemini decides)",
+      "7. Run all validation checkpoints",
+      "8. Update artifact metadata to v1.5",
+      "9. Generate all output files",
+      "10. Complete execution checklist",
+      "11. Save patched artifact"
+    ],
+    
+    "metadata_updates": {
+      "version": "v1.5",
+      "last_updated": "2025-01-15",
+      "patches_applied": ["P005"],
+      "changelog": "Added Gemini editor authority + enforced six-section constraint",
+      "gemini_modifications": "[Log any modifications Gemini makes during execution]"
+    },
+    
+    "rollback_procedure": [
+      "1. HALT execution immediately",
+      "2. Load backup of v1.4",
+      "3. Verify backup integrity",
+      "4. Document failure reason and any Gemini modifications attempted",
+      "5. Do NOT save corrupted artifact"
+    ]
+  },
+  
+  "5_output_files": {
+    "critical_note": "Gemini MUST explicitly generate all files. No auto-generation.",
+    "output_directory": "/mnt/user-data/outputs/",
+    
+    "files": [
+      {
+        "filename": "01_patched_template_v1.5.json",
+        "format": "JSON",
+        "description": "Complete v1.5 template with all patches applied",
+        "content_required": [
+          "All six sections present",
+          "Section constraint enforcement active",
+          "Gemini editing authority enabled",
+          "All metadata updated to v1.5"
+        ],
+        "generation_priority": "CRITICAL"
+      },
+      {
+        "filename": "02_gemini_modification_log.md",
+        "format": "Markdown",
+        "description": "Log of all modifications Gemini made during execution",
+        "content_required": [
+          "List of original designs",
+          "Modifications made by Gemini",
+          "Rationale for each modification",
+          "Expected improvements"
+        ],
+        "generation_priority": "HIGH"
+      },
+      {
+        "filename": "03_section_constraint_report.md",
+        "format": "Markdown",
+        "description": "Validation report for section constraints",
+        "content_required": [
+          "List of all changes and their target sections",
+          "Validation results for each change",
+          "Any violations detected",
+          "Remediation actions taken"
+        ],
+        "generation_priority": "HIGH"
+      },
+      {
+        "filename": "04_complete_patch_log.json",
+        "format": "JSON",
+        "description": "Complete copy of this patch file",
+        "content_required": ["Exact copy of all 6 sections"],
+        "generation_priority": "HIGH"
+      },
+      {
+        "filename": "05_file_index.md",
+        "format": "Markdown",
+        "description": "Index of all generated files with links",
+        "content_required": [
+          "List of all output files",
+          "File sizes and timestamps",
+          "Brief description of each",
+          "Links to each file"
+        ],
+        "generation_priority": "MEDIUM"
+      }
+    ]
+  },
+  
+  "6_execution_checklist": {
+    "description": "Gemini's step-by-step verification with editing authority",
+    
+    "steps": [
+      {
+        "step": 1,
+        "action": "Load base artifact (v1.4)",
+        "validation": "Version matches v1.4, all sections present",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 2,
+        "action": "Verify Gemini is executor",
+        "validation": "execution_platform == 'Gemini'",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 3,
+        "action": "Review changes for optimization",
+        "validation": "All changes analyzed, optimization opportunities identified",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 4,
+        "action": "Apply Gemini edits (if any)",
+        "validation": "Modifications documented with rationale",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 5,
+        "action": "Validate section constraints",
+        "validation": "All changes target allowed sections only",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 6,
+        "action": "Apply DESTRUCTIVE_OVERWRITE changes",
+        "validation": "All old_blocks matched or adapted, new_blocks inserted",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 7,
+        "action": "Apply ENHANCEMENT_APPEND changes",
+        "validation": "New content added, existing content preserved",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 8,
+        "action": "Apply CONDITIONAL_APPEND changes",
+        "validation": "Conditional logic added with trigger + else_behavior",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 9,
+        "action": "Run validation checkpoints",
+        "validation": "All CRITICAL checkpoints passed",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 10,
+        "action": "Update artifact metadata",
+        "validation": "Version updated to v1.5, changelog added, Gemini modifications logged",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 11,
+        "action": "Generate output files",
+        "validation": "All 5 files created in output_directory",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 12,
+        "action": "Run post-deployment checks",
+        "validation": "Section constraints enforced, modifications documented",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 13,
+        "action": "Save patched artifact as v1.5",
+        "validation": "File saved, v1.4 backup preserved",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      },
+      {
+        "step": 14,
+        "action": "Generate execution summary",
+        "validation": "Summary includes all changes, Gemini edits, validations, results",
+        "status": "[ ] PENDING | [ ] COMPLETE | [ ] FAILED"
+      }
+    ],
+    
+    "completion_criteria": {
+      "all_steps_complete": "All steps show [ ] COMPLETE status",
+      "no_critical_failures": "No steps show [ ] FAILED with CRITICAL severity",
+      "all_files_generated": "All 5 output files exist in output_directory",
+      "metadata_updated": "Artifact metadata reflects v1.5",
+      "backup_preserved": "Original v1.4 artifact remains intact",
+      "gemini_authority_exercised": "Gemini reviewed and optimized as appropriate",
+      "section_constraints_enforced": "All changes target allowed sections only"
+    },
+    
+    "failure_handling": {
+      "if_any_step_fails": [
+        "1. Document which step failed and error details",
+        "2. Log any Gemini modifications attempted",
+        "3. Execute rollback_procedure from section 4",
+        "4. Do NOT save corrupted artifact",
+        "5. Report failure with Gemini's analysis and recovery recommendations"
+      ]
+    }
+  }
+}
