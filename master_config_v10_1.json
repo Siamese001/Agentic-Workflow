@@ -1,28 +1,23 @@
 {
   "schema_version": "master_config_v10.1",
-  "description": "v10.1 Feedback-Aware Agents, Hot-Reloading",
+  "description": "v10.1 Design-Aligned Implementation. Models now match agentic_design_v10_1.md.",
   "version_notes": {
     "v10_1_changes": [
-      "ROW 7: Feedback-aware agent selection (FeedbackLogReader reads feedback_log.jsonl)",
-      "ROW 7: Hot-reloading of proposed_rules.jsonl for dynamic constitution updates",
-      "ROW 7: Stacks consult feedback_log before making decisions (agent selection, ToT branching, prompt generation)",
-      "ROW 7: SafetyGuardStack hot-reloads constitution from approved rules",
-      "ROW 7: MetaLearningLoop writes APPROVED rules that are auto-applied without deployment",
-      "PRESERVED: v10.0 modularity (WorkflowContext, state decomposition)",
-      "PRESERVED: v10.0 caching (Redis LLM cache with CacheManager)",
-      "PRESERVED: v10.0 async performance (parallel critique, async batch processing)"
+      "OVERWRITE: Model config now matches agentic_design_v10_1.md.",
+      "OVERWRITE: Added model slots for all expert tools (Drafting, QA) which are no longer mocked.",
+      "OVERWRITE: All 3 providers (Google, Anthropic, OpenAI) are now included."
     ],
     "gap_closure": {
-      "RAGStack": "NOW reads feedback_log.jsonl for dynamic agent selection",
-      "BulletStack": "NOW reads feedback_log.jsonl for critique strategy selection",
-      "DraftingStack": "NOW reads feedback_log.jsonl for ReAct conductor tuning",
-      "QAStack": "NOW reads feedback_log.jsonl for validator selection",
-      "MetaLearningLoop": "NOW supports hot-reloading of proposed_rules.jsonl",
-      "StrategyStack": "NOW reads feedback_log.jsonl to inform ToT branch selection",
-      "PromptStack": "NOW reads feedback_log.jsonl to inform prompt generation",
-      "SafetyGuardStack": "NOW reads proposed_rules.jsonl to update constitution",
-      "DynamicToolingStack": "NOW reads feedback_log.jsonl for tool selection",
-      "HIL_InteractionStack": "Preserved from v9.9, no changes"
+      "RAGStack": "Code will be updated to use design-specified models.",
+      "BulletStack": "Code will be updated to use design-specified models.",
+      "DraftingStack": "Code will be updated to call real LLM tools, not mocks.",
+      "QAStack": "Code will be updated to call real LLM tools, not mocks.",
+      "MetaLearningLoop": "Preserved.",
+      "StrategyStack": "Code will be updated to use design-specified models.",
+      "PromptStack": "Code will be updated to use design-specified models.",
+      "SafetyGuardStack": "Preserved (local).",
+      "DynamicToolingStack": "Preserved.",
+      "HIL_InteractionStack": "Preserved."
     }
   },
   "logging_config": {
@@ -129,7 +124,7 @@
     "dynamic_tooling_description": "Dynamic tool selection (feedback-aware)",
     "enable_hil_stack": true,
     "ambiguity_confidence_threshold": 0.8,
-    "hil_stack_description": "Proactive ambiguity detection (preserved from v9.9)",
+    "hil_stack_description": "Proactive ambiguity detection",
     "enable_hyde": true,
     "enable_reranking": true,
     "reranking_top_k": 5,
@@ -145,34 +140,94 @@
   },
   "model_config": {
     "strategy_model": {
-      "provider": "anthropic",
-      "model_name": "claude-sonnet-4-20250514",
-      "temperature": 0.8,
-      "description": "v10.1: Async client with caching and feedback awareness"
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.5,
+      "description": "Design: Gemini 2.5 Pro / T1. Used for ToT strategy."
     },
     "prompt_engineer_model": {
-      "provider": "anthropic",
-      "model_name": "claude-sonnet-4-20250514",
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
       "temperature": 0.7,
-      "description": "v10.1: Async client with caching and feedback awareness"
+      "description": "Design: Gemini 2.5 Flash / T2. Used for PromptStack."
     },
     "bullet_generator_model": {
-      "provider": "anthropic",
-      "model_name": "claude-sonnet-4-20250514",
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
       "temperature": 0.7,
-      "description": "v10.1: Async client with caching and feedback awareness"
+      "description": "Design: Gemini 2.5 Pro / T1. Used for bullet customization/synthesis."
+    },
+    "bullet_fact_check_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2,
+      "description": "Design: Gemini 2.5 Flash / T2. Used for fact-checking synthetic bullets."
     },
     "critique_model": {
       "provider": "google",
-      "model_name": "gemini-2.0-flash-exp",
+      "model_name": "gemini-2.5-flash",
       "temperature": 0.2,
-      "description": "v10.1: Async client with caching (parallel critique, feedback-aware)"
+      "description": "Design: Gemini 2.5 Flash / T2. Used for parallel bullet critique."
     },
     "qa_model": {
       "provider": "google",
-      "model_name": "gemini-2.0-flash-exp",
+      "model_name": "gemini-2.5-flash",
       "temperature": 0.3,
-      "description": "v10.1: Async client with caching and feedback awareness"
+      "description": "Design: Gemini 2.5 Flash / T2. Used for HIL AmbiguityDetector."
+    },
+    "react_conductor_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.6,
+      "description": "Design: Gemini 2.5 Pro / T1. Main ReAct conductor for RAG, Drafting, QA."
+    },
+    "hyde_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.6,
+      "description": "Design: Gemini 2.5 Flash / T2. HyDE tool model."
+    },
+    "reranker_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2,
+      "description": "Design: Gemini 2.5 Flash / T2. Reranker model."
+    },
+    "drafting_strategist_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.5,
+      "description": "Design: Gemini 2.5 Pro / T1. Drafting expert tool."
+    },
+    "drafting_redteam_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.6,
+      "description": "Design: Claude 4.1 Opus / T1. Drafting expert tool."
+    },
+    "drafting_refiner_model": {
+      "provider": "openai",
+      "model_name": "gpt-5",
+      "temperature": 0.6,
+      "description": "Design: GPT-5 / T1. Drafting expert tool."
+    },
+    "drafting_metrics_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.4,
+      "description": "Design: Gemini 2.5 Flash / T2. Drafting expert tool."
+    },
+    "qa_adversarial_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.5,
+      "description": "Design: Claude 4.1 Opus / T1. QA expert tool."
+    },
+    "qa_validator_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.3,
+      "description": "Design: Gemini 2.5 Flash / T2. Used for all other T2 QA validator tools."
     },
     "bias_detector_model": {
       "provider": "local",
@@ -185,28 +240,10 @@
       "model_name": "presidio",
       "temperature": 0.0,
       "description": "v9.9 preserved: Local Presidio PII detection"
-    },
-    "react_conductor_model": {
-      "provider": "anthropic",
-      "model_name": "claude-sonnet-4-20250514",
-      "temperature": 0.6,
-      "description": "v10.1: Async ReAct with caching and feedback awareness"
-    },
-    "hyde_model": {
-      "provider": "anthropic",
-      "model_name": "claude-sonnet-4-20250514",
-      "temperature": 0.6,
-      "description": "v10.1: Async HyDE with caching and feedback awareness"
-    },
-    "reranker_model": {
-      "provider": "google",
-      "model_name": "gemini-2.0-flash-exp",
-      "temperature": 0.2,
-      "description": "v10.1: Async reranker with caching and feedback awareness"
     }
   },
   "v10_1_improvements_summary": {
-    "version": "10.1.0-feedback-aware-hot-reload",
+    "version": "10.1.0-design-aligned",
     "row_7_feedback_awareness": [
       {
         "priority": "CRITICAL",
@@ -219,70 +256,23 @@
         "item": "Hot-Reloading Proposed Rules",
         "description": "ProposedRulesLoader hot-reloads proposed_rules.jsonl when file changes, no deployment needed",
         "benefit": "MetaLearningLoop changes take effect immediately"
-      },
-      {
-        "priority": "HIGH",
-        "item": "Dynamic Constitution Updates",
-        "description": "SafetyGuardStack hot-reloads constitution from APPROVED rules in proposed_rules.jsonl",
-        "benefit": "Safety constraints evolve without code changes"
-      },
-      {
-        "priority": "HIGH",
-        "item": "Feedback Logging Infrastructure",
-        "description": "All agents log success/failure/warning to feedback_log.jsonl via BaseAgent.log_feedback()",
-        "benefit": "Automatic feedback collection for meta-learning"
       }
     ],
     "gap_closure_details": [
       {
-        "stack": "RAGStack",
-        "gap_before": "Needed to read feedback_log.jsonl for dynamic agent selection",
-        "gap_after": "NOW reads feedback and selects best HyDE/reranker agents based on success rate"
-      },
-      {
-        "stack": "BulletStack",
-        "gap_before": "Needed to read feedback_log.jsonl for critique strategy selection",
-        "gap_after": "NOW reads feedback and adapts critique strategy (parallel vs sequential)"
-      },
-      {
         "stack": "DraftingStack",
-        "gap_before": "Needed to read feedback_log.jsonl for ReAct conductor tuning",
-        "gap_after": "NOW reads feedback and adjusts conductor temperature/max_steps"
+        "gap_before": "Mocked tools, incorrect models.",
+        "gap_after": "Code will be updated to use real LLM tools (Claude, GPT-5) as defined in this config."
       },
       {
         "stack": "QAStack",
-        "gap_before": "Needed to read feedback_log.jsonl for validator selection",
-        "gap_after": "NOW reads feedback and selects best QA validators"
-      },
-      {
-        "stack": "MetaLearningLoop",
-        "gap_before": "Needed hot-reloading of proposed_rules.jsonl without human deploy",
-        "gap_after": "NOW hot-reloads rules every 60 seconds, applies APPROVED rules automatically"
+        "gap_before": "Mocked tools, incorrect models.",
+        "gap_after": "Code will be updated to use real LLM tools (Claude, Gemini Flash) as defined in this config."
       },
       {
         "stack": "StrategyStack",
-        "gap_before": "Needed to read feedback_log.jsonl to inform ToT branch selection",
-        "gap_after": "NOW reads feedback and prioritizes ToT branches with higher historical success"
-      },
-      {
-        "stack": "PromptStack",
-        "gap_before": "Needed to read feedback_log.jsonl to inform prompt generation",
-        "gap_after": "NOW reads feedback and adjusts prompt style based on past performance"
-      },
-      {
-        "stack": "SafetyGuardStack",
-        "gap_before": "Needed to read proposed_rules.jsonl to update constitution",
-        "gap_after": "NOW hot-reloads constitution from APPROVED safety rules"
-      },
-      {
-        "stack": "DynamicToolingStack",
-        "gap_before": "Needed to read feedback_log.jsonl for tool selection",
-        "gap_after": "NOW reads feedback and selects tools with best success rates"
-      },
-      {
-        "stack": "HIL_InteractionStack",
-        "gap_before": "Needed deeper Human-Computer Interaction",
-        "gap_after": "PRESERVED from v9.9, no changes in v10.1"
+        "gap_before": "Used Claude Sonnet.",
+        "gap_after": "Now uses Gemini 2.5 Pro as specified in design."
       }
     ],
     "preserved_from_v10_0": [
@@ -293,30 +283,7 @@
       {
         "item": "Caching",
         "description": "Redis-based LLM caching with CacheManager preserved"
-      },
-      {
-        "item": "Async Performance",
-        "description": "Parallel bullet critique, async batch processing, async meta-learning preserved"
-      },
-      {
-        "item": "Security",
-        "description": "Local PII detection (Presidio) and bias detection (regex) preserved from v9.9"
       }
-    ],
-    "performance_impact": {
-      "feedback_aware_overhead": "< 50ms per agent selection (cached for 60 seconds)",
-      "hot_reload_overhead": "< 100ms per check (runs every 60 seconds)",
-      "expected_quality_improvement": "10-30% reduction in failures via adaptive agent selection",
-      "meta_learning_feedback_loop": "Closed loop: failures -> patterns -> proposals -> rules -> constitution updates"
-    },
-    "migration_impact": {
-      "breaking_changes": [
-        "Config schema updated to v10.1 (new feedback_config section)",
-        "All agents must call log_feedback() for success/failure/warning",
-        "Stacks that use dynamic selection must read FeedbackLogReader"
-      ],
-      "migration_effort": "MEDIUM - requires updating agent selection logic",
-      "backwards_compatibility": "PARTIAL - v10.0 agents will work but won't benefit from feedback awareness"
-    }
+    ]
   }
 }
