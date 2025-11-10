@@ -1,5 +1,10 @@
 # File: main_v10_1.py  
-# Version: 10.1 (Feedback-Driven Adaptation)
+# Version: 10.1 (Aspirational Design Implementation)
+#
+# v10.1 MAJOR CHANGES:
+# - Enabled HIL by default for single runs (enable_hil=True)
+# - Added --no-hil CLI flag to disable HIL
+# - MODULARITY OVERWRITE: Imports now point to agent_orchestration_v10_1 and agent_stacks_v10_1
 
 import os
 import sys
@@ -16,7 +21,9 @@ from core_v10_1 import (
     CONFIG, WorkflowContext, MainGraphState,
     FileIOError, CostCeilingExceededError
 )
-from agent_swarm_v10_1 import get_graph_app, PIISanitizerAgent
+# MODULARITY OVERWRITE: Import from new locations
+from agent_orchestration_v10_1 import get_graph_app
+from agent_stacks_v10_1 import PIISanitizerAgent
 from langgraph.checkpoint.redis import RedisSaver
 
 logger = logging.getLogger("main_v10_1")
@@ -54,7 +61,8 @@ def load_job_input(path: str) -> Dict[str, Any]:
 async def run_workflow_async(
     job_input_path: str,
     master_resume_path: str,
-    debug_mode: bool = False
+    debug_mode: bool = False,
+    enable_hil: bool = True  # Changed: HIL enabled by default for single run
 ) -> Dict[str, Any]:
     """Run workflow asynchronously with feedback-driven adaptation"""
     
@@ -83,14 +91,19 @@ async def run_workflow_async(
         db=CONFIG.redis_config.db
     )
     
-    app = get_graph_app(checkpointer, context, enable_hil=False)
-    logger.info("Compiled LangGraph workflow with feedback-driven agents")
+    # Changed: Pass enable_hil flag to graph builder
+    app = get_graph_app(checkpointer, context, enable_hil=enable_hil)
+    if enable_hil:
+        logger.info("Compiled LangGraph workflow with HIL (Human-in-the-Loop) ENABLED")
+    else:
+        logger.info("Compiled LangGraph workflow with HIL (Human-in-the-Loop) DISABLED")
     
     sanitizer = PIISanitizerAgent(context)
     sanitized_resume = sanitizer.run(master_resume)
     logger.info("PII sanitization complete")
     
     workflow_id = str(uuid.uuid4())
+    context.workflow_id = workflow_id # Set workflow_id on the context
     run_config = {"configurable": {"thread_id": workflow_id}}
     
     redis_client.set("current_workflow_id", workflow_id, ex=3600)
@@ -108,12 +121,25 @@ async def run_workflow_async(
     logger.info(f"Workflow ID: {workflow_id}")
     
     try:
-        final_state_dict = await asyncio.to_thread(
-            app.invoke,
-            state_dict,
-            run_config
-        )
+        final_state_dict = None
         
+        # Run async, streaming logs
+        async for s in app.astream(state_dict, run_config):
+            node_name = list(s.keys())[0]
+            logger.info(f"--- Executing Node: {node_name} ---")
+            if debug_mode:
+                logger.debug(json.dumps(s[node_name], indent=2))
+            
+            # Check for HIL pause
+            if node_name == "HIL_PAUSE":
+                logger.warning("="*80)
+                logger.warning("🛑 WORKFLOW PAUSED: HUMAN INPUT REQUIRED 🛑")
+                logger.warning(f"Please review the strategy and provide feedback for workflow: {workflow_id}")
+                logger.warning("="*80)
+            
+            final_state_dict = s[node_name]
+        
+        # Get final state from the last message
         final_state = MainGraphState.from_dict(final_state_dict)
         
         cache_stats = context.cache_manager.get_stats()
@@ -126,7 +152,8 @@ async def run_workflow_async(
             "status": "SUCCESS",
             "workflow_id": workflow_id,
             "cost": cost_summary['total_workflow_cost'],
-            "cache_stats": cache_stats
+            "cache_stats": cache_stats,
+            "final_artifacts": final_state.artifacts.artifacts
         }
         
     except Exception as e:
@@ -146,15 +173,18 @@ def main():
     parser.add_argument('-j', '--job', required=True, help='Path to job_input.json')
     parser.add_argument('-m', '--master', required=True, help='Path to master_resume.json')
     parser.add_argument('--debug', action='store_true', help='Enable debug logging')
+    parser.add_argument('--no-hil', action='store_true', help='Disable Human-in-the-Loop') # Added
     
     args = parser.parse_args()
     
     setup_logging(debug_mode=args.debug)
     
+    # Changed: Pass enable_hil flag (True by default, False if --no-hil is used)
     result = asyncio.run(run_workflow_async(
         args.job,
         args.master,
-        debug_mode=args.debug
+        debug_mode=args.debug,
+        enable_hil=not args.no_hil
     ))
     
     print("\n" + "="*80)
@@ -167,6 +197,10 @@ def main():
     if 'cache_stats' in result:
         stats = result['cache_stats']
         print(f"Cache Hit Rate: {stats['hit_rate_pct']:.1f}%")
+        
+    if 'final_artifacts' in result:
+        print("\n--- Final Artifacts ---")
+        print(json.dumps(result['final_artifacts'], indent=2))
     
     print("="*80)
     
