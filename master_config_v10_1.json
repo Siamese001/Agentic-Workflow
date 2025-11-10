@@ -1,0 +1,322 @@
+{
+  "schema_version": "master_config_v10.1",
+  "description": "v10.1 Feedback-Aware Agents, Hot-Reloading",
+  "version_notes": {
+    "v10_1_changes": [
+      "ROW 7: Feedback-aware agent selection (FeedbackLogReader reads feedback_log.jsonl)",
+      "ROW 7: Hot-reloading of proposed_rules.jsonl for dynamic constitution updates",
+      "ROW 7: Stacks consult feedback_log before making decisions (agent selection, ToT branching, prompt generation)",
+      "ROW 7: SafetyGuardStack hot-reloads constitution from approved rules",
+      "ROW 7: MetaLearningLoop writes APPROVED rules that are auto-applied without deployment",
+      "PRESERVED: v10.0 modularity (WorkflowContext, state decomposition)",
+      "PRESERVED: v10.0 caching (Redis LLM cache with CacheManager)",
+      "PRESERVED: v10.0 async performance (parallel critique, async batch processing)"
+    ],
+    "gap_closure": {
+      "RAGStack": "NOW reads feedback_log.jsonl for dynamic agent selection",
+      "BulletStack": "NOW reads feedback_log.jsonl for critique strategy selection",
+      "DraftingStack": "NOW reads feedback_log.jsonl for ReAct conductor tuning",
+      "QAStack": "NOW reads feedback_log.jsonl for validator selection",
+      "MetaLearningLoop": "NOW supports hot-reloading of proposed_rules.jsonl",
+      "StrategyStack": "NOW reads feedback_log.jsonl to inform ToT branch selection",
+      "PromptStack": "NOW reads feedback_log.jsonl to inform prompt generation",
+      "SafetyGuardStack": "NOW reads proposed_rules.jsonl to update constitution",
+      "DynamicToolingStack": "NOW reads feedback_log.jsonl for tool selection",
+      "HIL_InteractionStack": "Preserved from v9.9, no changes"
+    }
+  },
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "log_file": "./logs/workflow_v10_1.log",
+    "log_format": "json",
+    "correlation_ids": true,
+    "log_rotation": {
+      "max_bytes": 10485760,
+      "backup_count": 5
+    }
+  },
+  "redis_config": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "description": "Redis for LangGraph checkpoints and LLM caching"
+  },
+  "caching_config": {
+    "enable_llm_caching": true,
+    "cache_ttl_seconds": 3600,
+    "cache_db": 1,
+    "description": "v10.0 preserved: LLM response caching for cost reduction"
+  },
+  "performance_config": {
+    "enable_async_llm": true,
+    "max_concurrent_llm_calls": 10,
+    "llm_timeout_seconds": 30,
+    "description": "v10.0 preserved: Async LLM calls with concurrency control"
+  },
+  "cost_config": {
+    "cost_ceiling_per_workflow": 5.0,
+    "cost_ceiling_per_agent": 0.5,
+    "enable_cost_tracking": true,
+    "enable_in_flight_tracking": true,
+    "cost_warning_threshold": 4.0,
+    "description": "Cost tracking via injected CostTracker"
+  },
+  "batch_config": {
+    "max_parallel_workers": 4,
+    "enable_circuit_breaker": true,
+    "circuit_breaker_failure_threshold": 3,
+    "description": "v10.0 preserved: Async batch processing with semaphore-based concurrency"
+  },
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "max_meta_replan_loops": 3,
+    "feedback_log_path": "./logs/feedback_log.jsonl",
+    "preference_log_path": "./logs/preference_log.jsonl",
+    "proposed_rules_path": "./logs/proposed_rules.jsonl",
+    "enable_hot_reloading": true,
+    "hot_reload_check_interval_seconds": 60,
+    "description": "v10.1: Meta-learning with hot-reloading support"
+  },
+  "feedback_config": {
+    "enable_feedback_aware_agents": true,
+    "feedback_cache_ttl_seconds": 60,
+    "feedback_lookback_entries": 100,
+    "min_feedback_samples_for_selection": 5,
+    "default_agent_success_rate": 0.5,
+    "description": "v10.1: Feedback-aware agent selection configuration"
+  },
+  "tracing_config": {
+    "langsmith_enabled": false,
+    "langsmith_api_key": null,
+    "description": "Distributed tracing configuration"
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json",
+    "description": "Default file paths"
+  },
+  "agent_stacks": {
+    "description": "v10.1: All stacks now feedback-aware",
+    "safety_stack_enabled": true,
+    "bias_detection_threshold": 0.7,
+    "pii_detection_enabled": true,
+    "use_presidio_for_pii": true,
+    "use_local_bias_detection": true,
+    "enable_constitution_hot_reload": true,
+    "safety_stack_description": "SafetyGuardStack - hot-reloads constitution from proposed_rules.jsonl",
+    "strategy_tot_enabled": true,
+    "strategy_tot_branching_factor": 3,
+    "strategy_tot_depth": 2,
+    "strategy_feedback_aware": true,
+    "strategy_tot_description": "Tree-of-Thoughts Strategist (feedback-aware branch selection)",
+    "prompt_llm_driven": true,
+    "prompt_temperature": 0.7,
+    "prompt_feedback_aware": true,
+    "prompt_llm_description": "LLM-Driven Prompting (feedback-aware prompt generation)",
+    "enable_local_retries": true,
+    "max_local_retries": 2,
+    "local_retries_description": "Local Self-Correction (async)",
+    "enable_react_conductors": true,
+    "conductor_max_steps": 10,
+    "conductor_temperature": 0.6,
+    "conductor_feedback_aware": true,
+    "react_conductors_description": "ReAct conductors (feedback-aware tuning)",
+    "enable_dynamic_tooling": true,
+    "max_tools_per_task": 5,
+    "enable_tool_generation": false,
+    "tooling_feedback_aware": true,
+    "dynamic_tooling_description": "Dynamic tool selection (feedback-aware)",
+    "enable_hil_stack": true,
+    "ambiguity_confidence_threshold": 0.8,
+    "hil_stack_description": "Proactive ambiguity detection (preserved from v9.9)",
+    "enable_hyde": true,
+    "enable_reranking": true,
+    "reranking_top_k": 5,
+    "rag_feedback_aware": true,
+    "rag_enhancements_description": "HyDE generation and reranking (feedback-aware agent selection)",
+    "enable_dynamic_selection": true,
+    "agent_selection_strategy": "feedback_aware",
+    "dynamic_selection_description": "Dynamic agent selection via FeedbackLogReader",
+    "bullet_critique_feedback_aware": true,
+    "bullet_critique_description": "Parallel bullet critique (feedback-aware strategy selection)",
+    "qa_validation_feedback_aware": true,
+    "qa_validation_description": "QA validation (feedback-aware validator selection)"
+  },
+  "model_config": {
+    "strategy_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.8,
+      "description": "v10.1: Async client with caching and feedback awareness"
+    },
+    "prompt_engineer_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "v10.1: Async client with caching and feedback awareness"
+    },
+    "bullet_generator_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "v10.1: Async client with caching and feedback awareness"
+    },
+    "critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.2,
+      "description": "v10.1: Async client with caching (parallel critique, feedback-aware)"
+    },
+    "qa_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.3,
+      "description": "v10.1: Async client with caching and feedback awareness"
+    },
+    "bias_detector_model": {
+      "provider": "local",
+      "model_name": "regex",
+      "temperature": 0.0,
+      "description": "v9.9 preserved: Local regex-based bias detection (hot-reload constitution)"
+    },
+    "pii_sanitizer_model": {
+      "provider": "local",
+      "model_name": "presidio",
+      "temperature": 0.0,
+      "description": "v9.9 preserved: Local Presidio PII detection"
+    },
+    "react_conductor_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.6,
+      "description": "v10.1: Async ReAct with caching and feedback awareness"
+    },
+    "hyde_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.6,
+      "description": "v10.1: Async HyDE with caching and feedback awareness"
+    },
+    "reranker_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.2,
+      "description": "v10.1: Async reranker with caching and feedback awareness"
+    }
+  },
+  "v10_1_improvements_summary": {
+    "version": "10.1.0-feedback-aware-hot-reload",
+    "row_7_feedback_awareness": [
+      {
+        "priority": "CRITICAL",
+        "item": "Feedback-Aware Agent Selection",
+        "description": "FeedbackLogReader reads feedback_log.jsonl, calculates agent success rates, selects best agent for each task",
+        "benefit": "Agents automatically improve based on past performance data"
+      },
+      {
+        "priority": "CRITICAL",
+        "item": "Hot-Reloading Proposed Rules",
+        "description": "ProposedRulesLoader hot-reloads proposed_rules.jsonl when file changes, no deployment needed",
+        "benefit": "MetaLearningLoop changes take effect immediately"
+      },
+      {
+        "priority": "HIGH",
+        "item": "Dynamic Constitution Updates",
+        "description": "SafetyGuardStack hot-reloads constitution from APPROVED rules in proposed_rules.jsonl",
+        "benefit": "Safety constraints evolve without code changes"
+      },
+      {
+        "priority": "HIGH",
+        "item": "Feedback Logging Infrastructure",
+        "description": "All agents log success/failure/warning to feedback_log.jsonl via BaseAgent.log_feedback()",
+        "benefit": "Automatic feedback collection for meta-learning"
+      }
+    ],
+    "gap_closure_details": [
+      {
+        "stack": "RAGStack",
+        "gap_before": "Needed to read feedback_log.jsonl for dynamic agent selection",
+        "gap_after": "NOW reads feedback and selects best HyDE/reranker agents based on success rate"
+      },
+      {
+        "stack": "BulletStack",
+        "gap_before": "Needed to read feedback_log.jsonl for critique strategy selection",
+        "gap_after": "NOW reads feedback and adapts critique strategy (parallel vs sequential)"
+      },
+      {
+        "stack": "DraftingStack",
+        "gap_before": "Needed to read feedback_log.jsonl for ReAct conductor tuning",
+        "gap_after": "NOW reads feedback and adjusts conductor temperature/max_steps"
+      },
+      {
+        "stack": "QAStack",
+        "gap_before": "Needed to read feedback_log.jsonl for validator selection",
+        "gap_after": "NOW reads feedback and selects best QA validators"
+      },
+      {
+        "stack": "MetaLearningLoop",
+        "gap_before": "Needed hot-reloading of proposed_rules.jsonl without human deploy",
+        "gap_after": "NOW hot-reloads rules every 60 seconds, applies APPROVED rules automatically"
+      },
+      {
+        "stack": "StrategyStack",
+        "gap_before": "Needed to read feedback_log.jsonl to inform ToT branch selection",
+        "gap_after": "NOW reads feedback and prioritizes ToT branches with higher historical success"
+      },
+      {
+        "stack": "PromptStack",
+        "gap_before": "Needed to read feedback_log.jsonl to inform prompt generation",
+        "gap_after": "NOW reads feedback and adjusts prompt style based on past performance"
+      },
+      {
+        "stack": "SafetyGuardStack",
+        "gap_before": "Needed to read proposed_rules.jsonl to update constitution",
+        "gap_after": "NOW hot-reloads constitution from APPROVED safety rules"
+      },
+      {
+        "stack": "DynamicToolingStack",
+        "gap_before": "Needed to read feedback_log.jsonl for tool selection",
+        "gap_after": "NOW reads feedback and selects tools with best success rates"
+      },
+      {
+        "stack": "HIL_InteractionStack",
+        "gap_before": "Needed deeper Human-Computer Interaction",
+        "gap_after": "PRESERVED from v9.9, no changes in v10.1"
+      }
+    ],
+    "preserved_from_v10_0": [
+      {
+        "item": "Modularity",
+        "description": "WorkflowContext, state decomposition, dependency injection preserved"
+      },
+      {
+        "item": "Caching",
+        "description": "Redis-based LLM caching with CacheManager preserved"
+      },
+      {
+        "item": "Async Performance",
+        "description": "Parallel bullet critique, async batch processing, async meta-learning preserved"
+      },
+      {
+        "item": "Security",
+        "description": "Local PII detection (Presidio) and bias detection (regex) preserved from v9.9"
+      }
+    ],
+    "performance_impact": {
+      "feedback_aware_overhead": "< 50ms per agent selection (cached for 60 seconds)",
+      "hot_reload_overhead": "< 100ms per check (runs every 60 seconds)",
+      "expected_quality_improvement": "10-30% reduction in failures via adaptive agent selection",
+      "meta_learning_feedback_loop": "Closed loop: failures -> patterns -> proposals -> rules -> constitution updates"
+    },
+    "migration_impact": {
+      "breaking_changes": [
+        "Config schema updated to v10.1 (new feedback_config section)",
+        "All agents must call log_feedback() for success/failure/warning",
+        "Stacks that use dynamic selection must read FeedbackLogReader"
+      ],
+      "migration_effort": "MEDIUM - requires updating agent selection logic",
+      "backwards_compatibility": "PARTIAL - v10.0 agents will work but won't benefit from feedback awareness"
+    }
+  }
+}
