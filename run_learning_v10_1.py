@@ -1,5 +1,6 @@
 # File: run_learning_v10_1.py
 # Version: 10.1 (Feedback-Driven Adaptation)
+# COMPLETE META-LEARNING with all agents
 
 import json
 import logging
@@ -105,7 +106,7 @@ class AsyncLogSummarizerAgent(BaseAgent):
         """Summarize logs"""
         self.log_info("Summarizing logs with LLM...")
         
-        model_config = CONFIG.model_config.qa_model  # Reuse QA model
+        model_config = CONFIG.model_config.qa_model
         client = self.context.get_model_client(model_config.provider, model_config.model_name)
         
         prompt = f"""{META_LOG_READER_SYSTEM_PROMPT}
@@ -268,14 +269,12 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver
     
     workflow = StateGraph(dict)
     
-    # Node 1: Read logs
     async def read_logs_node(state: dict) -> dict:
         """Read raw logs"""
         log_reader = LogReaderAgent(context)
         raw_logs = log_reader.run()
         return {"raw_logs": raw_logs}
     
-    # Node 2: Summarize logs
     async def summarize_logs_node(state: dict) -> dict:
         """Summarize logs with LLM"""
         summarizer = AsyncLogSummarizerAgent(context)
@@ -284,7 +283,6 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver
         log_summary = await summarizer.run_async(state['raw_logs'], workflow_id)
         return {"log_summary": log_summary}
     
-    # Node 3: Find patterns
     async def find_patterns_node(state: dict) -> dict:
         """Find recurring patterns"""
         pattern_finder = AsyncPatternFinderAgent(context)
@@ -293,7 +291,6 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver
         patterns = await pattern_finder.run_async(state['log_summary'], workflow_id)
         return {"patterns": patterns}
     
-    # Node 4: Generate hypotheses
     async def generate_hypotheses_node(state: dict) -> dict:
         """Generate hypotheses"""
         hypothesis_gen = AsyncHypothesisGeneratorAgent(context)
@@ -303,7 +300,6 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver
         hypotheses = await hypothesis_gen.run_async(state['patterns'], previous_critique, workflow_id)
         return {"hypotheses": hypotheses}
     
-    # Node 5: Draft proposals (parallel for all hypotheses)
     async def draft_proposals_node(state: dict) -> dict:
         """Draft proposals for all hypotheses"""
         drafter = AsyncProposalDrafterAgent(context)
@@ -315,20 +311,17 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver
             logger.warning("No hypotheses to draft proposals for")
             return {"proposal": {}}
         
-        # Draft proposals in parallel
         proposal_tasks = [
             drafter.run_async(hyp, workflow_id)
-            for hyp in hypotheses[:3]  # Limit to top 3
+            for hyp in hypotheses[:3]
         ]
         
         proposals = await asyncio.gather(*proposal_tasks)
         
-        # Select best proposal (highest confidence)
         best_proposal = max(proposals, key=lambda p: p.get("confidence", 0.0))
         
         return {"proposal": best_proposal}
     
-    # Node 6: Critique proposal
     async def critique_proposal_node(state: dict) -> dict:
         """Critique proposal"""
         critique_agent = AsyncProposalCritiqueAgent(context)
@@ -342,7 +335,6 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver
         
         return {"critique": critique}
     
-    # Node 7: Write approved rules
     async def write_rules_node(state: dict) -> dict:
         """Write rules if critique passed"""
         rule_manager = HotReloadRuleManager()
@@ -365,7 +357,6 @@ def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver
         
         return {}
     
-    # Node 8: Replan check
     def should_replan(state: dict) -> str:
         """Decide if we should replan"""
         replan_count = state.get('replan_count', 0)
@@ -431,7 +422,6 @@ async def run_meta_learning():
         return
 
     try:
-        # Initialize Redis (separate DB for meta-learning)
         meta_db = CONFIG.redis_config.db + 10
         redis_client = redis.Redis(
             host=CONFIG.redis_config.host,
@@ -442,22 +432,18 @@ async def run_meta_learning():
         context = WorkflowContext(CONFIG, redis_client)
         logger.info("Initialized WorkflowContext for meta-learning")
         
-        # Initialize checkpointer
         checkpointer = RedisSaver(
             host=CONFIG.redis_config.host,
             port=CONFIG.redis_config.port,
             db=meta_db
         )
         
-        # Build graph
         app = build_meta_learning_graph(context, checkpointer)
         logger.info("Built meta-learning graph with 8 nodes")
         
-        # Initialize rule manager
         rule_manager = HotReloadRuleManager()
         logger.info("✓ Rules with high confidence (≥85%) are automatically approved")
         
-        # Run meta-learning
         workflow_id = str(uuid.uuid4())
         run_config = {"configurable": {"thread_id": workflow_id}}
         
@@ -481,7 +467,6 @@ async def run_meta_learning():
             run_config
         )
         
-        # Report results
         patterns_found = len(final_state.get('patterns', []))
         hypotheses_generated = len(final_state.get('hypotheses', []))
         critique_passed = final_state.get('critique', {}).get('critique_passed', False)
@@ -502,11 +487,9 @@ async def run_meta_learning():
         
         logger.info(f"{'='*80}\n")
         
-        # Cache stats
         cache_stats = context.cache_manager.get_stats()
         logger.info(f"Cache performance: {cache_stats}")
         
-        # Cost tracking
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Meta-learning cost: ${cost_summary['total_workflow_cost']:.4f}")
         

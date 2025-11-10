@@ -1,17 +1,17 @@
 # File: core_v10_1.py
-# Version: 10.1 (Feedback-Aware Agents, Hot-Reloading)
+# Version: 10.1 (Design-Aligned Implementation)
 #
 # v10.1 MAJOR CHANGES:
-# ROW 7: Feedback-aware agent selection (reads feedback_log.jsonl)
-# ROW 7: Hot-reloading of proposed_rules.jsonl for dynamic constitution updates
-# ROW 7: Enhanced WorkflowContext with FeedbackLogReader and ProposedRulesLoader
-# PRESERVED: All v10.0 modularity, caching, and async improvements
+# - Added OpenAIAsyncClient to support all models from the design doc.
+# - Updated CostTracker.PRICING to match all models in agentic_design_v10_1.md.
+# - Updated WorkflowContext to build clients for all 3 providers.
 
 import os
 import json
 import logging
 import hashlib
 import redis
+from openai import AsyncOpenAI  # Added
 from dataclasses import dataclass, field, asdict
 from typing import Dict, Any, List, Optional, Tuple
 from datetime import datetime
@@ -330,27 +330,20 @@ class ProposedRulesLoader:
         return constitution_updates
     
     def get_constitution_rules(self) -> List[Dict[str, Any]]:
-        """Get approved constitution rules as dicts (for BiasDetectorAgent)"""
+        """Extract constitution-type rules for bias detection
+        
+        Returns list of config_changes dicts from rules with type='constitution'
+        """
         rules = self.load_rules(status_filter="APPROVED")
         
-        # Filter safety-related rules
-        safety_rules = [r for r in rules if r.rule_type in ["safety_constraint", "bias_check", "pii_detection"]]
+        constitution_rules = [
+            r.config_changes 
+            for r in rules 
+            if r.rule_type.lower() == "constitution"
+        ]
         
-        # Convert to dict format expected by agents
-        result = []
-        for rule in safety_rules:
-            rule_dict = {
-                "type": rule.rule_type,
-                "description": rule.description,
-                "timestamp": rule.timestamp,
-            }
-            
-            # Merge config_changes into the rule dict
-            rule_dict.update(rule.config_changes)
-            
-            result.append(rule_dict)
-        
-        return result
+        self.logger.info(f"Extracted {len(constitution_rules)} constitution rules")
+        return constitution_rules
     
     def get_config_overrides(self) -> Dict[str, Any]:
         """Get approved config overrides"""
@@ -425,18 +418,27 @@ class CacheManager:
         }
 
 # ============================================================================
-# ROW 4: COST TRACKER (Preserved from v10.0)
+# ROW 4: COST TRACKER (Design-Aligned)
 # ============================================================================
 
 class CostTracker:
     """Tracks LLM API costs per workflow"""
     
+    # Updated pricing to match models from agentic_design_v10_1.md
     PRICING = {
         "anthropic": {
-            "claude-sonnet-4-20250514": {"input": 0.003, "output": 0.015}
+            "claude-4.1-opus": {"input": 0.015, "output": 0.075}, # Placeholder
+            "claude-sonnet-4-20250514": {"input": 0.003, "output": 0.015} # Keep existing
         },
         "google": {
-            "gemini-2.0-flash-exp": {"input": 0.0, "output": 0.0}
+            "gemini-2.5-pro": {"input": 0.002, "output": 0.006}, # Placeholder
+            "gemini-2.5-flash": {"input": 0.0001, "output": 0.0003}, # Placeholder
+            "gemini-2.0-flash-exp": {"input": 0.0, "output": 0.0} # Keep existing
+        },
+        "openai": {
+            "gpt-5": {"input": 0.05, "output": 0.15}, # Placeholder
+            "gpt-4-turbo": {"input": 0.01, "output": 0.03},
+            "gpt-4o": {"input": 0.005, "output": 0.015}
         }
     }
     
@@ -447,15 +449,18 @@ class CostTracker:
     def log_cost(self, workflow_id: str, agent_name: str, model_name: str,
                  input_tokens: int, output_tokens: int):
         """Log cost (wrapper for record_call)"""
-        # Extract provider from model_name prefix
-        if "claude" in model_name:
-            provider = "anthropic"
-        elif "gemini" in model_name:
-            provider = "google"
-        else:
-            provider = "unknown"
-        
+        provider = self._get_provider_name(model_name)
         self.record_call(workflow_id, provider, model_name, input_tokens, output_tokens)
+
+    def _get_provider_name(self, model_name: str) -> str:
+        """Extract provider name from model"""
+        if "claude" in model_name:
+            return "anthropic"
+        elif "gemini" in model_name:
+            return "google"
+        elif "gpt-" in model_name:
+            return "openai"
+        return "unknown"
     
     def record_call(self, workflow_id: str, provider: str, model: str, 
                     input_tokens: int, output_tokens: int):
@@ -498,218 +503,13 @@ class CostTracker:
         }
 
 # ============================================================================
-# ROW 4: WORKFLOW CONTEXT (Enhanced with v10.1 components)
-# ============================================================================
-
-class WorkflowContext:
-    """Dependency injection container for v10.1"""
-    
-    def __init__(self, config: ConfigV10_1, redis_client: redis.Redis):
-        self.config = config
-        self.redis_client = redis_client
-        
-        # Initialize managers (v10.0)
-        self.cache_manager = CacheManager(
-            redis_client,
-            ttl_seconds=config.caching_config.cache_ttl_seconds
-        )
-        self.cost_tracker = CostTracker()
-        
-        # v10.1: Initialize feedback and rules loaders
-        self.feedback_reader = FeedbackLogReader(
-            config.meta_loop_config.feedback_log_path
-        )
-        self.rules_loader = ProposedRulesLoader(
-            config.meta_loop_config.proposed_rules_path
-        )
-        
-        # Model client registry
-        self._model_clients: Dict[str, Any] = {}
-        
-        logger.info("WorkflowContext initialized with v10.1 enhancements")
-    
-    def get_model_client(self, provider: str, model_name: str):
-        """Get or create model client"""
-        key = f"{provider}:{model_name}"
-        
-        if key not in self._model_clients:
-            # Lazy import to avoid circular dependencies
-            from agent_swarm_v10_1 import AnthropicAsyncClient, GeminiAsyncClient
-            
-            if provider == "anthropic":
-                self._model_clients[key] = AnthropicAsyncClient(
-                    model_name=model_name,
-                    cache_manager=self.cache_manager,
-                    cost_tracker=self.cost_tracker,
-                    workflow_id="",
-                    agent_name=""
-                )
-            elif provider == "google":
-                self._model_clients[key] = GeminiAsyncClient(
-                    model_name=model_name,
-                    cache_manager=self.cache_manager,
-                    cost_tracker=self.cost_tracker,
-                    workflow_id="",
-                    agent_name=""
-                )
-            else:
-                raise ValueError(f"Unknown provider: {provider}")
-        
-        return self._model_clients[key]
-
-# ============================================================================
-# STATE MODELS (Preserved from v10.0, Enhanced for v10.1)
-# ============================================================================
-
-@dataclass
-class ResumeContext:
-    """Resume-related state"""
-    master_resume: Dict[str, Any] = field(default_factory=dict)
-    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
-    experience_bullets: List[Dict] = field(default_factory=list)
-
-@dataclass
-class JobContext:
-    """Job description state"""
-    raw_jd: str = ""
-    company: str = ""
-    job_title: str = ""
-    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
-
-@dataclass
-class StrategyContext:
-    """Strategy state"""
-    strategy_plan: Dict[str, Any] = field(default_factory=dict)
-    tot_branches: List[Dict] = field(default_factory=list)
-
-@dataclass
-class PromptContext:
-    """Prompt engineering state"""
-    prompts: Dict[str, str] = field(default_factory=dict)
-
-@dataclass
-class BulletContext:
-    """Bullet generation state"""
-    generated_bullets: List[Dict] = field(default_factory=list)
-    critiqued_bullets: List[Dict] = field(default_factory=list)
-
-@dataclass
-class DraftContext:
-    """Drafting state"""
-    sections: Dict[str, Any] = field(default_factory=dict)
-
-@dataclass
-class QAContext:
-    """QA state"""
-    validation_results: Dict[str, Any] = field(default_factory=dict)
-
-@dataclass
-class ArtifactContext:
-    """Artifact storage"""
-    artifacts: Dict[str, Any] = field(default_factory=dict)
-
-@dataclass
-class MetadataContext:
-    """Workflow metadata"""
-    workflow_id: str = ""
-    timestamp: str = ""
-    cost: float = 0.0
-
-@dataclass
-class SafetyContext:
-    """Safety checks state"""
-    pii_detected: bool = False
-    bias_detected: bool = False
-    safety_notes: List[str] = field(default_factory=list)
-
-@dataclass
-class FeedbackContext:
-    """v10.1: Feedback-aware state"""
-    recent_feedback: List[FeedbackEntry] = field(default_factory=list)
-    applied_rules: List[str] = field(default_factory=list)
-    selected_agents: Dict[str, str] = field(default_factory=dict)  # task -> agent_name
-
-@dataclass
-class MainGraphState:
-    """Main workflow state (v10.1)"""
-    resume: ResumeContext = field(default_factory=ResumeContext)
-    job: JobContext = field(default_factory=JobContext)
-    strategy: StrategyContext = field(default_factory=StrategyContext)
-    prompts: PromptContext = field(default_factory=PromptContext)
-    bullets: BulletContext = field(default_factory=BulletContext)
-    draft: DraftContext = field(default_factory=DraftContext)
-    qa: QAContext = field(default_factory=QAContext)
-    artifacts: ArtifactContext = field(default_factory=ArtifactContext)
-    metadata: MetadataContext = field(default_factory=MetadataContext)
-    safety: SafetyContext = field(default_factory=SafetyContext)
-    feedback: FeedbackContext = field(default_factory=FeedbackContext)  # v10.1
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dict for LangGraph"""
-        return asdict(self)
-    
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
-        """Create from dict"""
-        state = cls()
-        state.resume = ResumeContext(**data.get("resume", {}))
-        state.job = JobContext(**data.get("job", {}))
-        state.strategy = StrategyContext(**data.get("strategy", {}))
-        state.prompts = PromptContext(**data.get("prompts", {}))
-        state.bullets = BulletContext(**data.get("bullets", {}))
-        state.draft = DraftContext(**data.get("draft", {}))
-        state.qa = QAContext(**data.get("qa", {}))
-        state.artifacts = ArtifactContext(**data.get("artifacts", {}))
-        state.metadata = MetadataContext(**data.get("metadata", {}))
-        state.safety = SafetyContext(**data.get("safety", {}))
-        state.feedback = FeedbackContext(**data.get("feedback", {}))  # v10.1
-        return state
-
-@dataclass
-class MetaGraphState:
-    """Meta-learning graph state"""
-    raw_logs: Dict[str, str] = field(default_factory=dict)
-    log_summary: Dict[str, Any] = field(default_factory=dict)
-    patterns: List[Dict] = field(default_factory=list)
-    hypotheses: List[Dict] = field(default_factory=list)
-    proposal: Dict[str, Any] = field(default_factory=dict)
-    critique: Dict[str, Any] = field(default_factory=dict)
-    replan_count: int = 0
-    workflow_id: str = ""
-
-# ============================================================================
 # BASE AGENT CLASS (Preserved from v10.0)
 # ============================================================================
-
-class AsyncBaseModelClient:
-    """Base class for async LLM clients"""
-    
-    def __init__(self, model_name: str, cache_manager: CacheManager, 
-                 cost_tracker: CostTracker, workflow_id: str, agent_name: str):
-        self.model_name = model_name
-        self.cache_manager = cache_manager
-        self.cost_tracker = cost_tracker
-        self.workflow_id = workflow_id
-        self.agent_name = agent_name
-    
-    def _get_provider_name(self) -> str:
-        """Extract provider name from model"""
-        if "claude" in self.model_name:
-            return "anthropic"
-        elif "gemini" in self.model_name:
-            return "google"
-        return "unknown"
-    
-    async def chat_completion_async(self, messages: List[Dict[str, str]], 
-                                   temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
-        """Abstract method - implement in subclasses"""
-        raise NotImplementedError
 
 class BaseAgent:
     """Base class for all agents with context injection"""
     
-    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
         self.context = context
         self.config = context.config
         self.debug_mode = debug_mode
@@ -751,6 +551,421 @@ class BaseAgent:
             self.log_debug(f"Logged feedback: {feedback_type} for {task}")
         except Exception as e:
             self.log_error(f"Failed to log feedback: {e}")
+    
+    # Helper to get a configured model client
+    def get_model_client(self, model_config_name: str) -> "AsyncBaseModelClient":
+        """Helper to get a model client from config"""
+        model_config = getattr(self.config.model_config, model_config_name)
+        
+        client = self.context.get_model_client(
+            model_config.provider, 
+            model_config.model_name
+        )
+        
+        # Update client with workflow-specific IDs
+        client.workflow_id = self.context.workflow_id
+        client.agent_name = self.__class__.__name__
+        
+        return client
+        
+# ============================================================================
+# ROW 6: ASYNC LLM CLIENTS (Design-Aligned)
+# ============================================================================
+
+class AsyncBaseModelClient:
+    """Base class for async LLM clients"""
+    
+    def __init__(self, model_name: str, cache_manager, cost_tracker, workflow_id: str, agent_name: str):
+        self.model_name = model_name
+        self.cache_manager = cache_manager
+        self.cost_tracker = cost_tracker
+        self.workflow_id = workflow_id
+        self.agent_name = agent_name
+    
+    def _get_provider_name(self) -> str:
+        """Extract provider name from model"""
+        if "claude" in self.model_name:
+            return "anthropic"
+        elif "gemini" in self.model_name:
+            return "google"
+        elif "gpt-" in self.model_name:
+            return "openai"
+        return "unknown"
+    
+    async def chat_completion_async(self, messages: List[Dict[str, str]], 
+                                   temperature: float = 0.7,
+                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+        """Abstract method - implement in subclasses"""
+        raise NotImplementedError
+
+class AnthropicAsyncClient(AsyncBaseModelClient):
+    """Async Anthropic/Claude API client with caching"""
+    
+    async def chat_completion_async(self, messages: List[Dict[str, str]], 
+                                   temperature: float = 0.7,
+                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+        """Async chat completion with caching"""
+        import anthropic
+        
+        prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
+        provider = self._get_provider_name()
+        
+        cached_response = self.cache_manager.get(provider, self.model_name, prompt, temperature)
+        if cached_response:
+            return cached_response
+        
+        try:
+            client = anthropic.AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+            
+            response = await client.messages.create(
+                model=self.model_name,
+                max_tokens=4096,
+                temperature=temperature,
+                messages=messages
+            )
+            
+            content = response.content[0].text
+            
+            if response_format == "json_object":
+                try:
+                    # Find the JSON object
+                    json_start = content.find('{')
+                    json_end = content.rfind('}') + 1
+                    if json_start != -1 and json_end != -1:
+                        json_str = content[json_start:json_end]
+                        content = json.loads(json_str)
+                    else:
+                        raise JSONParsingError("No JSON object found in response")
+                except json.JSONDecodeError as e:
+                    raise JSONParsingError(f"Failed to parse JSON response: {e}")
+            
+            result = {
+                "content": content,
+                "usage": {
+                    "prompt_tokens": response.usage.input_tokens,
+                    "completion_tokens": response.usage.output_tokens
+                }
+            }
+            
+            self.cost_tracker.log_cost(
+                self.workflow_id, self.agent_name, self.model_name,
+                response.usage.input_tokens, response.usage.output_tokens
+            )
+            
+            self.cache_manager.set(provider, self.model_name, prompt, temperature, result)
+            
+            return result
+            
+        except Exception as e:
+            raise ModelAPIError(f"Anthropic API call failed: {e}")
+
+class GeminiAsyncClient(AsyncBaseModelClient):
+    """Async Google Gemini API client with caching"""
+    
+    async def chat_completion_async(self, messages: List[Dict[str, str]], 
+                                   temperature: float = 0.7,
+                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+        """Async chat completion with caching"""
+        import google.generativeai as genai
+        
+        prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
+        provider = self._get_provider_name()
+        
+        cached_response = self.cache_manager.get(provider, self.model_name, prompt, temperature)
+        if cached_response:
+            return cached_response
+        
+        try:
+            genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+            
+            # Note: Gemini's JSON mode is handled differently
+            gen_config = {"temperature": temperature}
+            if response_format == "json_object":
+                gen_config["response_mime_type"] = "application/json"
+            
+            model = genai.GenerativeModel(self.model_name)
+            
+            prompt_text = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
+            
+            response = await asyncio.to_thread(
+                model.generate_content,
+                prompt_text,
+                generation_config=gen_config
+            )
+            
+            content = response.text
+            
+            if response_format == "json_object":
+                try:
+                    # Gemini (with mime_type) should return a valid JSON string
+                    content = json.loads(content)
+                except json.JSONDecodeError as e:
+                    raise JSONParsingError(f"Failed to parse JSON response from Gemini: {e}")
+            
+            result = {
+                "content": content,
+                "usage": {
+                    # Gemini API v1 does not return token counts in response
+                    "prompt_tokens": 0, 
+                    "completion_tokens": 0
+                }
+            }
+            
+            self.cache_manager.set(provider, self.model_name, prompt, temperature, result)
+            
+            return result
+            
+        except Exception as e:
+            raise ModelAPIError(f"Gemini API call failed: {e}")
+
+class OpenAIAsyncClient(AsyncBaseModelClient):
+    """Async OpenAI API client with caching"""
+    
+    async def chat_completion_async(self, messages: List[Dict[str, str]], 
+                                   temperature: float = 0.7,
+                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+        """Async chat completion with caching"""
+        
+        prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
+        provider = self._get_provider_name()
+        
+        cached_response = self.cache_manager.get(provider, self.model_name, prompt, temperature)
+        if cached_response:
+            return cached_response
+        
+        try:
+            client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+            
+            # Prepare response format if requested
+            completion_kwargs = {
+                "model": self.model_name,
+                "temperature": temperature,
+                "messages": messages
+            }
+            if response_format == "json_object":
+                completion_kwargs["response_format"] = {"type": "json_object"}
+
+            response = await client.chat.completions.create(**completion_kwargs)
+            
+            content = response.choices[0].message.content
+            
+            if response_format == "json_object":
+                try:
+                    # OpenAI returns a string, so we must parse it
+                    content = json.loads(content)
+                except json.JSONDecodeError as e:
+                    raise JSONParsingError(f"Failed to parse JSON response from OpenAI: {e}")
+            
+            result = {
+                "content": content,
+                "usage": {
+                    "prompt_tokens": response.usage.prompt_tokens,
+                    "completion_tokens": response.usage.completion_tokens
+                }
+            }
+            
+            self.cost_tracker.log_cost(
+                self.workflow_id, self.agent_name, self.model_name,
+                response.usage.prompt_tokens, response.usage.completion_tokens
+            )
+            
+            self.cache_manager.set(provider, self.model_name, prompt, temperature, result)
+            
+            return result
+            
+        except Exception as e:
+            raise ModelAPIError(f"OpenAI API call failed: {e}")
+
+# ============================================================================
+# ROW 4: WORKFLOW CONTEXT (Design-Aligned)
+# ============================================================================
+
+class WorkflowContext:
+    """Dependency injection container for v10.1"""
+    
+    def __init__(self, config: ConfigV10_1, redis_client: redis.Redis):
+        self.config = config
+        self.redis_client = redis_client
+        self.workflow_id: str = "" # This will be set by the runner
+        
+        # Initialize managers (v10.0)
+        self.cache_manager = CacheManager(
+            redis_client,
+            ttl_seconds=config.caching_config.cache_ttl_seconds
+        )
+        self.cost_tracker = CostTracker()
+        
+        # v10.1: Initialize feedback and rules loaders
+        self.feedback_reader = FeedbackLogReader(
+            config.meta_loop_config.feedback_log_path
+        )
+        self.rules_loader = ProposedRulesLoader(
+            config.meta_loop_config.proposed_rules_path
+        )
+        
+        # Model client registry
+        self._model_clients: Dict[str, Any] = {}
+        
+        logger.info("WorkflowContext initialized with v10.1 enhancements")
+    
+    def get_model_client(self, provider: str, model_name: str):
+        """Get or create model client (no circular dependency - clients in core)"""
+        key = f"{provider}:{model_name}"
+        
+        if key not in self._model_clients:
+            base_args = {
+                "model_name": model_name,
+                "cache_manager": self.cache_manager,
+                "cost_tracker": self.cost_tracker,
+                "workflow_id": self.workflow_id, # Will be set at runtime
+                "agent_name": "" # Will be set by BaseAgent
+            }
+            
+            if provider == "anthropic":
+                self._model_clients[key] = AnthropicAsyncClient(**base_args)
+            elif provider == "google":
+                self._model_clients[key] = GeminiAsyncClient(**base_args)
+            elif provider == "openai":
+                self._model_clients[key] = OpenAIAsyncClient(**base_gargs)
+            else:
+                raise ValueError(f"Unknown provider: {provider}")
+        
+        client = self._model_clients[key]
+        # Ensure workflow_id is updated for this context
+        client.workflow_id = self.workflow_id
+        return client
+
+# ============================================================================
+# STATE MODELS (Preserved from v10.0, Enhanced for v10.1)
+# ============================================================================
+
+@dataclass
+class ResumeContext:
+    """Resume-related state"""
+    master_resume: Dict[str, Any] = field(default_factory=dict)
+    sanitized_resume: Dict[str, Any] = field(default_factory=dict)
+    experience_bullets: List[Dict] = field(default_factory=list)
+
+@dataclass
+class JobContext:
+    """Job description state"""
+    raw_jd: str = ""
+    company: str = ""
+    job_title: str = ""
+    parsed_requirements: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class StrategyContext:
+    """Strategy state"""
+    strategy_plan: Dict[str, Any] = field(default_factory=dict)
+    tot_branches: List[Dict] = field(default_factory=list)
+
+@dataclass
+class PromptContext:
+    """Prompt engineering state"""
+    prompts: Dict[str, str] = field(default_factory=dict)
+
+@dataclass
+class BulletContext:
+    """Bullet generation state"""
+    generated_bullets: List[Dict] = field(default_factory=list) # Now {text, experience}
+    critiqued_bullets: List[Dict] = field(default_factory=list) # Now {text, score, feedback}
+
+@dataclass
+class DraftContext:
+    """Drafting state"""
+    sections: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class QAContext:
+    """QA state"""
+    validation_results: Dict[str, Any] = field(default_factory=dict)
+    qa_passed: bool = False
+
+@dataclass
+class ArtifactContext:
+    """Artifact storage"""
+    artifacts: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class MetadataContext:
+    """Workflow metadata"""
+    workflow_id: str = ""
+    timestamp: str = ""
+    cost: float = 0.0
+    retries: Dict[str, int] = field(default_factory=lambda: {"bullet_retries": 0, "qa_retries": 0})
+
+@dataclass
+class SafetyContext:
+    """Safety checks state"""
+    pii_detected: bool = False
+    bias_detected: bool = False
+    safety_notes: List[str] = field(default_factory=list)
+
+@dataclass
+class FeedbackContext:
+    """v10.1: Feedback-aware state"""
+    recent_feedback: List[FeedbackEntry] = field(default_factory=list)
+    applied_rules: List[str] = field(default_factory=list)
+    selected_agents: Dict[str, str] = field(default_factory=dict)  # task -> agent_name
+
+@dataclass
+class HILContext:
+    """v10.1: HIL state"""
+    ambiguity_detected: bool = False
+    ambiguity_report: Dict[str, Any] = field(default_factory=dict)
+    next_step: str = "" # From feedback router
+
+@dataclass
+class MainGraphState:
+    """Main workflow state (v10.1 Design-Aligned)"""
+    resume: ResumeContext = field(default_factory=ResumeContext)
+    job: JobContext = field(default_factory=JobContext)
+    strategy: StrategyContext = field(default_factory=StrategyContext)
+    prompts: PromptContext = field(default_factory=PromptContext)
+    bullets: BulletContext = field(default_factory=BulletContext)
+    draft: DraftContext = field(default_factory=DraftContext)
+    qa: QAContext = field(default_factory=QAContext)
+    artifacts: ArtifactContext = field(default_factory=ArtifactContext)
+    metadata: MetadataContext = field(default_factory=MetadataContext)
+    safety: SafetyContext = field(default_factory=SafetyContext)
+    feedback: FeedbackContext = field(default_factory=FeedbackContext)  # v10.1
+    hil: HILContext = field(default_factory=HILContext) # v10.1
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dict for LangGraph"""
+        return asdict(self)
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'MainGraphState':
+        """Create from dict"""
+        state = cls()
+        state.resume = ResumeContext(**data.get("resume", {}))
+        state.job = JobContext(**data.get("job", {}))
+        state.strategy = StrategyContext(**data.get("strategy", {}))
+        state.prompts = PromptContext(**data.get("prompts", {}))
+        state.bullets = BulletContext(**data.get("bullets", {}))
+        state.draft = DraftContext(**data.get("draft", {}))
+        state.qa = QAContext(**data.get("qa", {}))
+        state.artifacts = ArtifactContext(**data.get("artifacts", {}))
+        state.metadata = MetadataContext(**data.get("metadata", {}))
+        state.safety = SafetyContext(**data.get("safety", {}))
+        state.feedback = FeedbackContext(**data.get("feedback", {}))  # v1Message: 0.1
+        state.hil = HILContext(**data.get("hil", {})) # v10.1
+        return state
+
+@dataclass
+class MetaGraphState:
+    """Meta-learning graph state"""
+    raw_logs: Dict[str, str] = field(default_factory=dict)
+    log_summary: Dict[str, Any] = field(default_factory=dict)
+    patterns: List[Dict] = field(default_factory=list)
+    hypotheses: List[Dict] = field(default_factory=list)
+    proposal: Dict[str, Any] = field(default_factory=dict)
+    critique: Dict[str, Any] = field(default_factory=dict)
+    replan_count: int = 0
+    workflow_id: str = ""
+
 
 # ============================================================================
 # SYSTEM PROMPTS FOR META-LEARNING (Preserved from v10.0)
