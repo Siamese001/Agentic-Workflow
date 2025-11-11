@@ -18,9 +18,9 @@
 
 import json
 import logging
-import asyncio 
-import uuid 
-from typing import Dict, Any, List
+import asyncio
+import uuid
+from typing import Dict, Any, List, Type
 
 from pydantic import BaseModel, Field
 from chromadb.utils import embedding_functions
@@ -67,125 +67,92 @@ from agent_stacks_v10_6 import BiasDetectorAgent # Import from stacks
 # v10.6: Logger name updated
 logger = logging.getLogger("agent_tools_v10_6")
 
-# ============================================================================
-# ROW 7: DRAFTING STACK (ReAct Conductor with REAL Tools)
-# ============================================================================
+class DraftingLLMTool(BaseTool):
+    """Shared async flow for drafting LLM tools."""
 
-class DraftingStrategistTool(BaseTool):
+    model_client_key: str = ""
+    output_model: Type[BaseToolOutput] = BaseToolOutput
+    log_action: str = ""
+
+    @track_metrics('tool_drafting_llm')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        action = self.log_action or f"Running {self.tool_name}"
+        self.log_info(f"Tool: {action} (v10.6)...")
+
+        client = self.get_model_client(self.model_client_key)
+        prompt_template = self.prompt_manager.get_template(self.tool_name)
+
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            tool_input,
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+
+        temperature = self._get_model_temperature()
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            response_format="json_object"
+        )
+
+        validated_output, error = self.validator.validate(response["content"], self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+
+        return validated_output.model_dump()
+
+    def _get_model_temperature(self) -> float:
+        try:
+            model_config = getattr(self.config.model_config, self.model_client_key)
+        except AttributeError as exc:
+            raise AttributeError(
+                f"Model config '{self.model_client_key}' not found for {self.__class__.__name__}"
+            ) from exc
+
+        temperature = getattr(model_config, 'temperature', None)
+        if temperature is None:
+            raise AttributeError(
+                f"Model config '{self.model_client_key}' for {self.__class__.__name__} lacks a 'temperature' value"
+            )
+        return float(temperature)
+
+
+class DraftingStrategistTool(DraftingLLMTool):
     """(Gemini 2.5 Pro) Reviews the overall strategy and ensures the draft aligns."""
+
     tool_name = "review_draft_strategy"
+    model_client_key = "drafting_strategist_model"
     output_model = DraftStrategyOutput
+    log_action = "Reviewing draft strategy"
 
-    @track_metrics('tool_drafting_strategist')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info(f"Tool: Reviewing draft strategy (v10.6)...")
-        client = self.get_model_client("drafting_strategist_model")
-        prompt_template = self.prompt_manager.get_template(self.tool_name)
-        
-        # v10.6 REFACTOR: Use centralized async formatter
-        prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
-        )
-        
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.drafting_strategist_model.temperature,
-            response_format="json_object"
-        )
-        
-        validated_output, error = self.validator.validate(response["content"], self.output_model)
-        if error:
-            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
-        return validated_output.model_dump()
 
-class DraftingRedTeamTool(BaseTool):
+class DraftingRedTeamTool(DraftingLLMTool):
     """(Claude 4.1 Opus) Aggressively critiques the draft for weaknesses."""
+
     tool_name = "red_team_critique"
+    model_client_key = "drafting_redteam_model"
     output_model = RedTeamOutput
+    log_action = "Red teaming draft"
 
-    @track_metrics('tool_drafting_redteam')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info(f"Tool: Red teaming draft (v10.6)...")
-        client = self.get_model_client("drafting_redteam_model")
-        prompt_template = self.prompt_manager.get_template(self.tool_name)
-        
-        # v10.6 REFACTOR: Use centralized async formatter
-        prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
-        )
-        
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.drafting_redteam_model.temperature,
-            response_format="json_object"
-        )
-        
-        validated_output, error = self.validator.validate(response["content"], self.output_model)
-        if error:
-            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
-        return validated_output.model_dump()
 
-class DraftingRefinerTool(BaseTool):
+class DraftingRefinerTool(DraftingLLMTool):
     """(GPT-5) Refines and rewrites specific sections."""
+
     tool_name = "refine_section"
+    model_client_key = "drafting_refiner_model"
     output_model = RefineSectionOutput
+    log_action = "Refining section (Debate Pattern)"
 
-    @track_metrics('tool_drafting_refiner')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info(f"Tool: Refining section (Debate Pattern) (v10.6)...")
-        client = self.get_model_client("drafting_refiner_model")
-        prompt_template = self.prompt_manager.get_template(self.tool_name)
-        
-        # v10.6 REFACTOR: Use centralized async formatter
-        prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
-        )
-        
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.drafting_refiner_model.temperature,
-            response_format="json_object"
-        )
-        
-        validated_output, error = self.validator.validate(response["content"], self.output_model)
-        if error:
-            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
-        return validated_output.model_dump()
 
-class DraftingMetricsTool(BaseTool):
+class DraftingMetricsTool(DraftingLLMTool):
     """(Gemini 2.5 Flash) Finds opportunities to add metrics to bullets."""
-    tool_name = "add_metrics"
-    output_model = AddMetricsOutput
 
-    @track_metrics('tool_drafting_metrics')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info(f"Tool: Adding metrics (v10.6)...")
-        client = self.get_model_client("drafting_metrics_model")
-        prompt_template = self.prompt_manager.get_template(self.tool_name)
-        
-        # v10.6 REFACTOR: Use centralized async formatter
-        prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
-        )
-        
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.drafting_metrics_model.temperature,
-            response_format="json_object"
-        )
-        
-        validated_output, error = self.validator.validate(response["content"], self.output_model)
-        if error:
-            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
-        return validated_output.model_dump()
+    tool_name = "add_metrics"
+    model_client_key = "drafting_metrics_model"
+    output_model = AddMetricsOutput
+    log_action = "Adding metrics"
 
 # ============================================================================
 # ROW 7: RAG STACK TOOLS (v10.6: Refactored)
@@ -323,16 +290,17 @@ class BM25SearchTool(BaseTool):
 
 class QABaseValidatorTool(BaseTool):
     """Base class for the 10 T2 validator tools"""
+
     model_config_name = "qa_validator_model" # Gemini 2.5 Flash
     output_model: Any = BaseToolOutput
-    
-    @track_metrics('tool_qa_base_validator')
+
+    @track_metrics('tool_qa_validator')
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         self.log_info(f"Tool: Running {self.tool_name} (v10.6)...")
         client = self.get_model_client(self.model_config_name)
-        
+
         prompt_template = self.prompt_manager.get_template(self.tool_name)
-        
+
         # v10.6 REFACTOR: Use centralized async formatter
         prompt = await _format_prompt_with_defaults(
             prompt_template, tool_input, self.budget_manager,
@@ -353,75 +321,65 @@ class QABaseValidatorTool(BaseTool):
 
 class QAClaimValidatorTool(QABaseValidatorTool):
     """(NLI) Checks if claims in the draft are supported by the master resume."""
+
     tool_name = "validate_claims"
-    output_model = QAClaimOutput 
-    @track_metrics('tool_qa_claim_validator')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    output_model = QAClaimOutput
+
 
 class QAToneValidatorTool(QABaseValidatorTool):
     """Checks if the draft's tone matches the strategy (e.g., 'leadership')."""
+
     tool_name = "validate_tone"
     output_model = QAToneOutput
-    @track_metrics('tool_qa_tone_validator')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+
 
 class QAThematicAlignmentTool(QABaseValidatorTool):
     """Ensures all sections support the central strategy theme."""
+
     tool_name = "validate_thematic_alignment"
     output_model = QAThematicAlignmentOutput
-    @track_metrics('tool_qa_thematic_alignment')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+
 
 class QASemanticEntailmentTool(QABaseValidatorTool):
     """Checks if bullets are semantically entailed by the job description."""
+
     tool_name = "validate_semantic_entailment"
     output_model = QASemanticEntailmentOutput
-    @track_metrics('tool_qa_semantic_entailment')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+
 
 class QANarrativeThreadTool(QABaseValidatorTool):
     """Checks for a consistent career story/narrative."""
+
     tool_name = "validate_narrative_thread"
     output_model = QANarrativeThreadOutput
-    @track_metrics('tool_qa_narrative_thread')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+
 
 class QAJDSkillsValidatorTool(QABaseValidatorTool):
     """Ensures keywords/skills from the JD are present in the draft."""
+
     tool_name = "validate_jd_skills"
     output_model = QAJDSkillsOutput
-    @track_metrics('tool_qa_jd_skills')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+
 
 class QASignalScoreValidatorTool(QABaseValidatorTool):
     """Rates the 'signal' (achievement) vs 'noise' (fluff) of each bullet."""
+
     tool_name = "validate_signal_score"
     output_model = QASignalScoreOutput
-    @track_metrics('tool_qa_signal_score')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+
 
 class QATenureValidatorTool(QABaseValidatorTool):
     """Checks for consistency in dates and tenure."""
+
     tool_name = "validate_tenure"
     output_model = QATenureOutput
-    @track_metrics('tool_qa_tenure')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+
 
 class QAMissedOpportunityTool(QABaseValidatorTool):
     """Looks for experience in the master resume that was omitted but is relevant."""
+
     tool_name = "find_missed_opportunities"
     output_model = QAMissedOpportunitiesOutput
-    @track_metrics('tool_qa_missed_opportunity')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
 
 class QAAdversarialReviewerTool(BaseTool):
     """(Claude 4.1 Opus) Acts as a skeptical hiring manager to find flaws."""
