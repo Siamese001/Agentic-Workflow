@@ -39,7 +39,7 @@ from core_v10_6 import (
     WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
     exponential_backoff_retry, CircuitBreakerOpenError,
     CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
-    ConfigV10_6,
+    ConfigV10_6, BaseTool,
     track_metrics,
     _format_prompt_with_defaults,
     ConstitutionalReviewResult # v10.6 (Fix #30)
@@ -310,7 +310,7 @@ class QAConductorAgent(BaseAgent):
             "validate_claims": QAClaimValidatorTool(context, debug_mode),
             "validate_tone": QAToneValidatorTool(context, debug_mode),
             "validate_thematic_alignment": QAThematicAlignmentTool(context, debug_mode),
-            "validate_semantic_entailment": QASemanticEntailmentTool(context, debug_debu_mode),
+            "validate_semantic_entailment": QASemanticEntailmentTool(context, debug_mode),
             "validate_narrative_thread": QANarrativeThreadTool(context, debug_mode),
             "adversarial_review": QAAdversarialReviewerTool(context, debug_mode),
             "validate_jd_skills": QAJDSkillsValidatorTool(context, debug_mode),
@@ -398,7 +398,7 @@ When finished, output:
         for step in range(max_steps):
             response = await client.chat_completion_async(
                 messages=messages,
-                temperature=0.4,
+                temperature=self.config.agent_stacks.conductor_temperature,
                 response_format="json_object"
             )
             
