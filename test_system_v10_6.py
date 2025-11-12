@@ -612,8 +612,7 @@ def test_contract_agent_logs_feedback(mock_workflow_context):
 @pytest.mark.asyncio
 async def test_fix_2_query_complexity_classifier_node(mock_workflow_context, mock_llm_client, base_state):
     mock_llm_client.chat_completion_async.return_value = {"content": json.dumps({"complexity": "simple", "reason": "test"}), "usage": {}}
-    with patch('agent_orchestration_v10_6.context', mock_workflow_context):
-        result_state = await run_classify_complexity(base_state)
+    result_state = await run_classify_complexity(base_state, mock_workflow_context)
     assert result_state["metadata"]["complexity"] == "simple"
     assert mock_workflow_context.complexity == "simple"
 
@@ -669,9 +668,8 @@ async def test_fix_6_node_timeout(mock_workflow_context, base_state):
 async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
     with patch('agent_stacks_v10_6.PIISanitizerAgent.run', return_value={}) as mock_pii_run, \
          patch('agent_stacks_v10_6.BiasDetectorAgent.run', return_value={"bias_detected": False}) as mock_bias_run:
-        with patch('agent_orchestration_v10_6.context', mock_workflow_context):
-            from agent_orchestration_v10_6 import run_sanitize_pii
-            await run_sanitize_pii(base_state)
+        from agent_orchestration_v10_6 import run_sanitize_pii
+        await run_sanitize_pii(base_state, mock_workflow_context)
     mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", ANY, success=True, error=None, metadata=ANY)
     mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", ANY, success=True, error=None, metadata=ANY)
 
@@ -783,12 +781,11 @@ async def test_fix_29_idempotency_validation(mock_workflow_context, mock_llm_cli
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_30_constitutional_review_node(mock_workflow_context, mock_llm_client, base_state):
-    """(v1g.6 Fix #30) Test the new run_constitutional_review node."""
+    """(v10.6 Fix #30) Test the new run_constitutional_review node."""
     mock_response = {"review_passed": False, "violations_found": ["Test Violation"], "feedback": "Test"}
     mock_llm_client.chat_completion_async.return_value = {"content": json.dumps(mock_response), "usage": {}}
-    
-    with patch('agent_orchestration_v10_6.context', mock_workflow_context):
-        result_state = await run_constitutional_review(base_state)
+
+    result_state = await run_constitutional_review(base_state, mock_workflow_context)
     
     assert "qa" in result_state
     assert result_state["qa"]["constitutional_review"]["review_passed"] is False

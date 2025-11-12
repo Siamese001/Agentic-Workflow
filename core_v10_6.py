@@ -1464,6 +1464,78 @@ class WorkflowContext:
 # v10.6 REFACTOR: COMPOSITION ROOT HELPER
 # ============================================================================
 
+def get_checkpointer(
+    config: ConfigV10_6,
+    *,
+    db: Optional[int] = None,
+    allow_memory_fallback: bool = False
+):
+    """Create a LangGraph checkpointer with standardized fallbacks."""
+
+    target_db = db if db is not None else config.redis_config.db
+    # Collect errors so we can surface meaningful diagnostics if all fallbacks fail.
+    fallback_errors: List[str] = []
+
+    try:
+        from langgraph.checkpoint.redis import RedisSaver  # type: ignore
+
+        try:
+            saver = RedisSaver(
+                host=config.redis_config.host,
+                port=config.redis_config.port,
+                db=target_db
+            )
+        except TypeError:
+            # Older LangGraph versions expose a parameter-less constructor.
+            saver = RedisSaver()
+
+        logger.info(
+            "Using RedisSaver for LangGraph checkpoints (db=%s).", target_db
+        )
+        return saver
+    except Exception as redis_error:
+        fallback_errors.append(f"RedisSaver unavailable: {redis_error}")
+        logger.warning(
+            "RedisSaver unavailable (%s). Attempting SqliteSaver fallback.",
+            redis_error
+        )
+
+    try:
+        from langgraph.checkpoint.sqlite import SqliteSaver  # type: ignore
+
+        sqlite_path = getattr(
+            config.redis_config,
+            "sqlite_fallback_path",
+            os.path.join(os.getcwd(), "langgraph_checkpoints_v10_6.sqlite3")
+        )
+        os.makedirs(os.path.dirname(sqlite_path) or ".", exist_ok=True)
+
+        try:
+            saver = SqliteSaver.from_conn_string(f"sqlite:///{sqlite_path}")
+        except AttributeError:
+            saver = SqliteSaver(sqlite_path)
+
+        logger.info("Using SqliteSaver for LangGraph checkpoints (%s).", sqlite_path)
+        return saver
+    except Exception as sqlite_error:
+        fallback_errors.append(f"SqliteSaver unavailable: {sqlite_error}")
+        logger.warning(
+            "SqliteSaver unavailable (%s).", sqlite_error,
+        )
+
+    if allow_memory_fallback:
+        try:
+            from langgraph.checkpoint.memory import MemorySaver  # type: ignore
+
+            logger.info("Using in-memory MemorySaver for LangGraph checkpoints.")
+            return MemorySaver()
+        except Exception as memory_error:
+            fallback_errors.append(f"MemorySaver unavailable: {memory_error}")
+
+    error_message = "; ".join(fallback_errors) or "No checkpoint backend available"
+    raise WorkflowError(f"Failed to initialize LangGraph checkpointer: {error_message}")
+
+
 def create_workflow_context(config: ConfigV10_6, db: int = 0) -> WorkflowContext:
     """
     v10.6 REFACTOR: Centralized Composition Root.
@@ -1544,7 +1616,7 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
     if not workflow_id:
         logger.warning("Cannot cleanup ChromaDB: WorkflowContext has no workflow_id.")
         return
-        
+
     try:
         logger.info(f"Cleaning up ChromaDB collection for workflow: {workflow_id}")
         collection = context.chromadb_client.get_collection(
@@ -1554,6 +1626,35 @@ def cleanup_workflow_chroma_collection(context: WorkflowContext):
         logger.info("ChromaDB cleanup complete.")
     except Exception as e:
         logger.warning(f"Failed to cleanup ChromaDB collection for {workflow_id}: {e}")
+
+
+def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> Dict[str, Any]:
+    """Centralized bias detection service shared by agents and tools."""
+
+    logger.debug("Running centralized bias detection service.")
+
+    base_patterns = ["he/she", "his/her", "male/female", "young", "old"]
+    rules = context.rules_loader.get_constitution_rules()
+
+    bias_patterns: List[str] = base_patterns.copy()
+    for rule in rules:
+        if isinstance(rule, dict) and 'bias_patterns' in rule:
+            patterns = rule.get('bias_patterns')
+            if isinstance(patterns, list):
+                bias_patterns.extend(str(p) for p in patterns)
+
+    normalized_text = text.lower()
+    detected_patterns = sorted({p for p in bias_patterns if p.lower() in normalized_text})
+    bias_detected = len(detected_patterns) > 0
+
+    result = {
+        "bias_detected": bias_detected,
+        "patterns": detected_patterns,
+        "bias_score": (len(detected_patterns) / len(bias_patterns)) if bias_patterns else 0.0,
+        "dynamic_rules_applied": len(rules)
+    }
+
+    return result
 
 # ============================================================================
 # STATE MODELS (v10.6: Fix #10 - A2A Comms)
