@@ -15,6 +15,11 @@ def test_analyzer_adds_confidence_field():
     assert "confidence" in out
 
 
-@pytest.mark.skip("Add 13 transformation tests on Analyzer, Enricher, Validator, Aggregator")
+@pytest.mark.xfail(
+    reason="Add 13 transformation tests on Analyzer, Enricher, Validator, Aggregator",
+    strict=False,
+)
 def test_placeholder():
-    pass
+    pytest.xfail(
+        "Add 13 transformation tests on Analyzer, Enricher, Validator, Aggregator"
+    )

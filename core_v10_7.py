@@ -424,18 +424,43 @@ def exponential_backoff_retry(max_retries: int = 3, initial_delay: float = 1.0):
         @wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
             delay = initial_delay
-            for attempt in range(max_retries):
+            total_attempts = max(1, max_retries + 1)
+
+            for attempt in range(total_attempts):
                 try:
                     return await func(*args, **kwargs)
-                except (ModelAPIError, JSONParsingError, PydanticSchemaError, asyncio.TimeoutError) as e:
-                    logger.warning(f"Node {func.__name__} failed (Attempt {attempt + 1}/{max_retries}): {e}")
-                    if attempt + 1 == max_retries:
-                        logger.error(f"Node {func.__name__} failed permanently after {max_retries} attempts.")
+                except (
+                    ModelAPIError,
+                    JSONParsingError,
+                    PydanticSchemaError,
+                    asyncio.TimeoutError,
+                ) as exc:
+                    logger.warning(
+                        "Node %s failed (Attempt %s/%s): %s",
+                        func.__name__,
+                        attempt + 1,
+                        total_attempts,
+                        exc,
+                    )
+
+                    if attempt + 1 == total_attempts:
+                        logger.error(
+                            "Node %s failed permanently after %s attempts.",
+                            func.__name__,
+                            total_attempts,
+                        )
                         raise
-                    
+
                     sleep_time = delay * (2 ** attempt)
-                    logger.info(f"Retrying {func.__name__} in {sleep_time:.2f}s...")
-                    await asyncio.sleep(sleep_time)
+                    if sleep_time > 0:
+                        logger.info(
+                            "Retrying %s in %.2fs...",
+                            func.__name__,
+                            sleep_time,
+                        )
+                        await asyncio.sleep(sleep_time)
+
+            # The loop always exits via return or raise; this guard is for type-checkers.
             raise WorkflowError(f"Node {func.__name__} failed after max retries")
         return wrapper
     return decorator
@@ -1819,7 +1844,7 @@ class WorkflowContext:
                 clients[spec.name] = _instantiate_mcp_client(spec)
             except Exception as exc:
                 errors[spec.name] = str(exc)
-                if spec.optional or self._mcp_fallback_mode == "stub":
+                if spec.optional:
                     logger.warning(
                         "MCP client '%s' failed to initialise (%s). Using stub fallback.",
                         spec.name,
@@ -1829,6 +1854,14 @@ class WorkflowContext:
                         spec.name,
                         {"error": str(exc), **spec.parameters, **self._mcp_fallback_parameters},
                     )
+                elif self._mcp_fallback_mode == "stub":
+                    logger.error(
+                        "Required MCP client '%s' failed during initialisation and cannot fall back to a stub.",
+                        spec.name,
+                    )
+                    raise MCPClientInitializationError(
+                        f"Failed to initialize MCP client '{spec.name}': {exc}"
+                    ) from exc
                 else:
                     raise MCPClientInitializationError(
                         f"Failed to initialize MCP client '{spec.name}': {exc}"
