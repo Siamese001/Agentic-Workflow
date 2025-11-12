@@ -18,6 +18,7 @@ from core_v10_6 import (
     PersonaConsensus,
     PersonaReviewDecision,
     StrategyPlan,
+    WorkflowContext,
     track_metrics,
     _format_prompt_with_defaults,
     PydanticSchemaError,
@@ -45,7 +46,7 @@ class VirtualReviewerPersonaAgent(BaseAgent):
     - escalation_recommended (boolean)
     """
 
-    def __init__(self, context: "WorkflowContext", persona: str, focus: str, debug_mode: bool = False):
+    def __init__(self, context: WorkflowContext, persona: str, focus: str, debug_mode: bool = False):
         super().__init__(context, debug_mode)
         self.persona = persona
         self.focus = focus
