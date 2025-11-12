@@ -42,7 +42,8 @@ from core_v10_6 import (
     ConfigV10_6, BaseTool,
     track_metrics,
     _format_prompt_with_defaults,
-    ConstitutionalReviewResult # v10.6 (Fix #30)
+    ConstitutionalReviewResult, # v10.6 (Fix #30)
+    PersonaConsensus
 )
 from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
@@ -69,19 +70,14 @@ from agent_stacks_v10_6 import (
     RAG_SearchAgent,
     AsyncBulletGeneratorAgent,
     AsyncBulletCritiqueAgent,
-    BulletCoordinatorAgent,
-    BulletProvenanceAuditorAgent,
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent # v10.6 (Fix #30)
+    ConstitutionalReviewerAgent, # v10.6 (Fix #30)
+    DraftingGuildCoordinator
 )
 
 # v10.6: Import from new tools file
 from agent_tools_v10_6 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
     QAClaimValidatorTool,
     QAToneValidatorTool,
     QAThematicAlignmentTool,
@@ -176,127 +172,6 @@ def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> Dict[str, 
                 
     return dynamic_tools
 
-# ============================================================================
-# DRAFTING CONDUCTOR (v10.6: Fix #7, #17, #19, #20, #24)
-# ============================================================================
-
-class ReActConductorAgent(BaseAgent):
-    """v10.6: ReAct conductor with dynamic tooling and cognitive modes."""
-    
-    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
-        super().__init__(context, debug_mode)
-        self.tools = {
-            "review_draft_strategy": DraftingStrategistTool(context, debug_mode),
-            "red_team_critique": DraftingRedTeamTool(context, debug_mode),
-            "refine_section": DraftingRefinerTool(context, debug_mode),
-            "add_metrics": DraftingMetricsTool(context, debug_mode)
-        }
-        
-        # v10.6 (Fix #7): Load dynamic tools
-        dynamic_tools = load_dynamic_tools(context, debug_mode)
-        self.tools.update(dynamic_tools)
-        
-        self.tool_schemas = [t.get_schema() for t in self.tools.values()]
-        
-        self.tool_breakers = {
-            name: CircuitBreaker(
-                failure_threshold=self.config.batch_config.circuit_breaker_failure_threshold
-            ) for name in self.tools
-        }
-        self.style_guide = "Style: Professional, high-impact, and metrics-driven."
-
-    @track_metrics('run_react_draft_conductor')
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info("Running ReAct Drafting Conductor (v10.6)...")
-        
-        client = self.get_model_client("react_conductor_model")
-        
-        strategy_plan = task_context.get('strategy')
-        if isinstance(strategy_plan, dict):
-            strategy_plan = StrategyPlan.model_validate(strategy_plan)
-        strategy_json = strategy_plan.model_dump_json()
-        
-        # v10.6 (Fix #17, #19, #20, #24): Inject Goal, Failures, Mode, Reflection
-        react_prompt = f"""
-{client.goal_state}
-{client.top_failures}
--------------------
-MODE: ORCHESTRATION
-TASK: You are a ReAct drafting conductor.
-Task Context: {json.dumps({"strategy": strategy_json})}
-Tools: {json.dumps(self.tool_schemas)}
-
-Plan (v10.6 Debate Pattern):
-1.  Call `review_draft_strategy` to get strategic feedback.
-2.  Call `red_team_critique` to get adversarial feedback.
-3.  Call `refine_section` to resolve *both* critiques.
-4.  Call `add_metrics` to enhance the refined draft.
-5.  Assemble final draft.
-
-REFLECTION: Does this plan fulfill the strategy?
-Output thoughts and tool calls in JSON:
-{{"thought": "Your reasoning", "tool_call": {{"name": "tool_name", "input": {{"arg": "value", "critique_2": "..."}}}}}}
-When finished, output:
-{{"thought": "Draft complete", "final_draft": {{...}}}}
-"""
-        messages = [{"role": "user", "content": react_prompt}]
-        
-        final_draft = {}
-        max_steps = self.config.agent_stacks.conductor_max_steps
-        
-        for step in range(max_steps):
-            response = await client.chat_completion_async(
-                messages=messages,
-                temperature=self.config.agent_stacks.conductor_temperature,
-                response_format="json_object"
-            )
-            
-            step_data, error = self.validator.validate(response["content"], dict)
-            if error:
-                logger.warning(f"ReAct step {step} failed validation: {error}")
-                messages.append({"role": "user", "content": f"Error: Invalid JSON response from LLM. {error}"})
-                continue
-
-            messages.append({"role": "assistant", "content": json.dumps(step_data)})
-            
-            if "final_draft" in step_data:
-                final_draft = step_data["final_draft"]
-                self.log_feedback(workflow_id, "react_conductor_draft", "success", {"steps_executed": step})
-                return {"final_output": final_draft, "steps": step}
-            
-            if "tool_call" in step_data:
-                tool_name = step_data["tool_call"].get("name")
-                tool_input = step_data["tool_call"].get("input", {})
-                
-                if not tool_name or tool_name not in self.tools:
-                    messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
-                    continue
-                
-                tool_input["draft"] = task_context.get("bullets")
-                tool_input["strategy"] = strategy_plan.model_dump() 
-                tool_input["style_guide"] = self.style_guide
-                
-                try:
-                    breaker = self.tool_breakers[tool_name]
-                    breaker.check()
-                    tool = self.tools[tool_name]
-                    tool_result = await tool.run_async(tool_input, workflow_id) 
-                    breaker.record_success()
-                    messages.append({"role": "user", "content": f"Tool Result: {json.dumps(tool_result)}"})
-                
-                except (CircuitBreakerOpenError, PydanticSchemaError, Exception) as e:
-                    self.log_error(f"Tool {tool_name} failed: {e}")
-                    if not isinstance(e, CircuitBreakerOpenError):
-                        if tool_name in self.tool_breakers:
-                            self.tool_breakers[tool_name].record_failure()
-                    
-                    error_msg = f"Error: Tool '{tool_name}' failed. Do not call it again. Reason: {str(e)}"
-                    messages.append({"role": "user", "content": error_msg})
-
-        self.log_feedback(workflow_id, "react_conductor_draft", "failure", {"reason": "Max steps reached"})
-        return {"final_output": {"error": "Max steps reached"}, "steps": max_steps}
-
-# ============================================================================
 # QA CONDUCTOR (v10.6: Fix #7, #8, #17, #19, #20, #24)
 # ============================================================================
 
@@ -586,41 +461,17 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
     """Node 6: Generate bullets (4-step)"""
     context = workflow_context
     bullet_gen = AsyncBulletGeneratorAgent(context)
-    coordinator = BulletCoordinatorAgent(context)
-    auditor = BulletProvenanceAuditorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     prompt = state['prompts']['prompts'].get('bullet_generation_prompt', "Generate bullets")
     strategy = state['strategy']['strategy_plan']
     if isinstance(strategy, dict):
         strategy = StrategyPlan.model_validate(strategy)
-
+    
     all_bullets = []
-    for exp in state['resume']['experience_bullets'][:3]:
+    for exp in state['resume']['experience_bullets'][:3]: 
         bullets = await bullet_gen.run_async(prompt, exp, strategy, workflow_id)
         all_bullets.extend([{"text": b, "experience": exp} for b in bullets])
-    retrieval_context = state.get('rag', {}).get('results') or state.get('resume', {}).get('experience_bullets', [])
-    bundle = await coordinator.run_async(all_bullets, retrieval_context, workflow_id)
-    audit_report = await auditor.run_async(bundle, workflow_id)
-
-    issue_map = {}
-    for issue in audit_report.get('issues', []):
-        issue_map.setdefault(issue.get('bullet_id'), []).append(issue)
-
-    for item in bundle.get('items', []):
-        provenance = item.setdefault('provenance', {})
-        provenance.setdefault('audit_flags', [])
-        provenance['audit_flags'].extend(issue_map.get(item.get('id'), []))
-
-    bundle['audit'] = audit_report
-
-    rag_patch = dict(state.get('rag', {}) or {})
-    if bundle.get('retrieval_requests'):
-        rag_patch['liaison_requests'] = bundle['retrieval_requests']
-
-    patch: Dict[str, Any] = {"bullets": {"bundle": bundle}}
-    if rag_patch:
-        patch['rag'] = rag_patch
-    return patch
+    return {"bullets": {"generated_bullets": all_bullets}}
 
 @exponential_backoff_retry()
 async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -629,33 +480,31 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     critique_agent = AsyncBulletCritiqueAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
-    bundle = state['bullets']['bundle']
-    critique_inputs = [{"text": item['text'], "experience": item.get('experience', {})} for item in bundle.get('items', [])]
-    critiques = await critique_agent.run_async(critique_inputs, critique_prompt, workflow_id)
-
-    for item, critique in zip(bundle.get('items', []), critiques):
-        item['critique'] = critique.get('critique', {})
-
-    return {"bullets": {"bundle": bundle}}
+    bullets = state['bullets']['generated_bullets']
+    critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
+    return {"bullets": {"critiqued_bullets": critiques}}
 
 @exponential_backoff_retry()
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
     context = workflow_context
-    conductor = ReActConductorAgent(context)
+    coordinator = DraftingGuildCoordinator(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    
-    bundle = state['bullets']['bundle']
+
     good_bullets = [
-        item for item in bundle.get('items', [])
-        if item.get('critique', {}).get('score', 0) >= 7
+        b for b in state['bullets']['critiqued_bullets']
+        if b.get('critique', {}).get('score', 0) >= 7
     ]
     strategy_plan = state['strategy']['strategy_plan']
     if isinstance(strategy_plan, dict):
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
     
-    task_context = {"bullets": good_bullets, "strategy": strategy_plan}
-    draft = await conductor.run_async(task_context, workflow_id)
+    task_context = {
+        "bullets": good_bullets,
+        "strategy": strategy_plan,
+        "resume": state['resume']['master_resume']
+    }
+    draft = await coordinator.run_async(task_context, workflow_id)
     return {"draft": {"sections": draft.get("final_output", {})}}
 
 async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -687,9 +536,18 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
     context = workflow_context
     router = HILFeedbackRouterAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    last_human_message = "Default to drafting" # Stub
-    route = await router.run_async(last_human_message, workflow_id)
-    return {"hil": {"next_step": route.get("next_step"), "payload": route.get("payload")}}
+    human_feedback = state.get('hil', {}).get('raw_feedback') or "Default to drafting"
+    route = await router.run_async(human_feedback, workflow_id, state)
+    return {
+        "hil": {
+            "next_step": route.get("next_step"),
+            "payload": route.get("payload"),
+            "intent_clusters": route.get("intent_clusters", []),
+            "delegated_specialists": route.get("delegated_specialists", []),
+            "persona_consensus": route.get("persona_consensus"),
+            "reconciliation": route.get("reconciliation")
+        }
+    }
 
 def human_in_the_loop_node(state: dict) -> dict:
     """Node 10: HIL Pause"""
@@ -714,9 +572,32 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
         return {}
     if 'sections' not in state['draft']:
         state['draft']['sections'] = {}
-    state['draft']['sections']['summary'] = f"[EDITED BY HUMAN]: {payload}"
+    reconciliation = state.get('hil', {}).get('reconciliation')
+    if reconciliation and reconciliation.get('integrated_text'):
+        state['draft']['sections']['summary'] = reconciliation['integrated_text']
+    else:
+        state['draft']['sections']['summary'] = f"[EDITED BY HUMAN]: {payload}"
     logger.info("HIL edit injected into draft summary.")
     return {"draft": state['draft']}
+
+
+async def run_reconcile_specialists(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Node 11.5: Reconcile specialist contributions."""
+    context = workflow_context
+    agent = HILReconciliationAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    specialist_feedback = state.get('hil', {}).get('specialist_feedback', [])
+    persona_consensus_data = state.get('hil', {}).get('persona_consensus')
+    persona_consensus = None
+    if persona_consensus_data:
+        try:
+            persona_consensus = PersonaConsensus.model_validate(persona_consensus_data)
+        except Exception as exc:
+            logger.warning(f"Failed to parse persona consensus for reconciliation: {exc}")
+
+    draft_sections = state.get('draft', {}).get('sections', {})
+    result = await agent.run_async(draft_sections, specialist_feedback, persona_consensus, workflow_id)
+    return {"hil": {"reconciliation": result.model_dump()}}
 
 # --- CONDITIONAL EDGES (v10.6: Fix #30) ---
 
@@ -736,12 +617,10 @@ def check_ambiguity(state: dict) -> str:
 
 def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     """Node 7 conditional: Check bullet quality and retries"""
-    bundle = state.get('bullets', {}).get('bundle', {})
-    items = bundle.get('items', [])
-    critiques = [item.get('critique', {}) for item in items if item.get('critique')]
+    critiques = state.get('bullets', {}).get('critiqued_bullets', [])
     if not critiques:
         return "global_replanner"
-    avg_score = sum(c.get('score', 0) for c in critiques) / len(critiques)
+    avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / len(critiques)
     if avg_score >= 7.0:
         return "bullets_passed"
     retries = state.get('metadata', {}).get('retries', {}).get('bullet_retries', 0)
@@ -781,6 +660,7 @@ def route_feedback(state: dict) -> str:
     if next_step == "STRATEGY": return "to_strategy"
     if next_step == "BULLET_GENERATION": return "to_bullets"
     if next_step == "INJECT_EDIT": return "to_inject_edit"
+    if next_step == "DELEGATE_SPECIALIST": return "to_delegation"
     return "to_drafting"
 
 # ============================================================================
@@ -820,6 +700,7 @@ def get_graph_app(checkpointer: Any, workflow_context: WorkflowContext, enable_h
     add_async_node("run_constitutional_review", partial(run_constitutional_review, workflow_context=workflow_context)) # 9.5 (Fix #30)
     workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
     add_async_node("run_feedback_router", partial(run_feedback_router, workflow_context=workflow_context)) # 11
+    add_async_node("run_reconcile_specialists", partial(run_reconcile_specialists, workflow_context=workflow_context)) # 11.5
     add_async_node("run_inject_hil_edit", partial(run_inject_hil_edit, workflow_context=workflow_context)) # 12
     
     # --- CONNECT NODES (v10.6: Rerouted for new nodes) ---
@@ -882,9 +763,12 @@ def get_graph_app(checkpointer: Any, workflow_context: WorkflowContext, enable_h
             "to_strategy": "run_tot_strategy",
             "to_bullets": "run_generate_bullets",
             "to_drafting": "run_drafting",
-            "to_inject_edit": "run_inject_hil_edit"
+            "to_inject_edit": "run_inject_hil_edit",
+            "to_delegation": "run_reconcile_specialists"
         }
     )
+
+    workflow.add_edge("run_reconcile_specialists", "run_inject_hil_edit") # 11.5 -> 12
     
     workflow.add_edge("run_inject_hil_edit", "run_qa_validation") # 12 -> 9 (Re-run QA)
     
