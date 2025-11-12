@@ -35,16 +35,18 @@ import os
 import json
 import logging
 import hashlib
-import redis
 import asyncio
-import chromadb
 import importlib
-import time 
+import time
 import random # v10.7: Added for Fix #29
-from functools import wraps 
+from functools import wraps
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
 from chromadb.utils import embedding_functions
-from openai import AsyncOpenAI
+
+from mcp import get_tool, get_schema, sync_context
+from telemetry_v10_7 import log_event
 try:
     import anthropic
     import google.generativeai as genai
@@ -61,6 +63,19 @@ from asyncio import TimeoutError as AsyncTimeoutError
 # v10.7: Logger name updated
 logger = logging.getLogger("core_v10_7")
 
+redis_module = get_tool("redis")
+chromadb_module = get_tool("chromadb")
+openai_module = get_tool("openai")
+
+AsyncOpenAI = getattr(openai_module, "AsyncOpenAI", None)
+
+if TYPE_CHECKING:  # pragma: no cover - typing aids
+    from redis import Redis as RedisType
+    from chromadb import Client as ChromaClientType
+else:
+    RedisType = Any
+    ChromaClientType = Any
+
 # ============================================================================
 # CONFIGURATION (v10.7: Fixed class name and paths)
 # ============================================================================
@@ -69,8 +84,7 @@ class ConfigV10_7:
     """Configuration loader for v10.7"""
     
     def __init__(self, config_path: str = "master_config_v10_7.json"):
-        with open(config_path, 'r') as f:
-            self._config = json.load(f)
+        self._config = get_schema(config_path)
         
         # Validate schema version
         expected_schema = "master_config_v10.7"
@@ -198,10 +212,19 @@ def _instantiate_mcp_client(spec: MCPClientSpec) -> Any:
         return client_cls(**spec.parameters)
 
     if spec.provider == "redis":
-        return redis.Redis(**spec.parameters)
+        redis_cls = getattr(redis_module, "Redis", None)
+        if callable(redis_cls):
+            return redis_cls(**spec.parameters)
+        return redis_module(**spec.parameters) if callable(redis_module) else MCPClientStub(spec.name, spec.parameters)
 
     if spec.provider == "chromadb":
-        return chromadb.PersistentClient(**spec.parameters)
+        persistent_cls = getattr(chromadb_module, "PersistentClient", None)
+        if callable(persistent_cls):
+            return persistent_cls(**spec.parameters)
+        client_cls = getattr(chromadb_module, "Client", None)
+        if callable(client_cls):
+            return client_cls(**spec.parameters)
+        return MCPClientStub(spec.name, spec.parameters)
 
     # Default to stub for unknown providers
     return MCPClientStub(spec.name, {"provider": spec.provider, **spec.parameters})
@@ -446,6 +469,17 @@ def _extract_workflow_context(args: Tuple[Any, ...], kwargs: Dict[str, Any]) -> 
     return None
 
 
+def update_context(context: Optional['WorkflowContext']) -> None:
+    """Synchronise the workflow context with the MCP runtime."""
+
+    if context is None:
+        return
+    try:
+        sync_context(context, scope="workflow")
+    except Exception as exc:  # pragma: no cover - sync failures should not break flow
+        logger.debug("Context sync skipped: %s", exc)
+
+
 def wrap_mcp(func: Optional[Callable] = None, *, force: bool = False) -> Callable:
     """Decorator that ensures MCP clients are initialised for node handlers."""
 
@@ -459,7 +493,9 @@ def wrap_mcp(func: Optional[Callable] = None, *, force: bool = False) -> Callabl
             context = _extract_workflow_context(args, kwargs)
             if context and context.is_mcp_enabled() and (force or context.wrap_mcp_nodes):
                 context.ensure_mcp_clients()
-            return await func(*args, **kwargs)
+            result = await func(*args, **kwargs)
+            update_context(context)
+            return result
 
         return async_wrapper
 
@@ -468,7 +504,9 @@ def wrap_mcp(func: Optional[Callable] = None, *, force: bool = False) -> Callabl
         context = _extract_workflow_context(args, kwargs)
         if context and context.is_mcp_enabled() and (force or context.wrap_mcp_nodes):
             context.ensure_mcp_clients()
-        return func(*args, **kwargs)
+        result = func(*args, **kwargs)
+        update_context(context)
+        return result
 
     return sync_wrapper
 
@@ -1126,10 +1164,10 @@ class ProposedRulesLoader:
 # ============================================================================
 
 class CacheManager:
-    def __init__(self, 
+    def __init__(self,
                  config: ConfigV10_7,
-                 redis_client: redis.Redis,
-                 chromadb_client: chromadb.Client,
+                 redis_client: RedisType,
+                 chromadb_client: ChromaClientType,
                  embedding_function: embedding_functions.EmbeddingFunction
                 ):
         self.config = config
@@ -1174,6 +1212,11 @@ class CacheManager:
             if cached_data:
                 self._hits += 1
                 self.logger.debug(f"LLM Cache HIT (Exact): {cache_key[:16]}...")
+                log_event("CacheManager", "llm_cache_hit", {
+                    "mode": "exact",
+                    "provider": provider,
+                    "model": model,
+                })
                 return json.loads(cached_data)
         except Exception as e:
             self.logger.error(f"Redis get error: {e}")
@@ -1193,6 +1236,11 @@ class CacheManager:
                     self._semantic_hits += 1
                     cached_data_str = results['documents'][0][0]
                     self.logger.info(f"LLM Cache HIT (Semantic): Similarity {1.0 - results['distances'][0][0]:.4f}")
+                    log_event("CacheManager", "llm_cache_hit", {
+                        "mode": "semantic",
+                        "provider": provider,
+                        "model": model,
+                    })
                     # Also set this in exact cache for future hits
                     self.redis.setex(cache_key, self.ttl, cached_data_str)
                     return json.loads(cached_data_str)
@@ -1202,6 +1250,10 @@ class CacheManager:
 
         self._misses += 1
         self.logger.debug(f"LLM Cache MISS: {cache_key[:16]}...")
+        log_event("CacheManager", "llm_cache_miss", {
+            "provider": provider,
+            "model": model,
+        })
         return None
     
     async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
@@ -1237,14 +1289,17 @@ class CacheManager:
             if cached_data:
                 self._tool_hits += 1
                 self.logger.info(f"Tool Cache HIT: {tool_name}")
+                log_event("CacheManager", "tool_cache_hit", {"tool": tool_name})
                 return json.loads(cached_data)
             else:
                 self._tool_misses += 1
                 self.logger.debug(f"Tool Cache MISS: {tool_name}")
+                log_event("CacheManager", "tool_cache_miss", {"tool": tool_name})
                 return None
         except Exception as e:
             self.logger.error(f"Tool Cache get error: {e}")
             self._tool_misses += 1
+            log_event("CacheManager", "tool_cache_error", {"tool": tool_name, "error": str(e)})
             return None
 
     def set_tool_cache(self, tool_name: str, tool_input: Dict[str, Any], result: Any):
@@ -1589,9 +1644,11 @@ class GeminiAsyncClient(AsyncBaseModelClient):
             raise ModelAPIError(f"Gemini API call failed: {e}")
 
 class OpenAIAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]], 
+    async def _internal_api_call(self, messages: List[Dict[str, str]],
                                    temperature: float = 0.7,
                                    response_format: Optional[str] = None) -> Dict[str, Any]:
+        if AsyncOpenAI is None:
+            raise ModelAPIError("OpenAI library not available. Install 'openai' to enable this client.")
         try:
             client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
             completion_kwargs = {
@@ -1625,14 +1682,14 @@ class WorkflowContext:
     
     def __init__(self,
                  config: ConfigV10_7,
-                 redis_client: redis.Redis,
-                 chromadb_client: chromadb.Client,
+                 redis_client: RedisType,
+                 chromadb_client: ChromaClientType,
                  cache_manager: CacheManager,
                  cost_tracker: CostTracker,
                  feedback_reader: FeedbackLogReader,
                  rules_loader: ProposedRulesLoader,
-                 prompt_manager: PromptTemplateManager,    
-                 response_validator: ResponseValidator,  
+                 prompt_manager: PromptTemplateManager,
+                 response_validator: ResponseValidator,
                  metrics_collector: MetricsCollector,
                  semantic_validator: SemanticValidator,
                  embedding_function: embedding_functions.EmbeddingFunction
@@ -1889,24 +1946,46 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     logger.info(f"Creating WorkflowContext with {config.schema_version}...")
     
     # 1. Initialize Clients (Redis, ChromaDB, Embedding)
-    redis_client = redis.Redis(
-        host=config.redis_config.host,
-        port=config.redis_config.port,
-        db=db or config.redis_config.db
-    )
-    
+    redis_ctor = getattr(redis_module, "Redis", None)
+    if callable(redis_ctor):
+        redis_client = redis_ctor(
+            host=config.redis_config.host,
+            port=config.redis_config.port,
+            db=db or config.redis_config.db
+        )
+    else:  # pragma: no cover - defensive stub fallback
+        redis_client = MCPClientStub("redis", {
+            "host": config.redis_config.host,
+            "port": config.redis_config.port,
+            "db": db or config.redis_config.db,
+        })
+
     if config.chromadb_config.use_http_client:
-        chromadb_client = chromadb.HttpClient(
-            host=config.chromadb_config.host,
-            port=config.chromadb_config.port
-        )
+        http_ctor = getattr(chromadb_module, "HttpClient", None)
+        if callable(http_ctor):
+            chromadb_client = http_ctor(
+                host=config.chromadb_config.host,
+                port=config.chromadb_config.port
+            )
+        else:  # pragma: no cover - defensive stub fallback
+            client_ctor = getattr(chromadb_module, "Client", None)
+            chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     else:
-        chromadb_client = chromadb.PersistentClient(
-            path=config.chromadb_config.persistent_path
-        )
+        persistent_ctor = getattr(chromadb_module, "PersistentClient", None)
+        if callable(persistent_ctor):
+            chromadb_client = persistent_ctor(
+                path=config.chromadb_config.persistent_path
+            )
+        else:  # pragma: no cover - defensive stub fallback
+            client_ctor = getattr(chromadb_module, "Client", None)
+            chromadb_client = client_ctor() if callable(client_ctor) else MCPClientStub("chromadb")
     logger.info("Initialized ChromaDB client")
     
-    embedding_function = embedding_functions.DefaultEmbeddingFunction()
+    embedding_ctor = getattr(embedding_functions, "DefaultEmbeddingFunction", None)
+    if callable(embedding_ctor):
+        embedding_function = embedding_ctor()
+    else:  # pragma: no cover - stub fallback for local tests
+        embedding_function = embedding_functions.EmbeddingFunction()
 
     # 2. Initialize Core Services (All 9+ services)
     feedback_reader = FeedbackLogReader(
