@@ -59,10 +59,9 @@ from core_v10_6 import (
     track_metrics,
     BaseTool,
     # v10.6: Import centralized prompt formatter
-    _format_prompt_with_defaults
+    _format_prompt_with_defaults,
+    detect_bias
 )
-# v10.6: Import from new stacks
-from agent_stacks_v10_6 import BiasDetectorAgent # Import from stacks
 
 # v10.6: Logger name updated
 logger = logging.getLogger("agent_tools_v10_6")
@@ -418,11 +417,10 @@ class QABiasDetectorTool(BaseTool):
     @track_metrics('tool_qa_bias_detector')
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         self.log_info(f"Tool: Running local bias detector (v10.6)...")
-        bias_agent = BiasDetectorAgent(self.context)
         draft_text = json.dumps(tool_input.get("draft_text", ""))
-        
+
         # v10.6 (FIX): Call the sync function in a thread to avoid blocking
-        result_dict = await asyncio.to_thread(bias_agent.run, draft_text, workflow_id)
+        result_dict = await asyncio.to_thread(detect_bias, self.context, draft_text, workflow_id)
         
         validated_output, error = self.validator.validate(result_dict, self.output_model)
         if error:
