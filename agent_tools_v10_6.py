@@ -18,9 +18,9 @@
 
 import json
 import logging
-import asyncio 
-import uuid 
-from typing import Dict, Any, List
+import asyncio
+import uuid
+from typing import Dict, Any, List, ClassVar
 
 from pydantic import BaseModel, Field
 from chromadb.utils import embedding_functions
@@ -325,103 +325,89 @@ class QABaseValidatorTool(BaseTool):
     """Base class for the 10 T2 validator tools"""
     model_config_name = "qa_validator_model" # Gemini 2.5 Flash
     output_model: Any = BaseToolOutput
-    
-    @track_metrics('tool_qa_base_validator')
+    metrics_tag: ClassVar[str] = "tool_qa_base_validator"
+
     async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info(f"Tool: Running {self.tool_name} (v10.6)...")
-        client = self.get_model_client(self.model_config_name)
-        
-        prompt_template = self.prompt_manager.get_template(self.tool_name)
-        
-        # v10.6 REFACTOR: Use centralized async formatter
-        prompt = await _format_prompt_with_defaults(
-            prompt_template, tool_input, self.budget_manager,
-            client.goal_state, client.top_failures
-        )
-        
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.qa_validator_model.temperature,
-            response_format="json_object"
-        )
-        
-        validated_output, error = self.validator.validate(response["content"], self.output_model)
-        if error:
-            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
-            
-        return validated_output.model_dump()
+        async def _execute(self: 'QABaseValidatorTool', tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+            self.log_info(f"Tool: Running {self.tool_name} (v10.6)...")
+            client = self.get_model_client(self.model_config_name)
+
+            prompt_template = self.prompt_manager.get_template(self.tool_name)
+
+            # v10.6 REFACTOR: Use centralized async formatter
+            prompt = await _format_prompt_with_defaults(
+                prompt_template, tool_input, self.budget_manager,
+                client.goal_state, client.top_failures
+            )
+
+            response = await client.chat_completion_async(
+                messages=[{"role": "user", "content": prompt}],
+                temperature=self.config.model_config.qa_validator_model.temperature,
+                response_format="json_object"
+            )
+
+            validated_output, error = self.validator.validate(response["content"], self.output_model)
+            if error:
+                raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+
+            return validated_output.model_dump()
+
+        tracked_execute = track_metrics(self.metrics_tag)(_execute)
+        return await tracked_execute(self, tool_input, workflow_id)
 
 class QAClaimValidatorTool(QABaseValidatorTool):
     """(NLI) Checks if claims in the draft are supported by the master resume."""
     tool_name = "validate_claims"
-    output_model = QAClaimOutput 
-    @track_metrics('tool_qa_claim_validator')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    output_model = QAClaimOutput
+    metrics_tag: ClassVar[str] = "tool_qa_claim_validator"
 
 class QAToneValidatorTool(QABaseValidatorTool):
     """Checks if the draft's tone matches the strategy (e.g., 'leadership')."""
     tool_name = "validate_tone"
     output_model = QAToneOutput
-    @track_metrics('tool_qa_tone_validator')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_tone_validator"
 
 class QAThematicAlignmentTool(QABaseValidatorTool):
     """Ensures all sections support the central strategy theme."""
     tool_name = "validate_thematic_alignment"
     output_model = QAThematicAlignmentOutput
-    @track_metrics('tool_qa_thematic_alignment')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_thematic_alignment"
 
 class QASemanticEntailmentTool(QABaseValidatorTool):
     """Checks if bullets are semantically entailed by the job description."""
     tool_name = "validate_semantic_entailment"
     output_model = QASemanticEntailmentOutput
-    @track_metrics('tool_qa_semantic_entailment')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_semantic_entailment"
 
 class QANarrativeThreadTool(QABaseValidatorTool):
     """Checks for a consistent career story/narrative."""
     tool_name = "validate_narrative_thread"
     output_model = QANarrativeThreadOutput
-    @track_metrics('tool_qa_narrative_thread')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_narrative_thread"
 
 class QAJDSkillsValidatorTool(QABaseValidatorTool):
     """Ensures keywords/skills from the JD are present in the draft."""
     tool_name = "validate_jd_skills"
     output_model = QAJDSkillsOutput
-    @track_metrics('tool_qa_jd_skills')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_jd_skills"
 
 class QASignalScoreValidatorTool(QABaseValidatorTool):
     """Rates the 'signal' (achievement) vs 'noise' (fluff) of each bullet."""
     tool_name = "validate_signal_score"
     output_model = QASignalScoreOutput
-    @track_metrics('tool_qa_signal_score')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_signal_score"
 
 class QATenureValidatorTool(QABaseValidatorTool):
     """Checks for consistency in dates and tenure."""
     tool_name = "validate_tenure"
     output_model = QATenureOutput
-    @track_metrics('tool_qa_tenure')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_tenure"
 
 class QAMissedOpportunityTool(QABaseValidatorTool):
     """Looks for experience in the master resume that was omitted but is relevant."""
     tool_name = "find_missed_opportunities"
     output_model = QAMissedOpportunitiesOutput
-    @track_metrics('tool_qa_missed_opportunity')
-    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        return await super()._run_async_internal(tool_input, workflow_id)
+    metrics_tag: ClassVar[str] = "tool_qa_missed_opportunity"
 
 class QAAdversarialReviewerTool(BaseTool):
     """(Claude 4.1 Opus) Acts as a skeptical hiring manager to find flaws."""
