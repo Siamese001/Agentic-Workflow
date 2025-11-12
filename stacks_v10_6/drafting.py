@@ -3,11 +3,7 @@
 import json
 from typing import Any, Dict, List
 
-from core_v10_6 import (
-    BaseAgent,
-    StrategyPlan,
-    track_metrics,
-)
+from core_v10_6 import BaseAgent, StrategyPlan, WorkflowContext, track_metrics
 from agent_tools_v10_6 import (
     EvidenceBriefAssemblerTool,
     EvidenceClarificationTool,
@@ -201,7 +197,7 @@ class ComplianceEditorAgent(BaseAgent):
 class EvidenceLiaisonAgent(BaseAgent):
     """Coordinates clarification loops and evidence briefs."""
 
-    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
         super().__init__(context, debug_mode)
         self.clarification_tool = EvidenceClarificationTool(context, debug_mode)
         self.brief_tool = EvidenceBriefAssemblerTool(context, debug_mode)
@@ -381,7 +377,7 @@ class CritiqueRoutingPanel(BaseAgent):
 class DraftingGuildCoordinator(BaseAgent):
     """Coordinates drafting specialists and synthesizes outputs."""
 
-    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
         super().__init__(context, debug_mode)
         self.structure_lead = StructureLeadAgent(context, debug_mode)
         self.narrative_stylist = NarrativeStylistAgent(context, debug_mode)

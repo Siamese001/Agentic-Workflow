@@ -266,6 +266,7 @@ async def run_batch_async(config: ConfigV10_6): # v10.6
     
     end_time = datetime.now()
     duration = (end_time - start_time).total_seconds()
+    logger.info("Processed %d jobs in %.2f seconds", len(results), duration)
     
     # v10.6: Write CSV summary
     batch_summary = batch_aggregator.get_batch_summary()
@@ -282,13 +283,13 @@ async def run_batch_async(config: ConfigV10_6): # v10.6
         except IOError as e:
             logger.error(f"Failed to write batch summary: {e}")
     
-    logger.info(f"BATCH PROCESSING COMPLETE (v10.6)")
+    logger.info("BATCH PROCESSING COMPLETE (v10.6)")
     logger.info(f"  Total Jobs: {batch_summary.get('total_jobs', 0)}")
     logger.info(f"  Success Rate: {batch_summary.get('success_rate', 0.0):.1%}")
     logger.info(f"  Total Cost: ${batch_summary.get('total_cost', 0.0):.4f}")
     
     # v10.6: Log metrics summary for the *entire* batch
-    logger.info(f"--- Batch Metrics Summary (v10.6) ---")
+    logger.info("--- Batch Metrics Summary (v10.6) ---")
     for metric in metrics_collector.get_summary():
          logger.info(f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}")
     
