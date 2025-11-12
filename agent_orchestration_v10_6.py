@@ -69,6 +69,8 @@ from agent_stacks_v10_6 import (
     RAG_SearchAgent,
     AsyncBulletGeneratorAgent,
     AsyncBulletCritiqueAgent,
+    BulletCoordinatorAgent,
+    BulletProvenanceAuditorAgent,
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
     ConstitutionalReviewerAgent # v10.6 (Fix #30)
@@ -584,17 +586,41 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
     """Node 6: Generate bullets (4-step)"""
     context = workflow_context
     bullet_gen = AsyncBulletGeneratorAgent(context)
+    coordinator = BulletCoordinatorAgent(context)
+    auditor = BulletProvenanceAuditorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     prompt = state['prompts']['prompts'].get('bullet_generation_prompt', "Generate bullets")
     strategy = state['strategy']['strategy_plan']
     if isinstance(strategy, dict):
         strategy = StrategyPlan.model_validate(strategy)
-    
+
     all_bullets = []
-    for exp in state['resume']['experience_bullets'][:3]: 
+    for exp in state['resume']['experience_bullets'][:3]:
         bullets = await bullet_gen.run_async(prompt, exp, strategy, workflow_id)
         all_bullets.extend([{"text": b, "experience": exp} for b in bullets])
-    return {"bullets": {"generated_bullets": all_bullets}}
+    retrieval_context = state.get('rag', {}).get('results') or state.get('resume', {}).get('experience_bullets', [])
+    bundle = await coordinator.run_async(all_bullets, retrieval_context, workflow_id)
+    audit_report = await auditor.run_async(bundle, workflow_id)
+
+    issue_map = {}
+    for issue in audit_report.get('issues', []):
+        issue_map.setdefault(issue.get('bullet_id'), []).append(issue)
+
+    for item in bundle.get('items', []):
+        provenance = item.setdefault('provenance', {})
+        provenance.setdefault('audit_flags', [])
+        provenance['audit_flags'].extend(issue_map.get(item.get('id'), []))
+
+    bundle['audit'] = audit_report
+
+    rag_patch = dict(state.get('rag', {}) or {})
+    if bundle.get('retrieval_requests'):
+        rag_patch['liaison_requests'] = bundle['retrieval_requests']
+
+    patch: Dict[str, Any] = {"bullets": {"bundle": bundle}}
+    if rag_patch:
+        patch['rag'] = rag_patch
+    return patch
 
 @exponential_backoff_retry()
 async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -603,9 +629,14 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     critique_agent = AsyncBulletCritiqueAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
-    bullets = state['bullets']['generated_bullets']
-    critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
-    return {"bullets": {"critiqued_bullets": critiques}}
+    bundle = state['bullets']['bundle']
+    critique_inputs = [{"text": item['text'], "experience": item.get('experience', {})} for item in bundle.get('items', [])]
+    critiques = await critique_agent.run_async(critique_inputs, critique_prompt, workflow_id)
+
+    for item, critique in zip(bundle.get('items', []), critiques):
+        item['critique'] = critique.get('critique', {})
+
+    return {"bullets": {"bundle": bundle}}
 
 @exponential_backoff_retry()
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -614,9 +645,10 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     conductor = ReActConductorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     
+    bundle = state['bullets']['bundle']
     good_bullets = [
-        b for b in state['bullets']['critiqued_bullets']
-        if b.get('critique', {}).get('score', 0) >= 7
+        item for item in bundle.get('items', [])
+        if item.get('critique', {}).get('score', 0) >= 7
     ]
     strategy_plan = state['strategy']['strategy_plan']
     if isinstance(strategy_plan, dict):
@@ -704,10 +736,12 @@ def check_ambiguity(state: dict) -> str:
 
 def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     """Node 7 conditional: Check bullet quality and retries"""
-    critiques = state.get('bullets', {}).get('critiqued_bullets', [])
+    bundle = state.get('bullets', {}).get('bundle', {})
+    items = bundle.get('items', [])
+    critiques = [item.get('critique', {}) for item in items if item.get('critique')]
     if not critiques:
         return "global_replanner"
-    avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / len(critiques)
+    avg_score = sum(c.get('score', 0) for c in critiques) / len(critiques)
     if avg_score >= 7.0:
         return "bullets_passed"
     retries = state.get('metadata', {}).get('retries', {}).get('bullet_retries', 0)
