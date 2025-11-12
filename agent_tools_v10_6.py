@@ -36,7 +36,7 @@ except ImportError:
 
 # v10.6: Import from new core
 from core_v10_6 import (
-    WorkflowContext, 
+    WorkflowContext,
     PydanticSchemaError,
     # Import all 15 Pydantic output models
     BaseToolOutput,
@@ -152,6 +152,97 @@ class DraftingMetricsTool(DraftingLLMTool):
     model_client_key = "drafting_metrics_model"
     output_model = AddMetricsOutput
     log_action = "Adding metrics"
+
+
+class EvidenceClarificationTool(BaseTool):
+    """Allows the evidence liaison to raise clarification requests."""
+
+    tool_name = "request_evidence_clarification"
+
+    class ClarificationRequestOutput(BaseToolOutput):
+        request_id: str = Field(..., description="Unique id for the clarification request")
+        recipient: str = Field(..., description="Who should receive the request (e.g., 'bullet_team', 'rag_team')")
+        questions: List[str] = Field(..., description="Questions that need clarification")
+        priority: str = Field("normal", description="Request priority level")
+        context_summary: str = Field("", description="Short summary of the ambiguity driving the request")
+
+    output_model = ClarificationRequestOutput
+
+    @track_metrics('tool_request_evidence_clarification')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Tool: Logging clarification request (v10.6 Guild)...")
+
+        recipient = tool_input.get("recipient", "bullet_team")
+        questions = [q for q in tool_input.get("questions", []) if isinstance(q, str) and q.strip()]
+        if not questions:
+            questions = ["Please confirm the data points for this section."]
+
+        request_payload = {
+            "status": "queued",
+            "request_id": f"clar-{uuid.uuid4()}",
+            "recipient": recipient,
+            "questions": questions,
+            "priority": tool_input.get("priority", "normal"),
+            "context_summary": tool_input.get("context_summary", ""),
+        }
+
+        validated_output, error = self.validator.validate(request_payload, self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+
+        return validated_output.model_dump()
+
+
+class EvidenceBriefAssemblerTool(BaseTool):
+    """Synthesizes structured evidence briefs for the drafting specialists."""
+
+    tool_name = "assemble_evidence_brief"
+
+    class EvidenceBriefOutput(BaseToolOutput):
+        section: str = Field(..., description="Name of the section the brief supports")
+        brief: str = Field(..., description="Short narrative of the supporting evidence")
+        key_points: List[str] = Field(default_factory=list, description="Bullet-ready evidence points")
+        citations: List[str] = Field(default_factory=list, description="Reference identifiers or source hints")
+        outstanding_questions: List[str] = Field(default_factory=list, description="Clarifications still pending")
+
+    output_model = EvidenceBriefOutput
+
+    @track_metrics('tool_assemble_evidence_brief')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Tool: Assembling evidence brief (v10.6 Guild)...")
+
+        section_name = tool_input.get("section", "general")
+        draft_excerpt = tool_input.get("draft_content", "")
+        evidence_points = tool_input.get("evidence_points", [])
+        outstanding = [q for q in tool_input.get("open_questions", []) if isinstance(q, str)]
+
+        if isinstance(draft_excerpt, dict):
+            draft_excerpt = json.dumps(draft_excerpt)
+
+        if not isinstance(evidence_points, list):
+            evidence_points = [str(evidence_points)]
+
+        brief_text = f"Evidence for {section_name}: "
+        if evidence_points:
+            brief_text += "; ".join(str(pt) for pt in evidence_points[:5])
+        elif draft_excerpt:
+            brief_text += draft_excerpt[:200]
+        else:
+            brief_text += "No direct evidence captured."
+
+        result_dict = {
+            "section": section_name,
+            "brief": brief_text,
+            "key_points": [str(pt) for pt in evidence_points[:5]],
+            "citations": tool_input.get("citations", []),
+            "outstanding_questions": outstanding,
+        }
+
+        validated_output, error = self.validator.validate(result_dict, self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+
+        return validated_output.model_dump()
 
 # ============================================================================
 # ROW 7: RAG STACK TOOLS (v10.6: Refactored)
