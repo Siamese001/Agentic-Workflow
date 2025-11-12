@@ -13,7 +13,6 @@ from core_v10_6 import (
     BulletList,
     CritiqueResult,
     StrategyPlan,
-    WorkflowContext,
     track_metrics,
     _format_prompt_with_defaults,
 )
@@ -245,7 +244,7 @@ class BulletConfidenceScoringAgent(BaseAgent):
 class BulletCoordinatorAgent(BaseAgent):
     """Coordinates bullet enrichment agents."""
 
-    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
         super().__init__(context, debug_mode)
         self.entity_agent = BulletEntityExtractionAgent(context, debug_mode)
         self.metrics_agent = BulletMetricsEnrichmentAgent(context, debug_mode)
@@ -336,7 +335,7 @@ class BulletProvenanceAuditorAgent(BaseAgent):
 class AsyncBulletGeneratorAgent(BaseAgent):
     """Generates and validates bullets asynchronously."""
 
-    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
         super().__init__(context, debug_mode)
         self.coordinator = BulletCoordinatorAgent(context, debug_mode)
 
