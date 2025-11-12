@@ -16,6 +16,6 @@ def test_dependency_injection_exists():
     assert "context" in signature(StrategyAgent.__init__).parameters
 
 
-@pytest.mark.skip("Add 13 architecture compliance tests")
+@pytest.mark.xfail(reason="Add 13 architecture compliance tests", strict=False)
 def test_placeholder():
-    pass
+    pytest.xfail("Add 13 architecture compliance tests")

@@ -24,6 +24,6 @@ def test_low_confidence_triggers_retry():
     assert "retry" in out["events"]
 
 
-@pytest.mark.skip("Add 17 more integration tests for all stacks")
+@pytest.mark.xfail(reason="Add 17 more integration tests for all stacks", strict=False)
 def test_placeholder():
-    pass
+    pytest.xfail("Add 17 more integration tests for all stacks")
