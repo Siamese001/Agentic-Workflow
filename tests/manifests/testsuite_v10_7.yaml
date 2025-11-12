@@ -1,0 +1,16 @@
+suite: Agentic Workflow v10.7
+version: 10.7
+description: "Full system and regression coverage"
+categories:
+  functional: [tests/system/test_system_v10_7.py]
+  end_to_end: [tests/system/test_end_to_end_v10_7.py]
+  mock_detection: [tests/mocks/test_mock_detection_v10_7.py]
+  architecture: [tests/regression/test_architecture_compliance_v10_7.py]
+  design_validation: [tests/regression/test_design_validation_v10_7.py]
+  integration: [tests/system/test_integration_v10_7.py]
+  data_transformation: [tests/regression/test_data_transformation_v10_7.py]
+  contract: [tests/regression/test_contract_v10_7.py]
+  regression: [tests/regression/test_regression_v10_7.py]
+  performance: [tests/performance/test_sla_latency_v10_7.py]
+pytest_config: pytest.ini
+ci_tags: ["v10.7","agentic","full-suite"]
