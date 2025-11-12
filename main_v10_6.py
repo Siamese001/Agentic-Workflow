@@ -33,7 +33,6 @@ from core_v10_6 import (
 )
 # v10.6: Import from new orchestration/stacks
 from agent_orchestration_v10_6 import get_graph_app
-from agent_stacks_v10_6 import PIISanitizerAgent
 try:
     from langgraph.checkpoint.redis import RedisSaver
 except ImportError:
@@ -113,18 +112,12 @@ async def run_workflow_async(
     
     app = get_graph_app(checkpointer, context, enable_hil=enable_hil)
     
-    sanitizer = PIISanitizerAgent(context)
-    # v10.6: Run sync code in thread
-    sanitized_resume = await asyncio.to_thread(sanitizer.run, master_resume)
-    logger.info("PII sanitization complete")
-    
     workflow_id = str(uuid.uuid4())
     context.workflow_id = workflow_id
     run_config = {"configurable": {"thread_id": workflow_id}}
-    
+
     initial_state = MainGraphState()
     initial_state.resume.master_resume = master_resume
-    initial_state.resume.sanitized_resume = sanitized_resume
     initial_state.job.raw_jd = job_input_data['job_description']
     initial_state.job.company = job_input_data['company_name']
     initial_state.job.job_title = job_input_data['job_title']

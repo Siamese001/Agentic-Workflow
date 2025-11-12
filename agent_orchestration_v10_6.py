@@ -341,7 +341,7 @@ class QAConductorAgent(BaseAgent):
     async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         self.log_info("Running ReAct QA Conductor (v10.6)...")
         
-        max_steps = 15
+        max_steps = self.config.agent_stacks.conductor_max_steps
         client = self.get_model_client("react_conductor_model")
         
         pruned_draft = await self.budget_manager.prune(
