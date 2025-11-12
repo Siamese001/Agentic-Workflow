@@ -1,32 +1,18 @@
 """Reasoning toggles for the LIC outreach stack."""
 from __future__ import annotations
 
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, ValidationError
 
 
 class ReasoningToggles(BaseModel):
-    """Configuration flags and bounds for reasoning behaviors."""
+    cot: bool = True
+    tot_branches: int = 3
+    min_tot_depth: int = 2
+    self_consistency: int = 3
+    reflexion: bool = True
+    temperature_cap: float = 0.5
 
-    cot: bool = Field(default=True, description="Enable chain-of-thought prompting.")
-    tot_branches: int = Field(
-        default=3,
-        description="Maximum number of tree-of-thought branches to explore.",
-    )
-    min_tot_depth: int = Field(
-        default=2,
-        description="Minimum reasoning depth for tree-of-thought exploration.",
-    )
-    self_consistency: int = Field(
-        default=3,
-        description="Number of self-consistency samples to aggregate.",
-    )
-    reflexion: bool = Field(default=True, description="Enable reflexion feedback loop.")
-    temperature_cap: float = Field(
-        default=0.5,
-        description="Upper bound for model sampling temperature.",
-    )
-
-    def __init__(self, **data):  # type: ignore[override]
+    def __init__(self, **data):
         super().__init__(**data)
         self._validate()
 
