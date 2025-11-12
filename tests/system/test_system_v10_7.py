@@ -22,6 +22,6 @@ def test_strategy_agent_produces_steps():
     assert "steps" in plan
 
 
-@pytest.mark.skip("Pending implementation of additional 17 tests")
+@pytest.mark.xfail(reason="Pending implementation of additional 17 tests", strict=False)
 def test_placeholder():
-    pass
+    pytest.xfail("Pending implementation of additional 17 tests")
