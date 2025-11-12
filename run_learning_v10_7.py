@@ -1,3 +1,11 @@
+# --- Vendor path bootstrap for Codex offline environment ---
+import sys
+import os
+
+VENDOR_PATH = os.path.join(os.path.dirname(__file__), "vendor")
+if VENDOR_PATH not in sys.path:
+    sys.path.insert(0, VENDOR_PATH)
+
 # File: run_learning_v10_7.py
 # Version: 10.7 (Refactored)
 #
