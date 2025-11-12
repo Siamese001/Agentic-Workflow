@@ -30,14 +30,11 @@ from core_v10_6 import (
     FileIOError, WorkflowError,
     CircuitBreaker,
     # v10.6: Import new helper functions
-    create_workflow_context, cleanup_workflow_chroma_collection
+    create_workflow_context, cleanup_workflow_chroma_collection,
+    get_checkpointer
 )
 # v10.6: Import from new orchestration/stacks
 from agent_orchestration_v10_6 import get_graph_app
-try:
-    from langgraph.checkpoint.redis import RedisSaver
-except ImportError:
-    from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
 
 try:
     # v10.6: Import new meta-learner
@@ -210,11 +207,7 @@ async def run_batch_async(config: ConfigV10_6): # v10.6
     metrics_collector = shared_context.metrics_collector
     semantic_validator = shared_context.semantic_validator
     
-    checkpointer = RedisSaver(
-        host=config.redis_config.host,
-        port=config.redis_config.port,
-        db=config.redis_config.db
-    )
+    checkpointer = get_checkpointer(config)
     # --- v10.6: REFACTOR END ---
     
     batch_aggregator = BatchFeedbackAggregator()
