@@ -2,7 +2,9 @@ class ValidationError(Exception):
     pass
 
 
-def Field(default=..., **kwargs):  # pragma: no cover - stub
+def Field(default=..., *, default_factory=None, **_kwargs):  # pragma: no cover - stub
+    if default is ... and default_factory is not None:
+        return default_factory()
     return default
 
 
@@ -32,3 +34,11 @@ class BaseModel:
 
     def model_dump(self):
         return self.dict()
+
+    @classmethod
+    def model_validate(cls, data):
+        if isinstance(data, cls):
+            return data
+        if isinstance(data, dict):
+            return cls(**data)
+        raise ValidationError(f"Cannot validate data for {cls.__name__}: {data!r}")
