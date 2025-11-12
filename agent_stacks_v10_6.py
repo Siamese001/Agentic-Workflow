@@ -26,11 +26,11 @@ import asyncio
 import re
 import math
 import uuid
-from collections import Counter
+from collections import Counter, defaultdict
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field
 
 # v10.6: Import from new core
 from core_v10_6 import (
@@ -44,6 +44,10 @@ from core_v10_6 import (
     CritiqueResult,
     HILAmbiguityReport,
     HILFeedbackRoute,
+    HILFeedbackIntent,
+    HILReconciliationResult,
+    PersonaConsensus,
+    PersonaReviewDecision,
     BaseToolOutput,
     ConstitutionalReviewResult, # v10.6 (Fix #30)
     A2AMessage, # v10.6 (Fix #10)
@@ -58,11 +62,67 @@ from core_v10_6 import (
 from agent_tools_v10_6 import (
     HyDETool,
     ChromaDBSearchTool,
-    BM25SearchTool
+    BM25SearchTool,
+    EvidenceClarificationTool,
+    EvidenceBriefAssemblerTool
 )
 
 # v10.6: Logger name updated
 logger = logging.getLogger("agent_stacks_v10_6")
+
+
+class SpecialistDraftPacket(BaseModel):
+    """Container for specialist drafting outputs."""
+
+    specialist: str = Field(..., description="Name of the drafting specialist")
+    focus_area: str = Field(..., description="Primary responsibility of the specialist")
+    sections: Dict[str, Any] = Field(default_factory=dict, description="Section-level draft contributions")
+    notes: List[str] = Field(default_factory=list, description="Observations or hand-off notes")
+    dependencies: List[str] = Field(default_factory=list, description="Dependencies or follow-up actions")
+
+
+class EvidenceClarificationRecord(BaseModel):
+    """Represents a clarification request raised by the liaison."""
+
+    request_id: str
+    recipient: str
+    questions: List[str]
+    priority: str = "normal"
+    context_summary: str = ""
+
+
+class EvidenceBriefRecord(BaseModel):
+    """Structured evidence digest for a section."""
+
+    section: str
+    brief: str
+    key_points: List[str] = Field(default_factory=list)
+    citations: List[str] = Field(default_factory=list)
+    outstanding_questions: List[str] = Field(default_factory=list)
+
+
+class EvidenceLiaisonPacket(BaseModel):
+    """Aggregated liaison output feeding back to the guild."""
+
+    clarifications: List[EvidenceClarificationRecord] = Field(default_factory=list)
+    briefs: List[EvidenceBriefRecord] = Field(default_factory=list)
+
+
+class CritiqueFindingRecord(BaseModel):
+    """Single critique finding routed by the panel."""
+
+    critic: str
+    severity: str
+    issues: List[str] = Field(default_factory=list)
+    recommendations: List[str] = Field(default_factory=list)
+    blockers: List[str] = Field(default_factory=list)
+
+
+class CritiquePanelPacket(BaseModel):
+    """Aggregated critique findings for the coordinator."""
+
+    findings: List[CritiqueFindingRecord] = Field(default_factory=list)
+    overall_status: str = Field(..., description="Coordinator-level status derived from findings")
 
 # ============================================================================
 # ROW 7: SAFETY GUARD STACK (v10.6: Added Constitutional AI)
@@ -596,8 +656,764 @@ class RAG_SearchAgent(BaseAgent):
         return {"resume": {"experience_bullets": ranked}, "a2a": {"messages": a2a_messages}}
 
 # ============================================================================
+# ROW 7: DRAFTING GUILD SPECIALISTS (v10.6 Guild Upgrade)
+# ============================================================================
+
+
+class StructureLeadAgent(BaseAgent):
+    """Produces the structural outline for the draft."""
+
+    @track_metrics('run_structure_lead')
+    async def run_async(self, bullets: List[Dict[str, Any]], strategy: StrategyPlan, workflow_id: str) -> SpecialistDraftPacket:
+        self.log_info("Drafting Guild >> Structure Lead assembling sections...")
+
+        summary_pivots = strategy.key_achievements_to_highlight[:3] if strategy.key_achievements_to_highlight else []
+        bullet_texts = [b.get("text", "") for b in bullets]
+
+        summary_content = "; ".join(summary_pivots) if summary_pivots else " ".join(bullet_texts[:2])
+        summary_content = summary_content.strip()
+
+        experience_entries: List[Dict[str, Any]] = []
+        for bullet in bullets:
+            experience = bullet.get("experience", {}) or {}
+            entry = {
+                "company": experience.get("company", ""),
+                "title": experience.get("title", ""),
+                "bullet": bullet.get("text", ""),
+                "metrics_present": any(ch.isdigit() for ch in bullet.get("text", "")),
+            }
+            if experience.get("years"):
+                entry["tenure"] = experience.get("years")
+            experience_entries.append(entry)
+
+        sections = {
+            "summary": {
+                "draft": summary_content,
+                "focus_areas": strategy.focus_areas,
+                "tone": strategy.tone,
+                "evidence_points": summary_pivots,
+                "open_questions": []
+            },
+            "experience": {
+                "entries": experience_entries,
+                "open_questions": []
+            }
+        }
+
+        notes = [
+            "Summary seeded from strategy achievements." if summary_pivots else "Summary derived from top-scoring bullets.",
+            f"Experience entries organized ({len(experience_entries)} bullets)."
+        ]
+
+        return SpecialistDraftPacket(
+            specialist="Structure Lead",
+            focus_area=strategy.strategy_name,
+            sections=sections,
+            notes=notes,
+            dependencies=[]
+        )
+
+
+class NarrativeStylistAgent(BaseAgent):
+    """Harmonizes voice and narrative flow across sections."""
+
+    @track_metrics('run_narrative_stylist')
+    async def run_async(self, structured_sections: Dict[str, Any], strategy: StrategyPlan, workflow_id: str) -> SpecialistDraftPacket:
+        self.log_info("Drafting Guild >> Narrative Stylist polishing tone...")
+
+        styled_sections: Dict[str, Any] = {}
+        for section_name, section_payload in structured_sections.items():
+            payload_copy = json.loads(json.dumps(section_payload))
+            if section_name == "summary":
+                base_text = payload_copy.get("draft", "")
+                payload_copy["draft"] = self._apply_tone(base_text, strategy.tone)
+                style_notes = payload_copy.setdefault("style_notes", [])
+                style_notes.append(f"Tone harmonized to '{strategy.tone}'.")
+            elif section_name == "experience":
+                entries = payload_copy.get("entries", [])
+                for entry in entries:
+                    entry["bullet"] = self._tighten_language(entry.get("bullet", ""))
+                payload_copy["entries"] = entries
+            styled_sections[section_name] = payload_copy
+
+        notes = [
+            "Tone calibrated across summary and experience.",
+            f"Maintained narrative focus on {', '.join(strategy.focus_areas)}."
+        ]
+
+        return SpecialistDraftPacket(
+            specialist="Narrative Stylist",
+            focus_area=strategy.tone,
+            sections=styled_sections,
+            notes=notes,
+            dependencies=[]
+        )
+
+    def _apply_tone(self, text: str, tone: str) -> str:
+        if not text:
+            return ""
+        prefix = tone.capitalize() if tone else "Professional"
+        if not text.lower().startswith(prefix.lower()):
+            return f"{prefix} focus: {text}".strip()
+        return text
+
+    def _tighten_language(self, bullet: str) -> str:
+        bullet = bullet.strip()
+        if not bullet:
+            return bullet
+        bullet = bullet.replace("Responsible for", "Led")
+        bullet = bullet.replace("Worked on", "Delivered")
+        return bullet
+
+
+class ComplianceEditorAgent(BaseAgent):
+    """Ensures stylistic and policy compliance for the guild."""
+
+    @track_metrics('run_compliance_editor')
+    async def run_async(self, narrative_sections: Dict[str, Any], workflow_id: str) -> SpecialistDraftPacket:
+        self.log_info("Drafting Guild >> Compliance Editor auditing sections...")
+
+        compliant_sections = json.loads(json.dumps(narrative_sections))
+        notes: List[str] = []
+        dependencies: List[str] = []
+
+        summary = compliant_sections.get("summary", {})
+        summary_text = summary.get("draft", "")
+        if summary_text and len(summary_text.split()) < 40:
+            summary.setdefault("open_questions", []).append("Expand summary to ~40 words for recruiter context.")
+        compliant_sections["summary"] = summary
+
+        experience = compliant_sections.get("experience", {})
+        entries = experience.get("entries", [])
+        for entry in entries:
+            bullet_text = entry.get("bullet", "").strip()
+            if bullet_text and not bullet_text.endswith('.'):
+                entry["bullet"] = f"{bullet_text}."
+                notes.append("Added terminal period for bullet compliance.")
+            if not any(ch.isdigit() for ch in entry.get("bullet", "")):
+                dependencies.append(f"Add metric for {entry.get('company', 'experience')} bullet.")
+        experience["entries"] = entries
+        compliant_sections["experience"] = experience
+
+        return SpecialistDraftPacket(
+            specialist="Compliance Editor",
+            focus_area="Governance",
+            sections=compliant_sections,
+            notes=notes or ["No stylistic adjustments required."],
+            dependencies=dependencies
+        )
+
+
+class EvidenceLiaisonAgent(BaseAgent):
+    """Coordinates clarification loops and evidence briefs."""
+
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.clarification_tool = EvidenceClarificationTool(context, debug_mode)
+        self.brief_tool = EvidenceBriefAssemblerTool(context, debug_mode)
+
+    @track_metrics('run_evidence_liaison')
+    async def run_async(self, sections: Dict[str, Any], resume: Dict[str, Any], workflow_id: str) -> EvidenceLiaisonPacket:
+        self.log_info("Drafting Guild >> Evidence Liaison orchestrating clarifications...")
+
+        clarifications: List[EvidenceClarificationRecord] = []
+        briefs: List[EvidenceBriefRecord] = []
+
+        for section_name, payload in sections.items():
+            payload_dict = payload if isinstance(payload, dict) else {"draft": payload}
+            open_questions = payload_dict.get("open_questions", [])
+            evidence_points = payload_dict.get("evidence_points") or self._harvest_resume_evidence(section_name, resume)
+
+            if open_questions:
+                clar_payload = {
+                    "recipient": "bullet_team" if section_name == "experience" else "rag_team",
+                    "questions": open_questions,
+                    "context_summary": payload_dict.get("draft", "")[:200],
+                }
+                clar_dict = await self.clarification_tool.run_async(clar_payload, workflow_id)
+                record = EvidenceClarificationTool.ClarificationRequestOutput.model_validate(clar_dict)
+                clarifications.append(EvidenceClarificationRecord(**record.model_dump()))
+
+            brief_payload = {
+                "section": section_name,
+                "draft_content": payload_dict.get("draft", payload_dict),
+                "evidence_points": evidence_points,
+                "open_questions": open_questions,
+            }
+            brief_dict = await self.brief_tool.run_async(brief_payload, workflow_id)
+            brief_record = EvidenceBriefAssemblerTool.EvidenceBriefOutput.model_validate(brief_dict)
+            briefs.append(EvidenceBriefRecord(**brief_record.model_dump()))
+
+        return EvidenceLiaisonPacket(clarifications=clarifications, briefs=briefs)
+
+    def _harvest_resume_evidence(self, section_name: str, resume: Dict[str, Any]) -> List[str]:
+        evidence: List[str] = []
+        if section_name == "experience":
+            for experience in resume.get("professional_experience", []):
+                company = experience.get("company", "")
+                for bullet in experience.get("bullet_pool", [])[:3]:
+                    evidence.append(f"{company}: {bullet}")
+        else:
+            summary_points = resume.get("summary", []) or resume.get("highlights", [])
+            if isinstance(summary_points, list):
+                evidence.extend(summary_points[:3])
+        return evidence
+
+
+class CritiqueRoutingPanel(BaseAgent):
+    """Routes specialist critiques (style, fact, policy)."""
+
+    @track_metrics('run_critique_routing_panel')
+    async def run_async(self, sections: Dict[str, Any], liaison_packet: EvidenceLiaisonPacket, workflow_id: str) -> CritiquePanelPacket:
+        self.log_info("Drafting Guild >> Critique panel aggregating findings...")
+
+        findings = [
+            self._style_critic(sections),
+            self._fact_critic(liaison_packet),
+            self._policy_critic(sections)
+        ]
+
+        severity_rank = {"approved": 0, "info": 1, "revise": 2, "block": 3}
+        overall_status = "approved"
+        for finding in findings:
+            level = finding.severity
+            if severity_rank.get(level, 0) > severity_rank.get(overall_status, 0):
+                overall_status = level
+
+        return CritiquePanelPacket(findings=findings, overall_status=overall_status)
+
+    def _style_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+        summary = sections.get("summary", {})
+        text = ""
+        if isinstance(summary, dict):
+            text = summary.get("draft", "")
+        issues: List[str] = []
+        recommendations: List[str] = []
+        severity = "approved"
+
+        if text and len(text.split()) < 35:
+            severity = "info"
+            issues.append("Summary is shorter than the recommended range.")
+            recommendations.append("Add more context or achievements to the summary.")
+
+        return CritiqueFindingRecord(
+            critic="Style Critic",
+            severity=severity,
+            issues=issues,
+            recommendations=recommendations,
+            blockers=[]
+        )
+
+    def _fact_critic(self, liaison_packet: EvidenceLiaisonPacket) -> CritiqueFindingRecord:
+        outstanding = [
+            brief for brief in liaison_packet.briefs
+            if brief.outstanding_questions
+        ]
+        clarifications_pending = [
+            clar for clar in liaison_packet.clarifications
+            if clar.questions
+        ]
+
+        severity = "approved"
+        issues: List[str] = []
+        recommendations: List[str] = []
+
+        if outstanding:
+            severity = "revise"
+            issues.append("Outstanding questions remain in evidence briefs.")
+            recommendations.append("Resolve open questions before final synthesis.")
+        elif clarifications_pending:
+            severity = "info"
+            issues.append("Clarification requests have been queued.")
+            recommendations.append("Monitor responses from bullet/RAG agents.")
+
+        return CritiqueFindingRecord(
+            critic="Fact Critic",
+            severity=severity,
+            issues=issues,
+            recommendations=recommendations,
+            blockers=[]
+        )
+
+    def _policy_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+        banned_terms = {"confidential", "classified", "secret"}
+        text_blob = json.dumps(sections).lower()
+        offenders = [term for term in banned_terms if term in text_blob]
+
+        severity = "approved"
+        issues: List[str] = []
+        blockers: List[str] = []
+        recommendations: List[str] = []
+
+        if offenders:
+            severity = "block"
+            issues.append(f"Policy-sensitive terms detected: {', '.join(offenders)}")
+            blockers = offenders
+            recommendations.append("Remove or sanitize policy-sensitive language.")
+
+        return CritiqueFindingRecord(
+            critic="Policy Critic",
+            severity=severity,
+            issues=issues,
+            recommendations=recommendations,
+            blockers=blockers
+        )
+
+
+class DraftingGuildCoordinator(BaseAgent):
+    """Coordinates drafting specialists and synthesizes outputs."""
+
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.structure_lead = StructureLeadAgent(context, debug_mode)
+        self.narrative_stylist = NarrativeStylistAgent(context, debug_mode)
+        self.compliance_editor = ComplianceEditorAgent(context, debug_mode)
+        self.evidence_liaison = EvidenceLiaisonAgent(context, debug_mode)
+        self.critique_panel = CritiqueRoutingPanel(context, debug_mode)
+
+    @track_metrics('run_drafting_guild_coordinator')
+    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Drafting Guild Coordinator orchestrating specialists...")
+
+        strategy = task_context.get("strategy")
+        if isinstance(strategy, dict):
+            strategy = StrategyPlan.model_validate(strategy)
+
+        bullets = task_context.get("bullets", [])
+        resume = task_context.get("resume", {})
+
+        structure_packet = await self.structure_lead.run_async(bullets, strategy, workflow_id)
+        narrative_packet = await self.narrative_stylist.run_async(structure_packet.sections, strategy, workflow_id)
+        compliance_packet = await self.compliance_editor.run_async(narrative_packet.sections, workflow_id)
+        liaison_packet = await self.evidence_liaison.run_async(compliance_packet.sections, resume, workflow_id)
+        critique_packet = await self.critique_panel.run_async(compliance_packet.sections, liaison_packet, workflow_id)
+
+        final_sections = self._merge_sections(
+            structure_packet.sections,
+            narrative_packet.sections,
+            compliance_packet.sections
+        )
+
+        # Attach evidence briefs to their respective sections.
+        for brief in liaison_packet.briefs:
+            section_payload = final_sections.setdefault(brief.section, {})
+            if isinstance(section_payload, dict):
+                section_payload.setdefault("evidence_brief", brief.brief)
+                if brief.key_points:
+                    section_payload.setdefault("evidence_points", brief.key_points)
+                if brief.outstanding_questions:
+                    section_payload.setdefault("open_questions", []).extend(brief.outstanding_questions)
+            final_sections[brief.section] = section_payload
+
+        guild_metadata = {
+            "structure": structure_packet.model_dump(),
+            "narrative": narrative_packet.model_dump(),
+            "compliance": compliance_packet.model_dump(),
+            "evidence": liaison_packet.model_dump(),
+            "critique": critique_packet.model_dump(),
+        }
+
+        return {
+            "final_output": final_sections,
+            "guild_metadata": guild_metadata,
+            "overall_status": critique_packet.overall_status,
+            "phases_executed": 5
+        }
+
+    def _merge_sections(self, *layers: Dict[str, Any]) -> Dict[str, Any]:
+        merged: Dict[str, Any] = {}
+        for layer in layers:
+            for key, value in layer.items():
+                merged[key] = json.loads(json.dumps(value))
+        return merged
+
+# ============================================================================
 # ROW 7: BULLET STACK (v10.6: Refactored)
 # ============================================================================
+
+class BulletEntityExtractionAgent(BaseAgent):
+    """Extracts named entities and key actors from a bullet."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        entities: List[Dict[str, Any]] = Field(default_factory=list)
+        raw_text: str
+        experience_id: Optional[str] = None
+
+    ENTITY_PATTERN = re.compile(r"\b([A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+){0,3})\b")
+    ORGANIZATION_HINTS = {"inc", "corp", "llc", "ltd", "company", "technologies"}
+    TECHNOLOGY_HINTS = {
+        "aws", "gcp", "azure", "python", "sql", "spark", "docker", "kubernetes",
+        "hadoop", "tensorflow", "pytorch", "salesforce"
+    }
+
+    @track_metrics('run_bullet_entity_extraction')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        experience: Dict[str, Any],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        text = bullet_text or ""
+        entities: List[Dict[str, Any]] = []
+        seen = set()
+
+        for match in self.ENTITY_PATTERN.finditer(text):
+            candidate = match.group(1).strip()
+            if not candidate or candidate.lower() in seen:
+                continue
+            seen.add(candidate.lower())
+            lower_candidate = candidate.lower()
+            ent_type = "proper_noun"
+            if any(hint in lower_candidate for hint in self.ORGANIZATION_HINTS):
+                ent_type = "organization"
+            elif any(lower_candidate.endswith(hint) or hint in lower_candidate for hint in self.ORGANIZATION_HINTS):
+                ent_type = "organization"
+            elif any(lower_candidate == hint or hint in lower_candidate.split() for hint in self.TECHNOLOGY_HINTS):
+                ent_type = "technology"
+            entities.append({
+                "name": candidate,
+                "type": ent_type,
+                "span": [match.start(), match.end()]
+            })
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            entities=entities,
+            raw_text=text,
+            experience_id=experience.get('id') if isinstance(experience, dict) else None
+        )
+        return output.model_dump()
+
+
+class BulletMetricsEnrichmentAgent(BaseAgent):
+    """Annotates bullets with derived metrics metadata."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        has_metric: bool
+        metrics: Dict[str, List[str]] = Field(default_factory=dict)
+        raw_numbers: List[str] = Field(default_factory=list)
+        raw_text: str
+
+    METRIC_PATTERN = re.compile(r"(?P<number>-?\d+(?:[\.,]\d+)?)(?P<suffix>%|x|X|\b)")
+    CURRENCY_PATTERN = re.compile(r"\$[\d,]+(?:\.\d+)?")
+
+    @track_metrics('run_bullet_metrics_enrichment')
+    async def run_async(self, bullet_id: str, bullet_text: str, workflow_id: str) -> Dict[str, Any]:
+        text = bullet_text or ""
+        metrics: Dict[str, List[str]] = defaultdict(list)
+        raw_numbers: List[str] = []
+
+        for match in self.METRIC_PATTERN.finditer(text):
+            number = match.group('number')
+            suffix = match.group('suffix')
+            raw = f"{number}{suffix.strip()}".strip()
+            raw_numbers.append(raw)
+            if suffix.strip() == "%":
+                metrics['percentage'].append(raw)
+            elif suffix.strip().lower() == 'x':
+                metrics['multipliers'].append(raw)
+            else:
+                metrics['absolute'].append(raw)
+
+        for money in self.CURRENCY_PATTERN.findall(text):
+            metrics['currency'].append(money)
+            raw_numbers.append(money)
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            has_metric=bool(raw_numbers),
+            metrics={k: sorted(set(v)) for k, v in metrics.items()},
+            raw_numbers=sorted(set(raw_numbers)),
+            raw_text=text
+        )
+        return output.model_dump()
+
+
+class BulletNarrativeSynthesisAgent(BaseAgent):
+    """Produces narrative scaffolding for each bullet."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        storyline: str
+        highlights: List[str] = Field(default_factory=list)
+        tone: str
+
+    @track_metrics('run_bullet_narrative_synthesis')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        metrics_payload: Dict[str, Any],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        text = bullet_text or ""
+        fragments = [frag.strip() for frag in re.split(r"[.;]", text) if frag.strip()]
+        tone = "impact" if metrics_payload.get('has_metric') else "descriptive"
+        if not fragments:
+            fragments = [text.strip()] if text else []
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            storyline=text,
+            highlights=fragments,
+            tone=tone
+        )
+        return output.model_dump()
+
+
+class BulletEvidenceLinkerAgent(BaseAgent):
+    """Matches bullets with retrieved evidence and notes gaps."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        supporting_sources: List[Dict[str, Any]] = Field(default_factory=list)
+        unresolved_claims: List[str] = Field(default_factory=list)
+        retrieval_notes: List[str] = Field(default_factory=list)
+
+    @staticmethod
+    def _normalize_keywords(text: str) -> set:
+        tokens = re.findall(r"[A-Za-z0-9]+", text.lower())
+        return {tok for tok in tokens if len(tok) > 3}
+
+    @track_metrics('run_bullet_evidence_linker')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        retrieval_records: List[Dict[str, Any]],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        bullet_keywords = self._normalize_keywords(bullet_text or "")
+        sources: List[Dict[str, Any]] = []
+        notes: List[str] = []
+
+        for record in retrieval_records or []:
+            raw_text = record.get('text') or record.get('content') or record.get('snippet') or ""
+            overlap = sorted(self._normalize_keywords(raw_text) & bullet_keywords)
+            if not overlap:
+                continue
+            source_id = str(record.get('source_id') or record.get('id') or uuid.uuid4())
+            sources.append({
+                "source_id": source_id,
+                "snippet": raw_text[:300],
+                "overlap_terms": overlap,
+                "score": record.get('score')
+            })
+
+        unresolved_claims: List[str] = []
+        if not sources:
+            unresolved_claims.append("No retrieval evidence matched bullet claims.")
+            notes.append("Consider requesting additional retrieval for unmatched bullet.")
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            supporting_sources=sources,
+            unresolved_claims=unresolved_claims,
+            retrieval_notes=notes
+        )
+        return output.model_dump()
+
+
+class BulletConfidenceScoringAgent(BaseAgent):
+    """Assigns a confidence score leveraging specialist outputs."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        score: float
+        rationale: str
+        contributing_factors: List[str] = Field(default_factory=list)
+
+    @track_metrics('run_bullet_confidence_scoring')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        metrics_payload: Dict[str, Any],
+        evidence_payload: Dict[str, Any],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        score = 0.4
+        factors: List[str] = []
+
+        if metrics_payload.get('has_metric'):
+            score += 0.2
+            factors.append('quantified_impact')
+        if evidence_payload.get('supporting_sources'):
+            score += 0.25
+            factors.append('retrieval_alignment')
+        if evidence_payload.get('unresolved_claims'):
+            score -= 0.2
+            factors.append('unresolved_claims')
+        if len((metrics_payload.get('raw_numbers') or [])) > 2:
+            score += 0.05
+            factors.append('dense_metrics')
+
+        score = max(0.05, min(0.95, score))
+
+        rationale = (
+            "Confidence derived from metrics presence and retrieval support;"
+            " adjusted for outstanding evidence gaps."
+        )
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            score=round(score, 2),
+            rationale=rationale,
+            contributing_factors=factors or ['baseline_assessment']
+        )
+        return output.model_dump()
+
+
+class BulletCoordinatorAgent(BaseAgent):
+    """Coordinates bullet specialists, merges outputs, and attaches provenance."""
+
+    SPECIALIST_ORDER = [
+        'entity_extraction',
+        'metrics_enrichment',
+        'narrative_synthesis',
+        'evidence_linking',
+        'confidence_scoring'
+    ]
+
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.entity_agent = BulletEntityExtractionAgent(context, debug_mode)
+        self.metrics_agent = BulletMetricsEnrichmentAgent(context, debug_mode)
+        self.narrative_agent = BulletNarrativeSynthesisAgent(context, debug_mode)
+        self.evidence_agent = BulletEvidenceLinkerAgent(context, debug_mode)
+        self.confidence_agent = BulletConfidenceScoringAgent(context, debug_mode)
+
+    @track_metrics('run_bullet_coordinator')
+    async def run_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        retrieval_records: List[Dict[str, Any]],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        bundle_id = str(uuid.uuid4())
+        timestamp = datetime.utcnow().isoformat()
+        coordinated_items: List[Dict[str, Any]] = []
+        retrieval_requests: List[Dict[str, Any]] = []
+
+        for bullet in bullets:
+            bullet_text = bullet.get('text') if isinstance(bullet, dict) else bullet
+            experience = bullet.get('experience') if isinstance(bullet, dict) else {}
+            bullet_id = bullet.get('id') if isinstance(bullet, dict) and bullet.get('id') else str(uuid.uuid4())
+
+            entity_payload = await self.entity_agent.run_async(bullet_id, bullet_text, experience, workflow_id)
+            metrics_payload = await self.metrics_agent.run_async(bullet_id, bullet_text, workflow_id)
+            narrative_payload = await self.narrative_agent.run_async(bullet_id, bullet_text, metrics_payload, workflow_id)
+            evidence_payload = await self.evidence_agent.run_async(bullet_id, bullet_text, retrieval_records, workflow_id)
+            confidence_payload = await self.confidence_agent.run_async(
+                bullet_id,
+                bullet_text,
+                metrics_payload,
+                evidence_payload,
+                workflow_id
+            )
+
+            provenance_flags: List[str] = []
+            if metrics_payload.get('has_metric') and not evidence_payload.get('supporting_sources'):
+                provenance_flags.append('metrics_without_evidence')
+                confidence_payload['score'] = max(0.05, round(confidence_payload['score'] - 0.1, 2))
+                confidence_payload['rationale'] += " Confidence reduced due to missing evidence."
+
+            if evidence_payload.get('unresolved_claims'):
+                provenance_flags.append('unresolved_claims')
+                retrieval_requests.append({
+                    "bullet_id": bullet_id,
+                    "claims": evidence_payload['unresolved_claims'],
+                    "experience_reference": experience.get('id') if isinstance(experience, dict) else None
+                })
+
+            coordinated_items.append({
+                "id": bullet_id,
+                "text": bullet_text,
+                "experience": experience,
+                "entities": entity_payload,
+                "metrics": metrics_payload,
+                "narrative": narrative_payload,
+                "evidence": evidence_payload,
+                "confidence": confidence_payload,
+                "provenance": {
+                    "source_ids": [src.get('source_id') for src in evidence_payload.get('supporting_sources', [])],
+                    "flags": provenance_flags,
+                    "generated_at": timestamp,
+                    "specialists": self.SPECIALIST_ORDER,
+                    "inputs": {
+                        "workflow_id": workflow_id,
+                        "experience_id": experience.get('id') if isinstance(experience, dict) else None
+                    }
+                }
+            })
+
+        bundle = {
+            "bundle_id": bundle_id,
+            "generated_at": timestamp,
+            "items": coordinated_items,
+            "retrieval_requests": retrieval_requests,
+            "provenance": {
+                "coordinator": "BulletCoordinatorAgent",
+                "specialists": self.SPECIALIST_ORDER,
+                "workflow_id": workflow_id
+            }
+        }
+        return bundle
+
+
+class BulletProvenanceAuditorAgent(BaseAgent):
+    """Validates provenance metadata and evidence linkages."""
+
+    @track_metrics('run_bullet_provenance_audit')
+    async def run_async(self, bundle: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        issues: List[Dict[str, Any]] = []
+        items = bundle.get('items', []) if isinstance(bundle, dict) else []
+
+        for item in items:
+            bullet_id = item.get('id', 'unknown')
+            evidence = item.get('evidence', {})
+            sources = evidence.get('supporting_sources') or []
+            if evidence.get('unresolved_claims'):
+                issues.append({
+                    "bullet_id": bullet_id,
+                    "issue": 'unresolved_claims_present',
+                    "severity": 'warning',
+                    "details": {'claims': evidence.get('unresolved_claims')}
+                })
+            if not sources:
+                issues.append({
+                    "bullet_id": bullet_id,
+                    "issue": 'no_supporting_sources',
+                    "severity": 'critical',
+                    "details": {}
+                })
+            for idx, source in enumerate(sources):
+                if not source.get('source_id'):
+                    issues.append({
+                        "bullet_id": bullet_id,
+                        "issue": 'missing_source_identifier',
+                        "severity": 'critical',
+                        "details": {'index': idx}
+                    })
+                if not source.get('snippet'):
+                    issues.append({
+                        "bullet_id": bullet_id,
+                        "issue": 'missing_source_snippet',
+                        "severity": 'warning',
+                        "details": {'index': idx}
+                    })
+
+        report = {
+            "bundle_id": bundle.get('bundle_id', str(uuid.uuid4())),
+            "validated": len(issues) == 0,
+            "audited_at": datetime.utcnow().isoformat(),
+            "issues": issues
+        }
+        return report
+
 
 class AsyncBulletGeneratorAgent(BaseAgent):
     """v10.6: Async bullet generator with 4-step provenance plan"""
@@ -755,8 +1571,296 @@ class AsyncBulletCritiqueAgent(BaseAgent):
         return final_critiqued_bullets
 
 # ============================================================================
-# ROW 7: HIL STACK (v10.6: Refactored)
+# ROW 7: HIL STACK (v10.6: Refactored & Extended)
 # ============================================================================
+
+
+class VirtualReviewerPersonaAgent(BaseAgent):
+    """Persona-specialized reviewer that interprets human feedback."""
+
+    PersonaPrompt = """
+    You are acting as the {persona} reviewer.
+    Specialty focus: {focus}
+    Human feedback:
+    {human_feedback}
+
+    Clustered intents summary:
+    {intent_summary}
+
+    Provide a JSON object with keys:
+    - persona (string)
+    - approval (boolean)
+    - confidence (0-1 float)
+    - key_concerns (list of strings)
+    - proposed_actions (list of strings)
+    - escalation_recommended (boolean)
+    """
+
+    def __init__(self, context: 'WorkflowContext', persona: str, focus: str, debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.persona = persona
+        self.focus = focus
+
+    @track_metrics('run_virtual_reviewer_persona')
+    async def run_async(
+        self,
+        human_feedback: str,
+        intent_clusters: List[HILFeedbackIntent],
+        workflow_id: str
+    ) -> PersonaReviewDecision:
+        client = self.get_model_client("qa_model")
+        intent_summary = json.dumps([intent.model_dump() for intent in intent_clusters]) if intent_clusters else "[]"
+        prompt = await _format_prompt_with_defaults(
+            self.PersonaPrompt,
+            {
+                "persona": self.persona,
+                "focus": self.focus,
+                "human_feedback": human_feedback,
+                "intent_summary": intent_summary
+            },
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.model_config.qa_model.temperature,
+            response_format="json_object"
+        )
+
+        validated_output, error = self.validator.validate(response["content"], PersonaReviewDecision)
+        if error:
+            self.log_warning(f"Persona {self.persona} validation failed: {error}. Using fallback decision.")
+            fallback = PersonaReviewDecision(
+                persona=self.persona,
+                approval=False,
+                confidence=0.0,
+                key_concerns=["Unable to parse persona feedback"],
+                proposed_actions=[],
+                escalation_recommended=True
+            )
+            self.log_feedback(
+                workflow_id,
+                "virtual_persona_decision",
+                "error",
+                fallback.model_dump()
+            )
+            return fallback
+
+        self.log_feedback(
+            workflow_id,
+            "virtual_persona_decision",
+            "success",
+            validated_output.model_dump()
+        )
+
+        return validated_output
+
+
+class VirtualReviewerCouncilAgent(BaseAgent):
+    """Coordinates persona reviewers to negotiate a consensus."""
+
+    DEFAULT_PERSONAS = [
+        {"name": "Legal", "focus": "Ensure compliance, risk mitigation, and policy adherence."},
+        {"name": "Brand", "focus": "Protect voice, tone, and reputation considerations."},
+        {"name": "SME", "focus": "Validate technical accuracy and subject-matter fidelity."}
+    ]
+
+    @track_metrics('run_virtual_reviewer_council')
+    async def run_async(
+        self,
+        human_feedback: str,
+        intent_clusters: List[HILFeedbackIntent],
+        workflow_id: str
+    ) -> PersonaConsensus:
+        persona_tasks = []
+        for persona in self.DEFAULT_PERSONAS:
+            persona_agent = VirtualReviewerPersonaAgent(
+                self.context,
+                persona["name"],
+                persona["focus"],
+                self.debug_mode
+            )
+            persona_tasks.append(persona_agent.run_async(human_feedback, intent_clusters, workflow_id))
+
+        persona_decisions = await asyncio.gather(*persona_tasks)
+        approvals = sum(1 for decision in persona_decisions if decision.approval)
+        escalations = any(decision.escalation_recommended for decision in persona_decisions)
+        approved = approvals >= math.ceil(len(persona_decisions) / 2)
+
+        negotiated_actions: List[str] = []
+        for decision in persona_decisions:
+            for action in decision.proposed_actions:
+                if action not in negotiated_actions:
+                    negotiated_actions.append(action)
+
+        rationale = (
+            "Consensus reached with majority approval." if approved else
+            "Consensus blocked: additional drafting or strategy work required."
+        )
+        if escalations:
+            rationale += " Legal/SME escalation recommended by at least one persona."
+
+        consensus = PersonaConsensus(
+            approved=approved,
+            rationale=rationale,
+            negotiated_actions=negotiated_actions,
+            persona_votes=persona_decisions
+        )
+
+        self.log_feedback(
+            workflow_id,
+            "virtual_persona_consensus",
+            "success" if approved else "warning",
+            {
+                "approved": approved,
+                "negotiated_actions": negotiated_actions,
+                "persona_votes": [vote.model_dump() for vote in persona_decisions]
+            }
+        )
+
+        return consensus
+
+
+class HILFeedbackSummarizerAgent(BaseAgent):
+    """Clusters human edits into reusable intents for downstream routing."""
+
+    class SummarizerOutput(BaseModel):
+        intent_clusters: List[HILFeedbackIntent] = Field(default_factory=list)
+        delegation_score: float = Field(0.0, ge=0.0, le=1.0)
+        recommended_node: str = Field("DRAFTING")
+        recommended_specialists: List[str] = Field(default_factory=list)
+
+    @track_metrics('run_hil_feedback_summarizer')
+    async def run_async(
+        self,
+        human_feedback: str,
+        state_snapshot: Optional[Dict[str, Any]],
+        workflow_id: str
+    ) -> SummarizerOutput:
+        if not human_feedback.strip():
+            return self.SummarizerOutput()
+
+        client = self.get_model_client("qa_model")
+        prompt_body = {
+            "human_feedback": human_feedback,
+            "state_snapshot": json.dumps(state_snapshot or {}, default=str)
+        }
+        prompt = await _format_prompt_with_defaults(
+            "Cluster human edits into intents and recommend routing.",
+            prompt_body,
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.model_config.qa_model.temperature,
+            response_format="json_object"
+        )
+
+        validated_output, error = self.validator.validate(response["content"], self.SummarizerOutput)
+        if error:
+            self.log_warning(f"Summarizer validation failed: {error}. Using default routing.")
+            output = self.SummarizerOutput()
+        else:
+            output = validated_output
+
+        self.log_feedback(
+            workflow_id,
+            "hil_intent_summary",
+            "success" if not error else "warning",
+            {
+                "delegation_score": output.delegation_score,
+                "recommended_node": output.recommended_node,
+                "intent_count": len(output.intent_clusters)
+            }
+        )
+
+        return output
+
+
+class HILReconciliationAgent(BaseAgent):
+    """Integrates specialist human feedback back into the draft."""
+
+    @track_metrics('run_hil_reconciliation')
+    async def run_async(
+        self,
+        draft_sections: Dict[str, Any],
+        specialist_feedback: List[str],
+        persona_consensus: Optional[PersonaConsensus],
+        workflow_id: str
+    ) -> HILReconciliationResult:
+        if not specialist_feedback:
+            empty_result = HILReconciliationResult(
+                integrated_text=json.dumps(draft_sections),
+                change_log=["No specialist feedback provided"],
+                unresolved_questions=[]
+            )
+            self.log_feedback(
+                workflow_id,
+                "hil_reconciliation",
+                "warning",
+                empty_result.model_dump()
+            )
+            return empty_result
+
+        client = self.get_model_client("qa_model")
+        prompt = await _format_prompt_with_defaults(
+            """
+            Integrate the following specialist feedback into the draft.
+            Draft sections:
+            {draft}
+            Specialist feedback entries:
+            {feedback}
+            Persona consensus summary:
+            {consensus}
+
+            Respond as JSON with keys: integrated_text (string), change_log (list of strings), unresolved_questions (list).
+            """,
+            {
+                "draft": json.dumps(draft_sections, default=str),
+                "feedback": json.dumps(specialist_feedback, default=str),
+                "consensus": json.dumps(persona_consensus.model_dump() if persona_consensus else {}, default=str)
+            },
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.model_config.qa_model.temperature,
+            response_format="json_object"
+        )
+
+        validated_output, error = self.validator.validate(response["content"], HILReconciliationResult)
+        if error:
+            self.log_warning(f"Reconciliation validation failed: {error}. Returning fallback.")
+            fallback = HILReconciliationResult(
+                integrated_text=json.dumps(draft_sections),
+                change_log=[f"Reconciliation failed validation: {error}"],
+                unresolved_questions=specialist_feedback
+            )
+            self.log_feedback(
+                workflow_id,
+                "hil_reconciliation",
+                "error",
+                fallback.model_dump()
+            )
+            return fallback
+
+        self.log_feedback(
+            workflow_id,
+            "hil_reconciliation",
+            "success",
+            validated_output.model_dump()
+        )
+
+        return validated_output
+
 
 class HILAmbiguityDetectorAgent(BaseAgent):
     """v10.6: Proactively detects ambiguity."""
@@ -792,45 +1896,76 @@ class HILAmbiguityDetectorAgent(BaseAgent):
         return {"ambiguity_report": validated_output}
 
 class HILFeedbackRouterAgent(BaseAgent):
-    """v10.6: Routes human feedback."""
-    
+    """v10.6: Routes human feedback with persona negotiation and delegation."""
+
     @track_metrics('run_feedback_router')
-    async def run_async(self, human_feedback: str, workflow_id: str) -> Dict[str, Any]:
-        self.log_info(f"Routing human feedback (v10.6)...")
-        
+    async def run_async(
+        self,
+        human_feedback: str,
+        workflow_id: str,
+        state_snapshot: Optional[Dict[str, Any]] = None
+    ) -> Dict[str, Any]:
+        self.log_info("Routing human feedback with persona council...")
+
         try:
             log_path = self.config.meta_loop_config.preference_log_path
             os.makedirs(os.path.dirname(log_path), exist_ok=True)
             with open(log_path, 'a') as f:
-                json.dump({"timestamp": datetime.now().isoformat(), "workflow_id": workflow_id, "feedback": human_feedback}, f)
+                json.dump({
+                    "timestamp": datetime.now().isoformat(),
+                    "workflow_id": workflow_id,
+                    "feedback": human_feedback
+                }, f)
                 f.write('\n')
         except Exception as e:
             self.log_error(f"Failed to log HIL preference feedback: {e}")
 
-        client = self.get_model_client("qa_model")
-        
-        prompt_template = self.prompt_manager.get_template("hil_feedback_router")
-        
-        # v10.6 REFACTOR: Use centralized async formatter
-        prompt = await _format_prompt_with_defaults(
-            prompt_template, 
-            {"human_feedback": human_feedback},
-            self.budget_manager,
-            client.goal_state,
-            client.top_failures
+        if not human_feedback.strip():
+            self.log_warning("No human feedback supplied. Defaulting to drafting continuation.")
+            default_route = HILFeedbackRoute(next_step="DRAFTING", payload=None)
+            return default_route.model_dump()
+
+        summarizer = HILFeedbackSummarizerAgent(self.context, self.debug_mode)
+        summary_output = await summarizer.run_async(human_feedback, state_snapshot, workflow_id)
+        intent_clusters = summary_output.intent_clusters
+
+        council = VirtualReviewerCouncilAgent(self.context, self.debug_mode)
+        persona_consensus = await council.run_async(human_feedback, intent_clusters, workflow_id)
+
+        delegated_specialists = summary_output.recommended_specialists
+        delegation_score = summary_output.delegation_score
+
+        delegation_threshold = getattr(self.config.agent_stacks, "hil_delegation_threshold", 0.65)
+        strategy_threshold = getattr(self.config.agent_stacks, "hil_strategy_threshold", 0.45)
+
+        next_step = summary_output.recommended_node or "DRAFTING"
+        if not persona_consensus.approved:
+            self.log_info("Persona consensus blocked. Routing to strategy for clarification.")
+            next_step = "STRATEGY"
+
+        elif delegation_score >= delegation_threshold and delegated_specialists:
+            self.log_info(
+                f"Delegation threshold met ({delegation_score:.2f} >= {delegation_threshold}). Escalating to specialists."
+            )
+            next_step = "DELEGATE_SPECIALIST"
+
+        elif delegation_score >= strategy_threshold and summary_output.recommended_node == "STRATEGY":
+            self.log_info("Strategy adjustments recommended based on delegation score.")
+            next_step = "STRATEGY"
+
+        payload = None
+        if intent_clusters:
+            payload = intent_clusters[0].summary
+
+        route = HILFeedbackRoute(
+            next_step=next_step,
+            payload=payload,
+            intent_clusters=intent_clusters,
+            delegated_specialists=delegated_specialists,
+            persona_consensus=persona_consensus,
         )
-        
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            response_format="json_object"
-        )
-        
-        validated_output, error = self.validator.validate(response["content"], HILFeedbackRoute)
-        if error:
-            raise PydanticSchemaError(f"HILFeedbackRouter failed validation: {error}")
-            
-        return validated_output.model_dump()
+
+        return route.model_dump()
 
 # ============================================================================
 # END OF agent_stacks_v10_6.py
