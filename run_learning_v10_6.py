@@ -29,16 +29,10 @@ from core_v10_6 import (
     create_workflow_context,
     PydanticSchemaError,
     track_metrics,
-    _format_prompt_with_defaults # v10.6: Import async formatter
+    _format_prompt_with_defaults, # v10.6: Import async formatter
+    get_checkpointer
 )
 from langgraph.graph import StateGraph, END
-try:
-    from langgraph.checkpoint.redis import RedisSaver
-except ImportError:
-    try:
-        from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
-    except ImportError:
-        from langgraph.checkpoint.memory import MemorySaver as RedisSaver
 
 # v10.6: Logger name updated
 logger = logging.getLogger("meta_learner_v10_6")
@@ -380,7 +374,7 @@ def check_tool_critique(state: MetaGraphState) -> str:
 # META-LEARNING GRAPH BUILDER (v10.6: Refactored Nodes)
 # ============================================================================
 
-def build_meta_learning_graph(context: WorkflowContext, checkpointer: RedisSaver):
+def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
     """Build complete async meta-learning graph"""
     
     workflow = StateGraph(MetaGraphState)
@@ -547,12 +541,11 @@ async def run_meta_learning(config: ConfigV10_6):
         context = create_workflow_context(config, db=meta_db)
         logger.info("Initialized WorkflowContext for meta-learning (v10.6)")
         
-        try:
-            checkpointer = RedisSaver(
-                host=config.redis_config.host, port=config.redis_config.port, db=meta_db
-            )
-        except TypeError:
-            checkpointer = RedisSaver()
+        checkpointer = get_checkpointer(
+            config,
+            db=meta_db,
+            allow_memory_fallback=True
+        )
         # --- v10.6: REFACTOR END ---
         
         app = build_meta_learning_graph(context, checkpointer)
