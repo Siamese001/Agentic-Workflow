@@ -26,7 +26,7 @@ import asyncio
 import re
 import math
 import uuid
-from collections import Counter
+from collections import Counter, defaultdict
 from typing import Dict, Any, List, Optional
 from datetime import datetime
 
@@ -598,6 +598,390 @@ class RAG_SearchAgent(BaseAgent):
 # ============================================================================
 # ROW 7: BULLET STACK (v10.6: Refactored)
 # ============================================================================
+
+class BulletEntityExtractionAgent(BaseAgent):
+    """Extracts named entities and key actors from a bullet."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        entities: List[Dict[str, Any]] = Field(default_factory=list)
+        raw_text: str
+        experience_id: Optional[str] = None
+
+    ENTITY_PATTERN = re.compile(r"\b([A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+){0,3})\b")
+    ORGANIZATION_HINTS = {"inc", "corp", "llc", "ltd", "company", "technologies"}
+    TECHNOLOGY_HINTS = {
+        "aws", "gcp", "azure", "python", "sql", "spark", "docker", "kubernetes",
+        "hadoop", "tensorflow", "pytorch", "salesforce"
+    }
+
+    @track_metrics('run_bullet_entity_extraction')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        experience: Dict[str, Any],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        text = bullet_text or ""
+        entities: List[Dict[str, Any]] = []
+        seen = set()
+
+        for match in self.ENTITY_PATTERN.finditer(text):
+            candidate = match.group(1).strip()
+            if not candidate or candidate.lower() in seen:
+                continue
+            seen.add(candidate.lower())
+            lower_candidate = candidate.lower()
+            ent_type = "proper_noun"
+            if any(hint in lower_candidate for hint in self.ORGANIZATION_HINTS):
+                ent_type = "organization"
+            elif any(lower_candidate.endswith(hint) or hint in lower_candidate for hint in self.ORGANIZATION_HINTS):
+                ent_type = "organization"
+            elif any(lower_candidate == hint or hint in lower_candidate.split() for hint in self.TECHNOLOGY_HINTS):
+                ent_type = "technology"
+            entities.append({
+                "name": candidate,
+                "type": ent_type,
+                "span": [match.start(), match.end()]
+            })
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            entities=entities,
+            raw_text=text,
+            experience_id=experience.get('id') if isinstance(experience, dict) else None
+        )
+        return output.model_dump()
+
+
+class BulletMetricsEnrichmentAgent(BaseAgent):
+    """Annotates bullets with derived metrics metadata."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        has_metric: bool
+        metrics: Dict[str, List[str]] = Field(default_factory=dict)
+        raw_numbers: List[str] = Field(default_factory=list)
+        raw_text: str
+
+    METRIC_PATTERN = re.compile(r"(?P<number>-?\d+(?:[\.,]\d+)?)(?P<suffix>%|x|X|\b)")
+    CURRENCY_PATTERN = re.compile(r"\$[\d,]+(?:\.\d+)?")
+
+    @track_metrics('run_bullet_metrics_enrichment')
+    async def run_async(self, bullet_id: str, bullet_text: str, workflow_id: str) -> Dict[str, Any]:
+        text = bullet_text or ""
+        metrics: Dict[str, List[str]] = defaultdict(list)
+        raw_numbers: List[str] = []
+
+        for match in self.METRIC_PATTERN.finditer(text):
+            number = match.group('number')
+            suffix = match.group('suffix')
+            raw = f"{number}{suffix.strip()}".strip()
+            raw_numbers.append(raw)
+            if suffix.strip() == "%":
+                metrics['percentage'].append(raw)
+            elif suffix.strip().lower() == 'x':
+                metrics['multipliers'].append(raw)
+            else:
+                metrics['absolute'].append(raw)
+
+        for money in self.CURRENCY_PATTERN.findall(text):
+            metrics['currency'].append(money)
+            raw_numbers.append(money)
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            has_metric=bool(raw_numbers),
+            metrics={k: sorted(set(v)) for k, v in metrics.items()},
+            raw_numbers=sorted(set(raw_numbers)),
+            raw_text=text
+        )
+        return output.model_dump()
+
+
+class BulletNarrativeSynthesisAgent(BaseAgent):
+    """Produces narrative scaffolding for each bullet."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        storyline: str
+        highlights: List[str] = Field(default_factory=list)
+        tone: str
+
+    @track_metrics('run_bullet_narrative_synthesis')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        metrics_payload: Dict[str, Any],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        text = bullet_text or ""
+        fragments = [frag.strip() for frag in re.split(r"[.;]", text) if frag.strip()]
+        tone = "impact" if metrics_payload.get('has_metric') else "descriptive"
+        if not fragments:
+            fragments = [text.strip()] if text else []
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            storyline=text,
+            highlights=fragments,
+            tone=tone
+        )
+        return output.model_dump()
+
+
+class BulletEvidenceLinkerAgent(BaseAgent):
+    """Matches bullets with retrieved evidence and notes gaps."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        supporting_sources: List[Dict[str, Any]] = Field(default_factory=list)
+        unresolved_claims: List[str] = Field(default_factory=list)
+        retrieval_notes: List[str] = Field(default_factory=list)
+
+    @staticmethod
+    def _normalize_keywords(text: str) -> set:
+        tokens = re.findall(r"[A-Za-z0-9]+", text.lower())
+        return {tok for tok in tokens if len(tok) > 3}
+
+    @track_metrics('run_bullet_evidence_linker')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        retrieval_records: List[Dict[str, Any]],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        bullet_keywords = self._normalize_keywords(bullet_text or "")
+        sources: List[Dict[str, Any]] = []
+        notes: List[str] = []
+
+        for record in retrieval_records or []:
+            raw_text = record.get('text') or record.get('content') or record.get('snippet') or ""
+            overlap = sorted(self._normalize_keywords(raw_text) & bullet_keywords)
+            if not overlap:
+                continue
+            source_id = str(record.get('source_id') or record.get('id') or uuid.uuid4())
+            sources.append({
+                "source_id": source_id,
+                "snippet": raw_text[:300],
+                "overlap_terms": overlap,
+                "score": record.get('score')
+            })
+
+        unresolved_claims: List[str] = []
+        if not sources:
+            unresolved_claims.append("No retrieval evidence matched bullet claims.")
+            notes.append("Consider requesting additional retrieval for unmatched bullet.")
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            supporting_sources=sources,
+            unresolved_claims=unresolved_claims,
+            retrieval_notes=notes
+        )
+        return output.model_dump()
+
+
+class BulletConfidenceScoringAgent(BaseAgent):
+    """Assigns a confidence score leveraging specialist outputs."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        score: float
+        rationale: str
+        contributing_factors: List[str] = Field(default_factory=list)
+
+    @track_metrics('run_bullet_confidence_scoring')
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        metrics_payload: Dict[str, Any],
+        evidence_payload: Dict[str, Any],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        score = 0.4
+        factors: List[str] = []
+
+        if metrics_payload.get('has_metric'):
+            score += 0.2
+            factors.append('quantified_impact')
+        if evidence_payload.get('supporting_sources'):
+            score += 0.25
+            factors.append('retrieval_alignment')
+        if evidence_payload.get('unresolved_claims'):
+            score -= 0.2
+            factors.append('unresolved_claims')
+        if len((metrics_payload.get('raw_numbers') or [])) > 2:
+            score += 0.05
+            factors.append('dense_metrics')
+
+        score = max(0.05, min(0.95, score))
+
+        rationale = (
+            "Confidence derived from metrics presence and retrieval support;"
+            " adjusted for outstanding evidence gaps."
+        )
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            score=round(score, 2),
+            rationale=rationale,
+            contributing_factors=factors or ['baseline_assessment']
+        )
+        return output.model_dump()
+
+
+class BulletCoordinatorAgent(BaseAgent):
+    """Coordinates bullet specialists, merges outputs, and attaches provenance."""
+
+    SPECIALIST_ORDER = [
+        'entity_extraction',
+        'metrics_enrichment',
+        'narrative_synthesis',
+        'evidence_linking',
+        'confidence_scoring'
+    ]
+
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.entity_agent = BulletEntityExtractionAgent(context, debug_mode)
+        self.metrics_agent = BulletMetricsEnrichmentAgent(context, debug_mode)
+        self.narrative_agent = BulletNarrativeSynthesisAgent(context, debug_mode)
+        self.evidence_agent = BulletEvidenceLinkerAgent(context, debug_mode)
+        self.confidence_agent = BulletConfidenceScoringAgent(context, debug_mode)
+
+    @track_metrics('run_bullet_coordinator')
+    async def run_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        retrieval_records: List[Dict[str, Any]],
+        workflow_id: str
+    ) -> Dict[str, Any]:
+        bundle_id = str(uuid.uuid4())
+        timestamp = datetime.utcnow().isoformat()
+        coordinated_items: List[Dict[str, Any]] = []
+        retrieval_requests: List[Dict[str, Any]] = []
+
+        for bullet in bullets:
+            bullet_text = bullet.get('text') if isinstance(bullet, dict) else bullet
+            experience = bullet.get('experience') if isinstance(bullet, dict) else {}
+            bullet_id = bullet.get('id') if isinstance(bullet, dict) and bullet.get('id') else str(uuid.uuid4())
+
+            entity_payload = await self.entity_agent.run_async(bullet_id, bullet_text, experience, workflow_id)
+            metrics_payload = await self.metrics_agent.run_async(bullet_id, bullet_text, workflow_id)
+            narrative_payload = await self.narrative_agent.run_async(bullet_id, bullet_text, metrics_payload, workflow_id)
+            evidence_payload = await self.evidence_agent.run_async(bullet_id, bullet_text, retrieval_records, workflow_id)
+            confidence_payload = await self.confidence_agent.run_async(
+                bullet_id,
+                bullet_text,
+                metrics_payload,
+                evidence_payload,
+                workflow_id
+            )
+
+            provenance_flags: List[str] = []
+            if metrics_payload.get('has_metric') and not evidence_payload.get('supporting_sources'):
+                provenance_flags.append('metrics_without_evidence')
+                confidence_payload['score'] = max(0.05, round(confidence_payload['score'] - 0.1, 2))
+                confidence_payload['rationale'] += " Confidence reduced due to missing evidence."
+
+            if evidence_payload.get('unresolved_claims'):
+                provenance_flags.append('unresolved_claims')
+                retrieval_requests.append({
+                    "bullet_id": bullet_id,
+                    "claims": evidence_payload['unresolved_claims'],
+                    "experience_reference": experience.get('id') if isinstance(experience, dict) else None
+                })
+
+            coordinated_items.append({
+                "id": bullet_id,
+                "text": bullet_text,
+                "experience": experience,
+                "entities": entity_payload,
+                "metrics": metrics_payload,
+                "narrative": narrative_payload,
+                "evidence": evidence_payload,
+                "confidence": confidence_payload,
+                "provenance": {
+                    "source_ids": [src.get('source_id') for src in evidence_payload.get('supporting_sources', [])],
+                    "flags": provenance_flags,
+                    "generated_at": timestamp,
+                    "specialists": self.SPECIALIST_ORDER,
+                    "inputs": {
+                        "workflow_id": workflow_id,
+                        "experience_id": experience.get('id') if isinstance(experience, dict) else None
+                    }
+                }
+            })
+
+        bundle = {
+            "bundle_id": bundle_id,
+            "generated_at": timestamp,
+            "items": coordinated_items,
+            "retrieval_requests": retrieval_requests,
+            "provenance": {
+                "coordinator": "BulletCoordinatorAgent",
+                "specialists": self.SPECIALIST_ORDER,
+                "workflow_id": workflow_id
+            }
+        }
+        return bundle
+
+
+class BulletProvenanceAuditorAgent(BaseAgent):
+    """Validates provenance metadata and evidence linkages."""
+
+    @track_metrics('run_bullet_provenance_audit')
+    async def run_async(self, bundle: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        issues: List[Dict[str, Any]] = []
+        items = bundle.get('items', []) if isinstance(bundle, dict) else []
+
+        for item in items:
+            bullet_id = item.get('id', 'unknown')
+            evidence = item.get('evidence', {})
+            sources = evidence.get('supporting_sources') or []
+            if evidence.get('unresolved_claims'):
+                issues.append({
+                    "bullet_id": bullet_id,
+                    "issue": 'unresolved_claims_present',
+                    "severity": 'warning',
+                    "details": {'claims': evidence.get('unresolved_claims')}
+                })
+            if not sources:
+                issues.append({
+                    "bullet_id": bullet_id,
+                    "issue": 'no_supporting_sources',
+                    "severity": 'critical',
+                    "details": {}
+                })
+            for idx, source in enumerate(sources):
+                if not source.get('source_id'):
+                    issues.append({
+                        "bullet_id": bullet_id,
+                        "issue": 'missing_source_identifier',
+                        "severity": 'critical',
+                        "details": {'index': idx}
+                    })
+                if not source.get('snippet'):
+                    issues.append({
+                        "bullet_id": bullet_id,
+                        "issue": 'missing_source_snippet',
+                        "severity": 'warning',
+                        "details": {'index': idx}
+                    })
+
+        report = {
+            "bundle_id": bundle.get('bundle_id', str(uuid.uuid4())),
+            "validated": len(issues) == 0,
+            "audited_at": datetime.utcnow().isoformat(),
+            "issues": issues
+        }
+        return report
+
 
 class AsyncBulletGeneratorAgent(BaseAgent):
     """v10.6: Async bullet generator with 4-step provenance plan"""
