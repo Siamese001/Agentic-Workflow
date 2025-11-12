@@ -42,7 +42,8 @@ from core_v10_6 import (
     ConfigV10_6, BaseTool,
     track_metrics,
     _format_prompt_with_defaults,
-    ConstitutionalReviewResult # v10.6 (Fix #30)
+    ConstitutionalReviewResult, # v10.6 (Fix #30)
+    PersonaConsensus
 )
 from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
@@ -71,6 +72,7 @@ from agent_stacks_v10_6 import (
     AsyncBulletCritiqueAgent,
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
+    HILReconciliationAgent,
     ConstitutionalReviewerAgent # v10.6 (Fix #30)
 )
 
@@ -655,9 +657,18 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
     context = workflow_context
     router = HILFeedbackRouterAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    last_human_message = "Default to drafting" # Stub
-    route = await router.run_async(last_human_message, workflow_id)
-    return {"hil": {"next_step": route.get("next_step"), "payload": route.get("payload")}}
+    human_feedback = state.get('hil', {}).get('raw_feedback') or "Default to drafting"
+    route = await router.run_async(human_feedback, workflow_id, state)
+    return {
+        "hil": {
+            "next_step": route.get("next_step"),
+            "payload": route.get("payload"),
+            "intent_clusters": route.get("intent_clusters", []),
+            "delegated_specialists": route.get("delegated_specialists", []),
+            "persona_consensus": route.get("persona_consensus"),
+            "reconciliation": route.get("reconciliation")
+        }
+    }
 
 def human_in_the_loop_node(state: dict) -> dict:
     """Node 10: HIL Pause"""
@@ -682,9 +693,32 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
         return {}
     if 'sections' not in state['draft']:
         state['draft']['sections'] = {}
-    state['draft']['sections']['summary'] = f"[EDITED BY HUMAN]: {payload}"
+    reconciliation = state.get('hil', {}).get('reconciliation')
+    if reconciliation and reconciliation.get('integrated_text'):
+        state['draft']['sections']['summary'] = reconciliation['integrated_text']
+    else:
+        state['draft']['sections']['summary'] = f"[EDITED BY HUMAN]: {payload}"
     logger.info("HIL edit injected into draft summary.")
     return {"draft": state['draft']}
+
+
+async def run_reconcile_specialists(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Node 11.5: Reconcile specialist contributions."""
+    context = workflow_context
+    agent = HILReconciliationAgent(context)
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    specialist_feedback = state.get('hil', {}).get('specialist_feedback', [])
+    persona_consensus_data = state.get('hil', {}).get('persona_consensus')
+    persona_consensus = None
+    if persona_consensus_data:
+        try:
+            persona_consensus = PersonaConsensus.model_validate(persona_consensus_data)
+        except Exception as exc:
+            logger.warning(f"Failed to parse persona consensus for reconciliation: {exc}")
+
+    draft_sections = state.get('draft', {}).get('sections', {})
+    result = await agent.run_async(draft_sections, specialist_feedback, persona_consensus, workflow_id)
+    return {"hil": {"reconciliation": result.model_dump()}}
 
 # --- CONDITIONAL EDGES (v10.6: Fix #30) ---
 
@@ -747,6 +781,7 @@ def route_feedback(state: dict) -> str:
     if next_step == "STRATEGY": return "to_strategy"
     if next_step == "BULLET_GENERATION": return "to_bullets"
     if next_step == "INJECT_EDIT": return "to_inject_edit"
+    if next_step == "DELEGATE_SPECIALIST": return "to_delegation"
     return "to_drafting"
 
 # ============================================================================
@@ -786,6 +821,7 @@ def get_graph_app(checkpointer: Any, workflow_context: WorkflowContext, enable_h
     add_async_node("run_constitutional_review", partial(run_constitutional_review, workflow_context=workflow_context)) # 9.5 (Fix #30)
     workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
     add_async_node("run_feedback_router", partial(run_feedback_router, workflow_context=workflow_context)) # 11
+    add_async_node("run_reconcile_specialists", partial(run_reconcile_specialists, workflow_context=workflow_context)) # 11.5
     add_async_node("run_inject_hil_edit", partial(run_inject_hil_edit, workflow_context=workflow_context)) # 12
     
     # --- CONNECT NODES (v10.6: Rerouted for new nodes) ---
@@ -848,9 +884,12 @@ def get_graph_app(checkpointer: Any, workflow_context: WorkflowContext, enable_h
             "to_strategy": "run_tot_strategy",
             "to_bullets": "run_generate_bullets",
             "to_drafting": "run_drafting",
-            "to_inject_edit": "run_inject_hil_edit"
+            "to_inject_edit": "run_inject_hil_edit",
+            "to_delegation": "run_reconcile_specialists"
         }
     )
+
+    workflow.add_edge("run_reconcile_specialists", "run_inject_hil_edit") # 11.5 -> 12
     
     workflow.add_edge("run_inject_hil_edit", "run_qa_validation") # 12 -> 9 (Re-run QA)
     
