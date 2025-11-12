@@ -17,7 +17,20 @@ from core_v10_6 import (
     CircuitBreakerOpenError,
     ConfigV10_6,
     ModelAPIError,
+    StrategyPlan,
+    PydanticSchemaError,
+    ResponseValidator,
     exponential_backoff_retry,
+)
+from agent_tools_v10_6 import DraftingStrategistTool
+from agent_stacks_v10_6 import (
+    DraftingGuildCoordinator,
+    SpecialistDraftPacket,
+    EvidenceLiaisonPacket,
+    EvidenceClarificationRecord,
+    EvidenceBriefRecord,
+    CritiquePanelPacket,
+    CritiqueFindingRecord,
 )
 
 
@@ -245,19 +258,83 @@ async def test_fix_2_dynamic_model_routing_in_agent(mock_workflow_context, mock_
 # SECTION 15: v10.5 Fix #1, #15 - TOOL CACHING & FEEDBACK (v10.6: Updated)
 # ============================================================================
 @pytest.mark.asyncio
-async def test_fix_1_react_conductor_uses_tool_cache(mock_workflow_context, mock_llm_client, base_state):
-    mock_llm_client.chat_completion_async.side_effect = [
-        {"content": json.dumps({"thought": "Call 1", "tool_call": {"name": "red_team_critique", "input": {"id": 1}}}), "usage": {}},
-        {"content": json.dumps({"thought": "Call 2", "tool_call": {"name": "red_team_critique", "input": {"id": 1}}}), "usage": {}},
-        {"content": json.dumps({"thought": "Done", "final_draft": {}}), "usage": {}}
-    ]
-    conductor = ReActConductorAgent(mock_workflow_context)
-    conductor.tools["red_team_critique"]._run_async_internal = AsyncMock(return_value={"weaknesses_found": ["test"]})
+async def test_drafting_guild_coordinator_merges_specialists(mock_workflow_context, base_state):
+    coordinator = DraftingGuildCoordinator(mock_workflow_context)
+
+    structure_packet = SpecialistDraftPacket(
+        specialist="Structure Lead",
+        focus_area="Test Strategy",
+        sections={"summary": {"draft": "Initial summary", "open_questions": []}},
+        notes=["seed"],
+        dependencies=[]
+    )
+
+    narrative_packet = SpecialistDraftPacket(
+        specialist="Narrative Stylist",
+        focus_area="professional",
+        sections={"summary": {"draft": "Styled summary", "open_questions": []}},
+        notes=["tone"],
+        dependencies=[]
+    )
+
+    compliance_packet = SpecialistDraftPacket(
+        specialist="Compliance Editor",
+        focus_area="governance",
+        sections={"summary": {"draft": "Styled summary", "open_questions": ["Need metric"]}},
+        notes=["period"],
+        dependencies=["Add metric"]
+    )
+
+    liaison_packet = EvidenceLiaisonPacket(
+        clarifications=[
+            EvidenceClarificationRecord(
+                request_id="clar-1",
+                recipient="bullet_team",
+                questions=["Which metric?"],
+                priority="normal",
+                context_summary="Styled summary"
+            )
+        ],
+        briefs=[
+            EvidenceBriefRecord(
+                section="summary",
+                brief="Evidence for summary",
+                key_points=["Metric"],
+                citations=[],
+                outstanding_questions=[]
+            )
+        ]
+    )
+
+    critique_packet = CritiquePanelPacket(
+        findings=[
+            CritiqueFindingRecord(
+                critic="Style Critic",
+                severity="approved",
+                issues=[],
+                recommendations=[],
+                blockers=[]
+            )
+        ],
+        overall_status="approved"
+    )
+
+    coordinator.structure_lead.run_async = AsyncMock(return_value=structure_packet)
+    coordinator.narrative_stylist.run_async = AsyncMock(return_value=narrative_packet)
+    coordinator.compliance_editor.run_async = AsyncMock(return_value=compliance_packet)
+    coordinator.evidence_liaison.run_async = AsyncMock(return_value=liaison_packet)
+    coordinator.critique_panel.run_async = AsyncMock(return_value=critique_packet)
+
     strategy_model = StrategyPlan.model_validate(base_state["strategy"]["strategy_plan"])
-    await conductor.run_async({"strategy": strategy_model}, "test-wf")
-    conductor.tools["red_team_critique"]._run_async_internal.assert_called_once()
-    assert mock_workflow_context.cache_manager.get_tool_cache.call_count == 2
-    assert mock_workflow_context.cache_manager.set_tool_cache.call_count == 1
+    result = await coordinator.run_async({
+        "strategy": strategy_model,
+        "bullets": [],
+        "resume": base_state["resume"]["master_resume"]
+    }, "test-wf")
+
+    assert result["final_output"]["summary"]["draft"] == "Styled summary"
+    assert result["guild_metadata"]["critique"]["overall_status"] == "approved"
+    assert result["phases_executed"] == 5
 
 # ============================================================================
 # SECTION 16-19: (Preserved, no v10.6 changes needed)

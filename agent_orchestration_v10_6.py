@@ -71,15 +71,12 @@ from agent_stacks_v10_6 import (
     AsyncBulletCritiqueAgent,
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent # v10.6 (Fix #30)
+    ConstitutionalReviewerAgent, # v10.6 (Fix #30)
+    DraftingGuildCoordinator
 )
 
 # v10.6: Import from new tools file
 from agent_tools_v10_6 import (
-    DraftingStrategistTool,
-    DraftingRedTeamTool,
-    DraftingRefinerTool,
-    DraftingMetricsTool,
     QAClaimValidatorTool,
     QAToneValidatorTool,
     QAThematicAlignmentTool,
@@ -174,127 +171,6 @@ def load_dynamic_tools(context: WorkflowContext, debug_mode: bool) -> Dict[str, 
                 
     return dynamic_tools
 
-# ============================================================================
-# DRAFTING CONDUCTOR (v10.6: Fix #7, #17, #19, #20, #24)
-# ============================================================================
-
-class ReActConductorAgent(BaseAgent):
-    """v10.6: ReAct conductor with dynamic tooling and cognitive modes."""
-    
-    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
-        super().__init__(context, debug_mode)
-        self.tools = {
-            "review_draft_strategy": DraftingStrategistTool(context, debug_mode),
-            "red_team_critique": DraftingRedTeamTool(context, debug_mode),
-            "refine_section": DraftingRefinerTool(context, debug_mode),
-            "add_metrics": DraftingMetricsTool(context, debug_mode)
-        }
-        
-        # v10.6 (Fix #7): Load dynamic tools
-        dynamic_tools = load_dynamic_tools(context, debug_mode)
-        self.tools.update(dynamic_tools)
-        
-        self.tool_schemas = [t.get_schema() for t in self.tools.values()]
-        
-        self.tool_breakers = {
-            name: CircuitBreaker(
-                failure_threshold=self.config.batch_config.circuit_breaker_failure_threshold
-            ) for name in self.tools
-        }
-        self.style_guide = "Style: Professional, high-impact, and metrics-driven."
-
-    @track_metrics('run_react_draft_conductor')
-    async def run_async(self, task_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
-        self.log_info("Running ReAct Drafting Conductor (v10.6)...")
-        
-        client = self.get_model_client("react_conductor_model")
-        
-        strategy_plan = task_context.get('strategy')
-        if isinstance(strategy_plan, dict):
-            strategy_plan = StrategyPlan.model_validate(strategy_plan)
-        strategy_json = strategy_plan.model_dump_json()
-        
-        # v10.6 (Fix #17, #19, #20, #24): Inject Goal, Failures, Mode, Reflection
-        react_prompt = f"""
-{client.goal_state}
-{client.top_failures}
--------------------
-MODE: ORCHESTRATION
-TASK: You are a ReAct drafting conductor.
-Task Context: {json.dumps({"strategy": strategy_json})}
-Tools: {json.dumps(self.tool_schemas)}
-
-Plan (v10.6 Debate Pattern):
-1.  Call `review_draft_strategy` to get strategic feedback.
-2.  Call `red_team_critique` to get adversarial feedback.
-3.  Call `refine_section` to resolve *both* critiques.
-4.  Call `add_metrics` to enhance the refined draft.
-5.  Assemble final draft.
-
-REFLECTION: Does this plan fulfill the strategy?
-Output thoughts and tool calls in JSON:
-{{"thought": "Your reasoning", "tool_call": {{"name": "tool_name", "input": {{"arg": "value", "critique_2": "..."}}}}}}
-When finished, output:
-{{"thought": "Draft complete", "final_draft": {{...}}}}
-"""
-        messages = [{"role": "user", "content": react_prompt}]
-        
-        final_draft = {}
-        max_steps = self.config.agent_stacks.conductor_max_steps
-        
-        for step in range(max_steps):
-            response = await client.chat_completion_async(
-                messages=messages,
-                temperature=self.config.agent_stacks.conductor_temperature,
-                response_format="json_object"
-            )
-            
-            step_data, error = self.validator.validate(response["content"], dict)
-            if error:
-                logger.warning(f"ReAct step {step} failed validation: {error}")
-                messages.append({"role": "user", "content": f"Error: Invalid JSON response from LLM. {error}"})
-                continue
-
-            messages.append({"role": "assistant", "content": json.dumps(step_data)})
-            
-            if "final_draft" in step_data:
-                final_draft = step_data["final_draft"]
-                self.log_feedback(workflow_id, "react_conductor_draft", "success", {"steps_executed": step})
-                return {"final_output": final_draft, "steps": step}
-            
-            if "tool_call" in step_data:
-                tool_name = step_data["tool_call"].get("name")
-                tool_input = step_data["tool_call"].get("input", {})
-                
-                if not tool_name or tool_name not in self.tools:
-                    messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
-                    continue
-                
-                tool_input["draft"] = task_context.get("bullets")
-                tool_input["strategy"] = strategy_plan.model_dump() 
-                tool_input["style_guide"] = self.style_guide
-                
-                try:
-                    breaker = self.tool_breakers[tool_name]
-                    breaker.check()
-                    tool = self.tools[tool_name]
-                    tool_result = await tool.run_async(tool_input, workflow_id) 
-                    breaker.record_success()
-                    messages.append({"role": "user", "content": f"Tool Result: {json.dumps(tool_result)}"})
-                
-                except (CircuitBreakerOpenError, PydanticSchemaError, Exception) as e:
-                    self.log_error(f"Tool {tool_name} failed: {e}")
-                    if not isinstance(e, CircuitBreakerOpenError):
-                        if tool_name in self.tool_breakers:
-                            self.tool_breakers[tool_name].record_failure()
-                    
-                    error_msg = f"Error: Tool '{tool_name}' failed. Do not call it again. Reason: {str(e)}"
-                    messages.append({"role": "user", "content": error_msg})
-
-        self.log_feedback(workflow_id, "react_conductor_draft", "failure", {"reason": "Max steps reached"})
-        return {"final_output": {"error": "Max steps reached"}, "steps": max_steps}
-
-# ============================================================================
 # QA CONDUCTOR (v10.6: Fix #7, #8, #17, #19, #20, #24)
 # ============================================================================
 
@@ -611,9 +487,9 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
     context = workflow_context
-    conductor = ReActConductorAgent(context)
+    coordinator = DraftingGuildCoordinator(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    
+
     good_bullets = [
         b for b in state['bullets']['critiqued_bullets']
         if b.get('critique', {}).get('score', 0) >= 7
@@ -622,8 +498,12 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     if isinstance(strategy_plan, dict):
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
     
-    task_context = {"bullets": good_bullets, "strategy": strategy_plan}
-    draft = await conductor.run_async(task_context, workflow_id)
+    task_context = {
+        "bullets": good_bullets,
+        "strategy": strategy_plan,
+        "resume": state['resume']['master_resume']
+    }
+    draft = await coordinator.run_async(task_context, workflow_id)
     return {"draft": {"sections": draft.get("final_output", {})}}
 
 async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
