@@ -23,6 +23,6 @@ def test_idempotent_results():
     assert r1 == r2
 
 
-@pytest.mark.skip("Add 22 more contract and SLA enforcement tests")
+@pytest.mark.xfail(reason="Add 22 more contract and SLA enforcement tests", strict=False)
 def test_placeholder():
-    pass
+    pytest.xfail("Add 22 more contract and SLA enforcement tests")

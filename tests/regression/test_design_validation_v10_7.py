@@ -18,6 +18,11 @@ def test_edges_consistency():
     assert all("->" in e for e in edges)
 
 
-@pytest.mark.skip("Add 18 design validation tests comparing LIC_10-05-2025_v8.54.json to runtime")
+@pytest.mark.xfail(
+    reason="Add 18 design validation tests comparing LIC_10-05-2025_v8.54.json to runtime",
+    strict=False,
+)
 def test_placeholder():
-    pass
+    pytest.xfail(
+        "Add 18 design validation tests comparing LIC_10-05-2025_v8.54.json to runtime"
+    )
