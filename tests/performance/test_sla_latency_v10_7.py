@@ -16,6 +16,8 @@ def test_latency_under_3s(benchmark):
     assert result is not None
 
 
-@pytest.mark.skip("Add 8 more performance + memory tests")
-def test_placeholder():
-    pass
+def test_retry_context_emits_retry_event():
+    ctx = {"resume": "RetryCase", "low_confidence": True}
+    result = run_workflow(ctx)
+    assert result["status"] == "success"
+    assert "retry" in result["events"]
