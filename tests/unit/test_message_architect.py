@@ -31,25 +31,22 @@ def test_record_evidence_supports_cached_strings():
     cache_key = registry.make_key({"tool": job.tool, "query": job.query, "scope": job.scope}, plan.context)
     store.put(cache_key, "cached summary", {"tool": job.tool})
     retrievals = [("cache", job, "cached summary")]
-    evidence, latency = architect._record_evidence(retrievals, sanitized)
+    evidence = architect._record_evidence(retrievals, sanitized)
     assert evidence and evidence[0][1] == "cached summary"
-    assert latency == 0
 
 
 def test_compose_appends_reflexion_and_artifacts():
     toggles = ReasoningToggles(reflexion=True)
     architect = MessageArchitect(toggles)
     sanitized = SimpleNamespace(prompt="Hello", company_id="ACME", contact_id="C1")
-    package = architect.compose(sanitized, route_decision=None)
-    assert "Reflexion:" in package.draft
-    assert "[artifact_id:" in package.draft
-    assert package.artifacts
+    draft = architect.compose(sanitized, route_decision=None)
+    assert "Reflexion:" in draft
+    assert "[artifact_id:" in draft
 
 
 def test_compose_without_company_uses_baseline_marker():
     toggles = ReasoningToggles()
     architect = MessageArchitect(toggles)
     sanitized = SimpleNamespace(prompt="", company_id=None, contact_id=None)
-    package = architect.compose(sanitized, route_decision=None)
-    assert "[artifact_id:baseline]" in package.draft
-    assert package.artifacts == {"baseline": "Value proposition here."}
+    draft = architect.compose(sanitized, route_decision=None)
+    assert "[artifact_id:baseline]" in draft

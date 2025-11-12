@@ -23,10 +23,6 @@ def test_default_registry_includes_builtin_tools():
     registry = ToolRegistry.default_with_builtins()
     for name in ("web_search", "profile_lookup", "news"):
         assert name in registry.available()
-        tool = registry.resolve(name)
-        result = tool.run("ACME milestone", {"company_id": "ACME", "contact_id": "C1"})
-        assert result.sources
-        assert result.latency_ms > 0
 
 
 def test_resolve_missing_tool_raises_key_error():

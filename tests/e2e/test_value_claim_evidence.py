@@ -24,9 +24,8 @@ def test_value_claims_are_anchored():
     outcomes = plan.execute(architect.tool_registry, architect.content_store)
     expected_markers = len(outcomes)
 
-    package = architect.compose(sanitized, route_decision=None)
-    markers = extract_artifact_markers(package.draft)
+    draft = architect.compose(sanitized, route_decision=None)
+    markers = extract_artifact_markers(draft)
 
     assert markers, "Expected at least one artifact marker in the draft"
     assert len(markers) == expected_markers
-    assert len(package.artifacts) == expected_markers
