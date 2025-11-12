@@ -47,8 +47,10 @@ from core_v10_7 import (
     wrap_mcp,
     MCPClientStub
 )
+from mcp import get_agent
 from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
+from telemetry_v10_7 import log_event
 
 # Make HIL import conditional for environment compatibility
 try:
@@ -102,6 +104,34 @@ from agent_tools_v10_7 import (
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_7")
+
+# ============================================================================
+# MCP STACK ROUTING HELPERS
+# ============================================================================
+
+
+async def route_to_stack(stack_name: str, context: WorkflowContext, *args, **kwargs):
+    """Resolve an MCP-registered stack and execute it with provided arguments."""
+
+    agent_cls = get_agent(stack_name)
+    agent = agent_cls(context)
+
+    runner = getattr(agent, "run_async", None)
+    if callable(runner):
+        result = runner(*args, **kwargs)
+        if asyncio.iscoroutine(result):
+            result = await result
+        return result
+
+    runner = getattr(agent, "run", None)
+    if callable(runner):
+        result = runner(*args, **kwargs)
+        if asyncio.iscoroutine(result):
+            result = await result
+        return result
+
+    raise WorkflowError(f"Agent '{stack_name}' does not expose run or run_async methods")
+
 
 # ============================================================================
 # v10.7: RUNTIME DECORATORS (Fix #6)
@@ -373,6 +403,15 @@ When finished, output:
         self.log_feedback(workflow_id, "react_conductor_qa", "failure", {"reason": "Max steps reached"})
         return {"error": "Max steps reached", "steps": max_steps, "all_tool_results": all_tool_results, "qa_passed": False}
 
+
+class MetaLearningLoop(BaseAgent):
+    """Placeholder MCP agent for telemetry-aligned meta learning."""
+
+    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("MetaLearningLoop invoked - emitting telemetry only.")
+        log_event("MetaLearningLoop", "executed", {"workflow_id": workflow_id})
+        return {"meta_learning": {"status": "noop"}}
+
 # ============================================================================
 # LANGGRAPH NODE & EDGE FUNCTIONS (v10.7: Fix #5, #10, #30)
 # ============================================================================
@@ -404,12 +443,12 @@ async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowCon
     context = workflow_context
     if not context.config.agent_stacks.enable_prompt_injection_detection:
         return {"safety": {"injection_detected": False}}
-        
-    pi_agent = PromptInjectionDetectorAgent(context)
+
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    jd_result = await pi_agent.run_async(state['job']['raw_jd'], workflow_id)
-    
-    return {"safety": {"injection_detected": jd_result['injection_detected']}}
+    jd_result = await route_to_stack("SafetyGuardStack", context, state['job']['raw_jd'], workflow_id)
+    log_event("SafetyGuardStack", "run", {"workflow_id": workflow_id})
+
+    return {"safety": {"injection_detected": jd_result.get('injection_detected', False)}}
 
 @wrap_mcp
 @exponential_backoff_retry()
@@ -427,16 +466,18 @@ async def run_classify_complexity(state: dict, workflow_context: WorkflowContext
 async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 2: ToT strategy"""
     context = workflow_context
-    strategist = ToTStrategistAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    strategy_result = await strategist.run_async(
+    strategy_result = await route_to_stack(
+        "StrategyStack",
+        context,
         {
-            "job_title": state['job']['job_title'], 
+            "job_title": state['job']['job_title'],
             "company": state['job']['company'],
             "job_description": state['job']['raw_jd']
         },
         workflow_id
     )
+    log_event("StrategyStack", "completed", {"workflow_id": workflow_id})
     return {"strategy": strategy_result}
 
 @wrap_mcp
@@ -487,9 +528,8 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
 async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5: Agentic RAG (v10.7 Fix #10: A2A enabled)"""
     context = workflow_context
-    rag_agent = RAG_SearchAgent(context)
-    # v10.7 (Fix #10): Pass the full state and return the patch
-    state_patch = await rag_agent.run_async(state)
+    state_patch = await route_to_stack("RAGStack", context, state)
+    log_event("RAGStack", "completed", {"workflow_id": state.get('metadata', {}).get('workflow_id', '')})
     return state_patch
 
 # v10.7 (Fix #5): Dummy node for parallel join
@@ -533,7 +573,6 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
     context = workflow_context
-    coordinator = DraftingGuildCoordinator(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
 
     good_bullets = [
@@ -549,19 +588,20 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
         "strategy": strategy_plan,
         "resume": state['resume']['master_resume']
     }
-    draft = await coordinator.run_async(task_context, workflow_id)
+    draft = await route_to_stack("DraftingStack", context, task_context, workflow_id)
+    log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
     return {"draft": {"sections": draft.get("final_output", {})}}
 
 async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9: Final QA with ReAct Conductor"""
     context = workflow_context
-    qa_conductor = QAConductorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     
     if isinstance(state['strategy']['strategy_plan'], dict):
         state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
     
-    validation = await qa_conductor.run_async(state, workflow_id)
+    validation = await route_to_stack("QAStack", context, state, workflow_id)
+    log_event("QAStack", "completed", {"workflow_id": workflow_id})
     return {
         "qa": {"validation_results": validation, "qa_passed": validation.get("qa_passed", False)},
         "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}}
@@ -579,10 +619,10 @@ async def run_constitutional_review(state: dict, workflow_context: WorkflowConte
 async def run_feedback_router(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 11: HIL Feedback Router"""
     context = workflow_context
-    router = HILFeedbackRouterAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     human_feedback = state.get('hil', {}).get('raw_feedback') or "Default to drafting"
-    route = await router.run_async(human_feedback, workflow_id, state)
+    route = await route_to_stack("HILStack", context, human_feedback, workflow_id, state)
+    log_event("HILStack", "completed", {"workflow_id": workflow_id, "next_step": route.get("next_step")})
     return {
         "hil": {
             "next_step": route.get("next_step"),
