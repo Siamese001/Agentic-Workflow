@@ -310,6 +310,11 @@ class QAConductorAgent(BaseAgent):
             "validate_claims": QAClaimValidatorTool(context, debug_mode),
             "validate_tone": QAToneValidatorTool(context, debug_mode),
             "validate_thematic_alignment": QAThematicAlignmentTool(context, debug_mode),
+        self.tools = {
+            # Standard QA Suite
+            "validate_claims": QAClaimValidatorTool(context, debug_mode),
+            "validate_tone": QAToneValidatorTool(context, debug_mode),
+            "validate_thematic_alignment": QAThematicAlignmentTool(context, debug_mode),
             "validate_semantic_entailment": QASemanticEntailmentTool(context, debug_mode),
             "validate_narrative_thread": QANarrativeThreadTool(context, debug_mode),
             "adversarial_review": QAAdversarialReviewerTool(context, debug_mode),
@@ -341,6 +346,10 @@ class QAConductorAgent(BaseAgent):
     async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
         self.log_info("Running ReAct QA Conductor (v10.6)...")
 
+        max_steps = self.config.agent_stacks.conductor_max_steps
+        client = self.get_model_client("react_conductor_model")
+        self.log_info("Running ReAct QA Conductor (v10.6)...")
+        
         max_steps = self.config.agent_stacks.conductor_max_steps
         client = self.get_model_client("react_conductor_model")
         
