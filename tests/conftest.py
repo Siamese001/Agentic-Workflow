@@ -110,3 +110,13 @@ def workflow_context(config: ConfigV10_7) -> WorkflowContext:
     ctx.context_budget_manager = ContextBudgetManager(config=config, model_client_getter=ctx.get_model_client)
     ctx.reset_mcp_clients()
     return ctx
+
+
+@pytest.fixture()
+def benchmark():
+    """Lightweight stand-in for pytest-benchmark's fixture."""
+
+    def _runner(func, *args, **kwargs):
+        return func(*args, **kwargs)
+
+    return _runner
