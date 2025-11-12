@@ -44,6 +44,7 @@ from core_v10_6 import (
     _format_prompt_with_defaults,
     ConstitutionalReviewResult # v10.6 (Fix #30)
 )
+from strategy_ensemble_v10_6 import StrategyCoordinatorAgent
 from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
 
@@ -513,15 +514,39 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
     context = workflow_context
     strategist = ToTStrategistAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    strategy_result = await strategist.run_async(
-        {
-            "job_title": state['job']['job_title'], 
-            "company": state['job']['company'],
-            "job_description": state['job']['raw_jd']
-        },
-        workflow_id
+    job_context = {
+        "job_title": state['job']['job_title'],
+        "company": state['job']['company'],
+        "job_description": state['job']['raw_jd']
+    }
+
+    tot_output = await strategist.run_async(job_context, workflow_id)
+
+    base_plan = tot_output.get('strategy_plan')
+    if isinstance(base_plan, dict):
+        base_plan = StrategyPlan.model_validate(base_plan)
+    elif not isinstance(base_plan, StrategyPlan):
+        raise PydanticSchemaError("ToT strategist did not return a StrategyPlan-compatible payload")
+
+    downstream_feedback = {}
+    for key in ("qa", "hil"):
+        if key in state and state[key]:
+            downstream_feedback[key] = state[key]
+
+    coordinator = StrategyCoordinatorAgent(context)
+    aggregated_plan = await coordinator.run_async(
+        job_context=job_context,
+        base_plan=base_plan,
+        workflow_id=workflow_id,
+        downstream_feedback=downstream_feedback or None
     )
-    return {"strategy": strategy_result}
+
+    strategy_payload = {
+        "strategy_plan": aggregated_plan.model_dump(),
+        "tot_branches": tot_output.get('tot_branches', [])
+    }
+
+    return {"strategy": strategy_payload}
 
 @exponential_backoff_retry()
 async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -> dict:
