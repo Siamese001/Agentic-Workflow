@@ -1,4 +1,6 @@
 import subprocess
+from unittest.mock import AsyncMock, patch
+
 import pytest
 
 
@@ -14,6 +16,15 @@ def test_no_identity_function_returns():
     assert "return input" not in result.stdout
 
 
-@pytest.mark.skip("Add 13 more mock detection tests")
-def test_placeholder():
-    pass
+@pytest.mark.asyncio
+async def test_mock_llm_client_triggers_idempotency(mock_workflow_context, mock_llm_client):
+    cached_response = {"content": "cached", "usage": {}}
+    mock_workflow_context.cache_manager.get_llm_cache = AsyncMock(return_value=cached_response)
+
+    with patch.object(mock_llm_client, "_run_idempotency_check", new_callable=AsyncMock) as run_check:
+        await mock_llm_client.chat_completion_async(
+            messages=[{"role": "user", "content": "hello"}],
+            temperature=0.2,
+        )
+
+    run_check.assert_called_once()

@@ -1,5 +1,4 @@
-# ruff: noqa
-"""Focused regression tests for the v10.6 core components.
+"""Focused regression tests for the v10.7 core components.
 
 The original suite attempted to exercise the entire orchestration graph
 which made the tests brittle and slow.  These replacements target the parts
@@ -8,23 +7,37 @@ covering the behaviours that downstream components rely on.
 """
 
 import asyncio
+import json
+import time
 from typing import Any, Dict, List
+from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
 
-from core_v10_6 import (
+from core_v10_7 import (
+    BaseAgent,
+    BaseTool,
     CacheManager,
     CircuitBreaker,
     CircuitBreakerOpenError,
-    ConfigV10_6,
+    ConfigV10_7,
     ModelAPIError,
-    StrategyPlan,
     PydanticSchemaError,
     ResponseValidator,
+    StrategyPlan,
+    WorkflowTimeoutError,
+    _format_prompt_with_defaults,
     exponential_backoff_retry,
 )
-from agent_tools_v10_6 import DraftingStrategistTool
-from agent_stacks_v10_6 import (
+from agent_orchestration_v10_7 import (
+    check_constitution,
+    get_graph_app,
+    load_dynamic_tools,
+    run_classify_complexity,
+    run_constitutional_review,
+)
+from agent_tools_v10_7 import DraftingStrategistTool
+from agent_stacks_v10_7 import (
     DraftingGuildCoordinator,
     SpecialistDraftPacket,
     EvidenceLiaisonPacket,
@@ -32,7 +45,12 @@ from agent_stacks_v10_6 import (
     EvidenceBriefRecord,
     CritiquePanelPacket,
     CritiqueFindingRecord,
+    BiasDetectorAgent,
+    RAG_SearchAgent,
+    ToTStrategistAgent,
 )
+from langgraph.errors import NodeExecutionError
+from run_batch_v10_7 import run_batch_async
 
 
 # ---------------------------------------------------------------------------
@@ -102,12 +120,12 @@ class DummyEmbeddingFunction:
 
 
 @pytest.fixture()
-def config() -> ConfigV10_6:
-    return ConfigV10_6("master_config_v10_6.json")
+def config() -> ConfigV10_7:
+    return ConfigV10_7("master_config_v10_7.json")
 
 
 @pytest.fixture()
-def cache_manager(config: ConfigV10_6) -> CacheManager:
+def cache_manager(config: ConfigV10_7) -> CacheManager:
     collection = FakeCollection()
     chroma = FakeChromaClient(collection)
     redis_client = InMemoryRedis()
@@ -120,13 +138,13 @@ def cache_manager(config: ConfigV10_6) -> CacheManager:
 # ---------------------------------------------------------------------------
 
 
-def test_config_provides_nested_sections(config: ConfigV10_6) -> None:
+def test_config_provides_nested_sections(config: ConfigV10_7) -> None:
     assert config.logging_config.log_level == "INFO"
     assert config.agent_stacks.enable_constitutional_review is True
     assert config.agent_stacks.conductor_max_steps == 10
 
 
-def test_config_missing_section_raises_attribute_error(config: ConfigV10_6) -> None:
+def test_config_missing_section_raises_attribute_error(config: ConfigV10_7) -> None:
     with pytest.raises(AttributeError):
         _ = config.this_section_does_not_exist
 
@@ -224,7 +242,7 @@ async def test_tool_contract_drafting_tool(mock_workflow_context, mock_llm_clien
     assert result["feedback"] == "Mock strategic feedback"
 
 @pytest.mark.asyncio
-async def test_tool_handles_malformed_json_v10_6(mock_workflow_context, mock_llm_client):
+async def test_tool_handles_malformed_json_v10_7(mock_workflow_context, mock_llm_client):
     mock_llm_client.chat_completion_async.return_value = {"content": "This is not JSON", "usage": {}}
     real_validator = ResponseValidator()
     mock_workflow_context.response_validator.validate.side_effect = real_validator.validate
@@ -355,9 +373,12 @@ async def test_drafting_guild_coordinator_merges_specialists(mock_workflow_conte
 @pytest.mark.asyncio
 async def test_fix_6_node_timeout(mock_workflow_context, base_state):
     mock_workflow_context.config.performance_config.workflow_node_timeout_seconds = 0.01
-    with patch('agent_stacks_v10_6.PIISanitizerAgent.run', side_effect=lambda *args, **kwargs: time.sleep(0.1)), \
-         patch('agent_stacks_v10_6.BiasDetectorAgent.run', return_value={"bias_detected": False}):
-        mock_checkpointer = AsyncMock(); mock_checkpointer.aget.return_value = None
+    with patch(
+        'agent_stacks_v10_7.PIISanitizerAgent.run',
+        side_effect=lambda *args, **kwargs: time.sleep(0.1),
+    ), patch('agent_stacks_v10_7.BiasDetectorAgent.run', return_value={"bias_detected": False}):
+        mock_checkpointer = AsyncMock()
+        mock_checkpointer.aget.return_value = None
         app = get_graph_app(mock_checkpointer, mock_workflow_context, enable_hil=False)
         with pytest.raises(NodeExecutionError) as e:
             await app.ainvoke(base_state, {"configurable": {"thread_id": "timeout-test"}})
@@ -366,9 +387,9 @@ async def test_fix_6_node_timeout(mock_workflow_context, base_state):
 
 @pytest.mark.asyncio
 async def test_fix_8_metrics_decorator(mock_workflow_context, base_state):
-    with patch('agent_stacks_v10_6.PIISanitizerAgent.run', return_value={}) as mock_pii_run, \
-         patch('agent_stacks_v10_6.BiasDetectorAgent.run', return_value={"bias_detected": False}) as mock_bias_run:
-        from agent_orchestration_v10_6 import run_sanitize_pii
+    with patch('agent_stacks_v10_7.PIISanitizerAgent.run', return_value={}), \
+         patch('agent_stacks_v10_7.BiasDetectorAgent.run', return_value={"bias_detected": False}):
+        from agent_orchestration_v10_7 import run_sanitize_pii
         await run_sanitize_pii(base_state, mock_workflow_context)
     mock_workflow_context.metrics_collector.record.assert_any_call("PIISanitizerAgent", "run_pii_sanitizer", ANY, success=True, error=None, metadata=ANY)
     mock_workflow_context.metrics_collector.record.assert_any_call("BiasDetectorAgent", "run_bias_detector", ANY, success=True, error=None, metadata=ANY)
@@ -427,7 +448,7 @@ async def test_fix_15_latency_based_routing(mock_workflow_context):
     
     agent = BaseAgent(mock_workflow_context)
     # Request the complex model
-    client = agent.get_model_client("strategy_model")
+    agent.get_model_client("strategy_model")
     
     # Verify the agent *asked* for the complex model, but got the simple one
     mock_workflow_context.get_model_client.assert_called_with("google", "gemini-flash")
@@ -562,11 +583,11 @@ async def test_fix_19_20_24_prompt_context_injection(mock_context_budget_manager
 def test_fix_7_dynamic_tool_loading(mock_workflow_context, tmp_path):
     """(v10.6 Fix #7) Test load_dynamic_tools loads a tool from a file."""
     # 1. Create a fake tool file in the temp directory
-    tool_dir = tmp_path / "generated_tools_v10_6"
+    tool_dir = tmp_path / "generated_tools_v10_7"
     tool_dir.mkdir()
     tool_file = tool_dir / "my_new_tool.py"
     tool_code = """
-from core_v10_6 import BaseTool, BaseToolOutput, track_metrics
+from core_v10_7 import BaseTool, BaseToolOutput, track_metrics
 from pydantic import BaseModel
 class MyDynamicTool(BaseTool):
     tool_name = "my_dynamic_tool"
