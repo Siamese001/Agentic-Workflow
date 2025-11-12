@@ -223,9 +223,55 @@ class HILAmbiguityReport(BaseModel):
     confidence: float = Field(..., ge=0.0, le=1.0)
     reason: str
     question_for_human: str = Field(..., description="The specific question to ask the human")
+
+
+class PersonaReviewDecision(BaseModel):
+    persona: str = Field(..., description="Persona name (e.g., Legal, Brand, SME)")
+    approval: bool = Field(..., description="True if the persona approves the change")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Model confidence in the persona decision")
+    key_concerns: List[str] = Field(default_factory=list, description="Top issues raised by the persona")
+    proposed_actions: List[str] = Field(default_factory=list, description="Specific actions requested by the persona")
+    escalation_recommended: bool = Field(
+        False,
+        description="True if the persona recommends escalating to a specialist human reviewer"
+    )
+
+
+class PersonaConsensus(BaseModel):
+    approved: bool = Field(..., description="True if consensus favors accepting the edit")
+    rationale: str = Field(..., description="Narrative summary of the negotiation outcome")
+    negotiated_actions: List[str] = Field(default_factory=list, description="Actions agreed upon during negotiation")
+    persona_votes: List[PersonaReviewDecision] = Field(
+        default_factory=list,
+        description="Detailed breakdown of each persona's vote and rationale"
+    )
+
+
+class HILFeedbackIntent(BaseModel):
+    intent_id: str = Field(..., description="Stable identifier for the clustered feedback intent")
+    summary: str = Field(..., description="Human-readable description of the intent")
+    severity: str = Field(..., description="Qualitative severity (e.g., 'critical', 'minor')")
+    recommended_owner: str = Field(..., description="Suggested owner (Strategy, Drafting, Legal, etc.)")
+    exemplar_quotes: List[str] = Field(default_factory=list, description="Representative human quotes for the intent")
+    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the clustering")
+
+
+class HILReconciliationResult(BaseModel):
+    integrated_text: str = Field(..., description="Reconciled text ready to merge into the draft")
+    change_log: List[str] = Field(default_factory=list, description="Bullet log of applied changes")
+    unresolved_questions: List[str] = Field(default_factory=list, description="Open questions that need human follow-up")
+
+
 class HILFeedbackRoute(BaseModel):
     next_step: str = Field(..., description="The graph node to jump to (e.g., 'STRATEGY', 'DRAFTING', 'INJECT_EDIT')")
     payload: Optional[str] = Field(None, description="Corrected text or data from the human")
+    intent_clusters: List[HILFeedbackIntent] = Field(default_factory=list, description="Clustered intents extracted from human feedback")
+    delegated_specialists: List[str] = Field(default_factory=list, description="List of human specialists requested for escalation")
+    persona_consensus: Optional[PersonaConsensus] = Field(None, description="Negotiated consensus between virtual personas")
+    reconciliation: Optional[HILReconciliationResult] = Field(
+        None,
+        description="Latest reconciliation result from specialist feedback"
+    )
 
 # v10.6 (Fix #30): New model for Constitutional AI
 class ConstitutionalReviewResult(BaseModel):
