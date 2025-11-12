@@ -2,25 +2,6 @@
   "schema_version": "master_config_v10.7",
   "description": "v10.7: Implements 15 new enhancements including Semantic Caching, Idempotency Validation, Concurrent Node Execution, Constitutional AI, and Agent-to-Agent (A2A) Comms.",
   "version_notes": {
-    "v10_6_changes": [
-      "SCHEMA_VERSION: Updated to v10.6",
-      "FILE_PATHS: All logs/dbs updated to v10_7 versions.",
-      "FIX_5 (Concurrency): Architecture now supports concurrent node execution.",
-      "FIX_7 (Dynamic Tooling): Added ToolRegistry config (see meta_loop_config).",
-      "FIX_8 (UI Tools): Architecture supports UI control tools (logging only).",
-      "FIX_9 (Streaming): Architecture supports real-time streaming (via main).",
-      "FIX_10 (A2A Comms): Architecture supports A2A messaging via state.",
-      "FIX_13 (Semantic Caching): Added 'enable_semantic_caching' and 'semantic_cache_similarity_threshold' to caching_config.",
-      "FIX_14 (Smarter Pruning): Added 'summarizer_model' for agentic context pruning.",
-      "FIX_15 (Cost/Latency Routing): Added 'max_complex_model_latency_ms' to performance_config.",
-      "FIX_17 (Reflection): Architecture updated for metacognitive reflection in agents.",
-      "FIX_19 (Goal-State): Architecture supports global goal state injection.",
-      "FIX_20 (Cognitive Mode): Prompts refactored to use Cognitive Modes (e.g., 'MODE: ANALYTICAL').",
-      "FIX_24 (Failure Anticipation): Architecture injects top failures into prompts.",
-      "FIX_25 (Backpressure): Added 'max_batch_queue_size' to batch_config.",
-      "FIX_29 (Idempotency): Added 'enable_idempotency_validation' and 'idempotency_validation_sample_rate' to caching_config.",
-      "FIX_30 (Constitutional AI): Added 'enable_constitutional_review' and 'constitutional_review_model'."
-    ],
     "v10_5_changes": [
       "Inherits all v10.5 features: Dynamic Model Routing, Tool Caching, Node Timeouts, Tool Generation, Agent Metrics, Self-Consistency Voting, Curriculum Prompting, PI Detection, and Semantic Validation."
     ],
@@ -51,7 +32,7 @@
     "persistent_path": "./chroma_db_v10_7",
     "default_collection_name": "resume_embeddings_v10_7",
     "semantic_cache_collection": "llm_semantic_cache_v10_7",
-    "description": "v10.6: ChromaDB for RAG and Semantic LLM Caching"
+    "description": "ChromaDB for RAG and Semantic LLM Caching"
   },
   "caching_config": {
     "enable_llm_caching": true,
@@ -104,7 +85,7 @@
     "default_master_resume": "master_resume.json"
   },
   "agent_stacks": {
-    "description": "v10.6: All stacks validated, resilient, and use centralized prompts.",
+    "description": "All stacks validated, resilient, and using centralized prompts.",
     "safety_stack_enabled": true,
     "bias_detection_threshold": 0.7,
     "pii_detection_enabled": true,
@@ -130,7 +111,7 @@
     "rag_feedback_aware": true
   },
   "model_config": {
-    "description": "v10.6: Added models for smarter pruning and constitutional review.",
+    "description": "Models for smarter pruning and constitutional review.",
     "strategy_model": {
       "provider": "google",
       "model_name": "gemini-2.5-pro",
@@ -262,8 +243,8 @@
       "temperature": 0.1
     }
   },
-  "v10_6_improvements_summary": {
-    "version": "10.6.0-full-fix-list",
+  "improvements_summary": {
+    "version": "10.7.0-full-fix-list",
     "techniques_applied": [
       {
         "technique": "Semantic Caching (Fix #13)",
