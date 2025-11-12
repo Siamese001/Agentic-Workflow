@@ -1,8 +1,12 @@
-import asyncio, types, sys, pytest
-from typing import Dict, Any, List
+import asyncio
+import pytest
+
 from core_v10_7 import (
-    CircuitBreaker, CircuitBreakerOpenError, exponential_backoff_retry, ModelAPIError,
-    CacheManager
+    CacheManager,
+    CircuitBreaker,
+    CircuitBreakerOpenError,
+    ModelAPIError,
+    exponential_backoff_retry,
 )
 
 # ---- CircuitBreaker matrix (threshold x pattern) → 12 tests
@@ -23,17 +27,18 @@ def test_circuit_breaker_opening_behavior(threshold, failures, opens):
         cb.check()  # no raise
 
 # ---- Reset semantics (6 tests)
-@pytest.mark.parametrize("threshold", [1,2,3])
+@pytest.mark.parametrize("threshold", [1, 2, 3])
 def test_circuit_breaker_resets_on_success(threshold):
     cb = CircuitBreaker(failure_threshold=threshold)
-    for _ in range(threshold): cb.record_failure()
+    for _ in range(threshold):
+        cb.record_failure()
     assert cb.is_open
     cb.record_success()
     cb.check()
     assert not cb.is_open
 
 # ---- Backoff decorator matrix (8 tests)
-@pytest.mark.parametrize("max_retries, succeed_on", [(1,1),(2,2),(3,3),(4,3)])
+@pytest.mark.parametrize("max_retries, succeed_on", [(1, 1), (2, 2), (3, 3), (4, 3)])
 def test_exponential_backoff_eventual_success(max_retries, succeed_on):
     calls = {"n": 0}
     @exponential_backoff_retry(max_retries=max_retries, initial_delay=0)
@@ -46,10 +51,11 @@ def test_exponential_backoff_eventual_success(max_retries, succeed_on):
     assert out == "ok"
     assert calls["n"] == succeed_on
 
-@pytest.mark.parametrize("max_retries", [0,1,2,3])
+@pytest.mark.parametrize("max_retries", [0, 1, 2, 3])
 def test_exponential_backoff_propagates(max_retries):
     @exponential_backoff_retry(max_retries=max_retries, initial_delay=0)
-    async def always_fail(): raise ModelAPIError("boom")
+    async def always_fail():
+        raise ModelAPIError("boom")
     with pytest.raises(ModelAPIError):
         asyncio.run(always_fail())
 

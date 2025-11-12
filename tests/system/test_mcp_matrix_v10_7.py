@@ -1,31 +1,41 @@
-import sys, types, asyncio, pytest
+import asyncio
+import sys
+import types
 from typing import Any, Dict
+
+import pytest
+
 from core_v10_7 import (
-    MCPClientStub,
-    _parse_mcp_client_specs,
-    _instantiate_mcp_client,
-    MCPClientSpec,
-    MCPClientInitializationError,
-    wrap_mcp,
-    WorkflowContext,
     BaseTool,
+    MCPClientInitializationError,
+    MCPClientSpec,
+    MCPClientStub,
+    WorkflowContext,
+    _instantiate_mcp_client,
+    _parse_mcp_client_specs,
+    wrap_mcp,
 )
 from agent_orchestration_v10_7 import load_dynamic_tools
 from agent_tools_v10_7 import resolve_mcp_client
 
-def make_broken_module(class_name="BrokenClient"):
+def make_broken_module(class_name: str = "BrokenClient") -> str:
     module_name = f"mod_{class_name.lower()}"
     module = types.ModuleType(module_name)
     class BrokenClient:
-        def __init__(self, **_): raise RuntimeError("boom")
+        def __init__(self, **_: Any) -> None:
+            raise RuntimeError("boom")
     setattr(module, class_name, BrokenClient)
     sys.modules[module_name] = module
     return module_name
 
 # ---- Spec parsing (8 tests)
-@pytest.mark.parametrize("bad", [ ["not-mapping"], [{"name":"x","parameters":["nope"]}] ])
+@pytest.mark.parametrize(
+    "bad",
+    [["not-mapping"], [{"name": "x", "parameters": ["nope"]}]],
+)
 def test_parse_mcp_client_specs_rejects(bad):
-    with pytest.raises(ValueError): _parse_mcp_client_specs(bad)  # type: ignore[arg-type]
+    with pytest.raises(ValueError):
+        _parse_mcp_client_specs(bad)  # type: ignore[arg-type]
 
 def test_instantiate_missing_class_raises_attribute_error():
     module_name = "failing_mcp_module"
@@ -60,16 +70,21 @@ def test_workflow_context_initialises_default_stub(workflow_context: WorkflowCon
     assert isinstance(clients["default_stub"], MCPClientStub)
 
 # ---- Required vs optional failure (6 tests)
-@pytest.mark.parametrize("optional,expect_stub", [(True,True),(False,False)])
+@pytest.mark.parametrize("optional,expect_stub", [(True, True), (False, False)])
 def test_required_optional_failure_paths(workflow_context: WorkflowContext, optional, expect_stub):
     module_name = make_broken_module()
     clients_cfg = workflow_context.config._config["mcp_config"]["clients"]
     clients_cfg.append({
-        "name": "broken", "provider":"custom","module":module_name,"class_name":"BrokenClient",
-        "parameters":{"note":"x"}, "optional": optional
+        "name": "broken",
+        "provider": "custom",
+        "module": module_name,
+        "class_name": "BrokenClient",
+        "parameters": {"note": "x"},
+        "optional": optional,
     })
     try:
-        workflow_context._load_mcp_config(); workflow_context.reset_mcp_clients()
+        workflow_context._load_mcp_config()
+        workflow_context.reset_mcp_clients()
         if expect_stub:
             clients = workflow_context.ensure_mcp_clients()
             stub = clients["broken"]
@@ -90,19 +105,24 @@ def test_wrap_mcp_initialises_clients(workflow_context: WorkflowContext):
     workflow_context.wrap_mcp_nodes = True
     workflow_context.reset_mcp_clients()
     @wrap_mcp
-    async def noop(state, workflow_context): return state
+    async def noop(state, workflow_context):
+        return state
     out = asyncio.run(noop({}, workflow_context))
     assert out == {}
     assert "default_stub" in workflow_context.mcp_clients
 
 def test_wrap_mcp_force_sync(workflow_context: WorkflowContext, monkeypatch: pytest.MonkeyPatch):
-    calls={"n":0}
-    def fake(): calls["n"]+=1; return {}
+    calls = {"n": 0}
+
+    def fake():
+        calls["n"] += 1
+        return {}
     monkeypatch.setattr(workflow_context, "ensure_mcp_clients", fake)
     @wrap_mcp(force=True)
-    def handler(state, workflow_context): return state
+    def handler(state, workflow_context):
+        return state
     assert handler({}, workflow_context) == {}
-    assert calls["n"]==1
+    assert calls["n"] == 1
 
 
 def test_wrap_mcp_sync_skips_when_disabled(workflow_context: WorkflowContext, monkeypatch: pytest.MonkeyPatch):
@@ -126,7 +146,8 @@ def test_wrap_mcp_sync_skips_when_disabled(workflow_context: WorkflowContext, mo
 def test_dynamic_tool_loader_respects_requirements(tmp_path, workflow_context: WorkflowContext):
     workflow_context.wrap_mcp_nodes = True
     workflow_context.reset_mcp_clients()
-    tool_dir = tmp_path / "generated_tools_v10_7"; tool_dir.mkdir()
+    tool_dir = tmp_path / "generated_tools_v10_7"
+    tool_dir.mkdir()
     code = """
 from core_v10_7 import BaseTool, track_metrics
 class MCPSampleTool(BaseTool):
