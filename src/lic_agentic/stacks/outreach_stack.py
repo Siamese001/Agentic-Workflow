@@ -8,10 +8,6 @@ from ..agents.k3_message_architect import MessageArchitect
 from ..agents.k5_cta_agent import CTAAgent
 from ..agents.k6_signature_agent import SignatureAgent
 from ..agents.k7_validator_agent import ValidationResult, ValidatorAgent
-from ..mcp import MCPClient
-from ..rag import MCPSelector, register_discovered_tools
-from ..telemetry import PolicyController
-from ..orchestration import Conductor
 from ..reasoning.toggles import ReasoningToggles
 from ..safety.bias_auditor import audit_bias
 from ..safety.pii_sanitizer import sanitize_pii
@@ -31,18 +27,12 @@ class OutreachStack:
     def __init__(self, toggles: ReasoningToggles):
         self.toggles = toggles
         self.router = RouterAgent()
-        self.conductor = Conductor()
-        self.architect = MessageArchitect(toggles, conductor=self.conductor)
+        self.architect = MessageArchitect(toggles)
         self.cta = CTAAgent()
         self.signature = SignatureAgent()
         self.validator = ValidatorAgent()
-        self.policy = PolicyController()
-        self.mcp_client = MCPClient()
-        self.mcp_selector = MCPSelector(self.mcp_client, self.policy)
-        register_discovered_tools(self.architect.tool_registry, self.mcp_selector, 'web_search', {'min_trust': 'medium'})
 
     def run(self, inputs: StackInputs) -> dict:
-        self.conductor.reset()
         finding = detect_injection(inputs.prompt)
         if finding.is_injection and finding.severity == "high":
             return {"end": "safety_block", "reason": finding.rationale}
@@ -51,38 +41,9 @@ class OutreachStack:
         bias = audit_bias(sanitized_inputs)
         route = self.router.route(sanitized_inputs, bias)
 
-        max_calls = max(1, int(round(self.policy.budget_multiplier * 6)))
-        package = self.architect.compose(sanitized_inputs, route, max_calls=max_calls)
-        draft = self.cta.adjust(package.draft, route)
+        draft = self.architect.compose(sanitized_inputs, route)
+        draft = self.cta.adjust(draft, route)
         draft = self.signature.attach(draft, route)
 
-        def _retry(
-            qa_result, current_draft, current_artifacts
-        ) -> tuple[str, dict[str, str]] | None:
-            refreshed = self.architect.compose(sanitized_inputs, route)
-            refreshed_draft = self.cta.adjust(refreshed.draft, route)
-            refreshed_draft = self.signature.attach(refreshed_draft, route)
-            if refreshed_draft == current_draft:
-                return None
-            return refreshed_draft, refreshed.artifacts
-
-        verdict: ValidationResult = self.validator.check(
-            draft,
-            route,
-            pii_map,
-            artifacts=package.artifacts,
-            retry_fn=_retry,
-            token_count=len(draft.split()),
-            latency_ms=package.total_latency_ms,
-        )
-        policy_update = self.policy.update(
-            latency_p95_ms=package.total_latency_ms,
-            qa_pass_rate=self.validator.metrics.pass_rate(),
-            token_drift=self.validator.metrics.token_drift(),
-        )
-        self.toggles = self.toggles.with_updates(
-            tot_branches=policy_update.tot_branches,
-            temperature_cap=policy_update.temperature_cap,
-        )
-        self.architect.update_toggles(self.toggles)
-        return {"draft": verdict.final_draft, "verdict": verdict}
+        verdict: ValidationResult = self.validator.check(draft, route, pii_map)
+        return {"draft": draft, "verdict": verdict}

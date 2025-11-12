@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional
+from typing import Dict, List, Optional
 
 
 @dataclass
@@ -21,9 +21,8 @@ class EvidenceRecord:
 class EvidenceRegistry:
     """Track evidence artifacts referenced in outreach drafts."""
 
-    def __init__(self, id_factory: Callable[[], str] | None = None) -> None:
+    def __init__(self) -> None:
         self._records: Dict[str, EvidenceRecord] = {}
-        self._id_factory = id_factory or (lambda: str(uuid.uuid4()))
 
     def upsert(
         self,
@@ -36,7 +35,7 @@ class EvidenceRegistry:
         used_in_section: str,
         artifact_id: Optional[str] = None,
     ) -> str:
-        record_id = artifact_id or self._id_factory()
+        record_id = artifact_id or str(uuid.uuid4())
         self._records[record_id] = EvidenceRecord(
             artifact_id=record_id,
             scope=scope,

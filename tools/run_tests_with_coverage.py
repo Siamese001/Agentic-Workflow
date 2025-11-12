@@ -11,11 +11,9 @@ falls below the requested threshold.
 from __future__ import annotations
 
 import argparse
-import dis
 import pathlib
 import sys
 import trace
-import types
 from typing import Iterable, Set, Tuple
 
 import pytest
@@ -31,34 +29,20 @@ DEFAULT_TEST_TARGETS = [
 
 
 def _iter_code_lines(path: pathlib.Path) -> Set[int]:
-    """Return executable line numbers for *path* based on bytecode analysis."""
-
-    source = path.read_text(encoding="utf-8")
-    try:
-        module_code = compile(source, str(path), "exec")
-    except SyntaxError:
-        return set()
-
+    """Return the line numbers that should count toward coverage for *path*."""
     code_lines: Set[int] = set()
-
-    def _visit(code_obj: types.CodeType) -> None:
-        for _, lineno in dis.findlinestarts(code_obj):
-            if lineno:
-                code_lines.add(lineno)
-        for const in code_obj.co_consts:
-            if isinstance(const, types.CodeType):
-                _visit(const)
-
-    _visit(module_code)
+    with path.open("r", encoding="utf-8") as handle:
+        for lineno, raw_line in enumerate(handle, start=1):
+            stripped = raw_line.strip()
+            if not stripped or stripped.startswith("#"):
+                continue
+            code_lines.add(lineno)
     return code_lines
 
 
-def _collect_coverage(
-    counts: dict[Tuple[str, int], int]
-) -> Tuple[int, int, list[tuple[pathlib.Path, int, int]]]:
+def _collect_coverage(counts: dict[Tuple[str, int], int]) -> Tuple[int, int]:
     total_lines = 0
     executed_lines = 0
-    per_file: list[tuple[pathlib.Path, int, int]] = []
     normalized_counts: dict[pathlib.Path, Set[int]] = {}
 
     for (filename, lineno), hit_count in counts.items():
@@ -75,11 +59,9 @@ def _collect_coverage(
             continue
         total_lines += len(lines)
         executed = normalized_counts.get(file_path.resolve(), set())
-        executed_count = len(lines & executed)
-        executed_lines += executed_count
-        per_file.append((file_path, executed_count, len(lines)))
+        executed_lines += len(lines & executed)
 
-    return executed_lines, total_lines, per_file
+    return executed_lines, total_lines
 
 
 def main(argv: Iterable[str] | None = None) -> int:
@@ -95,11 +77,6 @@ def main(argv: Iterable[str] | None = None) -> int:
         nargs=argparse.REMAINDER,
         help="Arguments forwarded to pytest (prefix with '--' to separate)",
     )
-    parser.add_argument(
-        "--report-missing",
-        action="store_true",
-        help="Print per-file coverage breakdown to stderr",
-    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     tracer = trace.Trace(count=True, trace=False, ignoredirs=[sys.prefix, str(ROOT / "tests")])
@@ -114,20 +91,10 @@ def main(argv: Iterable[str] | None = None) -> int:
     if exit_code != 0:
         return exit_code
 
-    executed, total, per_file = _collect_coverage(tracer.results().counts)
+    executed, total = _collect_coverage(tracer.results().counts)
     coverage_pct = (executed / total * 100.0) if total else 100.0
 
     print(f"Coverage for src/lic_agentic: {coverage_pct:.2f}% ({executed}/{total} lines)")
-    if args.report_missing:
-        for file_path, executed_lines, total_lines in sorted(
-            per_file,
-            key=lambda entry: (entry[1] / entry[2] if entry[2] else 1.0),
-        ):
-            percentage = (executed_lines / total_lines * 100.0) if total_lines else 100.0
-            print(
-                f"  {file_path.relative_to(ROOT)}: {percentage:5.1f}% ({executed_lines}/{total_lines})",
-                file=sys.stderr,
-            )
     if coverage_pct < args.threshold:
         print(
             f"ERROR: coverage {coverage_pct:.2f}% is below the required {args.threshold:.2f}%",

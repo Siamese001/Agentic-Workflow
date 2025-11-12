@@ -4,10 +4,18 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Iterable
 
-_HIGH_RISK_KEYWORDS: Iterable[str] = tuple(
-    "ignore previous instructions|exfiltrate|password|disable safety|run shell".split("|")
+_HIGH_RISK_KEYWORDS: Iterable[str] = (
+    "ignore previous instructions",
+    "exfiltrate",
+    "password",
+    "disable safety",
+    "run shell",
 )
-_MEDIUM_RISK_KEYWORDS: Iterable[str] = tuple("bypass|override|forget the rules".split("|"))
+_MEDIUM_RISK_KEYWORDS: Iterable[str] = (
+    "bypass",
+    "override",
+    "forget the rules",
+)
 
 
 @dataclass(frozen=True)
