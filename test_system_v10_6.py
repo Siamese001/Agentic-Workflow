@@ -202,8 +202,15 @@ def test_cache_manager_reads_exact_cache(cache_manager: CacheManager) -> None:
             response={"content": "cached"},
         )
     )
-    assert mock_llm_client.chat_completion_async.call_count == 3
-    assert len(result) == 3
+    result = asyncio.run(
+        cache_manager.get_llm_cache(
+            provider="openai",
+            model="gpt-test",
+            prompt="hello",
+            temperature=0.1,
+        )
+    )
+    assert result == {"content": "cached"}
 
 # --- SECTION 7: Contract Enforcement (v10.6: Fixed async bugs) ---
 @pytest.mark.asyncio
