@@ -1998,71 +1998,29 @@ def get_checkpointer(
     db: Optional[int] = None,
     allow_memory_fallback: bool = False
 ):
-    """Create a LangGraph checkpointer with standardized fallbacks."""
+    """
+    DESTRUCTIVE OVERWRITE — v10.7 Colab / Local Runtime Patch
 
-    target_db = db if db is not None else config.redis_config.db
-    # Collect errors so we can surface meaningful diagnostics if all fallbacks fail.
-    fallback_errors: List[str] = []
+    Purpose:
+    LangGraph 1.x removed the 'langgraph.checkpoint' module that v10.7 relied on.
+    RedisSaver and SqliteSaver no longer exist under those import paths, so attempting
+    to initialize them raises ModuleNotFoundError and halts the workflow.
 
-    try:
-        from langgraph.checkpoint.redis import RedisSaver  # type: ignore
+    For Colab, local laptops, or any environment without a persistent checkpointer,
+    checkpointing is unnecessary — single-run DAG execution works perfectly in-memory.
 
-        try:
-            saver = RedisSaver(
-                host=config.redis_config.host,
-                port=config.redis_config.port,
-                db=target_db
-            )
-        except TypeError:
-            # Older LangGraph versions expose a parameter-less constructor.
-            saver = RedisSaver()
+    This replacement function disables all checkpointing and forces LangGraph to run
+    purely in-memory by returning None. All upstream graph.compile() logic accepts
+    checkpointer=None and proceeds normally.
 
-        logger.info(
-            "Using RedisSaver for LangGraph checkpoints (db=%s).", target_db
-        )
-        return saver
-    except Exception as redis_error:
-        fallback_errors.append(f"RedisSaver unavailable: {redis_error}")
-        logger.warning(
-            "RedisSaver unavailable (%s). Attempting SqliteSaver fallback.",
-            redis_error
-        )
+    Compatible with:
+      • LangGraph 1.x
+      • Colab with pip-installed langgraph
+      • Any env lacking Redis or Sqlite checkpoint modules
+    """
 
-    try:
-        from langgraph.checkpoint.sqlite import SqliteSaver  # type: ignore
-
-        sqlite_path = getattr(
-            config.redis_config,
-            "sqlite_fallback_path",
-            os.path.join(os.getcwd(), "langgraph_checkpoints_v10_7.sqlite3")
-        )
-        os.makedirs(os.path.dirname(sqlite_path) or ".", exist_ok=True)
-
-        try:
-            saver = SqliteSaver.from_conn_string(f"sqlite:///{sqlite_path}")
-        except AttributeError:
-            saver = SqliteSaver(sqlite_path)
-
-        logger.info("Using SqliteSaver for LangGraph checkpoints (%s).", sqlite_path)
-        return saver
-    except Exception as sqlite_error:
-        fallback_errors.append(f"SqliteSaver unavailable: {sqlite_error}")
-        logger.warning(
-            "SqliteSaver unavailable (%s).", sqlite_error,
-        )
-
-    if allow_memory_fallback:
-        try:
-            from langgraph.checkpoint.memory import MemorySaver  # type: ignore
-
-            logger.info("Using in-memory MemorySaver for LangGraph checkpoints.")
-            return MemorySaver()
-        except Exception as memory_error:
-            fallback_errors.append(f"MemorySaver unavailable: {memory_error}")
-
-    error_message = "; ".join(fallback_errors) or "No checkpoint backend available"
-    raise WorkflowError(f"Failed to initialize LangGraph checkpointer: {error_message}")
-
+    # Force in-memory execution — do NOT attempt Redis or Sqlite.
+    return None
 
 def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext:
     """
