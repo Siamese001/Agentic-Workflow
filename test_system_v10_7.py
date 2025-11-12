@@ -19,12 +19,16 @@ from core_v10_7 import (
     MCPClientStub,
     MetricsCollector,
     ModelAPIError,
+    MCPClientInitializationError,
     ProposedRulesLoader,
     PromptTemplateManager,
     ResponseValidator,
     SemanticValidator,
     WorkflowContext,
     exponential_backoff_retry,
+    _instantiate_mcp_client,
+    _parse_mcp_client_specs,
+    MCPClientSpec,
     wrap_mcp,
 )
 from agent_tools_v10_7 import resolve_mcp_client
@@ -288,6 +292,49 @@ def test_cache_manager_sets_tool_cache(cache_manager: CacheManager) -> None:
 # ---------------------------------------------------------------------------
 
 
+def test_parse_mcp_client_specs_rejects_non_mappings() -> None:
+    with pytest.raises(ValueError):
+        _ = _parse_mcp_client_specs(["not-a-mapping"])  # type: ignore[list-item]
+
+
+def test_parse_mcp_client_specs_requires_parameter_mapping() -> None:
+    with pytest.raises(ValueError):
+        _parse_mcp_client_specs(
+            [
+                {
+                    "name": "broken",
+                    "parameters": ["not", "a", "dict"],
+                }
+            ]
+        )
+
+
+def test_instantiate_mcp_client_missing_class_raises() -> None:
+    module_name = "failing_mcp_module"
+    module = types.ModuleType(module_name)
+    sys.modules[module_name] = module
+
+    spec = MCPClientSpec(
+        name="missing",
+        provider="custom",
+        module=module_name,
+        class_name="DoesNotExist",
+    )
+
+    try:
+        with pytest.raises(AttributeError):
+            _instantiate_mcp_client(spec)
+    finally:
+        sys.modules.pop(module_name, None)
+
+
+def test_instantiate_mcp_client_unknown_provider_returns_stub() -> None:
+    spec = MCPClientSpec(name="mystery", provider="unknown")
+    client = _instantiate_mcp_client(spec)
+    assert isinstance(client, MCPClientStub)
+    assert client.parameters["provider"] == "unknown"
+
+
 def test_workflow_context_initialises_mcp_stub(workflow_context: WorkflowContext) -> None:
     workflow_context.wrap_mcp_nodes = True
     workflow_context.reset_mcp_clients()
@@ -330,6 +377,25 @@ def test_resolve_mcp_client_optional_returns_stub(workflow_context: WorkflowCont
     assert tool.get_mcp_client("nonexistent") is stub
 
 
+def test_resolve_mcp_client_required_raises_without_fallback(workflow_context: WorkflowContext) -> None:
+    workflow_context.config._config["mcp_config"]["fallback_mode"] = "error"
+    workflow_context._load_mcp_config()
+    workflow_context.reset_mcp_clients()
+
+    class DummyTool(BaseTool):
+        tool_name = "dummy-required"
+
+        async def _run_async_internal(
+            self, tool_input: Dict[str, Any], workflow_id: str
+        ) -> Dict[str, Any]:
+            return {}
+
+    tool = DummyTool(workflow_context)
+
+    with pytest.raises(KeyError):
+        resolve_mcp_client(tool, "nonexistent", optional=False)
+
+
 def test_dynamic_tool_loader_respects_mcp_requirements(workflow_context: WorkflowContext, tmp_path) -> None:
     workflow_context.wrap_mcp_nodes = True
     workflow_context.reset_mcp_clients()
@@ -360,4 +426,134 @@ class MCPSampleTool(BaseTool):
     tool_instance = dynamic_tools["mcp_sample_tool"]
     result = asyncio.run(tool_instance._run_async_internal({}, "wf"))
     assert result["status"] == "Default stub MCP client for testing"
+
+
+def test_optional_mcp_client_failure_falls_back_to_stub(
+    workflow_context: WorkflowContext,
+) -> None:
+    module_name = "optional_failure_mcp"
+    module = types.ModuleType(module_name)
+
+    class BrokenClient:
+        def __init__(self, **_kwargs):
+            raise RuntimeError("boom")
+
+    module.BrokenClient = BrokenClient
+    sys.modules[module_name] = module
+
+    workflow_context.config._config["mcp_config"]["fallback_mode"] = "error"
+    workflow_context.config._config["mcp_config"]["clients"].append(
+        {
+            "name": "optional_broken",
+            "provider": "custom",
+            "module": module_name,
+            "class_name": "BrokenClient",
+            "parameters": {"note": "from optional"},
+            "optional": True,
+        }
+    )
+    try:
+        workflow_context._load_mcp_config()
+        workflow_context.reset_mcp_clients()
+        clients = workflow_context.ensure_mcp_clients()
+
+        assert "optional_broken" in clients
+        stub = clients["optional_broken"]
+        assert isinstance(stub, MCPClientStub)
+        assert stub.parameters["note"] == "from optional"
+        assert "error" in stub.parameters
+    finally:
+        sys.modules.pop(module_name, None)
+
+
+def test_required_mcp_client_failure_raises_error(
+    workflow_context: WorkflowContext,
+) -> None:
+    module_name = "required_failure_mcp"
+    module = types.ModuleType(module_name)
+
+    class BrokenClient:
+        def __init__(self, **_kwargs):
+            raise RuntimeError("boom")
+
+    module.BrokenClient = BrokenClient
+    sys.modules[module_name] = module
+
+    workflow_context.config._config["mcp_config"]["fallback_mode"] = "error"
+    workflow_context.config._config["mcp_config"]["clients"].append(
+        {
+            "name": "required_broken",
+            "provider": "custom",
+            "module": module_name,
+            "class_name": "BrokenClient",
+            "parameters": {"note": "from required"},
+            "optional": False,
+        }
+    )
+
+    try:
+        workflow_context._load_mcp_config()
+        workflow_context.reset_mcp_clients()
+
+        with pytest.raises(MCPClientInitializationError):
+            workflow_context.ensure_mcp_clients()
+    finally:
+        sys.modules.pop(module_name, None)
+
+
+def test_get_mcp_client_returns_fallback_stub_when_configured(
+    workflow_context: WorkflowContext,
+) -> None:
+    workflow_context.config._config["mcp_config"]["fallback_mode"] = "stub"
+    workflow_context.config._config["mcp_config"]["fallback_parameters"] = {"source": "test"}
+    workflow_context._load_mcp_config()
+    workflow_context.reset_mcp_clients()
+
+    missing = workflow_context.get_mcp_client("auto_stub")
+    assert isinstance(missing, MCPClientStub)
+    assert missing.parameters["source"] == "test"
+
+
+def test_wrap_mcp_sync_force_initialises_clients(
+    workflow_context: WorkflowContext, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workflow_context.wrap_mcp_nodes = False
+    calls = {"count": 0}
+
+    def fake_ensure() -> Dict[str, Any]:
+        calls["count"] += 1
+        return {}
+
+    monkeypatch.setattr(workflow_context, "ensure_mcp_clients", fake_ensure)
+
+    @wrap_mcp(force=True)
+    def handler(state: Dict[str, Any], workflow_context: WorkflowContext) -> Dict[str, Any]:
+        return state
+
+    result = handler({}, workflow_context)
+
+    assert result == {}
+    assert calls["count"] == 1
+
+
+def test_wrap_mcp_sync_skips_when_disabled(
+    workflow_context: WorkflowContext, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    workflow_context.wrap_mcp_nodes = False
+    calls = {"count": 0}
+
+    def fake_ensure() -> Dict[str, Any]:
+        calls["count"] += 1
+        return {}
+
+    monkeypatch.setattr(workflow_context, "ensure_mcp_clients", fake_ensure)
+
+    @wrap_mcp
+    def handler(state: Dict[str, Any], workflow_context: WorkflowContext) -> Dict[str, Any]:
+        return state
+
+    result = handler({}, workflow_context)
+
+    assert result == {}
+    assert calls["count"] == 0
 
