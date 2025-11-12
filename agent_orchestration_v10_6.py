@@ -31,7 +31,7 @@ import asyncio
 import os
 import importlib.util
 import inspect
-from typing import Dict, Any, List, Callable, Awaitable
+from typing import Dict, Any, List, Callable, Awaitable, Tuple
 from functools import wraps, partial
 
 # v10.6: Import from new core
@@ -107,20 +107,26 @@ logger = logging.getLogger("agent_orchestration_v10_6")
 # v10.6: RUNTIME DECORATORS (Fix #6)
 # ============================================================================
 
-def get_timeout_decorator(workflow_context: WorkflowContext):
-    """v10.6 (Fix #6): Creates a decorator bound to a specific context."""
+def get_timeout_decorator(timeout_seconds: float):
+    """v10.6 (Fix #6): Creates a decorator bound to an explicit timeout."""
+
+    timeout_seconds = float(timeout_seconds)
+
     def decorator(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
         @wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
-            timeout_seconds = (
-                workflow_context.config.performance_config.workflow_node_timeout_seconds
-            )
             try:
-                return await asyncio.wait_for(func(*args, **kwargs), timeout=float(timeout_seconds))
+                return await asyncio.wait_for(func(*args, **kwargs), timeout=timeout_seconds)
             except AsyncTimeoutError as e:
-                logger.error(f"!!! NODE TIMEOUT: {func.__name__} exceeded {timeout_seconds}s !!!")
-                raise WorkflowTimeoutError(f"Node {func.__name__} timed out after {timeout_seconds}s") from e
+                logger.error(
+                    f"!!! NODE TIMEOUT: {func.__name__} exceeded {timeout_seconds}s !!!"
+                )
+                raise WorkflowTimeoutError(
+                    f"Node {func.__name__} timed out after {timeout_seconds}s"
+                ) from e
+
         return wrapper
+
     return decorator
 
 # ============================================================================
@@ -297,27 +303,45 @@ class QAConductorAgent(BaseAgent):
     
     def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
         super().__init__(context, debug_mode)
-        self.tools = {
+        static_tools: List[Tuple[str, BaseTool]] = [
             # Standard QA Suite
-            "validate_claims": QAClaimValidatorTool(context, debug_mode),
-            "validate_tone": QAToneValidatorTool(context, debug_mode),
-            "validate_thematic_alignment": QAThematicAlignmentTool(context, debug_mode),
-            "validate_semantic_entailment": QASemanticEntailmentTool(context, debug_mode),
-            "validate_narrative_thread": QANarrativeThreadTool(context, debug_mode),
-            "adversarial_review": QAAdversarialReviewerTool(context, debug_mode),
-            "validate_jd_skills": QAJDSkillsValidatorTool(context, debug_mode),
-            "validate_signal_score": QASignalScoreValidatorTool(context, debug_mode),
-            "validate_bias": QABiasDetectorTool(context, debug_mode),
-            "validate_tenure": QATenureValidatorTool(context, debug_mode),
-            "find_missed_opportunities": QAMissedOpportunityTool(context, debug_mode),
-            "validate_word_count": QAWordCountValidatorTool(context, debug_mode),
+            ("validate_claims", QAClaimValidatorTool(context, debug_mode)),
+            ("validate_tone", QAToneValidatorTool(context, debug_mode)),
+            ("validate_thematic_alignment", QAThematicAlignmentTool(context, debug_mode)),
+            ("validate_semantic_entailment", QASemanticEntailmentTool(context, debug_mode)),
+            ("validate_narrative_thread", QANarrativeThreadTool(context, debug_mode)),
+            ("adversarial_review", QAAdversarialReviewerTool(context, debug_mode)),
+            ("validate_jd_skills", QAJDSkillsValidatorTool(context, debug_mode)),
+            ("validate_signal_score", QASignalScoreValidatorTool(context, debug_mode)),
+            ("validate_bias", QABiasDetectorTool(context, debug_mode)),
+            ("validate_tenure", QATenureValidatorTool(context, debug_mode)),
+            ("find_missed_opportunities", QAMissedOpportunityTool(context, debug_mode)),
+            ("validate_word_count", QAWordCountValidatorTool(context, debug_mode)),
             # v10.6 (Fix #8): Add UI tools
-            "ui_update_element": UIUpdateElementTool(context, debug_mode),
-            "ui_fire_event": UIFireEventTool(context, debug_mode)
-        }
-        
+            ("ui_update_element", UIUpdateElementTool(context, debug_mode)),
+            ("ui_fire_event", UIFireEventTool(context, debug_mode)),
+        ]
+
+        self.tools: Dict[str, BaseTool] = {}
+        for tool_name, tool_instance in static_tools:
+            if tool_name in self.tools:
+                logger.error(
+                    "Duplicate static QA tool name detected during initialization: %s",
+                    tool_name,
+                )
+                raise WorkflowError(
+                    f"Duplicate static QA tool detected: {tool_name}"
+                )
+            self.tools[tool_name] = tool_instance
+
         # v10.6 (Fix #7): Load dynamic tools
         dynamic_tools = load_dynamic_tools(context, debug_mode)
+        for tool_name in dynamic_tools:
+            if tool_name in self.tools:
+                logger.warning(
+                    "Dynamic tool '%s' overrides an existing QA tool. Previous instance will be replaced.",
+                    tool_name,
+                )
         self.tools.update(dynamic_tools)
         
         self.tool_schemas = [t.get_schema() for t in self.tools.values()]
@@ -347,8 +371,6 @@ class QAConductorAgent(BaseAgent):
         strategy_plan = state['strategy']['strategy_plan']
         if isinstance(strategy_plan, dict):
             strategy_plan = StrategyPlan.model_validate(strategy_plan)
-        strategy_json = strategy_plan.model_dump_json()
-        
         # v10.6 (Fix #17, #19, #20, #24): Inject Goal, Failures, Mode, Reflection
         react_prompt = f"""
 {client.goal_state}
@@ -739,7 +761,10 @@ def get_graph_app(checkpointer: Any, workflow_context: WorkflowContext, enable_h
 
     workflow = StateGraph(dict)
 
-    timeout_wrapper = get_timeout_decorator(workflow_context)
+    timeout_seconds = (
+        workflow_context.config.performance_config.workflow_node_timeout_seconds
+    )
+    timeout_wrapper = get_timeout_decorator(timeout_seconds)
 
     def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, Any]]]):
         workflow.add_node(name, timeout_wrapper(func))
