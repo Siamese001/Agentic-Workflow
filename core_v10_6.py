@@ -1736,6 +1736,7 @@ class PromptContext:
     prompts: Optional[GeneratedPrompts] = None 
 @dataclass
 class BulletContext:
+    bundle: Dict[str, Any] = field(default_factory=dict)
     generated_bullets: List[Dict] = field(default_factory=list)
     critiqued_bullets: List[Dict] = field(default_factory=list)
 @dataclass
@@ -1817,7 +1818,30 @@ class MainGraphState:
             data['hil']['ambiguity_report'] = self.hil.ambiguity_report.model_dump()
         if self.qa.constitutional_review: # v10.6 (Fix #30)
             data['qa']['constitutional_review'] = self.qa.constitutional_review.model_dump()
-            
+
+        if self.bullets.bundle:
+            bundle_copy = json.loads(json.dumps(self.bullets.bundle))
+            bullets_section = data.setdefault('bullets', {})
+            bullets_section['bundle'] = bundle_copy
+            if not bullets_section.get('generated_bullets'):
+                bullets_section['generated_bullets'] = [
+                    {
+                        "text": item.get("text"),
+                        "experience": item.get("experience", {}),
+                    }
+                    for item in bundle_copy.get("items", [])
+                ]
+            if not bullets_section.get('critiqued_bullets'):
+                bullets_section['critiqued_bullets'] = [
+                    {
+                        "text": item.get("text"),
+                        "experience": item.get("experience", {}),
+                        "critique": item.get("critique", {}),
+                    }
+                    for item in bundle_copy.get("items", [])
+                    if item.get("critique")
+                ]
+
         return data
     
     @classmethod
@@ -1828,7 +1852,40 @@ class MainGraphState:
         # Deserialize dataclasses
         state.resume = ResumeContext(**data.get("resume", {}))
         state.job = JobContext(**data.get("job", {}))
-        state.bullets = BulletContext(**data.get("bullets", {}))
+        bullet_data = data.get("bullets", {}) or {}
+        bundle_data = bullet_data.get("bundle")
+        if not isinstance(bundle_data, dict):
+            bundle_data = {}
+
+        generated_bullets = bullet_data.get("generated_bullets", []) or []
+        critiqued_bullets = bullet_data.get("critiqued_bullets", []) or []
+
+        # Backwards compatibility: derive legacy lists from bundle when not provided.
+        if bundle_data and not generated_bullets:
+            generated_bullets = [
+                {
+                    "text": item.get("text"),
+                    "experience": item.get("experience", {}),
+                }
+                for item in bundle_data.get("items", [])
+            ]
+
+        if bundle_data and not critiqued_bullets:
+            critiqued_bullets = [
+                {
+                    "text": item.get("text"),
+                    "experience": item.get("experience", {}),
+                    "critique": item.get("critique", {}),
+                }
+                for item in bundle_data.get("items", [])
+                if item.get("critique")
+            ]
+
+        state.bullets = BulletContext(
+            bundle=bundle_data,
+            generated_bullets=generated_bullets,
+            critiqued_bullets=critiqued_bullets,
+        )
         state.draft = DraftContext(**data.get("draft", {}))
         state.artifacts = ArtifactContext(**data.get("artifacts", {}))
         state.metadata = MetadataContext(**data.get("metadata", {}))
