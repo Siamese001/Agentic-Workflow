@@ -1,3 +1,11 @@
+# --- Vendor path bootstrap for Codex offline environment ---
+import sys
+import os
+
+VENDOR_PATH = os.path.join(os.path.dirname(__file__), "vendor")
+if VENDOR_PATH not in sys.path:
+    sys.path.insert(0, VENDOR_PATH)
+
 # File: agent_orchestration_v10_7.py
 # Version: 10.7 (Refactored - CORRECTED)
 #
@@ -31,6 +39,7 @@ import asyncio
 import os
 import importlib.util
 import inspect
+import time
 from typing import Dict, Any, List, Callable, Awaitable, Tuple, Optional
 from functools import wraps, partial
 
@@ -145,14 +154,19 @@ def get_timeout_decorator(timeout_seconds: float):
     def decorator(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
         @wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
+            func_name = getattr(func, "__name__", None)
+            if func_name is None and hasattr(func, "func"):
+                func_name = getattr(func.func, "__name__", "partial")
+            if func_name is None:
+                func_name = repr(func)
             try:
                 return await asyncio.wait_for(func(*args, **kwargs), timeout=timeout_seconds)
             except AsyncTimeoutError as e:
                 logger.error(
-                    f"!!! NODE TIMEOUT: {func.__name__} exceeded {timeout_seconds}s !!!"
+                    f"!!! NODE TIMEOUT: {func_name} exceeded {timeout_seconds}s !!!"
                 )
                 raise WorkflowTimeoutError(
-                    f"Node {func.__name__} timed out after {timeout_seconds}s"
+                    f"Node {func_name} timed out after {timeout_seconds}s"
                 ) from e
 
         return wrapper
@@ -425,12 +439,42 @@ async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> di
     context = workflow_context
     context.complexity = state.get('metadata', {}).get('complexity', 'unknown')
     pii_agent = PIISanitizerAgent(context)
-    sanitized = await asyncio.to_thread(pii_agent.run, state['resume']['master_resume'])
-    
+    collector = getattr(context, "metrics_collector", None)
+
+    async def _invoke_with_metrics(callable_obj, agent_name: str, task_name: str, *args):
+        decorated = hasattr(callable_obj, "__wrapped__")
+        start = time.perf_counter()
+        try:
+            result = await asyncio.to_thread(callable_obj, *args)
+        except Exception as exc:
+            if collector and hasattr(collector, "record") and not decorated:
+                collector.record(
+                    agent_name,
+                    task_name,
+                    (time.perf_counter() - start) * 1000,
+                    success=False,
+                    error=str(exc),
+                    metadata={},
+                )
+            raise
+        else:
+            if collector and hasattr(collector, "record") and not decorated:
+                collector.record(
+                    agent_name,
+                    task_name,
+                    (time.perf_counter() - start) * 1000,
+                    success=True,
+                    error=None,
+                    metadata={},
+                )
+            return result
+
+    sanitized = await _invoke_with_metrics(pii_agent.run, "PIISanitizerAgent", "run_pii_sanitizer", state['resume']['master_resume'])
+
     bias_agent = BiasDetectorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    bias_result = await asyncio.to_thread(bias_agent.run, state['job']['raw_jd'], workflow_id)
-    
+    bias_result = await _invoke_with_metrics(bias_agent.run, "BiasDetectorAgent", "run_bias_detector", state['job']['raw_jd'], workflow_id)
+
     return {
         "resume": {"sanitized_resume": sanitized},
         "safety": {"bias_detected": bias_result['bias_detected']}
@@ -611,8 +655,30 @@ async def run_constitutional_review(state: dict, workflow_context: WorkflowConte
     """Node 9.5: Constitutional Review (v10.7 Fix #30)"""
     context = workflow_context
     agent = ConstitutionalReviewerAgent(context)
-    draft_text = json.dumps(state['artifacts']['artifacts']['final_resume'])
-    result = await agent.run_async(draft_text, state['metadata']['workflow_id'])
+    artifacts_bucket = state.get('artifacts', {})
+    final_resume: Any = None
+    if isinstance(artifacts_bucket, dict):
+        inner = artifacts_bucket.get('artifacts', {})
+        if isinstance(inner, dict):
+            final_resume = inner.get('final_resume')
+
+    if final_resume is None:
+        draft_state = state.get('draft', {})
+        if isinstance(draft_state, dict):
+            final_resume = draft_state.get('final_draft')
+            if final_resume is None:
+                sections = draft_state.get('sections', {})
+                if isinstance(sections, dict):
+                    summary = sections.get('summary', {})
+                    if isinstance(summary, dict):
+                        final_resume = summary.get('draft')
+
+    if final_resume is None:
+        final_resume = state.get('resume', {}).get('master_resume', {})
+
+    draft_text = json.dumps(final_resume)
+    workflow_id = state.get('metadata', {}).get('workflow_id', context.workflow_id)
+    result = await agent.run_async(draft_text, workflow_id)
     return {"qa": {"constitutional_review": result.model_dump()}}
 
 # HIL Nodes
