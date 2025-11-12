@@ -304,32 +304,42 @@ class ContextBudgetManager:
             into its essential points. The output *must* be less than {max_tokens * 3} characters.
             DOCUMENT:
             {document}
-            
+
             SUMMARY:
             """
-            
+
             response = await client.chat_completion_async(
                 messages=[{"role": "user", "content": prompt}],
                 temperature=self.config.model_config.summarizer_model.temperature
             )
-            pruned_doc = response["content"]
-            
-            # Final fallback truncation
-            if self._estimate_tokens(pruned_doc) > max_tokens:
-                pruned_doc = pruned_doc[:max_tokens*4]
-                
-            return f"{pruned_doc}\n\n[... DOCUMENT PRUNED (AGENTIC) ...]"
-            
-        except Exception as e:
-            self.logger.error(f"Agentic pruning failed: {e}. Falling back to truncation.")
-            return self_prune_truncate(document, max_tokens)
+            pruned_doc = response.get("content")
 
-    def _prune_truncate(self, document: str, max_tokens: int) -> str:
+            if not isinstance(pruned_doc, str) or not pruned_doc.strip():
+                raise TypeError("Summarizer returned empty or non-string content")
+
+            pruned_tokens = self._estimate_tokens(pruned_doc)
+
+            # Final fallback truncation if the summarizer still overshoots the budget
+            if pruned_tokens > max_tokens:
+                self.logger.warning(
+                    "Agentic pruning output still above budget (%s > %s tokens). Applying truncation fallback.",
+                    pruned_tokens,
+                    max_tokens,
+                )
+                return self._prune_truncate(pruned_doc, max_tokens, label="AGENTIC_TRUNCATION")
+
+            return f"{pruned_doc}\n\n[... DOCUMENT PRUNED (AGENTIC) ...]"
+
+        except Exception as e:
+            self.logger.error("Agentic pruning failed: %s. Falling back to truncation.", e, exc_info=True)
+            return self._prune_truncate(document, max_tokens, label="AGENTIC_FAILURE")
+
+    def _prune_truncate(self, document: str, max_tokens: int, *, label: str = "TRUNCATION") -> str:
         """v10.6: Simple truncation fallback."""
         max_chars = max_tokens * 4
         pruned_doc = document[:max_chars]
         self.logger.warning(f"Context truncated to {max_tokens} tokens.")
-        return f"{pruned_doc}\n\n[... DOCUMENT PRUNED (TRUNCATION) ...]"
+        return f"{pruned_doc}\n\n[... DOCUMENT PRUNED ({label}) ...]"
     
     async def prune(self, document: str, max_tokens: Optional[int] = None) -> str:
         if max_tokens is None:
