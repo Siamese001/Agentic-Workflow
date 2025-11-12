@@ -32,7 +32,7 @@ import os
 import importlib.util
 import inspect
 from typing import Dict, Any, List, Callable, Awaitable
-from functools import wraps
+from functools import wraps, partial
 
 # v10.6: Import from new core
 from core_v10_6 import (
@@ -45,10 +45,6 @@ from core_v10_6 import (
     ConstitutionalReviewResult # v10.6 (Fix #30)
 )
 from langgraph.graph import StateGraph, END
-try:
-    from langgraph.checkpoint.redis import RedisSaver
-except ImportError:
-    from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
 from langgraph.errors import GraphRecursionError
 
 # Make HIL import conditional for environment compatibility
@@ -107,22 +103,18 @@ from agent_tools_v10_6 import (
 # v10.6: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_6")
 
-# v10.6: Define context for module-level functions
-context: WorkflowContext = None # type: ignore
-
 # ============================================================================
 # v10.6: RUNTIME DECORATORS (Fix #6)
 # ============================================================================
 
-def get_timeout_decorator():
-    """v10.6 (Fix #6): Creates a decorator that fetches timeout from context."""
+def get_timeout_decorator(workflow_context: WorkflowContext):
+    """v10.6 (Fix #6): Creates a decorator bound to a specific context."""
     def decorator(func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
         @wraps(func)
         async def wrapper(*args, **kwargs) -> Any:
-            if context is None:
-                raise WorkflowError("Graph context not initialized before node execution")
-            
-            timeout_seconds = context.config.performance_config.workflow_node_timeout_seconds
+            timeout_seconds = (
+                workflow_context.config.performance_config.workflow_node_timeout_seconds
+            )
             try:
                 return await asyncio.wait_for(func(*args, **kwargs), timeout=float(timeout_seconds))
             except AsyncTimeoutError as e:
@@ -310,11 +302,6 @@ class QAConductorAgent(BaseAgent):
             "validate_claims": QAClaimValidatorTool(context, debug_mode),
             "validate_tone": QAToneValidatorTool(context, debug_mode),
             "validate_thematic_alignment": QAThematicAlignmentTool(context, debug_mode),
-        self.tools = {
-            # Standard QA Suite
-            "validate_claims": QAClaimValidatorTool(context, debug_mode),
-            "validate_tone": QAToneValidatorTool(context, debug_mode),
-            "validate_thematic_alignment": QAThematicAlignmentTool(context, debug_mode),
             "validate_semantic_entailment": QASemanticEntailmentTool(context, debug_mode),
             "validate_narrative_thread": QANarrativeThreadTool(context, debug_mode),
             "adversarial_review": QAAdversarialReviewerTool(context, debug_mode),
@@ -348,11 +335,7 @@ class QAConductorAgent(BaseAgent):
 
         max_steps = self.config.agent_stacks.conductor_max_steps
         client = self.get_model_client("react_conductor_model")
-        self.log_info("Running ReAct QA Conductor (v10.6)...")
-        
-        max_steps = self.config.agent_stacks.conductor_max_steps
-        client = self.get_model_client("react_conductor_model")
-        
+
         pruned_draft = await self.budget_manager.prune(
             json.dumps(state['draft']['sections']), 4000
         )
@@ -462,10 +445,10 @@ When finished, output:
 
 # --- NODE DEFINITIONS (v10.6) ---
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_sanitize_pii(state: dict) -> dict:
+async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 0: Sanitize PII"""
+    context = workflow_context
     context.complexity = state.get('metadata', {}).get('complexity', 'unknown')
     pii_agent = PIISanitizerAgent(context)
     sanitized = await asyncio.to_thread(pii_agent.run, state['resume']['master_resume'])
@@ -479,10 +462,10 @@ async def run_sanitize_pii(state: dict) -> dict:
         "safety": {"bias_detected": bias_result['bias_detected']}
     }
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_detect_prompt_injection(state: dict) -> dict:
+async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 0.5: Detect Prompt Injection"""
+    context = workflow_context
     if not context.config.agent_stacks.enable_prompt_injection_detection:
         return {"safety": {"injection_detected": False}}
         
@@ -492,20 +475,20 @@ async def run_detect_prompt_injection(state: dict) -> dict:
     
     return {"safety": {"injection_detected": jd_result['injection_detected']}}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_classify_complexity(state: dict) -> dict:
+async def run_classify_complexity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 1: Classify Complexity"""
+    context = workflow_context
     classifier = QueryComplexityClassifier(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     complexity = await classifier.run_async(state['job']['raw_jd'], workflow_id)
     context.complexity = complexity
     return {"metadata": {"complexity": complexity}}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_tot_strategy(state: dict) -> dict:
+async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 2: ToT strategy"""
+    context = workflow_context
     strategist = ToTStrategistAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     strategy_result = await strategist.run_async(
@@ -518,10 +501,10 @@ async def run_tot_strategy(state: dict) -> dict:
     )
     return {"strategy": strategy_result}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_detect_ambiguity(state: dict) -> dict:
+async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 3: Proactive HIL ambiguity check"""
+    context = workflow_context
     if not context.config.agent_stacks.enable_hil_stack:
         return {"hil": {"ambiguity_report": {"ambiguity_detected": False, "confidence": 1.0, "reason": "HIL disabled", "question_for_human": ""}}}
         
@@ -545,10 +528,10 @@ def prepare_parallel_run(state: dict) -> dict:
     logger.info("Forking graph for parallel RAG and Prompt Engineering.")
     return {}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_prompt_engineering(state: dict) -> dict:
+async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 4: Generate dynamic prompts"""
+    context = workflow_context
     prompt_agent = PromptEngineerAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     strategy_plan = state['strategy']['strategy_plan']
@@ -559,10 +542,10 @@ async def run_prompt_engineering(state: dict) -> dict:
     prompts_result = await prompt_agent.run_async(strategy_plan, complexity, workflow_id)
     return {"prompts": {"prompts": prompts_result.get("prompts").model_dump()}}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_rag_stack(state: dict) -> dict:
+async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5: Agentic RAG (v10.6 Fix #10: A2A enabled)"""
+    context = workflow_context
     rag_agent = RAG_SearchAgent(context)
     # v10.6 (Fix #10): Pass the full state and return the patch
     state_patch = await rag_agent.run_async(state)
@@ -574,10 +557,10 @@ def join_rag_and_prompt(state: dict) -> dict:
     logger.info("Joining graph from parallel RAG and Prompt Engineering.")
     return {}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_generate_bullets(state: dict) -> dict:
+async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 6: Generate bullets (4-step)"""
+    context = workflow_context
     bullet_gen = AsyncBulletGeneratorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     prompt = state['prompts']['prompts'].get('bullet_generation_prompt', "Generate bullets")
@@ -591,10 +574,10 @@ async def run_generate_bullets(state: dict) -> dict:
         all_bullets.extend([{"text": b, "experience": exp} for b in bullets])
     return {"bullets": {"generated_bullets": all_bullets}}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_critique_bullets(state: dict) -> dict:
+async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 7: Critique bullets"""
+    context = workflow_context
     critique_agent = AsyncBulletCritiqueAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
@@ -602,10 +585,10 @@ async def run_critique_bullets(state: dict) -> dict:
     critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
     return {"bullets": {"critiqued_bullets": critiques}}
 
-@get_timeout_decorator()
 @exponential_backoff_retry()
-async def run_drafting(state: dict) -> dict:
+async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
+    context = workflow_context
     conductor = ReActConductorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     
@@ -621,15 +604,14 @@ async def run_drafting(state: dict) -> dict:
     draft = await conductor.run_async(task_context, workflow_id)
     return {"draft": {"sections": draft.get("final_output", {})}}
 
-@get_timeout_decorator()
-@exponential_backoff_retry()
-async def run_qa_validation(state: dict) -> dict:
+async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9: Final QA with ReAct Conductor"""
+    context = workflow_context
     qa_conductor = QAConductorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     
     if isinstance(state['strategy']['strategy_plan'], dict):
-            state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
+        state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
     
     validation = await qa_conductor.run_async(state, workflow_id)
     return {
@@ -637,27 +619,24 @@ async def run_qa_validation(state: dict) -> dict:
         "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}}
     }
 
-@get_timeout_decorator()
-@exponential_backoff_retry()
-async def run_constitutional_review(state: dict) -> dict:
+async def run_constitutional_review(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9.5: Constitutional Review (v10.6 Fix #30)"""
+    context = workflow_context
     agent = ConstitutionalReviewerAgent(context)
     draft_text = json.dumps(state['artifacts']['artifacts']['final_resume'])
     result = await agent.run_async(draft_text, state['metadata']['workflow_id'])
     return {"qa": {"constitutional_review": result.model_dump()}}
 
 # HIL Nodes
-@get_timeout_decorator()
-@exponential_backoff_retry()
-async def run_feedback_router(state: dict) -> dict:
+async def run_feedback_router(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 11: HIL Feedback Router"""
+    context = workflow_context
     router = HILFeedbackRouterAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     last_human_message = "Default to drafting" # Stub
     route = await router.run_async(last_human_message, workflow_id)
     return {"hil": {"next_step": route.get("next_step"), "payload": route.get("payload")}}
 
-@get_timeout_decorator()
 def human_in_the_loop_node(state: dict) -> dict:
     """Node 10: HIL Pause"""
     if not HIL_AVAILABLE:
@@ -671,9 +650,9 @@ def human_in_the_loop_node(state: dict) -> dict:
         logger.error(f"HIL node failed: {e}")
     return {}
 
-@get_timeout_decorator()
-async def run_inject_hil_edit(state: dict) -> dict:
+async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 12: Inject HIL Edits"""
+    _ = workflow_context
     logger.info("Injecting human-in-the-loop edits...")
     payload = state.get("hil", {}).get("payload")
     if not payload:
@@ -701,7 +680,7 @@ def check_ambiguity(state: dict) -> str:
         return "pause_for_human"
     return "continue_workflow"
 
-def check_bullets_passed(state: dict) -> str:
+def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     """Node 7 conditional: Check bullet quality and retries"""
     critiques = state.get('bullets', {}).get('critiqued_bullets', [])
     if not critiques:
@@ -710,7 +689,7 @@ def check_bullets_passed(state: dict) -> str:
     if avg_score >= 7.0:
         return "bullets_passed"
     retries = state.get('metadata', {}).get('retries', {}).get('bullet_retries', 0)
-    if retries < context.config.agent_stacks.max_local_retries:
+    if retries < workflow_context.config.agent_stacks.max_local_retries:
         if 'metadata' not in state: state['metadata'] = {}
         if 'retries' not in state['metadata']: state['metadata']['retries'] = {}
         state['metadata']['retries']['bullet_retries'] = retries + 1
@@ -752,35 +731,37 @@ def route_feedback(state: dict) -> str:
 # LANGGRAPH WORKFLOW BUILDER (Design-Aligned v10.6: Fix #5, #30)
 # ============================================================================
 
-def get_graph_app(checkpointer: RedisSaver, workflow_context: WorkflowContext, enable_hil: bool = True):
+def get_graph_app(checkpointer: Any, workflow_context: WorkflowContext, enable_hil: bool = True):
     """Build complete LangGraph workflow with v10.6 resilience."""
-    
-    global context
-    context = workflow_context
-    
+
     global HIL_AVAILABLE
-    HIL_AVAILABLE = HIL_AVAILABLE and enable_hil and context.config.agent_stacks.enable_hil_stack
-    
+    HIL_AVAILABLE = HIL_AVAILABLE and enable_hil and workflow_context.config.agent_stacks.enable_hil_stack
+
     workflow = StateGraph(dict)
-    
+
+    timeout_wrapper = get_timeout_decorator(workflow_context)
+
+    def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, Any]]]):
+        workflow.add_node(name, timeout_wrapper(func))
+
     # --- ADD NODES (v10.6: Added new nodes) ---
-    workflow.add_node("run_sanitize_pii", run_sanitize_pii) # 0
-    workflow.add_node("run_detect_prompt_injection", run_detect_prompt_injection) # 0.5
-    workflow.add_node("run_classify_complexity", run_classify_complexity) # 1
-    workflow.add_node("run_tot_strategy", run_tot_strategy) # 2
-    workflow.add_node("run_detect_ambiguity", run_detect_ambiguity) # 3
+    add_async_node("run_sanitize_pii", partial(run_sanitize_pii, workflow_context=workflow_context)) # 0
+    add_async_node("run_detect_prompt_injection", partial(run_detect_prompt_injection, workflow_context=workflow_context)) # 0.5
+    add_async_node("run_classify_complexity", partial(run_classify_complexity, workflow_context=workflow_context)) # 1
+    add_async_node("run_tot_strategy", partial(run_tot_strategy, workflow_context=workflow_context)) # 2
+    add_async_node("run_detect_ambiguity", partial(run_detect_ambiguity, workflow_context=workflow_context)) # 3
     workflow.add_node("prepare_parallel_run", prepare_parallel_run) # 3.5 (Fix #5)
-    workflow.add_node("run_prompt_engineering", run_prompt_engineering) # 4
-    workflow.add_node("run_rag_stack", run_rag_stack) # 5
+    add_async_node("run_prompt_engineering", partial(run_prompt_engineering, workflow_context=workflow_context)) # 4
+    add_async_node("run_rag_stack", partial(run_rag_stack, workflow_context=workflow_context)) # 5
     workflow.add_node("join_rag_and_prompt", join_rag_and_prompt) # 5.5 (Fix #5)
-    workflow.add_node("run_generate_bullets", run_generate_bullets) # 6
-    workflow.add_node("run_critique_bullets", run_critique_bullets) # 7
-    workflow.add_node("run_drafting", run_drafting) # 8
-    workflow.add_node("run_qa_validation", run_qa_validation) # 9
-    workflow.add_node("run_constitutional_review", run_constitutional_review) # 9.5 (Fix #30)
+    add_async_node("run_generate_bullets", partial(run_generate_bullets, workflow_context=workflow_context)) # 6
+    add_async_node("run_critique_bullets", partial(run_critique_bullets, workflow_context=workflow_context)) # 7
+    add_async_node("run_drafting", partial(run_drafting, workflow_context=workflow_context)) # 8
+    add_async_node("run_qa_validation", partial(run_qa_validation, workflow_context=workflow_context)) # 9
+    add_async_node("run_constitutional_review", partial(run_constitutional_review, workflow_context=workflow_context)) # 9.5 (Fix #30)
     workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
-    workflow.add_node("run_feedback_router", run_feedback_router) # 11
-    workflow.add_node("run_inject_hil_edit", run_inject_hil_edit) # 12
+    add_async_node("run_feedback_router", partial(run_feedback_router, workflow_context=workflow_context)) # 11
+    add_async_node("run_inject_hil_edit", partial(run_inject_hil_edit, workflow_context=workflow_context)) # 12
     
     # --- CONNECT NODES (v10.6: Rerouted for new nodes) ---
     workflow.set_entry_point("run_sanitize_pii")
@@ -810,7 +791,7 @@ def get_graph_app(checkpointer: RedisSaver, workflow_context: WorkflowContext, e
     workflow.add_edge("run_generate_bullets", "run_critique_bullets") # 6 -> 7
     
     workflow.add_conditional_edges(
-        "run_critique_bullets", check_bullets_passed,
+        "run_critique_bullets", partial(check_bullets_passed, workflow_context=workflow_context),
         {"bullets_passed": "run_drafting", "retry_bullets": "run_generate_bullets", "global_replanner": END}
     ) # 7 -> 8 or 6 or END
     
