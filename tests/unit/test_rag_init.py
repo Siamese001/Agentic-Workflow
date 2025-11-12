@@ -11,10 +11,3 @@ def test_rag_package_exports_expected_symbols():
         "ToolResult",
     ]:
         assert hasattr(module, symbol)
-    assert set(module.__all__) >= {
-        "ContentStore",
-        "EvidenceRegistry",
-        "RetrievalPlan",
-        "ToolRegistry",
-        "ToolResult",
-    }

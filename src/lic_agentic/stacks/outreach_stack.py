@@ -41,27 +41,9 @@ class OutreachStack:
         bias = audit_bias(sanitized_inputs)
         route = self.router.route(sanitized_inputs, bias)
 
-        package = self.architect.compose(sanitized_inputs, route)
-        draft = self.cta.adjust(package.draft, route)
+        draft = self.architect.compose(sanitized_inputs, route)
+        draft = self.cta.adjust(draft, route)
         draft = self.signature.attach(draft, route)
 
-        def _retry(
-            qa_result, current_draft, current_artifacts
-        ) -> tuple[str, dict[str, str]] | None:
-            refreshed = self.architect.compose(sanitized_inputs, route)
-            refreshed_draft = self.cta.adjust(refreshed.draft, route)
-            refreshed_draft = self.signature.attach(refreshed_draft, route)
-            if refreshed_draft == current_draft:
-                return None
-            return refreshed_draft, refreshed.artifacts
-
-        verdict: ValidationResult = self.validator.check(
-            draft,
-            route,
-            pii_map,
-            artifacts=package.artifacts,
-            retry_fn=_retry,
-            token_count=len(draft.split()),
-            latency_ms=package.total_latency_ms,
-        )
-        return {"draft": verdict.final_draft, "verdict": verdict}
+        verdict: ValidationResult = self.validator.check(draft, route, pii_map)
+        return {"draft": draft, "verdict": verdict}
