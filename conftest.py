@@ -7,6 +7,9 @@ from typing import Any, Dict, List
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
 from unittest.mock import AsyncMock, MagicMock
 
@@ -15,6 +18,8 @@ import pytest
 # -------------------------------------------------------------------
 # LANGGRAPH COMPAT SHIM (ensures tests run without actual langgraph)
 # -------------------------------------------------------------------
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -39,6 +44,7 @@ from core_v10_6 import (
 )
 >>>>>>> main
 >>>>>>> main
+>>>>>>> main
 if "langgraph" not in sys.modules:
     langgraph_module = types.ModuleType("langgraph")
     graph_module = types.ModuleType("langgraph.graph")
@@ -49,7 +55,11 @@ if "langgraph" not in sys.modules:
 <<<<<<< HEAD
     class StateGraph:  # minimal stub
 =======
+<<<<<<< HEAD
+    class StateGraph:  # minimal stub
+=======
     class StateGraph:  # type: ignore
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
         def __init__(self, _state_type):
@@ -67,6 +77,9 @@ if "langgraph" not in sys.modules:
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
         def add_conditional_edges(self, *_args, **_kwargs):
             return None
@@ -114,7 +127,10 @@ if "langgraph" not in sys.modules:
 
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     graph_module.StateGraph = StateGraph
@@ -128,6 +144,9 @@ if "langgraph" not in sys.modules:
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
     class NodeExecutionError(Exception):
         ...
@@ -136,8 +155,11 @@ if "langgraph" not in sys.modules:
     errors_module.NodeExecutionError = NodeExecutionError
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 =======
     errors_module.GraphRecursionError = GraphRecursionError
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 
@@ -150,6 +172,9 @@ if "langgraph" not in sys.modules:
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
 
 # -------------------------------------------------------------------
@@ -218,6 +243,8 @@ def pytest_pyfunc_call(pyfuncitem):
         kwargs = {n: pyfuncitem.funcargs[n] for n in argnames}
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 =======
 from agent_orchestration_v10_6 import (
     check_constitution,
@@ -278,6 +305,7 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool:
         kwargs = {name: pyfuncitem.funcargs[name] for name in argnames or ()}
 >>>>>>> main
 >>>>>>> main
+>>>>>>> main
         asyncio.run(pyfuncitem.obj(**kwargs))
         return True
     return False
@@ -286,6 +314,9 @@ def pytest_pyfunc_call(pyfuncitem: pytest.Function) -> bool:
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
 # -------------------------------------------------------------------
 # LLM CLIENT FIXTURE
@@ -302,12 +333,15 @@ def mock_llm_client():
     client.chat_completion_async = AsyncMock(side_effect=_chat_completion_async)
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 =======
 @pytest.fixture()
 def mock_llm_client() -> MagicMock:
     client = MagicMock(name="MockLLMClient")
     client.chat_completion_async = AsyncMock(name="chat_completion_async")
     client._run_idempotency_check = AsyncMock(name="_run_idempotency_check")
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     client.goal_state = "Deliver standout resume artifacts"
@@ -319,6 +353,9 @@ def mock_llm_client() -> MagicMock:
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
 # -------------------------------------------------------------------
 # CHROMADB CLIENT FIXTURE
@@ -327,9 +364,12 @@ def mock_llm_client() -> MagicMock:
 def mock_chromadb_client():
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 =======
 @pytest.fixture()
 def mock_chromadb_client() -> MagicMock:
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     collection = FakeCollection()
@@ -342,6 +382,9 @@ def mock_chromadb_client() -> MagicMock:
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
 # -------------------------------------------------------------------
 # WORKFLOW CONTEXT FIXTURE (FULL v10.7)
@@ -362,6 +405,8 @@ def mock_workflow_context(mock_llm_client, mock_chromadb_client):
     # Mock Redis
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 =======
 @pytest.fixture()
 def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: MagicMock) -> WorkflowContext:
@@ -377,6 +422,7 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
 
 >>>>>>> main
 >>>>>>> main
+>>>>>>> main
     redis_client = MagicMock(name="MockRedisClient")
     redis_client.get = MagicMock(return_value=None)
     redis_client.setex = MagicMock()
@@ -385,6 +431,9 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
     embedding = DummyEmbeddingFunction()
     cache_manager = CacheManager(config, redis_client, mock_chromadb_client, embedding)
@@ -402,6 +451,8 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
     metrics.metrics = []
 
     semantic = SemanticValidator(metrics)
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -425,6 +476,7 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
     semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
 >>>>>>> main
 >>>>>>> main
+>>>>>>> main
 
     context = WorkflowContext(
         config=config,
@@ -438,6 +490,9 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
         response_validator=response_validator,
         metrics_collector=metrics,
@@ -453,6 +508,8 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
         config=config,
         model_client_getter=context.get_model_client
     )
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -478,6 +535,7 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
     context.semantic_validator = semantic_validator
 >>>>>>> main
 >>>>>>> main
+>>>>>>> main
 
     return context
 
@@ -485,12 +543,17 @@ def mock_workflow_context(mock_llm_client: MagicMock, mock_chromadb_client: Magi
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
 # -------------------------------------------------------------------
 # GENERIC TEST STATE
 # -------------------------------------------------------------------
 @pytest.fixture()
 def base_state():
+<<<<<<< HEAD
+=======
 <<<<<<< HEAD
 =======
 =======
@@ -535,6 +598,7 @@ def mock_context_budget_manager() -> Any:
 def base_state() -> Dict[str, Any]:
 >>>>>>> main
 >>>>>>> main
+>>>>>>> main
     strategy_plan = {
         "strategy_name": "AI Leadership",
         "focus_areas": ["innovation", "team building"],
@@ -552,7 +616,11 @@ def base_state() -> Dict[str, Any]:
 <<<<<<< HEAD
         "coordinator_summary": "Ready for drafting"
 =======
+<<<<<<< HEAD
+        "coordinator_summary": "Ready for drafting"
+=======
         "coordinator_summary": "Ready for drafting",
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     }
@@ -579,7 +647,11 @@ def base_state() -> Dict[str, Any]:
 <<<<<<< HEAD
                             "Increased throughput by 30%",
 =======
+<<<<<<< HEAD
+                            "Increased throughput by 30%",
+=======
                             "Increased model throughput by 30%",
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
                         ],
@@ -595,6 +667,9 @@ def base_state() -> Dict[str, Any]:
 <<<<<<< HEAD
 =======
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
 >>>>>>> main
 # -------------------------------------------------------------------
 # CONTEXT BUDGET MANAGER FIXTURE
@@ -620,11 +695,14 @@ def mock_config(tmp_path):
     # Override paths for isolation
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
 =======
 @pytest.fixture()
 def mock_config(tmp_path: Path) -> ConfigV10_6:
     config = ConfigV10_6("master_config_v10_6.json")
 
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     feedback_log = tmp_path / "feedback_log.jsonl"

@@ -2,6 +2,9 @@
 """Focused regression tests for the v10.7 core components.
 =======
 <<<<<<< HEAD
+"""Focused regression tests for the v10.7 core components.
+=======
+<<<<<<< HEAD
 <<<<<<<< HEAD:tests/regression/test_system_v10_7_regression.py
 """Focused regression tests for the v10.7 core components.
 ========
@@ -10,6 +13,7 @@
 >>>>>>>> main:test_system_v10_6.py
 =======
 """Focused regression tests for the v10.7 core components.
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 
@@ -250,7 +254,11 @@ def test_cache_manager_reads_exact_cache(cache_manager: CacheManager) -> None:
 <<<<<<< HEAD
 # --- SECTION 7: Contract Enforcement (legacy: Fixed async bugs) ---
 =======
+<<<<<<< HEAD
+# --- SECTION 7: Contract Enforcement (legacy: Fixed async bugs) ---
+=======
 # --- SECTION 7: Contract Enforcement (v10.6: Fixed async bugs) ---
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 @pytest.mark.asyncio
@@ -277,7 +285,11 @@ async def test_tool_handles_malformed_json_v10_7(mock_workflow_context, mock_llm
 <<<<<<< HEAD
 # legacy TEST FIX: Removed `async def` from sync test
 =======
+<<<<<<< HEAD
+# legacy TEST FIX: Removed `async def` from sync test
+=======
 # v10.6 TEST FIX: Removed `async def` from sync test
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 def test_contract_agent_logs_feedback(mock_workflow_context):
@@ -300,11 +312,19 @@ def test_contract_agent_logs_feedback(mock_workflow_context):
 # ============================================================================
 # SECTION 13: v10.5 Fix #2 - DYNAMIC ROUTING TESTS (legacy: Updated)
 =======
+<<<<<<< HEAD
+# --- SECTION 8-12: (Preserved, no legacy changes needed) ---
+# ... (Tests for Batch, Chaos, Meta, Determinism, Orchestration) ...
+
+# ============================================================================
+# SECTION 13: v10.5 Fix #2 - DYNAMIC ROUTING TESTS (legacy: Updated)
+=======
 # --- SECTION 8-12: (Preserved, no v10.6 changes needed) ---
 # ... (Tests for Batch, Chaos, Meta, Determinism, Orchestration) ...
 
 # ============================================================================
 # SECTION 13: v10.5 Fix #2 - DYNAMIC ROUTING TESTS (v10.6: Updated)
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 # ============================================================================
@@ -332,7 +352,11 @@ async def test_fix_2_dynamic_model_routing_in_agent(mock_workflow_context, mock_
 <<<<<<< HEAD
 # SECTION 15: v10.5 Fix #1, #15 - TOOL CACHING & FEEDBACK (legacy: Updated)
 =======
+<<<<<<< HEAD
+# SECTION 15: v10.5 Fix #1, #15 - TOOL CACHING & FEEDBACK (legacy: Updated)
+=======
 # SECTION 15: v10.5 Fix #1, #15 - TOOL CACHING & FEEDBACK (v10.6: Updated)
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 # ============================================================================
@@ -422,7 +446,11 @@ async def test_drafting_guild_coordinator_merges_specialists(mock_workflow_conte
 <<<<<<< HEAD
 # SECTION 16-19: (Preserved, no legacy changes needed)
 =======
+<<<<<<< HEAD
+# SECTION 16-19: (Preserved, no legacy changes needed)
+=======
 # SECTION 16-19: (Preserved, no v10.6 changes needed)
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 # ============================================================================
@@ -435,7 +463,11 @@ async def test_drafting_guild_coordinator_merges_specialists(mock_workflow_conte
 <<<<<<< HEAD
 # SECTION 20: v10.5 Fix #6, #8 - RESILIENCE & OPS (legacy: Fixed async bugs)
 =======
+<<<<<<< HEAD
+# SECTION 20: v10.5 Fix #6, #8 - RESILIENCE & OPS (legacy: Fixed async bugs)
+=======
 # SECTION 20: v10.5 Fix #6, #8 - RESILIENCE & OPS (v10.6: Fixed async bugs)
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 # ============================================================================
@@ -478,11 +510,19 @@ async def test_fix_13_semantic_cache_hit(mock_workflow_context, mock_chromadb_cl
 async def test_fix_13_semantic_cache_hit(mock_workflow_context, mock_chromadb_client):
     """(legacy Fix #13) Test CacheManager uses ChromaDB on an exact miss."""
 =======
+<<<<<<< HEAD
+# SECTION 21: legacy Fix #13 - SEMANTIC CACHING TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_13_semantic_cache_hit(mock_workflow_context, mock_chromadb_client):
+    """(legacy Fix #13) Test CacheManager uses ChromaDB on an exact miss."""
+=======
 # SECTION 21: v10.6 Fix #13 - SEMANTIC CACHING TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_13_semantic_cache_hit(mock_workflow_context, mock_chromadb_client):
     """(v10.6 Fix #13) Test CacheManager uses ChromaDB on an exact miss."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     cache_manager = mock_workflow_context.cache_manager
@@ -519,11 +559,19 @@ async def test_fix_14_agentic_pruning(mock_workflow_context, mock_llm_client):
 async def test_fix_14_agentic_pruning(mock_workflow_context, mock_llm_client):
     """(legacy Fix #14) Test ContextBudgetManager uses summarizer model."""
 =======
+<<<<<<< HEAD
+# SECTION 22: legacy Fix #14 - AGENTIC PRUNING TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_14_agentic_pruning(mock_workflow_context, mock_llm_client):
+    """(legacy Fix #14) Test ContextBudgetManager uses summarizer model."""
+=======
 # SECTION 22: v10.6 Fix #14 - AGENTIC PRUNING TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_14_agentic_pruning(mock_workflow_context, mock_llm_client):
     """(v10.6 Fix #14) Test ContextBudgetManager uses summarizer model."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     manager = mock_workflow_context.context_budget_manager
@@ -552,11 +600,19 @@ async def test_fix_15_latency_based_routing(mock_workflow_context):
 async def test_fix_15_latency_based_routing(mock_workflow_context):
     """(legacy Fix #15) Test get_model_client falls back to simple model."""
 =======
+<<<<<<< HEAD
+# SECTION 23: legacy Fix #15 - LATENCY-BASED ROUTING TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_15_latency_based_routing(mock_workflow_context):
+    """(legacy Fix #15) Test get_model_client falls back to simple model."""
+=======
 # SECTION 23: v10.6 Fix #15 - LATENCY-BASED ROUTING TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_15_latency_based_routing(mock_workflow_context):
     """(v10.6 Fix #15) Test get_model_client falls back to simple model."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     # Set high latency for the complex model
@@ -593,11 +649,19 @@ async def test_fix_25_backpressure(mock_config, caplog):
 async def test_fix_25_backpressure(mock_config, caplog):
     """(legacy Fix #25) Test run_batch_async halts if queue is too large."""
 =======
+<<<<<<< HEAD
+# SECTION 24: legacy Fix #25 - BACKPRESSURE TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_25_backpressure(mock_config, caplog):
+    """(legacy Fix #25) Test run_batch_async halts if queue is too large."""
+=======
 # SECTION 24: v10.6 Fix #25 - BACKPRESSURE TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_25_backpressure(mock_config, caplog):
     """(v10.6 Fix #25) Test run_batch_async halts if queue is too large."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     mock_config.batch_config.max_batch_queue_size = 10 # Set a low limit
@@ -624,11 +688,19 @@ async def test_fix_29_idempotency_validation(mock_workflow_context, mock_llm_cli
 async def test_fix_29_idempotency_validation(mock_workflow_context, mock_llm_client):
     """(legacy Fix #29) Test idempotency check is triggered on cache hit."""
 =======
+<<<<<<< HEAD
+# SECTION 25: legacy Fix #29 - IDEMPOTENCY VALIDATION TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_29_idempotency_validation(mock_workflow_context, mock_llm_client):
+    """(legacy Fix #29) Test idempotency check is triggered on cache hit."""
+=======
 # SECTION 25: v10.6 Fix #29 - IDEMPOTENCY VALIDATION TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_29_idempotency_validation(mock_workflow_context, mock_llm_client):
     """(v10.6 Fix #29) Test idempotency check is triggered on cache hit."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     # 1. Force a cache hit
@@ -661,11 +733,19 @@ async def test_fix_30_constitutional_review_node(mock_workflow_context, mock_llm
 async def test_fix_30_constitutional_review_node(mock_workflow_context, mock_llm_client, base_state):
     """(legacy Fix #30) Test the new run_constitutional_review node."""
 =======
+<<<<<<< HEAD
+# SECTION 26: legacy Fix #30 - CONSTITUTIONAL AI TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_30_constitutional_review_node(mock_workflow_context, mock_llm_client, base_state):
+    """(legacy Fix #30) Test the new run_constitutional_review node."""
+=======
 # SECTION 26: v10.6 Fix #30 - CONSTITUTIONAL AI TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_30_constitutional_review_node(mock_workflow_context, mock_llm_client, base_state):
     """(v10.6 Fix #30) Test the new run_constitutional_review node."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     mock_response = {"review_passed": False, "violations_found": ["Test Violation"], "feedback": "Test"}
@@ -684,7 +764,11 @@ def test_fix_30_constitutional_edge(mock_workflow_context):
 <<<<<<< HEAD
     """(legacy Fix #30) Test the 'check_constitution' conditional edge."""
 =======
+<<<<<<< HEAD
+    """(legacy Fix #30) Test the 'check_constitution' conditional edge."""
+=======
     """(v10.6 Fix #30) Test the 'check_constitution' conditional edge."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     state = {"qa": {"constitutional_review": {"review_passed": True}}}
@@ -706,10 +790,17 @@ def test_fix_5_concurrent_node_graph(mock_workflow_context):
 def test_fix_5_concurrent_node_graph(mock_workflow_context):
     """(legacy Fix #5) Test graph is correctly wired for parallel execution."""
 =======
+<<<<<<< HEAD
+# SECTION 27: legacy Fix #5 - CONCURRENT NODE TEST (NEW)
+# ============================================================================
+def test_fix_5_concurrent_node_graph(mock_workflow_context):
+    """(legacy Fix #5) Test graph is correctly wired for parallel execution."""
+=======
 # SECTION 27: v10.6 Fix #5 - CONCURRENT NODE TEST (NEW)
 # ============================================================================
 def test_fix_5_concurrent_node_graph(mock_workflow_context):
     """(v10.6 Fix #5) Test graph is correctly wired for parallel execution."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     mock_checkpointer = AsyncMock()
@@ -739,11 +830,19 @@ async def test_fix_10_a2a_comms_on_rag_fail(mock_workflow_context, mock_llm_clie
 async def test_fix_10_a2a_comms_on_rag_fail(mock_workflow_context, mock_llm_client, base_state):
     """(legacy Fix #10) Test RAG agent sends A2A message on max steps failure."""
 =======
+<<<<<<< HEAD
+# SECTION 28: legacy Fix #10 - A2A COMMS TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_10_a2a_comms_on_rag_fail(mock_workflow_context, mock_llm_client, base_state):
+    """(legacy Fix #10) Test RAG agent sends A2A message on max steps failure."""
+=======
 # SECTION 28: v10.6 Fix #10 - A2A COMMS TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_10_a2a_comms_on_rag_fail(mock_workflow_context, mock_llm_client, base_state):
     """(v10.6 Fix #10) Test RAG agent sends A2A message on max steps failure."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     agent = RAG_SearchAgent(mock_workflow_context)
@@ -779,11 +878,19 @@ async def test_fix_19_20_24_prompt_context_injection(mock_context_budget_manager
 async def test_fix_19_20_24_prompt_context_injection(mock_context_budget_manager):
     """(legacy) Test _format_prompt_with_defaults injects all context."""
 =======
+<<<<<<< HEAD
+# SECTION 29: legacy Fix #19, #20, #24 - PROMPT INJECTION TEST (NEW)
+# ============================================================================
+@pytest.mark.asyncio
+async def test_fix_19_20_24_prompt_context_injection(mock_context_budget_manager):
+    """(legacy) Test _format_prompt_with_defaults injects all context."""
+=======
 # SECTION 29: v10.6 Fix #19, #20, #24 - PROMPT INJECTION TEST (NEW)
 # ============================================================================
 @pytest.mark.asyncio
 async def test_fix_19_20_24_prompt_context_injection(mock_context_budget_manager):
     """(v10.6) Test _format_prompt_with_defaults injects all context."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     template = "MODE: TEST\n{content}"
@@ -809,10 +916,17 @@ def test_fix_7_dynamic_tool_loading(mock_workflow_context, tmp_path):
 def test_fix_7_dynamic_tool_loading(mock_workflow_context, tmp_path):
     """(legacy Fix #7) Test load_dynamic_tools loads a tool from a file."""
 =======
+<<<<<<< HEAD
+# SECTION 30: legacy Fix #7 - DYNAMIC TOOL LOADING TEST (NEW)
+# ============================================================================
+def test_fix_7_dynamic_tool_loading(mock_workflow_context, tmp_path):
+    """(legacy Fix #7) Test load_dynamic_tools loads a tool from a file."""
+=======
 # SECTION 30: v10.6 Fix #7 - DYNAMIC TOOL LOADING TEST (NEW)
 # ============================================================================
 def test_fix_7_dynamic_tool_loading(mock_workflow_context, tmp_path):
     """(v10.6 Fix #7) Test load_dynamic_tools loads a tool from a file."""
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
     # 1. Create a fake tool file in the temp directory
@@ -848,7 +962,11 @@ class MyDynamicTool(BaseTool):
 <<<<<<< HEAD
 # END OF legacy TEST SUITE (150 TESTS)
 =======
+<<<<<<< HEAD
+# END OF legacy TEST SUITE (150 TESTS)
+=======
 # END OF v10.6 TEST SUITE (150 TESTS)
+>>>>>>> main
 >>>>>>> main
 >>>>>>> main
 # ============================================================================

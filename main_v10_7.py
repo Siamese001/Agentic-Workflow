@@ -196,6 +196,17 @@ async def run_workflow_async(
         # v10.7 REFACTOR: Call centralized cleanup helper
         cleanup_workflow_chroma_collection(context)
 
+        os.makedirs("outputs", exist_ok=True)
+
+        with open("outputs/final_resume.json", "w") as f:
+            json.dump(final_state.artifacts.artifacts.get("final_resume", {}), f, indent=2)
+
+        with open("outputs/qa_report.json", "w") as f:
+            json.dump(final_state.artifacts.artifacts.get("qa_report", {}), f, indent=2)
+
+        print("\u2713 Saved final resume to outputs/final_resume.json")
+        print("\u2713 Saved QA report to outputs/qa_report.json")
+
         return {
             "status": "SUCCESS",
             "workflow_id": workflow_id,
