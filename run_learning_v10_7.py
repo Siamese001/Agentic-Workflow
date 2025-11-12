@@ -20,12 +20,15 @@ import os
 import uuid
 import asyncio
 from datetime import datetime
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List
 
 # v10.7: Import from new core
 from core_v10_7 import (
-    ConfigV10_7, WorkflowContext, BaseAgent, MetaGraphState,
-    FileIOError, WorkflowError,
+    BaseAgent,
+    ConfigV10_7,
+    MetaGraphState,
+    WorkflowContext,
+    WorkflowError,
     create_workflow_context,
     PydanticSchemaError,
     track_metrics,
@@ -82,12 +85,14 @@ class LogReaderAgent(BaseAgent):
             if os.path.exists(feedback_log_path):
                 with open(feedback_log_path, 'r') as f:
                     logs["feedback_log"] = "\n".join(f.readlines()[-50:])
-        except Exception: pass
+        except Exception:
+            pass
         try:
             if os.path.exists(preference_log_path):
                 with open(preference_log_path, 'r') as f:
                     logs["preference_log"] = "\n".join(f.readlines()[-50:])
-        except Exception: pass
+        except Exception:
+            pass
         
         return logs
 
@@ -569,13 +574,13 @@ async def run_meta_learning(config: ConfigV10_7):
         patterns_found = len(final_state.patterns)
         critique_passed = final_state.critique.get("critique_passed", False)
         
-        logger.info(f"META-LEARNING RESULTS (v10.7):")
+        logger.info("META-LEARNING RESULTS (v10.7):")
         logger.info(f"  Patterns Found: {patterns_found}")
         logger.info(f"  Critique Passed: {critique_passed}")
         
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Meta-learning cost: ${cost_summary['total_workflow_cost']:.4f}")
-        logger.info(f"===== v10.7 Meta-Learning Complete =====")
+        logger.info("===== v10.7 Meta-Learning Complete =====")
         
     except Exception as e:
         logger.error(f"Meta-Learning failed: {e}", exc_info=True)
