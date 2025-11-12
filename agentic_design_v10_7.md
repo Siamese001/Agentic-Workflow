@@ -1305,6 +1305,368 @@ a living proof that the author *understands how intelligence itself works*.
 
 ---
 
+## ⚡ ORCHESTRATION & STATE STACK — “THE CONDUCTOR”
+*(MIT AI Systems Seminar · v10·7 Architecture · Workflow Control & Concurrency)*
 
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│                 🧱 FROM: SAFETYGUARD → 🧭 STRATEGY → 🔍 RAG / ⚙️ PROMPT → ✒️ DRAFTING → …    │
+│                                                                                            │
+│  Objective → Coordinate all stacks as a single cognitive graph — manage execution order,   │
+│               parallelism, and recovery so intelligence behaves like an orchestra, not a    │
+│               collection of soloists.                                                      │
+│                                                                                            │
+│  SYSTEM ASSUMPTIONS                                                                        │
+│  • Implemented in `agent_orchestration_v10_7.py` using LangGraph DAG controller.           │
+│  • Supports async concurrency (Prompt ↔ RAG ↔ DynamicTooling).                             │
+│  • Integrates retry logic, circuit breaker, and token budgeting.                           │
+│  • Maintains runtime state in `WorkflowContext` injected into all agents.                  │
+│                                                                                            │
+│  FLOW OF CONTROL — HOW ORCHESTRATION CREATES COHERENCE                                     │
+│                                                                                            │
+│  INPUT: User Prompt (Entry Signal)                                                        │
+│      │                                                                                     │
+│      ▼                                                                                     │
+│  [1] 🧩 GRAPH BUILDER — Dependency Constructor                                              │
+│      ├─ Loads all node definitions (agents) and their inputs/outputs.                      │
+│      ├─ Builds LangGraph DAG: each stack = node cluster.                                   │
+│      ├─ Emits → execution_plan.json.                                                       │
+│      │                                                                                     │
+│      │  Function → Map cognition into workflow topology.                                  │
+│      │  Resume Effect → Guarantees résumé generation follows logical flow, no skips.      │
+│      │  Quality Impact → Enforces **causal integrity** across reasoning steps.             │
+│      │  Cognitive Parallel → Executive workflow mapping before delegation.                 │
+│      ▼                                                                                     │
+│  [2] ⚙️ EXECUTION MANAGER — Async Conductor                                                │
+│      ├─ Launches nodes concurrently where dependencies allow.                              │
+│      ├─ Uses `asyncio.gather` for multi-agent runs (PromptStack ↔ RAGStack).               │
+│      ├─ Monitors task completion, handles inter-agent messaging.                           │
+│      ├─ Emits → live_state + task_results.                                                 │
+│      │                                                                                     │
+│      │  Function → Synchronize reasoning in real time.                                     │
+│      │  Resume Effect → Allows simultaneous retrieval + drafting → faster generation.     │
+│      │  Quality Impact → Reduces latency, raises **tempo and responsiveness**.             │
+│      │  Cognitive Parallel → Orchestra conductor cueing sections simultaneously.           │
+│      ▼                                                                                     │
+│  [3] 🔁 RESILIENCE ENGINE — Fault & Retry Controller                                       │
+│      ├─ Wraps each node in circuit-breaker logic.                                          │
+│      ├─ If transient failure → retry ≤ 2; if repeat failure → short-circuit node.          │
+│      ├─ Emits → resilience_log + failover_stats.                                           │
+│      │                                                                                     │
+│      │  Function → Prevent cascading failure across stacks.                               │
+│      │  Resume Effect → Prevents single agent bug from halting résumé build.               │
+│      │  Quality Impact → Sustains **uptime and reliability** during multi-agent execution. │
+│      │  Cognitive Parallel → Crisis manager containing issues before escalation.           │
+│      ▼                                                                                     │
+│  [4] 🧮 STATE PERSISTENCE LAYER — Context Manager                                          │
+│      ├─ Stores partial results and metadata in Redis cache.                                │
+│      ├─ Maintains current tokens, costs, tool calls, and agent outputs.                    │
+│      ├─ Supports recovery checkpointing for interrupted runs.                              │
+│      ├─ Emits → workflow_snapshot + cost_report.                                           │
+│      │                                                                                     │
+│      │  Function → Preserve and restore cognition mid-flight.                             │
+│      │  Resume Effect → Enables **resume-safe execution** (pun intended).                  │
+│      │  Quality Impact → Guarantees reproducibility of résumé builds.                      │
+│      │  Cognitive Parallel → Project manager keeping meeting minutes for continuity.       │
+│      ▼                                                                                     │
+│  [5] 📊 TELEMETRY ROUTER — Metrics Distribution Hub                                        │
+│      ├─ Streams latency, cost, and success data to Prometheus Collector.                   │
+│      ├─ Tags metrics by stack and agent for observability.                                 │
+│      ├─ Emits → orchestration_metrics.json.                                                │
+│      │                                                                                     │
+│      │  Function → Enable system-wide analytics.                                          │
+│      │  Resume Effect → Allows post-run analysis of timing bottlenecks and value density. │
+│      │  Quality Impact → Enables **continuous process optimization**.                      │
+│      │  Cognitive Parallel → COO monitoring productivity dashboard in real time.          │
+│      ▼                                                                                     │
+│  [6] 🚀 OUTPUT → Propagates verified results → QA / Meta / HIL Stacks                     │
+│      ├─ Final orchestration trace logged for auditability.                                 │
+│      └─ Telemetry updated with total runtime & confidence aggregate.                       │
+│                                                                                            │
+│  INTER-AGENT RELATIONSHIPS                                                                 │
+│  • Controls execution order of all other stacks.                                           │
+│  • Receives SafetyGuard OK signal as entry gate.                                           │
+│  • Dispatches data flows between Strategy ↔ RAG ↔ Prompt ↔ Draft ↔ QA.                     │
+│  • Reports to Meta-Learning Loop for performance feedback.                                 │
+│                                                                                            │
+│  FAILURE HANDLING                                                                          │
+│  • If orchestrator crash → reload from latest Redis checkpoint.                            │
+│  • If circular dependency detected → auto-resolve via topological sort.                    │
+│  • If latency > threshold → trigger async throttle for heavy agents.                       │
+│                                                                                            │
+│  RESUME OUTPUT LINKAGES                                                                    │
+│  ----------------------------------------------------------------------------------------  │
+│  • Graph Builder → Maintains order → **coherent workflow logic**.                          │
+│  • Execution Manager → Async orchestration → **speed & parallel reasoning**.               │
+│  • Resilience Engine → Fault isolation → **reliability**.                                  │
+│  • State Persistence → Snapshot & recovery → **continuity**.                               │
+│  • Telemetry Router → Visibility → **operational intelligence**.                           │
+│  • Combined Effect → Résumé generation pipeline behaves as a *single thinking organism* —  │
+│      fast, stable, and accountable.                                                        │
+│                                                                                            │
+│  CLASS DISCUSSION                                                                          │
+│  ----------------------------------------------------------------------------------------  │
+│  Q1: Why does orchestration matter in multi-agent reasoning?                               │
+│      → Because intelligence without scheduling becomes noise; order is cognition.          │
+│  Q2: How does concurrency raise résumé “temperature”?                                      │
+│      → It maintains creative momentum — multiple minds thinking in unison.                 │
+│  Q3: What human faculty does this mirror?                                                  │
+│      → Executive coordination — ensuring teams act in harmony toward shared purpose.       │
+│                                                                                            │
+│  SYSTEM OUTCOME                                                                            │
+│  • Central nervous system of the workflow fully operational.                               │
+│  • Achieves:                                                                               │
+│      → **High signal:** synchronized agent outputs amplify each other.                     │
+│      → **High temperature:** fluid creative tempo without friction.                        │
+│      → **High resilience:** recoverable, auditable execution.                              │
+│                                                                                            │
+│  Summary Quote → “Orchestration is how intelligence learns to listen to itself.”           │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
+
+---
+
+## 📊 TELEMETRY & OBSERVABILITY STACK — “THE DIAGNOSTIC MIND”
+*(MIT AI Systems Seminar · v10·7 Architecture · Performance Intelligence Layer)*
+
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│             ⚡ FROM: ORCHESTRATION & STATE STACK + ALL ACTIVE AGENTS (1–9)                 │
+│          (Metrics Streams: latency, cost, confidence, engagement, bias, entropy)          │
+│                                                                                            │
+│  Objective → Capture, analyze, and visualize every measurable aspect of system behavior    │
+│               — transforming agent execution into actionable intelligence.                 │
+│                                                                                            │
+│  SYSTEM ASSUMPTIONS                                                                        │
+│  • Implemented via `MetricsCollector` in `core_v10_7.py` + Prometheus exporters.           │
+│  • Aggregates data from all stacks and MCP tool calls.                                     │
+│  • Logs to Redis (ephemeral), Prometheus (time series), and Dashboard API.                 │
+│  • Feeds summary stats into Meta-Learning and QA for feedback correlation.                 │
+│                                                                                            │
+│  FLOW OF CONTROL — HOW TELEMETRY CREATES INSIGHT                                           │
+│                                                                                            │
+│  INPUT: Real-time Metrics Streams (from Orchestrator & Agents)                            │
+│      │                                                                                     │
+│      ▼                                                                                     │
+│  [1] 🧮 METRICS COLLECTOR — Unified Data Sink                                              │
+│      ├─ Subscribes to metrics topics (latency_ms, token_usage, cost_usd, confidence).      │
+│      ├─ Normalizes all signals into canonical schema (stack_id, agent_id, metric_type).    │
+│      ├─ Emits → raw_metrics_log.                                                           │
+│      │                                                                                     │
+│      │  Function → Gather and standardize performance data.                               │
+│      │  Resume Effect → Enables consistent measurement of résumé quality over time.       │
+│      │  Quality Impact → Provides baseline for **signal and temperature benchmarking.**    │
+│      │  Cognitive Parallel → Sensory neurons transmitting stimuli to the analytical brain. │
+│      ▼                                                                                     │
+│  [2] ⚙️ METRIC AGGREGATOR — Statistical Engine                                            │
+│      ├─ Aggregates metrics into time-windowed summaries (1s, 1m, 1h).                     │
+│      ├─ Computes derived KPIs:                                                            │
+│      │     • Signal-to-noise ratio (SNR).                                                 │
+│      │     • Confidence variance.                                                         │
+│      │     • Cost per high-confidence token.                                              │
+│      │     • Engagement entropy (variance in attention heatmaps).                         │
+│      ├─ Emits → telemetry_snapshot + kpi_report.                                           │
+│      │                                                                                     │
+│      │  Function → Translate raw logs into meaning.                                       │
+│      │  Resume Effect → Quantifies *how efficiently intelligence turns into persuasion.*  │
+│      │  Quality Impact → Enables **cost-performance optimization** across runs.           │
+│      │  Cognitive Parallel → Analyst summarizing real-time sensor feeds.                  │
+│      ▼                                                                                     │
+│  [3] 🧩 CORRELATION ENGINE — Cross-Stack Analyzer                                          │
+│      ├─ Correlates QA confidence, RAG accuracy, Draft entropy, and engagement metrics.     │
+│      ├─ Detects causal links (e.g., higher bias → lower recruiter engagement).             │
+│      ├─ Emits → correlation_matrix + anomaly_flags.                                       │
+│      │                                                                                     │
+│      │  Function → Detect cross-domain performance dependencies.                          │
+│      │  Resume Effect → Reveals which phrasing or structure patterns drive responses.     │
+│      │  Quality Impact → Yields **data-backed writing heuristics** for Meta-Learning.     │
+│      │  Cognitive Parallel → Systems scientist finding emergent properties in data.       │
+│      ▼                                                                                     │
+│  [4] 🧾 DASHBOARD VISUALIZER — Real-Time Monitor                                           │
+│      ├─ Streams KPIs and correlations to Grafana/Prometheus dashboards.                   │
+│      ├─ Color-coded health indicators per stack (green/yellow/red).                       │
+│      ├─ Displays cost efficiency, throughput, and bias drift over time.                   │
+│      ├─ Emits → visual_dashboard_state + alerts.                                          │
+│      │                                                                                     │
+│      │  Function → Make invisible reasoning visible.                                     │
+│      │  Resume Effect → Lets executive see *why* the résumé reads well — evidence of craft│
+│      │                     and consistency.                                               │
+│      │  Quality Impact → Adds **explainability & stakeholder confidence.**                │
+│      │  Cognitive Parallel → Executive dashboard in the boardroom — live metrics.         │
+│      ▼                                                                                     │
+│  [5] 🔁 FEEDBACK LOOP — Learning Channel to Meta-Learning                                 │
+│      ├─ Sends aggregated metrics and anomalies to Meta-Learning Loop.                     │
+│      ├─ Updates reward functions and planning heuristics.                                 │
+│      ├─ Emits → telemetry_feedback_packet.                                                │
+│      │                                                                                     │
+│      │  Function → Close the learning circuit quantitatively.                             │
+│      │  Resume Effect → Ensures next résumé run optimizes against real-world outcomes.    │
+│      │  Quality Impact → Drives **continuous improvement** without human prompting.       │
+│      │  Cognitive Parallel → Homeostasis — system adjusts to maintain optimal state.      │
+│      ▼                                                                                     │
+│  [6] 🚀 OUTPUT → Archive + Performance Reports                                            │
+│      ├─ Stores snapshots for audit (run_id, metrics, anomalies, correlation).              │
+│      ├─ Available to QA and HIL dashboards for transparency.                              │
+│      └─ Telemetry: aggregated_kpis, run_confidence, engagement_trends.                    │
+│                                                                                            │
+│  INTER-AGENT RELATIONSHIPS                                                                 │
+│  • Receives data from Orchestrator, QA, Drafting, and Tooling.                             │
+│  • Feeds analytics into Meta-Learning (reward shaping).                                   │
+│  • Provides health signals to Orchestrator for adaptive scheduling.                       │
+│                                                                                            │
+│  FAILURE HANDLING                                                                          │
+│  • If metrics stream breaks → reinitialize collector; backfill from Redis cache.          │
+│  • If anomaly flags exceed 3σ → alert QAStack + Orchestrator.                             │
+│  • If data missing → mark incomplete telemetry episode (ignored by learning).             │
+│                                                                                            │
+│  RESUME OUTPUT LINKAGES                                                                    │
+│  ----------------------------------------------------------------------------------------  │
+│  • Collector → Captures execution truth → **quantitative visibility.**                    │
+│  • Aggregator → Turns data into insight → **performance intelligence.**                   │
+│  • Correlation → Reveals causal patterns → **optimization heuristics.**                   │
+│  • Dashboard → Communicates transparency → **executive credibility.**                     │
+│  • Feedback Loop → Drives evolution → **ever-improving quality.**                         │
+│  • Combined Effect → The résumé ecosystem becomes self-aware — monitoring its own craft.   │
+│                                                                                            │
+│  CLASS DISCUSSION                                                                          │
+│  ----------------------------------------------------------------------------------------  │
+│  Q1: Why measure cognition quantitatively?                                                 │
+│      → Because without metrics, improvement is opinion; telemetry makes excellence repeat. │
+│  Q2: How does observability raise résumé “signal”?                                         │
+│      → By linking every output trait to measurable performance drivers.                    │
+│  Q3: Which human faculty does this emulate?                                                │
+│      → Self-awareness — knowing not just what you think, but how well you’re thinking.     │
+│                                                                                            │
+│  SYSTEM OUTCOME                                                                            │
+│  • Complete visibility across all cognitive layers.                                       │
+│  • Achieves:                                                                               │
+│      → **High signal:** objective measurement of impact.                                  │
+│      → **High temperature:** controlled variation for persuasive energy.                  │
+│      → **High accountability:** traceable, explainable intelligence.                      │
+│                                                                                            │
+│  Summary Quote → “You can’t improve what you can’t observe — observability is wisdom.”     │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
+
+---
+
+
+## 🕸️ MCP BRIDGE STACK — “THE ECOSYSTEM INTERFACE”
+*(MIT AI Systems Seminar · v10·7 Architecture · Cross-System Interoperability Layer)*
+
+┌────────────────────────────────────────────────────────────────────────────────────────────┐
+│                        ⚙️ FROM: ORCHESTRATION + 🧭 STRATEGY + 🧰 TOOLING STACK              │
+│        (Goal Vector + Context Budget + Tool Invocation Requests via Model Context Protocol)│
+│                                                                                            │
+│  Objective → Enable seamless, dynamic, and secure collaboration between internal agents     │
+│               and external AI systems, APIs, or services — extending cognition across       │
+│               organizational and platform boundaries.                                       │
+│                                                                                            │
+│  SYSTEM ASSUMPTIONS                                                                        │
+│  • Implemented via `MCPClient` and `MCPToolRegistry` in `core_v10_7.py`.                   │
+│  • Provides context handshake: discover → validate → invoke → log.                         │
+│  • Manages authentication, permissions, and schema enforcement for third-party tools.      │
+│  • Outputs MCP_ExchangePacket: {tool, payload, result, confidence, latency}.               │
+│                                                                                            │
+│  FLOW OF CONTROL — HOW INTEROPERABILITY CREATES SCALE                                      │
+│                                                                                            │
+│  INPUT: Goal Vector + Tool Requests + Context Metadata                                     │
+│      │                                                                                     │
+│      ▼                                                                                     │
+│  [1] 🌐 DISCOVERY HANDSHAKE — External Capability Finder                                   │
+│      ├─ Queries MCP registry for available endpoints (LLMs, APIs, micro-agents).            │
+│      ├─ Verifies compatibility and licensing.                                              │
+│      ├─ Emits → mcp_candidates + handshake_log.                                            │
+│      │                                                                                     │
+│      │  Function → Identify trustworthy collaborators.                                     │
+│      │  Resume Effect → Finds domain-specific data sources (e.g., company KPIs, recruiters).│
+│      │  Quality Impact → Expands **knowledge surface area** for richer insight.            │
+│      │  Cognitive Parallel → Business development lead mapping partnership ecosystem.      │
+│      ▼                                                                                     │
+│  [2] 🔐 AUTHORIZATION LAYER — Trust Gatekeeper                                             │
+│      ├─ Performs key exchange and permission validation.                                   │
+│      ├─ Applies role-based access (read-only, compute-limited, secure-output).             │
+│      ├─ Logs all credentials hashed for audit.                                             │
+│      ├─ Emits → session_token + auth_context.                                              │
+│      │                                                                                     │
+│      │  Function → Secure all cross-system communication.                                 │
+│      │  Resume Effect → Prevents accidental data leakage while fetching external info.     │
+│      │  Quality Impact → Ensures **integrity and confidentiality** of context transfer.    │
+│      │  Cognitive Parallel → Legal counsel approving NDAs before collaboration.            │
+│      ▼                                                                                     │
+│  [3] 🔁 INVOCATION BUS — Context Exchange Engine                                           │
+│      ├─ Streams requests to external models/tools with context snapshot.                   │
+│      ├─ Supports asynchronous message-passing and batched returns.                         │
+│      ├─ Converts outputs into canonical schema (text/json/vector).                         │
+│      ├─ Emits → mcp_responses + latency_metrics.                                           │
+│      │                                                                                     │
+│      │  Function → Facilitate multi-agent conversation across systems.                     │
+│      │  Resume Effect → Allows résumé to include **real-time data** from HR systems,       │
+│      │                     public APIs, or internal knowledge bases.                       │
+│      │  Quality Impact → Increases **signal immediacy** — facts are truly up to date.      │
+│      │  Cognitive Parallel → Diplomat exchanging intelligence between departments.         │
+│      ▼                                                                                     │
+│  [4] 🧠 CONTEXT MERGER — Schema Alignment & Reconciliation                                 │
+│      ├─ Aligns external outputs to internal ontology (skills, metrics, tone).              │
+│      ├─ Resolves naming and format inconsistencies via schema mapping.                     │
+│      ├─ Emits → unified_context + provenance_chain.                                        │
+│      │                                                                                     │
+│      │  Function → Normalize external intelligence for local reasoning.                    │
+│      │  Resume Effect → Integrates external recruiter trends into résumé phrasing.         │
+│      │  Quality Impact → Produces **semantic cohesion** between local and remote data.     │
+│      │  Cognitive Parallel → Chief of Staff translating external insights for executives.  │
+│      ▼                                                                                     │
+│  [5] 🧩 FEEDBACK RELAY — Learning Synchronizer                                            │
+│      ├─ Sends MCP call outcomes (success/failure, latency, accuracy) → Telemetry.          │
+│      ├─ Shares cross-system performance data → Meta-Learning Loop.                         │
+│      ├─ Adjusts external tool weighting dynamically.                                       │
+│      ├─ Emits → mcp_performance_summary + updated_priority_map.                            │
+│      │                                                                                     │
+│      │  Function → Keep ecosystem efficiency self-optimizing.                             │
+│      │  Resume Effect → Improves sourcing of external insights — best-performing           │
+│      │                     APIs prioritized automatically.                                │
+│      │  Quality Impact → Increases **adaptive efficiency** and reliability.               │
+│      │  Cognitive Parallel → Strategic partnership analytics — learning which partners win.│
+│      ▼                                                                                     │
+│  [6] 🚀 OUTPUT → Feeds 🧰 DYNAMIC TOOLING + 🔍 RAGSTACK + 📊 TELEMETRY                     │
+│      ├─ Payload: unified_context + provenance_chain + performance_summary.                 │
+│      └─ Telemetry: mcp_latency, external_confidence, auth_failures.                        │
+│                                                                                            │
+│  INTER-AGENT RELATIONSHIPS                                                                 │
+│  • Provides dynamic tool registry to Dynamic Tooling Stack.                                │
+│  • Supplies external data to RAGStack for broader retrieval.                               │
+│  • Reports cross-system performance to Telemetry and Meta-Learning.                        │
+│                                                                                            │
+│  FAILURE HANDLING                                                                          │
+│  • If auth fails → reattempt limited handshake; fallback to internal equivalent.           │
+│  • If latency > budget → dynamic offload to cached result.                                 │
+│  • If schema mismatch → invoke Context Merger reconciliation.                              │
+│                                                                                            │
+│  RESUME OUTPUT LINKAGES                                                                    │
+│  ----------------------------------------------------------------------------------------  │
+│  • Discovery → Expands external reach → **breadth of intelligence.**                      │
+│  • Authorization → Secures collaboration → **ethical compliance.**                        │
+│  • Invocation → Executes requests live → **fresh, real-time data.**                       │
+│  • Merger → Aligns data meaning → **semantic unity.**                                     │
+│  • Feedback → Optimizes network → **sustained performance growth.**                       │
+│  • Combined Effect → The résumé pipeline becomes *network-aware*: it sources               │
+│      context dynamically from live ecosystems, producing documents that sound              │
+│      both **current** and **connected**.                                                  │
+│                                                                                            │
+│  CLASS DISCUSSION                                                                          │
+│  ----------------------------------------------------------------------------------------  │
+│  Q1: Why is external interoperability a mark of mature intelligence?                       │
+│      → Because no mind is omniscient — collaboration scales cognition exponentially.       │
+│  Q2: How does MCP elevate résumé signal?                                                  │
+│      → By linking the résumé to real-world data streams, ensuring every claim stands on    │
+│         verifiable, current information.                                                   │
+│  Q3: Which human faculty does this emulate?                                               │
+│      → Social cognition — understanding, trusting, and coordinating with others.          │
+│                                                                                            │
+│  SYSTEM OUTCOME                                                                            │
+│  • The AI ecosystem communicates fluidly with external knowledge systems.                 │
+│  • Résumé outputs achieve:                                                                 │
+│      → **High signal:** expanded context scope and precision.                             │
+│      → **High temperature:** confident relevance to present moment.                       │
+│      → **High adaptability:** continuously updated ecosystem awareness.                    │
+│                                                                                            │
+│  Summary Quote → “Connection is cognition — intelligence grows at the edges of networks.” │
+└────────────────────────────────────────────────────────────────────────────────────────────┘
 
 -----
