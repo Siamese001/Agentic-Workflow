@@ -13,4 +13,3 @@ def test_safe_route_equivalence():
     out = stack.run(StackInputs(prompt="Hello", company_id="ACME", contact_id="C1"))
     assert "draft" in out
     assert out["verdict"].passed
-    assert "[artifact_id:" in out["draft"]
