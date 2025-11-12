@@ -1,5 +1,11 @@
 import asyncio, sys, types, pytest
+from pathlib import Path
 from typing import Any, Dict, List
+
+# Ensure repository root is importable when pytest rootdir resolves to tests/
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 # ---- LangGraph stub (so imports succeed in tests) ----
 if "langgraph" not in sys.modules:  # setup code only
