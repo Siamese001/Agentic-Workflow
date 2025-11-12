@@ -29,14 +29,11 @@ from typing import Dict, Any
 from core_v10_6 import (
     ConfigV10_6, WorkflowContext, MainGraphState,
     FileIOError, CostCeilingExceededError, WorkflowError,
-    create_workflow_context, cleanup_workflow_chroma_collection
+    create_workflow_context, cleanup_workflow_chroma_collection,
+    get_checkpointer
 )
 # v10.6: Import from new orchestration/stacks
 from agent_orchestration_v10_6 import get_graph_app
-try:
-    from langgraph.checkpoint.redis import RedisSaver
-except ImportError:
-    from langgraph.checkpoint.sqlite import SqliteSaver as RedisSaver
 
 # v10.6: Logger name updated
 logger = logging.getLogger("main_v10_6")
@@ -100,15 +97,11 @@ async def run_workflow_async(
     
     logger.info(f"Job: {company} - {title}")
     
-    # --- v1Show.6: REFACTOR: COMPOSITION ROOT ---
+    # --- v10.6: REFACTOR: COMPOSITION ROOT ---
     context = create_workflow_context(config, db=config.redis_config.db)
     # --- v10.6: REFACTOR END ---
-    
-    checkpointer = RedisSaver(
-        host=config.redis_config.host,
-        port=config.redis_config.port,
-        db=config.redis_config.db
-    )
+
+    checkpointer = get_checkpointer(config)
     
     app = get_graph_app(checkpointer, context, enable_hil=enable_hil)
     

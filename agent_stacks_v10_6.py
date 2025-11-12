@@ -50,7 +50,8 @@ from core_v10_6 import (
     # v10.6: Import new decorators and services
     track_metrics,
     MetricsCollector,
-    BaseTool 
+    BaseTool,
+    detect_bias
 )
 
 # v10.6: Import from new tools file
@@ -101,30 +102,17 @@ class BiasDetectorAgent(BaseAgent):
     @track_metrics('run_bias_detector')
     def run(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
         self.log_info("Detecting bias (local processing with dynamic rules)...")
-        
-        constitution_rules = self.context.rules_loader.get_constitution_rules()
-        
-        bias_patterns = ["he/she", "his/her", "male/female", "young", "old"]
-        for rule in constitution_rules:
-            if 'bias_patterns' in rule:
-                bias_patterns.extend(rule['bias_patterns'])
-        
-        detected_patterns = [p for p in bias_patterns if p.lower() in text.lower()]
-        bias_detected = len(detected_patterns) > 0
-        
+        result = detect_bias(self.context, text, workflow_id)
+
         if workflow_id:
             self.log_feedback(
-                workflow_id, "bias_detection",
-                "warning" if bias_detected else "success",
-                {"patterns_found": len(detected_patterns)}
+                workflow_id,
+                "bias_detection",
+                "warning" if result["bias_detected"] else "success",
+                {"patterns_found": len(result.get("patterns", []))}
             )
-        
-        return {
-            "bias_detected": bias_detected,
-            "patterns": detected_patterns,
-            "bias_score": len(detected_patterns) / len(bias_patterns) if bias_patterns else 0.0,
-            "dynamic_rules_applied": len(constitution_rules)
-        }
+
+        return result
 
 class PromptInjectionDetectorAgent(BaseAgent):
     """v10.6: Detects prompt injection attacks."""
