@@ -9,6 +9,7 @@ from core_v10_7 import (
     A2AMessage,
     BaseAgent,
     PydanticSchemaError,
+    WorkflowContext,
     track_metrics,
     _format_prompt_with_defaults,
 )
@@ -18,7 +19,7 @@ from agent_tools_v10_7 import HyDETool, ChromaDBSearchTool, BM25SearchTool
 class RAG_SearchAgent(BaseAgent):
     """Agentic RAG conductor that orchestrates resume search tooling."""
 
-    def __init__(self, context: "WorkflowContext", debug_mode: bool = False):
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
         super().__init__(context, debug_mode)
         self.tools = {
             "search_resume_database": ChromaDBSearchTool(context, debug_mode),

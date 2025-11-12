@@ -41,6 +41,7 @@ import time
 import random # v10.7: Added for Fix #29
 from functools import wraps
 from typing import TYPE_CHECKING
+from collections.abc import Mapping
 
 from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
 from chromadb.utils import embedding_functions
@@ -56,8 +57,24 @@ except ImportError:
     genai = None
 
 from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
+from typing import Dict, Any, List, Optional, Tuple, TypeVar, Callable, Awaitable
 from datetime import datetime
+
+
+LEGACY_MODEL_ALIASES = {
+    "gemini-2.5-pro": "gemini-pro",
+    "gemini-2.5-flash": "gemini-flash",
+}
+
+LEGACY_MODEL_REVERSE = {alias: original for original, alias in LEGACY_MODEL_ALIASES.items()}
+
+
+def _legacy_model_alias(model_name: str) -> str:
+    return LEGACY_MODEL_ALIASES.get(model_name, model_name)
+
+
+def _canonical_model_name(model_name: str) -> str:
+    return LEGACY_MODEL_REVERSE.get(model_name, model_name)
 from asyncio import TimeoutError as AsyncTimeoutError
 
 # v10.7: Logger name updated
@@ -113,25 +130,33 @@ class ConfigSection:
 
     def __init__(self, data: Dict):
         self._data = data
-    
+
     def __getattr__(self, name):
         if name.startswith('_'):
             return object.__getattribute__(self, name)
-        
+
         value = self._data.get(name)
         if value is None:
             snake_name = name.replace('-', '_')
             value = self._data.get(snake_name)
             if value is None:
                 raise AttributeError(f"Config key '{name}' or '{snake_name}' not found")
-        
+
         if isinstance(value, dict):
             return ConfigSection(value)
         return value
-    
+
+    def __setattr__(self, name, value):
+        if name.startswith('_'):
+            object.__setattr__(self, name, value)
+            return
+
+        key = name if name in self._data else name.replace('-', '_')
+        self._data[key] = value
+
     def get(self, key, default=None):
         return self._data.get(key, default)
-    
+
     def __contains__(self, key):
         return key in self._data
 
@@ -556,9 +581,10 @@ class ContextBudgetManager:
         """v10.7 (Fix #14): Uses an LLM to prune text."""
         self.logger.warning(f"Context > {max_tokens} tokens. Pruning agentically...")
         try:
+            summarizer_config = self.config.model_config.summarizer_model
             client = self.get_model_client(
-                self.config.model_config.summarizer_model.provider,
-                self.config.model_config.summarizer_model.model_name
+                summarizer_config.provider,
+                _legacy_model_alias(summarizer_config.model_name)
             )
             # v10.7 NOTE: We cannot use PromptTemplateManager here as it
             # creates a circular dependency. We define the prompt inline.
@@ -608,7 +634,12 @@ class ContextBudgetManager:
     async def prune(self, document: str, max_tokens: Optional[int] = None) -> str:
         if max_tokens is None:
             max_tokens = self.default_limit
-            
+
+        if document is None:
+            document = ""
+        elif not isinstance(document, str):
+            document = str(document)
+
         token_limit_with_buffer = int(max_tokens * (1.0 - self.buffer))
         estimated_tokens = self._estimate_tokens(document)
         
@@ -679,12 +710,26 @@ def track_metrics(task_name: str):
                     result = await func(self, *args, **kwargs)
                     end_time = time.perf_counter()
                     duration_ms = (end_time - start_time) * 1000
-                    collector.record(agent_name, task_name, duration_ms, success=True, metadata=kwargs)
+                    collector.record(
+                        agent_name,
+                        task_name,
+                        duration_ms,
+                        success=True,
+                        error=None,
+                        metadata=dict(kwargs),
+                    )
                     return result
                 except Exception as e:
                     end_time = time.perf_counter()
                     duration_ms = (end_time - start_time) * 1000
-                    collector.record(agent_name, task_name, duration_ms, success=False, error=str(e), metadata=kwargs)
+                    collector.record(
+                        agent_name,
+                        task_name,
+                        duration_ms,
+                        success=False,
+                        error=str(e),
+                        metadata=dict(kwargs),
+                    )
                     raise
             return async_wrapper
         else:
@@ -702,12 +747,26 @@ def track_metrics(task_name: str):
                     result = func(self, *args, **kwargs)
                     end_time = time.perf_counter()
                     duration_ms = (end_time - start_time) * 1000
-                    collector.record(agent_name, task_name, duration_ms, success=True, metadata=kwargs)
+                    collector.record(
+                        agent_name,
+                        task_name,
+                        duration_ms,
+                        success=True,
+                        error=None,
+                        metadata=dict(kwargs),
+                    )
                     return result
                 except Exception as e:
                     end_time = time.perf_counter()
                     duration_ms = (end_time - start_time) * 1000
-                    collector.record(agent_name, task_name, duration_ms, success=False, error=str(e), metadata=kwargs)
+                    collector.record(
+                        agent_name,
+                        task_name,
+                        duration_ms,
+                        success=False,
+                        error=str(e),
+                        metadata=dict(kwargs),
+                    )
                     raise
             return sync_wrapper
     return decorator
@@ -748,8 +807,8 @@ class SemanticValidator:
 # ============================================================================
 
 async def _format_prompt_with_defaults(
-    template: str, 
-    tool_input: Dict[str, Any], 
+    template: str,
+    tool_input: Dict[str, Any],
     budget_manager: ContextBudgetManager,
     goal_state: str,         # v10.7 (Fix #19)
     top_failures: List[str]  # v10.7 (Fix #24)
@@ -758,7 +817,30 @@ async def _format_prompt_with_defaults(
     v10.7: Centralized helper.
     Injects Goal State, Top Failures, and performs agentic pruning.
     """
-    
+
+    tool_input = dict(tool_input or {})
+
+    def _ensure_mapping(value: Any) -> Dict[str, Any]:
+        if isinstance(value, Mapping):
+            return dict(value)
+        if value is None:
+            return {}
+        return {"value": value}
+
+    def _serialize(value: Any) -> str:
+        if isinstance(value, str):
+            return value
+        try:
+            return json.dumps(value)
+        except TypeError:
+            return json.dumps(str(value))
+
+    strategy_mapping = _ensure_mapping(tool_input.get("strategy"))
+
+    master_resume = await budget_manager.prune(_serialize(tool_input.get("master_resume")), 4000)
+    draft_text = await budget_manager.prune(_serialize(tool_input.get("draft_text")), 4000)
+    job_description = await budget_manager.prune(_serialize(tool_input.get("job_description")), 4000)
+
     # v10.7 (Fix #19, #24): Inject Goal and Failures
     goal_injection = f"GLOBAL_GOAL: {goal_state}\n"
     failure_injection = ""
@@ -766,60 +848,57 @@ async def _format_prompt_with_defaults(
         failure_list = "\n".join(f"- {f}" for f in top_failures)
         failure_injection = f"BEWARE: System analysis shows top failures are:\n{failure_list}\n"
 
-    # v10.7 (Fix #14): Use agentic pruning for large context fields
-    master_resume = await budget_manager.prune(json.dumps(tool_input.get('master_resume')), 4000)
-    draft_text = await budget_manager.prune(json.dumps(tool_input.get('draft_text')), 4000)
-    job_description = await budget_manager.prune(json.dumps(tool_input.get('job_description')), 4000)
-    
     all_keys = {
         "goal_state": goal_injection,       # Fix #19
         "top_failures": failure_injection,  # Fix #24
-        
+
         "style_guide": tool_input.get('style_guide', "Default style: professional."),
-        "draft": json.dumps(tool_input.get('draft')),
-        "strategy": json.dumps(tool_input.get('strategy')),
-        "section_text": json.dumps(tool_input.get('section_text')),
-        "critique": json.dumps(tool_input.get('critique')),
-        "critique_2": json.dumps(tool_input.get('critique_2')),
-        "bullets": json.dumps(tool_input.get('bullets')),
+        "draft": _serialize(tool_input.get('draft')),
+        "strategy": _serialize(tool_input.get('strategy')),
+        "section_text": _serialize(tool_input.get('section_text')),
+        "critique": _serialize(tool_input.get('critique')),
+        "critique_2": _serialize(tool_input.get('critique_2')),
+        "bullets": _serialize(tool_input.get('bullets')),
         "master_resume": master_resume,
         "draft_text": draft_text,
-        "required_tone": json.dumps(tool_input.get('strategy', {}).get('tone', 'N/A')),
+        "required_tone": json.dumps(strategy_mapping.get('tone', 'N/A')),
         "job_description": job_description,
-        
+
         "query": tool_input.get('query', ''),
-        "candidates": json.dumps(tool_input.get('candidates', [])),
-        
-        "experience": json.dumps(tool_input.get('experience')),
-        
+        "candidates": _serialize(tool_input.get('candidates', [])),
+
+        "experience": _serialize(tool_input.get('experience')),
+
         "job_title": tool_input.get('job_title', 'N/A'),
         "company": tool_input.get('company', 'N/A'),
         "branch_num": tool_input.get('branch_num', 1),
         "total_branches": tool_input.get('total_branches', 1),
         "num_branches": tool_input.get('num_branches', 1),
-        "branches_json": json.dumps(tool_input.get('branches_json', [])),
-        
+        "branches_json": _serialize(tool_input.get('branches_json', [])),
+
         "complexity": tool_input.get('complexity', 'unknown'),
         "user_input": tool_input.get('user_input', ''),
         "human_feedback": tool_input.get('human_feedback', ''),
-        
-        "hypothesis": json.dumps(tool_input.get('hypothesis', {})),
-        "patterns": json.dumps(tool_input.get('patterns', [])),
-        "proposal": json.dumps(tool_input.get('proposal', {})),
-        "log_data": json.dumps(tool_input.get('log_data', {})),
+
+        "hypothesis": _serialize(tool_input.get('hypothesis', {})),
+        "patterns": _serialize(tool_input.get('patterns', [])),
+        "proposal": _serialize(tool_input.get('proposal', {})),
+        "log_data": _serialize(tool_input.get('log_data', {})),
         "feedback_log": tool_input.get('feedback_log', ''),
         "preference_log": tool_input.get('preference_log', ''),
         "generated_tool_code": tool_input.get('generated_tool_code', ''),
-        
+
         "instruction": tool_input.get('instruction', ''),
-        "context": json.dumps(tool_input.get('context', {})),
+        "context": _serialize(tool_input.get('context', {})),
         "content": tool_input.get('content', ''),
 
-        "final_draft": tool_input.get('final_draft', ''), # v10.7 (Fix #30)
-        "constitution": tool_input.get('constitution', ''), # v10.7 (Fix #30)
+        "final_draft": tool_input.get('final_draft', ''),  # v10.7 (Fix #30)
+        "constitution": tool_input.get('constitution', ''),  # v10.7 (Fix #30)
     }
-    
-    return template.format(**all_keys)
+
+    formatted = template.format(**all_keys)
+    header = f"{goal_injection}{failure_injection}-------------------\n\n"
+    return f"{header}{formatted}"
 
 # ============================================================================
 # v10.7: PROMPT TEMPLATE MANAGER (Fix #17, #19, #20, #24, #30)
@@ -1154,7 +1233,7 @@ class ProposedRulesLoader:
             if self._last_mtime == current_mtime:
                 return [r for r in self._cache if r.status == status_filter]
             
-            self.logger.info(f"Hot-reloading proposed rules (file modified).")
+            self.logger.info("Hot-reloading proposed rules (file modified).")
             rules = []
             with open(self.proposed_rules_path, 'r') as f:
                 for line in f:
@@ -1470,8 +1549,11 @@ class BaseAgent:
             model_key = model_config_name
             
         model_config = getattr(self.config.model_config, model_key)
-        
-        client = self.context.get_model_client(model_config.provider, model_config.model_name)
+
+        client = self.context.get_model_client(
+            model_config.provider,
+            _legacy_model_alias(model_config.model_name),
+        )
         client.workflow_id = self.context.workflow_id
         client.agent_name = self.__class__.__name__
         # v10.7 (Fix #19, #24): Inject prompt context
@@ -1757,11 +1839,12 @@ class WorkflowContext:
         logger.info("WorkflowContext initialized with v10.7 injected dependencies")
     
     def get_model_client(self, provider: str, model_name: str):
-        key = f"{provider}:{model_name}"
+        canonical_name = _canonical_model_name(model_name)
+        key = f"{provider}:{canonical_name}"
         if key not in self._model_clients:
             base_args = {
                 "config": self.config,
-                "model_name": model_name,
+                "model_name": canonical_name,
                 "cache_manager": self.cache_manager,
                 "cost_tracker": self.cost_tracker,
                 "metrics_collector": self.metrics_collector,
@@ -1775,6 +1858,7 @@ class WorkflowContext:
 
         client = self._model_clients[key]
         client.workflow_id = self.workflow_id
+        client.model_name = canonical_name
         return client
 
     # ------------------------------------------------------------------
@@ -2184,6 +2268,18 @@ class A2AMessage:
     message_type: str # e.g., "ERROR", "METRIC", "UI_EVENT"
     payload: Dict[str, Any]
     timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "sender": self.sender,
+            "recipient": self.recipient,
+            "message_type": self.message_type,
+            "payload": self.payload,
+            "timestamp": self.timestamp,
+        }
+
+    def model_dump(self) -> Dict[str, Any]:
+        return self.to_dict()
 
 @dataclass
 class A2AContext:
