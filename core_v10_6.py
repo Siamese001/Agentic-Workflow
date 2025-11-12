@@ -51,7 +51,7 @@ except ImportError:
     genai = None
 
 from dataclasses import dataclass, field, asdict
-from typing import Dict, Any, List, Optional, Tuple, TypeVar, Callable, Awaitable
+from typing import Dict, Any, List, Optional, Tuple, Type, TypeVar, Callable, Awaitable
 from datetime import datetime
 from asyncio import TimeoutError as AsyncTimeoutError
 

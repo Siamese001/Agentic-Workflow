@@ -529,7 +529,7 @@ async def run_meta_learning(config: ConfigV10_6):
     v10.6: Runs async meta-learning graph.
     """
     
-    logger.info("===== Starting v10.6 Meta-Learning =====")
+    logger.info(f"===== Starting v10.6 Meta-Learning =====")
     
     if not config.meta_loop_config.enable_meta_learning:
         logger.info("Meta-learning disabled in config. Exiting.")
@@ -569,13 +569,13 @@ async def run_meta_learning(config: ConfigV10_6):
         patterns_found = len(final_state.patterns)
         critique_passed = final_state.critique.get("critique_passed", False)
         
-        logger.info("META-LEARNING RESULTS (v10.6):")
+        logger.info(f"META-LEARNING RESULTS (v10.6):")
         logger.info(f"  Patterns Found: {patterns_found}")
         logger.info(f"  Critique Passed: {critique_passed}")
         
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Meta-learning cost: ${cost_summary['total_workflow_cost']:.4f}")
-        logger.info("===== v10.6 Meta-Learning Complete =====")
+        logger.info(f"===== v10.6 Meta-Learning Complete =====")
         
     except Exception as e:
         logger.error(f"Meta-Learning failed: {e}", exc_info=True)
