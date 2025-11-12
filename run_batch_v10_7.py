@@ -13,25 +13,27 @@
 
 import os
 import csv
-import json
 import logging
 import shutil
 import asyncio
 import uuid
 import sys
 from datetime import datetime
-from typing import Dict, Any, List
+from typing import Any, Dict, List
 
 # v10.7: Import from new main/core
 from main_v10_7 import setup_logging, load_job_input
 from core_v10_7 import (
-    ConfigV10_7, WorkflowContext, MainGraphState,
-    CircuitBreakerOpenError, CostCeilingExceededError,
-    FileIOError, WorkflowError,
+    ConfigV10_7,
+    ContextBudgetManager,
     CircuitBreaker,
-    # v10.7: Import new helper functions
-    create_workflow_context, cleanup_workflow_chroma_collection,
-    get_checkpointer
+    CircuitBreakerOpenError,
+    MainGraphState,
+    WorkflowContext,
+    WorkflowError,
+    cleanup_workflow_chroma_collection,
+    create_workflow_context,
+    get_checkpointer,
 )
 # v10.7: Import from new orchestration/stacks
 from agent_orchestration_v10_7 import get_graph_app
@@ -63,17 +65,25 @@ class BatchFeedbackAggregator:
         self.job_results.append(result)
     
     def get_batch_summary(self) -> Dict[str, Any]:
-        if not self.job_results: return {}
+        if not self.job_results:
+            return {}
+
         total_jobs = len(self.job_results)
-        successful = sum(1 for r in self.job_results if r['status'] == 'SUCCESS')
-        total_cost = sum(r.get('cost', 0.0) for r in self.job_results)
+        successful = sum(
+            1 for result in self.job_results if result["status"] == "SUCCESS"
+        )
+        total_cost = sum(result.get("cost", 0.0) for result in self.job_results)
         avg_cost = total_cost / total_jobs if total_jobs > 0 else 0.0
-        
+        success_rate = successful / total_jobs if total_jobs > 0 else 0.0
+
         return {
-            "timestamp": datetime.now().isoformat(), "total_jobs": total_jobs,
-            "successful": successful, "success_rate": successful / total_jobs if total_jobs > 0 else 0.0,
-            "total_cost": total_cost, "avg_cost_per_job": avg_cost,
-            "batch_health_score": (successful / total_jobs * 100) if total_jobs > 0 else 0.0
+            "timestamp": datetime.now().isoformat(),
+            "total_jobs": total_jobs,
+            "successful": successful,
+            "success_rate": success_rate,
+            "total_cost": total_cost,
+            "avg_cost_per_job": avg_cost,
+            "batch_health_score": success_rate * 100,
         }
 
 # ============================================================================
@@ -129,7 +139,7 @@ async def process_single_job_async(
              logger.error(f"Workflow {workflow_id} REJECTED.")
              raise WorkflowError("Workflow rejected, likely due to prompt injection or constitutional failure.")
 
-        final_state = MainGraphState.from_dict(final_state_dict)
+        MainGraphState.from_dict(final_state_dict)
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         total_cost = cost_summary['total_workflow_cost']
         
@@ -179,7 +189,7 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
         logger.info("v10.7 Batch process starting. No jobs found.")
         return
     
-    logger.info(f"===== v10.7 Async Batch Process Starting =====")
+    logger.info("===== v10.7 Async Batch Process Starting =====")
     
     # v10.7 (Fix #25): Backpressure Check
     max_queue_size = config.batch_config.max_batch_queue_size
@@ -188,7 +198,7 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
         logger.error("Batch run aborted. Clear queue before retrying.")
         return
         
-    logger.info(f"Found {len(job_files)} jobs in queue (limit: {max_queue_size})")
+    logger.info("Found %d jobs in queue (limit: %d)", len(job_files), max_queue_size)
     
     # --- v10.7: REFACTOR: COMPOSITION ROOT ---
     # Create a single, shared context to hold all instantiated services
@@ -261,7 +271,7 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
                 batch_aggregator
             )
     
-    logger.info(f"Starting parallel processing ({max_workers} workers)...")
+    logger.info("Starting parallel processing (%d workers)...", max_workers)
     start_time = datetime.now()
     
     results = await asyncio.gather(*[
@@ -271,6 +281,7 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
     
     end_time = datetime.now()
     duration = (end_time - start_time).total_seconds()
+    logger.info("Processed %d jobs in %.2f seconds", len(results), duration)
     
     # v10.7: Write CSV summary
     batch_summary = batch_aggregator.get_batch_summary()
@@ -287,15 +298,21 @@ async def run_batch_async(config: ConfigV10_7): # v10.7
         except IOError as e:
             logger.error(f"Failed to write batch summary: {e}")
     
-    logger.info(f"BATCH PROCESSING COMPLETE (v10.7)")
+    logger.info("BATCH PROCESSING COMPLETE (v10.7)")
     logger.info(f"  Total Jobs: {batch_summary.get('total_jobs', 0)}")
     logger.info(f"  Success Rate: {batch_summary.get('success_rate', 0.0):.1%}")
     logger.info(f"  Total Cost: ${batch_summary.get('total_cost', 0.0):.4f}")
     
     # v10.7: Log metrics summary for the *entire* batch
-    logger.info(f"--- Batch Metrics Summary (v10.7) ---")
+    logger.info("--- Batch Metrics Summary (v10.7) ---")
     for metric in metrics_collector.get_summary():
-         logger.info(f"  - {metric['agent_name']}::{metric['task_name']} | {metric['duration_ms']:.2f}ms | Success: {metric['success']}")
+        logger.info(
+            "  - %s::%s | %.2fms | Success: %s",
+            metric["agent_name"],
+            metric["task_name"],
+            metric["duration_ms"],
+            metric["success"],
+        )
     
     # Optionally trigger meta-learning
     if META_LEARNER_AVAILABLE and config.meta_loop_config.enable_meta_learning:
