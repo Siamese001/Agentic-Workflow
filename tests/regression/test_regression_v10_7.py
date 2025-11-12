@@ -10,6 +10,6 @@ def test_output_backward_compatibility():
         assert set(prev[k].keys()).issubset(new[k].keys())
 
 
-@pytest.mark.skip("Add additional regression tests for model drift and scoring consistency")
+@pytest.mark.xfail(reason="Add additional regression tests for model drift and scoring consistency", strict=False)
 def test_placeholder():
-    pass
+    pytest.xfail("Add additional regression tests for model drift and scoring consistency")

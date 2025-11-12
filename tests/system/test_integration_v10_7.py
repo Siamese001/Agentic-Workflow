@@ -16,6 +16,11 @@ def test_hil_trigger_on_ambiguity():
     assert "HIL" in out["events"]
 
 
-@pytest.mark.skip("Add 18 integration flow tests for cache, async merges, and redis persistence")
+@pytest.mark.xfail(
+    reason="Add 18 integration flow tests for cache, async merges, and redis persistence",
+    strict=False,
+)
 def test_placeholder():
-    pass
+    pytest.xfail(
+        "Add 18 integration flow tests for cache, async merges, and redis persistence"
+    )
