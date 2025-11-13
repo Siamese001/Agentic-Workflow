@@ -125,6 +125,7 @@ class ContextBudgetManager:
         # v10.7 (Fix #14): Use agentic pruning
         return await self._prune_agentic(document, token_limit_with_buffer)
 
+
 class MetricsCollector:
     """v10.7: In-memory collector for agent/tool observability."""
     def __init__(self):
@@ -168,20 +169,38 @@ class MetricsCollector:
             return None
         return sum(latencies) / len(latencies)
 
+
 def track_metrics(task_name: str):
-    """v10.7: Decorator for agent/tool run/run_async methods."""
+    """
+    v10.7: Decorator for agent/tool/model run methods.
+
+    Updated to support BOTH:
+      - Agents: self.context.metrics_collector
+      - Model clients: self.metrics
+    """
     def decorator(func: Callable) -> Callable:
         if asyncio.iscoroutinefunction(func):
             @wraps(func)
-            async def async_wrapper(self: 'BaseAgent', *args, **kwargs) -> Any:
-                if not (hasattr(self, 'context') and hasattr(self.context, 'metrics_collector')):
-                    logger.warning(f"@track_metrics on {func.__name__} requires 'self.context.metrics_collector'")
+            async def async_wrapper(self: Any, *args, **kwargs) -> Any:
+                collector = None
+
+                # Prefer agent-style: self.context.metrics_collector
+                if hasattr(self, "context") and getattr(self.context, "metrics_collector", None):
+                    collector = self.context.metrics_collector
+                # Fallback: client-style: self.metrics
+                elif hasattr(self, "metrics"):
+                    collector = self.metrics
+
+                if collector is None:
+                    logger.warning(
+                        f"@track_metrics on {func.__name__} could not find a MetricsCollector "
+                        f"(looked for self.context.metrics_collector or self.metrics)"
+                    )
                     return await func(self, *args, **kwargs)
-                
-                collector = self.context.metrics_collector
+
                 agent_name = self.__class__.__name__
                 start_time = time.perf_counter()
-                
+
                 try:
                     result = await func(self, *args, **kwargs)
                     end_time = time.perf_counter()
@@ -210,15 +229,24 @@ def track_metrics(task_name: str):
             return async_wrapper
         else:
             @wraps(func)
-            def sync_wrapper(self: 'BaseAgent', *args, **kwargs) -> Any:
-                if not (hasattr(self, 'context') and hasattr(self.context, 'metrics_collector')):
-                    logger.warning(f"@track_metrics on {func.__name__} requires 'self.context.metrics_collector'")
+            def sync_wrapper(self: Any, *args, **kwargs) -> Any:
+                collector = None
+
+                if hasattr(self, "context") and getattr(self.context, "metrics_collector", None):
+                    collector = self.context.metrics_collector
+                elif hasattr(self, "metrics"):
+                    collector = self.metrics
+
+                if collector is None:
+                    logger.warning(
+                        f"@track_metrics on {func.__name__} could not find a MetricsCollector "
+                        f"(looked for self.context.metrics_collector or self.metrics)"
+                    )
                     return func(self, *args, **kwargs)
-                
-                collector = self.context.metrics_collector
+
                 agent_name = self.__class__.__name__
                 start_time = time.perf_counter()
-                
+
                 try:
                     result = func(self, *args, **kwargs)
                     end_time = time.perf_counter()
@@ -246,6 +274,7 @@ def track_metrics(task_name: str):
                     raise
             return sync_wrapper
     return decorator
+
 
 class SemanticValidator:
     """v10.7: Local, deterministic validation service."""
@@ -277,6 +306,7 @@ class SemanticValidator:
             return (True, f"Word count OK ({deterministic_count})")
         else:
             return (False, f"Word count FAILED. Expected {min_words}-{max_words}, got {deterministic_count}.")
+
 
 # ============================================================================
 # v10.7: CENTRALIZED PROMPT FORMATTER (Fix #14, #19, #24)
@@ -375,6 +405,7 @@ async def _format_prompt_with_defaults(
     formatted = template.format(**all_keys)
     header = f"{goal_injection}{failure_injection}-------------------\n\n"
     return f"{header}{formatted}"
+
 
 # ============================================================================
 # v10.7: PROMPT TEMPLATE MANAGER (Fix #17, #19, #20, #24, #30)
@@ -564,6 +595,7 @@ Your Review:
         
         return templates
 
+
 # ============================================================================
 # v10.7: RESPONSE VALIDATOR (Preserved)
 # ============================================================================
@@ -631,6 +663,7 @@ class ResponseValidator:
             self.logger.error(f"Response validation failed: {e}")
             return None, str(e)
 
+
 # ============================================================================
 # ROW 7: FEEDBACK LOG READER (v10.7: Added failure getter)
 # ============================================================================
@@ -680,6 +713,7 @@ class FeedbackLogReader:
         """v10.7 (Fix #24): Gets recent failure events."""
         all_entries = self._read_log_lines(max_entries)
         return [e for e in all_entries if e.feedback_type == "failure"]
+
 
 # ============================================================================
 # ROW 7: PROPOSED RULES LOADER (v10.7: Preserved)
@@ -738,6 +772,7 @@ class ProposedRulesLoader:
         rules = self.load_rules(status_filter="APPROVED")
         # v10.7 (Fix #30): Also load rules of type 'moral_constitution'
         return [r.config_changes for r in rules if r.rule_type.lower() in ["constitution", "moral_constitution"]]
+
 
 # ============================================================================
 # ROW 5: CACHE MANAGER (v10.7: Fix #13 - Semantic Caching)
@@ -904,6 +939,7 @@ class CacheManager:
             "tool_cache": {"hits": self._tool_hits, "misses": self._tool_misses, "total": tool_total, "hit_rate_pct": tool_hit_rate}
         }
 
+
 # ============================================================================
 # ROW 4: COST TRACKER (v10.7: Preserved)
 # ============================================================================
@@ -940,6 +976,7 @@ class CostTracker:
         total_cost = sum(c["cost"] for c in calls)
         return {"workflow_id": workflow_id, "total_workflow_cost": total_cost, "calls": calls}
 
+
 __all__ = [
     "ContextBudgetManager",
     "MetricsCollector",
@@ -955,4 +992,3 @@ __all__ = [
     "CostTracker",
     "_format_prompt_with_defaults",
 ]
-
