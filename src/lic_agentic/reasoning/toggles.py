@@ -25,5 +25,5 @@ class ReasoningToggles(BaseModel):
             raise ValidationError("min_tot_depth must be between 1 and 3")
         if not 1 <= int(self.self_consistency) <= 5:
             raise ValidationError("self_consistency must be between 1 and 5")
-        if not 0.1 <= float(self.temperature_cap) <= 0.9:
-            raise ValidationError("temperature_cap must be between 0.1 and 0.9")
+        if not 0.2 <= float(self.temperature_cap) <= 0.7:
+            raise ValidationError("temperature_cap must be between 0.2 and 0.7")

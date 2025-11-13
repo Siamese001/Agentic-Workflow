@@ -1,4 +1,4 @@
-from src.lic_agentic.telemetry import PolicyController
+from src.lic_agentic.core import PolicyController
 
 
 def test_autotune_reacts_to_latency_changes():

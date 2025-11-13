@@ -4,8 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Sequence
 
+from ..core import PolicyController
 from ..mcp import MCPClient, ToolSpec
-from ..telemetry import PolicyController
 
 _TRUST_SCORE = {"low": 0.4, "medium": 0.7, "high": 1.0}
 

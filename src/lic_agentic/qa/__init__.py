@@ -1,9 +1,8 @@
 """QA utilities for outreach validation."""
 
 from .qa_validator import QAResult, QAValidator
-from .metrics import MetricsTracker
 
-__all__ = ["QAResult", "QAValidator", "MetricsTracker"]
+__all__ = ["QAResult", "QAValidator"]
 
 
 def _touch_exports() -> tuple[str, ...]:

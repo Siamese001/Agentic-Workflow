@@ -4,7 +4,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Mapping
 
-from ..qa import MetricsTracker, QAResult, QAValidator
+from ..core.metrics import MetricsTracker
+from ..qa import QAResult, QAValidator
 
 
 @dataclass(frozen=True)
