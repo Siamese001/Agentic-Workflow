@@ -154,8 +154,9 @@ async def run_workflow_async(
                     print(chunk.content, end="", flush=True)
             
             if kind == "on_node_end":
-                if current_node in event["data"]["output"]:
-                    final_state_dict = event["data"]["output"][current_node]
+                # Do NOT extract partial state here.
+                # Node-end events only indicate completion; they do not carry final graph state.
+                pass
                 
                 if current_node == "HIL_PAUSE":
                     print("\n", flush=True) # Newline after streaming
@@ -177,7 +178,8 @@ async def run_workflow_async(
              raise WorkflowError("Workflow rejected, likely due to prompt injection.")
         
         # v10.7 (Fix #30): Check for constitutional failure
-        if "failed_constitution" in final_state_dict.get("qa", {}).get("constitutional_review", {}):
+        cr = final_state_dict.get("qa", {}).get("constitutional_review")
+        if isinstance(cr, dict) and cr.get("review_passed") is False:   
              logger.error(f"Workflow {workflow_id} FAILED CONSTITUTIONAL REVIEW.")
              raise WorkflowError("Workflow rejected due to constitutional failure.")
 
