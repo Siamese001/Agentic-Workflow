@@ -1,4 +1,5 @@
 import asyncio
+import asyncio
 import sys
 import types
 from typing import Any, Dict
@@ -11,8 +12,8 @@ from core_v10_7 import (
     MCPClientSpec,
     MCPClientStub,
     WorkflowContext,
-    _instantiate_mcp_client,
-    _parse_mcp_client_specs,
+    instantiate_mcp_client,
+    parse_mcp_client_specs,
     wrap_mcp,
 )
 from agent_orchestration_v10_7 import load_dynamic_tools
@@ -35,7 +36,7 @@ def make_broken_module(class_name: str = "BrokenClient") -> str:
 )
 def test_parse_mcp_client_specs_rejects(bad):
     with pytest.raises(ValueError):
-        _parse_mcp_client_specs(bad)  # type: ignore[arg-type]
+        parse_mcp_client_specs(bad)  # type: ignore[arg-type]
 
 def test_instantiate_missing_class_raises_attribute_error():
     module_name = "failing_mcp_module"
@@ -51,12 +52,12 @@ def test_instantiate_missing_class_raises_attribute_error():
 
     try:
         with pytest.raises(AttributeError):
-            _instantiate_mcp_client(spec)
+            instantiate_mcp_client(spec)
     finally:
         sys.modules.pop(module_name, None)
 
 def test_instantiate_unknown_provider_returns_stub():
-    c = _instantiate_mcp_client(MCPClientSpec(name="mystery", provider="unknown"))
+    c = instantiate_mcp_client(MCPClientSpec(name="mystery", provider="unknown"))
     assert isinstance(c, MCPClientStub)
 
 

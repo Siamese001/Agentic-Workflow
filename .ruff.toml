@@ -2,6 +2,7 @@ line-length = 100
 extend-exclude = [
     "agent_orchestration_v10_6.py",
     "agent_orchestration_v10_7.py",
+    "core_v10_7",
     "run_learning_v10_6.py",
     "run_learning_v10_7.py",
     "run_batch_v10_6.py",
