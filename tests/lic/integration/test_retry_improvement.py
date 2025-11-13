@@ -1,8 +1,8 @@
 from src.lic_agentic.agents.k7_validator_agent import ValidatorAgent
 
 
-def test_retry_brings_to_pass():
-    agent = ValidatorAgent(max_retries=1)
+def test_retry_brings_to_pass(lic_context):
+    agent = ValidatorAgent(lic_context, max_retries=1)
     initial_draft = """Subject: Hello\n\nHello there\nBest regards,\nLIC Outreach Bot"""
     artifacts = {"aid": "Grounded insight"}
     verdict = agent.check(

@@ -5,8 +5,8 @@ from src.lic_agentic.reasoning.toggles import ReasoningToggles
 from src.lic_agentic.stacks.outreach_stack import OutreachStack, StackInputs
 
 
-def test_release_path_meets_slos_and_is_deterministic():
-    stack = OutreachStack(ReasoningToggles())
+def test_release_path_meets_slos_and_is_deterministic(lic_context):
+    stack = OutreachStack(ReasoningToggles(), context=lic_context)
     inputs = StackInputs(prompt="Checking in", company_id="ACME", contact_id="C1")
 
     drafts = []

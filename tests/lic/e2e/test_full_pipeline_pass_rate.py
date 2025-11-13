@@ -4,8 +4,8 @@ from src.lic_agentic.reasoning.toggles import ReasoningToggles
 from src.lic_agentic.stacks.outreach_stack import OutreachStack
 
 
-def test_full_pipeline_pass_rate():
-    stack = OutreachStack(ReasoningToggles())
+def test_full_pipeline_pass_rate(lic_context):
+    stack = OutreachStack(ReasoningToggles(), context=lic_context)
     samples = [
         SimpleNamespace(prompt="Excited to connect", company_id="ACME", contact_id="C1"),
         SimpleNamespace(prompt="Shared interest in innovation", company_id="OMEGA", contact_id="C2"),

@@ -8,8 +8,8 @@ class _Inputs:
     contact_id = "C1"
 
 
-def test_safe_route_equivalence():
-    stack = OutreachStack(ReasoningToggles())
+def test_safe_route_equivalence(lic_context):
+    stack = OutreachStack(ReasoningToggles(), context=lic_context)
     out = stack.run(StackInputs(prompt="Hello", company_id="ACME", contact_id="C1"))
     assert "draft" in out
     assert out["verdict"].passed

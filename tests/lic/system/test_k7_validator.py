@@ -11,17 +11,19 @@ class StubQAValidator:
         return next(self._responses)
 
 
-def test_validator_passes_with_subject_and_artifact():
+def test_validator_passes_with_subject_and_artifact(lic_context):
     draft = """Subject: Hello\n\nHello there,\nBody with [artifact_id:123] token\nCTA: Let me know if next week works.\nBest regards,\nLIC Outreach Bot"""
-    verdict = ValidatorAgent().check(draft, route_decision=None, pii_map={}, artifacts={"123": "token"})
+    verdict = ValidatorAgent(lic_context).check(
+        draft, route_decision=None, pii_map={}, artifacts={"123": "token"}
+    )
     assert isinstance(verdict, ValidationResult)
     assert verdict.passed
     assert verdict.reasons == ()
 
 
-def test_validator_flags_missing_placeholders():
+def test_validator_flags_missing_placeholders(lic_context):
     draft = """Subject: Hi\n\nHello there,\nBody with [artifact_id:123] token\nCTA: Can we connect?\nBest regards,\nLIC Outreach Bot"""
-    verdict = ValidatorAgent().check(
+    verdict = ValidatorAgent(lic_context).check(
         draft,
         route_decision=None,
         pii_map={"<PII_1>": "alice@example.com"},
@@ -31,9 +33,9 @@ def test_validator_flags_missing_placeholders():
     assert any("Placeholder <PII_1>" in reason for reason in verdict.reasons)
 
 
-def test_validator_retry_inserts_cta_before_signature():
+def test_validator_retry_inserts_cta_before_signature(lic_context):
     draft = """Subject: Hi\n\nHello there,\nBest regards,\nLIC Outreach Bot"""
-    verdict = ValidatorAgent(max_retries=1).check(
+    verdict = ValidatorAgent(lic_context, max_retries=1).check(
         draft,
         route_decision=None,
         pii_map={},
@@ -44,16 +46,16 @@ def test_validator_retry_inserts_cta_before_signature():
     assert verdict.final_draft.strip().endswith("LIC Outreach Bot")
 
 
-def test_validator_without_artifacts_flags_missing_value_wedge():
+def test_validator_without_artifacts_flags_missing_value_wedge(lic_context):
     draft = """Subject: Hi\n\nHello there,\nCTA: Talk soon?\nBest regards,\nLIC Outreach Bot"""
-    verdict = ValidatorAgent().check(draft, route_decision=None, pii_map={}, artifacts={})
+    verdict = ValidatorAgent(lic_context).check(draft, route_decision=None, pii_map={}, artifacts={})
     assert not verdict.passed
     assert any("evidence" in reason.lower() for reason in verdict.reasons)
 
 
-def test_validator_adds_signature_when_missing():
+def test_validator_adds_signature_when_missing(lic_context):
     draft = """Subject: Hi\n\nHello there,\n[artifact_id:aid] detail"""
-    verdict = ValidatorAgent(max_retries=1).check(
+    verdict = ValidatorAgent(lic_context, max_retries=1).check(
         draft,
         route_decision=None,
         pii_map={},
@@ -63,9 +65,9 @@ def test_validator_adds_signature_when_missing():
     assert verdict.final_draft.strip().endswith("LIC Outreach Bot")
 
 
-def test_validator_inserts_missing_artifacts():
+def test_validator_inserts_missing_artifacts(lic_context):
     draft = """Subject: Hi\n\nHello there,\nCTA: Talk soon?\nBest regards,\nLIC Outreach Bot"""
-    verdict = ValidatorAgent(max_retries=1).check(
+    verdict = ValidatorAgent(lic_context, max_retries=1).check(
         draft,
         route_decision=None,
         pii_map={},
@@ -74,7 +76,7 @@ def test_validator_inserts_missing_artifacts():
     assert "[artifact_id:aid]" in verdict.final_draft
 
 
-def test_validator_retry_repairs_all_missing_sections():
+def test_validator_retry_repairs_all_missing_sections(lic_context):
     failing = QAResult(
         ok=False,
         reasons=("Missing subject",),
@@ -82,7 +84,7 @@ def test_validator_retry_repairs_all_missing_sections():
         missing_artifacts=("aid",),
     )
     passing = QAResult(ok=True, reasons=())
-    agent = ValidatorAgent(qa_validator=StubQAValidator([failing, passing]), max_retries=2)
+    agent = ValidatorAgent(lic_context, qa_validator=StubQAValidator([failing, passing]), max_retries=2)
     verdict = agent.check("", route_decision=None, pii_map={}, artifacts={"aid": "Summary"})
     assert verdict.passed
     assert verdict.attempts == 2
@@ -93,14 +95,14 @@ def test_validator_retry_repairs_all_missing_sections():
     assert "[artifact_id:aid]" in verdict.final_draft
 
 
-def test_find_signature_index_detects_keywords():
-    agent = ValidatorAgent()
+def test_find_signature_index_detects_keywords(lic_context):
+    agent = ValidatorAgent(lic_context)
     lines = ["Body line", "Best regards,"]
     assert agent._find_signature_index(lines) == 1
     assert agent._find_signature_index(["Body line"]) is None
 
 
-def test_estimate_token_drift_caps_value():
-    agent = ValidatorAgent()
+def test_estimate_token_drift_caps_value(lic_context):
+    agent = ValidatorAgent(lic_context)
     assert agent._estimate_token_drift(100) == 0
     assert agent._estimate_token_drift(300) == 0.1
