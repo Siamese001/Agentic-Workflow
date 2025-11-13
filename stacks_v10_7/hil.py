@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from vendor.pydantic_compat import BaseModel, Field
 
 from core_v10_7 import (
     BaseAgent,

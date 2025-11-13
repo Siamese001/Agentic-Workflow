@@ -30,7 +30,7 @@ import asyncio
 import uuid
 from typing import Dict, Any, List, Type, Optional
 
-from pydantic import BaseModel, Field
+from vendor.pydantic_compat import BaseModel, Field
 from chromadb.utils import embedding_functions
 try:
     from rank_bm25 import BM25Okapi

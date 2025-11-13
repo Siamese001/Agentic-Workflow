@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, Field
+from vendor.pydantic_compat import BaseModel, Field
 
 
 class SpecialistDraftPacket(BaseModel):

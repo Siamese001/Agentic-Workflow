@@ -1,14 +1,14 @@
+"""Specialist planner ensemble and coordinator for v10.7 strategies."""
+
+from __future__ import annotations  # noqa: F404, E402
+
 # --- Vendor path bootstrap for Codex offline environment ---
-import sys
 import os
+import sys
 
 VENDOR_PATH = os.path.join(os.path.dirname(__file__), "vendor")
 if VENDOR_PATH not in sys.path:
     sys.path.insert(0, VENDOR_PATH)
-
-"""Specialist planner ensemble and coordinator for v10.7 strategies."""
-
-from __future__ import annotations  # noqa: F404, E402
 
 import asyncio  # noqa: E402
 from typing import TYPE_CHECKING, Any, Dict, List, Optional  # noqa: E402

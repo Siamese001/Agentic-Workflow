@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from .constants import legacy_model_alias
+from .exceptions import PydanticSchemaError
 from .services import track_metrics
 
 if TYPE_CHECKING:  # pragma: no cover
@@ -145,8 +146,8 @@ class BaseAgent:
         model_cfg = getattr(self.config.model_config, model_key)
 
         client = self.context.get_model_client(
-            provider=model_cfg.provider,
-            model_name=legacy_model_alias(model_cfg.model_name),
+            model_cfg.provider,
+            legacy_model_alias(model_cfg.model_name),
         )
 
         # Inject runtime metadata
@@ -210,6 +211,10 @@ class BaseTool(BaseAgent):
         # --- 2. Execute tool ---
         try:
             result = await self._run_async_internal(tool_input, workflow_id)
+        except PydanticSchemaError:
+            # Contract violations must propagate so callers/tests can assert
+            self.log_error("Tool execution failed schema validation")
+            raise
         except Exception as exc:
             self.log_error(f"Tool execution failed: {exc}")
             return {

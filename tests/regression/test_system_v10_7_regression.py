@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 from unittest.mock import ANY, AsyncMock, MagicMock, patch
 
 import pytest
-from pydantic import BaseModel
+from vendor.pydantic_compat import BaseModel
 
 from core_v10_7 import (
     BaseAgent,
@@ -592,7 +592,7 @@ def test_fix_7_dynamic_tool_loading(mock_workflow_context, tmp_path):
     tool_file = tool_dir / "my_new_tool.py"
     tool_code = """
 from core_v10_7 import BaseTool, BaseToolOutput, track_metrics
-from pydantic import BaseModel
+from vendor.pydantic_compat import BaseModel
 class MyDynamicTool(BaseTool):
     tool_name = "my_dynamic_tool"
     output_model = BaseToolOutput

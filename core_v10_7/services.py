@@ -15,7 +15,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable, Dict, List, Mapping, Optional, Tuple
 
 from chromadb.utils import embedding_functions
-from pydantic import BaseModel, ValidationError as PydanticValidationError
+from vendor.pydantic_compat import BaseModel, ValidationError as PydanticValidationError
 
 from telemetry_v10_7 import log_event
 

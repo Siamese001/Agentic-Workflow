@@ -6,7 +6,7 @@ import asyncio
 import json
 from typing import Any, Dict, List
 
-from pydantic import BaseModel
+from vendor.pydantic_compat import BaseModel
 
 from core_v10_7 import (
     BaseAgent,
@@ -202,10 +202,10 @@ class ToTStrategistAgent(BaseAgent):
             },
         )
 
-        # ======================================================
-        # 🔥 CRITICAL FIX — ALWAYS RETURN DICTS, NEVER MODELS
-        # ======================================================
+        # Provide both typed and serialized artifacts so downstream consumers
+        # (tests + orchestration layers) can pick whichever format they need.
         return {
-            "strategy_plan": selected_strategy.model_dump(),
+            "strategy_plan": selected_strategy,
+            "strategy_plan_dict": selected_strategy.model_dump(),
             "tot_branches": [b["strategy"].model_dump() for b in branches],
         }
