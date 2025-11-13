@@ -32,29 +32,29 @@ class OutreachStack:
         self.toggles = toggles
         self.context = context or LICCoreContext.bootstrap()
         self.policy: PolicyController = self.context.resolve("policy_controller")
-        metrics: MetricsTracker = self.context.resolve("metrics_tracker")
-        self.router = RouterAgent()
-        self.architect = MessageArchitect(toggles)
-        self.cta = CTAAgent()
-        self.signature = SignatureAgent()
-        self.validator = ValidatorAgent(qa_validator=QAValidator(), metrics=metrics, max_retries=1)
+        self.metrics: MetricsTracker = self.context.resolve("metrics_tracker")
+        self.router = RouterAgent(self.context)
+        self.architect = MessageArchitect(self.context, toggles)
+        self.cta = CTAAgent(self.context)
+        self.signature = SignatureAgent(self.context)
+        self.validator = ValidatorAgent(self.context, qa_validator=QAValidator(), max_retries=1)
 
     def run(self, inputs: StackInputs) -> dict:
-        # 1. Prompt-injection block
+        # 1) detect_injection
         finding = detect_injection(inputs.prompt)
         if finding.is_injection and finding.severity == "high":
             return {"end": "safety_block", "reason": finding.rationale}
 
-        # 2. PII sanitization with reversible map
+        # 2) sanitize_pii
         sanitized_inputs, pii_map = sanitize_pii(inputs)
 
-        # 3. Bias auditing
+        # 3) audit_bias
         bias = audit_bias(sanitized_inputs)
 
-        # 4. Routing
+        # 4) route
         route = self.router.route(sanitized_inputs, bias)
 
-        # 5. Draft assembly with retrieval evidence
+        # 5) compose
         package = self.architect.compose(
             sanitized_inputs,
             route,
@@ -69,26 +69,29 @@ class OutreachStack:
             artifacts = {"baseline": "Value proposition here."}
             latency_ms = 0
 
-        # 6. CTA and signature sequencing
+        # 6) CTA
         draft = self.cta.adjust(draft, route)
+        # 7) signature
         draft = self.signature.attach(draft, route)
 
-        # 7. QA validation and repair loop
+        # 8) validation
         verdict: ValidationResult = self.validator.check(
             draft,
             route,
             pii_map,
             artifacts=artifacts,
         )
+        # 9) PII rehydration
         final_draft = self._rehydrate(verdict.final_draft, pii_map)
         verdict = replace(verdict, final_draft=final_draft)
 
-        # 8. Policy update and toggle propagation
+        # 10) policy.update(...)
         policy_update = self.policy.update(
             latency_p95_ms=latency_ms or 1000,
             qa_pass_rate=1.0 if verdict.passed else 0.0,
             token_drift=self.validator.metrics.token_drift(),
         )
+        # 11) toggle propagation → MessageArchitect.update_toggles()
         self._apply_policy_update(policy_update)
 
         return {"draft": verdict.final_draft, "verdict": verdict, "artifacts": artifacts}

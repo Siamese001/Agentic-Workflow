@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict
 
+from ..core import LICBaseAgent
 from ..safety.bias_auditor import BiasAssessment
 
 
@@ -13,8 +13,11 @@ class RouteDecision:
     priority: str
 
 
-class RouterAgent:
+class RouterAgent(LICBaseAgent):
     """Very small heuristic-based router."""
+
+    def __init__(self, context, *args, **kwargs):
+        super().__init__(context)
 
     def route(self, sanitized_inputs, bias: BiasAssessment) -> RouteDecision:
         prompt = getattr(sanitized_inputs, "prompt", "")
