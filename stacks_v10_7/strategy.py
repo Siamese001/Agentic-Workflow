@@ -55,7 +55,8 @@ class QueryComplexityClassifier(BaseAgent):
         )
 
         validated_output, error = self.validator.validate(
-            response["content"], self.ComplexityOutput
+            response["content"],
+            self.ComplexityOutput,
         )
         if error:
             self.log_error(
@@ -121,20 +122,22 @@ class ToTStrategistAgent(BaseAgent):
         return branches
 
     @track_metrics("run_tot_strategy")
-    async def run_async(self, job_context: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+    async def run_async(
+        self, job_context: Dict[str, Any], workflow_id: str
+    ) -> Dict[str, Any]:
         self.log_info("Generating ToT strategy with voting (v10.7)...")
 
         branching_factor = self.config.agent_stacks.strategy_tot_branching_factor
         client = self.get_model_client("strategy_model")
 
-        # Generate multiple strategy branches
-        branches = await self._generate_branches(job_context, client, branching_factor)
+        branches = await self._generate_branches(
+            job_context, client, branching_factor
+        )
         if not branches:
             raise ValidationError("All ToT strategy branches failed validation.")
 
         self.log_info(f"Generated {len(branches)} branches. Starting vote...")
 
-        # Prepare branch JSON for voting
         vote_client = self.get_model_client("strategy_model_simple")
         vote_prompt_template = self.prompt_manager.get_template("strategy_tot_vote")
 
@@ -178,8 +181,7 @@ class ToTStrategistAgent(BaseAgent):
             selected_strategy = branches[0]["strategy"]
         else:
             self.log_info(
-                f"Vote selected: {validated_vote.best_branch_id}. "
-                f"Reason: {validated_vote.reason}"
+                f"Vote selected: {validated_vote.best_branch_id}. Reason: {validated_vote.reason}"
             )
             selected_strategy = next(
                 (
@@ -190,7 +192,6 @@ class ToTStrategistAgent(BaseAgent):
                 branches[0]["strategy"],
             )
 
-        # Log voting result
         self.log_feedback(
             workflow_id,
             "tot_strategy_vote",
@@ -201,11 +202,9 @@ class ToTStrategistAgent(BaseAgent):
             },
         )
 
-        # --------------------------------------------
-        # CRITICAL FIX:
-        # Always return StrategyPlan as a dict, not a Pydantic model.
-        # This prevents state corruption and fixes HIL crash.
-        # --------------------------------------------
+        # ======================================================
+        # 🔥 CRITICAL FIX — ALWAYS RETURN DICTS, NEVER MODELS
+        # ======================================================
         return {
             "strategy_plan": selected_strategy.model_dump(),
             "tot_branches": [b["strategy"].model_dump() for b in branches],
