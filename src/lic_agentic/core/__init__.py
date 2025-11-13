@@ -1,4 +1,5 @@
 """Core LIC infrastructure mirroring the resume-gen v10.7 layering."""
+from .base_agent import LICBaseAgent
 from .conductor import Conductor
 from .dependency_injection import (
     DependencyAlreadyRegisteredError,
@@ -10,6 +11,7 @@ from .policy_controller import PolicyController, PolicyUpdate
 from .registry_client import MCPClient, ToolSpec
 
 __all__ = [
+    "LICBaseAgent",
     "Conductor",
     "DependencyAlreadyRegisteredError",
     "DependencyNotRegisteredError",
