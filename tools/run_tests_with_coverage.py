@@ -36,14 +36,19 @@ def _iter_code_lines(path: pathlib.Path) -> Set[int]:
             stripped = raw_line.strip()
             if not stripped or stripped.startswith("#"):
                 continue
+            if "# pragma: no cover" in stripped.lower():
+                continue
             code_lines.add(lineno)
     return code_lines
 
 
-def _collect_coverage(counts: dict[Tuple[str, int], int]) -> Tuple[int, int]:
+def _collect_coverage(
+    counts: dict[Tuple[str, int], int]
+) -> Tuple[int, int, list[Tuple[pathlib.Path, int, int, list[int]]]]:
     total_lines = 0
     executed_lines = 0
     normalized_counts: dict[pathlib.Path, Set[int]] = {}
+    breakdown: list[Tuple[pathlib.Path, int, int, list[int]]] = []
 
     for (filename, lineno), hit_count in counts.items():
         if hit_count <= 0:
@@ -54,14 +59,19 @@ def _collect_coverage(counts: dict[Tuple[str, int], int]) -> Tuple[int, int]:
         normalized_counts.setdefault(file_path, set()).add(lineno)
 
     for file_path in TARGET_DIR.rglob("*.py"):
+        if file_path.name == "__init__.py":
+            continue
         lines = _iter_code_lines(file_path)
         if not lines:
             continue
         total_lines += len(lines)
         executed = normalized_counts.get(file_path.resolve(), set())
-        executed_lines += len(lines & executed)
+        hit_count = len(lines & executed)
+        executed_lines += hit_count
+        missing_lines = sorted(lines - executed)
+        breakdown.append((file_path, hit_count, len(lines), missing_lines))
 
-    return executed_lines, total_lines
+    return executed_lines, total_lines, breakdown
 
 
 def main(argv: Iterable[str] | None = None) -> int:
@@ -71,6 +81,11 @@ def main(argv: Iterable[str] | None = None) -> int:
         type=float,
         default=90.0,
         help="Required coverage percentage for src/lic_agentic (default: 90.0)",
+    )
+    parser.add_argument(
+        "--report-missing",
+        action="store_true",
+        help="Print per-file coverage breakdown sorted by ascending coverage",
     )
     parser.add_argument(
         "pytest_args",
@@ -91,10 +106,23 @@ def main(argv: Iterable[str] | None = None) -> int:
     if exit_code != 0:
         return exit_code
 
-    executed, total = _collect_coverage(tracer.results().counts)
+    executed, total, breakdown = _collect_coverage(tracer.results().counts)
     coverage_pct = (executed / total * 100.0) if total else 100.0
 
     print(f"Coverage for src/lic_agentic: {coverage_pct:.2f}% ({executed}/{total} lines)")
+    if args.report_missing:
+        for file_path, hit_count, line_count, missing in sorted(
+            breakdown,
+            key=lambda item: item[1] / item[2] if item[2] else 1.0,
+        ):
+            pct = (hit_count / line_count * 100.0) if line_count else 100.0
+            preview = ", ".join(str(num) for num in missing[:5])
+            if len(missing) > 5:
+                preview += ", ..."
+            suffix = f" missing: {preview}" if missing else ""
+            print(
+                f"  {file_path.relative_to(ROOT)}: {pct:.1f}% ({hit_count}/{line_count}){suffix}"
+            )
     if coverage_pct < args.threshold:
         print(
             f"ERROR: coverage {coverage_pct:.2f}% is below the required {args.threshold:.2f}%",

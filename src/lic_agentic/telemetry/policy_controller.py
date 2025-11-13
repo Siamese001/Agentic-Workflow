@@ -49,14 +49,7 @@ class PolicyController:
     def quarantine_status(self, tool_id: str) -> bool:
         return self._registered_quarantine.get(tool_id, False)
 
-    def update(
-        self,
-        *,
-        latency_p95_ms: int,
-        qa_pass_rate: float,
-        token_drift: float = 0.0,
-        tool_success_rates: Mapping[str, float] | None = None,
-    ) -> PolicyUpdate:
+    def update(self, *, latency_p95_ms: int, qa_pass_rate: float, token_drift: float = 0.0, tool_success_rates: Mapping[str, float] | None = None) -> PolicyUpdate:
         """Update policy settings based on telemetry samples."""
 
         error = self.TARGET_LATENCY_MS - max(latency_p95_ms, 0)

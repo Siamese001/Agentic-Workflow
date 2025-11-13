@@ -23,13 +23,7 @@ class SelectedTool:
 class MCPSelector:
     """Rank tools from the MCP registry using trust and policy signals."""
 
-    def __init__(
-        self,
-        client: MCPClient,
-        policy: PolicyController,
-        *,
-        allowlist: Iterable[str] | None = None,
-    ) -> None:
+    def __init__(self, client: MCPClient, policy: PolicyController, *, allowlist: Iterable[str] | None = None) -> None:
         self._client = client
         self._policy = policy
         self._allowlist = {item.lower() for item in (allowlist or [])}
