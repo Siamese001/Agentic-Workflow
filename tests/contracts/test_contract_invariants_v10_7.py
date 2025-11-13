@@ -1,0 +1,182 @@
+import pytest
+from workflow.runner import run_workflow
+from time import perf_counter
+
+
+# --------------------------------------------------------------------
+# Helper to assert "resume-like" dict structure
+# --------------------------------------------------------------------
+def _assert_resume_structure(resume: dict):
+    assert isinstance(resume, dict), "Resume output must be a dict"
+
+    # Minimal required blocks for v10.7
+    assert "strategy" in resume, "Missing strategy block"
+    assert "qa" in resume, "Missing QA block"
+
+    # At least one of these required narrative outputs:
+    assert any(
+        k in resume for k in ("summary", "bullets", "body")
+    ), "Resume must contain summary/bullets/body"
+
+
+# --------------------------------------------------------------------
+# 1. API Envelope Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_api_envelope_structure():
+    out = run_workflow({"resume": "AI Exec", "jd": "Databricks"})
+
+    assert isinstance(out, dict), "Workflow must return dict"
+    assert "status" in out, "Missing top-level status"
+    assert "events" in out, "Missing top-level events"
+    assert "resume" in out, "Missing top-level resume payload"
+
+    _assert_resume_structure(out["resume"])
+
+
+# --------------------------------------------------------------------
+# 2. Status Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_status_values_are_valid():
+    out = run_workflow({"resume": "AI Exec", "jd": "CoreWeave"})
+
+    valid = {"success", "fail", "blocked"}
+    assert out["status"] in valid, (
+        f"Invalid status '{out['status']}'. Allowed: {valid}"
+    )
+
+    if out["status"] == "blocked":
+        # SafetyGuard block reason must exist
+        assert "events" in out
+        assert any("safety" in e.lower() for e in out["events"]), (
+            "Blocked status must accompany safety-related event"
+        )
+
+
+# --------------------------------------------------------------------
+# 3. Event Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_event_list_is_properly_structured():
+    out = run_workflow({"resume": "AuditCase", "jd": "AI Director"})
+    events = out["events"]
+
+    assert isinstance(events, list), "Events must be list"
+    assert len(events) >= 1, "Event list may not be empty"
+
+    for e in events:
+        assert isinstance(e, (str, dict)), (
+            f"Event `{e}` must be string or dict"
+        )
+
+
+@pytest.mark.contract
+def test_retry_events_present_when_low_confidence():
+    out = run_workflow({"resume": "RetryCase", "jd": "AI Exec", "low_confidence": True})
+
+    # Must produce retry event
+    ev = out.get("events", [])
+    assert any("retry" in str(e).lower() for e in ev), (
+        f"Expected retry event missing. Events={ev}"
+    )
+
+
+# --------------------------------------------------------------------
+# 4. Strategy Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_strategy_block_fields_correct():
+    out = run_workflow({"resume": "AI Exec", "jd": "Anthropic"})
+    strat = out["resume"]["strategy"]
+
+    assert isinstance(strat, dict)
+    for field in ["steps", "goal", "context"]:
+        assert field in strat, f"Strategy block missing field `{field}`"
+        assert strat[field] not in (None, "", []), (
+            f"Strategy field `{field}` cannot be empty"
+        )
+
+
+# --------------------------------------------------------------------
+# 5. QA Block Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_qa_block_fields_correct():
+    out = run_workflow({"resume": "AI Exec", "jd": "AWS"})
+    qa = out["resume"]["qa"]
+
+    for field in ["confidence", "summary", "issues"]:
+        assert field in qa, f"QA block missing field `{field}`"
+
+    assert isinstance(qa["issues"], list), "`issues` must be list-like"
+
+
+# --------------------------------------------------------------------
+# 6. Summary must be shorter than resume input
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_summary_shorter_than_input():
+    text = "This is a long AI-related resume description intended to test summary shortening."
+    out = run_workflow({"resume": text, "jd": "Databricks"})
+
+    summary = out["resume"].get("summary")
+    assert summary, "Summary missing from resume output"
+
+    assert len(summary) < len(text), (
+        f"Summary not shorter than input.\n"
+        f"Summary({len(summary)} chars): {summary}\n"
+        f"Input({len(text)} chars): {text}"
+    )
+
+
+# --------------------------------------------------------------------
+# 7. Response must return rapidly and never None (simple SLA)
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_response_not_none_and_under_3s():
+    start = perf_counter()
+    out = run_workflow({"resume": "PerfTest", "jd": "Citi"})
+    elapsed = perf_counter() - start
+
+    assert out is not None, "Workflow returned None"
+    assert elapsed < 3.0, f"Workflow exceeded 3-second SLA (elapsed={elapsed:.2f}s)"
+
+
+# --------------------------------------------------------------------
+# 8. Error contract: malformed input must produce structured failure
+# --------------------------------------------------------------------
+@pytest.mark.contract
+@pytest.mark.parametrize("bad_input", [None, 123, ["not valid"], {"oops": "no resume"}])
+def test_error_contract_for_malformed_input(bad_input):
+    """
+    Ensures no raw stack traces leak. The workflow must normalize errors
+    into a proper {status:'fail', error:{...}} envelope.
+    """
+    out = run_workflow({"resume": bad_input, "jd": "AI Exec"})
+
+    # Must not throw
+    assert isinstance(out, dict), "Workflow must return a dict even for bad input"
+
+    # Failure must be normalized
+    assert out["status"] in {"fail", "blocked"}, (
+        f"Malformed input should produce fail/blocked status, not {out['status']}"
+    )
+
+    # Must include a structured error block
+    assert "error" in out or "issues" in out["resume"].get("qa", {}), (
+        "Malformed input must provide structured error information"
+    )
+
+
+# --------------------------------------------------------------------
+# 9. Resume always enriched: must contain >=3 top-level fields
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_resume_enrichment_minimum_structure():
+    out = run_workflow({"resume": "StructuralTest", "jd": "Google"})
+    resume = out["resume"]
+
+    assert len(resume.keys()) >= 3, (
+        f"Resume output not sufficiently enriched: keys={list(resume.keys())}"
+    )
