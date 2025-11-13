@@ -29,7 +29,7 @@
     "host": "localhost",
     "port": 8000,
     "use_http_client": false,
-    "persistent_path": "./chroma_db_v10_7",
+    "persistent_path": "./chromadb/persist",
     "default_collection_name": "resume_embeddings_v10_7",
     "semantic_cache_collection": "llm_semantic_cache_v10_7",
     "description": "ChromaDB for RAG and Semantic LLM Caching"
