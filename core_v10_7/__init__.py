@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import os
+<<<<<<< HEAD
 import site
+=======
+>>>>>>> main
 import sys
 from asyncio import TimeoutError as AsyncTimeoutError
 
@@ -11,6 +14,7 @@ VENDOR_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir,
 if os.path.isdir(VENDOR_PATH) and VENDOR_PATH not in sys.path:
     sys.path.insert(0, VENDOR_PATH)
 
+<<<<<<< HEAD
 # Ensure site-packages directories remain discoverable even in notebook or
 # sandboxed launchers that manipulate sys.path.
 try:
@@ -22,6 +26,8 @@ for candidate in candidate_paths + [getattr(site, "getusersitepackages", lambda:
     if candidate and os.path.isdir(candidate) and candidate not in sys.path:
         sys.path.append(candidate)
 
+=======
+>>>>>>> main
 from . import agents as _agents
 from . import clients as _clients
 from . import config as _config
