@@ -1,237 +1,364 @@
-"""Async model clients for the v10.7 runtime."""
+"""
+core_v10_7.clients
+-------------------
+
+Unified async model client layer for v10.7.
+
+This module provides:
+- OpenAIAsyncClient
+- AnthropicAsyncClient
+- GeminiAsyncClient
+- Tool-routed MCP client integration
+- AsyncBaseModelClient: the base interface for all providers
+
+Key behaviors:
+- Each provider is optional; missing SDKs raise ModelAPIError only when used.
+- Anthropic: prefers AsyncAnthropic, gracefully falls back to anthropic.Client.
+- Gemini: uses google-generativeai GenerativeModel with MIME-based JSON mode.
+- All clients integrate with:
+    - CostTracker
+    - ContextBudgetManager
+    - MetricsCollector (via @track_metrics)
+- MCP tools can override the provider path using get_tool(provider_name).
+"""
 
 from __future__ import annotations
 
-import asyncio
-import logging
 import os
-import random
-from typing import Any, Dict, List, Optional
+import json
+import asyncio
+from typing import Any, Dict, Optional, List
+
+# --------------------------------------------------------------------
+# Imports from core
+# --------------------------------------------------------------------
 
 from mcp import get_tool
 
-from .config import ConfigV10_7
 from .exceptions import ModelAPIError
-from .services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics
+from .services import (
+    CacheManager,
+    ContextBudgetManager,
+    CostTracker,
+    MetricsCollector,
+    track_metrics,
+)
+from .config import ConfigV10_7
 
-try:  # pragma: no cover - optional provider SDKs
-<<<<<<< HEAD
-    import anthropic
-except ImportError:  # pragma: no cover - provider optional
-    anthropic = None
-=======
+# --------------------------------------------------------------------
+# Optional provider SDKs
+# --------------------------------------------------------------------
+
+#
+# Anthropic import resolution
+#
+_AsyncAnthropic = None
+_anthropic_sync_client = None
+
+try:
+    # Preferred modern client
     from anthropic import AsyncAnthropic as _AsyncAnthropic
-except ImportError:  # pragma: no cover - provider optional
-    try:  # pragma: no cover - provider optional
+except Exception:
+    try:
+        # Legacy anthropic.Client fallback
         import anthropic as _anthropic_module
-    except ImportError:  # pragma: no cover - provider optional
+        _anthropic_sync_client = getattr(_anthropic_module, "Client", None)
+    except Exception:
         _anthropic_module = None
-    _AsyncAnthropic = getattr(_anthropic_module, "AsyncAnthropic", None)
-except AttributeError:  # pragma: no cover - provider optional
-    _AsyncAnthropic = None
->>>>>>> main
+        _anthropic_sync_client = None
 
-try:  # pragma: no cover - optional provider SDKs
+
+#
+# Gemini / Google GenerativeAI
+#
+try:
     import google.generativeai as genai
-except ImportError:  # pragma: no cover - provider optional
+except Exception:
     genai = None
 
-openai_module = get_tool("openai")
-AsyncOpenAI = getattr(openai_module, "AsyncOpenAI", None)
 
-logger = logging.getLogger("core_v10_7")
+#
+# OpenAI
+#
+try:
+    import openai
+except Exception:
+    openai = None
 
+
+# --------------------------------------------------------------------
+# Abstract Base Client
+# --------------------------------------------------------------------
 
 class AsyncBaseModelClient:
-    def __init__(self, 
-                 config: ConfigV10_7,
-                 model_name: str, 
-                 cache_manager: CacheManager, 
-                 cost_tracker: CostTracker,
-                 metrics_collector: MetricsCollector,
-                 workflow_id: str, 
-                 agent_name: str
-                ):
-        self.config = config
+    """
+    Unified async interface for all LLM providers.
+
+    Every provider must implement:
+        async def _internal_api_call(self, messages, temperature, response_format=None)
+    """
+
+    def __init__(
+        self,
+        model_name: str,
+        config: ConfigV10_7,
+        cost_tracker: CostTracker,
+        budget_manager: ContextBudgetManager,
+        metrics: MetricsCollector,
+        cache: CacheManager,
+    ):
         self.model_name = model_name
-        self.cache_manager = cache_manager
+        self.config = config
         self.cost_tracker = cost_tracker
-        self.metrics = metrics_collector
-        self.workflow_id = workflow_id
-        self.agent_name = agent_name
-        # v10.7: Injected by get_model_client
-        self.goal_state: str = ""
-        self.top_failures: List[str] = []
-        self.budget_manager: ContextBudgetManager = None # type: ignore
-        
-    def _get_provider_name(self) -> str:
-        if "claude" in self.model_name: return "anthropic"
-        if "gemini" in self.model_name: return "google"
-        if "gpt-" in self.model_name: return "openai"
-        return "unknown"
+        self.budget_manager = budget_manager
+        self.metrics = metrics
+        self.cache = cache
 
-    async def _run_idempotency_check(self, cached_response: Dict[str, Any], 
-                                     messages: List[Dict[str, str]], temperature: float,
-                                     response_format: Optional[str] = None):
-        """v10.7 (Fix #29): Runs a 'shadow call' to check for cache drift."""
-        try:
-            logger.debug(f"Running Idempotency Check for {self.model_name}")
-            # Call the *internal* API method to bypass caching
-            shadow_response = await self._internal_api_call(messages, temperature, response_format)
-            
-            # Compare results (e.g., hash of content)
-            if shadow_response['content'] != cached_response['content']:
-                logger.warning(f"IDEMPOTENCY VIOLATION: {self.model_name} cache drift detected.")
-                self.metrics.record(
-                    agent_name=self.__class__.__name__,
-                    task_name="idempotency_violation",
-                    duration_ms=0,
-                    success=True, # Log as a successful finding
-                    metadata={
-                        "model": self.model_name,
-                        "cached_content": cached_response['content'][:50],
-                        "new_content": shadow_response['content'][:50]
-                    }
-                )
-        except Exception as e:
-            logger.warning(f"Idempotency check failed: {e}")
+    async def call(
+        self,
+        messages: List[Dict[str, Any]],
+        temperature: float = 0.7,
+        response_format: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Common entrypoint for all providers.
+        Handles caching, metrics, cost tracking, and exceptions.
+        """
+        cache_key = self.cache.build_key(
+            provider=self.__class__.__name__,
+            model=self.model_name,
+            messages=messages,
+            temperature=temperature,
+            response_format=response_format,
+        )
 
-    @track_metrics('AsyncBaseModelClient') # v10.7 (Fix #15): Track latency
-    async def chat_completion_async(self, messages: List[Dict[str, str]], 
-                                   temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
-        prompt = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
-        provider = self._get_provider_name()
-        
-        cached_response = await self.cache_manager.get_llm_cache(provider, self.model_name, prompt, temperature)
-        
-        if cached_response:
-            # v10.7 (Fix #29): Idempotency Validation
-            if self.config.caching_config.enable_idempotency_validation and \
-               random.random() < self.config.caching_config.idempotency_validation_sample_rate:
-                # Don't await, run in background
-                asyncio.create_task(self._run_idempotency_check(
-                    cached_response, messages, temperature, response_format
-                ))
-            return cached_response
-        
-        # Cache MISS: Run the actual API call
-        result = await self._internal_api_call(messages, temperature, response_format)
-        
-        await self.cache_manager.set_llm_cache(provider, self.model_name, prompt, temperature, result)
-        return result
+        cached = await self.cache.get(cache_key)
+        if cached is not None:
+            return cached
 
-    async def _internal_api_call(self, messages: List[Dict[str, str]], 
-                                 temperature: float = 0.7,
-                                 response_format: Optional[str] = None) -> Dict[str, Any]:
-        """Subclasses must implement the actual API call logic here."""
+        # Budget check
+        self.budget_manager.check_budget(messages)
+
+        # Metrics wrapper
+        with track_metrics(self.metrics, provider=self.__class__.__name__):
+            response = await self._internal_api_call(
+                messages,
+                temperature=temperature,
+                response_format=response_format,
+            )
+
+        # Track cost if tokens present
+        self.cost_tracker.update_from_response(response)
+
+        await self.cache.set(cache_key, response)
+        return response
+
+    async def _internal_api_call(
+        self, messages, temperature: float = 0.7, response_format=None
+    ):
         raise NotImplementedError
 
-class AnthropicAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]],
-                                   temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
-<<<<<<< HEAD
-        if anthropic is None or not hasattr(anthropic, "Client"):
-            raise ModelAPIError("Anthropic library not installed. Run 'pip install anthropic'")
-        try:
-            client = anthropic.Client(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-            system_prompt_parts = [m["content"] for m in messages if m.get("role") == "system"]
-            system_prompt = "\n\n".join(system_prompt_parts) if system_prompt_parts else None
-            non_system_messages = [m for m in messages if m.get("role") != "system"]
 
-            response = await asyncio.to_thread(
-                client.messages.create,
-=======
-        if _AsyncAnthropic is None:
-            raise ModelAPIError("Anthropic library not installed. Run 'pip install anthropic'")
+# --------------------------------------------------------------------
+# OpenAI Client
+# --------------------------------------------------------------------
+
+class OpenAIAsyncClient(AsyncBaseModelClient):
+    async def _internal_api_call(
+        self, messages, temperature: float = 0.7, response_format=None
+    ):
+        if openai is None:
+            raise ModelAPIError(
+                "OpenAI SDK not installed. Run 'pip install openai'."
+            )
+
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            raise ModelAPIError("Missing OPENAI_API_KEY environment variable.")
+
         try:
-            client = _AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-            system_prompt_parts = [m["content"] for m in messages if m.get("role") == "system"]
-            system_prompt = "\n\n".join(system_prompt_parts) if system_prompt_parts else None
-            non_system_messages = [m for m in messages if m.get("role") != "system"]
-            response = await client.messages.create(
->>>>>>> main
+            client = openai.AsyncOpenAI(api_key=api_key)
+            response = await client.chat.completions.create(
                 model=self.model_name,
-                max_tokens=4096,
+                messages=messages,
                 temperature=temperature,
-                system=system_prompt,
-                messages=non_system_messages,
+                response_format=(
+                    {"type": "json_object"} if response_format == "json_object" else None
+                ),
             )
-            content = response.content[0].text
-            result = {
-                "content": content,
-                "usage": {"prompt_tokens": response.usage.input_tokens, "completion_tokens": response.usage.output_tokens}
-            }
-            self.cost_tracker.log_cost(
-                self.workflow_id, self.agent_name, self.model_name,
-                response.usage.input_tokens, response.usage.output_tokens
-            )
-            return result
-        except Exception as e:
-            raise ModelAPIError(f"Anthropic API call failed: {e}")
+
+            # Standardize into dict
+            content = response.choices[0].message["content"]
+            return {"content": content, "raw": response}
+
+        except Exception as exc:
+            raise ModelAPIError(f"OpenAI model call failed: {exc}")
+
+
+# --------------------------------------------------------------------
+# Anthropic Client
+# --------------------------------------------------------------------
+
+class AnthropicAsyncClient(AsyncBaseModelClient):
+    async def _internal_api_call(
+        self, messages, temperature: float = 0.7, response_format=None
+    ):
+        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        if not api_key:
+            raise ModelAPIError("Missing ANTHROPIC_API_KEY environment variable.")
+
+        # Modern async client
+        if _AsyncAnthropic is not None:
+            try:
+                client = _AsyncAnthropic(api_key=api_key)
+                response = await client.messages.create(
+                    model=self.model_name,
+                    messages=messages,
+                    max_tokens=self.config.max_output_tokens,
+                    temperature=temperature,
+                )
+                content = response.content[0].text
+                return {"content": content, "raw": response}
+            except Exception as exc:
+                raise ModelAPIError(f"Anthropic async call failed: {exc}")
+
+        # Fallback: legacy sync client wrapped in thread executor
+        if _anthropic_sync_client:
+            try:
+                sync_client = _anthropic_sync_client(api_key=api_key)
+
+                loop = asyncio.get_running_loop()
+                response = await loop.run_in_executor(
+                    None,
+                    lambda: sync_client.messages.create(
+                        model=self.model_name,
+                        messages=messages,
+                        max_tokens=self.config.max_output_tokens,
+                        temperature=temperature,
+                    ),
+                )
+
+                content = response["content"][0]["text"]
+                return {"content": content, "raw": response}
+
+            except Exception as exc:
+                raise ModelAPIError(f"Anthropic legacy call failed: {exc}")
+
+        raise ModelAPIError(
+            "Anthropic SDK not installed. Run 'pip install anthropic'."
+        )
+
+
+# --------------------------------------------------------------------
+# Gemini Client (Google GenerativeAI)
+# --------------------------------------------------------------------
 
 class GeminiAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]], 
-                                   temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
+    async def _internal_api_call(
+        self, messages, temperature: float = 0.7, response_format=None
+    ):
         if genai is None:
-            raise ModelAPIError("Google GenerativeAI library not installed. Run 'pip install google-generativeai'")
+            raise ModelAPIError(
+                "Google GenerativeAI library not installed. Run 'pip install google-generativeai'."
+            )
+
+        api_key = os.environ.get("GOOGLE_API_KEY")
+        if not api_key:
+            raise ModelAPIError("Missing GOOGLE_API_KEY environment variable.")
+
         try:
-            genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+            genai.configure(api_key=api_key)
+
             gen_config = {"temperature": temperature}
             if response_format == "json_object":
                 gen_config["response_mime_type"] = "application/json"
+
             model = genai.GenerativeModel(self.model_name)
-            prompt_text = "\n".join([f"{m['role']}: {m['content']}" for m in messages])
-            response = await asyncio.to_thread(
-                model.generate_content, prompt_text, generation_config=gen_config
-            )
-            content = response.text
-            result = {
-                "content": content, "usage": {"prompt_tokens": 0, "completion_tokens": 0}
-            }
-            return result
-        except Exception as e:
-            raise ModelAPIError(f"Gemini API call failed: {e}")
 
-class OpenAIAsyncClient(AsyncBaseModelClient):
-    async def _internal_api_call(self, messages: List[Dict[str, str]],
-                                   temperature: float = 0.7,
-                                   response_format: Optional[str] = None) -> Dict[str, Any]:
-        if AsyncOpenAI is None:
-            raise ModelAPIError("OpenAI library not available. Install 'openai' to enable this client.")
+            text_input = "\n".join(m.get("content", "") for m in messages)
+
+            loop = asyncio.get_running_loop()
+            result = await loop.run_in_executor(
+                None,
+                lambda: model.generate_content(
+                    text_input, generation_config=gen_config
+                ),
+            )
+
+            # Normalize output
+            if hasattr(result, "text"):
+                out = result.text
+            elif hasattr(result, "candidates") and result.candidates:
+                out = result.candidates[0].content.parts[0].text
+            else:
+                out = str(result)
+
+            return {"content": out, "raw": result}
+
+        except Exception as exc:
+            raise ModelAPIError(f"Gemini model call failed: {exc}")
+
+
+# --------------------------------------------------------------------
+# MCP Tool Routed Client
+# --------------------------------------------------------------------
+
+class MCPToolClient(AsyncBaseModelClient):
+    """
+    Allows MCP to override provider behavior.
+    Tools are discovered dynamically via get_tool(provider).
+    """
+
+    async def _internal_api_call(
+        self, messages, temperature: float = 0.7, response_format=None
+    ):
+        tool = get_tool(self.model_name)
+        if tool is None:
+            raise ModelAPIError(
+                f"MCP tool not found for provider '{self.model_name}'."
+            )
+
         try:
-            client = AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-            completion_kwargs = {
-                "model": self.model_name, "temperature": temperature, "messages": messages
-            }
-            if response_format == "json_object":
-                completion_kwargs["response_format"] = {"type": "json_object"}
-
-            response = await client.chat.completions.create(**completion_kwargs)
-            content = response.choices[0].message.content
-            result = {
-                "content": content,
-                "usage": {"prompt_tokens": response.usage.prompt_tokens, "completion_tokens": response.usage.completion_tokens}
-            }
-            self.cost_tracker.log_cost(
-                self.workflow_id, self.agent_name, self.model_name,
-                response.usage.prompt_tokens, response.usage.completion_tokens
+            result = await tool(
+                messages=messages,
+                temperature=temperature,
+                response_format=response_format,
             )
             return result
-        except Exception as e:
-            raise ModelAPIError(f"OpenAI API call failed: {e}")
+
+        except Exception as exc:
+            raise ModelAPIError(f"MCP tool call failed: {exc}")
 
 
-__all__ = [
-    "AsyncBaseModelClient",
-    "AnthropicAsyncClient",
-    "GeminiAsyncClient",
-    "OpenAIAsyncClient",
-]
+# --------------------------------------------------------------------
+# Provider factory
+# --------------------------------------------------------------------
 
-# ============================================================================
-# ROW 4: WORKFLOW CONTEXT (v10.7: DI Fixes)
-# ============================================================================
+def make_model_client(
+    provider_name: str,
+    model_name: str,
+    config: ConfigV10_7,
+    cost: CostTracker,
+    budget: ContextBudgetManager,
+    metrics: MetricsCollector,
+    cache: CacheManager,
+) -> AsyncBaseModelClient:
+    """
+    Creates an async client for the specified provider.
+    """
 
+    provider = provider_name.lower()
+
+    if provider == "openai":
+        return OpenAIAsyncClient(model_name, config, cost, budget, metrics, cache)
+
+    if provider == "anthropic":
+        return AnthropicAsyncClient(model_name, config, cost, budget, metrics, cache)
+
+    if provider == "gemini":
+        return GeminiAsyncClient(model_name, config, cost, budget, metrics, cache)
+
+    if provider == "mcp":
+        return MCPToolClient(model_name, config, cost, budget, metrics, cache)
+
+    raise ModelAPIError(f"Unknown provider: {provider_name}")
