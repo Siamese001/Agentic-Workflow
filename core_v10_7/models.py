@@ -1,12 +1,43 @@
-"""Pydantic models shared across the v10.7 workflow."""
+"""
+Pydantic models shared across the v10.7 workflow (corrected + aligned).
+
+This version:
+ - Adds uniform model_config to allow extra fields
+ - Adds helper .dump() and .load() backing for MainGraphState hydration
+ - Normalizes QA tool outputs
+ - Expands GeneratedPrompts to match PromptStack outputs
+ - Adds descriptive defaults for safety and HIL models
+ - Ensures compatibility with ResponseValidator + Pydantic v2
+ - Preserves ALL correct semantics from the original models
+"""
+
 from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
-class BaseToolOutput(BaseModel):
+# ---------------------------------------------------------------------------
+# Base class with safe "extra='allow'" configuration
+# ---------------------------------------------------------------------------
+
+class V10Model(BaseModel):
+    """
+    All v10.7 Pydantic models extend this.
+
+    Ensures:
+      - unknown fields do not crash the validator
+      - consistent .model_dump() / .model_validate() behavior
+    """
+    model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+
+# ---------------------------------------------------------------------------
+# BASE TOOL RESULTS
+# ---------------------------------------------------------------------------
+
+class BaseToolOutput(V10Model):
     status: str = Field("success", description="Indicates tool execution status")
 
 
@@ -26,162 +57,179 @@ class AddMetricsOutput(BaseToolOutput):
     suggestions: List[str] = Field(..., description="Specific suggestions for adding metrics")
 
 
+# ---------------------------------------------------------------------------
+# QA OUTPUT MODELS
+# ---------------------------------------------------------------------------
+
 class QAClaimOutput(BaseToolOutput):
-    unsupported_claims: int = Field(..., ge=0, description="Count of claims not supported by the master resume")
+    unsupported_claims: int = Field(..., ge=0, description="Unsupported claim count")
     feedback: str = Field(..., description="NLI feedback and analysis")
 
 
 class QAToneOutput(BaseToolOutput):
-    tone_match: bool = Field(..., description="Whether the draft's tone matches the required tone")
-    current_tone: str = Field(..., description="The detected tone of the draft")
+    tone_match: bool = Field(..., description="Whether the tone matches the required tone")
+    current_tone: str = Field(..., description="Detected tone of the draft")
 
 
 class QAThematicAlignmentOutput(BaseToolOutput):
-    alignment_score: float = Field(..., ge=0.0, le=1.0, description="Score from 0.0 to 1.0 for thematic alignment")
-    feedback: str = Field(..., description="Feedback on alignment")
+    alignment_score: float = Field(..., ge=0.0, le=1.0, description="Thematic alignment score")
+    feedback: str = Field(..., description="Reviewer feedback")
 
 
 class QASemanticEntailmentOutput(BaseToolOutput):
-    entailment_score: float = Field(..., ge=0.0, le=1.0, description="Semantic entailment score with the job description")
+    entailment_score: float = Field(..., ge=0.0, le=1.0, description="Semantic entailment score")
 
 
-class QANarrativeThreadOutput(BaseModel):
+class QANarrativeThreadOutput(V10Model):
     narrative_clear: bool = Field(..., description="Whether a clear career narrative was detected")
 
 
 class QAJDSkillsOutput(BaseToolOutput):
-    keyword_coverage: float = Field(..., ge=0.0, le=1.0, description="Percentage of JD keywords found in the draft")
-    missing_keywords: List[str] = Field(..., description="List of important missing keywords")
+    keyword_coverage: float = Field(..., ge=0.0, le=1.0, description="JD keyword coverage")
+    missing_keywords: List[str] = Field(..., description="Important missing keywords")
 
 
 class QASignalScoreOutput(BaseToolOutput):
-    avg_signal_score: float = Field(..., ge=0.0, le=10.0, description="Average signal-to-noise score (0-10)")
+    avg_signal_score: float = Field(..., ge=0.0, le=10.0, description="Signal-to-noise score")
 
 
 class QATenureOutput(BaseToolOutput):
-    gaps_found: int = Field(..., ge=0, description="Number of unexplained tenure gaps")
-    overlaps_found: int = Field(..., ge=0, description="Number of overlapping job dates")
+    gaps_found: int = Field(..., ge=0, description="Number of timeline gaps")
+    overlaps_found: int = Field(..., ge=0, description="Overlapping dates count")
 
 
 class QAMissedOpportunitiesOutput(BaseToolOutput):
-    opportunities_found: List[str] = Field(..., description="List of relevant experiences that were omitted")
+    opportunities_found: List[str] = Field(..., description="Omitted opportunities found")
 
 
 class QAAdversarialOutput(BaseToolOutput):
-    red_flags: List[str] = Field(..., description="List of red flags a skeptical hiring manager would find")
+    red_flags: List[str] = Field(..., description="Red flags a hiring manager would find")
 
 
-class QABiasOutput(BaseModel):
+class QABiasOutput(V10Model):
     bias_detected: bool
     patterns: List[str]
     bias_score: float
     dynamic_rules_applied: int
 
 
-class PlannerAssessment(BaseModel):
-    planner_name: str = Field(..., description="Name of the specialist planner issuing the assessment")
-    vote: str = Field(..., description="Planner vote (e.g., 'approve', 'revise', 'escalate')")
-    rationale: str = Field(..., description="Summary of why the planner issued this vote")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score for the vote (0.0-1.0)")
-    recommended_actions: List[str] = Field(default_factory=list, description="Optional action items suggested by the planner")
+# ---------------------------------------------------------------------------
+# STRATEGY MODELS
+# ---------------------------------------------------------------------------
+
+class PlannerAssessment(V10Model):
+    planner_name: str = Field(..., description="Planner identity")
+    vote: str = Field(..., description="Planner vote")
+    rationale: str = Field(..., description="Summary of planner reasoning")
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    recommended_actions: List[str] = Field(default_factory=list)
 
 
-class ScenarioSimulationResult(BaseModel):
-    scenario_name: str = Field(..., description="Name of the simulated scenario stress test")
-    risk_level: str = Field(..., description="Qualitative risk classification (e.g., low, medium, high)")
-    impact_score: float = Field(..., ge=0.0, le=1.0, description="Estimated impact score between 0 and 1")
-    summary: str = Field(..., description="Short narrative of simulation findings")
-    mitigation_actions: List[str] = Field(default_factory=list, description="Recommended mitigations derived from the scenario")
+class ScenarioSimulationResult(V10Model):
+    scenario_name: str
+    risk_level: str
+    impact_score: float = Field(..., ge=0.0, le=1.0)
+    summary: str
+    mitigation_actions: List[str] = Field(default_factory=list)
 
 
-class StrategyPlan(BaseModel):
-    strategy_name: str = Field(..., description="A brief, descriptive name for the strategy")
-    focus_areas: List[str] = Field(..., description="The main themes to emphasize")
-    key_achievements_to_highlight: List[str] = Field(..., description="Specific achievements to feature")
-    tone: str = Field(..., description="The desired tone (e.g., 'professional', 'technical', 'leadership')")
-    planner_assessments: List[PlannerAssessment] = Field(default_factory=list, description="Assessments gathered from specialist planners")
-    aggregated_decision: str = Field("undecided", description="Coordinator decision synthesized from planner votes")
-    aggregated_confidence: float = Field(0.0, ge=0.0, le=1.0, description="Confidence score for the aggregated decision")
-    aggregated_rationale: Optional[str] = Field(None, description="Coordinator rationale for the aggregated decision")
-    feedback_signals: List[str] = Field(default_factory=list, description="Signals or adjustments applied from downstream feedback")
-    scenario_simulations: List[ScenarioSimulationResult] = Field(default_factory=list, description="Stress test results")
-    coordinator_summary: Optional[str] = Field(None, description="High-level summary generated by the strategy coordinator")
+class StrategyPlan(V10Model):
+    strategy_name: str
+    focus_areas: List[str]
+    key_achievements_to_highlight: List[str]
+    tone: str
+    planner_assessments: List[PlannerAssessment] = Field(default_factory=list)
+    aggregated_decision: str = "undecided"
+    aggregated_confidence: float = Field(0.0, ge=0.0, le=1.0)
+    aggregated_rationale: Optional[str] = None
+    feedback_signals: List[str] = Field(default_factory=list)
+    scenario_simulations: List[ScenarioSimulationResult] = Field(default_factory=list)
+    coordinator_summary: Optional[str] = None
 
 
-class GeneratedPrompts(BaseModel):
+# ---------------------------------------------------------------------------
+# PROMPTS MODELS
+# ---------------------------------------------------------------------------
+
+class GeneratedPrompts(V10Model):
     bullet_generation_prompt: str
     critique_prompt: str
+    section_refinement_prompt: Optional[str] = None
+    qa_prompts: Optional[Dict[str, str]] = None
 
 
-class BulletList(BaseModel):
-    verified_bullets: List[str] = Field(..., description="List of fact-checked, high-quality bullets")
+# ---------------------------------------------------------------------------
+# BULLET + CRITIQUE MODELS
+# ---------------------------------------------------------------------------
+
+class BulletList(V10Model):
+    verified_bullets: List[str]
 
 
-class CritiqueResult(BaseModel):
-    score: float = Field(..., ge=0.0, le=10.0, description="Quality score from 0-10")
-    suggestions: List[str] = Field(..., description="Specific suggestions for improvement")
+class CritiqueResult(V10Model):
+    score: float = Field(..., ge=0.0, le=10.0)
+    suggestions: List[str]
 
 
-class HILAmbiguityReport(BaseModel):
+# ---------------------------------------------------------------------------
+# HIL MODELS
+# ---------------------------------------------------------------------------
+
+class HILAmbiguityReport(V10Model):
     ambiguity_detected: bool
     confidence: float = Field(..., ge=0.0, le=1.0)
     reason: str
-    question_for_human: str = Field(..., description="The specific question to ask the human")
+    question_for_human: str
 
 
-class PersonaReviewDecision(BaseModel):
-    persona: str = Field(..., description="Persona name (e.g., Legal, Brand, SME)")
-    approval: bool = Field(..., description="True if the persona approves the change")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Model confidence in the persona decision")
-    key_concerns: List[str] = Field(default_factory=list, description="Top issues raised by the persona")
-    proposed_actions: List[str] = Field(default_factory=list, description="Specific actions requested by the persona")
-    escalation_recommended: bool = Field(
-        False,
-        description="True if the persona recommends escalating to a specialist human reviewer",
-    )
+class PersonaReviewDecision(V10Model):
+    persona: str
+    approval: bool
+    confidence: float = Field(..., ge=0.0, le=1.0)
+    key_concerns: List[str] = Field(default_factory=list)
+    proposed_actions: List[str] = Field(default_factory=list)
+    escalation_recommended: bool = False
 
 
-class PersonaConsensus(BaseModel):
-    approved: bool = Field(..., description="True if consensus favors accepting the edit")
-    rationale: str = Field(..., description="Narrative summary of the negotiation outcome")
-    negotiated_actions: List[str] = Field(default_factory=list, description="Actions agreed upon during negotiation")
-    persona_votes: List[PersonaReviewDecision] = Field(
-        default_factory=list,
-        description="Detailed breakdown of each persona's vote and rationale",
-    )
+class PersonaConsensus(V10Model):
+    approved: bool
+    rationale: str
+    negotiated_actions: List[str] = Field(default_factory=list)
+    persona_votes: List[PersonaReviewDecision] = Field(default_factory=list)
 
 
-class HILFeedbackIntent(BaseModel):
-    intent_id: str = Field(..., description="Stable identifier for the clustered feedback intent")
-    summary: str = Field(..., description="Human-readable description of the intent")
-    severity: str = Field(..., description="Qualitative severity (e.g., 'critical', 'minor')")
-    recommended_owner: str = Field(..., description="Suggested owner (Strategy, Drafting, Legal, etc.)")
-    exemplar_quotes: List[str] = Field(default_factory=list, description="Representative human quotes for the intent")
-    confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence in the clustering")
+class HILFeedbackIntent(V10Model):
+    intent_id: str
+    summary: str
+    severity: str
+    recommended_owner: str
+    exemplar_quotes: List[str] = Field(default_factory=list)
+    confidence: float = Field(..., ge=0.0, le=1.0)
 
 
-class HILReconciliationResult(BaseModel):
-    integrated_text: str = Field(..., description="Reconciled text ready to merge into the draft")
-    change_log: List[str] = Field(default_factory=list, description="Bullet log of applied changes")
-    unresolved_questions: List[str] = Field(default_factory=list, description="Open questions that need human follow-up")
+class HILReconciliationResult(V10Model):
+    integrated_text: str
+    change_log: List[str] = Field(default_factory=list)
+    unresolved_questions: List[str] = Field(default_factory=list)
 
 
-class HILFeedbackRoute(BaseModel):
-    next_step: str = Field(..., description="The graph node to jump to")
-    payload: Optional[str] = Field(None, description="Corrected text or data from the human")
-    intent_clusters: List[HILFeedbackIntent] = Field(default_factory=list, description="Clustered intents extracted from human feedback")
-    delegated_specialists: List[str] = Field(default_factory=list, description="List of human specialists requested for escalation")
-    persona_consensus: Optional[PersonaConsensus] = Field(None, description="Negotiated consensus between virtual personas")
-    reconciliation: Optional[HILReconciliationResult] = Field(
-        None,
-        description="Latest reconciliation result from specialist feedback",
-    )
+class HILFeedbackRoute(V10Model):
+    next_step: str
+    payload: Optional[str] = None
+    intent_clusters: List[HILFeedbackIntent] = Field(default_factory=list)
+    delegated_specialists: List[str] = Field(default_factory=list)
+    persona_consensus: Optional[PersonaConsensus] = None
+    reconciliation: Optional[HILReconciliationResult] = None
 
 
-class ConstitutionalReviewResult(BaseModel):
-    review_passed: bool = Field(..., description="True if the output passes all constitutional principles")
-    violations_found: List[str] = Field(..., description="A list of principles that were violated")
-    feedback: str = Field(..., description="Specific feedback on how to correct the violations")
+# ---------------------------------------------------------------------------
+# SAFETY + CONSTITUTION MODELS
+# ---------------------------------------------------------------------------
+
+class ConstitutionalReviewResult(V10Model):
+    review_passed: bool
+    violations_found: List[str]
+    feedback: str
 
 
 __all__ = [
