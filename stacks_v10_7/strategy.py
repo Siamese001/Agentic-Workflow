@@ -1,5 +1,7 @@
 """Strategy stack agents."""
 
+from __future__ import annotations
+
 import asyncio
 import json
 from typing import Any, Dict, List
@@ -53,8 +55,7 @@ class QueryComplexityClassifier(BaseAgent):
         )
 
         validated_output, error = self.validator.validate(
-            response["content"],
-            self.ComplexityOutput,
+            response["content"], self.ComplexityOutput
         )
         if error:
             self.log_error(
@@ -108,11 +109,15 @@ class ToTStrategistAgent(BaseAgent):
             if isinstance(res, Exception):
                 self.log_warning(f"ToT Branch {i + 1} failed API call: {res}")
                 continue
-            validated_output, error = self.validator.validate(res["content"], StrategyPlan)
+            validated_output, error = self.validator.validate(
+                res["content"], StrategyPlan
+            )
             if error:
                 self.log_warning(f"ToT Branch {i + 1} failed validation: {error}")
                 continue
-            branches.append({"branch_id": f"branch_{i}", "strategy": validated_output})
+            branches.append(
+                {"branch_id": f"branch_{i}", "strategy": validated_output}
+            )
         return branches
 
     @track_metrics("run_tot_strategy")
@@ -122,17 +127,23 @@ class ToTStrategistAgent(BaseAgent):
         branching_factor = self.config.agent_stacks.strategy_tot_branching_factor
         client = self.get_model_client("strategy_model")
 
+        # Generate multiple strategy branches
         branches = await self._generate_branches(job_context, client, branching_factor)
         if not branches:
             raise ValidationError("All ToT strategy branches failed validation.")
 
         self.log_info(f"Generated {len(branches)} branches. Starting vote...")
+
+        # Prepare branch JSON for voting
         vote_client = self.get_model_client("strategy_model_simple")
         vote_prompt_template = self.prompt_manager.get_template("strategy_tot_vote")
 
-        branches_json = json.dumps([
-            {"id": b["branch_id"], "plan": b["strategy"].model_dump()} for b in branches
-        ])
+        branches_json = json.dumps(
+            [
+                {"id": b["branch_id"], "plan": b["strategy"].model_dump()}
+                for b in branches
+            ]
+        )
 
         vote_prompt = await _format_prompt_with_defaults(
             vote_prompt_template,
@@ -157,8 +168,7 @@ class ToTStrategistAgent(BaseAgent):
             reason: str
 
         validated_vote, error = self.validator.validate(
-            vote_response["content"],
-            VoteOutput,
+            vote_response["content"], VoteOutput
         )
 
         if error:
@@ -168,7 +178,8 @@ class ToTStrategistAgent(BaseAgent):
             selected_strategy = branches[0]["strategy"]
         else:
             self.log_info(
-                f"Vote selected: {validated_vote.best_branch_id}. Reason: {validated_vote.reason}"
+                f"Vote selected: {validated_vote.best_branch_id}. "
+                f"Reason: {validated_vote.reason}"
             )
             selected_strategy = next(
                 (
@@ -179,6 +190,7 @@ class ToTStrategistAgent(BaseAgent):
                 branches[0]["strategy"],
             )
 
+        # Log voting result
         self.log_feedback(
             workflow_id,
             "tot_strategy_vote",
@@ -189,7 +201,12 @@ class ToTStrategistAgent(BaseAgent):
             },
         )
 
+        # --------------------------------------------
+        # CRITICAL FIX:
+        # Always return StrategyPlan as a dict, not a Pydantic model.
+        # This prevents state corruption and fixes HIL crash.
+        # --------------------------------------------
         return {
-            "strategy_plan": selected_strategy,
+            "strategy_plan": selected_strategy.model_dump(),
             "tot_branches": [b["strategy"].model_dump() for b in branches],
         }
