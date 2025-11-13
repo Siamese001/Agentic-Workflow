@@ -19,3 +19,14 @@ def test_outreach_stack_handles_string_draft_from_architect():
 
     assert result["draft"].startswith("Subject: Hi")
     assert result["verdict"].passed
+    assert "CTA:" in result["draft"]
+    assert result["draft"].strip().endswith("LIC Outreach Bot")
+
+
+def test_outreach_stack_rehydrates_pii_tokens():
+    stack = OutreachStack(ReasoningToggles())
+    prompt = "Contact alice@example.com for more info"
+    result = stack.run(StackInputs(prompt=prompt, company_id="ACME", contact_id="C1"))
+
+    assert "alice@example.com" in result["draft"]
+    assert result["verdict"].passed

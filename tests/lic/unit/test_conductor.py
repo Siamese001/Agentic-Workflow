@@ -3,7 +3,7 @@ import asyncio
 
 import pytest
 
-from src.lic_agentic.orchestration.conductor import Conductor
+from src.lic_agentic.core.conductor import Conductor
 
 
 async def _task(value):

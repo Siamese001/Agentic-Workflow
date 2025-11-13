@@ -6,7 +6,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Dict, List
 
-from .qa_validator import QAResult
+from ..qa.qa_validator import QAResult
 
 
 @dataclass

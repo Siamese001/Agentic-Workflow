@@ -62,9 +62,11 @@ class PolicyController:
         if latency_p95_ms > self.TARGET_LATENCY_MS:
             penalty = 0.05 + max(0.0, -self._latency_error_integral)
             self.budget_multiplier -= penalty
+            self.temperature_cap -= 0.01
         elif latency_p95_ms < self.TARGET_LATENCY_MS * 0.75:
             boost = 0.04 + max(0.0, self._latency_error_integral)
             self.budget_multiplier += boost
+            self.temperature_cap += 0.01
 
         self.budget_multiplier = _clamp(self.budget_multiplier, 0.7, 1.3)
 
@@ -76,9 +78,15 @@ class PolicyController:
             if self.tot_branches < 4:
                 self.tot_branches += 1
 
-        if token_drift > 0.1:
-            self.tot_branches -= 1
+        drift_penalty = max(0.0, token_drift)
+        if drift_penalty:
+            normalized = min(1.0, drift_penalty / 0.1)
+            self.budget_multiplier -= 0.03 * normalized
+            self.temperature_cap -= 0.05 * normalized
+            if drift_penalty > 0.05:
+                self.tot_branches -= 1
 
+        self.budget_multiplier = _clamp(self.budget_multiplier, 0.7, 1.3)
         self.temperature_cap = _clamp(self.temperature_cap, 0.2, 0.7)
         self.tot_branches = int(_clamp(float(self.tot_branches), 1, 4))
 

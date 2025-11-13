@@ -1,4 +1,5 @@
-from src.lic_agentic.qa import MetricsTracker, QAResult
+from src.lic_agentic.core.metrics import MetricsTracker
+from src.lic_agentic.qa import QAResult
 
 
 def test_metrics_aggregate_pass_rate_and_latency():

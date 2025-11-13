@@ -1,4 +1,4 @@
-from src.lic_agentic.telemetry import PolicyController
+from src.lic_agentic.core import PolicyController
 
 
 def test_budget_adjustment_trends_down_on_latency_pressure():
