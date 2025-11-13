@@ -1,4 +1,15 @@
-"""MCP client registry utilities for v10.7."""
+"""
+MCP client registry utilities for v10.7.
+
+This version fixes:
+ - provider→module routing
+ - proper stub fallback
+ - module/class resolution
+ - structured error propagation
+ - compatibility with context._load_mcp_config()
+ - alignment with instantiate_mcp_client() expectations
+"""
+
 from __future__ import annotations
 
 import importlib
@@ -8,8 +19,31 @@ from typing import Any, Dict, List, Optional
 
 from .exceptions import MCPClientInitializationError
 
-logger = logging.getLogger("core_v10_7")
+logger = logging.getLogger("core_v10_7.mcp")
 
+
+# ---------------------------------------------------------------------------
+# Provider → Default module/class maps (v10.7 standardization)
+# ---------------------------------------------------------------------------
+
+DEFAULT_PROVIDER_MODULES = {
+    "redis": "redis",
+    "chromadb": "chromadb",
+    "openai": "mcp_openai",  # Example: MCP OpenAI wrapper module
+    "http": "mcp_http_client",
+}
+
+DEFAULT_PROVIDER_CLASSES = {
+    "redis": "RedisMCPClient",
+    "chromadb": "ChromaMCPClient",
+    "openai": "OpenAIMCPClient",
+    "http": "HTTPMCPClient",
+}
+
+
+# ---------------------------------------------------------------------------
+# MCPClientSpec (unchanged conceptually, but validated more strictly)
+# ---------------------------------------------------------------------------
 
 @dataclass
 class MCPClientSpec:
@@ -22,18 +56,54 @@ class MCPClientSpec:
     parameters: Dict[str, Any] = field(default_factory=dict)
     optional: bool = False
 
+    def resolved_module(self) -> Optional[str]:
+        """Return explicit module or provider-mapped default."""
+        if self.module:
+            return self.module
+        return DEFAULT_PROVIDER_MODULES.get(self.provider)
+
+    def resolved_class(self) -> Optional[str]:
+        """Return explicit class_name or provider-mapped default."""
+        if self.class_name:
+            return self.class_name
+        return DEFAULT_PROVIDER_CLASSES.get(self.provider)
+
+
+# ---------------------------------------------------------------------------
+# Stub fallback client
+# ---------------------------------------------------------------------------
 
 class MCPClientStub:
-    """Fallback stub MCP client used when no implementation exists."""
+    """
+    Safe fallback MCP client.
+
+    All MCP tools using this stub will receive a structured response:
+      {"error": "<reason>", "stub": true, ...parameters}
+    """
 
     def __init__(self, name: str, parameters: Optional[Dict[str, Any]] = None):
         self.name = name
         self.parameters = parameters or {}
 
-    def __repr__(self) -> str:  # pragma: no cover - debug helper
+    def __call__(self, *args, **kwargs):
+        """All calls simply return a structured stub result."""
+        return {
+            "stub": True,
+            "client": self.name,
+            "parameters": self.parameters,
+            "args": args,
+            "kwargs": kwargs,
+            "error": self.parameters.get("error", "Stubbed MCP client."),
+        }
+
+    def __repr__(self) -> str:
         details = ", ".join(f"{k}={v}" for k, v in self.parameters.items())
         return f"<MCPClientStub name={self.name} {details}>"
 
+
+# ---------------------------------------------------------------------------
+# Spec parser
+# ---------------------------------------------------------------------------
 
 def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpec]:
     """Validate and normalise MCP client specifications."""
@@ -53,11 +123,15 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
         if not isinstance(parameters, dict):
             raise ValueError(f"MCP client '{name}' parameters must be a mapping.")
 
+        provider = str(raw.get("provider", "stub")).lower()
+        module = raw.get("module")
+        class_name = raw.get("class_name") or raw.get("class")
+
         spec = MCPClientSpec(
             name=name,
-            provider=str(raw.get("provider", "stub")),
-            module=raw.get("module"),
-            class_name=raw.get("class_name") or raw.get("class"),
+            provider=provider,
+            module=module,
+            class_name=class_name,
             parameters=parameters,
             optional=bool(raw.get("optional", False)),
         )
@@ -66,32 +140,66 @@ def parse_mcp_client_specs(raw_specs: List[Dict[str, Any]]) -> List[MCPClientSpe
     return specs
 
 
-def instantiate_mcp_client(spec: MCPClientSpec) -> Any:
-    """Create an MCP client instance from a validated spec."""
+# ---------------------------------------------------------------------------
+# MCP client instantiation (fixed and fully aligned with context.py)
+# ---------------------------------------------------------------------------
 
+def instantiate_mcp_client(spec: MCPClientSpec) -> Any:
+    """
+    Create an MCP client instance from a validated spec.
+
+    v10.7 fixes:
+      - provider→default module resolution
+      - class_name resolution
+      - explicit logging
+      - clean error propagation
+    """
+
+    # STUB path
     if spec.provider == "stub" and not spec.module:
+        logger.info(f"[MCP] Using stub for '{spec.name}'.")
         return MCPClientStub(spec.name, spec.parameters)
 
-    if spec.module:
-        module = importlib.import_module(spec.module)
-        class_name = spec.class_name or spec.provider
-        try:
-            client_cls = getattr(module, class_name)
-        except AttributeError as exc:
-            raise AttributeError(
-                f"Module '{spec.module}' missing class '{class_name}' for MCP client '{spec.name}'"
-            ) from exc
+    # Resolve module and class_name
+    module_name = spec.resolved_module()
+    class_name = spec.resolved_class()
 
-        try:
-            return client_cls(**spec.parameters)
-        except Exception as exc:  # pragma: no cover - instantiation errors are logged upstream
-            raise MCPClientInitializationError(
-                f"Failed to instantiate MCP client '{spec.name}': {exc}"
-            ) from exc
+    if not module_name:
+        raise MCPClientInitializationError(
+            f"Cannot create MCP client '{spec.name}': no module specified and no provider mapping found."
+        )
 
-    raise MCPClientInitializationError(
-        f"Invalid MCP client spec for '{spec.name}'. Expected either 'module' or 'provider'."
-    )
+    if not class_name:
+        raise MCPClientInitializationError(
+            f"Cannot create MCP client '{spec.name}': no class_name specified and no provider mapping found."
+        )
+
+    # Import module
+    try:
+        module = importlib.import_module(module_name)
+    except Exception as exc:
+        raise MCPClientInitializationError(
+            f"Failed to import MCP module '{module_name}' for client '{spec.name}': {exc}"
+        ) from exc
+
+    # Get class
+    try:
+        client_cls = getattr(module, class_name)
+    except AttributeError as exc:
+        raise MCPClientInitializationError(
+            f"Module '{module_name}' missing class '{class_name}' "
+            f"for MCP client '{spec.name}'."
+        ) from exc
+
+    # Instantiate client
+    try:
+        instance = client_cls(**spec.parameters)
+        logger.info(f"[MCP] Initialized client '{spec.name}' via {module_name}.{class_name}")
+        return instance
+    except Exception as exc:
+        raise MCPClientInitializationError(
+            f"Failed to instantiate MCP client '{spec.name}': {exc}"
+        ) from exc
 
 
 __all__ = [
