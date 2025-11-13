@@ -6,8 +6,8 @@ from src.lic_agentic.reasoning.toggles import ReasoningToggles
 from src.lic_agentic.stacks.outreach_stack import OutreachStack
 
 
-def test_policy_feedback_updates_toggles_and_budget():
-    stack = OutreachStack(ReasoningToggles())
+def test_policy_feedback_updates_toggles_and_budget(lic_context):
+    stack = OutreachStack(ReasoningToggles(), context=lic_context)
 
     def fake_compose(inputs, route, *, max_calls=None):
         draft = "Subject: Hi\n\nHello there\n[artifact_id:aid] evidence"
