@@ -3,8 +3,11 @@ import sys
 import os
 
 VENDOR_PATH = os.path.join(os.path.dirname(__file__), "vendor")
-if VENDOR_PATH not in sys.path:
-    sys.path.insert(0, VENDOR_PATH)
+# Only load vendor stubs when explicitly testing
+if os.environ.get("USE_VENDOR_STUBS") == "1":
+    if VENDOR_PATH not in sys.path:
+        sys.path.insert(0, VENDOR_PATH)
+
 
 # File: main_v10_7.py
 # Version: 10.7 (Refactored)
