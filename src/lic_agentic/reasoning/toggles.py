@@ -5,6 +5,8 @@ from pydantic import BaseModel, ValidationError
 
 
 class ReasoningToggles(BaseModel):
+    """Bounded reasoning configuration shared across the stack."""
+
     cot: bool = True
     tot_branches: int = 3
     min_tot_depth: int = 2
@@ -14,9 +16,9 @@ class ReasoningToggles(BaseModel):
 
     def __init__(self, **data):
         super().__init__(**data)
-        self._validate()
+        self._enforce_bounds()
 
-    def _validate(self) -> None:
+    def _enforce_bounds(self) -> None:
         if not 1 <= int(self.tot_branches) <= 4:
             raise ValidationError("tot_branches must be between 1 and 4")
         if not 1 <= int(self.min_tot_depth) <= 3:

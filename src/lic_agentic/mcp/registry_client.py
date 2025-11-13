@@ -42,27 +42,30 @@ class MCPClient:
 
         constraints = constraints or {}
         capability = capability.lower()
-        candidates = [
-            spec
-            for spec in self._tools.values()
-            if any(capability in cap.lower() for cap in spec.capabilities)
-        ]
+        candidates: List[ToolSpec] = []
+        for spec in self._tools.values():
+            if any(capability in cap.lower() for cap in spec.capabilities):
+                candidates.append(spec)
 
         allowlist = {item.lower() for item in constraints.get("allowlist", [])}
         if allowlist:
-            candidates = [
-                spec
-                for spec in candidates
-                if spec.id.lower() in allowlist or spec.name.lower() in allowlist
-            ]
+            filtered: List[ToolSpec] = []
+            for spec in candidates:
+                name = spec.name.lower()
+                identifier = spec.id.lower()
+                if identifier in allowlist or name in allowlist:
+                    filtered.append(spec)
+            candidates = filtered
 
         denylist = {item.lower() for item in constraints.get("denylist", [])}
         if denylist:
-            candidates = [
-                spec
-                for spec in candidates
-                if spec.id.lower() not in denylist and spec.name.lower() not in denylist
-            ]
+            filtered = []
+            for spec in candidates:
+                identifier = spec.id.lower()
+                name = spec.name.lower()
+                if identifier not in denylist and name not in denylist:
+                    filtered.append(spec)
+            candidates = filtered
 
         max_cost = constraints.get("max_cost")
         if isinstance(max_cost, (int, float)):
