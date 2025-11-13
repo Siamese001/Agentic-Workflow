@@ -15,9 +15,21 @@ from .exceptions import ModelAPIError
 from .services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics
 
 try:  # pragma: no cover - optional provider SDKs
+<<<<<<< HEAD
     import anthropic
 except ImportError:  # pragma: no cover - provider optional
     anthropic = None
+=======
+    from anthropic import AsyncAnthropic as _AsyncAnthropic
+except ImportError:  # pragma: no cover - provider optional
+    try:  # pragma: no cover - provider optional
+        import anthropic as _anthropic_module
+    except ImportError:  # pragma: no cover - provider optional
+        _anthropic_module = None
+    _AsyncAnthropic = getattr(_anthropic_module, "AsyncAnthropic", None)
+except AttributeError:  # pragma: no cover - provider optional
+    _AsyncAnthropic = None
+>>>>>>> main
 
 try:  # pragma: no cover - optional provider SDKs
     import google.generativeai as genai
@@ -119,6 +131,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
     async def _internal_api_call(self, messages: List[Dict[str, str]],
                                    temperature: float = 0.7,
                                    response_format: Optional[str] = None) -> Dict[str, Any]:
+<<<<<<< HEAD
         if anthropic is None or not hasattr(anthropic, "Client"):
             raise ModelAPIError("Anthropic library not installed. Run 'pip install anthropic'")
         try:
@@ -129,6 +142,16 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
 
             response = await asyncio.to_thread(
                 client.messages.create,
+=======
+        if _AsyncAnthropic is None:
+            raise ModelAPIError("Anthropic library not installed. Run 'pip install anthropic'")
+        try:
+            client = _AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+            system_prompt_parts = [m["content"] for m in messages if m.get("role") == "system"]
+            system_prompt = "\n\n".join(system_prompt_parts) if system_prompt_parts else None
+            non_system_messages = [m for m in messages if m.get("role") != "system"]
+            response = await client.messages.create(
+>>>>>>> main
                 model=self.model_name,
                 max_tokens=4096,
                 temperature=temperature,
