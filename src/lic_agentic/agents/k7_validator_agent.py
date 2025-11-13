@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Mapping
 
-from ..core.metrics import MetricsTracker
+from ..core import LICBaseAgent
 from ..qa import QAResult, QAValidator
 
 
@@ -22,12 +22,12 @@ class ValidationResult:
 ArtifactMap = Mapping[str, str]
 
 
-class ValidatorAgent:
+class ValidatorAgent(LICBaseAgent):
     """Apply QA rules and perform limited retries to reach a pass state."""
 
-    def __init__(self, *, qa_validator: QAValidator | None = None, metrics: MetricsTracker | None = None, max_retries: int = 0) -> None:
+    def __init__(self, context, *, qa_validator: QAValidator | None = None, max_retries: int = 0) -> None:
+        super().__init__(context)
         self.qa_validator = qa_validator or QAValidator()
-        self.metrics = metrics or MetricsTracker()
         self.max_retries = max(0, int(max_retries))
 
     def check(self, draft: str, route_decision, pii_map: Dict[str, str], *, artifacts: ArtifactMap | None = None) -> ValidationResult:

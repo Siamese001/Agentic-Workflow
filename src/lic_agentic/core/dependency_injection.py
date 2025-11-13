@@ -66,9 +66,29 @@ class LICCoreContext:
         from .conductor import Conductor
         from .metrics import MetricsTracker
         from .policy_controller import PolicyController
+        from .registry_client import MCPClient
+        from ..rag import ContentStore, EvidenceRegistry, MCPSelector
+        from ..rag.retrieval_planner import RetrievalPlanner
+        from ..rag.tool_registry import ToolRegistry
 
         ctx = cls()
         ctx.register_instance("policy_controller", PolicyController())
         ctx.register_instance("metrics_tracker", MetricsTracker())
         ctx.register_factory("conductor", lambda _ctx: Conductor(), singleton=True)
+        ctx.register_factory("tool_registry", lambda _ctx: ToolRegistry.default_with_builtins())
+        ctx.register_factory("content_store", lambda _ctx: ContentStore())
+        ctx.register_factory("evidence_registry", lambda _ctx: EvidenceRegistry())
+        ctx.register_factory(
+            "retrieval_planner",
+            lambda _ctx: RetrievalPlanner([], {"ttl_s": 60 * 60 * 24 * 90}),
+            singleton=False,
+        )
+        ctx.register_factory("mcp_client", lambda _ctx: MCPClient(), singleton=True)
+        ctx.register_factory(
+            "mcp_selector",
+            lambda _ctx: MCPSelector(
+                _ctx.resolve("mcp_client"),
+                _ctx.resolve("policy_controller"),
+            ),
+        )
         return ctx

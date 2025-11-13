@@ -16,7 +16,7 @@ class RetrievalJob:
 @dataclass
 class RetrievalPlan:
     wants: Sequence[str]
-    context: Dict[str, str]
+    context: Dict[str, object]
     jobs: List[RetrievalJob] = field(default_factory=list)
 
     def add(self, job: Dict[str, str] | RetrievalJob) -> None:
@@ -55,3 +55,36 @@ class RetrievalPlan:
             store.put(cache_key, outcome, {"tool": job.tool, "scope": job.scope})
             results.append(("live", job, outcome))
         return results
+
+
+class RetrievalPlanner:
+    """Stateful planner wrapper for DI-managed retrieval flows."""
+
+    def __init__(self, wants: Sequence[str] | None = None, context: Dict[str, object] | None = None) -> None:
+        self._default_wants = list(wants or [])
+        self._default_context = dict(context or {})
+        self._plan = RetrievalPlan(self._default_wants, dict(self._default_context))
+
+    @property
+    def plan(self) -> RetrievalPlan:
+        return self._plan
+
+    def reset(self, wants: Sequence[str] | None = None, context: Dict[str, object] | None = None) -> RetrievalPlan:
+        plan_wants = list(wants or self._default_wants)
+        plan_context = dict(self._default_context)
+        if context:
+            plan_context.update(dict(context))
+        self._plan = RetrievalPlan(plan_wants, plan_context)
+        return self._plan
+
+    def add(self, job: Dict[str, str] | RetrievalJob) -> None:
+        self._plan.add(job)
+
+    def dedupe(self) -> None:
+        self._plan.dedupe()
+
+    def budget(self, max_calls: int = 6) -> None:
+        self._plan.budget(max_calls)
+
+    def execute(self, registry, store):
+        return self._plan.execute(registry, store)

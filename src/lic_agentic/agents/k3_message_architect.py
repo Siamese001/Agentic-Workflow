@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Dict, Iterable, List, Sequence, Tuple
 
-from ..rag import ContentStore, EvidenceRegistry, RetrievalPlan
-from ..rag.tool_registry import ToolRegistry, ToolResult
+from ..core import LICBaseAgent
+from ..rag.tool_registry import ToolResult
 from ..reasoning import cot, reflexion, tot
 from ..reasoning.toggles import ReasoningToggles
 
@@ -42,21 +42,12 @@ def score_quality(draft: str, reflexion: bool) -> int:
     return base + (2 if reflexion else 0)
 
 
-class MessageArchitect:
+class MessageArchitect(LICBaseAgent):
     """Construct outreach drafts with retrieval-backed evidence."""  # pragma: no cover
 
-    def __init__(
-        self,
-        toggles: ReasoningToggles,
-        *,
-        tool_registry: ToolRegistry | None = None,
-        content_store: ContentStore | None = None,
-        evidence_registry: EvidenceRegistry | None = None,
-    ) -> None:
+    def __init__(self, context, toggles: ReasoningToggles) -> None:
+        super().__init__(context)
         self.toggles = toggles
-        self.tool_registry = tool_registry or ToolRegistry.default_with_builtins()
-        self.content_store = content_store or ContentStore()
-        self.evidence_registry = evidence_registry or EvidenceRegistry()
 
     def update_toggles(self, toggles: ReasoningToggles) -> None:
         self.toggles = toggles
@@ -70,10 +61,11 @@ class MessageArchitect:
     ) -> DraftPackage:
         prompt = getattr(sanitized_inputs, "prompt", "")
         wants = self._derive_wants(prompt, sanitized_inputs)
-        plan = self._build_plan(wants, sanitized_inputs)
-        plan.dedupe()
-        plan.budget(max_calls or self._default_budget())
-        retrievals = plan.execute(self.tool_registry, self.content_store)
+        planner = self.context.resolve("retrieval_planner")
+        self._configure_plan(planner, wants, sanitized_inputs)
+        planner.dedupe()
+        planner.budget(max_calls or self._default_budget())
+        retrievals = planner.execute(self.registry, self.content_store)
         evidence = self._record_evidence(retrievals, sanitized_inputs)
 
         body_lines = self._compose_body(prompt, evidence)
@@ -110,16 +102,18 @@ class MessageArchitect:
             wants.append("Context for: prospect overview")
         return wants
 
-    def _build_plan(self, wants: Sequence[str], inputs) -> RetrievalPlan:
-        context = {
+    def _configure_plan(self, planner, wants: Sequence[str], inputs) -> None:
+        context = self._plan_context(inputs)
+        planner.reset(wants, context)
+        for want in wants[:6]:
+            planner.add({"tool": self._select_tool_for_want(want), "query": want})
+
+    def _plan_context(self, inputs) -> Dict[str, object]:
+        return {
             "company_id": getattr(inputs, "company_id", None),
             "contact_id": getattr(inputs, "contact_id", None),
             "ttl_s": _ANCHOR_WINDOW_S,
         }
-        plan = RetrievalPlan(wants, context)
-        for want in wants[:6]:
-            plan.add({"tool": self._select_tool_for_want(want), "query": want})
-        return plan
 
     def _select_tool_for_want(self, want: str) -> str:
         lowered = want.lower()
