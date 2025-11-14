@@ -28,7 +28,7 @@ import os
 import uuid
 import asyncio
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 # v10.7: Import from new core
 from core_v10_7 import (
@@ -41,12 +41,62 @@ from core_v10_7 import (
     PydanticSchemaError,
     track_metrics,
     _format_prompt_with_defaults, # v10.7: Import async formatter
-    get_checkpointer
+    get_checkpointer,
+    MCPClientStub,
 )
 from langgraph.graph import StateGraph, END
 
 # v10.7: Logger name updated
 logger = logging.getLogger("meta_learner_v10_7")
+
+# ============================================================================
+# MODULE HELPERS
+# ============================================================================
+
+
+def _read_log_tail(path: str, limit: int = 50) -> Tuple[str, int]:
+    """Return the last ``limit`` lines of ``path`` and a count of entries."""
+
+    if not path or not os.path.exists(path):
+        return "", 0
+
+    try:
+        with open(path, 'r') as f:
+            lines = f.readlines()
+    except Exception:
+        return "", 0
+
+    tail = lines[-limit:]
+    if not tail:
+        return "", 0
+
+    joined = "\n".join(line.rstrip('\n') for line in tail)
+    entry_count = sum(1 for line in tail if line.strip())
+    return joined, entry_count
+
+
+def _count_feedback_entries(config: ConfigV10_7) -> int:
+    meta_cfg = getattr(config, "meta_loop_config", None)
+    if not meta_cfg:
+        return 0
+    _, count = _read_log_tail(getattr(meta_cfg, "feedback_log_path", ""))
+    return count
+
+
+def _redis_available(redis_client: Any) -> bool:
+    if redis_client is None or isinstance(redis_client, MCPClientStub):
+        return False
+
+    ping_fn = getattr(redis_client, "ping", None)
+    if not callable(ping_fn):
+        return False
+
+    try:  # pragma: no cover - requires Redis
+        ping_fn()
+        return True
+    except Exception:
+        return False
+
 
 # ============================================================================
 # ROW 7: HOT-RELOAD RULE MANAGER (Preserved)
@@ -88,17 +138,15 @@ class LogReaderAgent(BaseAgent):
         logs = {"feedback_log": "", "preference_log": ""}
         feedback_log_path = self.config.meta_loop_config.feedback_log_path
         preference_log_path = self.config.meta_loop_config.preference_log_path
-        
+
         try:
-            if os.path.exists(feedback_log_path):
-                with open(feedback_log_path, 'r') as f:
-                    logs["feedback_log"] = "\n".join(f.readlines()[-50:])
+            feedback_tail, _ = _read_log_tail(feedback_log_path)
+            logs["feedback_log"] = feedback_tail
         except Exception:
             pass
         try:
-            if os.path.exists(preference_log_path):
-                with open(preference_log_path, 'r') as f:
-                    logs["preference_log"] = "\n".join(f.readlines()[-50:])
+            preference_tail, _ = _read_log_tail(preference_log_path)
+            logs["preference_log"] = preference_tail
         except Exception:
             pass
         
@@ -543,33 +591,43 @@ async def run_meta_learning(config: ConfigV10_7):
     """
     
     logger.info(f"===== Starting v10.7 Meta-Learning =====")
-    
+
     if not config.meta_loop_config.enable_meta_learning:
         logger.info("Meta-learning disabled in config. Exiting.")
         return
+
+    feedback_log_entries = _count_feedback_entries(config)
 
     try:
         # --- v10.7: REFACTOR: COMPOSITION ROOT ---
         meta_db = config.redis_config.db + 10
         context = create_workflow_context(config, db=meta_db)
         logger.info("Initialized WorkflowContext for meta-learning (v10.7)")
-        
+
         checkpointer = get_checkpointer(
             config,
             db=meta_db,
             allow_memory_fallback=True
         )
         # --- v10.7: REFACTOR END ---
-        
+
         app = build_meta_learning_graph(context, checkpointer)
-        
+
         workflow_id = str(uuid.uuid4())
         run_config = {"configurable": {"thread_id": workflow_id}}
-        
+
         initial_state = MetaGraphState(workflow_id=workflow_id, replan_count=0)
-        
+
+        redis_available = _redis_available(context.redis_client)
+        logger.info(
+            "Meta-learning bootstrap | redis_available=%s | feedback_log_entries=%d | patterns_found=%d",
+            redis_available,
+            feedback_log_entries,
+            0,
+        )
+
         logger.info(f"Executing meta-learning graph (ID: {workflow_id})...")
-        
+
         final_state = None
         async for s in app.astream(initial_state, run_config):
             node_name = list(s.keys())[0]
@@ -585,7 +643,10 @@ async def run_meta_learning(config: ConfigV10_7):
         logger.info("META-LEARNING RESULTS (v10.7):")
         logger.info(f"  Patterns Found: {patterns_found}")
         logger.info(f"  Critique Passed: {critique_passed}")
-        
+
+        if patterns_found == 0 and feedback_log_entries == 0:
+            logger.info("Meta-learning skipped: no data available (harmless).")
+
         cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
         logger.info(f"Meta-learning cost: ${cost_summary['total_workflow_cost']:.4f}")
         logger.info("===== v10.7 Meta-Learning Complete =====")
