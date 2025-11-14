@@ -19,6 +19,8 @@ from core_v10_7 import (
     CostTracker,
     FeedbackLogReader,
     MetricsCollector,
+    PredictiveCacheManager,
+    PrecomputeEngine,
     PromptTemplateManager,
     ProposedRulesLoader,
     ResponseValidator,
@@ -299,6 +301,12 @@ def workflow_harness(
     prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
     response_validator = ResponseValidator()
     metrics_collector = MetricsCollector()
+    predictive_cache_manager = PredictiveCacheManager(
+        config=config,
+        cache_manager=cache_manager,
+        metrics=metrics_collector,
+    )
+    precompute_engine = PrecomputeEngine(context=None)
     semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
     context_budget_manager = ContextBudgetManager(
@@ -309,6 +317,7 @@ def workflow_harness(
         context_budget_manager.register_workflow = lambda *_args, **_kwargs: None  # type: ignore[attr-defined]
     context_budget_manager.register_workflow("test-workflow", 1000)
 
+    metrics_collector.predictive_cache_manager = predictive_cache_manager
     workflow_context = WorkflowContext(
         config=config,
         redis_client=redis_client,
@@ -323,8 +332,11 @@ def workflow_harness(
         semantic_validator=semantic_validator,
         embedding_function=embedding,
         arbitration_engine=arbitration_engine,
+        predictive_cache_manager=predictive_cache_manager,
+        precompute_engine=precompute_engine,
     )
     workflow_context.context_budget_manager = context_budget_manager
+    precompute_engine.context = workflow_context
     workflow_context.workflow_id = "test-workflow"
     workflow_context.get_model_client = MagicMock(return_value=mock_llm_client)
     context_budget_manager.get_model_client = workflow_context.get_model_client

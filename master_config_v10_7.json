@@ -125,6 +125,14 @@
       "qa": { "enable": true }
     }
   },
+  "predictive_caching_config": {
+    "enabled": false,
+    "enable_precompute_embeddings": true,
+    "enable_precompute_rag": true,
+    "enable_precompute_strategy": true,
+    "enable_precompute_critique": false,
+    "max_background_tasks": 3
+  },
   "file_paths": {
     "default_job_input": "job_input.json",
     "default_master_resume": "master_resume.json"
