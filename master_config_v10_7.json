@@ -115,6 +115,16 @@
     "langsmith_enabled": false,
     "langsmith_api_key": null
   },
+  "self_correction_config": {
+    "enabled": false,
+    "max_local_retries": 1,
+    "heuristics": {
+      "drafting": { "enable": true },
+      "rag": { "enable": true },
+      "prompt": { "enable": true },
+      "qa": { "enable": true }
+    }
+  },
   "file_paths": {
     "default_job_input": "job_input.json",
     "default_master_resume": "master_resume.json"
