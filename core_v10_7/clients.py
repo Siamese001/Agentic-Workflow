@@ -33,7 +33,16 @@ try:  # pragma: no cover - optional provider SDKs
 except Exception:  # pragma: no cover - provider optional
     _AsyncAnthropic = None
     try:  # pragma: no cover - provider optional
-        import anthropic as _anthropic_module  # type: ignore[assignment]
+        try:
+            import anthropic
+            print("[CLIENTS] Anthropic imported OK from:",
+                  getattr(anthropic, "__file__", "<?>"))
+        except Exception as e:
+            import sys
+            print("[CLIENTS.ANTHROPIC_IMPORT_ERROR]")
+            print("Exception:", repr(e))
+            print("sys.path =", sys.path)
+            raise
         _AnthropicSyncClient = getattr(_anthropic_module, "Client", None)
     except Exception:  # pragma: no cover - provider optional
         _anthropic_module = None
