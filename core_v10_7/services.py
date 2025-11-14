@@ -32,7 +32,7 @@ from telemetry_v10_7 import log_event
 from .config import ConfigV10_7
 from .constants import legacy_model_alias
 from .exceptions import JSONParsingError, PydanticSchemaError
-from .models import ArbitrationReport, GeneratedPrompts, StrategyPlan
+from .models import ArbitrationReport, GeneratedPrompts, SelfCorrectionReport, StrategyPlan
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
     from .clients import AsyncBaseModelClient
@@ -46,19 +46,142 @@ else:  # pragma: no cover - fallback aliases for runtime
 logger = logging.getLogger("core_v10_7")
 
 
+class SelfCorrectionManager:
+    """Central registry for stack-local self-healing attempts."""
+
+    _STACK_ALIASES = {
+        "draftingstack": "drafting",
+        "drafting": "drafting",
+        "ragstack": "rag",
+        "rag": "rag",
+        "promptstack": "prompt",
+        "prompt": "prompt",
+        "qastack": "qa",
+        "qa": "qa",
+    }
+
+    def __init__(self, config: ConfigV10_7):
+        cfg = getattr(config, "self_correction_config", None)
+        heuristics_cfg = getattr(cfg, "heuristics", {}) if cfg else {}
+        self.enabled = bool(getattr(cfg, "enabled", False)) if cfg else False
+        self.max_local_retries = int(getattr(cfg, "max_local_retries", 1)) if cfg else 1
+        self.heuristics = {
+            "drafting": heuristics_cfg.get("drafting", {"enable": True}),
+            "rag": heuristics_cfg.get("rag", {"enable": True}),
+            "prompt": heuristics_cfg.get("prompt", {"enable": True}),
+            "qa": heuristics_cfg.get("qa", {"enable": True}),
+        }
+        self.logger = logging.getLogger(f"{__name__}.SelfCorrectionManager")
+        self._attempts: Dict[Tuple[str, str], int] = {}
+        self._signals: Dict[Tuple[str, str], List[Dict[str, Any]]] = {}
+        self._reports: List[SelfCorrectionReport] = []
+
+    def _normalize_stack(self, stack_name: str) -> str:
+        key = (stack_name or "").lower()
+        return self._STACK_ALIASES.get(key, key or "unknown")
+
+    def stack_enabled(self, stack_name: str) -> bool:
+        if not self.enabled:
+            return False
+        key = self._normalize_stack(stack_name)
+        stack_cfg = self.heuristics.get(key, {})
+        return bool(stack_cfg.get("enable", False))
+
+    def can_retry(self, workflow_id: str, stack_name: str) -> bool:
+        if not self.stack_enabled(stack_name):
+            return False
+        key = (workflow_id or "", self._normalize_stack(stack_name))
+        attempts = self._attempts.get(key, 0)
+        return attempts < self.max_local_retries
+
+    def start_retry(
+        self,
+        workflow_id: str,
+        stack_name: str,
+        issue: str,
+        action: str,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> SelfCorrectionReport:
+        key = (workflow_id or "", self._normalize_stack(stack_name))
+        attempts = self._attempts.get(key, 0) + 1
+        self._attempts[key] = attempts
+        report = SelfCorrectionReport(
+            stack_name=key[1],
+            workflow_id=workflow_id or "unknown",
+            issue_detected=issue,
+            action_taken=action,
+            retry_count=attempts,
+            resolved=False,
+            notes=dict(metadata or {}),
+        )
+        self._reports.append(report)
+        self.logger.info(
+            "Self-correction attempt %s for %s (workflow=%s): %s",
+            attempts,
+            key[1],
+            workflow_id,
+            issue,
+        )
+        return report
+
+    def finalize_retry(
+        self,
+        report: SelfCorrectionReport,
+        resolved: bool,
+        extra_notes: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        report.resolved = resolved
+        if extra_notes:
+            report.notes.update(extra_notes)
+        outcome = "resolved" if resolved else "unresolved"
+        self.logger.info(
+            "Self-correction %s for %s (workflow=%s)",
+            outcome,
+            report.stack_name,
+            report.workflow_id,
+        )
+
+    def register_signal(self, workflow_id: str, source: str, payload: Dict[str, Any]) -> None:
+        key = (workflow_id or "", source)
+        signals = self._signals.setdefault(key, [])
+        signals.append({"timestamp": datetime.now().isoformat(), **payload})
+        # Keep signal buffer short to avoid runaway memory
+        if len(signals) > 20:
+            del signals[:-20]
+
+    def get_signals(self, workflow_id: str, source: Optional[str] = None) -> List[Dict[str, Any]]:
+        if source:
+            return list(self._signals.get((workflow_id or "", source), []))
+        collected: List[Dict[str, Any]] = []
+        for (wf_id, signal_source), payloads in self._signals.items():
+            if wf_id == (workflow_id or ""):
+                collected.extend({"source": signal_source, **p} for p in payloads)
+        return collected
+
+    def latest_reports(self, workflow_id: str, stack_name: Optional[str] = None) -> List[SelfCorrectionReport]:
+        if stack_name is None:
+            return [r for r in self._reports if r.workflow_id == workflow_id]
+        key = self._normalize_stack(stack_name)
+        return [r for r in self._reports if r.workflow_id == workflow_id and r.stack_name == key]
+
+
 class ContextBudgetManager:
     """
     v10.7 (Fix #14): Manages context window limits using agentic pruning.
     """
-    def __init__(self, 
+    def __init__(self,
                  config: ConfigV10_7,
-                 model_client_getter: Callable[..., 'AsyncBaseModelClient']
+                 model_client_getter: Callable[..., 'AsyncBaseModelClient'],
+                 self_correction_manager: Optional['SelfCorrectionManager'] = None,
+                 workflow_id_getter: Optional[Callable[[], str]] = None,
                 ):
         self.default_limit = config.performance_config.default_token_limit
         self.buffer = 0.2 # 20% buffer
         self.logger = logging.getLogger(f"{__name__}.ContextBudgetManager")
         self.config = config
         self.get_model_client = model_client_getter
+        self.self_correction_manager = self_correction_manager
+        self._workflow_id_getter = workflow_id_getter or (lambda: "")
     
     def _estimate_tokens(self, text: str) -> int:
         return len(text) // 4
@@ -108,6 +231,10 @@ class ContextBudgetManager:
 
         except Exception as e:
             self.logger.error("Agentic pruning failed: %s. Falling back to truncation.", e, exc_info=True)
+            self._emit_signal(
+                "agentic_failure",
+                {"error": str(e), "max_tokens": max_tokens},
+            )
             return self._prune_truncate(document, max_tokens, label="AGENTIC_FAILURE")
 
     def _prune_truncate(self, document: str, max_tokens: int, *, label: str = "TRUNCATION") -> str:
@@ -115,6 +242,10 @@ class ContextBudgetManager:
         max_chars = max_tokens * 4
         pruned_doc = document[:max_chars]
         self.logger.warning(f"Context truncated to {max_tokens} tokens.")
+        self._emit_signal(
+            "context_truncated",
+            {"label": label, "max_tokens": max_tokens, "pruned_chars": len(pruned_doc)},
+        )
         return f"{pruned_doc}\n\n[... DOCUMENT PRUNED ({label}) ...]"
     
     async def prune(self, document: str, max_tokens: Optional[int] = None) -> str:
@@ -133,15 +264,37 @@ class ContextBudgetManager:
             return document 
         
         # v10.7 (Fix #14): Use agentic pruning
-        return await self._prune_agentic(document, token_limit_with_buffer)
+        result = await self._prune_agentic(document, token_limit_with_buffer)
+        self._emit_signal(
+            "agentic_prune",
+            {
+                "estimated_tokens": estimated_tokens,
+                "limit": token_limit_with_buffer,
+            },
+        )
+        return result
+
+    def _emit_signal(self, event: str, payload: Dict[str, Any]) -> None:
+        if not self.self_correction_manager:
+            return
+        workflow_id = self._workflow_id_getter() if callable(self._workflow_id_getter) else ""
+        if not workflow_id:
+            return
+        self.self_correction_manager.register_signal(
+            workflow_id,
+            "context_budget",
+            {"event": event, **payload},
+        )
 
 
 class MetricsCollector:
     """v10.7: In-memory collector for agent/tool observability."""
-    def __init__(self):
+
+    def __init__(self, self_correction_manager: Optional['SelfCorrectionManager'] = None):
         self.logger = logging.getLogger(f"{__name__}.MetricsCollector")
         self.metrics: List[Dict[str, Any]] = []
         self.log_path = "./logs/metrics_v10_7.jsonl"
+        self.self_correction_manager = self_correction_manager
         try:
             os.makedirs(os.path.dirname(self.log_path), exist_ok=True)
             self.logger.info(f"Metrics logging to {self.log_path}")
@@ -165,6 +318,7 @@ class MetricsCollector:
                 f.write('\n')
         except Exception as e:
             self.logger.error(f"Failed to write metric to log: {e}")
+        self._emit_signal(metric)
 
     def get_summary(self) -> List[Dict[str, Any]]:
         return self.metrics
@@ -178,6 +332,24 @@ class MetricsCollector:
         if not latencies:
             return None
         return sum(latencies) / len(latencies)
+
+    def _emit_signal(self, metric: Dict[str, Any]) -> None:
+        if not self.self_correction_manager:
+            return
+        metadata = metric.get("metadata") or {}
+        workflow_id = metadata.get("workflow_id")
+        if not workflow_id:
+            return
+        if metric.get("success") and metric.get("duration_ms", 0) <= 0:
+            return
+        signal_payload = {
+            "agent": metric.get("agent_name"),
+            "task": metric.get("task_name"),
+            "success": metric.get("success"),
+            "duration_ms": metric.get("duration_ms"),
+            "error": metric.get("error"),
+        }
+        self.self_correction_manager.register_signal(workflow_id, "metrics", signal_payload)
 
 
 TaskNameResolver = Union[str, Callable[..., str]]
@@ -708,12 +880,13 @@ class FeedbackEntry:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 class FeedbackLogReader:
-    def __init__(self, feedback_log_path: str):
+    def __init__(self, feedback_log_path: str, self_correction_manager: Optional['SelfCorrectionManager'] = None):
         self.feedback_log_path = feedback_log_path
         self.logger = logging.getLogger(f"{__name__}.FeedbackLogReader")
         self._cache: List[FeedbackEntry] = []
         self._last_read_time: Optional[float] = None
         self._cache_ttl = 60.0
+        self.self_correction_manager = self_correction_manager
     
     def _read_log_lines(self, max_entries: int) -> List[FeedbackEntry]:
         now = time.time()
@@ -726,8 +899,24 @@ class FeedbackLogReader:
                 # Read all lines, parse only the last N
                 lines = f.readlines()
                 for line in lines[-max_entries:]:
-                    try: entries.append(FeedbackEntry(**json.loads(line.strip())))
-                    except (json.JSONDecodeError, TypeError): continue
+                    try:
+                        entry = FeedbackEntry(**json.loads(line.strip()))
+                    except (json.JSONDecodeError, TypeError):
+                        continue
+                    entries.append(entry)
+                    if (
+                        self.self_correction_manager
+                        and entry.feedback_type == "failure"
+                    ):
+                        self.self_correction_manager.register_signal(
+                            entry.workflow_id,
+                            "feedback",
+                            {
+                                "agent": entry.agent_name,
+                                "task": entry.task,
+                                "details": entry.details,
+                            },
+                        )
             self._cache = entries
             self._last_read_time = now
             return entries
@@ -1169,6 +1358,7 @@ class ArbitrationEngine:
 
 
 __all__ = [
+    "SelfCorrectionManager",
     "ContextBudgetManager",
     "MetricsCollector",
     "track_metrics",
