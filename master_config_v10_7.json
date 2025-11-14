@@ -19,6 +19,12 @@
     "log_format": "json",
     "correlation_ids": true
   },
+  "storage_config": {
+    "durable_root": "./runtime_state",
+    "ephemeral_root": "./tmp",
+    "logs_backend": "fs",
+    "vector_backend": "local"
+  },
   "redis_config": {
     "host": "localhost",
     "port": 6379,
