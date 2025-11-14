@@ -73,14 +73,16 @@ from core_v10_7 import (
     ArbitrationEngine,
     CacheManager,
     ConfigV10_7,
+    ContextBudgetManager,
     CostTracker,
     FeedbackLogReader,
-    ProposedRulesLoader,
-    PromptTemplateManager,
-    ResponseValidator,
     MetricsCollector,
+    PredictiveCacheManager,
+    PrecomputeEngine,
+    PromptTemplateManager,
+    ProposedRulesLoader,
+    ResponseValidator,
     SemanticValidator,
-    ContextBudgetManager,
     WorkflowContext,
 )
 
@@ -109,8 +111,15 @@ def workflow_context(config: ConfigV10_7) -> WorkflowContext:
     prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
     response_validator = ResponseValidator()
     metrics = MetricsCollector()
+    predictive_cache_manager = PredictiveCacheManager(
+        config=config,
+        cache_manager=cache_mgr,
+        metrics=metrics,
+    )
+    precompute_engine = PrecomputeEngine(context=None)
     semantic_validator = SemanticValidator(metrics_collector=metrics)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics)
+    metrics.predictive_cache_manager = predictive_cache_manager
     ctx = WorkflowContext(
         config=config, redis_client=redis_client, chromadb_client=chroma,
         cache_manager=cache_mgr, cost_tracker=cost_tracker,
@@ -118,8 +127,10 @@ def workflow_context(config: ConfigV10_7) -> WorkflowContext:
         prompt_manager=prompt_manager, response_validator=response_validator,
         metrics_collector=metrics, semantic_validator=semantic_validator,
         embedding_function=embedding_fn, arbitration_engine=arbitration_engine,
+        predictive_cache_manager=predictive_cache_manager, precompute_engine=precompute_engine,
     )
     ctx.context_budget_manager = ContextBudgetManager(config=config, model_client_getter=ctx.get_model_client)
+    precompute_engine.context = ctx
     ctx.reset_mcp_clients()
     return ctx
 

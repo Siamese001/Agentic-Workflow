@@ -392,6 +392,17 @@ class DraftingGuildCoordinator(BaseAgent):
         task_context: Dict[str, Any],
         workflow_id: str,
     ) -> Dict[str, Any]:
+        pcm = self.context.predictive_cache_manager
+        if pcm and pcm.enabled():
+            bullets = task_context.get("bullets", [])
+            for bullet in bullets[:3]:
+                text = bullet.get("text", "") if isinstance(bullet, dict) else ""
+                if not text:
+                    continue
+                pcm.schedule({
+                    "coroutine": (lambda t=text: self.context.precompute_engine.precompute_embeddings(t))
+                })
+            await pcm.run_scheduled()
         base_result, meta = await self._execute_guild(task_context, workflow_id)
         return await self._maybe_self_correct(task_context, workflow_id, base_result, meta)
 
