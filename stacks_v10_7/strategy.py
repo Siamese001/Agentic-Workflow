@@ -65,6 +65,9 @@ class QueryComplexityClassifier(BaseAgent):
             return "complex"
 
         self.log_info(f"Task complexity classified as: {validated_output.complexity}")
+        if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
+            if self.context.tuning_profile.temperature < 0.2:
+                return "simple"
         return validated_output.complexity
 
 

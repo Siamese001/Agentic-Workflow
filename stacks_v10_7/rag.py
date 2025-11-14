@@ -139,6 +139,9 @@ class RAG_SearchAgent(BaseAgent):
                 "coroutine": (lambda q=query: self.context.precompute_engine.precompute_hyde_document(q))
             })
             await pcm.run_scheduled()
+        if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
+            if self.context.tuning_profile.rag_force_multi_tool:
+                state.setdefault("rag", {})["force_multi_tool"] = True
         base_result, meta = await self._execute_rag(state)
         return await self._maybe_self_correct(state, base_result, meta)
 

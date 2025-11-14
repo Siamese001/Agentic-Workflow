@@ -19,12 +19,14 @@ from core_v10_7 import (
     CostTracker,
     FeedbackLogReader,
     MetricsCollector,
+    PolicyAutoTuner,
     PredictiveCacheManager,
     PrecomputeEngine,
     PromptTemplateManager,
     ProposedRulesLoader,
     ResponseValidator,
     SemanticValidator,
+    TuningProfile,
     WorkflowContext,
     WorkflowTimeoutError,
 )
@@ -301,6 +303,8 @@ def workflow_harness(
     prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
     response_validator = ResponseValidator()
     metrics_collector = MetricsCollector()
+    tuning_profile = TuningProfile()
+    policy_auto_tuner = PolicyAutoTuner(config, metrics_collector)
     predictive_cache_manager = PredictiveCacheManager(
         config=config,
         cache_manager=cache_manager,
@@ -334,6 +338,8 @@ def workflow_harness(
         arbitration_engine=arbitration_engine,
         predictive_cache_manager=predictive_cache_manager,
         precompute_engine=precompute_engine,
+        tuning_profile=tuning_profile,
+        policy_auto_tuner=policy_auto_tuner,
     )
     workflow_context.context_budget_manager = context_budget_manager
     precompute_engine.context = workflow_context
