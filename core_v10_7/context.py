@@ -40,10 +40,12 @@ from .services import (
     FeedbackLogReader,
     MetricsCollector,
     PromptTemplateManager,
+    PredictiveCacheManager,
     ProposedRulesLoader,
     ResponseValidator,
     SelfCorrectionManager,
     SemanticValidator,
+    PrecomputeEngine,
 )
 
 logger = logging.getLogger("core_v10_7")
@@ -196,6 +198,8 @@ class WorkflowContext:
         semantic_validator: SemanticValidator,
         embedding_function: embedding_functions.EmbeddingFunction,
         arbitration_engine: ArbitrationEngine,
+        predictive_cache_manager: PredictiveCacheManager,
+        precompute_engine: PrecomputeEngine,
         self_correction_manager: Optional[SelfCorrectionManager] = None,
     ):
 
@@ -227,6 +231,8 @@ class WorkflowContext:
         self.semantic_validator = semantic_validator
         self.embedding_function = embedding_function
         self.arbitration_engine = arbitration_engine
+        self.predictive_cache_manager = predictive_cache_manager
+        self.precompute_engine = precompute_engine
         self.self_correction_manager = self_correction_manager
 
         # This is injected *after* __init__ to break circular dependency
@@ -498,8 +504,15 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
     response_validator = ResponseValidator()
     metrics_collector = MetricsCollector(self_correction_manager=self_correction_manager)
+    predictive_cache_manager = PredictiveCacheManager(
+        config=config,
+        cache_manager=cache_manager,
+        metrics=metrics_collector,
+    )
+    precompute_engine = PrecomputeEngine(context=None)  # placeholder
     semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
+    metrics_collector.predictive_cache_manager = predictive_cache_manager
 
     # 3. Initialize Context (Partial)
     context = WorkflowContext(
@@ -516,6 +529,8 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         semantic_validator=semantic_validator,
         embedding_function=embedding_function,
         arbitration_engine=arbitration_engine,
+        predictive_cache_manager=predictive_cache_manager,
+        precompute_engine=precompute_engine,
         self_correction_manager=self_correction_manager,
     )
 
@@ -528,6 +543,9 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     )
     # 5. Inject the final service
     context.context_budget_manager = context_budget_manager
+
+    # Wire the precompute engine now that context exists
+    precompute_engine.context = context
 
     redis_mode = _describe_redis_mode(redis_client)
     chroma_mode = _describe_chroma_mode(config, storage_config)
