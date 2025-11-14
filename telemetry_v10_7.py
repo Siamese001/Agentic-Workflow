@@ -24,6 +24,17 @@ from mcp import emit_event
 logger = logging.getLogger("telemetry_v10_7")
 
 
+def check_langgraph() -> Dict[str, Any]:
+    """Capability-based LangGraph health check used by diagnostics."""
+
+    try:
+        from langgraph.graph import StateGraph  # noqa: F401
+
+        return {"ok": True, "info": "StateGraph import succeeded"}
+    except Exception as exc:  # pragma: no cover - best-effort diagnostic
+        return {"ok": False, "error": str(exc)}
+
+
 # ---------------------------------------------------------------------------
 # Unified Telemetry Envelope
 # ---------------------------------------------------------------------------
@@ -113,4 +124,4 @@ def log_event(
         logger.debug("Failed payload was: %s", env)
 
 
-__all__ = ["log_event"]
+__all__ = ["log_event", "check_langgraph"]
