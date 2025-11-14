@@ -132,7 +132,9 @@ class AsyncBaseModelClient:
         except Exception as e:  # pragma: no cover - best-effort
             logger.warning(f"Idempotency check failed: {e}")
 
-    @track_metrics("AsyncBaseModelClient")  # v10.7 (Fix #15): Track latency
+    @track_metrics(
+        lambda self, *_, **__: getattr(self, "latency_task_name", self.model_name)
+    )  # v10.7 (Fix #15/#45): Track latency per model
     async def chat_completion_async(
         self,
         messages: List[Dict[str, str]],
