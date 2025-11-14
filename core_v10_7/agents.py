@@ -155,6 +155,7 @@ class BaseAgent:
         client.goal_state = self.prompt_manager.goal_state
         client.top_failures = self.prompt_manager.top_failures
         client.budget_manager = self.budget_manager
+        client.latency_task_name = model_key
 
         return client
 
