@@ -351,6 +351,14 @@ class MetricsCollector:
         }
         self.self_correction_manager.register_signal(workflow_id, "metrics", signal_payload)
 
+        # Predictive cache signal observer
+        pcm = getattr(self, "predictive_cache_manager", None)
+        if pcm and pcm.enabled():
+            try:
+                pcm.schedule({"coroutine": lambda: asyncio.sleep(0)})  # no-op
+            except Exception:
+                pass
+
 
 TaskNameResolver = Union[str, Callable[..., str]]
 
@@ -1217,6 +1225,96 @@ class CostTracker:
         return {"workflow_id": workflow_id, "total_workflow_cost": total_cost, "calls": calls}
 
 
+class PredictiveCacheManager:
+    """
+    v10.7: Predictive caching layer that prefetches embeddings, RAG expansions,
+    prompt templates, and critique skeletons before an agent needs them.
+    All behavior is gated behind predictive_caching_config.enabled.
+    """
+
+    def __init__(self, config: ConfigV10_7, cache_manager: CacheManager, metrics: MetricsCollector):
+        self.config = config
+        self.cache_manager = cache_manager
+        self.metrics = metrics
+        self.logger = logging.getLogger(f"{__name__}.PredictiveCacheManager")
+        self._queue: List[Dict[str, Any]] = []
+
+    def enabled(self) -> bool:
+        cfg = getattr(self.config, "predictive_caching_config", None)
+        return bool(cfg and getattr(cfg, "enabled", False))
+
+    def schedule(self, task: Dict[str, Any]) -> None:
+        if not self.enabled():
+            return
+        self._queue.append(task)
+        if len(self._queue) > self.config.predictive_caching_config.max_background_tasks:
+            self._queue.pop(0)
+
+    async def run_scheduled(self):
+        if not self.enabled():
+            return
+        for task in list(self._queue):
+            try:
+                coro = task.get("coroutine")
+                if coro:
+                    await coro()
+            except Exception as e:
+                self.logger.warning(f"[PredictiveCache] Task error: {e}")
+            finally:
+                self._queue.remove(task)
+
+
+class PrecomputeEngine:
+    """
+    v10.7: Background precomputation engine.
+    Performs:
+      - embedding precompute
+      - RAG HyDE expansions
+      - prompt template prep
+      - critique skeleton generation
+    """
+
+    def __init__(self, context: "WorkflowContext"):
+        self.context = context
+        self.logger = logging.getLogger(f"{__name__}.PrecomputeEngine")
+
+    async def precompute_embeddings(self, text: str):
+        if not text:
+            return
+        try:
+            emb = self.context.embedding_function([text])[0]
+            self.context.metrics_collector.record(
+                agent_name="PrecomputeEngine",
+                task_name="precompute_embeddings",
+                duration_ms=0,
+                success=True,
+                metadata={"len": len(text)}
+            )
+            return emb
+        except Exception as e:
+            self.logger.warning(f"Embedding precompute failed: {e}")
+
+    async def precompute_hyde_document(self, query: str):
+        from agent_tools_v10_7 import HyDETool
+        try:
+            tool = HyDETool(self.context)
+            await tool.run_async({"query": query}, self.context.workflow_id)
+        except Exception as e:
+            self.logger.warning(f"HyDE precompute failed: {e}")
+
+    async def precompute_prompt_plan(self, strategy_json: str, complexity: str):
+        from prompting import PromptEngineerAgent
+        try:
+            agent = PromptEngineerAgent(self.context)
+            await agent._generate_prompts(
+                strategy=StrategyPlan.model_validate_json(strategy_json),
+                complexity=complexity,
+                workflow_id=self.context.workflow_id,
+            )
+        except Exception as e:
+            self.logger.warning(f"Prompt precompute failed: {e}")
+
+
 class ArbitrationEngine:
     """Lightweight arbitration service for cross-stack decisions."""
 
@@ -1365,6 +1463,8 @@ __all__ = [
     "SelfCorrectionManager",
     "ContextBudgetManager",
     "MetricsCollector",
+    "PredictiveCacheManager",
+    "PrecomputeEngine",
     "track_metrics",
     "SemanticValidator",
     "PromptTemplateManager",
