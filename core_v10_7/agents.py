@@ -36,6 +36,7 @@ class BaseAgent:
         self.validator = context.response_validator
         self.budget_manager = context.context_budget_manager
         self.metrics = context.metrics_collector
+        self.self_correction_manager = getattr(context, "self_correction_manager", None)
 
         # v10.7 MCP integration
         self.mcp_clients = context.ensure_mcp_clients() if context.is_mcp_enabled() else {}
