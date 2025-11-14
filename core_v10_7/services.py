@@ -1343,7 +1343,7 @@ class PrecomputeEngine:
         from prompting import PromptEngineerAgent
         try:
             agent = PromptEngineerAgent(self.context)
-            await agent._generate_prompts(
+            await agent._execute_prompt_engineer(
                 strategy=StrategyPlan.model_validate_json(strategy_json),
                 complexity=complexity,
                 workflow_id=self.context.workflow_id,

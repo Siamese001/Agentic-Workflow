@@ -300,17 +300,18 @@ class RAG_SearchAgent(BaseAgent):
         base_result: Dict[str, Any],
         meta: Dict[str, Any],
     ) -> Dict[str, Any]:
-        if not self.self_correction_manager:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
             return base_result
         workflow_id = state["metadata"].get("workflow_id", "")
-        if not self.self_correction_manager.can_retry(workflow_id, "rag"):
+        if not manager.can_retry(workflow_id, "rag"):
             return base_result
 
         baseline_count = len(base_result.get("resume", {}).get("experience_bullets", []) or [])
         if baseline_count >= 3:
             return base_result
 
-        report = self.self_correction_manager.start_retry(
+        report = manager.start_retry(
             workflow_id,
             "rag",
             issue="sparse_rag_results",
@@ -328,7 +329,7 @@ class RAG_SearchAgent(BaseAgent):
         )
         corrected_count = len(corrected_result.get("resume", {}).get("experience_bullets", []) or [])
         resolved = corrected_count > baseline_count
-        self.self_correction_manager.finalize_retry(
+        manager.finalize_retry(
             report,
             resolved,
             {"corrected_results": corrected_count},
