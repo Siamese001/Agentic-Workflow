@@ -3,7 +3,7 @@
 import asyncio
 import json
 import uuid
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from core_v10_7 import (
     A2AMessage,
@@ -126,6 +126,14 @@ class RAG_SearchAgent(BaseAgent):
 
     @track_metrics("run_agentic_rag")
     async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        base_result, meta = await self._execute_rag(state)
+        return await self._maybe_self_correct(state, base_result, meta)
+
+    async def _execute_rag(
+        self,
+        state: Dict[str, Any],
+        self_heal_hint: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         self.log_info("Running Agentic RAG Conductor (v10.7)...")
 
         workflow_id = state["metadata"]["workflow_id"]
@@ -140,7 +148,8 @@ class RAG_SearchAgent(BaseAgent):
 
         client = self.get_model_client("react_conductor_model")
         rerank_client = self.get_model_client("reranker_model")
-        max_steps = 5
+        hint = self_heal_hint or {}
+        max_steps = hint.get("max_steps", self.config.agent_stacks.conductor_max_steps)
 
         react_prompt_template = f"""
         {client.goal_state}
@@ -159,9 +168,26 @@ class RAG_SearchAgent(BaseAgent):
         6. Output final list.
         """
 
+        if hint.get("force_multi_tool"):
+            react_prompt_template += "\nREFRESH: Always call both search tools before finishing."
+
         messages = [{"role": "user", "content": react_prompt_template}]
         current_query = query
         all_tool_results: List[List[Dict[str, Any]]] = []
+
+        if hint.get("prefetch_hyde"):
+            try:
+                hyde_tool = self.tools.get("generate_hypothetical_documents")
+                if hyde_tool:
+                    hyde_result = await hyde_tool.run_async({"query": query}, workflow_id)
+                    if hyde_result.get("status") == "success":
+                        current_query = hyde_result.get("hypothetical_document", query)
+                        messages.append({
+                            "role": "user",
+                            "content": f"Prefetched HyDE query: {current_query}",
+                        })
+            except Exception as exc:  # pragma: no cover - defensive logging
+                self.log_warning(f"HyDE prefetch failed: {exc}")
 
         for step in range(max_steps):
             response = await client.chat_completion_async(
@@ -184,7 +210,7 @@ class RAG_SearchAgent(BaseAgent):
                 return {
                     "resume": {"experience_bullets": ranked},
                     "a2a": {"messages": a2a_messages},
-                }
+                }, {"experience_bullets": len(ranked)}
 
             if "tool_call" in step_data:
                 tool_name = step_data["tool_call"].get("name")
@@ -233,6 +259,65 @@ class RAG_SearchAgent(BaseAgent):
             ).model_dump()
         )
 
+        if hint.get("force_multi_tool") and not all_tool_results:
+            for tool_name in ["search_resume_database", "search_resume_bm25"]:
+                tool = self.tools.get(tool_name)
+                if not tool:
+                    continue
+                fallback_input = {"query": current_query}
+                if tool_name == "search_resume_bm25":
+                    fallback_input["corpus_text"] = corpus_text
+                    fallback_input["corpus_metadata"] = corpus_metadata
+                try:
+                    fallback_result = await tool.run_async(fallback_input, workflow_id)
+                    all_tool_results.append(fallback_result.get("search_results", []))
+                except Exception as exc:  # pragma: no cover - defensive logging
+                    self.log_warning(f"Forced {tool_name} call failed: {exc}")
+
         merged = self._merge_and_deduplicate(all_tool_results)
         ranked = await self.rerank_results(query, merged, rerank_client)
-        return {"resume": {"experience_bullets": ranked}, "a2a": {"messages": a2a_messages}}
+        return {"resume": {"experience_bullets": ranked}, "a2a": {"messages": a2a_messages}}, {"experience_bullets": len(ranked)}
+
+    async def _maybe_self_correct(
+        self,
+        state: Dict[str, Any],
+        base_result: Dict[str, Any],
+        meta: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        if not self.self_correction_manager:
+            return base_result
+        workflow_id = state["metadata"].get("workflow_id", "")
+        if not self.self_correction_manager.can_retry(workflow_id, "rag"):
+            return base_result
+
+        baseline_count = len(base_result.get("resume", {}).get("experience_bullets", []) or [])
+        if baseline_count >= 3:
+            return base_result
+
+        report = self.self_correction_manager.start_retry(
+            workflow_id,
+            "rag",
+            issue="sparse_rag_results",
+            action="expand_hybrid_search",
+            metadata={"initial_results": baseline_count},
+        )
+
+        corrected_result, corrected_meta = await self._execute_rag(
+            state,
+            self_heal_hint={
+                "prefetch_hyde": True,
+                "force_multi_tool": True,
+                "max_steps": self.config.agent_stacks.conductor_max_steps + 2,
+            },
+        )
+        corrected_count = len(corrected_result.get("resume", {}).get("experience_bullets", []) or [])
+        resolved = corrected_count > baseline_count
+        self.self_correction_manager.finalize_retry(
+            report,
+            resolved,
+            {"corrected_results": corrected_count},
+        )
+        if resolved:
+            corrected_result.setdefault("self_correction", {})["rag"] = report.model_dump()
+            return corrected_result
+        return base_result
