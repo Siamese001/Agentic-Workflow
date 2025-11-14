@@ -196,6 +196,17 @@ class WorkflowContext:
     ):
 
         self.config = config
+        redis_required = bool(getattr(config.redis_config, "required", True))
+        if redis_required:
+            try:
+                redis_client.ping()
+            except Exception as e:
+                raise RuntimeError(
+                    f"Redis is required but not running: {e}"
+                ) from e
+            logger.warning(
+                "Redis mode: REQUIRED — workflow will fail if Redis is not running."
+            )
         self.redis_client = redis_client
         self.chromadb_client = chromadb_client
         self.workflow_id: str = ""
