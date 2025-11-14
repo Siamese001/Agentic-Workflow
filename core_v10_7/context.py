@@ -39,6 +39,7 @@ from .services import (
     FeedbackEntry,
     FeedbackLogReader,
     MetricsCollector,
+    PolicyAutoTuner,
     PromptTemplateManager,
     PredictiveCacheManager,
     ProposedRulesLoader,
@@ -46,6 +47,7 @@ from .services import (
     SelfCorrectionManager,
     SemanticValidator,
     PrecomputeEngine,
+    TuningProfile,
 )
 
 logger = logging.getLogger("core_v10_7")
@@ -200,6 +202,8 @@ class WorkflowContext:
         arbitration_engine: ArbitrationEngine,
         predictive_cache_manager: PredictiveCacheManager,
         precompute_engine: PrecomputeEngine,
+        tuning_profile: TuningProfile,
+        policy_auto_tuner: PolicyAutoTuner,
         self_correction_manager: Optional[SelfCorrectionManager] = None,
     ):
 
@@ -234,6 +238,8 @@ class WorkflowContext:
         self.predictive_cache_manager = predictive_cache_manager
         self.precompute_engine = precompute_engine
         self.self_correction_manager = self_correction_manager
+        self.tuning_profile = tuning_profile
+        self.policy_auto_tuner = policy_auto_tuner
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
@@ -504,6 +510,8 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
     response_validator = ResponseValidator()
     metrics_collector = MetricsCollector(self_correction_manager=self_correction_manager)
+    tuning_profile = TuningProfile()
+    policy_auto_tuner = PolicyAutoTuner(config, metrics_collector)
     predictive_cache_manager = PredictiveCacheManager(
         config=config,
         cache_manager=cache_manager,
@@ -532,6 +540,8 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         predictive_cache_manager=predictive_cache_manager,
         precompute_engine=precompute_engine,
         self_correction_manager=self_correction_manager,
+        tuning_profile=tuning_profile,
+        policy_auto_tuner=policy_auto_tuner,
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
