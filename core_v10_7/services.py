@@ -12,7 +12,17 @@ import time
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Mapping, Optional, Tuple
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Tuple,
+    Union,
+)
 
 from chromadb.utils import embedding_functions
 from pydantic import BaseModel, ValidationError as PydanticValidationError
@@ -170,7 +180,10 @@ class MetricsCollector:
         return sum(latencies) / len(latencies)
 
 
-def track_metrics(task_name: str):
+TaskNameResolver = Union[str, Callable[..., str]]
+
+
+def track_metrics(task_name: TaskNameResolver):
     """
     v10.7: Decorator for agent/tool/model run methods.
 
@@ -178,6 +191,20 @@ def track_metrics(task_name: str):
       - Agents: self.context.metrics_collector
       - Model clients: self.metrics
     """
+    def resolve_task_name(self: Any, *args: Any, **kwargs: Any) -> str:
+        if callable(task_name):
+            try:
+                resolved = task_name(self, *args, **kwargs)
+            except Exception as exc:  # pragma: no cover - defensive logging
+                logger.warning(
+                    "@track_metrics task_name callable failed on %s: %s",
+                    getattr(self, "__class__", type(self)),
+                    exc,
+                )
+                return "unknown_task"
+            return resolved or "unknown_task"
+        return task_name
+
     def decorator(func: Callable) -> Callable:
         if asyncio.iscoroutinefunction(func):
             @wraps(func)
@@ -199,6 +226,7 @@ def track_metrics(task_name: str):
                     return await func(self, *args, **kwargs)
 
                 agent_name = self.__class__.__name__
+                resolved_task_name = resolve_task_name(self, *args, **kwargs)
                 start_time = time.perf_counter()
 
                 try:
@@ -207,7 +235,7 @@ def track_metrics(task_name: str):
                     duration_ms = (end_time - start_time) * 1000
                     collector.record(
                         agent_name,
-                        task_name,
+                        resolved_task_name,
                         duration_ms,
                         success=True,
                         error=None,
@@ -219,7 +247,7 @@ def track_metrics(task_name: str):
                     duration_ms = (end_time - start_time) * 1000
                     collector.record(
                         agent_name,
-                        task_name,
+                        resolved_task_name,
                         duration_ms,
                         success=False,
                         error=str(e),
@@ -245,6 +273,7 @@ def track_metrics(task_name: str):
                     return func(self, *args, **kwargs)
 
                 agent_name = self.__class__.__name__
+                resolved_task_name = resolve_task_name(self, *args, **kwargs)
                 start_time = time.perf_counter()
 
                 try:
@@ -253,7 +282,7 @@ def track_metrics(task_name: str):
                     duration_ms = (end_time - start_time) * 1000
                     collector.record(
                         agent_name,
-                        task_name,
+                        resolved_task_name,
                         duration_ms,
                         success=True,
                         error=None,
@@ -265,7 +294,7 @@ def track_metrics(task_name: str):
                     duration_ms = (end_time - start_time) * 1000
                     collector.record(
                         agent_name,
-                        task_name,
+                        resolved_task_name,
                         duration_ms,
                         success=False,
                         error=str(e),
