@@ -728,6 +728,8 @@ Job Description: {job_description}
 This is branch {branch_num} of {total_branches}. Be creative and distinct.
 {style_guide}
 Example: {{"strategy_name": "AI Visionary", "focus_areas": [...], "tone": "leadership"}}
+You MUST output ONLY a JSON object. No prose, no explanation, no surrounding text.
+Schema Example: {{ "strategy_name": "...", "focus_areas": ["..."], "key_achievements_to_highlight": ["..."], "tone": "..." }}
 REFLECTION: Is this strategy unique from other branches?
 Your Strategy Branch:
 """,
@@ -738,6 +740,8 @@ TASK: Vote for the single best strategy branch.
 Job Description: {job_description}
 Branches: {branches_json}
 Example: {{"best_branch_id": "branch_1", "reason": "Branch 1 is most aligned."}}
+You MUST output ONLY a JSON object. No prose, no explanation, no surrounding text.
+Schema Example: {{ "strategy_name": "...", "focus_areas": ["..."], "key_achievements_to_highlight": ["..."], "tone": "..." }}
 REFLECTION: Why is this branch better than the others?
 Your Vote:
 """,

@@ -307,7 +307,13 @@ class GeminiAsyncClient(AsyncBaseModelClient):
                 "Run 'pip install google-generativeai'"
             )
         try:
-            genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+            api_key = (
+                os.environ.get("GEMINI_API_KEY")
+                or os.environ.get("GOOGLE_API_KEY")
+            )
+            if not api_key:
+                raise ModelAPIError("Missing GEMINI_API_KEY or GOOGLE_API_KEY.")
+            genai.configure(api_key=api_key)
             gen_config: Dict[str, Any] = {"temperature": temperature}
             if response_format == "json_object":
                 gen_config["response_mime_type"] = "application/json"
