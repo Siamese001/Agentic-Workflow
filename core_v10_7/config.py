@@ -15,13 +15,17 @@ class ConfigV10_7:
     
     def __init__(self, config_path: str = "master_config_v10_7.json"):
         self._config = get_schema(config_path)
-        
+
         # Validate schema version
         expected_schema = "master_config_v10.7"
         loaded_schema = self._config.get("schema_version")
         if loaded_schema != expected_schema:
             raise ValueError(f"Config schema mismatch. Expected {expected_schema}, got {loaded_schema}")
-        
+
+        redis_cfg = self._config.setdefault("redis_config", {})
+        redis_cfg.setdefault("required", True)
+        redis_cfg.setdefault("persistent", False)
+
         logger.info(f"Loaded {loaded_schema} configuration")
     
     def __getattr__(self, name):
