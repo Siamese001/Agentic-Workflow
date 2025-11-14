@@ -25,7 +25,7 @@ from typing import (
 )
 
 from chromadb.utils import embedding_functions
-from pydantic import BaseModel, ValidationError as PydanticValidationError
+from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
 
 from telemetry_v10_7 import log_event
 
@@ -358,6 +358,14 @@ class MetricsCollector:
                 pcm.schedule({"coroutine": lambda: asyncio.sleep(0)})  # no-op
             except Exception:
                 pass
+
+        # Auto-tuning feedback signal
+        ctx = None
+        if hasattr(self, "self_correction_manager"):
+            # workflow_id lives in metadata, but may be absent
+            workflow_id = metric.get("metadata", {}).get("workflow_id")
+            # non-blocking: auto-tuning uses batch integration, not live state
+        # no direct calls here — tuning occurs in orchestrator hook
 
 
 TaskNameResolver = Union[str, Callable[..., str]]
@@ -1315,6 +1323,85 @@ class PrecomputeEngine:
             self.logger.warning(f"Prompt precompute failed: {e}")
 
 
+class TuningProfile(BaseModel):
+    """
+    v10.7: Live-updating parameter profile for adaptive system tuning.
+    Stored in WorkflowContext and updated between node executions.
+    """
+
+    temperature: float = 0.5
+    prune_factor: float = 0.2
+    rag_force_multi_tool: bool = False
+    drafting_expand_summary: bool = False
+    drafting_boost_metrics: bool = False
+    last_update: str = Field(default_factory=lambda: datetime.now().isoformat())
+    history: List[Dict[str, Any]] = Field(default_factory=list)
+
+
+class PolicyAutoTuner:
+    """
+    v10.7: Behavior-based tuning engine driven by MetricsCollector, ArbitrationEngine,
+    and SelfCorrectionManager signals. All adjustments are soft and reversible.
+    """
+
+    def __init__(self, config: ConfigV10_7, metrics: MetricsCollector):
+        self.config = config
+        self.metrics = metrics
+        self.logger = logging.getLogger(f"{__name__}.PolicyAutoTuner")
+
+    def enabled(self) -> bool:
+        cfg = getattr(self.config, "auto_tuning_config", None)
+        return bool(cfg and getattr(cfg, "enabled", False))
+
+    def _safe_bound(self, value: float, bounds: Dict[str, float]) -> float:
+        return max(bounds["min"], min(bounds["max"], value))
+
+    def tune_profile(self, profile: TuningProfile) -> TuningProfile:
+        if not self.enabled():
+            return profile
+
+        cfg = self.config.auto_tuning_config
+
+        # === 1. Latency-based temperature tuning ===
+        avg_lat = self.metrics.get_average_latency(
+            agent_name="DraftingStrategistTool",
+            task_name="tool_drafting_llm"
+        )
+        if avg_lat and avg_lat > cfg.latency_target_ms:
+            profile.temperature -= 0.05
+        else:
+            profile.temperature += 0.03
+
+        profile.temperature = self._safe_bound(profile.temperature, cfg.temperature_bounds)
+
+        # === 2. Pruning aggressiveness tuning ===
+        if avg_lat and avg_lat > cfg.latency_target_ms * 1.5:
+            profile.prune_factor += 0.05
+        profile.prune_factor = self._safe_bound(profile.prune_factor, cfg.prune_aggressiveness)
+
+        # === 3. RAG stress tuning ===
+        rag_latency = self.metrics.get_average_latency("RAG_SearchAgent", "run_agentic_rag")
+        if rag_latency and rag_latency > cfg.latency_target_ms * 1.1:
+            profile.rag_force_multi_tool = True
+
+        # === 4. Drafting tuning (expand summary, boost metrics) ===
+        # If ArbitrationEngine often requests revision at drafting_post_assembly
+        drafting_signals = [m for m in self.metrics.metrics if "draft_post_assembly" in m.get("metadata", {}).get("stage","")]
+        if drafting_signals:
+            profile.drafting_expand_summary = True
+            profile.drafting_boost_metrics = True
+
+        # === 5. Log + stamp ===
+        profile.history.append({
+            "timestamp": datetime.now().isoformat(),
+            "temperature": profile.temperature,
+            "prune_factor": profile.prune_factor,
+            "force_multi_tool": profile.rag_force_multi_tool
+        })
+        profile.last_update = datetime.now().isoformat()
+        return profile
+
+
 class ArbitrationEngine:
     """Lightweight arbitration service for cross-stack decisions."""
 
@@ -1476,5 +1563,7 @@ __all__ = [
     "CacheManager",
     "CostTracker",
     "ArbitrationEngine",
+    "TuningProfile",
+    "PolicyAutoTuner",
     "_format_prompt_with_defaults",
 ]

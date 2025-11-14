@@ -77,12 +77,14 @@ from core_v10_7 import (
     CostTracker,
     FeedbackLogReader,
     MetricsCollector,
+    PolicyAutoTuner,
     PredictiveCacheManager,
     PrecomputeEngine,
     PromptTemplateManager,
     ProposedRulesLoader,
     ResponseValidator,
     SemanticValidator,
+    TuningProfile,
     WorkflowContext,
 )
 
@@ -111,6 +113,8 @@ def workflow_context(config: ConfigV10_7) -> WorkflowContext:
     prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
     response_validator = ResponseValidator()
     metrics = MetricsCollector()
+    tuning_profile = TuningProfile()
+    policy_auto_tuner = PolicyAutoTuner(config, metrics)
     predictive_cache_manager = PredictiveCacheManager(
         config=config,
         cache_manager=cache_mgr,
@@ -128,6 +132,7 @@ def workflow_context(config: ConfigV10_7) -> WorkflowContext:
         metrics_collector=metrics, semantic_validator=semantic_validator,
         embedding_function=embedding_fn, arbitration_engine=arbitration_engine,
         predictive_cache_manager=predictive_cache_manager, precompute_engine=precompute_engine,
+        tuning_profile=tuning_profile, policy_auto_tuner=policy_auto_tuner,
     )
     ctx.context_budget_manager = ContextBudgetManager(config=config, model_client_getter=ctx.get_model_client)
     precompute_engine.context = ctx

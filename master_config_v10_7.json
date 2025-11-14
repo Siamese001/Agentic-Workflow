@@ -133,6 +133,22 @@
     "enable_precompute_critique": false,
     "max_background_tasks": 3
   },
+  "auto_tuning_config": {
+    "enabled": false,
+    "latency_target_ms": 2800,
+    "confidence_target": 0.72,
+    "temperature_bounds": {
+      "min": 0.1,
+      "max": 0.9
+    },
+    "drafting_expansion_threshold": 0.75,
+    "prompt_risk_threshold": 0.3,
+    "rag_retry_threshold": 3,
+    "prune_aggressiveness": {
+      "min": 0.15,
+      "max": 0.5
+    }
+  },
   "file_paths": {
     "default_job_input": "job_input.json",
     "default_master_resume": "master_resume.json"

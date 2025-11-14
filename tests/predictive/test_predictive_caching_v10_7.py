@@ -3,7 +3,7 @@ from types import MethodType, SimpleNamespace
 
 import pytest
 
-from core_v10_7.services import PredictiveCacheManager
+from core_v10_7.services import PolicyAutoTuner, PredictiveCacheManager, TuningProfile
 from stacks_v10_7.drafting import DraftingGuildCoordinator
 from stacks_v10_7.prompting import PromptEngineerAgent
 from stacks_v10_7.rag import RAG_SearchAgent
@@ -48,7 +48,10 @@ class StubPrecomputeEngine:
 
 def _make_context(enabled=True):
     predictive_cfg = SimpleNamespace(enabled=enabled, max_background_tasks=5)
-    config = SimpleNamespace(predictive_caching_config=predictive_cfg)
+    config = SimpleNamespace(
+        predictive_caching_config=predictive_cfg,
+        auto_tuning_config=SimpleNamespace(enabled=False),
+    )
     metrics = DummyMetricsCollector()
     precompute_engine = StubPrecomputeEngine()
     pcm = PredictiveCacheManager(
@@ -57,6 +60,8 @@ def _make_context(enabled=True):
         metrics=metrics,
     )
     metrics.predictive_cache_manager = pcm
+    tuning_profile = TuningProfile()
+    policy_auto_tuner = PolicyAutoTuner(config, metrics)
     context = SimpleNamespace(
         config=config,
         predictive_cache_manager=pcm,
@@ -70,6 +75,8 @@ def _make_context(enabled=True):
         ensure_mcp_clients=lambda: {},
         workflow_id="wf-test",
         complexity="complex",
+        policy_auto_tuner=policy_auto_tuner,
+        tuning_profile=tuning_profile,
     )
     return context, pcm, precompute_engine
 
