@@ -42,6 +42,7 @@ from .services import (
     PromptTemplateManager,
     ProposedRulesLoader,
     ResponseValidator,
+    SelfCorrectionManager,
     SemanticValidator,
 )
 
@@ -195,6 +196,7 @@ class WorkflowContext:
         semantic_validator: SemanticValidator,
         embedding_function: embedding_functions.EmbeddingFunction,
         arbitration_engine: ArbitrationEngine,
+        self_correction_manager: Optional[SelfCorrectionManager] = None,
     ):
 
         self.config = config
@@ -225,6 +227,7 @@ class WorkflowContext:
         self.semantic_validator = semantic_validator
         self.embedding_function = embedding_function
         self.arbitration_engine = arbitration_engine
+        self.self_correction_manager = self_correction_manager
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
@@ -479,7 +482,11 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         embedding_function = embedding_functions.EmbeddingFunction()
 
     # 2. Initialize Core Services (All 9+ services)
-    feedback_reader = FeedbackLogReader(config.meta_loop_config.feedback_log_path)
+    self_correction_manager = SelfCorrectionManager(config=config)
+    feedback_reader = FeedbackLogReader(
+        config.meta_loop_config.feedback_log_path,
+        self_correction_manager=self_correction_manager,
+    )
     cache_manager = CacheManager(
         config=config,
         redis_client=redis_client,
@@ -490,7 +497,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     rules_loader = ProposedRulesLoader(config.meta_loop_config.proposed_rules_path)
     prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
     response_validator = ResponseValidator()
-    metrics_collector = MetricsCollector()
+    metrics_collector = MetricsCollector(self_correction_manager=self_correction_manager)
     semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
 
@@ -509,12 +516,15 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         semantic_validator=semantic_validator,
         embedding_function=embedding_function,
         arbitration_engine=arbitration_engine,
+        self_correction_manager=self_correction_manager,
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
     context_budget_manager = ContextBudgetManager(
         config=config,
         model_client_getter=context.get_model_client,  # Pass the method
+        self_correction_manager=self_correction_manager,
+        workflow_id_getter=lambda: context.workflow_id,
     )
     # 5. Inject the final service
     context.context_budget_manager = context_budget_manager
