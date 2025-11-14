@@ -12,6 +12,7 @@ import pytest
 from chromadb.utils import embedding_functions
 
 from core_v10_7 import (
+    ArbitrationEngine,
     CacheManager,
     ConfigV10_7,
     ContextBudgetManager,
@@ -51,6 +52,9 @@ class FakeRedisClient:
 
     def delete(self, name: str) -> None:
         self.store.pop(name, None)
+
+    def ping(self) -> bool:
+        return True
 
 
 class FakeCollection:
@@ -296,6 +300,7 @@ def workflow_harness(
     response_validator = ResponseValidator()
     metrics_collector = MetricsCollector()
     semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
+    arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
     context_budget_manager = ContextBudgetManager(
         config,
         model_client_getter=lambda *_args, **_kwargs: mock_llm_client,
@@ -317,6 +322,7 @@ def workflow_harness(
         metrics_collector=metrics_collector,
         semantic_validator=semantic_validator,
         embedding_function=embedding,
+        arbitration_engine=arbitration_engine,
     )
     workflow_context.context_budget_manager = context_budget_manager
     workflow_context.workflow_id = "test-workflow"

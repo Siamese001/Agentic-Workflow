@@ -54,7 +54,8 @@ from core_v10_7 import (
     ConstitutionalReviewResult, # v10.7 (Fix #30)
     PersonaConsensus,
     wrap_mcp,
-    MCPClientStub
+    MCPClientStub,
+    ArbitrationReport,
 )
 from mcp import get_agent
 from langgraph.graph import StateGraph, END
@@ -140,6 +141,14 @@ async def route_to_stack(stack_name: str, context: WorkflowContext, *args, **kwa
         return result
 
     raise WorkflowError(f"Agent '{stack_name}' does not expose run or run_async methods")
+
+
+def _attach_arbitration_report(state: dict, stage: str, report: ArbitrationReport) -> None:
+    """Attach an arbitration report to the shared state tree."""
+
+    if "arbitration" not in state or not isinstance(state["arbitration"], dict):
+        state["arbitration"] = {}
+    state["arbitration"][stage] = report.model_dump()
 
 
 # ============================================================================
@@ -524,6 +533,16 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
     log_event("StrategyStack", "completed", {"workflow_id": workflow_id})
     return {"strategy": strategy_result}
 
+
+@wrap_mcp
+@exponential_backoff_retry()
+async def run_arbitration_after_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Arbitration node after Strategy stack completion."""
+
+    report = await workflow_context.arbitration_engine.run_check("strategy_post_plan", state)
+    _attach_arbitration_report(state, "strategy_post_plan", report)
+    return {"arbitration": state.get("arbitration", {})}
+
 @wrap_mcp
 @exponential_backoff_retry()
 async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -582,6 +601,16 @@ def join_rag_and_prompt(state: dict) -> dict:
     logger.info("Joining graph from parallel RAG and Prompt Engineering.")
     return {}
 
+
+@wrap_mcp
+@exponential_backoff_retry()
+async def run_arbitration_after_join(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Arbitration node after prompt/RAG join."""
+
+    report = await workflow_context.arbitration_engine.run_check("prompt_rag_join", state)
+    _attach_arbitration_report(state, "prompt_rag_join", report)
+    return {"arbitration": state.get("arbitration", {})}
+
 @wrap_mcp
 @exponential_backoff_retry()
 async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -612,6 +641,16 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
     return {"bullets": {"critiqued_bullets": critiques}}
 
+
+@wrap_mcp
+@exponential_backoff_retry()
+async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Arbitration node after bullet critique/selection."""
+
+    report = await workflow_context.arbitration_engine.run_check("bullets_post_selection", state)
+    _attach_arbitration_report(state, "bullets_post_selection", report)
+    return {"arbitration": state.get("arbitration", {})}
+
 @wrap_mcp
 @exponential_backoff_retry()
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -636,6 +675,16 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
     return {"draft": {"sections": draft.get("final_output", {})}}
 
+
+@wrap_mcp
+@exponential_backoff_retry()
+async def run_arbitration_after_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Arbitration node after drafting."""
+
+    report = await workflow_context.arbitration_engine.run_check("draft_post_assembly", state)
+    _attach_arbitration_report(state, "draft_post_assembly", report)
+    return {"arbitration": state.get("arbitration", {})}
+
 async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9: Final QA with ReAct Conductor"""
     context = workflow_context
@@ -650,6 +699,16 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
         "qa": {"validation_results": validation, "qa_passed": validation.get("qa_passed", False)},
         "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}}
     }
+
+
+@wrap_mcp
+@exponential_backoff_retry()
+async def run_arbitration_after_qa(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Arbitration node after QA validation."""
+
+    report = await workflow_context.arbitration_engine.run_check("qa_post_validation", state)
+    _attach_arbitration_report(state, "qa_post_validation", report)
+    return {"arbitration": state.get("arbitration", {})}
 
 async def run_constitutional_review(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9.5: Constitutional Review (v10.7 Fix #30)"""
@@ -850,15 +909,20 @@ def get_graph_app(
     add_async_node("run_detect_prompt_injection", partial(run_detect_prompt_injection, workflow_context=workflow_context)) # 0.5
     add_async_node("run_classify_complexity", partial(run_classify_complexity, workflow_context=workflow_context)) # 1
     add_async_node("run_tot_strategy", partial(run_tot_strategy, workflow_context=workflow_context)) # 2
+    add_async_node("run_arbitration_after_strategy", partial(run_arbitration_after_strategy, workflow_context=workflow_context))
     add_async_node("run_detect_ambiguity", partial(run_detect_ambiguity, workflow_context=workflow_context)) # 3
     workflow.add_node("prepare_parallel_run", prepare_parallel_run) # 3.5 (Fix #5)
     add_async_node("run_prompt_engineering", partial(run_prompt_engineering, workflow_context=workflow_context)) # 4
     add_async_node("run_rag_stack", partial(run_rag_stack, workflow_context=workflow_context)) # 5
     workflow.add_node("join_rag_and_prompt", join_rag_and_prompt) # 5.5 (Fix #5)
+    add_async_node("run_arbitration_after_join", partial(run_arbitration_after_join, workflow_context=workflow_context))
     add_async_node("run_generate_bullets", partial(run_generate_bullets, workflow_context=workflow_context)) # 6
     add_async_node("run_critique_bullets", partial(run_critique_bullets, workflow_context=workflow_context)) # 7
+    add_async_node("run_arbitration_after_bullets", partial(run_arbitration_after_bullets, workflow_context=workflow_context))
     add_async_node("run_drafting", partial(run_drafting, workflow_context=workflow_context)) # 8
+    add_async_node("run_arbitration_after_drafting", partial(run_arbitration_after_drafting, workflow_context=workflow_context))
     add_async_node("run_qa_validation", partial(run_qa_validation, workflow_context=workflow_context)) # 9
+    add_async_node("run_arbitration_after_qa", partial(run_arbitration_after_qa, workflow_context=workflow_context))
     add_async_node("run_constitutional_review", partial(run_constitutional_review, workflow_context=workflow_context)) # 9.5 (Fix #30)
     workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
     add_async_node("run_feedback_router", partial(run_feedback_router, workflow_context=workflow_context)) # 11
@@ -875,7 +939,8 @@ def get_graph_app(
     ) # 0.5 -> 1 or END
     
     workflow.add_edge("run_classify_complexity", "run_tot_strategy") # 1 -> 2
-    workflow.add_edge("run_tot_strategy", "run_detect_ambiguity") # 2 -> 3
+    workflow.add_edge("run_tot_strategy", "run_arbitration_after_strategy") # 2 -> arbitration
+    workflow.add_edge("run_arbitration_after_strategy", "run_detect_ambiguity") # arbitration -> 3
     
     # v10.7 (Fix #5): Reroute for parallel execution
     workflow.add_conditional_edges(
@@ -887,21 +952,27 @@ def get_graph_app(
     workflow.add_edge("prepare_parallel_run", "run_rag_stack") # 3.5 -> 5
     workflow.add_edge("run_prompt_engineering", "join_rag_and_prompt") # 4 -> 5.5
     workflow.add_edge("run_rag_stack", "join_rag_and_prompt") # 5 -> 5.5
-    
-    workflow.add_edge("join_rag_and_prompt", "run_generate_bullets") # 5.5 -> 6
+
+    workflow.add_edge("join_rag_and_prompt", "run_arbitration_after_join") # 5.5 -> arbitration
+    workflow.add_edge("run_arbitration_after_join", "run_generate_bullets") # arbitration -> 6
     
     workflow.add_edge("run_generate_bullets", "run_critique_bullets") # 6 -> 7
-    
+
     workflow.add_conditional_edges(
         "run_critique_bullets", partial(check_bullets_passed, workflow_context=workflow_context),
-        {"bullets_passed": "run_drafting", "retry_bullets": "run_generate_bullets", "global_replanner": END}
-    ) # 7 -> 8 or 6 or END
-    
-    workflow.add_edge("run_drafting", "run_qa_validation") # 8 -> 9
+        {"bullets_passed": "run_arbitration_after_bullets", "retry_bullets": "run_generate_bullets", "global_replanner": END}
+    ) # 7 -> arbitration or 6 or END
+
+    workflow.add_edge("run_arbitration_after_bullets", "run_drafting") # arbitration -> 8
+
+    workflow.add_edge("run_drafting", "run_arbitration_after_drafting") # 8 -> arbitration
+    workflow.add_edge("run_arbitration_after_drafting", "run_qa_validation") # arbitration -> 9
     
     # v10.7 (Fix #30): Reroute for constitutional review
+    workflow.add_edge("run_qa_validation", "run_arbitration_after_qa") # 9 -> arbitration
+
     workflow.add_conditional_edges(
-        "run_qa_validation", check_qa_passed,
+        "run_arbitration_after_qa", check_qa_passed,
         {
             "qa_passed": "run_constitutional_review", # 9 -> 9.5
             "retry_drafting": "run_drafting", # 9 -> 8
