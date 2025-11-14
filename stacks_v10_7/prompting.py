@@ -80,6 +80,8 @@ class PromptEngineerAgent(BaseAgent):
         )
 
         base_temp = self.config.model_config.prompt_engineer_model.temperature
+        if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
+            base_temp = self.context.tuning_profile.temperature
         temperature = max(0.0, min(1.0, base_temp + temperature_offset))
 
         response = await client.chat_completion_async(
