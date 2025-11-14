@@ -66,8 +66,21 @@ from typing import List
 VENDOR_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, "vendor")
 )
-if os.path.isdir(VENDOR_PATH) and VENDOR_PATH not in sys.path:
-    sys.path.insert(0, VENDOR_PATH)
+if os.path.isdir(VENDOR_PATH):
+    # NOTE:
+    # The original bootstrap inserted the entire vendor directory at the
+    # front of sys.path, which unintentionally allowed vendored stubs
+    # (e.g., anthropic_stub) to shadow real SDKs installed in
+    # site-packages.  We now scope the bootstrap to the vendored graph
+    # dependencies only so langgraph/langchain remain available without
+    # overriding any first-party SDKs used elsewhere in the stack.
+    vendor_langgraph = os.path.join(VENDOR_PATH, "langgraph")
+    vendor_langchain = os.path.join(VENDOR_PATH, "langchain")
+
+    if os.path.isdir(vendor_langgraph) and vendor_langgraph not in sys.path:
+        sys.path.insert(0, vendor_langgraph)
+    if os.path.isdir(vendor_langchain) and vendor_langchain not in sys.path:
+        sys.path.insert(0, vendor_langchain)
 
 # -------------------------------------------------------------------
 # Import submodules (as modules and via wildcard)
