@@ -159,6 +159,20 @@ class GeneratedPrompts(V10Model):
 
 
 # ---------------------------------------------------------------------------
+# SELF-CORRECTION MODELS
+# ---------------------------------------------------------------------------
+
+class SelfCorrectionReport(V10Model):
+    stack_name: str
+    workflow_id: str
+    issue_detected: str
+    action_taken: str
+    retry_count: int = Field(0, ge=0)
+    resolved: bool = False
+    notes: Dict[str, Any] = Field(default_factory=dict)
+
+
+# ---------------------------------------------------------------------------
 # BULLET + CRITIQUE MODELS
 # ---------------------------------------------------------------------------
 

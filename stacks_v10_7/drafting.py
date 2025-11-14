@@ -1,7 +1,8 @@
 """Drafting guild stack with specialist agents."""
 
+import copy
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Tuple
 
 from core_v10_7 import BaseAgent, StrategyPlan, WorkflowContext, track_metrics
 from agent_tools_v10_7 import (
@@ -391,14 +392,32 @@ class DraftingGuildCoordinator(BaseAgent):
         task_context: Dict[str, Any],
         workflow_id: str,
     ) -> Dict[str, Any]:
+        base_result, meta = await self._execute_guild(task_context, workflow_id)
+        return await self._maybe_self_correct(task_context, workflow_id, base_result, meta)
+
+    def _merge_sections(self, *layers: Dict[str, Any]) -> Dict[str, Any]:
+        merged: Dict[str, Any] = {}
+        for layer in layers:
+            for key, value in layer.items():
+                merged[key] = json.loads(json.dumps(value))
+        return merged
+
+    async def _execute_guild(
+        self,
+        task_context: Dict[str, Any],
+        workflow_id: str,
+        overrides: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         self.log_info("Drafting Guild Coordinator orchestrating specialists...")
 
-        strategy = task_context.get("strategy")
+        working_context = self._apply_overrides(task_context, overrides or {})
+
+        strategy = working_context.get("strategy")
         if isinstance(strategy, dict):
             strategy = StrategyPlan.model_validate(strategy)
 
-        bullets = task_context.get("bullets", [])
-        resume = task_context.get("resume", {})
+        bullets = working_context.get("bullets", [])
+        resume = working_context.get("resume", {})
 
         structure_packet = await self.structure_lead.run_async(
             bullets, strategy, workflow_id
@@ -442,16 +461,153 @@ class DraftingGuildCoordinator(BaseAgent):
             "critique": critique_packet.model_dump(),
         }
 
-        return {
+        result = {
             "final_output": final_sections,
             "guild_metadata": guild_metadata,
             "overall_status": critique_packet.overall_status,
             "phases_executed": 5,
         }
+        meta = {
+            "critique": critique_packet,
+            "overrides": overrides or {},
+        }
+        return result, meta
 
-    def _merge_sections(self, *layers: Dict[str, Any]) -> Dict[str, Any]:
-        merged: Dict[str, Any] = {}
-        for layer in layers:
-            for key, value in layer.items():
-                merged[key] = json.loads(json.dumps(value))
-        return merged
+    def _apply_overrides(
+        self,
+        task_context: Dict[str, Any],
+        overrides: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        if not overrides:
+            return task_context
+        context_copy = copy.deepcopy(task_context)
+        strategy = context_copy.get("strategy")
+        if isinstance(strategy, StrategyPlan):
+            strategy_payload = strategy.model_dump()
+        else:
+            strategy_payload = copy.deepcopy(strategy or {})
+
+        if overrides.get("expand_summary"):
+            achievements = strategy_payload.get("key_achievements_to_highlight", []) or []
+            if isinstance(achievements, list):
+                seed_texts = [b.get("text") for b in context_copy.get("bullets", []) if isinstance(b, dict)]
+                for text in seed_texts[:3]:
+                    if text and text not in achievements:
+                        achievements.append(text)
+                strategy_payload["key_achievements_to_highlight"] = achievements
+
+        context_copy["strategy"] = strategy_payload
+
+        if overrides.get("boost_metrics"):
+            context_copy["bullets"] = self._boost_metric_bullets(context_copy.get("bullets", []))
+
+        if overrides.get("sanitize_policy_terms"):
+            context_copy["resume"] = self._sanitize_resume(context_copy.get("resume", {}))
+
+        return context_copy
+
+    def _boost_metric_bullets(self, bullets: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        boosted: List[Dict[str, Any]] = []
+        for bullet in bullets or []:
+            bullet_copy = copy.deepcopy(bullet)
+            text = bullet_copy.get("text", "")
+            if text and not any(ch.isdigit() for ch in text):
+                bullet_copy["text"] = f"{text} (+ quantified impact)"
+            boosted.append(bullet_copy)
+        return boosted
+
+    def _sanitize_resume(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+        sanitized = copy.deepcopy(resume)
+        banned_terms = {"confidential", "classified", "secret"}
+
+        def _clean_text(value: str) -> str:
+            lowered = value
+            for term in banned_terms:
+                lowered = lowered.replace(term, "[redacted]")
+                lowered = lowered.replace(term.title(), "[Redacted]")
+            return lowered
+
+        summary = sanitized.get("summary")
+        if isinstance(summary, str):
+            sanitized["summary"] = _clean_text(summary)
+
+        for exp in sanitized.get("professional_experience", []) or []:
+            for key in ["company", "title"]:
+                if isinstance(exp.get(key), str):
+                    exp[key] = _clean_text(exp[key])
+            bullets = exp.get("bullet_pool", [])
+            cleaned_bullets = []
+            for text in bullets:
+                cleaned_bullets.append(_clean_text(text) if isinstance(text, str) else text)
+            exp["bullet_pool"] = cleaned_bullets
+        return sanitized
+
+    async def _maybe_self_correct(
+        self,
+        task_context: Dict[str, Any],
+        workflow_id: str,
+        base_result: Dict[str, Any],
+        meta: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        if not self.self_correction_manager:
+            return base_result
+        if not self.self_correction_manager.can_retry(workflow_id, "drafting"):
+            return base_result
+
+        critique_packet = meta.get("critique")
+        severity = self._extract_severity(critique_packet)
+        if self._severity_rank(severity) <= self._severity_rank("info"):
+            return base_result
+
+        overrides = self._build_override_flags(critique_packet)
+        if not overrides:
+            return base_result
+
+        report = self.self_correction_manager.start_retry(
+            workflow_id,
+            "drafting",
+            issue=f"critique_{severity}",
+            action="reassemble_with_overrides",
+            metadata={"overrides": overrides},
+        )
+
+        corrected_result, corrected_meta = await self._execute_guild(
+            task_context,
+            workflow_id,
+            overrides=overrides,
+        )
+
+        corrected_severity = self._extract_severity(corrected_meta.get("critique"))
+        resolved = self._severity_rank(corrected_severity) < self._severity_rank(severity)
+        self.self_correction_manager.finalize_retry(
+            report,
+            resolved,
+            {"corrected_severity": corrected_severity},
+        )
+        if resolved:
+            corrected_result.setdefault("self_correction", {})["drafting"] = report.model_dump()
+            return corrected_result
+        return base_result
+
+    def _build_override_flags(self, critique_packet: Any) -> Dict[str, bool]:
+        overrides: Dict[str, bool] = {}
+        findings = getattr(critique_packet, "findings", []) if critique_packet else []
+        for finding in findings:
+            critic = getattr(finding, "critic", "")
+            severity = getattr(finding, "severity", "")
+            if critic == "Style Critic" and severity in {"info", "revise"}:
+                overrides["expand_summary"] = True
+            if critic == "Fact Critic" and severity in {"info", "revise"}:
+                overrides["boost_metrics"] = True
+            if critic == "Policy Critic" and severity == "block":
+                overrides["sanitize_policy_terms"] = True
+        return overrides
+
+    def _extract_severity(self, critique_packet: Any) -> str:
+        if not critique_packet:
+            return "approved"
+        return getattr(critique_packet, "overall_status", "approved")
+
+    def _severity_rank(self, severity: str) -> int:
+        ranks = {"approved": 0, "info": 1, "revise": 2, "block": 3}
+        return ranks.get(severity or "approved", 0)

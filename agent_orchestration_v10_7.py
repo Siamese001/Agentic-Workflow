@@ -320,9 +320,19 @@ class QAConductorAgent(BaseAgent):
 
     @track_metrics('run_react_qa_conductor')
     async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        result = await self._execute_conductor(state, workflow_id)
+        return await self._maybe_self_correct(state, workflow_id, result)
+
+    async def _execute_conductor(
+        self,
+        state: Dict[str, Any],
+        workflow_id: str,
+        self_heal_hint: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         self.log_info("Running ReAct QA Conductor (v10.7)...")
 
-        max_steps = self.config.agent_stacks.conductor_max_steps
+        hint = self_heal_hint or {}
+        max_steps = hint.get("max_steps", self.config.agent_stacks.conductor_max_steps)
         client = self.get_model_client("react_conductor_model")
 
         pruned_draft = await self.budget_manager.prune(
@@ -332,11 +342,11 @@ class QAConductorAgent(BaseAgent):
             json.dumps(state['resume']['master_resume']), 4000
         )
         pruned_jd = await self.budget_manager.prune(state['job']['raw_jd'], 2000)
-        
+
         strategy_plan = state['strategy']['strategy_plan']
         if isinstance(strategy_plan, dict):
             strategy_plan = StrategyPlan.model_validate(strategy_plan)
-        # v10.7 (Fix #17, #19, #20, #24): Inject Goal, Failures, Mode, Reflection
+
         react_prompt = f"""
 {client.goal_state}
 {client.top_failures}
@@ -361,40 +371,46 @@ Output thoughts/tool calls in JSON:
 When finished, output:
 {{"thought": "QA complete", "final_qa_report": {{"qa_passed": true/false, "issues": [...]}}}}
 """
+        if hint.get("extra_instruction"):
+            react_prompt += f"\nEXTRA_DIRECTIVE: {hint['extra_instruction']}"
+
         messages = [{"role": "user", "content": react_prompt}]
-        
+
         final_report = {}
         all_tool_results = []
-        
+
         tool_context = {
             "draft_text": pruned_draft,
-            "master_resume": pruned_master_resume, 
-            "job_description": pruned_jd,           
-            "strategy": strategy_plan.model_dump(), 
+            "master_resume": pruned_master_resume,
+            "job_description": pruned_jd,
+            "strategy": strategy_plan.model_dump(),
             "style_guide": self.style_guide
         }
-        
+
         for step in range(max_steps):
             response = await client.chat_completion_async(
                 messages=messages,
-                temperature=self.config.agent_stacks.conductor_temperature,
+                temperature=hint.get(
+                    "temperature",
+                    self.config.agent_stacks.conductor_temperature,
+                ),
                 response_format="json_object"
             )
-            
+
             step_data, error = self.validator.validate(response["content"], dict)
             if error:
                 logger.warning(f"QA step {step} failed validation: {error}")
                 messages.append({"role": "user", "content": f"Error: Invalid JSON response from LLM. {error}"})
                 continue
-            
+
             messages.append({"role": "assistant", "content": json.dumps(step_data)})
-            
+
             if "final_qa_report" in step_data:
                 final_report = step_data["final_qa_report"]
                 final_report["all_tool_results"] = all_tool_results
                 self.log_feedback(workflow_id, "react_conductor_qa", "success", {"steps_executed": step})
                 return final_report
-            
+
             if "tool_call" in step_data:
                 tool_name = step_data["tool_call"].get("name")
                 tool_input = step_data["tool_call"].get("input", {})
@@ -402,9 +418,9 @@ When finished, output:
                 if not tool_name or tool_name not in self.tools:
                     messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
                     continue
-                
+
                 tool_input.update(tool_context)
-                
+
                 try:
                     breaker = self.tool_breakers[tool_name]
                     breaker.check()
@@ -413,18 +429,58 @@ When finished, output:
                     breaker.record_success()
                     all_tool_results.append({tool_name: tool_result})
                     messages.append({"role": "user", "content": f"Tool Result: {json.dumps(tool_result)}"})
-                
+
                 except (CircuitBreakerOpenError, PydanticSchemaError, Exception) as e:
                     self.log_error(f"QA Tool {tool_name} failed: {e}")
                     if not isinstance(e, CircuitBreakerOpenError):
                         if tool_name in self.tool_breakers:
                             self.tool_breakers[tool_name].record_failure()
-                    
+
                     error_msg = f"Error: Tool '{tool_name}' failed. Do not call it again. Reason: {str(e)}"
                     messages.append({"role": "user", "content": error_msg})
-        
+
         self.log_feedback(workflow_id, "react_conductor_qa", "failure", {"reason": "Max steps reached"})
         return {"error": "Max steps reached", "steps": max_steps, "all_tool_results": all_tool_results, "qa_passed": False}
+
+    async def _maybe_self_correct(
+        self,
+        state: Dict[str, Any],
+        workflow_id: str,
+        base_result: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
+            return base_result
+        if not manager.can_retry(workflow_id, "qa"):
+            return base_result
+
+        if base_result.get("qa_passed", False) and not base_result.get("error"):
+            return base_result
+
+        issue = "qa_failed" if not base_result.get("qa_passed", False) else "qa_error"
+        report = manager.start_retry(
+            workflow_id,
+            "qa",
+            issue=issue,
+            action="extend_validation_budget",
+        )
+
+        corrected_result = await self._execute_conductor(
+            state,
+            workflow_id,
+            self_heal_hint={
+                "max_steps": self.config.agent_stacks.conductor_max_steps + 1,
+                "temperature": max(0.0, self.config.agent_stacks.conductor_temperature - 0.1),
+                "extra_instruction": "Revisit failed validators and emit a structured QA report.",
+            },
+        )
+
+        resolved = corrected_result.get("qa_passed", False) and not corrected_result.get("error")
+        manager.finalize_retry(report, resolved)
+        if resolved:
+            corrected_result.setdefault("self_correction", {})["qa"] = report.model_dump()
+            return corrected_result
+        return base_result
 
 
 class MetaLearningLoop(BaseAgent):
