@@ -23,6 +23,17 @@ class PromptEngineerAgent(BaseAgent):
         complexity: str,
         workflow_id: str,
     ) -> Dict[str, Any]:
+        pcm = self.context.predictive_cache_manager
+        if pcm and pcm.enabled():
+            pcm.schedule({
+                "coroutine": (
+                    lambda s_json=strategy.model_dump_json(), c=complexity: self.context.precompute_engine.precompute_prompt_plan(
+                        s_json,
+                        c,
+                    )
+                )
+            })
+            await pcm.run_scheduled()
         base_result, validated_output = await self._generate_prompts(
             strategy,
             complexity,
