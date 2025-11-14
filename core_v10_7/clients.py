@@ -201,7 +201,7 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
             m["content"] for m in messages if m.get("role") == "system"
         ]
         system_prompt = (
-            "\n\n".join(system_prompt_parts) if system_prompt_parts else None
+            "\n\n".join(system_prompt_parts) if system_prompt_parts else ""
         )
         non_system_messages = [
             m for m in messages if m.get("role") != "system"
@@ -211,13 +211,15 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
         if _AsyncAnthropic is not None:
             try:
                 client = _AsyncAnthropic(api_key=api_key)
-                response = await client.messages.create(
-                    model=self.model_name,
-                    max_tokens=4096,
-                    temperature=temperature,
-                    system=system_prompt,
-                    messages=non_system_messages,
-                )
+                kwargs: Dict[str, Any] = {
+                    "model": self.model_name,
+                    "max_tokens": 4096,
+                    "temperature": temperature,
+                    "messages": non_system_messages,
+                }
+                if system_prompt:
+                    kwargs["system"] = system_prompt
+                response = await client.messages.create(**kwargs)
                 content = response.content[0].text
                 result = {
                     "content": content,
@@ -243,15 +245,20 @@ class AnthropicAsyncClient(AsyncBaseModelClient):
                 sync_client = _AnthropicSyncClient(api_key=api_key)
 
                 loop = asyncio.get_running_loop()
+                def _create_sync_message() -> Any:
+                    kwargs: Dict[str, Any] = {
+                        "model": self.model_name,
+                        "max_tokens": 4096,
+                        "temperature": temperature,
+                        "messages": non_system_messages,
+                    }
+                    if system_prompt:
+                        kwargs["system"] = system_prompt
+                    return sync_client.messages.create(**kwargs)
+
                 response = await loop.run_in_executor(
                     None,
-                    lambda: sync_client.messages.create(
-                        model=self.model_name,
-                        max_tokens=4096,
-                        temperature=temperature,
-                        system=system_prompt,
-                        messages=non_system_messages,
-                    ),
+                    _create_sync_message,
                 )
 
                 # Legacy response is dict-like
