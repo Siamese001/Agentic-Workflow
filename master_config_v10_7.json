@@ -29,6 +29,8 @@
     "host": "localhost",
     "port": 6379,
     "db": 0,
+    "required": true,
+    "persistent": false,
     "description": "Redis for LangGraph checkpoints, LLM caching, and Tool caching"
   },
   "chromadb_config": {
