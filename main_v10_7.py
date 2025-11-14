@@ -238,6 +238,7 @@ def main():
     parser.add_argument('-m', '--master', required=True, help='Path to master_resume.json')
     parser.add_argument('--debug', action='store_true', help='Enable debug logging')
     parser.add_argument('--no-hil', action='store_true', help='Disable Human-in-the-Loop')
+    parser.add_argument('--sim', type=str, help='Run a simulation instead of workflow')
 
     mcp_group = parser.add_mutually_exclusive_group()
     mcp_group.add_argument('--disable-mcp', action='store_true', help='Disable MCP wrapping even if config enables it')
@@ -253,6 +254,16 @@ def main():
         sys.exit(1)
     
     setup_logging(config, debug_mode=args.debug)
+
+    if args.sim:
+        from simulations.runner import run_simulation
+
+        payload = load_job_input(args.job)
+        payload = dict(payload)
+        payload.setdefault("simulation_id", str(uuid.uuid4()))
+        result = asyncio.run(run_simulation(args.sim, payload))
+        print(json.dumps(result.model_dump(), indent=2))
+        return
     
     mcp_toggle: Optional[bool] = None
     if args.disable_mcp:
