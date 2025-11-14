@@ -101,3 +101,30 @@ def test_selector_allowlist_filters_out_unapproved_tools():
     selector = MCPSelector(client, PolicyController(), allowlist=["trusted"])
     selections = selector.discover("web_search")
     assert all(sel.spec.id == "trusted" for sel in selections)
+
+
+def test_selector_ranks_tools_using_cost_and_latency_signals():
+    client = MCPClient(
+        tools=[
+            ToolSpec(
+                id="premium",
+                name="Premium",
+                capabilities=("web_search",),
+                cost=1.0,
+                trust_tier="high",
+                latency_ms=1200,
+            ),
+            ToolSpec(
+                id="fast",
+                name="Fast",
+                capabilities=("web_search",),
+                cost=0.1,
+                trust_tier="medium",
+                latency_ms=200,
+            ),
+        ]
+    )
+    selector = MCPSelector(client, PolicyController())
+    selections = selector.discover("web_search")
+    assert selections[0].spec.id == "fast"
+    assert selections[0].score > selections[-1].score
