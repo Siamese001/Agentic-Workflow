@@ -132,7 +132,7 @@
     },
     "strategy_model_complex": {
       "provider": "anthropic",
-      "model_name": "claude-4.1-opus",
+      "model_name": "claude-3-opus-20240229",
       "temperature": 0.4
     },
     "prompt_engineer_model": {
@@ -182,7 +182,7 @@
     },
     "react_conductor_model_complex": {
       "provider": "anthropic",
-      "model_name": "claude-4.1-opus",
+      "model_name": "claude-3-opus-20240229",
       "temperature": 0.5
     },
     "hyde_model": {
@@ -202,7 +202,7 @@
     },
     "drafting_redteam_model": {
       "provider": "anthropic",
-      "model_name": "claude-4.1-opus",
+      "model_name": "claude-3-opus-20240229",
       "temperature": 0.6
     },
     "drafting_refiner_model": {
@@ -217,7 +217,7 @@
     },
     "qa_adversarial_model": {
       "provider": "anthropic",
-      "model_name": "claude-4.1-opus",
+      "model_name": "claude-3-opus-20240229",
       "temperature": 0.5
     },
     "qa_validator_model": {
@@ -232,7 +232,7 @@
     },
     "meta_tool_generator_model": {
       "provider": "anthropic",
-      "model_name": "claude-4.1-opus",
+      "model_name": "claude-3-opus-20240229",
       "temperature": 0.4
     },
     "meta_tool_critique_model": {
