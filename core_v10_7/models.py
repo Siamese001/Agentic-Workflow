@@ -13,6 +13,7 @@ This version:
 
 from __future__ import annotations
 
+import json
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -31,6 +32,29 @@ class V10Model(BaseModel):
       - consistent .model_dump() / .model_validate() behavior
     """
     model_config = ConfigDict(extra="allow", populate_by_name=True)
+
+    def dict(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:  # type: ignore[override]
+        def _serialize(value: Any) -> Any:
+            if isinstance(value, BaseModel):
+                return value.dict()
+            if isinstance(value, list):
+                return [_serialize(item) for item in value]
+            if isinstance(value, dict):
+                return {k: _serialize(v) for k, v in value.items()}
+            return value
+
+        result: Dict[str, Any] = {}
+        for key, value in self.__dict__.items():
+            if key.startswith("__"):
+                continue
+            result[key] = _serialize(value)
+        return result
+
+    def model_dump(self, *args: Any, **kwargs: Any) -> Dict[str, Any]:  # type: ignore[override]
+        return self.dict()
+
+    def model_dump_json(self, *args: Any, **kwargs: Any) -> str:  # type: ignore[override]
+        return json.dumps(self.model_dump())
 
 
 # ---------------------------------------------------------------------------
