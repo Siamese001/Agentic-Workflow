@@ -1,10 +1,12 @@
-# From /content/Agentic-Workflow (run in a terminal / shell cell)
-cat > requirements.txt << 'EOF'
 anthropic
 google-generativeai
+openai
+pydantic
 redis
 chromadb
 rank-bm25
 python-dotenv
-# v10.7 vendor bootstraps langgraph/langchain via ./vendor/, so we *don't* pin them here.
-EOF
+httpx
+aiohttp
+tiktoken
+numpy
