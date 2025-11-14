@@ -7,6 +7,7 @@ import logging
 import os
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from chromadb.utils import embedding_functions
@@ -47,6 +48,117 @@ logger = logging.getLogger("core_v10_7")
 
 redis_module = get_tool("redis")
 chromadb_module = get_tool("chromadb")
+
+
+def _resolve_path(path_like: str) -> Path:
+    path_obj = Path(str(path_like)).expanduser()
+    try:
+        return path_obj.resolve()
+    except Exception:
+        return path_obj
+
+
+def _path_is_durable(path_like: str, storage_config: Any) -> bool:
+    if not storage_config or not path_like:
+        return False
+
+    durable_root = getattr(storage_config, "durable_root", None)
+    if not durable_root:
+        return False
+
+    try:
+        target_path = _resolve_path(path_like)
+        durable_path = _resolve_path(durable_root)
+    except Exception:
+        return False
+
+    try:
+        target_path.relative_to(durable_path)
+        return True
+    except ValueError:
+        return False
+
+
+def _detect_meta_learning_persistence(config: ConfigV10_7) -> str:
+    try:
+        meta_cfg = config.meta_loop_config
+    except AttributeError:
+        return "UNKNOWN"
+
+    if not getattr(meta_cfg, "enable_meta_learning", False):
+        return "NONE"
+
+    storage_cfg = getattr(config, "storage_config", None)
+    backend = (getattr(storage_cfg, "logs_backend", "fs") or "fs").strip().upper()
+    if backend == "DRIVE":
+        return "DRIVE"
+
+    durability_checks = [
+        getattr(meta_cfg, "feedback_log_path", ""),
+        getattr(meta_cfg, "preference_log_path", ""),
+        getattr(meta_cfg, "proposed_rules_path", ""),
+        getattr(meta_cfg, "generated_tools_path", ""),
+    ]
+    if any(_path_is_durable(path, storage_cfg) for path in durability_checks):
+        return "LOCAL"
+    return "NONE"
+
+
+def _describe_redis_mode(redis_client: Any) -> str:
+    if isinstance(redis_client, MCPClientStub):
+        return "STUB"
+
+    ping_fn = getattr(redis_client, "ping", None)
+    if callable(ping_fn):
+        try:
+            ping_fn()
+            return "REAL"
+        except Exception as exc:  # pragma: no cover - network dependency
+            logger.warning("Redis ping failed; continuing with degraded cache: %s", exc)
+            return "UNREACHABLE"
+    return "UNKNOWN"
+
+
+def _describe_chroma_mode(config: ConfigV10_7, storage_config: Any) -> str:
+    try:
+        chroma_cfg = config.chromadb_config
+    except AttributeError:
+        return "UNKNOWN"
+
+    if getattr(chroma_cfg, "use_http_client", False):
+        return "REMOTE_HTTP"
+
+    persistent_path = getattr(chroma_cfg, "persistent_path", "")
+    if persistent_path and _path_is_durable(persistent_path, storage_config):
+        return "PERSISTENT"
+    return "EPHEMERAL"
+
+
+def _log_runtime_capabilities(
+    config: ConfigV10_7,
+    redis_mode: str,
+    chroma_mode: str,
+    meta_mode: str,
+) -> None:
+    storage_cfg = getattr(config, "storage_config", None)
+    logs_backend = (getattr(storage_cfg, "logs_backend", "fs") or "fs").upper()
+    vector_backend = (getattr(storage_cfg, "vector_backend", "local") or "local").upper()
+    durable_root = getattr(storage_cfg, "durable_root", "n/a") if storage_cfg else "n/a"
+    ephemeral_root = getattr(storage_cfg, "ephemeral_root", "n/a") if storage_cfg else "n/a"
+
+    logger.info(
+        "Runtime storage capabilities | Meta-learning=%s | Redis=%s | Chroma=%s | Logs backend=%s | Vector backend=%s",
+        meta_mode,
+        redis_mode,
+        chroma_mode,
+        logs_backend,
+        vector_backend,
+    )
+    logger.info(
+        "Storage roots | durable=%s | ephemeral=%s",
+        durable_root,
+        ephemeral_root,
+    )
 
 
 def _mcp_get(config_obj: Any, key: str, default: Any) -> Any:
@@ -307,6 +419,8 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     """
     logger.info(f"Creating WorkflowContext with {config.schema_version}...")
 
+    storage_config = getattr(config, "storage_config", None)
+
     # 1. Initialize Clients (Redis, ChromaDB, Embedding)
     redis_ctor = getattr(redis_module, "Redis", None)
     if callable(redis_ctor):
@@ -388,6 +502,11 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     )
     # 5. Inject the final service
     context.context_budget_manager = context_budget_manager
+
+    redis_mode = _describe_redis_mode(redis_client)
+    chroma_mode = _describe_chroma_mode(config, storage_config)
+    meta_mode = _detect_meta_learning_persistence(config)
+    _log_runtime_capabilities(config, redis_mode, chroma_mode, meta_mode)
 
     logger.info("WorkflowContext created and services injected.")
     return context
