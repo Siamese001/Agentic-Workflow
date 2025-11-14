@@ -126,6 +126,19 @@ class RAG_SearchAgent(BaseAgent):
 
     @track_metrics("run_agentic_rag")
     async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        # Predictive caching hook: prefetch embeddings and HyDE doc
+        pcm = self.context.predictive_cache_manager
+        if pcm and pcm.enabled():
+            job_title = state.get("job", {}).get("job_title", "")
+            company = state.get("job", {}).get("company", "")
+            query = f"{job_title} at {company}".strip()
+            pcm.schedule({
+                "coroutine": (lambda q=query: self.context.precompute_engine.precompute_embeddings(q))
+            })
+            pcm.schedule({
+                "coroutine": (lambda q=query: self.context.precompute_engine.precompute_hyde_document(q))
+            })
+            await pcm.run_scheduled()
         base_result, meta = await self._execute_rag(state)
         return await self._maybe_self_correct(state, base_result, meta)
 
