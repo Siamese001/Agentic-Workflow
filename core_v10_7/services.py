@@ -302,6 +302,7 @@ class MetricsCollector:
             self.logger.error(f"Could not create log directory for metrics: {e}")
 
     def record(self, agent_name: str, task_name: str, duration_ms: float, success: bool, error: Optional[str] = None, metadata: Optional[Dict[str, Any]] = None):
+        sanitized_metadata = self._sanitize_metadata(metadata or {})
         metric = {
             "timestamp": datetime.now().isoformat(),
             "agent_name": agent_name,
@@ -309,16 +310,41 @@ class MetricsCollector:
             "duration_ms": duration_ms,
             "success": success,
             "error": error,
-            "metadata": metadata or {}
+            "metadata": sanitized_metadata
         }
         self.metrics.append(metric)
         try:
             with open(self.log_path, 'a') as f:
-                json.dump(metric, f)
+                json.dump(metric, f, default=str)
                 f.write('\n')
         except Exception as e:
             self.logger.error(f"Failed to write metric to log: {e}")
         self._emit_signal(metric)
+
+    def _sanitize_metadata(self, value: Any) -> Any:
+        if isinstance(value, dict):
+            return {k: self._sanitize_metadata(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [self._sanitize_metadata(v) for v in value]
+        if isinstance(value, tuple):
+            return tuple(self._sanitize_metadata(v) for v in value)
+        if isinstance(value, (str, int, float, bool)) or value is None:
+            return value
+        if hasattr(value, "model_dump"):
+            try:
+                return self._sanitize_metadata(value.model_dump())
+            except Exception:
+                return str(value)
+        if hasattr(value, "__dict__"):
+            try:
+                return {
+                    k: self._sanitize_metadata(v)
+                    for k, v in value.__dict__.items()
+                    if not k.startswith("__")
+                }
+            except Exception:
+                return str(value)
+        return str(value)
 
     def get_summary(self) -> List[Dict[str, Any]]:
         return self.metrics
@@ -591,6 +617,9 @@ async def _format_prompt_with_defaults(
         "candidates": _serialize(tool_input.get('candidates', [])),
 
         "experience": _serialize(tool_input.get('experience')),
+
+        "feedback": _serialize(tool_input.get('feedback')),
+        "consensus": _serialize(tool_input.get('consensus')),
 
         "job_title": tool_input.get('job_title', 'N/A'),
         "company": tool_input.get('company', 'N/A'),
