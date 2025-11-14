@@ -167,7 +167,7 @@ async def test_predictive_prompt_prefetch():
     async def fake_self_correct(self, strategy, complexity, workflow_id, base_result, validated_output):
         return base_result
 
-    agent._generate_prompts = MethodType(fake_generate, agent)
+    agent._execute_prompt_engineer = MethodType(fake_generate, agent)
     agent._maybe_self_correct = MethodType(fake_self_correct, agent)
 
     strategy = _DummyStrategy()
