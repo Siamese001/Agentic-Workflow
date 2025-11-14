@@ -341,7 +341,11 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         self.coordinator = BulletCoordinatorAgent(context, debug_mode)
 
     async def _generate_customized(
-        self, prompt: str, experience: Dict[str, Any], client: Any
+        self,
+        prompt: str,
+        experience: Dict[str, Any],
+        client: Any,
+        temperature: Optional[float] = None,
     ) -> List[str]:
         gen_prompt = f"""
         {client.goal_state}
@@ -354,7 +358,11 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         """
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": gen_prompt}],
-            temperature=self.config.model_config.bullet_generator_model.temperature,
+            temperature=(
+                temperature
+                if temperature is not None
+                else self.config.model_config.bullet_generator_model.temperature
+            ),
             response_format="json_object",
         )
         content, error = self.validator.validate(response["content"], (list, dict))
@@ -367,7 +375,11 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         return []
 
     async def _generate_synthetic(
-        self, prompt: str, experience: Dict[str, Any], client: Any
+        self,
+        prompt: str,
+        experience: Dict[str, Any],
+        client: Any,
+        temperature: Optional[float] = None,
     ) -> List[str]:
         gen_prompt = f"""
         {client.goal_state}
@@ -380,7 +392,11 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         """
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": gen_prompt}],
-            temperature=self.config.model_config.bullet_generator_model.temperature,
+            temperature=(
+                temperature
+                if temperature is not None
+                else self.config.model_config.bullet_generator_model.temperature
+            ),
             response_format="json_object",
         )
         content, error = self.validator.validate(response["content"], (list, dict))
@@ -440,31 +456,68 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         strategy: StrategyPlan,
         workflow_id: str,
     ) -> Dict[str, Any]:
+        base_result = await self._execute_bullet_generator(
+            task_context,
+            strategy,
+            workflow_id,
+        )
+        return await self._maybe_self_correct(
+            task_context,
+            strategy,
+            workflow_id,
+            base_result,
+        )
+
+    async def _execute_bullet_generator(
+        self,
+        task_context: Dict[str, Any],
+        strategy: StrategyPlan,
+        workflow_id: str,
+        self_heal_hint: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
         self.log_info("Generating bullets asynchronously...")
 
+        hint = self_heal_hint or {}
         generation_client = self.get_model_client("bullet_generator_model")
         fact_check_client = self.get_model_client("bullet_fact_check_model")
 
         bullet_prompts = task_context.get("prompts", [])
         resume_experience = task_context.get("experience", [])
 
+        temperature_override = hint.get("temperature")
+        force_synthetic = hint.get("force_synthetic", False)
+
         generation_tasks = []
         for prompt in bullet_prompts:
             for experience in resume_experience:
-                if experience.get("bullet_pool"):
+                use_customized = experience.get("bullet_pool") and not force_synthetic
+                if use_customized:
                     generation_tasks.append(
-                        self._generate_customized(prompt, experience, generation_client)
+                        self._generate_customized(
+                            prompt,
+                            experience,
+                            generation_client,
+                            temperature=temperature_override,
+                        )
                     )
                 else:
                     generation_tasks.append(
-                        self._generate_synthetic(prompt, experience, generation_client)
+                        self._generate_synthetic(
+                            prompt,
+                            experience,
+                            generation_client,
+                            temperature=temperature_override,
+                        )
                     )
 
         generated_results = await asyncio.gather(*generation_tasks)
         flat_generated = [bullet for result in generated_results for bullet in result]
 
         fact_checked = await self.run_fact_check(
-            flat_generated, resume_experience[0] if resume_experience else {}, strategy, fact_check_client
+            flat_generated,
+            resume_experience[0] if resume_experience else {},
+            strategy,
+            fact_check_client,
         )
 
         enriched_payload = await self.coordinator.run_async(
@@ -486,6 +539,61 @@ class AsyncBulletGeneratorAgent(BaseAgent):
             "bullets": enriched_payload,
             "raw_generated": flat_generated,
         }
+
+    async def _maybe_self_correct(
+        self,
+        task_context: Dict[str, Any],
+        strategy: StrategyPlan,
+        workflow_id: str,
+        base_result: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
+            return base_result
+        if not manager.can_retry(workflow_id, "bullet"):
+            return base_result
+
+        baseline_count = len(base_result.get("bullets") or [])
+        retry_threshold = getattr(
+            self.config.agent_stacks,
+            "bullet_retry_threshold",
+            3,
+        )
+        if baseline_count >= retry_threshold:
+            return base_result
+
+        report = manager.start_retry(
+            workflow_id,
+            "bullet",
+            issue="insufficient_bullets",
+            action="regenerate_with_synthetic_override",
+            metadata={"initial_count": baseline_count},
+        )
+
+        corrected_result = await self._execute_bullet_generator(
+            task_context,
+            strategy,
+            workflow_id,
+            self_heal_hint={
+                "force_synthetic": True,
+                "temperature": max(
+                    0.0,
+                    self.config.model_config.bullet_generator_model.temperature - 0.15,
+                ),
+            },
+        )
+
+        corrected_count = len(corrected_result.get("bullets") or [])
+        resolved = corrected_count > baseline_count
+        manager.finalize_retry(
+            report,
+            resolved,
+            {"corrected_count": corrected_count},
+        )
+        if resolved:
+            corrected_result.setdefault("self_correction", {})["bullet"] = report.model_dump()
+            return corrected_result
+        return base_result
 
 
 class AsyncBulletCritiqueAgent(BaseAgent):

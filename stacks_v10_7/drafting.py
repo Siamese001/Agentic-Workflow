@@ -568,9 +568,10 @@ class DraftingGuildCoordinator(BaseAgent):
         base_result: Dict[str, Any],
         meta: Dict[str, Any],
     ) -> Dict[str, Any]:
-        if not self.self_correction_manager:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
             return base_result
-        if not self.self_correction_manager.can_retry(workflow_id, "drafting"):
+        if not manager.can_retry(workflow_id, "drafting"):
             return base_result
 
         critique_packet = meta.get("critique")
@@ -582,7 +583,7 @@ class DraftingGuildCoordinator(BaseAgent):
         if not overrides:
             return base_result
 
-        report = self.self_correction_manager.start_retry(
+        report = manager.start_retry(
             workflow_id,
             "drafting",
             issue=f"critique_{severity}",
@@ -598,7 +599,7 @@ class DraftingGuildCoordinator(BaseAgent):
 
         corrected_severity = self._extract_severity(corrected_meta.get("critique"))
         resolved = self._severity_rank(corrected_severity) < self._severity_rank(severity)
-        self.self_correction_manager.finalize_retry(
+        manager.finalize_retry(
             report,
             resolved,
             {"corrected_severity": corrected_severity},

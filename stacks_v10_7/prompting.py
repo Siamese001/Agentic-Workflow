@@ -34,7 +34,8 @@ class PromptEngineerAgent(BaseAgent):
                 )
             })
             await pcm.run_scheduled()
-        base_result, validated_output = await self._generate_prompts(
+
+        base_result, validated_output = await self._execute_prompt_engineer(
             strategy,
             complexity,
             workflow_id,
@@ -47,21 +48,24 @@ class PromptEngineerAgent(BaseAgent):
             validated_output,
         )
 
-    async def _generate_prompts(
+    async def _execute_prompt_engineer(
         self,
         strategy: StrategyPlan,
         complexity: str,
         workflow_id: str,
-        temperature_offset: float = 0.0,
-        force_structured: bool = False,
+        self_heal_hint: Optional[Dict[str, Any]] = None,
     ) -> Tuple[Dict[str, Any], GeneratedPrompts]:
         self.log_info(f"Engineering prompts (Complexity: {complexity})...")
 
+        hint = self_heal_hint or {}
         client = self.get_model_client("prompt_engineer_model")
         meta_prompt_template = self.prompt_manager.get_template("prompt_engineer")
 
-        style_guide = "Style: Generate clear, role-appropriate prompts."
-        if force_structured:
+        style_guide = hint.get(
+            "style_guide",
+            "Style: Generate clear, role-appropriate prompts.",
+        )
+        if hint.get("force_structured"):
             style_guide = (
                 "Style: Enforce numbered prompts with explicit QA coverage and guardrails."
             )
@@ -82,7 +86,11 @@ class PromptEngineerAgent(BaseAgent):
         base_temp = self.config.model_config.prompt_engineer_model.temperature
         if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
             base_temp = self.context.tuning_profile.temperature
-        temperature = max(0.0, min(1.0, base_temp + temperature_offset))
+
+        temperature = hint.get(
+            "temperature",
+            max(0.0, min(1.0, base_temp + hint.get("temperature_offset", 0.0))),
+        )
 
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": meta_prompt}],
@@ -121,31 +129,34 @@ class PromptEngineerAgent(BaseAgent):
         base_result: Dict[str, Any],
         validated_output: GeneratedPrompts,
     ) -> Dict[str, Any]:
-        if not self.self_correction_manager:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
             return base_result
-        if not self.self_correction_manager.can_retry(workflow_id, "prompt"):
+        if not manager.can_retry(workflow_id, "prompt"):
             return base_result
 
         issue = self._needs_retry(validated_output)
         if not issue:
             return base_result
 
-        report = self.self_correction_manager.start_retry(
+        report = manager.start_retry(
             workflow_id,
             "prompt",
             issue=issue,
             action="stabilize_prompt_structure",
         )
 
-        corrected_result, corrected_output = await self._generate_prompts(
+        corrected_result, corrected_output = await self._execute_prompt_engineer(
             strategy,
             complexity,
             workflow_id,
-            temperature_offset=-0.2,
-            force_structured=True,
+            self_heal_hint={
+                "temperature_offset": -0.2,
+                "force_structured": True,
+            },
         )
         resolved = not self._needs_retry(corrected_output)
-        self.self_correction_manager.finalize_retry(report, resolved)
+        manager.finalize_retry(report, resolved)
         if resolved:
             corrected_result.setdefault("self_correction", {})["prompt"] = report.model_dump()
             return corrected_result
