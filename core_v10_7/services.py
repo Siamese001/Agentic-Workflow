@@ -822,6 +822,12 @@ class CacheManager:
         self.logger = logging.getLogger(f"{__name__}.CacheManager")
         self._hits = 0; self._misses = 0; self._tool_hits = 0; self._tool_misses = 0
         self._semantic_hits = 0 # v10.7 (Fix #13)
+        self.redis_required = bool(getattr(config.redis_config, "required", True))
+
+        try:
+            self.redis.ping()
+        except Exception as e:
+            raise RuntimeError("Redis is required but unavailable: " + str(e)) from e
         
         # v10.7 (Fix #13): Init Semantic Cache
         if self.config.caching_config.enable_semantic_caching:
@@ -848,23 +854,29 @@ class CacheManager:
             self.logger.warning(f"Could not generate tool cache key for {tool_name}: {e}")
             return ""
 
+    def _redis_call(self, operation: str, func: Callable[..., Any], *args, **kwargs) -> Any:
+        try:
+            return func(*args, **kwargs)
+        except Exception as exc:
+            requirement = "required" if self.redis_required else "optional"
+            raise RuntimeError(
+                f"Redis ({requirement}) operation failed during {operation}: {exc}"
+            ) from exc
+
     async def get_llm_cache(self, provider: str, model: str, prompt: str, temperature: float) -> Optional[Dict[str, Any]]:
         # 1. Check Exact Cache (Redis)
         cache_key = self._generate_llm_cache_key(provider, model, prompt, temperature)
-        try:
-            cached_data = self.redis.get(cache_key)
-            if cached_data:
-                self._hits += 1
-                self.logger.debug(f"LLM Cache HIT (Exact): {cache_key[:16]}...")
-                log_event("CacheManager", "llm_cache_hit", {
-                    "mode": "exact",
-                    "provider": provider,
-                    "model": model,
-                })
-                return json.loads(cached_data)
-        except Exception as e:
-            self.logger.error(f"Redis get error: {e}")
-            
+        cached_data = self._redis_call("LLM cache get", self.redis.get, cache_key)
+        if cached_data:
+            self._hits += 1
+            self.logger.debug(f"LLM Cache HIT (Exact): {cache_key[:16]}...")
+            log_event("CacheManager", "llm_cache_hit", {
+                "mode": "exact",
+                "provider": provider,
+                "model": model,
+            })
+            return json.loads(cached_data)
+
         # 2. Check Semantic Cache (ChromaDB)
         if self.config.caching_config.enable_semantic_caching:
             try:
@@ -886,9 +898,15 @@ class CacheManager:
                         "model": model,
                     })
                     # Also set this in exact cache for future hits
-                    self.redis.setex(cache_key, self.ttl, cached_data_str)
+                    self._redis_call(
+                        "LLM cache hydration",
+                        self.redis.setex,
+                        cache_key,
+                        self.ttl,
+                        cached_data_str,
+                    )
                     return json.loads(cached_data_str)
-                    
+
             except Exception as e:
                 self.logger.error(f"Semantic Cache get error: {e}")
 
@@ -902,14 +920,17 @@ class CacheManager:
     
     async def set_llm_cache(self, provider: str, model: str, prompt: str, temperature: float, response: Dict[str, Any]):
         response_str = json.dumps(response)
-        
+
         # 1. Set Exact Cache (Redis)
         cache_key = self._generate_llm_cache_key(provider, model, prompt, temperature)
-        try:
-            self.redis.setex(cache_key, self.ttl, response_str)
-            self.logger.debug(f"Cached LLM response (Exact): {cache_key[:16]}...")
-        except Exception as e:
-            self.logger.error(f"Redis set error: {e}")
+        self._redis_call(
+            "LLM cache set",
+            self.redis.setex,
+            cache_key,
+            self.ttl,
+            response_str,
+        )
+        self.logger.debug(f"Cached LLM response (Exact): {cache_key[:16]}...")
 
         # 2. Set Semantic Cache (ChromaDB)
         if self.config.caching_config.enable_semantic_caching:
@@ -928,32 +949,29 @@ class CacheManager:
     def get_tool_cache(self, tool_name: str, tool_input: Dict[str, Any]) -> Optional[Any]:
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return None
-        try:
-            cached_data = self.redis.get(cache_key)
-            if cached_data:
-                self._tool_hits += 1
-                self.logger.info(f"Tool Cache HIT: {tool_name}")
-                log_event("CacheManager", "tool_cache_hit", {"tool": tool_name})
-                return json.loads(cached_data)
-            else:
-                self._tool_misses += 1
-                self.logger.debug(f"Tool Cache MISS: {tool_name}")
-                log_event("CacheManager", "tool_cache_miss", {"tool": tool_name})
-                return None
-        except Exception as e:
-            self.logger.error(f"Tool Cache get error: {e}")
-            self._tool_misses += 1
-            log_event("CacheManager", "tool_cache_error", {"tool": tool_name, "error": str(e)})
-            return None
+        cached_data = self._redis_call("Tool cache get", self.redis.get, cache_key)
+        if cached_data:
+            self._tool_hits += 1
+            self.logger.info(f"Tool Cache HIT: {tool_name}")
+            log_event("CacheManager", "tool_cache_hit", {"tool": tool_name})
+            return json.loads(cached_data)
+
+        self._tool_misses += 1
+        self.logger.debug(f"Tool Cache MISS: {tool_name}")
+        log_event("CacheManager", "tool_cache_miss", {"tool": tool_name})
+        return None
 
     def set_tool_cache(self, tool_name: str, tool_input: Dict[str, Any], result: Any):
         cache_key = self._generate_tool_cache_key(tool_name, tool_input)
         if not cache_key: return
-        try:
-            self.redis.setex(cache_key, self.ttl, json.dumps(result))
-            self.logger.debug(f"Cached Tool response: {tool_name}")
-        except Exception as e:
-            self.logger.error(f"Tool Cache set error: {e}")
+        self._redis_call(
+            "Tool cache set",
+            self.redis.setex,
+            cache_key,
+            self.ttl,
+            json.dumps(result),
+        )
+        self.logger.debug(f"Cached Tool response: {tool_name}")
     
     def get_stats(self) -> Dict[str, Any]:
         llm_total = self._hits + self._misses + self._semantic_hits
