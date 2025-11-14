@@ -421,7 +421,15 @@ class DraftingGuildCoordinator(BaseAgent):
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         self.log_info("Drafting Guild Coordinator orchestrating specialists...")
 
-        working_context = self._apply_overrides(task_context, overrides or {})
+        overrides = overrides or {}
+        if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
+            tp = self.context.tuning_profile
+            if tp.drafting_expand_summary:
+                overrides.setdefault("expand_summary", True)
+            if tp.drafting_boost_metrics:
+                overrides.setdefault("boost_metrics", True)
+
+        working_context = self._apply_overrides(task_context, overrides)
 
         strategy = working_context.get("strategy")
         if isinstance(strategy, dict):

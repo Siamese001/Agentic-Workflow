@@ -540,6 +540,11 @@ async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> di
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     bias_result = await _invoke_with_metrics(bias_agent.run, "BiasDetectorAgent", "run_bias_detector", state['job']['raw_jd'], workflow_id)
 
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
+
     return {
         "resume": {"sanitized_resume": sanitized},
         "safety": {"bias_detected": bias_result['bias_detected']}
@@ -551,11 +556,20 @@ async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowCon
     """Node 0.5: Detect Prompt Injection"""
     context = workflow_context
     if not context.config.agent_stacks.enable_prompt_injection_detection:
+        if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+            profile = workflow_context.tuning_profile
+            new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+            workflow_context.tuning_profile = new_profile
         return {"safety": {"injection_detected": False}}
 
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     jd_result = await route_to_stack("SafetyGuardStack", context, state['job']['raw_jd'], workflow_id)
     log_event("SafetyGuardStack", "run", {"workflow_id": workflow_id})
+
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
 
     return {"safety": {"injection_detected": jd_result.get('injection_detected', False)}}
 
@@ -568,6 +582,10 @@ async def run_classify_complexity(state: dict, workflow_context: WorkflowContext
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     complexity = await classifier.run_async(state['job']['raw_jd'], workflow_id)
     context.complexity = complexity
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"metadata": {"complexity": complexity}}
 
 @wrap_mcp
@@ -587,6 +605,10 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
         workflow_id
     )
     log_event("StrategyStack", "completed", {"workflow_id": workflow_id})
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"strategy": strategy_result}
 
 
@@ -597,6 +619,10 @@ async def run_arbitration_after_strategy(state: dict, workflow_context: Workflow
 
     report = await workflow_context.arbitration_engine.run_check("strategy_post_plan", state)
     _attach_arbitration_report(state, "strategy_post_plan", report)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
 @wrap_mcp
@@ -605,6 +631,10 @@ async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -
     """Node 3: Proactive HIL ambiguity check"""
     context = workflow_context
     if not context.config.agent_stacks.enable_hil_stack:
+        if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+            profile = workflow_context.tuning_profile
+            new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+            workflow_context.tuning_profile = new_profile
         return {"hil": {"ambiguity_report": {"ambiguity_detected": False, "confidence": 1.0, "reason": "HIL disabled", "question_for_human": ""}}}
         
     detector = HILAmbiguityDetectorAgent(context)
@@ -619,6 +649,10 @@ async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -
     if report.confidence < context.config.agent_stacks.ambiguity_confidence_threshold:
             report.ambiguity_detected = False
     
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"hil": {"ambiguity_report": report.model_dump()}}
 
 # v10.7 (Fix #5): Dummy node for parallel fork
@@ -637,9 +671,13 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
     strategy_plan = state['strategy']['strategy_plan']
     if isinstance(strategy_plan, dict):
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
-    
+
     complexity = state.get('metadata', {}).get('complexity', 'unknown')
     prompts_result = await prompt_agent.run_async(strategy_plan, complexity, workflow_id)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"prompts": {"prompts": prompts_result.get("prompts").model_dump()}}
 
 @wrap_mcp
@@ -649,6 +687,10 @@ async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     context = workflow_context
     state_patch = await route_to_stack("RAGStack", context, state)
     log_event("RAGStack", "completed", {"workflow_id": state.get('metadata', {}).get('workflow_id', '')})
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return state_patch
 
 # v10.7 (Fix #5): Dummy node for parallel join
@@ -665,6 +707,10 @@ async def run_arbitration_after_join(state: dict, workflow_context: WorkflowCont
 
     report = await workflow_context.arbitration_engine.run_check("prompt_rag_join", state)
     _attach_arbitration_report(state, "prompt_rag_join", report)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
 @wrap_mcp
@@ -680,9 +726,13 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
         strategy = StrategyPlan.model_validate(strategy)
     
     all_bullets = []
-    for exp in state['resume']['experience_bullets'][:3]: 
+    for exp in state['resume']['experience_bullets'][:3]:
         bullets = await bullet_gen.run_async(prompt, exp, strategy, workflow_id)
         all_bullets.extend([{"text": b, "experience": exp} for b in bullets])
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"bullets": {"generated_bullets": all_bullets}}
 
 @wrap_mcp
@@ -695,6 +745,10 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
     bullets = state['bullets']['generated_bullets']
     critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"bullets": {"critiqued_bullets": critiques}}
 
 
@@ -705,6 +759,10 @@ async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowC
 
     report = await workflow_context.arbitration_engine.run_check("bullets_post_selection", state)
     _attach_arbitration_report(state, "bullets_post_selection", report)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
 @wrap_mcp
@@ -729,6 +787,10 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     }
     draft = await route_to_stack("DraftingStack", context, task_context, workflow_id)
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"draft": {"sections": draft.get("final_output", {})}}
 
 
@@ -739,6 +801,10 @@ async def run_arbitration_after_drafting(state: dict, workflow_context: Workflow
 
     report = await workflow_context.arbitration_engine.run_check("draft_post_assembly", state)
     _attach_arbitration_report(state, "draft_post_assembly", report)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
 async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -748,9 +814,13 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     
     if isinstance(state['strategy']['strategy_plan'], dict):
         state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
-    
+
     validation = await route_to_stack("QAStack", context, state, workflow_id)
     log_event("QAStack", "completed", {"workflow_id": workflow_id})
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {
         "qa": {"validation_results": validation, "qa_passed": validation.get("qa_passed", False)},
         "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}}
@@ -764,6 +834,10 @@ async def run_arbitration_after_qa(state: dict, workflow_context: WorkflowContex
 
     report = await workflow_context.arbitration_engine.run_check("qa_post_validation", state)
     _attach_arbitration_report(state, "qa_post_validation", report)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
 async def run_constitutional_review(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -794,6 +868,10 @@ async def run_constitutional_review(state: dict, workflow_context: WorkflowConte
     draft_text = json.dumps(final_resume)
     workflow_id = state.get('metadata', {}).get('workflow_id', context.workflow_id)
     result = await agent.run_async(draft_text, workflow_id)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"qa": {"constitutional_review": result.model_dump()}}
 
 # HIL Nodes
@@ -804,6 +882,10 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
     human_feedback = state.get('hil', {}).get('raw_feedback') or "Default to drafting"
     route = await route_to_stack("HILStack", context, human_feedback, workflow_id, state)
     log_event("HILStack", "completed", {"workflow_id": workflow_id, "next_step": route.get("next_step")})
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {
         "hil": {
             "next_step": route.get("next_step"),
@@ -835,6 +917,10 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
     payload = state.get("hil", {}).get("payload")
     if not payload:
         logger.warning("HIL INJECT_EDIT route chosen, but no payload found.")
+        if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+            profile = workflow_context.tuning_profile
+            new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+            workflow_context.tuning_profile = new_profile
         return {}
     if 'sections' not in state['draft']:
         state['draft']['sections'] = {}
@@ -844,6 +930,10 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
     else:
         state['draft']['sections']['summary'] = f"[EDITED BY HUMAN]: {payload}"
     logger.info("HIL edit injected into draft summary.")
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"draft": state['draft']}
 
 
@@ -863,6 +953,10 @@ async def run_reconcile_specialists(state: dict, workflow_context: WorkflowConte
 
     draft_sections = state.get('draft', {}).get('sections', {})
     result = await agent.run_async(draft_sections, specialist_feedback, persona_consensus, workflow_id)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
     return {"hil": {"reconciliation": result.model_dump()}}
 
 # --- CONDITIONAL EDGES (v10.7: Fix #30) ---
