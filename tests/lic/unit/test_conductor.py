@@ -75,3 +75,19 @@ def test_conductor_requires_positive_concurrency():
 def test_run_with_no_jobs_returns_empty_list():
     conductor = Conductor()
     assert conductor.run([]) == []
+
+
+def test_execute_async_preserves_input_order_even_when_tasks_finish_out_of_order():
+    conductor = Conductor(concurrency=2)
+
+    async def _job(idx: int, delay: float):
+        await asyncio.sleep(delay)
+        return idx, f"payload-{idx}"
+
+    factories = [
+        lambda idx=i, delay=d: _job(idx, delay)
+        for i, d in enumerate([0.03, 0.0, 0.01])
+    ]
+
+    results = asyncio.run(conductor._execute_async(factories))
+    assert [idx for idx, _ in results] == [0, 1, 2]
