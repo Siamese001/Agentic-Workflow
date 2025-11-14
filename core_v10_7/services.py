@@ -32,7 +32,7 @@ from telemetry_v10_7 import log_event
 from .config import ConfigV10_7
 from .constants import legacy_model_alias
 from .exceptions import JSONParsingError, PydanticSchemaError
-from .models import GeneratedPrompts, StrategyPlan
+from .models import ArbitrationReport, GeneratedPrompts, StrategyPlan
 
 if TYPE_CHECKING:  # pragma: no cover - typing helpers
     from .clients import AsyncBaseModelClient
@@ -1024,6 +1024,150 @@ class CostTracker:
         return {"workflow_id": workflow_id, "total_workflow_cost": total_cost, "calls": calls}
 
 
+class ArbitrationEngine:
+    """Lightweight arbitration service for cross-stack decisions."""
+
+    def __init__(self, config: ConfigV10_7, metrics: MetricsCollector):
+        self.config = config
+        self.metrics = metrics
+        self.logger = logging.getLogger(f"{__name__}.ArbitrationEngine")
+
+    def _stage_config(self, stage: str) -> Dict[str, Any]:
+        try:
+            cfg = getattr(self.config, "arbitration_config")
+        except AttributeError:
+            return {"enabled": False}
+
+        stages_cfg: Any
+        if hasattr(cfg, "stages"):
+            stages_cfg = getattr(cfg, "stages", {})
+        else:
+            stages_cfg = getattr(cfg, "get", lambda *_: {})("stages", {})  # type: ignore[operator]
+
+        if isinstance(stages_cfg, dict):
+            return stages_cfg.get(stage, {"enabled": False})
+
+        # ConfigSection exposes .get
+        getter = getattr(stages_cfg, "get", None)
+        if callable(getter):
+            return getter(stage, {"enabled": False})
+
+        return {"enabled": False}
+
+    async def run_check(self, stage: str, state: Dict[str, Any]) -> ArbitrationReport:
+        try:
+            arb_cfg = getattr(self.config, "arbitration_config")
+        except AttributeError:
+            return ArbitrationReport(
+                stage=stage,
+                decision="ACCEPT",
+                reasons=["Arbitration config missing"],
+                confidence=1.0,
+            )
+
+        if not getattr(arb_cfg, "enabled", False):
+            return ArbitrationReport(
+                stage=stage,
+                decision="ACCEPT",
+                reasons=["Arbitration disabled"],
+                confidence=1.0,
+            )
+
+        stage_cfg = self._stage_config(stage)
+        if not stage_cfg.get("enabled", False):
+            return ArbitrationReport(
+                stage=stage,
+                decision="ACCEPT",
+                reasons=["Stage disabled"],
+                confidence=1.0,
+            )
+
+        decision = "ACCEPT"
+        reasons: List[str] = []
+        confidence = 0.8
+        suggested_route: Optional[str] = None
+
+        if stage == "strategy_post_plan":
+            strategy = state.get("strategy", {}).get("strategy_plan", {})
+            if isinstance(strategy, StrategyPlan):
+                focus_areas = strategy.focus_areas
+                tone = strategy.tone
+            else:
+                focus_areas = strategy.get("focus_areas", []) if isinstance(strategy, dict) else []
+                tone = strategy.get("tone") if isinstance(strategy, dict) else None
+            if not focus_areas or not tone:
+                decision = "REQUEST_REVISE"
+                reasons.append("Strategy plan missing focus_areas or tone.")
+                confidence = 0.7
+                suggested_route = "REPLAN_STRATEGY"
+
+        elif stage == "prompt_rag_join":
+            rag_patch = state.get("rag", {})
+            if isinstance(rag_patch, dict) and not rag_patch.get("results"):
+                decision = "WARN"
+                reasons.append("RAG returned no results after join.")
+                confidence = 0.6
+
+        elif stage == "draft_post_assembly":
+            draft_sections = state.get("draft", {}).get("sections")
+            if not draft_sections:
+                decision = "REQUEST_REVISE"
+                reasons.append("Draft sections are empty.")
+                confidence = 0.8
+                suggested_route = "RETRY_DRAFTING"
+
+        elif stage == "bullets_post_selection":
+            bullets_bucket = state.get("bullets", {})
+            bullets = bullets_bucket.get("critiqued_bullets") or bullets_bucket.get("generated_bullets", [])
+            if isinstance(bullets, list) and len(bullets) == 0:
+                decision = "REQUEST_REVISE"
+                reasons.append("No bullets generated or selected.")
+                confidence = 0.8
+                suggested_route = "RETRY_BULLETS"
+
+        elif stage == "qa_post_validation":
+            qa_ctx = state.get("qa", {})
+            if not qa_ctx.get("qa_passed", False):
+                decision = "REQUEST_REVISE"
+                reasons.append("QA did not pass; arbitration suggests revision.")
+                confidence = 0.85
+                suggested_route = "RETRY_QA"
+
+        if not reasons:
+            reasons.append("No issues detected.")
+
+        report = ArbitrationReport(
+            stage=stage,
+            decision=decision,
+            reasons=reasons,
+            confidence=confidence,
+            suggested_route=suggested_route,
+            metrics_snapshot={"stage": stage, "decision": decision},
+        )
+
+        log_event(
+            agent="ArbitrationEngine",
+            event="arbitration_report",
+            data={
+                "stage": stage,
+                "decision": decision,
+                "confidence": confidence,
+                "reasons": reasons,
+                "suggested_route": suggested_route,
+            },
+        )
+
+        self.metrics.record(
+            agent_name="ArbitrationEngine",
+            task_name=f"arbitrate::{stage}",
+            duration_ms=0.0,
+            success=True,
+            metadata={"decision": decision, "suggested_route": suggested_route},
+        )
+
+        return report
+
+
 __all__ = [
     "ContextBudgetManager",
     "MetricsCollector",
@@ -1037,5 +1181,6 @@ __all__ = [
     "ProposedRulesLoader",
     "CacheManager",
     "CostTracker",
+    "ArbitrationEngine",
     "_format_prompt_with_defaults",
 ]

@@ -32,6 +32,7 @@ from .models import (
     StrategyPlan,
 )
 from .services import (
+    ArbitrationEngine,
     CacheManager,
     ContextBudgetManager,
     CostTracker,
@@ -193,6 +194,7 @@ class WorkflowContext:
         metrics_collector: MetricsCollector,
         semantic_validator: SemanticValidator,
         embedding_function: embedding_functions.EmbeddingFunction,
+        arbitration_engine: ArbitrationEngine,
     ):
 
         self.config = config
@@ -222,6 +224,7 @@ class WorkflowContext:
         self.metrics_collector = metrics_collector
         self.semantic_validator = semantic_validator
         self.embedding_function = embedding_function
+        self.arbitration_engine = arbitration_engine
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
@@ -489,6 +492,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     response_validator = ResponseValidator()
     metrics_collector = MetricsCollector()
     semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
+    arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
 
     # 3. Initialize Context (Partial)
     context = WorkflowContext(
@@ -504,6 +508,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         metrics_collector=metrics_collector,
         semantic_validator=semantic_validator,
         embedding_function=embedding_function,
+        arbitration_engine=arbitration_engine,
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
