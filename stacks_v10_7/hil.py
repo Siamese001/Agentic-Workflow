@@ -400,8 +400,20 @@ class HILFeedbackRouterAgent(BaseAgent):
         workflow_id: str,
         state_snapshot: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        self.log_info("Routing human feedback with persona council...")
+        self._log_feedback_preference(human_feedback, workflow_id)
+        base_result = await self._execute_feedback_router(
+            human_feedback,
+            workflow_id,
+            state_snapshot,
+        )
+        return await self._maybe_self_correct(
+            human_feedback,
+            workflow_id,
+            state_snapshot,
+            base_result,
+        )
 
+    def _log_feedback_preference(self, human_feedback: str, workflow_id: str) -> None:
         try:
             log_path = self.config.meta_loop_config.preference_log_path
             os.makedirs(os.path.dirname(log_path), exist_ok=True)
@@ -418,16 +430,34 @@ class HILFeedbackRouterAgent(BaseAgent):
         except Exception as exc:  # pragma: no cover - defensive logging
             self.log_error(f"Failed to log HIL preference feedback: {exc}")
 
-        if not human_feedback.strip():
+    async def _execute_feedback_router(
+        self,
+        human_feedback: str,
+        workflow_id: str,
+        state_snapshot: Optional[Dict[str, Any]] = None,
+        self_heal_hint: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        self.log_info("Routing human feedback with persona council...")
+
+        hint = self_heal_hint or {}
+        working_feedback = human_feedback
+        if hint.get("request_richer_summary") and human_feedback.strip():
+            working_feedback = (
+                f"{human_feedback}\n\n[RouterHint] Enumerate discrete intents and blockers."
+            )
+
+        if not working_feedback.strip():
             self.log_warning(
                 "No human feedback supplied. Defaulting to drafting continuation."
             )
             default_route = HILFeedbackRoute(next_step="DRAFTING", payload=None)
-            return default_route.model_dump()
+            result = default_route.model_dump()
+            result["raw_feedback"] = working_feedback
+            return result
 
         summarizer = HILFeedbackSummarizerAgent(self.context, self.debug_mode)
         summary_output = await summarizer.run_async(
-            human_feedback,
+            working_feedback,
             state_snapshot,
             workflow_id,
         )
@@ -435,7 +465,7 @@ class HILFeedbackRouterAgent(BaseAgent):
 
         council = VirtualReviewerCouncilAgent(self.context, self.debug_mode)
         persona_consensus = await council.run_async(
-            human_feedback,
+            working_feedback,
             intent_clusters,
             workflow_id,
         )
@@ -443,15 +473,21 @@ class HILFeedbackRouterAgent(BaseAgent):
         delegated_specialists = summary_output.recommended_specialists
         delegation_score = summary_output.delegation_score
 
-        delegation_threshold = getattr(
-            self.config.agent_stacks,
-            "hil_delegation_threshold",
-            0.65,
+        delegation_threshold = hint.get(
+            "delegation_threshold",
+            getattr(
+                self.config.agent_stacks,
+                "hil_delegation_threshold",
+                0.65,
+            ),
         )
-        strategy_threshold = getattr(
-            self.config.agent_stacks,
-            "hil_strategy_threshold",
-            0.45,
+        strategy_threshold = hint.get(
+            "strategy_threshold",
+            getattr(
+                self.config.agent_stacks,
+                "hil_strategy_threshold",
+                0.45,
+            ),
         )
 
         next_step = summary_output.recommended_node or "DRAFTING"
@@ -481,6 +517,9 @@ class HILFeedbackRouterAgent(BaseAgent):
             )
             next_step = "STRATEGY"
 
+        if hint.get("force_strategy_escalation"):
+            next_step = "STRATEGY"
+
         payload = None
         if intent_clusters:
             payload = intent_clusters[0].summary
@@ -493,4 +532,51 @@ class HILFeedbackRouterAgent(BaseAgent):
             persona_consensus=persona_consensus,
         )
 
-        return route.model_dump()
+        result = route.model_dump()
+        result["raw_feedback"] = working_feedback
+        result["router_hint_applied"] = bool(hint)
+        return result
+
+    async def _maybe_self_correct(
+        self,
+        human_feedback: str,
+        workflow_id: str,
+        state_snapshot: Optional[Dict[str, Any]],
+        base_result: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
+            return base_result
+        if not manager.can_retry(workflow_id, "hil"):
+            return base_result
+        if not human_feedback.strip():
+            return base_result
+
+        intent_clusters = base_result.get("intent_clusters") or []
+        if intent_clusters:
+            return base_result
+
+        report = manager.start_retry(
+            workflow_id,
+            "hil",
+            issue="missing_intent_clusters",
+            action="force_strategy_escalation",
+        )
+
+        corrected_result = await self._execute_feedback_router(
+            human_feedback,
+            workflow_id,
+            state_snapshot,
+            self_heal_hint={
+                "request_richer_summary": True,
+                "force_strategy_escalation": True,
+                "strategy_threshold": 0.0,
+            },
+        )
+
+        resolved = bool(corrected_result.get("intent_clusters"))
+        manager.finalize_retry(report, resolved)
+        if resolved:
+            corrected_result.setdefault("self_correction", {})["hil"] = report.model_dump()
+            return corrected_result
+        return base_result

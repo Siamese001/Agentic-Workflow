@@ -2,7 +2,7 @@
 
 import json
 import re
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from pydantic import BaseModel, Field
 
@@ -133,6 +133,22 @@ class ConstitutionalReviewerAgent(BaseAgent):
         final_draft: str,
         workflow_id: str,
     ) -> ConstitutionalReviewResult:
+        base_result = await self._execute_constitutional_review(
+            final_draft,
+            workflow_id,
+        )
+        return await self._maybe_self_correct(
+            final_draft,
+            workflow_id,
+            base_result,
+        )
+
+    async def _execute_constitutional_review(
+        self,
+        final_draft: str,
+        workflow_id: str,
+        self_heal_hint: Optional[Dict[str, Any]] = None,
+    ) -> ConstitutionalReviewResult:
         self.log_info("Running final constitutional review...")
 
         if not self.config.agent_stacks.enable_constitutional_review:
@@ -143,6 +159,7 @@ class ConstitutionalReviewerAgent(BaseAgent):
                 feedback="Review disabled",
             )
 
+        hint = self_heal_hint or {}
         client = self.get_model_client("constitutional_review_model")
         prompt_template = self.prompt_manager.get_template("constitutional_review")
 
@@ -157,9 +174,18 @@ class ConstitutionalReviewerAgent(BaseAgent):
             client.top_failures,
         )
 
+        extra_instruction = hint.get("extra_instruction")
+        if extra_instruction:
+            prompt += f"\nReviewer Hint: {extra_instruction}"
+
+        temperature = hint.get(
+            "temperature",
+            self.config.model_config.constitutional_review_model.temperature,
+        )
+
         response = await client.chat_completion_async(
             messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.constitutional_review_model.temperature,
+            temperature=temperature,
             response_format="json_object",
         )
 
@@ -183,3 +209,44 @@ class ConstitutionalReviewerAgent(BaseAgent):
             )
 
         return validated_output
+
+    async def _maybe_self_correct(
+        self,
+        final_draft: str,
+        workflow_id: str,
+        base_result: ConstitutionalReviewResult,
+    ) -> ConstitutionalReviewResult:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
+            return base_result
+        if not manager.can_retry(workflow_id, "safety"):
+            return base_result
+        if base_result.review_passed:
+            return base_result
+
+        report = manager.start_retry(
+            workflow_id,
+            "safety",
+            issue="constitutional_violation",
+            action="lower_temperature_and_recheck",
+            metadata={"violations": base_result.violations_found},
+        )
+
+        corrected_result = await self._execute_constitutional_review(
+            final_draft,
+            workflow_id,
+            self_heal_hint={
+                "temperature": max(
+                    0.0,
+                    self.config.model_config.constitutional_review_model.temperature - 0.1,
+                ),
+                "extra_instruction": "Re-evaluate violations and confirm if remediation notes resolve them.",
+            },
+        )
+
+        resolved = corrected_result.review_passed
+        manager.finalize_retry(report, resolved)
+        if resolved:
+            corrected_result.self_correction = {"safety": report.model_dump()}
+            return corrected_result
+        return base_result
