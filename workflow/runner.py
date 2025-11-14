@@ -45,6 +45,8 @@ def _ensure_runtime_paths(config: ConfigV10_7) -> None:
     paths = [
         Path(config.logging_config.log_file).parent,
         Path(config.logging_config.metrics_log_path).parent,
+        Path(getattr(config.storage_config, "durable_root", "runtime_state")),
+        Path(getattr(config.storage_config, "ephemeral_root", "tmp")),
         Path(config.meta_loop_config.feedback_log_path).parent,
         Path(config.meta_loop_config.preference_log_path).parent,
         Path(config.meta_loop_config.proposed_rules_path).parent,
