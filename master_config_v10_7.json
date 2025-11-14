@@ -84,6 +84,33 @@
     "feedback_cache_ttl_seconds": 60,
     "feedback_lookback_entries": 100
   },
+  "arbitration_config": {
+    "enabled": true,
+    "default_mode": "observe_only",
+    "max_revision_loops_per_stage": 1,
+    "stages": {
+      "strategy_post_plan": {
+        "enabled": true,
+        "allow_revision": true
+      },
+      "prompt_rag_join": {
+        "enabled": true,
+        "allow_revision": false
+      },
+      "draft_post_assembly": {
+        "enabled": true,
+        "allow_revision": true
+      },
+      "bullets_post_selection": {
+        "enabled": true,
+        "allow_revision": true
+      },
+      "qa_post_validation": {
+        "enabled": true,
+        "allow_revision": true
+      }
+    }
+  },
   "tracing_config": {
     "langsmith_enabled": false,
     "langsmith_api_key": null
