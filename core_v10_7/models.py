@@ -232,6 +232,21 @@ class ConstitutionalReviewResult(V10Model):
     feedback: str
 
 
+class ArbitrationReport(V10Model):
+    stage: str = Field(..., description="Arbitration stage identifier")
+    decision: str = Field(..., description="Decision: ACCEPT, WARN, or REQUEST_REVISE")
+    reasons: List[str] = Field(default_factory=list, description="Short textual reasons")
+    confidence: float = Field(0.0, ge=0.0, le=1.0, description="Confidence in decision")
+    suggested_route: Optional[str] = Field(
+        default=None,
+        description="Optional suggested route label (e.g., 'REPLAN_STRATEGY').",
+    )
+    metrics_snapshot: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Optional snapshot of relevant metrics or signals.",
+    )
+
+
 __all__ = [
     "BaseToolOutput",
     "DraftStrategyOutput",
@@ -262,4 +277,5 @@ __all__ = [
     "HILReconciliationResult",
     "HILFeedbackRoute",
     "ConstitutionalReviewResult",
+    "ArbitrationReport",
 ]

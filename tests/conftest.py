@@ -42,6 +42,8 @@ class InMemoryRedis:
         self.store[name] = value
     def get(self, name: str) -> str | None:
         return self.store.get(name)
+    def ping(self) -> bool:
+        return True
 
 class FakeCollection:
     def __init__(self) -> None:
@@ -68,9 +70,18 @@ class DummyEmbeddingFunction:
 
 # ---- Core fixtures pulled together like your v10_7 tests ----
 from core_v10_7 import (
-    CacheManager, ConfigV10_7, CostTracker, FeedbackLogReader, ProposedRulesLoader,
-    PromptTemplateManager, ResponseValidator, MetricsCollector, SemanticValidator,
-    ContextBudgetManager, WorkflowContext
+    ArbitrationEngine,
+    CacheManager,
+    ConfigV10_7,
+    CostTracker,
+    FeedbackLogReader,
+    ProposedRulesLoader,
+    PromptTemplateManager,
+    ResponseValidator,
+    MetricsCollector,
+    SemanticValidator,
+    ContextBudgetManager,
+    WorkflowContext,
 )
 
 @pytest.fixture(scope="session")
@@ -99,13 +110,14 @@ def workflow_context(config: ConfigV10_7) -> WorkflowContext:
     response_validator = ResponseValidator()
     metrics = MetricsCollector()
     semantic_validator = SemanticValidator(metrics_collector=metrics)
+    arbitration_engine = ArbitrationEngine(config=config, metrics=metrics)
     ctx = WorkflowContext(
         config=config, redis_client=redis_client, chromadb_client=chroma,
         cache_manager=cache_mgr, cost_tracker=cost_tracker,
         feedback_reader=feedback_reader, rules_loader=rules_loader,
         prompt_manager=prompt_manager, response_validator=response_validator,
         metrics_collector=metrics, semantic_validator=semantic_validator,
-        embedding_function=embedding_fn,
+        embedding_function=embedding_fn, arbitration_engine=arbitration_engine,
     )
     ctx.context_budget_manager = ContextBudgetManager(config=config, model_client_getter=ctx.get_model_client)
     ctx.reset_mcp_clients()
