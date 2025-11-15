@@ -392,6 +392,13 @@ class DraftingGuildCoordinator(BaseAgent):
         task_context: Dict[str, Any],
         workflow_id: str,
     ) -> Dict[str, Any]:
+        workflow_id = workflow_id or ""
+        episodic = getattr(self.context, "episodic_memory", None)
+        if episodic and workflow_id:
+            prior = episodic.get(workflow_id)
+            self.log_debug(
+                f"Episodic prior events: {len(prior.get('events', []))}"
+            )
         pcm = self.context.predictive_cache_manager
         if pcm and pcm.enabled():
             bullets = task_context.get("bullets", [])
@@ -404,7 +411,20 @@ class DraftingGuildCoordinator(BaseAgent):
                 })
             await pcm.run_scheduled()
         base_result, meta = await self._execute_guild(task_context, workflow_id)
-        return await self._maybe_self_correct(task_context, workflow_id, base_result, meta)
+        result = await self._maybe_self_correct(
+            task_context, workflow_id, base_result, meta
+        )
+        if episodic and workflow_id:
+            result_status = result.get("overall_status")
+            episodic.append(
+                workflow_id,
+                {
+                    "stack": "drafting",
+                    "event": "draft_completed",
+                    "status": result_status,
+                },
+            )
+        return result
 
     def _merge_sections(self, *layers: Dict[str, Any]) -> Dict[str, Any]:
         merged: Dict[str, Any] = {}
