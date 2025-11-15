@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from stacks_v10_7.safety import (
+from agent_stacks_v10_8.components.safety import (
     BiasDetectorAgent,
     ConstitutionalReviewerAgent,
     PIISanitizerAgent,
