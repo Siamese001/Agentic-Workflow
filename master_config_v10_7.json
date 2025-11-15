@@ -163,6 +163,11 @@
     "max_company_entries": 500,
     "max_strategy_history": 1000
   },
+  "collaboration_config": {
+    "enabled": false,
+    "max_team_size": 4,
+    "allow_agent_feedback": true
+  },
   "file_paths": {
     "default_job_input": "job_input.json",
     "default_master_resume": "master_resume.json"

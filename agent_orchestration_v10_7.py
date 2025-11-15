@@ -320,6 +320,10 @@ class QAConductorAgent(BaseAgent):
 
     @track_metrics('run_react_qa_conductor')
     async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        collab = getattr(self.context, "collaboration_engine", None)
+        if collab and collab.enabled():
+            team = collab.form_team(self.__class__.__name__)
+            state.setdefault("a2a_team", team)
         autonomy = getattr(self.context, "autonomy_engine", None)
         if autonomy and autonomy.enabled():
             hints = autonomy.decide(workflow_id)
@@ -492,6 +496,10 @@ class MetaLearningLoop(BaseAgent):
     """Placeholder MCP agent for telemetry-aligned meta learning."""
 
     async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        collab = getattr(self.context, "collaboration_engine", None)
+        if collab and collab.enabled():
+            team = collab.form_team(self.__class__.__name__)
+            state.setdefault("a2a_team", team)
         self.log_info("MetaLearningLoop invoked - emitting telemetry only.")
         log_event("MetaLearningLoop", "executed", {"workflow_id": workflow_id})
         return {"meta_learning": {"status": "noop"}}
