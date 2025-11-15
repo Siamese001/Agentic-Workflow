@@ -10,6 +10,7 @@ from draft_execution import DraftingExecutionStack
 from rag_execution import RAGExecutionStack
 from stacks_v10_8.policy_stack import PolicyStack
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack
+from stacks_v10_8.constitutional_engine import ConstitutionalEngine
 
 
 class _Context(SimpleNamespace):
@@ -21,6 +22,7 @@ class _Context(SimpleNamespace):
         super().__init__(config=SimpleNamespace(agent_stacks=agent_stacks))
         self.safety_policy = SafetyPolicyStack(self, debug_mode=False)
         self.policy_stack = PolicyStack(self, debug_mode=False)
+        self.constitutional_engine = ConstitutionalEngine()
 
 
 def _run(coro):
@@ -64,10 +66,12 @@ def test_stack_outputs_attach_policy_decisions() -> None:
     rag_patch = _run(rag_stack.run_async(state, plan_payload))
     assert "policy" in rag_patch
     assert isinstance(rag_patch["policy"].get("allowed"), bool)
+    assert rag_patch["constitutional_review"]["passed"] is True
 
     bullet_plan = {"bullets": {"plan": {"target_sections": [1]}}}
     bullet_patch = _run(bullet_stack.run_async(state, bullet_plan))
     assert bullet_patch["policy"]["allowed"] is True
+    assert "constitutional_review" in bullet_patch
 
     draft_state = {"resume": {"master_resume": {}}, "metadata": {"workflow_id": "wf"}}
     draft_plan_payload = {"draft": {"plan": {"sections": [1]}}}
@@ -76,3 +80,4 @@ def test_stack_outputs_attach_policy_decisions() -> None:
     )
     assert "policy" in draft_patch
     assert draft_patch["policy"]["allowed"] is True
+    assert draft_patch["constitutional_review"]["passed"] is True

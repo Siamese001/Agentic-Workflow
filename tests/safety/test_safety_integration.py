@@ -10,6 +10,7 @@ from orchestration_policy import OrchestrationRoutingPolicy
 from rag_execution import RAGExecutionStack
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack
 from stacks_v10_8.policy_stack import PolicyStack
+from stacks_v10_8.constitutional_engine import ConstitutionalEngine
 
 
 class _MiniContext(SimpleNamespace):
@@ -25,6 +26,7 @@ class _MiniContext(SimpleNamespace):
         super().__init__(config=config)
         self.safety_policy = SafetyPolicyStack(self, debug_mode=False)
         self.policy_stack = PolicyStack(self, debug_mode=False)
+        self.constitutional_engine = ConstitutionalEngine()
 
 
 def _run_stack(stack, *args):
@@ -42,10 +44,12 @@ def test_safety_report_attached_and_routing_uses_new_field() -> None:
     rag_patch = _run_stack(rag_stack, state, plan_payload)
     assert "safety_report" in rag_patch
     assert any(f["category"] == "injection" for f in rag_patch["safety_report"]["findings"])
+    assert rag_patch["constitutional_review"]["passed"] is True
 
     bullet_plan = {"bullets": {"plan": {"target_sections": [1]}}}
     bullet_patch = _run_stack(bullet_stack, state, bullet_plan)
     assert "safety_report" in bullet_patch
+    assert bullet_patch["constitutional_review"]["passed"] is True
 
     draft_patch = _run_stack(
         draft_stack,
@@ -54,6 +58,7 @@ def test_safety_report_attached_and_routing_uses_new_field() -> None:
         {"draft": {"plan": {"sections": ["summary"]}}},
     )
     assert "safety_report" in draft_patch
+    assert draft_patch["constitutional_review"]["passed"] is True
 
     policy = OrchestrationRoutingPolicy(context)
     route = policy.after_prompt_injection({"safety_report": rag_patch["safety_report"]})

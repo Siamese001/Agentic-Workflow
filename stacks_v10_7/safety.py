@@ -2,16 +2,19 @@
 
 import json
 import re
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from pydantic import BaseModel, Field
 
 from core_v10_7 import (
     BaseAgent,
-    ConstitutionalReviewResult,
     track_metrics,
     _format_prompt_with_defaults,
     detect_bias,
+)
+from stacks_v10_8.constitutional_engine import (
+    ConstitutionalReviewResult,
+    ConstitutionalViolation,
 )
 
 
@@ -127,6 +130,11 @@ class PromptInjectionDetectorAgent(BaseAgent):
 class ConstitutionalReviewerAgent(BaseAgent):
     """Performs final constitutional review of the output."""
 
+    class LegacyReviewOutput(BaseModel):
+        review_passed: bool
+        violations_found: List[str]
+        feedback: str
+
     @track_metrics("run_constitutional_review")
     async def run_async(
         self,
@@ -137,11 +145,7 @@ class ConstitutionalReviewerAgent(BaseAgent):
 
         if not self.config.agent_stacks.enable_constitutional_review:
             self.log_warning("Constitutional review is disabled. Passing by default.")
-            return ConstitutionalReviewResult(
-                review_passed=True,
-                violations_found=[],
-                feedback="Review disabled",
-            )
+            return ConstitutionalReviewResult(violations=[], passed=True)
 
         client = self.get_model_client("constitutional_review_model")
         prompt_template = self.prompt_manager.get_template("constitutional_review")
@@ -165,21 +169,43 @@ class ConstitutionalReviewerAgent(BaseAgent):
 
         validated_output, error = self.validator.validate(
             response["content"],
-            ConstitutionalReviewResult,
+            self.LegacyReviewOutput,
         )
         if error:
             self.log_error(
                 f"ConstitutionalReviewer failed validation: {error}. Failing open (passing draft)."
             )
-            return ConstitutionalReviewResult(
-                review_passed=True,
-                violations_found=["VALIDATION_ERROR"],
-                feedback=error,
+            violation = ConstitutionalViolation(
+                rule_id="legacy_validation_error",
+                message=error,
             )
+            return ConstitutionalReviewResult(violations=[violation], passed=True)
 
-        if not validated_output.review_passed:
+        result = self._convert_legacy_output(validated_output)
+
+        if not result.passed:
             self.log_warning(
-                f"CONSTITUTIONAL REVIEW FAILED: {validated_output.violations_found}"
+                f"CONSTITUTIONAL REVIEW FAILED: {[v.message for v in result.violations]}"
             )
 
-        return validated_output
+        return result
+
+    def _convert_legacy_output(
+        self, legacy: "ConstitutionalReviewerAgent.LegacyReviewOutput"
+    ) -> ConstitutionalReviewResult:
+        violations: List[ConstitutionalViolation] = []
+        for idx, message in enumerate(legacy.violations_found):
+            violations.append(
+                ConstitutionalViolation(
+                    rule_id=f"legacy_violation_{idx}",
+                    message=message,
+                )
+            )
+        if legacy.feedback and (not legacy.review_passed or not violations):
+            violations.append(
+                ConstitutionalViolation(
+                    rule_id="legacy_feedback",
+                    message=legacy.feedback,
+                )
+            )
+        return ConstitutionalReviewResult(violations=violations, passed=legacy.review_passed)
