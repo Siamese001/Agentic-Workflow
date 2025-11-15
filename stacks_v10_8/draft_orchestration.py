@@ -25,6 +25,9 @@ class DraftOrchestratorStack(BaseAgent):
         self._bullet_execution = BulletExecutionStack(context, debug_mode)
         self._draft_planning = DraftPlanningStack(context, debug_mode)
         self._draft_execution = DraftingExecutionStack(context, debug_mode)
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
 
     async def run_async(
         self,
