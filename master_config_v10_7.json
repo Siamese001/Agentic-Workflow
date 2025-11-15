@@ -203,6 +203,9 @@
     "reranking_top_k": 5,
     "rag_feedback_aware": true
   },
+  "hil_config": {
+    "max_reentry_loops": 2
+  },
   "model_config": {
     "description": "Models for smarter pruning and constitutional review.",
     "strategy_model": {
