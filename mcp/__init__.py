@@ -7,7 +7,7 @@ import json
 import logging
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Tuple
 
 logger = logging.getLogger("mcp")
 
@@ -17,13 +17,14 @@ _SCHEMA_CACHE: Dict[str, Any] = {}
 _AGENT_CACHE: Dict[str, Any] = {}
 _CONTEXT_STATE: Dict[str, Any] = {}
 
-_AGENT_SPECS: Dict[str, tuple[str, str]] = {
-    "SafetyGuardStack": ("stacks_v10_7", "PromptInjectionDetectorAgent"),
-    "StrategyStack": ("stacks_v10_7", "ToTStrategistAgent"),
-    "RAGStack": ("stacks_v10_7", "RAG_SearchAgent"),
-    "DraftingStack": ("stacks_v10_7", "DraftingGuildCoordinator"),
-    "QAStack": ("agent_orchestration_v10_7", "QAConductorAgent"),
-    "HILStack": ("stacks_v10_7", "HILFeedbackRouterAgent"),
+_AGENT_SPECS: Dict[str, Tuple[str, str]] = {
+    "SafetyGuardStack": ("agent_stacks_v10_8", "SafetyStackV10_8"),
+    "StrategyStack": ("agent_stacks_v10_8", "StrategyStackV10_8"),
+    "RAGStack": ("agent_stacks_v10_8", "RAGExecutionStack"),
+    "DraftingStack": ("agent_stacks_v10_8", "DraftingExecutionStack"),
+    "QAStack": ("agent_stacks_v10_8", "QAValidationStack"),
+    "HILStack": ("agent_stacks_v10_8", "HILStackV10_8"),
+    "RobustnessStack": ("agent_stacks_v10_8", "RobustnessStack"),
     "MetaLearningLoop": ("agent_orchestration_v10_7", "MetaLearningLoop"),
 }
 
