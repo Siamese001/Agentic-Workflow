@@ -391,8 +391,20 @@ class DraftingGuildCoordinator(BaseAgent):
         self,
         task_context: Dict[str, Any],
         workflow_id: str,
+        state: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         workflow_id = workflow_id or ""
+        state_ref = state if isinstance(state, dict) else None
+        if state_ref is None and isinstance(task_context, dict):
+            state_ref = task_context
+
+        autonomy = getattr(self.context, "autonomy_engine", None)
+        if autonomy and autonomy.enabled():
+            hints = autonomy.decide(workflow_id)
+            self.log_debug(f"Autonomy hints: {hints}")
+            if state_ref is not None:
+                state_ref.setdefault("autonomy_hints", {}).update(hints)
+
         episodic = getattr(self.context, "episodic_memory", None)
         if episodic and workflow_id:
             prior = episodic.get(workflow_id)

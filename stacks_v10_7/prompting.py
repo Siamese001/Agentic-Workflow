@@ -22,7 +22,16 @@ class PromptEngineerAgent(BaseAgent):
         strategy: StrategyPlan,
         complexity: str,
         workflow_id: str,
+        state: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
+        state_ref = state if isinstance(state, dict) else None
+        autonomy = getattr(self.context, "autonomy_engine", None)
+        if autonomy and autonomy.enabled():
+            hints = autonomy.decide(workflow_id)
+            self.log_debug(f"Autonomy hints: {hints}")
+            if state_ref is not None:
+                state_ref.setdefault("autonomy_hints", {}).update(hints)
+
         pcm = self.context.predictive_cache_manager
         if pcm and pcm.enabled():
             pcm.schedule({
