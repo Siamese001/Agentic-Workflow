@@ -152,3 +152,31 @@ __all__ = sorted(
         + ["AsyncTimeoutError"]
     )
 )
+
+
+from agent_stacks_v10_8 import (  # noqa: E402
+    BulletExecutionStack as BulletExecutionStackV10_8,
+    DraftingExecutionStack as DraftingExecutionStackV10_8,
+    HILStackV10_8,
+    QAValidationStack as QAValidationStackV10_8,
+    RAGExecutionStack as RAGExecutionStackV10_8,
+    SafetyStackV10_8,
+    StateAdapterStack,
+    StrategyStackV10_8,
+)
+
+__all__ = sorted(
+    set(
+        __all__
+        + [
+            "BulletExecutionStackV10_8",
+            "DraftingExecutionStackV10_8",
+            "HILStackV10_8",
+            "QAValidationStackV10_8",
+            "RAGExecutionStackV10_8",
+            "SafetyStackV10_8",
+            "StateAdapterStack",
+            "StrategyStackV10_8",
+        ]
+    )
+)
