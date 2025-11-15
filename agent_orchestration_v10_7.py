@@ -80,15 +80,21 @@ from agent_stacks_v10_7 import (
     PromptInjectionDetectorAgent,
     QueryComplexityClassifier,
     ToTStrategistAgent,
-    PromptEngineerAgent,
-    AsyncBulletGeneratorAgent,
-    AsyncBulletCritiqueAgent,
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
     ConstitutionalReviewerAgent, # v10.7 (Fix #30)
     DraftingGuildCoordinator
 )
-from agent_stacks_v10_8 import RAGExecutionStack
+from agent_stacks_v10_8 import (
+    BulletExecutionStack,
+    DraftingExecutionStack,
+    HILStackV10_8,
+    PromptBuilderStack,
+    QAValidationStack,
+    RAGExecutionStack,
+    StateAdapterStack,
+    StrategyStackV10_8,
+)
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -611,23 +617,25 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
     """Node 2: ToT strategy"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    strategy_result = await route_to_stack(
-        "StrategyStack",
-        context,
-        {
-            "job_title": state['job']['job_title'],
-            "company": state['job']['company'],
-            "job_description": state['job']['raw_jd']
-        },
+    strategy_stack = StrategyStackV10_8(context)
+    job_context = {
+        "job_title": state['job']['job_title'],
+        "company": state['job']['company'],
+        "job_description": state['job']['raw_jd']
+    }
+    strategy_result = await strategy_stack.plan_strategy_async(
+        job_context,
         workflow_id,
         state,
     )
     log_event("StrategyStack", "completed", {"workflow_id": workflow_id})
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, {"strategy": strategy_result})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"strategy": strategy_result}
+    return state
 
 
 @wrap_mcp
@@ -684,24 +692,26 @@ def prepare_parallel_run(state: dict) -> dict:
 async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 4: Generate dynamic prompts"""
     context = workflow_context
-    prompt_agent = PromptEngineerAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     strategy_plan = state['strategy']['strategy_plan']
     if isinstance(strategy_plan, dict):
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
 
     complexity = state.get('metadata', {}).get('complexity', 'unknown')
-    prompts_result = await prompt_agent.run_async(
+    prompt_builder = PromptBuilderStack(context)
+    prompts_patch = await prompt_builder.run_async(
         strategy_plan,
         complexity,
         workflow_id,
         state,
     )
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, prompts_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"prompts": {"prompts": prompts_result.get("prompts").model_dump()}}
+    return state
 
 @wrap_mcp
 @exponential_backoff_retry()
@@ -711,12 +721,8 @@ async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     stack = RAGExecutionStack(context)
     patch = await stack.run_async(state, workflow_id)
-
-    resume = state.setdefault('resume', {})
-    resume['experience_bullets'] = patch.get('resume', {}).get('experience_bullets', [])
-    if 'rag' in patch:
-        state['rag'] = patch['rag']
-
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, patch)
     log_event("RAGStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
@@ -749,38 +755,49 @@ async def run_arbitration_after_join(state: dict, workflow_context: WorkflowCont
 async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 6: Generate bullets (4-step)"""
     context = workflow_context
-    bullet_gen = AsyncBulletGeneratorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     prompt = state['prompts']['prompts'].get('bullet_generation_prompt', "Generate bullets")
     strategy = state['strategy']['strategy_plan']
     if isinstance(strategy, dict):
         strategy = StrategyPlan.model_validate(strategy)
-    
-    all_bullets = []
-    for exp in state['resume']['experience_bullets'][:3]:
-        bullets = await bullet_gen.run_async(prompt, exp, strategy, workflow_id)
-        all_bullets.extend([{"text": b, "experience": exp} for b in bullets])
+
+    bullet_stack = BulletExecutionStack(context)
+    experiences = state['resume']['experience_bullets'][:3]
+    bullet_patch = await bullet_stack.generate_async(
+        prompt,
+        experiences,
+        strategy,
+        workflow_id,
+    )
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, bullet_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"bullets": {"generated_bullets": all_bullets}}
+    return state
 
 @wrap_mcp
 @exponential_backoff_retry()
 async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 7: Critique bullets"""
     context = workflow_context
-    critique_agent = AsyncBulletCritiqueAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
     bullets = state['bullets']['generated_bullets']
-    critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
+    bullet_stack = BulletExecutionStack(context)
+    critique_patch = await bullet_stack.critique_async(
+        bullets,
+        critique_prompt,
+        workflow_id,
+    )
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, critique_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"bullets": {"critiqued_bullets": critiques}}
+    return state
 
 
 @wrap_mcp
@@ -816,19 +833,20 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
         "strategy": strategy_plan,
         "resume": state['resume']['master_resume']
     }
-    draft = await route_to_stack(
-        "DraftingStack",
-        context,
+    drafting_stack = DraftingExecutionStack(context)
+    draft_patch = await drafting_stack.run_async(
         task_context,
         workflow_id,
         state,
     )
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, draft_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"draft": {"sections": draft.get("final_output", {})}}
+    return state
 
 
 @wrap_mcp
@@ -852,16 +870,16 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     if isinstance(state['strategy']['strategy_plan'], dict):
         state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
 
-    validation = await route_to_stack("QAStack", context, state, workflow_id)
+    qa_stack = QAValidationStack(context)
+    qa_patch = await qa_stack.run_async(state, workflow_id)
     log_event("QAStack", "completed", {"workflow_id": workflow_id})
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, qa_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {
-        "qa": {"validation_results": validation, "qa_passed": validation.get("qa_passed", False)},
-        "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}}
-    }
+    return state
 
 
 @wrap_mcp
@@ -917,22 +935,26 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     human_feedback = state.get('hil', {}).get('raw_feedback') or "Default to drafting"
-    route = await route_to_stack("HILStack", context, human_feedback, workflow_id, state)
+    hil_stack = HILStackV10_8(context)
+    route = await hil_stack.route_feedback_async(human_feedback, workflow_id)
     log_event("HILStack", "completed", {"workflow_id": workflow_id, "next_step": route.get("next_step")})
-    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
-        profile = workflow_context.tuning_profile
-        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
-        workflow_context.tuning_profile = new_profile
-    return {
+    hil_patch = {
         "hil": {
             "next_step": route.get("next_step"),
             "payload": route.get("payload"),
             "intent_clusters": route.get("intent_clusters", []),
             "delegated_specialists": route.get("delegated_specialists", []),
             "persona_consensus": route.get("persona_consensus"),
-            "reconciliation": route.get("reconciliation")
+            "reconciliation": route.get("reconciliation"),
         }
     }
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, hil_patch)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
+    return state
 
 def human_in_the_loop_node(state: dict) -> dict:
     """Node 10: HIL Pause"""
