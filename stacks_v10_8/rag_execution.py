@@ -72,6 +72,14 @@ class RAGExecutionStack(BaseAgent):
             "rag": {"plan": plan.model_dump(), "metadata": metadata},
         }
 
+    async def run_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Compatibility helper that mirrors the previous L3 node behavior."""
+
+        workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
+        return await self.run_async(state, workflow_id)
+
     def _plan_from_state(self, state: Dict[str, Any]) -> RAGPlan:
         plan_payload = state.get("rag", {}).get("plan")
         if plan_payload is None:
