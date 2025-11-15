@@ -765,6 +765,36 @@ class A2AMessage:
 class A2AContext:
     messages: List[A2AMessage] = field(default_factory=list)
 
+    def __post_init__(self) -> None:
+        normalized: List[A2AMessage] = []
+        for raw in self.messages:
+            if isinstance(raw, A2AMessage):
+                normalized.append(raw)
+            elif isinstance(raw, dict):
+                try:
+                    normalized.append(A2AMessage(**raw))
+                except TypeError:
+                    continue
+        self.messages = normalized
+
+    def append(
+        self,
+        *,
+        sender: str,
+        message_type: str,
+        payload: Dict[str, Any],
+        recipient: str = "ALL",
+        timestamp: Optional[str] = None,
+    ) -> None:
+        message = A2AMessage(
+            sender=sender,
+            recipient=recipient,
+            message_type=message_type,
+            payload=dict(payload or {}),
+            timestamp=timestamp or datetime.now().isoformat(),
+        )
+        self.messages.append(message)
+
 
 @dataclass
 class MainGraphState:
