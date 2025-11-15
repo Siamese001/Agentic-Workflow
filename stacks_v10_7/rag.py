@@ -6,7 +6,10 @@ from typing import Any, Dict, List
 from types import SimpleNamespace
 
 from core_v10_7.agents import BaseAgent
-from agent_stacks_v10_8 import RAGExecutionStack as RAGExecutionStackV10_8
+def _build_execution_stack(context: Any, debug_mode: bool = False):
+    from agent_stacks_v10_8 import RAGExecutionStack as RAGExecutionStackV10_8
+
+    return RAGExecutionStackV10_8(context, debug_mode)
 
 
 class RAG_SearchAgent(BaseAgent):
@@ -14,14 +17,14 @@ class RAG_SearchAgent(BaseAgent):
 
     def __init__(self, context: Any, debug_mode: bool = False):
         super().__init__(context, debug_mode)
-        self._stack = RAGExecutionStackV10_8(context, debug_mode)
+        self._stack = _build_execution_stack(context, debug_mode)
         self._stack_initialized_via_init = True
 
     async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
         if not hasattr(self, "_stack"):
             self._ensure_context_dependencies()
             debug_mode = getattr(self, "debug_mode", False)
-            self._stack = RAGExecutionStackV10_8(self.context, debug_mode)
+            self._stack = _build_execution_stack(self.context, debug_mode)
         workflow_id = state.get("metadata", {}).get("workflow_id", "")
         await self._maybe_precompute_embeddings(state)
         patch = await self._stack.run_async(state, workflow_id)
