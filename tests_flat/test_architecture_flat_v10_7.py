@@ -16,8 +16,8 @@ import pytest
 # Paths
 # ----------------------------------------------------------------------
 ROOT = Path(__file__).resolve().parents[2]
-AGENTIC_ROOT = ROOT / "agentic_workflow"
-STACKS_DIR = AGENTIC_ROOT / "stacks_v10_7"
+AGENTIC_ROOT = ROOT
+STACKS_DIR = AGENTIC_ROOT / "agent_stacks_v10_8" / "components"
 TOOLS_DIR = AGENTIC_ROOT / "tools_v10_7"
 
 
@@ -176,7 +176,7 @@ def test_no_circular_imports():
         imports = _extract_imports(tree)
         graph[f] = []
         for imp in imports:
-            # Map import to a file if it lives under stacks_v10_7
+            # Map import to a file if it lives under the stack components package
             for candidate in files:
                 if candidate.stem == imp or candidate.stem == imp.split(".")[-1]:
                     graph[f].append(candidate)
