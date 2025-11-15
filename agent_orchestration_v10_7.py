@@ -87,6 +87,7 @@ from agent_stacks_v10_7 import (
     DraftingGuildCoordinator
 )
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack, SafetyReport
+from stacks_v10_8.policy_stack import PolicyStack
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -207,6 +208,16 @@ def _get_safety_policy(workflow_context: WorkflowContext) -> SafetyPolicyStack:
     policy = SafetyPolicyStack(workflow_context, debug_mode)
     workflow_context.safety_policy = policy
     return policy
+
+
+def _get_policy_stack(workflow_context: WorkflowContext) -> PolicyStack:
+    stack = getattr(workflow_context, "policy_stack", None)
+    if isinstance(stack, PolicyStack):
+        return stack
+    debug_mode = getattr(getattr(workflow_context, "config", object()), "debug_mode", False)
+    stack = PolicyStack(workflow_context, debug_mode)
+    workflow_context.policy_stack = stack
+    return stack
 
 
 def _merge_arbitration_payload(
@@ -604,7 +615,13 @@ async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> di
     context.complexity = state.get('metadata', {}).get('complexity', 'unknown')
     pii_agent = PIISanitizerAgent(context)
     sanitized = await asyncio.to_thread(pii_agent.run, state['resume']['master_resume'])
-    return {"resume": {"sanitized_resume": sanitized}}
+    policy_stack = _get_policy_stack(context)
+    user_query = state.get('job', {}).get('raw_jd', '')
+    decision = policy_stack.guard_user_input(user_query)
+    return {
+        "resume": {"sanitized_resume": sanitized},
+        "policy": decision.model_dump(),
+    }
 
 @wrap_mcp
 @exponential_backoff_retry()
@@ -657,7 +674,9 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
         workflow_id
     )
     log_event("StrategyStack", "completed", {"workflow_id": workflow_id})
-    return {"strategy": strategy_result}
+    policy_stack = _get_policy_stack(context)
+    decision = policy_stack.guard_plan(strategy_result)
+    return {"strategy": strategy_result, "policy": decision.model_dump()}
 
 @wrap_mcp
 @exponential_backoff_retry()
@@ -709,6 +728,9 @@ async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     context = workflow_context
     state_patch = await route_to_stack("RAGStack", context, state)
     log_event("RAGStack", "completed", {"workflow_id": state.get('metadata', {}).get('workflow_id', '')})
+    policy_stack = _get_policy_stack(context)
+    decision = policy_stack.guard_output(state_patch)
+    state_patch["policy"] = decision.model_dump()
     return state_patch
 
 # v10.7 (Fix #5): Dummy node for parallel join
@@ -775,7 +797,11 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     }
     draft = await route_to_stack("DraftingStack", context, task_context, workflow_id)
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
-    return {"draft": {"sections": draft.get("final_output", {})}}
+    policy_stack = _get_policy_stack(context)
+    patch = {"draft": {"sections": draft.get("final_output", {})}}
+    decision = policy_stack.guard_output(patch)
+    patch["policy"] = decision.model_dump()
+    return patch
 
 async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9: Final QA with ReAct Conductor"""
@@ -795,6 +821,8 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     arbitration_payload = _prepare_qa_arbitration_payload(validation)
     report = arbitration_engine.run_check("qa_post_validation", arbitration_payload)
     payload["arbitration"] = _merge_arbitration_payload(state, "qa_post_validation", report)
+    policy_stack = _get_policy_stack(context)
+    payload["policy"] = policy_stack.guard_output(payload).model_dump()
     node_result = node_success("run_qa_validation", payload)
     return {NODE_RESULT_KEY: node_result, **payload}
 
@@ -1055,6 +1083,7 @@ def get_graph_app(
 
     debug_mode = getattr(workflow_context.config, "debug_mode", False)
     workflow_context.safety_policy = SafetyPolicyStack(workflow_context, debug_mode)
+    workflow_context.policy_stack = PolicyStack(workflow_context, debug_mode)
 
     if enable_mcp is not None:
         workflow_context.wrap_mcp_nodes = enable_mcp
