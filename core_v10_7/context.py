@@ -48,6 +48,7 @@ from .services import (
     SemanticValidator,
     PrecomputeEngine,
     TuningProfile,
+    WorldModelStore,
 )
 
 logger = logging.getLogger("core_v10_7")
@@ -205,6 +206,7 @@ class WorkflowContext:
         tuning_profile: TuningProfile,
         policy_auto_tuner: PolicyAutoTuner,
         self_correction_manager: Optional[SelfCorrectionManager] = None,
+        world_model_store: Optional[WorldModelStore] = None,
     ):
 
         self.config = config
@@ -240,6 +242,7 @@ class WorkflowContext:
         self.self_correction_manager = self_correction_manager
         self.tuning_profile = tuning_profile
         self.policy_auto_tuner = policy_auto_tuner
+        self.world_model_store = world_model_store
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
@@ -495,6 +498,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
 
     # 2. Initialize Core Services (All 9+ services)
     self_correction_manager = SelfCorrectionManager(config=config)
+    world_model_store = WorldModelStore(config=config, redis_client=redis_client)
     feedback_reader = FeedbackLogReader(
         config.meta_loop_config.feedback_log_path,
         self_correction_manager=self_correction_manager,
@@ -542,6 +546,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         self_correction_manager=self_correction_manager,
         tuning_profile=tuning_profile,
         policy_auto_tuner=policy_auto_tuner,
+        world_model_store=world_model_store,
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
