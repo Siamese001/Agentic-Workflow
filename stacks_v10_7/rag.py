@@ -136,6 +136,10 @@ class RAG_SearchAgent(BaseAgent):
             hints = autonomy.decide(workflow_id)
             self.log_debug(f"Autonomy hints: {hints}")
             state.setdefault("autonomy_hints", {}).update(hints)
+        adv = getattr(self.context, "advanced_meta_learner", None)
+        if adv and adv.enabled():
+            hints = adv.analyze(workflow_id)
+            state.setdefault("meta_hints", {}).update(hints)
         episodic = getattr(self.context, "episodic_memory", None)
         if episodic and workflow_id:
             prior = episodic.get(workflow_id)
