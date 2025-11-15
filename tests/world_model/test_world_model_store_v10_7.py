@@ -5,8 +5,11 @@ import pytest
 
 from core_v10_7.models import StrategyPlan
 from core_v10_7.services import WorldModelStore
-from stacks_v10_7.strategy import QueryComplexityClassifier, ToTStrategistAgent
-from stacks_v10_7.rag import RAG_SearchAgent
+from agent_stacks_v10_8.components.strategy import (
+    QueryComplexityClassifier,
+    ToTStrategistAgent,
+)
+from agent_stacks_v10_8.components.rag import RAG_SearchAgent
 
 
 class _DummyRedis:
@@ -182,7 +185,10 @@ async def test_tot_strategist_records_world_model_outcomes(monkeypatch):
 
     agent.get_model_client = lambda *_: _StubLLMClient({"best_branch_id": "branch_0", "reason": "clear"})
     monkeypatch.setattr(ToTStrategistAgent, "_generate_branches", fake_generate_branches)
-    monkeypatch.setattr("stacks_v10_7.strategy._format_prompt_with_defaults", fake_format_prompt)
+    monkeypatch.setattr(
+        "agent_stacks_v10_8.components.strategy._format_prompt_with_defaults",
+        fake_format_prompt,
+    )
     agent.log_feedback = lambda *_, **__: None
 
     result = await agent.run_async({"job_description": ""}, "wf-1")

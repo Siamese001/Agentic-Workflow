@@ -4,9 +4,9 @@ from types import MethodType, SimpleNamespace
 import pytest
 
 from core_v10_7.services import PolicyAutoTuner, PredictiveCacheManager, TuningProfile
-from stacks_v10_7.drafting import DraftingGuildCoordinator
-from stacks_v10_7.prompting import PromptEngineerAgent
-from stacks_v10_7.rag import RAG_SearchAgent
+from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
+from agent_stacks_v10_8.components.prompting import PromptEngineerAgent
+from agent_stacks_v10_8.components.rag import RAG_SearchAgent
 
 
 class DummyMetricsCollector:
