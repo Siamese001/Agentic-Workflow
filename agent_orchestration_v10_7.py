@@ -55,6 +55,7 @@ from core_v10_7_services import (
     RobustnessStack,
     SelfCorrectionManager,
 )
+from orchestration_policy import OrchestrationRoutingPolicy
 from mcp import get_agent
 from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
@@ -866,10 +867,16 @@ async def run_reconcile_specialists(state: dict, workflow_context: WorkflowConte
 
 # --- CONDITIONAL EDGES (v10.7: Fix #30) ---
 
-def check_prompt_injection(state: dict) -> str:
+def check_prompt_injection(
+    state: dict,
+    *,
+    routing_policy: OrchestrationRoutingPolicy | None = None,
+) -> str:
     """Node 0.5 conditional"""
+    if routing_policy is not None:
+        return routing_policy.after_prompt_injection(state)
     if state.get("safety", {}).get("injection_detected", False):
-        logger.error(f"!!! PROMPT INJECTION DETECTED. Halting workflow. !!!")
+        logger.error("!!! PROMPT INJECTION DETECTED. Halting workflow. !!!")
         return "injection_detected"
     return "injection_safe"
 
@@ -880,8 +887,19 @@ def check_ambiguity(state: dict) -> str:
         return "pause_for_human"
     return "continue_workflow"
 
-def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
+def check_bullets_passed(
+    state: dict,
+    workflow_context: WorkflowContext | None = None,
+    *,
+    routing_policy: OrchestrationRoutingPolicy | None = None,
+) -> str:
     """Node 7 conditional: Check bullet quality and retries"""
+    if routing_policy is not None:
+        return routing_policy.after_bullet_critique(state)
+
+    if workflow_context is None:
+        return "global_replanner"
+
     result = _extract_node_result(state, "run_critique_bullets")
     status = _result_status(result)
     payload = result.get("payload") if result else None
@@ -904,7 +922,6 @@ def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     if route and route != "ACCEPT":
         return "global_replanner"
 
-    # TODO: Remove fallback logic once all stacks emit arbitration data.
     bullet_state = {}
     if isinstance(payload, dict) and isinstance(payload.get("bullets"), dict):
         bullet_state = payload.get("bullets", {})
@@ -922,8 +939,19 @@ def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
         return "retry_bullets"
     return "global_replanner"
     
-def check_qa_passed(state: dict, workflow_context: WorkflowContext) -> str:
+def check_qa_passed(
+    state: dict,
+    workflow_context: WorkflowContext | None = None,
+    *,
+    routing_policy: OrchestrationRoutingPolicy | None = None,
+) -> str:
     """Node 9 conditional: Check QA and retries (v10.7: Rerouted)"""
+    if routing_policy is not None:
+        return routing_policy.after_qa_validation(state)
+
+    if workflow_context is None:
+        return "global_replanner"
+
     result = _extract_node_result(state, "run_qa_validation")
     status = _result_status(result)
     payload = result.get("payload") if result else None
@@ -956,7 +984,6 @@ def check_qa_passed(state: dict, workflow_context: WorkflowContext) -> str:
     if route:
         return "global_replanner"
 
-    # TODO: Remove fallback logic once all stacks emit arbitration data.
     qa_data = None
     if isinstance(payload, dict) and isinstance(payload.get("qa"), dict):
         qa_data = payload.get("qa")
@@ -965,7 +992,7 @@ def check_qa_passed(state: dict, workflow_context: WorkflowContext) -> str:
 
     if qa_data.get('qa_passed', False):
         robustness.reset("qa_validation")
-        return "qa_passed" # Route to constitutional review
+        return "qa_passed"
 
     if robustness.should_retry("qa_validation", "fallback_qa_failed"):
         return "retry_drafting"
@@ -1012,6 +1039,11 @@ def get_graph_app(
             workflow_context.reset_mcp_clients()
 
     workflow = StateGraph(dict)
+    routing_policy = OrchestrationRoutingPolicy(
+        workflow_context,
+        debug_mode=getattr(workflow_context.config, "debug_mode", False),
+        robustness=_get_robustness_stack(workflow_context),
+    )
 
     timeout_seconds = (
         workflow_context.config.performance_config.workflow_node_timeout_seconds
@@ -1046,7 +1078,8 @@ def get_graph_app(
     workflow.add_edge("run_sanitize_pii", "run_detect_prompt_injection") # 0 -> 0.5
     
     workflow.add_conditional_edges(
-        "run_detect_prompt_injection", check_prompt_injection,
+        "run_detect_prompt_injection",
+        partial(check_prompt_injection, routing_policy=routing_policy),
         {"injection_detected": END, "injection_safe": "run_classify_complexity"}
     ) # 0.5 -> 1 or END
     
@@ -1069,7 +1102,12 @@ def get_graph_app(
     workflow.add_edge("run_generate_bullets", "run_critique_bullets") # 6 -> 7
     
     workflow.add_conditional_edges(
-        "run_critique_bullets", partial(check_bullets_passed, workflow_context=workflow_context),
+        "run_critique_bullets",
+        partial(
+            check_bullets_passed,
+            workflow_context=workflow_context,
+            routing_policy=routing_policy,
+        ),
         {"bullets_passed": "run_drafting", "retry_bullets": "run_generate_bullets", "global_replanner": END}
     ) # 7 -> 8 or 6 or END
     
@@ -1077,7 +1115,12 @@ def get_graph_app(
     
     # v10.7 (Fix #30): Reroute for constitutional review
     workflow.add_conditional_edges(
-        "run_qa_validation", partial(check_qa_passed, workflow_context=workflow_context),
+        "run_qa_validation",
+        partial(
+            check_qa_passed,
+            workflow_context=workflow_context,
+            routing_policy=routing_policy,
+        ),
         {
             "qa_passed": "run_constitutional_review", # 9 -> 9.5
             "retry_drafting": "run_drafting", # 9 -> 8
