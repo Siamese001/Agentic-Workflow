@@ -46,6 +46,47 @@ else:  # pragma: no cover - fallback aliases for runtime
 logger = logging.getLogger("core_v10_7")
 
 
+class EpisodicMemory:
+    """v10.7: Redis-backed per-workflow episodic memory."""
+
+    def __init__(self, config: ConfigV10_7, redis_client: "RedisType"):
+        self.config = config
+        self.redis = redis_client
+        self.logger = logging.getLogger(f"{__name__}.EpisodicMemory")
+
+    def _key(self, workflow_id: str) -> str:
+        return f"episodic_v10_7:{workflow_id or 'unknown'}"
+
+    def append(self, workflow_id: str, event: Dict[str, Any]) -> None:
+        if not workflow_id:
+            return
+        try:
+            existing_raw = self.redis.get(self._key(workflow_id))
+            existing = json.loads(existing_raw) if existing_raw else {"events": []}
+            events = existing.get("events", [])
+            events.append(event)
+            if len(events) > 200:
+                events = events[-200:]
+            existing["events"] = events
+            self.redis.setex(
+                self._key(workflow_id),
+                7 * 24 * 3600,
+                json.dumps(existing),
+            )
+        except Exception as exc:
+            self.logger.warning("EpisodicMemory append failed: %s", exc)
+
+    def get(self, workflow_id: str) -> Dict[str, Any]:
+        if not workflow_id:
+            return {"events": []}
+        try:
+            existing_raw = self.redis.get(self._key(workflow_id))
+            return json.loads(existing_raw) if existing_raw else {"events": []}
+        except Exception as exc:
+            self.logger.warning("EpisodicMemory get failed: %s", exc)
+            return {"events": []}
+
+
 class WorldModelStore:
     """
     v10.7: Persistent store for global world-model state.
