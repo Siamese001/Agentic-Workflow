@@ -54,6 +54,25 @@ class HILStackV10_8:
 
         return await self._router.run_async(feedback, workflow_id, state_snapshot)
 
+    async def route_from_state_async(
+        self, state: Dict[str, Any], workflow_id: str
+    ) -> Dict[str, Any]:
+        """Read the HIL feedback payload and emit a normalized patch."""
+
+        hil_bucket = state.get("hil", {}) if isinstance(state, dict) else {}
+        human_feedback = hil_bucket.get("raw_feedback") or "Default to drafting"
+        route = await self.route_feedback_async(human_feedback, workflow_id, state)
+        return {
+            "hil": {
+                "next_step": route.get("next_step"),
+                "payload": route.get("payload"),
+                "intent_clusters": route.get("intent_clusters", []),
+                "delegated_specialists": route.get("delegated_specialists", []),
+                "persona_consensus": route.get("persona_consensus"),
+                "reconciliation": route.get("reconciliation"),
+            }
+        }
+
     async def reconcile_feedback_async(
         self,
         draft_sections: Dict[str, Any],
@@ -66,6 +85,33 @@ class HILStackV10_8:
         return await self._reconciliation_agent.run_async(
             draft_sections, specialist_feedback, persona_consensus, workflow_id
         )
+
+    async def reconcile_from_state_async(
+        self, state: Dict[str, Any], workflow_id: str
+    ) -> Dict[str, Any]:
+        """Assemble reconciliation inputs from the shared state tree."""
+
+        hil_bucket = state.get("hil", {}) if isinstance(state, dict) else {}
+        specialist_feedback = list(hil_bucket.get("specialist_feedback", []))
+        persona_payload = hil_bucket.get("persona_consensus")
+        persona_consensus: Optional[PersonaConsensus] = None
+        if isinstance(persona_payload, PersonaConsensus):
+            persona_consensus = persona_payload
+        elif persona_payload:
+            try:
+                persona_consensus = PersonaConsensus.model_validate(persona_payload)
+            except Exception:
+                persona_consensus = None
+
+        draft_sections = state.get("draft", {}).get("sections", {})
+        result = await self.reconcile_feedback_async(
+            draft_sections,
+            specialist_feedback,
+            persona_consensus,
+            workflow_id,
+        )
+        payload = result.model_dump() if hasattr(result, "model_dump") else result
+        return {"hil": {"reconciliation": payload}}
 
     async def convene_virtual_council_async(
         self, human_feedback: str, intent_clusters: List[Any], workflow_id: str
