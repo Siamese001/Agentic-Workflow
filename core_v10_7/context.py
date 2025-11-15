@@ -807,6 +807,9 @@ class MainGraphState:
     bullets: BulletContext = field(default_factory=BulletContext)
     draft: DraftContext = field(default_factory=DraftContext)
     qa: QAContext = field(default_factory=QAContext)
+    safety_report: Optional[Dict[str, Any]] = None
+    policy_decision: Optional[Dict[str, Any]] = None
+    constitutional_review: Optional[Dict[str, Any]] = None
     artifacts: ArtifactContext = field(default_factory=ArtifactContext)
     metadata: MetadataContext = field(default_factory=MetadataContext)
     safety: SafetyContext = field(default_factory=SafetyContext)
@@ -856,6 +859,10 @@ class MainGraphState:
             if qa_review_data and isinstance(qa_review_data, dict)
             else None,
         )
+
+        state.safety_report = data.get("safety_report")
+        state.policy_decision = data.get("policy_decision")
+        state.constitutional_review = data.get("constitutional_review")
 
         # Deserialize Strategy
         strategy_data = data.get("strategy", {})
