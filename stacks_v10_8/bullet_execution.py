@@ -90,7 +90,22 @@ class BulletExecutionStack(BaseAgent):
             workflow_id or "",
         )
         bullets = result.get("bullets", [])
-        return {"bullets": {"generated_bullets": bullets}}
+        patch = {"bullets": {"generated_bullets": bullets}}
+        safety_report = result.get("safety_report") or {}
+        policy_decision = result.get("policy_decision") or {}
+        constitutional_review = result.get("constitutional_review") or {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(result.get("safety_report") or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(result.get("policy_decision") or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(result.get("constitutional_review") or {})}
+            )()
+        patch["safety_report"] = safety_report.dict()
+        patch["policy_decision"] = policy_decision.dict()
+        patch["constitutional_review"] = constitutional_review.dict()
+        return patch
 
     async def critique_async(
         self,
@@ -105,7 +120,22 @@ class BulletExecutionStack(BaseAgent):
             critique_prompt,
             workflow_id or "",
         )
-        return {"bullets": {"critiqued_bullets": critiqued}}
+        patch = {"bullets": {"critiqued_bullets": critiqued}}
+        safety_report = critiqued.get("safety_report") if isinstance(critiqued, dict) else {}
+        policy_decision = critiqued.get("policy_decision") if isinstance(critiqued, dict) else {}
+        constitutional_review = critiqued.get("constitutional_review") if isinstance(critiqued, dict) else {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(safety_report or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(policy_decision or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(constitutional_review or {})}
+            )()
+        patch["safety_report"] = safety_report.dict()
+        patch["policy_decision"] = policy_decision.dict()
+        patch["constitutional_review"] = constitutional_review.dict()
+        return patch
 
     async def run_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
@@ -117,13 +147,28 @@ class BulletExecutionStack(BaseAgent):
         resume_section = state.get("resume", {}).get("master_resume", {})
         enriched = await self.coordinator.run_async(raw_bullets, resume_section, workflow_id)
 
-        return {
+        patch = {
             "bullets": {
                 "plan": plan.model_dump(),
                 "generated_bullets": enriched,
                 "instructions": self._plan_instructions(plan),
             }
         }
+        safety_report = state.get("safety_report") or {}
+        policy_decision = state.get("policy_decision") or {}
+        constitutional_review = state.get("constitutional_review") or {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(safety_report or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(policy_decision or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(constitutional_review or {})}
+            )()
+        patch["safety_report"] = safety_report.dict()
+        patch["policy_decision"] = policy_decision.dict()
+        patch["constitutional_review"] = constitutional_review.dict()
+        return patch
 
     def _plan_from_state(self, state: Dict[str, Any]) -> BulletPlan:
         plan_payload = state.get("bullets", {}).get("plan")
