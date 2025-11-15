@@ -6,7 +6,7 @@ import json
 from typing import Any, Dict, Optional
 
 from core_v10_7 import BaseAgent, DraftPlan, StrategyPlan
-from stacks_v10_7.drafting import (
+from agent_stacks_v10_8.components.drafting import (
     ComplianceEditorAgent,
     NarrativeStylistAgent,
     StructureLeadAgent,
