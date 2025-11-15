@@ -4,8 +4,12 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from core_v10_7 import BaseAgent, BulletPlan
-from agent_stacks_v10_8.components.bullet import BulletCoordinatorAgent
+from core_v10_7 import BaseAgent, BulletPlan, StrategyPlan
+from agent_stacks_v10_8.components.bullet import (
+    AsyncBulletCritiqueAgent,
+    AsyncBulletGeneratorAgent,
+    BulletCoordinatorAgent,
+)
 
 
 class BulletExecutionStack(BaseAgent):
@@ -14,9 +18,91 @@ class BulletExecutionStack(BaseAgent):
     def __init__(self, context: Any, debug_mode: bool = False) -> None:
         super().__init__(context, debug_mode)
         self.coordinator = BulletCoordinatorAgent(context, debug_mode)
+        self.generator = AsyncBulletGeneratorAgent(context, debug_mode)
+        self.critique_agent = AsyncBulletCritiqueAgent(context, debug_mode)
         self.bullets_per_experience = max(
             1, getattr(self.config.agent_stacks, "bullets_per_experience", 2)
         )
+
+    async def generate_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Extract inputs from state and delegate to ``generate_async``."""
+
+        prompts_bucket = state.get("prompts", {}).get("prompts", {})
+        prompt = prompts_bucket.get("bullet_generation_prompt", "Generate bullets")
+        strategy_payload = state.get("strategy", {}).get("strategy_plan")
+        if isinstance(strategy_payload, StrategyPlan):
+            strategy = strategy_payload
+        elif strategy_payload:
+            strategy = StrategyPlan.model_validate(strategy_payload)
+        else:
+            strategy = StrategyPlan(
+                strategy_name="bullet_generation",
+                focus_areas=["impact"],
+                key_achievements_to_highlight=[],
+                tone="Confident",
+            )
+
+        experiences = list(state.get("resume", {}).get("experience_bullets", []))
+        experience_slice = experiences[:3]
+
+        return await self.generate_async(
+            prompt,
+            experience_slice,
+            strategy,
+            workflow_id or state.get("metadata", {}).get("workflow_id", ""),
+        )
+
+    async def critique_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Extract bullets and critique prompt directly from shared state."""
+
+        critique_prompt = (
+            state.get("prompts", {})
+            .get("prompts", {})
+            .get("critique_prompt", "Critique bullets")
+        )
+        bullets = state.get("bullets", {}).get("generated_bullets", [])
+        return await self.critique_async(
+            bullets,
+            critique_prompt,
+            workflow_id or state.get("metadata", {}).get("workflow_id", ""),
+        )
+
+    async def generate_async(
+        self,
+        prompt: str,
+        experiences: List[Dict[str, Any]],
+        strategy: StrategyPlan,
+        workflow_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Generate bullets by delegating to the async generator helper."""
+
+        task_context = {"prompts": [prompt], "experience": experiences}
+        result = await self.generator.run_async(
+            task_context,
+            strategy if isinstance(strategy, StrategyPlan) else StrategyPlan.model_validate(strategy),
+            workflow_id or "",
+        )
+        bullets = result.get("bullets", [])
+        return {"bullets": {"generated_bullets": bullets}}
+
+    async def critique_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        critique_prompt: str,
+        workflow_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Critique generated bullets using the critique helper."""
+
+        critiqued = await self.critique_agent.run_async(
+            bullets,
+            critique_prompt,
+            workflow_id or "",
+        )
+        return {"bullets": {"critiqued_bullets": critiqued}}
 
     async def run_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
