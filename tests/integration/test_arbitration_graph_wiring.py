@@ -17,7 +17,12 @@ class DummyWorkflowContext:
             enable_prompt_injection_detection=False,
         )
         performance_config = SimpleNamespace(workflow_node_timeout_seconds=1)
-        self.config = SimpleNamespace(agent_stacks=agent_stacks, performance_config=performance_config)
+        hil_config = SimpleNamespace(max_reentry_loops=2)
+        self.config = SimpleNamespace(
+            agent_stacks=agent_stacks,
+            performance_config=performance_config,
+            hil_config=hil_config,
+        )
         self.arbitration_engine = DummyArbitrationEngine()
         self.wrap_mcp_nodes = True
 

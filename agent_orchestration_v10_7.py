@@ -1066,6 +1066,19 @@ def route_feedback(state: dict) -> str:
     return "to_drafting"
 
 
+def check_hil_reentry_allowed(state: dict, workflow_context: WorkflowContext) -> str:
+    """Conditional guard to stop the graph when HIL loop bounds are exceeded."""
+
+    if state.get("hil", {}).get("max_reentry_reached"):
+        return "halt"
+
+    max_loops = _get_hil_max_reentry_loops(workflow_context)
+    retries = _get_current_hil_retries(state)
+    if retries <= max_loops:
+        return "continue"
+    return "halt"
+
+
 def _append_hil_a2a(state: dict, message_type: str, payload: Dict[str, Any]) -> None:
     channel = state.setdefault("a2a", {})
     messages = channel.setdefault("messages", [])
@@ -1080,11 +1093,73 @@ def _append_hil_a2a(state: dict, message_type: str, payload: Dict[str, Any]) -> 
     )
 
 
+DEFAULT_MAX_HIL_REENTRY_LOOPS = 1
+
+
+def _get_hil_max_reentry_loops(workflow_context: WorkflowContext) -> int:
+    """Read the configured HIL loop budget, defaulting to a conservative value."""
+
+    hil_config = getattr(getattr(workflow_context, "config", None), "hil_config", None)
+    raw_value = getattr(hil_config, "max_reentry_loops", None)
+    try:
+        loops = int(raw_value)
+    except (TypeError, ValueError):
+        loops = DEFAULT_MAX_HIL_REENTRY_LOOPS
+    return max(1, loops)
+
+
+def _get_current_hil_retries(state: dict) -> int:
+    return int(state.get("metadata", {}).get("retries", {}).get("hil_retries", 0))
+
+
+def increment_hil_retries(state: dict, max_loops: int) -> bool:
+    """Increment the HIL retry counter and signal whether another loop is permitted."""
+
+    retries = state.setdefault("metadata", {}).setdefault("retries", {})
+    current = int(retries.get("hil_retries", 0)) + 1
+    retries["hil_retries"] = current
+    return current <= max_loops
+
+
+def _enforce_hil_loop_budget(
+    state: dict,
+    workflow_context: WorkflowContext,
+    *,
+    workflow_id: str,
+    route: str,
+) -> bool:
+    """Ensure HIL re-entry loops remain within the configured bound."""
+
+    max_loops = _get_hil_max_reentry_loops(workflow_context)
+    if increment_hil_retries(state, max_loops):
+        return True
+
+    hil_state = state.setdefault("hil", {})
+    hil_state["max_reentry_reached"] = True
+    log_event(
+        "HILStack",
+        "max_reentry_reached",
+        {
+            "workflow_id": workflow_id,
+            "route": route,
+            "max_reentry_loops": max_loops,
+            "hil_retries": _get_current_hil_retries(state),
+        },
+    )
+    return False
+
+
 async def run_prepare_hil_strategy_reentry(state: dict, workflow_context: WorkflowContext) -> dict:
     workflow_id = state.get('metadata', {}).get('workflow_id', workflow_context.workflow_id)
+    if not _enforce_hil_loop_budget(
+        state,
+        workflow_context,
+        workflow_id=workflow_id,
+        route="strategy",
+    ):
+        return state
+
     _append_hil_a2a(state, "HIL_REENTRY_STRATEGY", {"workflow_id": workflow_id})
-    retries = state.setdefault("metadata", {}).setdefault("retries", {})
-    retries["hil_retries"] = retries.get("hil_retries", 0) + 1
     log_event("HILStack", "strategy_reentry", {"workflow_id": workflow_id})
     scm = getattr(workflow_context, "self_correction_manager", None)
     if scm:
@@ -1100,9 +1175,15 @@ async def run_prepare_hil_strategy_reentry(state: dict, workflow_context: Workfl
 
 async def run_prepare_hil_drafting_reentry(state: dict, workflow_context: WorkflowContext) -> dict:
     workflow_id = state.get('metadata', {}).get('workflow_id', workflow_context.workflow_id)
+    if not _enforce_hil_loop_budget(
+        state,
+        workflow_context,
+        workflow_id=workflow_id,
+        route="drafting",
+    ):
+        return state
+
     _append_hil_a2a(state, "HIL_REENTRY_DRAFTING", {"workflow_id": workflow_id})
-    retries = state.setdefault("metadata", {}).setdefault("retries", {})
-    retries["hil_retries"] = retries.get("hil_retries", 0) + 1
     log_event("HILStack", "drafting_reentry", {"workflow_id": workflow_id})
     scm = getattr(workflow_context, "self_correction_manager", None)
     if scm:
@@ -1187,8 +1268,16 @@ def get_graph_app(
     # HIL pause is a UI-only barrier; keep it synchronous with no extra wrapping.
     workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
     register_node("run_feedback_router", run_feedback_router) # 11
-    register_node("run_prepare_hil_strategy_reentry", run_prepare_hil_strategy_reentry)
-    register_node("run_prepare_hil_drafting_reentry", run_prepare_hil_drafting_reentry)
+    register_node(
+        "run_prepare_hil_strategy_reentry",
+        run_prepare_hil_strategy_reentry,
+        enable_robustness=False,
+    )
+    register_node(
+        "run_prepare_hil_drafting_reentry",
+        run_prepare_hil_drafting_reentry,
+        enable_robustness=False,
+    )
     register_node("run_reconcile_specialists", run_reconcile_specialists) # 11.5
     register_node("run_inject_hil_edit", run_inject_hil_edit) # 12
     
@@ -1264,11 +1353,19 @@ def get_graph_app(
         }
     )
 
-    workflow.add_edge("run_prepare_hil_strategy_reentry", "run_tot_strategy")
+    workflow.add_conditional_edges(
+        "run_prepare_hil_strategy_reentry",
+        partial(check_hil_reentry_allowed, workflow_context=workflow_context),
+        {"continue": "run_tot_strategy", "halt": END},
+    )
 
-    workflow.add_edge("run_prepare_hil_drafting_reentry", "run_drafting")
+    workflow.add_conditional_edges(
+        "run_prepare_hil_drafting_reentry",
+        partial(check_hil_reentry_allowed, workflow_context=workflow_context),
+        {"continue": "run_drafting", "halt": END},
+    )
     workflow.add_edge("run_reconcile_specialists", "run_inject_hil_edit") # 11.5 -> 12
-    
+
     workflow.add_edge("run_inject_hil_edit", "run_qa_validation") # 12 -> 9 (Re-run QA)
     
     return workflow.compile(checkpointer=checkpointer)
