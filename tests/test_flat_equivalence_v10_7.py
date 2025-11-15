@@ -22,7 +22,7 @@ FLAT_TO_SOURCES: Dict[str, List[str]] = {
         "tests/test_baseline_schema_diff_v10_7.py",
     ],
     "tests_flat/test_rag_flat_v10_7.py": [
-        "tests/rag/test_cache_rag_matrix_v10_7.py",
+        "tests/integration/test_cache_rag_matrix_v10_7.py",
         "tests/rag/test_rag_invariants_v10_7.py",
     ],
     "tests_flat/test_qavalidation_flat_v10_7.py": [
@@ -43,8 +43,8 @@ FLAT_TO_SOURCES: Dict[str, List[str]] = {
         "tests/mcp/test_mcp_matrix_v10_7.py",
     ],
     "tests_flat/test_arbitration_flat_v10_7.py": [
-        "tests/arbitration/test_arbitration_engine_v10_7.py",
-        "tests/arbitration/test_arbitration_graph_wiring.py",
+        "tests/core/test_arbitration_engine_v10_7.py",
+        "tests/integration/test_arbitration_graph_wiring.py",
     ],
     "tests_flat/test_integration_flat_v10_7.py": [
         "tests/integration/test_integration_flow_v10_7.py",
@@ -55,7 +55,7 @@ FLAT_TO_SOURCES: Dict[str, List[str]] = {
         "tests/mock_detection/test_mock_sweeper_v10_7.py",
     ],
     "tests_flat/test_core_runtime_flat_v10_7.py": [
-        "tests/core/test_core_runtime_v10_7.py",
+        "tests/integration/test_core_runtime_v10_7.py",
     ],
 }
 
