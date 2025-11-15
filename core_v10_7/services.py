@@ -1352,6 +1352,76 @@ class PrecomputeEngine:
             self.logger.warning(f"Prompt precompute failed: {e}")
 
 
+class WorldModelStore:
+    """
+    v10.7: Persistent store for global world-model state.
+    All access is gated behind world_model_config.enabled.
+    """
+
+    def __init__(self, config: ConfigV10_7, redis_client: "RedisType"):
+        self.config = config
+        self.redis = redis_client
+        self.logger = logging.getLogger(f"{__name__}.WorldModelStore")
+
+    def enabled(self) -> bool:
+        cfg = getattr(self.config, "world_model_config", None)
+        return bool(cfg and getattr(cfg, "enabled", False))
+
+    def _key(self, suffix: str) -> str:
+        cfg = self.config.world_model_config
+        prefix = getattr(cfg, "key_prefix", "world_model_v10_7")
+        return f"{prefix}:{suffix}"
+
+    def set_json(self, suffix: str, value: Dict[str, Any]) -> None:
+        if not self.enabled():
+            return
+        try:
+            self.redis.setex(self._key(suffix), 7 * 24 * 3600, json.dumps(value))
+        except Exception as exc:
+            self.logger.warning("WorldModelStore set_json failed: %s", exc)
+
+    def get_json(self, suffix: str) -> Dict[str, Any]:
+        if not self.enabled():
+            return {}
+        try:
+            raw = self.redis.get(self._key(suffix))
+            return json.loads(raw) if raw else {}
+        except Exception as exc:
+            self.logger.warning("WorldModelStore get_json failed: %s", exc)
+            return {}
+
+    # Convenience helpers
+    def update_company_knowledge(self, company: str, patch: Dict[str, Any]) -> None:
+        if not company:
+            return
+        key = f"company:{company.lower()}"
+        current = self.get_json(key)
+        current.update(patch)
+        self.set_json(key, current)
+
+    def get_company_knowledge(self, company: str) -> Dict[str, Any]:
+        if not company:
+            return {}
+        key = f"company:{company.lower()}"
+        return self.get_json(key)
+
+    def append_strategy_outcome(self, outcome: Dict[str, Any]) -> None:
+        if not self.enabled():
+            return
+        key = self._key("strategy_outcomes")
+        data = self.get_json("strategy_outcomes") or {"history": []}
+        history = data.get("history", [])
+        history.append(outcome)
+        max_len = getattr(self.config.world_model_config, "max_strategy_history", 1000)
+        if len(history) > max_len:
+            history = history[-max_len:]
+        data["history"] = history
+        self.set_json("strategy_outcomes", data)
+
+    def get_strategy_history(self) -> Dict[str, Any]:
+        return self.get_json("strategy_outcomes")
+
+
 class TuningProfile(BaseModel):
     """
     v10.7: Live-updating parameter profile for adaptive system tuning.
@@ -1576,6 +1646,7 @@ class ArbitrationEngine:
 
 
 __all__ = [
+    "WorldModelStore",
     "SelfCorrectionManager",
     "ContextBudgetManager",
     "MetricsCollector",

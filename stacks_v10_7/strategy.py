@@ -68,6 +68,14 @@ class QueryComplexityClassifier(BaseAgent):
         if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
             if self.context.tuning_profile.temperature < 0.2:
                 return "simple"
+        if self.context.world_model_store and self.context.world_model_store.enabled():
+            self.context.world_model_store.append_strategy_outcome(
+                {
+                    "workflow_id": workflow_id,
+                    "job_title": (job_description or "")[:120],
+                    "complexity": validated_output.complexity,
+                }
+            )
         return validated_output.complexity
 
 
@@ -193,6 +201,15 @@ class ToTStrategistAgent(BaseAgent):
                     if b["branch_id"] == validated_vote.best_branch_id
                 ),
                 branches[0]["strategy"],
+            )
+
+        if self.context.world_model_store and self.context.world_model_store.enabled():
+            self.context.world_model_store.append_strategy_outcome(
+                {
+                    "workflow_id": workflow_id,
+                    "strategy_name": selected_strategy.strategy_name,
+                    "tone": selected_strategy.tone,
+                }
             )
 
         self.log_feedback(

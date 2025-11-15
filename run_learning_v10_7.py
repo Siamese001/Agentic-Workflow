@@ -633,7 +633,17 @@ async def run_meta_learning(config: ConfigV10_7):
             node_name = list(s.keys())[0]
             logger.info(f"--- Meta-Node: {node_name} ---")
             final_state = s[node_name]
-        
+            store = getattr(context, "world_model_store", None)
+            if store and store.enabled() and final_state is not None:
+                patterns = getattr(final_state, "patterns", None) or []
+                store.set_json(
+                    "meta_last_snapshot",
+                    {
+                        "feedback_entries": feedback_log_entries,
+                        "patterns_count": len(patterns),
+                    },
+                )
+
         if final_state is None:
              raise WorkflowError("Meta-learning graph did not return a final state.")
 
