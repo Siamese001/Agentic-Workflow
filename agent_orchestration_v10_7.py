@@ -175,6 +175,44 @@ def apply_robustness(stage_name: str):
     return decorator
 
 
+def add_node_with_policies(
+    workflow: StateGraph,
+    name: str,
+    func: Callable[..., Awaitable[Dict[str, Any]]],
+    workflow_context: WorkflowContext,
+    *,
+    timeout_wrapper: Optional[Callable[[Callable[..., Awaitable[Any]]], Callable[..., Awaitable[Any]]]] = None,
+    enable_timeout: bool = True,
+    enable_robustness: bool = True,
+    enable_mcp: bool = True,
+) -> None:
+    """Register an async node with the standard policy stack.
+
+    Wrappers are layered so the timeout guard remains outermost, followed by
+    MCP initialisation and finally the robustness stack—matching the original
+    decorator order and keeping behavior unchanged.
+    """
+
+    node_callable: Callable[..., Awaitable[Dict[str, Any]]] = partial(
+        func, workflow_context=workflow_context
+    )
+
+    if enable_robustness:
+        node_callable = apply_robustness(name)(node_callable)
+
+    if enable_mcp:
+        node_callable = wrap_mcp(node_callable)
+
+    if enable_timeout:
+        if timeout_wrapper is None:
+            raise WorkflowError(
+                f"Timeout wrapper is required when enable_timeout=True for node '{name}'"
+            )
+        node_callable = timeout_wrapper(node_callable)
+
+    workflow.add_node(name, node_callable)
+
+
 # ============================================================================
 # v10.7: RUNTIME DECORATORS (Fix #6)
 # ============================================================================
@@ -538,8 +576,6 @@ class MetaLearningLoop(BaseAgent):
 
 # --- NODE DEFINITIONS (v10.7) ---
 
-@wrap_mcp
-@apply_robustness("run_sanitize_pii")
 async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 0: Sanitize PII"""
 
@@ -571,8 +607,6 @@ async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> di
 
     return new_state
 
-@wrap_mcp
-@apply_robustness("run_detect_prompt_injection")
 async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 0.5: Detect Prompt Injection"""
 
@@ -604,8 +638,6 @@ async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowCon
 
     return new_state
 
-@wrap_mcp
-@apply_robustness("run_classify_complexity")
 async def run_classify_complexity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 1: Classify Complexity"""
 
@@ -628,8 +660,6 @@ async def run_classify_complexity(state: dict, workflow_context: WorkflowContext
 
     return new_state
 
-@wrap_mcp
-@apply_robustness("run_tot_strategy")
 async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 2: ToT strategy"""
     context = workflow_context
@@ -655,8 +685,6 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
     return state
 
 
-@wrap_mcp
-@apply_robustness("run_arbitration_after_strategy")
 async def run_arbitration_after_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after Strategy stack completion."""
 
@@ -668,8 +696,6 @@ async def run_arbitration_after_strategy(state: dict, workflow_context: Workflow
         workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
-@wrap_mcp
-@apply_robustness("run_detect_ambiguity")
 async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 3: Proactive HIL ambiguity check"""
     context = workflow_context
@@ -709,8 +735,6 @@ def prepare_parallel_run(state: dict) -> dict:
     logger.info("Forking graph for parallel RAG and Prompt Engineering.")
     return {}
 
-@wrap_mcp
-@apply_robustness("run_prompt_engineering")
 async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 4: Generate dynamic prompts"""
     context = workflow_context
@@ -735,8 +759,6 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
         workflow_context.tuning_profile = new_profile
     return state
 
-@wrap_mcp
-@apply_robustness("run_rag_stack")
 async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5: Agentic RAG (v10.7 Fix #10: A2A enabled)"""
     context = workflow_context
@@ -757,8 +779,6 @@ def join_rag_and_prompt(state: dict) -> dict:
     return {}
 
 
-@wrap_mcp
-@apply_robustness("run_arbitration_after_join")
 async def run_arbitration_after_join(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after prompt/RAG join."""
 
@@ -770,8 +790,6 @@ async def run_arbitration_after_join(state: dict, workflow_context: WorkflowCont
         workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
-@wrap_mcp
-@apply_robustness("run_generate_bullets")
 async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 6: Generate bullets (4-step)"""
     context = workflow_context
@@ -797,8 +815,6 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
         workflow_context.tuning_profile = new_profile
     return state
 
-@wrap_mcp
-@apply_robustness("run_critique_bullets")
 async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 7: Critique bullets"""
     context = workflow_context
@@ -820,8 +836,6 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     return state
 
 
-@wrap_mcp
-@apply_robustness("run_arbitration_after_bullets")
 async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after bullet critique/selection."""
 
@@ -833,8 +847,6 @@ async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowC
         workflow_context.tuning_profile = new_profile
     return {"arbitration": state.get("arbitration", {})}
 
-@wrap_mcp
-@apply_robustness("run_drafting")
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
     context = workflow_context
@@ -849,8 +861,6 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     return state
 
 
-@wrap_mcp
-@apply_robustness("run_arbitration_after_drafting")
 async def run_arbitration_after_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after drafting."""
 
@@ -882,8 +892,6 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     return state
 
 
-@wrap_mcp
-@apply_robustness("run_arbitration_after_qa")
 async def run_arbitration_after_qa(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after QA validation."""
 
@@ -1181,35 +1189,54 @@ def get_graph_app(
     )
     timeout_wrapper = get_timeout_decorator(timeout_seconds)
 
-    def add_async_node(name: str, func: Callable[..., Awaitable[Dict[str, Any]]]):
-        workflow.add_node(name, timeout_wrapper(func))
+    def register_node(
+        name: str,
+        func: Callable[..., Awaitable[Dict[str, Any]]],
+        *,
+        enable_timeout: bool = True,
+        enable_robustness: bool = True,
+        enable_mcp: bool = True,
+    ) -> None:
+        add_node_with_policies(
+            workflow,
+            name,
+            func,
+            workflow_context,
+            timeout_wrapper=timeout_wrapper,
+            enable_timeout=enable_timeout,
+            enable_robustness=enable_robustness,
+            enable_mcp=enable_mcp,
+        )
 
     # --- ADD NODES (v10.7: Added new nodes) ---
-    add_async_node("run_sanitize_pii", partial(run_sanitize_pii, workflow_context=workflow_context)) # 0
-    add_async_node("run_detect_prompt_injection", partial(run_detect_prompt_injection, workflow_context=workflow_context)) # 0.5
-    add_async_node("run_classify_complexity", partial(run_classify_complexity, workflow_context=workflow_context)) # 1
-    add_async_node("run_tot_strategy", partial(run_tot_strategy, workflow_context=workflow_context)) # 2
-    add_async_node("run_arbitration_after_strategy", partial(run_arbitration_after_strategy, workflow_context=workflow_context))
-    add_async_node("run_detect_ambiguity", partial(run_detect_ambiguity, workflow_context=workflow_context)) # 3
+    register_node("run_sanitize_pii", run_sanitize_pii) # 0
+    register_node("run_detect_prompt_injection", run_detect_prompt_injection) # 0.5
+    register_node("run_classify_complexity", run_classify_complexity) # 1
+    register_node("run_tot_strategy", run_tot_strategy) # 2
+    register_node("run_arbitration_after_strategy", run_arbitration_after_strategy)
+    register_node("run_detect_ambiguity", run_detect_ambiguity) # 3
+    # prepare_parallel_run is synchronous fan-out prep; no resilience/MCP wrapping.
     workflow.add_node("prepare_parallel_run", prepare_parallel_run) # 3.5 (Fix #5)
-    add_async_node("run_prompt_engineering", partial(run_prompt_engineering, workflow_context=workflow_context)) # 4
-    add_async_node("run_rag_stack", partial(run_rag_stack, workflow_context=workflow_context)) # 5
+    register_node("run_prompt_engineering", run_prompt_engineering) # 4
+    register_node("run_rag_stack", run_rag_stack) # 5
+    # join_rag_and_prompt is a synchronous merge helper and remains unwrapped.
     workflow.add_node("join_rag_and_prompt", join_rag_and_prompt) # 5.5 (Fix #5)
-    add_async_node("run_arbitration_after_join", partial(run_arbitration_after_join, workflow_context=workflow_context))
-    add_async_node("run_generate_bullets", partial(run_generate_bullets, workflow_context=workflow_context)) # 6
-    add_async_node("run_critique_bullets", partial(run_critique_bullets, workflow_context=workflow_context)) # 7
-    add_async_node("run_arbitration_after_bullets", partial(run_arbitration_after_bullets, workflow_context=workflow_context))
-    add_async_node("run_drafting", partial(run_drafting, workflow_context=workflow_context)) # 8
-    add_async_node("run_arbitration_after_drafting", partial(run_arbitration_after_drafting, workflow_context=workflow_context))
-    add_async_node("run_qa_validation", partial(run_qa_validation, workflow_context=workflow_context)) # 9
-    add_async_node("run_arbitration_after_qa", partial(run_arbitration_after_qa, workflow_context=workflow_context))
-    add_async_node("run_constitutional_review", partial(run_constitutional_review, workflow_context=workflow_context)) # 9.5 (Fix #30)
+    register_node("run_arbitration_after_join", run_arbitration_after_join)
+    register_node("run_generate_bullets", run_generate_bullets) # 6
+    register_node("run_critique_bullets", run_critique_bullets) # 7
+    register_node("run_arbitration_after_bullets", run_arbitration_after_bullets)
+    register_node("run_drafting", run_drafting) # 8
+    register_node("run_arbitration_after_drafting", run_arbitration_after_drafting)
+    register_node("run_qa_validation", run_qa_validation) # 9
+    register_node("run_arbitration_after_qa", run_arbitration_after_qa)
+    register_node("run_constitutional_review", run_constitutional_review) # 9.5 (Fix #30)
+    # HIL pause is a UI-only barrier; keep it synchronous with no extra wrapping.
     workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
-    add_async_node("run_feedback_router", partial(run_feedback_router, workflow_context=workflow_context)) # 11
-    add_async_node("run_prepare_hil_strategy_reentry", partial(run_prepare_hil_strategy_reentry, workflow_context=workflow_context))
-    add_async_node("run_prepare_hil_drafting_reentry", partial(run_prepare_hil_drafting_reentry, workflow_context=workflow_context))
-    add_async_node("run_reconcile_specialists", partial(run_reconcile_specialists, workflow_context=workflow_context)) # 11.5
-    add_async_node("run_inject_hil_edit", partial(run_inject_hil_edit, workflow_context=workflow_context)) # 12
+    register_node("run_feedback_router", run_feedback_router) # 11
+    register_node("run_prepare_hil_strategy_reentry", run_prepare_hil_strategy_reentry)
+    register_node("run_prepare_hil_drafting_reentry", run_prepare_hil_drafting_reentry)
+    register_node("run_reconcile_specialists", run_reconcile_specialists) # 11.5
+    register_node("run_inject_hil_edit", run_inject_hil_edit) # 12
     
     # --- CONNECT NODES (v10.7: Rerouted for new nodes) ---
     workflow.set_entry_point("run_sanitize_pii")
