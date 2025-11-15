@@ -14,6 +14,7 @@ This version:
 from __future__ import annotations
 
 import json
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, ConfigDict
@@ -41,6 +42,8 @@ class V10Model(BaseModel):
                 return [_serialize(item) for item in value]
             if isinstance(value, dict):
                 return {k: _serialize(v) for k, v in value.items()}
+            if isinstance(value, Enum):
+                return value.value
             return value
 
         result: Dict[str, Any] = {}
@@ -55,6 +58,31 @@ class V10Model(BaseModel):
 
     def model_dump_json(self, *args: Any, **kwargs: Any) -> str:  # type: ignore[override]
         return json.dumps(self.model_dump())
+
+
+# ---------------------------------------------------------------------------
+# NODE CONTRACT MODELS
+# ---------------------------------------------------------------------------
+
+
+class NodeStatus(str, Enum):
+    SUCCESS = "success"
+    RETRIABLE_ERROR = "retriable_error"
+    FATAL_ERROR = "fatal_error"
+    BLOCKED = "blocked"
+
+
+class NodeResult(V10Model):
+    node: str = Field(..., description="Node name / identifier.")
+    status: NodeStatus = Field(..., description="Outcome classification.")
+    error_kind: Optional[str] = Field(
+        default=None, description="Short error category.")
+    error_message: Optional[str] = Field(
+        default=None, description="Human-readable error detail.")
+    payload: Dict[str, Any] = Field(
+        default_factory=dict,
+        description="Node-specific payload or patch.",
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -349,6 +377,8 @@ class ArbitrationReport(V10Model):
 
 
 __all__ = [
+    "NodeStatus",
+    "NodeResult",
     "BaseToolOutput",
     "DraftStrategyOutput",
     "RedTeamOutput",
