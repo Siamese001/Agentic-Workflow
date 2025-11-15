@@ -76,14 +76,16 @@ except ImportError:
 # v10.7: Import from new stacks
 from agent_stacks_v10_8 import (
     BulletExecutionStack,
+    DraftingExecutionStack,
     HILStackV10_8,
     PromptBuilderStack,
     QAValidationStack,
+    SafetyStackV10_8,
     StateAdapterStack,
     StrategyStackV10_8,
     RobustnessStack,
 )
-from stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack
+from stacks_v10_8 import RAGOrchestratorStack
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -794,19 +796,8 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
     """Node 6: Generate bullets (4-step)"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    prompt = state['prompts']['prompts'].get('bullet_generation_prompt', "Generate bullets")
-    strategy = state['strategy']['strategy_plan']
-    if isinstance(strategy, dict):
-        strategy = StrategyPlan.model_validate(strategy)
-
     bullet_stack = BulletExecutionStack(context)
-    experiences = state['resume']['experience_bullets'][:3]
-    bullet_patch = await bullet_stack.generate_async(
-        prompt,
-        experiences,
-        strategy,
-        workflow_id,
-    )
+    bullet_patch = await bullet_stack.generate_from_state_async(state, workflow_id)
     adapter = StateAdapterStack(context)
     state = adapter.apply_patch(state, bullet_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
@@ -819,14 +810,8 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     """Node 7: Critique bullets"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
-    bullets = state['bullets']['generated_bullets']
     bullet_stack = BulletExecutionStack(context)
-    critique_patch = await bullet_stack.critique_async(
-        bullets,
-        critique_prompt,
-        workflow_id,
-    )
+    critique_patch = await bullet_stack.critique_from_state_async(state, workflow_id)
     adapter = StateAdapterStack(context)
     state = adapter.apply_patch(state, critique_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
@@ -851,8 +836,8 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    orchestrator = DraftOrchestratorStack(context)
-    state = await orchestrator.run_async(state, workflow_id, state_snapshot=state)
+    drafting_stack = DraftingExecutionStack(context)
+    state = await drafting_stack.run_from_state_async(state, workflow_id)
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
@@ -907,37 +892,17 @@ async def run_constitutional_review(state: dict, workflow_context: WorkflowConte
     """Node 9.5: Constitutional Review (v10.7 Fix #30)"""
     context = workflow_context
     safety_stack = SafetyStackV10_8(context)
-    artifacts_bucket = state.get('artifacts', {})
-    final_resume: Any = None
-    if isinstance(artifacts_bucket, dict):
-        inner = artifacts_bucket.get('artifacts', {})
-        if isinstance(inner, dict):
-            final_resume = inner.get('final_resume')
-
-    if final_resume is None:
-        draft_state = state.get('draft', {})
-        if isinstance(draft_state, dict):
-            final_resume = draft_state.get('final_draft')
-            if final_resume is None:
-                sections = draft_state.get('sections', {})
-                if isinstance(sections, dict):
-                    summary = sections.get('summary', {})
-                    if isinstance(summary, dict):
-                        final_resume = summary.get('draft')
-
-    if final_resume is None:
-        final_resume = state.get('resume', {}).get('master_resume', {})
-
-    draft_text = json.dumps(final_resume)
     workflow_id = state.get('metadata', {}).get('workflow_id', context.workflow_id)
-    result = await safety_stack.run_constitutional_review_async(draft_text, workflow_id)
+    review_patch = await safety_stack.constitutional_review_from_state_async(
+        state,
+        workflow_id,
+    )
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    payload = result.model_dump() if hasattr(result, "model_dump") else result
     adapter = StateAdapterStack(context)
-    return adapter.apply_patch(state, {"qa": {"constitutional_review": payload}})
+    return adapter.apply_patch(state, review_patch)
 
 # HIL Nodes
 async def run_feedback_router(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -983,29 +948,18 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
     """Node 12: Inject HIL Edits"""
     context = workflow_context
     logger.info("Injecting human-in-the-loop edits...")
-    payload = state.get("hil", {}).get("payload")
-    if not payload:
+    hil_stack = HILStackV10_8(context)
+    patch = await hil_stack.inject_edit_from_state_async(
+        state,
+        state.get('metadata', {}).get('workflow_id', ''),
+    )
+    if not patch:
         logger.warning("HIL INJECT_EDIT route chosen, but no payload found.")
         if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
             profile = workflow_context.tuning_profile
             new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
             workflow_context.tuning_profile = new_profile
         return state
-
-    reconciliation = state.get('hil', {}).get('reconciliation')
-    if reconciliation and reconciliation.get('integrated_text'):
-        summary_text = reconciliation['integrated_text']
-    else:
-        summary_text = f"[EDITED BY HUMAN]: {payload}"
-
-    existing_summary = state.get('draft', {}).get('sections', {}).get('summary')
-    if isinstance(existing_summary, dict):
-        summary_payload = dict(existing_summary)
-        summary_payload['draft'] = summary_text
-    else:
-        summary_payload = {"draft": summary_text}
-
-    patch = {"draft": {"sections": {"summary": summary_payload}}}
     adapter = StateAdapterStack(context)
     new_state = adapter.apply_patch(state, patch)
     logger.info("HIL edit injected into draft summary.")
