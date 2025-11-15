@@ -127,6 +127,11 @@ class RAG_SearchAgent(BaseAgent):
     @track_metrics("run_agentic_rag")
     async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
         workflow_id = state.get("metadata", {}).get("workflow_id", "")
+        autonomy = getattr(self.context, "autonomy_engine", None)
+        if autonomy and autonomy.enabled():
+            hints = autonomy.decide(workflow_id)
+            self.log_debug(f"Autonomy hints: {hints}")
+            state.setdefault("autonomy_hints", {}).update(hints)
         episodic = getattr(self.context, "episodic_memory", None)
         if episodic and workflow_id:
             prior = episodic.get(workflow_id)

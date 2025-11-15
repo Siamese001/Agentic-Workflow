@@ -156,6 +156,42 @@ class WorldModelStore:
         return self.get_json("strategy_outcomes")
 
 
+class AutonomyEngine:
+    """
+    v10.7: Learns routing/parameter decisions from prior workflows.
+    Produces: routing_hints + param adjustments for stacks.
+    """
+
+    def __init__(self, config, metrics, episodic_memory=None):
+        self.config = config
+        self.metrics = metrics
+        self.episodic_memory = episodic_memory
+        self.logger = logging.getLogger(f"{__name__}.AutonomyEngine")
+
+    def enabled(self) -> bool:
+        cfg = getattr(self.config, "autonomy_config", None)
+        return bool(cfg and getattr(cfg, "enabled", False))
+
+    def decide(self, workflow_id: str) -> Dict[str, Any]:
+        if not self.enabled():
+            return {}
+
+        # Collect signals
+        signals = []
+        if self.episodic_memory:
+            signals = self.episodic_memory.get(workflow_id).get("events", [])[-20:]
+
+        # Lightweight decision-tree heuristic
+        routing_hints = {}
+        if any("rag" in e.get("event", "") for e in signals):
+            routing_hints["rag_branch_factor"] = 2
+
+        if any("qa" in e.get("event", "") for e in signals):
+            routing_hints["qa_temperature_bias"] = -0.1
+
+        return routing_hints
+
+
 class SelfCorrectionManager:
     """Central registry for stack-local self-healing attempts."""
 
