@@ -35,6 +35,7 @@ from .services import (
     ArbitrationEngine,
     AutonomyEngine,
     CacheManager,
+    CollaborationEngine,
     ContextBudgetManager,
     CostTracker,
     EpisodicMemory,
@@ -211,6 +212,7 @@ class WorkflowContext:
         world_model_store: Optional[WorldModelStore] = None,
         episodic_memory: Optional[EpisodicMemory] = None,
         autonomy_engine: Optional[AutonomyEngine] = None,
+        collaboration_engine: Optional[CollaborationEngine] = None,
     ):
 
         self.config = config
@@ -249,6 +251,7 @@ class WorkflowContext:
         self.world_model_store = world_model_store
         self.episodic_memory = episodic_memory
         self.autonomy_engine = autonomy_engine
+        self.collaboration_engine = collaboration_engine
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
@@ -539,6 +542,11 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         episodic_memory=None,  # Placeholder for PR9 wiring
     )
 
+    collaboration_engine = CollaborationEngine(
+        config=config,
+        episodic_memory=None,
+    )
+
     # 3. Initialize Context (Partial)
     context = WorkflowContext(
         config=config,
@@ -562,6 +570,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         world_model_store=world_model_store,
         episodic_memory=episodic_memory,
         autonomy_engine=autonomy_engine,
+        collaboration_engine=collaboration_engine,
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
