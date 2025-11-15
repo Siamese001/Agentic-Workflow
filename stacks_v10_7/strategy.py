@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -134,11 +134,25 @@ class ToTStrategistAgent(BaseAgent):
 
     @track_metrics("run_tot_strategy")
     async def run_async(
-        self, job_context: Dict[str, Any], workflow_id: str
+        self,
+        job_context: Dict[str, Any],
+        workflow_id: str,
+        state: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         self.log_info("Generating ToT strategy with voting (v10.7)...")
 
         workflow_id = workflow_id or ""
+        state_ref = state if isinstance(state, dict) else None
+        if state_ref is None and isinstance(job_context, dict):
+            state_ref = job_context
+
+        autonomy = getattr(self.context, "autonomy_engine", None)
+        if autonomy and autonomy.enabled():
+            hints = autonomy.decide(workflow_id)
+            self.log_debug(f"Autonomy hints: {hints}")
+            if state_ref is not None:
+                state_ref.setdefault("autonomy_hints", {}).update(hints)
+
         episodic = getattr(self.context, "episodic_memory", None)
         if episodic and workflow_id:
             prior = episodic.get(workflow_id)
