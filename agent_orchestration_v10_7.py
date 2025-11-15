@@ -329,6 +329,10 @@ class QAConductorAgent(BaseAgent):
             hints = autonomy.decide(workflow_id)
             self.log_debug(f"Autonomy hints: {hints}")
             state.setdefault("autonomy_hints", {}).update(hints)
+        adv = getattr(self.context, "advanced_meta_learner", None)
+        if adv and adv.enabled():
+            hints = adv.analyze(workflow_id)
+            state.setdefault("meta_hints", {}).update(hints)
         result = await self._execute_conductor(state, workflow_id)
         return await self._maybe_self_correct(state, workflow_id, result)
 
