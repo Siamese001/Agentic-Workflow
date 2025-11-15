@@ -404,6 +404,12 @@ class DraftingGuildCoordinator(BaseAgent):
             self.log_debug(f"Autonomy hints: {hints}")
             if state_ref is not None:
                 state_ref.setdefault("autonomy_hints", {}).update(hints)
+        adv = getattr(self.context, "advanced_meta_learner", None)
+        if adv and adv.enabled():
+            hints = adv.analyze(workflow_id)
+            target_state = state_ref if state_ref is not None else state
+            if isinstance(target_state, dict):
+                target_state.setdefault("meta_hints", {}).update(hints)
 
         episodic = getattr(self.context, "episodic_memory", None)
         if episodic and workflow_id:
