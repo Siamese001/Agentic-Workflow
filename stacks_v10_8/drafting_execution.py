@@ -98,3 +98,17 @@ class DraftingExecutionStack(BaseAgent):
                 payload["tone"] = plan.tone
             ordered_sections[key] = payload
         return ordered_sections
+
+    async def run_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Route drafting orchestration through the L2 stack."""
+
+        from .draft_orchestration import DraftOrchestratorStack
+
+        orchestrator = DraftOrchestratorStack(self.context, self.debug_mode)
+        return await orchestrator.run_async(
+            state,
+            workflow_id or state.get("metadata", {}).get("workflow_id", ""),
+            state_snapshot=state,
+        )
