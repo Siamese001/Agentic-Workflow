@@ -149,6 +149,13 @@
       "max": 0.5
     }
   },
+  "world_model_config": {
+    "enabled": false,
+    "backend": "redis",
+    "key_prefix": "world_model_v10_7",
+    "max_company_entries": 500,
+    "max_strategy_history": 1000
+  },
   "file_paths": {
     "default_job_input": "job_input.json",
     "default_master_resume": "master_resume.json"
