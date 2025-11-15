@@ -75,8 +75,6 @@ except ImportError:
 # v10.7: Import from new stacks
 from agent_stacks_v10_7 import (
     PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent,
     QueryComplexityClassifier,
     ToTStrategistAgent,
     PromptEngineerAgent,
@@ -88,6 +86,7 @@ from agent_stacks_v10_7 import (
     ConstitutionalReviewerAgent, # v10.7 (Fix #30)
     DraftingGuildCoordinator
 )
+from stacks_v10_8.safety_policy_stack import SafetyPolicyStack, SafetyReport
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -198,6 +197,16 @@ def _get_arbitration_engine(workflow_context: WorkflowContext) -> ArbitrationEng
     )
     workflow_context.arbitration_engine = engine
     return engine
+
+
+def _get_safety_policy(workflow_context: WorkflowContext) -> SafetyPolicyStack:
+    policy = getattr(workflow_context, "safety_policy", None)
+    if isinstance(policy, SafetyPolicyStack):
+        return policy
+    debug_mode = getattr(getattr(workflow_context, "config", object()), "debug_mode", False)
+    policy = SafetyPolicyStack(workflow_context, debug_mode)
+    workflow_context.safety_policy = policy
+    return policy
 
 
 def _merge_arbitration_payload(
@@ -595,15 +604,7 @@ async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> di
     context.complexity = state.get('metadata', {}).get('complexity', 'unknown')
     pii_agent = PIISanitizerAgent(context)
     sanitized = await asyncio.to_thread(pii_agent.run, state['resume']['master_resume'])
-    
-    bias_agent = BiasDetectorAgent(context)
-    workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    bias_result = await asyncio.to_thread(bias_agent.run, state['job']['raw_jd'], workflow_id)
-    
-    return {
-        "resume": {"sanitized_resume": sanitized},
-        "safety": {"bias_detected": bias_result['bias_detected']}
-    }
+    return {"resume": {"sanitized_resume": sanitized}}
 
 @wrap_mcp
 @exponential_backoff_retry()
@@ -611,13 +612,22 @@ async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowCon
     """Node 0.5: Detect Prompt Injection"""
     context = workflow_context
     if not context.config.agent_stacks.enable_prompt_injection_detection:
-        return {"safety": {"injection_detected": False}}
-
-    workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    jd_result = await route_to_stack("SafetyGuardStack", context, state['job']['raw_jd'], workflow_id)
-    log_event("SafetyGuardStack", "run", {"workflow_id": workflow_id})
-
-    return {"safety": {"injection_detected": jd_result.get('injection_detected', False)}}
+        return {"safety_report": SafetyReport(findings=[], is_safe=True, blocked_reasons=[], raw_text="").to_dict()}
+    policy = _get_safety_policy(context)
+    node_payload = {
+        "job_description": state.get('job', {}).get('raw_jd', ''),
+        "sanitized_resume": state.get('resume', {}).get('sanitized_resume', {}),
+    }
+    safety_report = policy.evaluate_node(node_payload)
+    log_event(
+        "SafetyPolicyStack",
+        "evaluated",
+        {
+            "workflow_id": state.get('metadata', {}).get('workflow_id', ''),
+            "findings": [finding.category for finding in safety_report.findings],
+        },
+    )
+    return {"safety_report": safety_report.to_dict()}
 
 @wrap_mcp
 @exponential_backoff_retry()
@@ -867,6 +877,16 @@ async def run_reconcile_specialists(state: dict, workflow_context: WorkflowConte
 
 # --- CONDITIONAL EDGES (v10.7: Fix #30) ---
 
+def _has_injection_finding(report: Dict[str, Any]) -> bool:
+    findings = report.get("findings", []) if isinstance(report, dict) else []
+    for finding in findings:
+        if isinstance(finding, dict) and finding.get("category") == "injection":
+            severity = finding.get("severity", "high")
+            if severity in {"medium", "high"}:
+                return True
+    return False
+
+
 def check_prompt_injection(
     state: dict,
     *,
@@ -875,7 +895,7 @@ def check_prompt_injection(
     """Node 0.5 conditional"""
     if routing_policy is not None:
         return routing_policy.after_prompt_injection(state)
-    if state.get("safety", {}).get("injection_detected", False):
+    if _has_injection_finding(state.get("safety_report", {})):
         logger.error("!!! PROMPT INJECTION DETECTED. Halting workflow. !!!")
         return "injection_detected"
     return "injection_safe"
@@ -1032,6 +1052,9 @@ def get_graph_app(
 
     global HIL_AVAILABLE
     HIL_AVAILABLE = HIL_AVAILABLE and enable_hil and workflow_context.config.agent_stacks.enable_hil_stack
+
+    debug_mode = getattr(workflow_context.config, "debug_mode", False)
+    workflow_context.safety_policy = SafetyPolicyStack(workflow_context, debug_mode)
 
     if enable_mcp is not None:
         workflow_context.wrap_mcp_nodes = enable_mcp

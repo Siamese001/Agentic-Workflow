@@ -22,9 +22,9 @@ def _make_context() -> SimpleNamespace:
 
 def test_after_prompt_injection_detects_block():
     policy = OrchestrationRoutingPolicy(_make_context())
-    state = {"safety": {"injection_detected": True}}
+    state = {"safety_report": {"findings": [{"category": "injection", "severity": "high"}]}}
     assert policy.after_prompt_injection(state) == "injection_detected"
-    assert policy.after_prompt_injection({"safety": {"injection_detected": False}}) == "injection_safe"
+    assert policy.after_prompt_injection({"safety_report": {"findings": []}}) == "injection_safe"
 
 
 def test_after_bullet_critique_accepts_arbitration_route():

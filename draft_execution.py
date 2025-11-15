@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
+from stacks_v10_8.safety_policy_stack import SafetyPolicyStack
+
 
 class DraftingExecutionStack:
     """Assembles final drafts from plans and bullets."""
@@ -10,6 +12,11 @@ class DraftingExecutionStack:
     def __init__(self, context: Any, debug_mode: bool = False) -> None:
         self.context = context
         self.debug_mode = debug_mode
+        self.safety_policy = getattr(
+            context,
+            "safety_policy",
+            SafetyPolicyStack(context, debug_mode),
+        )
 
     async def run_async(
         self,
@@ -23,4 +30,7 @@ class DraftingExecutionStack:
             section: f"Section {section} with {len(bullets)} bullets"
             for section in sections
         }
-        return {"draft": {"sections": draft_sections}}
+        state_patch = {"draft": {"sections": draft_sections}}
+        safety_report = self.safety_policy.evaluate_node(state_patch)
+        state_patch["safety_report"] = safety_report.to_dict()
+        return state_patch

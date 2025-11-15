@@ -39,7 +39,7 @@ class OrchestrationRoutingPolicy:
     # ------------------------------------------------------------------
 
     def after_prompt_injection(self, state: Dict[str, Any]) -> str:
-        if state.get("safety", {}).get("injection_detected", False):
+        if self._has_injection_finding(state.get("safety_report")):
             return "injection_detected"
         return "injection_safe"
 
@@ -131,6 +131,17 @@ class OrchestrationRoutingPolicy:
         if result.get("node") != expected_node:
             return None
         return result
+
+    def _has_injection_finding(self, report: Any) -> bool:
+        if not isinstance(report, dict):
+            return False
+        findings = report.get("findings", [])
+        for finding in findings:
+            if isinstance(finding, dict) and finding.get("category") == "injection":
+                severity = finding.get("severity", "high")
+                if severity in {"medium", "high"}:
+                    return True
+        return False
 
     def _result_status(self, result: Optional[Dict[str, Any]]) -> Optional[NodeStatus]:
         if not result:
