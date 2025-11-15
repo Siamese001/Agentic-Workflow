@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
+from core_v10_7 import PersonaConsensus, StrategyPlan
 from stacks_v10_7.hil import (
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
@@ -33,25 +34,38 @@ class HILStackV10_8:
         return await self._summarizer.run_async(human_feedback, workflow_id)
 
     async def detect_ambiguity_async(
-        self, draft_sections: Dict[str, Any], workflow_id: str
+        self, strategy_plan: Any, workflow_id: str
     ) -> Dict[str, Any]:
-        """Delegate ambiguity detection without behavior changes."""
+        """Delegate ambiguity detection for strategy plans."""
 
-        return await self._ambiguity_detector.run_async(draft_sections, workflow_id)
+        if isinstance(strategy_plan, dict):
+            typed_plan = StrategyPlan.model_validate(strategy_plan)
+        else:
+            typed_plan = strategy_plan
+        return await self._ambiguity_detector.run_async(typed_plan, workflow_id)
 
     async def route_feedback_async(
-        self, feedback: Dict[str, Any], workflow_id: str
+        self,
+        feedback: str,
+        workflow_id: str,
+        state_snapshot: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Delegate routing decisions to the legacy router."""
 
-        return await self._router.run_async(feedback, workflow_id)
+        return await self._router.run_async(feedback, workflow_id, state_snapshot)
 
-    async def reconcile_async(
-        self, prior_state: Dict[str, Any], hil_patch: Dict[str, Any], workflow_id: str
-    ) -> Dict[str, Any]:
+    async def reconcile_feedback_async(
+        self,
+        draft_sections: Dict[str, Any],
+        specialist_feedback: List[Any],
+        persona_consensus: Optional[PersonaConsensus],
+        workflow_id: str,
+    ) -> Any:
         """Run the reconciliation agent with no behavior change."""
 
-        return await self._reconciliation_agent.run_async(prior_state, hil_patch, workflow_id)
+        return await self._reconciliation_agent.run_async(
+            draft_sections, specialist_feedback, persona_consensus, workflow_id
+        )
 
     async def convene_virtual_council_async(
         self, human_feedback: str, intent_clusters: List[Any], workflow_id: str
