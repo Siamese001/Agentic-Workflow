@@ -320,6 +320,11 @@ class QAConductorAgent(BaseAgent):
 
     @track_metrics('run_react_qa_conductor')
     async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        autonomy = getattr(self.context, "autonomy_engine", None)
+        if autonomy and autonomy.enabled():
+            hints = autonomy.decide(workflow_id)
+            self.log_debug(f"Autonomy hints: {hints}")
+            state.setdefault("autonomy_hints", {}).update(hints)
         result = await self._execute_conductor(state, workflow_id)
         return await self._maybe_self_correct(state, workflow_id, result)
 
@@ -602,7 +607,8 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
             "company": state['job']['company'],
             "job_description": state['job']['raw_jd']
         },
-        workflow_id
+        workflow_id,
+        state,
     )
     log_event("StrategyStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
@@ -673,7 +679,12 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
         strategy_plan = StrategyPlan.model_validate(strategy_plan)
 
     complexity = state.get('metadata', {}).get('complexity', 'unknown')
-    prompts_result = await prompt_agent.run_async(strategy_plan, complexity, workflow_id)
+    prompts_result = await prompt_agent.run_async(
+        strategy_plan,
+        complexity,
+        workflow_id,
+        state,
+    )
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
@@ -785,7 +796,13 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
         "strategy": strategy_plan,
         "resume": state['resume']['master_resume']
     }
-    draft = await route_to_stack("DraftingStack", context, task_context, workflow_id)
+    draft = await route_to_stack(
+        "DraftingStack",
+        context,
+        task_context,
+        workflow_id,
+        state,
+    )
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile

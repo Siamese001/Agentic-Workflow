@@ -149,6 +149,13 @@
       "max": 0.5
     }
   },
+  "autonomy_config": {
+    "enabled": false,
+    "decision_tree_max_depth": 4,
+    "context_signal_window": 20,
+    "routing_rules": {},
+    "allow_dynamic_branching": true
+  },
   "world_model_config": {
     "enabled": false,
     "backend": "redis",
