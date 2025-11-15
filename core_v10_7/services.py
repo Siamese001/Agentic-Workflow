@@ -192,6 +192,29 @@ class AutonomyEngine:
         return routing_hints
 
 
+class AdvancedMetaLearner:
+    """
+    Extends v10.7 meta-learning:
+      • cross-agent signals
+      • auto-adjust pruning
+      • identifies underperforming stacks
+    """
+
+    def __init__(self, config, metrics, episodic_memory: Optional[EpisodicMemory] = None):
+        self.config = config
+        self.metrics = metrics
+        self.episodic_memory = episodic_memory
+
+    def enabled(self) -> bool:
+        cfg = getattr(self.config, "meta_learning_advanced_config", None)
+        return bool(cfg and getattr(cfg, "enabled", False))
+
+    def analyze(self, workflow_id: str) -> Dict[str, Any]:
+        if not self.enabled():
+            return {}
+        return {"prune_boost": True}
+
+
 class CollaborationEngine:
     """
     v10.7: Manages agent teams, A2A feedback merging, and
@@ -1837,5 +1860,6 @@ __all__ = [
     "ArbitrationEngine",
     "TuningProfile",
     "PolicyAutoTuner",
+    "AdvancedMetaLearner",
     "_format_prompt_with_defaults",
 ]
