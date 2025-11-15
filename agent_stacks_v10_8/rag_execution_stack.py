@@ -52,17 +52,7 @@ class RAGExecutionStack(BaseAgent):
             query, merged_candidates, state
         )
 
-        rag_block = self._build_rag_metadata(
-            query,
-            search_query,
-            hyde_meta,
-            bm25_results,
-            chroma_results,
-            ranked,
-            rerank_meta,
-        )
-
-        return {"resume": {"experience_bullets": ranked}, "rag": rag_block}
+        return {"resume": {"experience_bullets": ranked}}
 
     def _build_query(self, state: Dict[str, Any]) -> str:
         job = state.get("job", {})

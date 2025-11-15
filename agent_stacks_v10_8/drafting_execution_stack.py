@@ -23,4 +23,18 @@ class DraftingExecutionStack:
     ) -> Dict[str, Any]:
         """Forward drafting execution to the existing coordinator."""
 
-        return await self._guild_coordinator.run_async(task_context, workflow_id, state)
+        result = await self._guild_coordinator.run_async(task_context, workflow_id, state)
+        final_sections = result.get("final_output", {}) if isinstance(result, dict) else {}
+        artifacts_payload = {
+            "drafting": {
+                "final_output": final_sections,
+                "guild_metadata": result.get("guild_metadata", {}) if isinstance(result, dict) else {},
+                "overall_status": result.get("overall_status") if isinstance(result, dict) else None,
+                "phases_executed": result.get("phases_executed") if isinstance(result, dict) else None,
+            }
+        }
+
+        return {
+            "draft": {"sections": final_sections},
+            "artifacts": {"artifacts": artifacts_payload},
+        }
