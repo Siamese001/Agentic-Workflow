@@ -29,7 +29,25 @@ class StateAdapterStack:
         merged_dict = self._deep_merge(typed_state.to_dict(), normalized_patch)
 
         validated_state = MainGraphState.from_dict(merged_dict)
-        return validated_state.to_dict()
+
+        if "safety_report" in patch:
+            validated_state.safety_report = patch["safety_report"]
+
+        if "policy_decision" in patch:
+            validated_state.policy_decision = patch["policy_decision"]
+
+        if "constitutional_review" in patch:
+            validated_state.constitutional_review = patch["constitutional_review"]
+
+        wrapper_cls = type(
+            "StateWrapper",
+            (dict,),
+            {
+                "__getattr__": lambda self, key: self.get(key),
+            },
+        )
+
+        return wrapper_cls(validated_state.to_dict())
 
     def _normalize_patch(self, value: Any) -> Any:
         if isinstance(value, Mapping):
