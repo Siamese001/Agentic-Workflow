@@ -3,6 +3,7 @@ import pytest
 from agent_orchestration_v10_7 import get_graph_app
 from agentic_workflow.workflow_v10_7.dag_spec import (
     CONCEPTUAL_DAG,
+    CONCEPTUAL_EDGES,
     all_concrete_nodes,
     conceptual_node_map,
 )
@@ -70,6 +71,11 @@ def test_conceptual_edges_match_design_doc():
     lookup = {name: idx for idx, name in enumerate(EXPECTED_ORDER)}
     for src, dst in EXPECTED_EDGES:
         assert lookup[src] < lookup[dst], f"{src} must precede {dst}"
+
+
+@pytest.mark.design
+def test_conceptual_edge_spec_matches_expected():
+    assert CONCEPTUAL_EDGES == EXPECTED_EDGES
 
 
 @pytest.mark.design
