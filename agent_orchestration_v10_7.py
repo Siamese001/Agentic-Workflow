@@ -75,15 +75,14 @@ except ImportError:
 # v10.7: Import from new stacks
 from agent_stacks_v10_8 import (
     BulletExecutionStack,
-    DraftingExecutionStack,
     HILStackV10_8,
     PromptBuilderStack,
     QAValidationStack,
-    RAGExecutionStack,
     StateAdapterStack,
     StrategyStackV10_8,
     RobustnessStack,
 )
+from stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -741,10 +740,8 @@ async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5: Agentic RAG (v10.7 Fix #10: A2A enabled)"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    stack = RAGExecutionStack(context)
-    patch = await stack.run_async(state, workflow_id)
-    adapter = StateAdapterStack(context)
-    state = adapter.apply_patch(state, patch)
+    orchestrator = RAGOrchestratorStack(context)
+    state = await orchestrator.run_async(state, workflow_id)
     log_event("RAGStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
@@ -841,29 +838,9 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-
-    good_bullets = [
-        b for b in state['bullets']['critiqued_bullets']
-        if b.get('critique', {}).get('score', 0) >= 7
-    ]
-    strategy_plan = state['strategy']['strategy_plan']
-    if isinstance(strategy_plan, dict):
-        strategy_plan = StrategyPlan.model_validate(strategy_plan)
-    
-    task_context = {
-        "bullets": good_bullets,
-        "strategy": strategy_plan,
-        "resume": state['resume']['master_resume']
-    }
-    drafting_stack = DraftingExecutionStack(context)
-    draft_patch = await drafting_stack.run_async(
-        task_context,
-        workflow_id,
-        state,
-    )
+    orchestrator = DraftOrchestratorStack(context)
+    state = await orchestrator.run_async(state, workflow_id, state_snapshot=state)
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
-    adapter = StateAdapterStack(context)
-    state = adapter.apply_patch(state, draft_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
