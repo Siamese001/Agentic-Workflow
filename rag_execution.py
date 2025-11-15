@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack
+from stacks_v10_8.policy_stack import PolicyStack
 
 
 class RAGExecutionStack:
@@ -17,6 +18,11 @@ class RAGExecutionStack:
             "safety_policy",
             SafetyPolicyStack(context, debug_mode),
         )
+        self.policy_stack = getattr(
+            context,
+            "policy_stack",
+            PolicyStack(context, debug_mode),
+        )
 
     async def run_async(self, state: Dict[str, Any], plan_payload: Dict[str, Any]) -> Dict[str, Any]:
         plan = plan_payload.get("rag", {}).get("plan", {})
@@ -25,4 +31,6 @@ class RAGExecutionStack:
         state_patch = {"rag": {"results": results, "last_plan": plan}}
         safety_report = self.safety_policy.evaluate_node(state_patch)
         state_patch["safety_report"] = safety_report.to_dict()
+        decision = self.policy_stack.guard_output(state_patch)
+        state_patch["policy"] = decision.model_dump()
         return state_patch

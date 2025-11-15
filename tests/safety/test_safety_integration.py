@@ -9,6 +9,7 @@ from draft_execution import DraftingExecutionStack
 from orchestration_policy import OrchestrationRoutingPolicy
 from rag_execution import RAGExecutionStack
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack
+from stacks_v10_8.policy_stack import PolicyStack
 
 
 class _MiniContext(SimpleNamespace):
@@ -23,6 +24,7 @@ class _MiniContext(SimpleNamespace):
         config = SimpleNamespace(agent_stacks=agent_stacks)
         super().__init__(config=config)
         self.safety_policy = SafetyPolicyStack(self, debug_mode=False)
+        self.policy_stack = PolicyStack(self, debug_mode=False)
 
 
 def _run_stack(stack, *args):
