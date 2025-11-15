@@ -21,6 +21,9 @@ class DraftingExecutionStack(BaseAgent):
         self.structure_lead = StructureLeadAgent(context, debug_mode)
         self.narrative_stylist = NarrativeStylistAgent(context, debug_mode)
         self.compliance_editor = ComplianceEditorAgent(context, debug_mode)
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
 
     async def run_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
