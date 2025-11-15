@@ -52,7 +52,6 @@ from core_v10_7 import (
     track_metrics,
     _format_prompt_with_defaults,
     ConstitutionalReviewResult, # v10.7 (Fix #30)
-    PersonaConsensus,
     wrap_mcp,
     MCPClientStub,
     ArbitrationReport,
@@ -759,7 +758,9 @@ async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     orchestrator = RAGOrchestratorStack(context)
-    state = await orchestrator.run_async(state, workflow_id)
+    rag_patch = await orchestrator.run_from_state_async(state, workflow_id)
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, rag_patch)
     log_event("RAGStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
@@ -830,7 +831,9 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     drafting_stack = DraftingExecutionStack(context)
-    state = await drafting_stack.run_from_state_async(state, workflow_id)
+    draft_patch = await drafting_stack.run_from_state_async(state, workflow_id)
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, draft_patch)
     log_event("DraftingStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
@@ -854,12 +857,8 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     """Node 9: Final QA with ReAct Conductor"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    
-    if isinstance(state['strategy']['strategy_plan'], dict):
-        state['strategy']['strategy_plan'] = StrategyPlan.model_validate(state['strategy']['strategy_plan'])
-
     qa_stack = QAValidationStack(context)
-    qa_patch = await qa_stack.run_async(state, workflow_id)
+    qa_patch = await qa_stack.run_from_state_async(state, workflow_id)
     log_event("QAStack", "completed", {"workflow_id": workflow_id})
     adapter = StateAdapterStack(context)
     state = adapter.apply_patch(state, qa_patch)
@@ -902,20 +901,9 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
     """Node 11: HIL Feedback Router"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    human_feedback = state.get('hil', {}).get('raw_feedback') or "Default to drafting"
     hil_stack = HILStackV10_8(context)
-    route = await hil_stack.route_feedback_async(human_feedback, workflow_id, state)
-    log_event("HILStack", "completed", {"workflow_id": workflow_id, "next_step": route.get("next_step")})
-    hil_patch = {
-        "hil": {
-            "next_step": route.get("next_step"),
-            "payload": route.get("payload"),
-            "intent_clusters": route.get("intent_clusters", []),
-            "delegated_specialists": route.get("delegated_specialists", []),
-            "persona_consensus": route.get("persona_consensus"),
-            "reconciliation": route.get("reconciliation"),
-        }
-    }
+    hil_patch = await hil_stack.route_from_state_async(state, workflow_id)
+    log_event("HILStack", "completed", {"workflow_id": workflow_id, "next_step": hil_patch.get("hil", {}).get("next_step")})
     adapter = StateAdapterStack(context)
     state = adapter.apply_patch(state, hil_patch)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
@@ -969,29 +957,13 @@ async def run_reconcile_specialists(state: dict, workflow_context: WorkflowConte
     context = workflow_context
     hil_stack = HILStackV10_8(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    specialist_feedback = state.get('hil', {}).get('specialist_feedback', [])
-    persona_consensus_data = state.get('hil', {}).get('persona_consensus')
-    persona_consensus = None
-    if persona_consensus_data:
-        try:
-            persona_consensus = PersonaConsensus.model_validate(persona_consensus_data)
-        except Exception as exc:
-            logger.warning(f"Failed to parse persona consensus for reconciliation: {exc}")
-
-    draft_sections = state.get('draft', {}).get('sections', {})
-    result = await hil_stack.reconcile_feedback_async(
-        draft_sections,
-        specialist_feedback,
-        persona_consensus,
-        workflow_id,
-    )
+    reconciliation_patch = await hil_stack.reconcile_from_state_async(state, workflow_id)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    reconciliation_payload = result.model_dump() if hasattr(result, "model_dump") else result
     adapter = StateAdapterStack(context)
-    return adapter.apply_patch(state, {"hil": {"reconciliation": reconciliation_payload}})
+    return adapter.apply_patch(state, reconciliation_patch)
 
 # --- CONDITIONAL EDGES (v10.7: Fix #30) ---
 
