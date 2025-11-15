@@ -163,6 +163,7 @@ from agent_stacks_v10_8 import (  # noqa: E402
     SafetyStackV10_8,
     StateAdapterStack,
     StrategyStackV10_8,
+    RobustnessStack,
 )
 
 __all__ = sorted(
@@ -177,6 +178,7 @@ __all__ = sorted(
             "SafetyStackV10_8",
             "StateAdapterStack",
             "StrategyStackV10_8",
+            "RobustnessStack",
         ]
     )
 )

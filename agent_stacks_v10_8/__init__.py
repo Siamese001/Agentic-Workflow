@@ -9,6 +9,7 @@ from .strategy_stack import StrategyStackV10_8
 from .safety_stack import SafetyStackV10_8
 from .hil_stack import HILStackV10_8
 from .state_adapter_stack import StateAdapterStack
+from .robustness_stack import RobustnessStack
 
 __all__ = [
     "RAGExecutionStack",
@@ -20,4 +21,5 @@ __all__ = [
     "SafetyStackV10_8",
     "HILStackV10_8",
     "StateAdapterStack",
+    "RobustnessStack",
 ]
