@@ -7,6 +7,7 @@ import pytest
 from agent_orchestration_v10_7 import (
     run_prepare_hil_drafting_reentry,
     run_prepare_hil_strategy_reentry,
+    unwrap_node_result,
 )
 from core_v10_7 import SelfCorrectionManager
 from stacks_v10_8 import DraftOrchestratorStack, RAGOrchestratorStack
@@ -124,12 +125,12 @@ async def test_hil_reentry_nodes_emit_signals(self_correction_enabled):
     context = self_correction_enabled
     state = {"metadata": {"workflow_id": "wf-hil"}, "hil": {"next_step": "STRATEGY"}}
 
-    updated = await run_prepare_hil_strategy_reentry(state, context)
+    updated = unwrap_node_result(await run_prepare_hil_strategy_reentry(state, context))
     assert updated["hil"]["next_step"] == "STRATEGY"
     assert updated["metadata"]["retries"]["hil_retries"] == 1
     assert any(m["message_type"] == "HIL_REENTRY_STRATEGY" for m in updated["a2a"]["messages"])
 
-    updated = await run_prepare_hil_drafting_reentry(updated, context)
+    updated = unwrap_node_result(await run_prepare_hil_drafting_reentry(updated, context))
     assert updated["hil"]["next_step"] == "DRAFTING"
     assert updated["metadata"]["retries"]["hil_retries"] == 2
     assert any(m["message_type"] == "HIL_REENTRY_DRAFTING" for m in updated["a2a"]["messages"])

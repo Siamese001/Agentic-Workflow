@@ -6,6 +6,8 @@ import pytest
 import agent_orchestration_v10_7 as orchestration
 from agent_orchestration_v10_7 import add_node_with_policies
 from core_v10_7 import WorkflowTimeoutError
+from core_v10_7.models import NodeStatus
+from agent_orchestration_v10_7 import node_success
 from langgraph.graph import StateGraph, END
 
 
@@ -32,7 +34,7 @@ async def test_wrapper_applies_timeout(monkeypatch):
 
     async def slow_node(state, workflow_context):
         await asyncio.sleep(0.2)
-        return {"slow": True}
+        return node_success("slow_node", {"slow": True})
 
     # Disable robustness to isolate timeout behavior
     monkeypatch.setattr(
@@ -64,12 +66,13 @@ async def test_wrapper_applies_robustness(monkeypatch):
     monkeypatch.setattr(orchestration, "wrap_mcp", lambda fn: fn)
 
     async def sample_node(state, workflow_context):
-        return {"ok": True}
+        return node_success("robust_node", {"ok": True})
 
     add_node_with_policies(workflow, "robust_node", sample_node, workflow_context)
     result = await workflow.nodes["robust_node"]({})
 
-    assert result == {"ok": True}
+    assert result["status"] == NodeStatus.SUCCESS.value
+    assert result["payload"] == {"ok": True}
     assert stage_calls == ["robust_node"]
 
 
@@ -95,12 +98,13 @@ async def test_wrapper_applies_mcp_when_enabled(monkeypatch):
     )
 
     async def sample_node(state, workflow_context):
-        return {"wrapped": True}
+        return node_success("mcp_node", {"wrapped": True})
 
     add_node_with_policies(workflow, "mcp_node", sample_node, workflow_context)
     result = await workflow.nodes["mcp_node"]({})
 
-    assert result == {"wrapped": True}
+    assert result["status"] == NodeStatus.SUCCESS.value
+    assert result["payload"] == {"wrapped": True}
     assert mcp_called["count"] == 1
 
 
@@ -123,7 +127,7 @@ async def test_wrapper_supports_opt_out_flags(monkeypatch):
     )
 
     async def fast_node(state, workflow_context):
-        return {"fast": True}
+        return node_success("fast_node", {"fast": True})
 
     add_node_with_policies(
         workflow,
@@ -136,7 +140,8 @@ async def test_wrapper_supports_opt_out_flags(monkeypatch):
     )
 
     result = await workflow.nodes["fast_node"]({})
-    assert result == {"fast": True}
+    assert result["status"] == NodeStatus.SUCCESS.value
+    assert result["payload"] == {"fast": True}
 
 
 def test_wrapper_preserves_node_name(monkeypatch):
@@ -150,7 +155,7 @@ def test_wrapper_preserves_node_name(monkeypatch):
     )
 
     async def trivial(state, workflow_context):
-        return state
+        return node_success("preserved", state)
 
     add_node_with_policies(workflow, "preserved", trivial, workflow_context, enable_timeout=False)
     assert workflow.added == ["preserved"]
@@ -186,11 +191,11 @@ async def test_compiled_dag_contains_wrapped_nodes(monkeypatch):
 
     async def node_a(state, workflow_context):
         state["a"] = True
-        return state
+        return node_success("node_a", state)
 
     async def node_b(state, workflow_context):
         state["b"] = True
-        return state
+        return node_success("node_b", state)
 
     add_node_with_policies(workflow, "node_a", node_a, workflow_context)
     add_node_with_policies(workflow, "node_b", node_b, workflow_context)

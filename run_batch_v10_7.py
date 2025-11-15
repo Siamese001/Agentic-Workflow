@@ -44,7 +44,7 @@ from core_v10_7 import (
     get_checkpointer,
 )
 # v10.7: Import from new orchestration/stacks
-from agent_orchestration_v10_7 import get_graph_app
+from agent_orchestration_v10_7 import get_graph_app, unwrap_node_result
 
 try:
     # v10.7: Import new meta-learner
@@ -142,6 +142,8 @@ async def process_single_job_async(
 
         if final_state_dict is None:
             raise WorkflowError("Workflow returned no final state.")
+
+        final_state_dict = unwrap_node_result(final_state_dict)
 
         if "REJECT_JOB" in final_state_dict:
              logger.error(f"Workflow {workflow_id} REJECTED.")

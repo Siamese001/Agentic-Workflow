@@ -44,7 +44,7 @@ from core_v10_7 import (
     get_checkpointer
 )
 # v10.7: Import from new orchestration/stacks
-from agent_orchestration_v10_7 import get_graph_app
+from agent_orchestration_v10_7 import get_graph_app, unwrap_node_result
 
 # v10.7: Logger name updated
 logger = logging.getLogger("main_v10_7")
@@ -169,7 +169,8 @@ async def run_workflow_async(
                     logger.warning("="*80)
             
             if kind == "on_graph_end":
-                final_state_dict = event["data"]["output"]
+                final_output = event["data"]["output"]
+                final_state_dict = unwrap_node_result(final_output)
                 print("\n--- Workflow Stream Complete ---", flush=True)
 
         if final_state_dict is None:
