@@ -36,6 +36,7 @@ from .services import (
     CacheManager,
     ContextBudgetManager,
     CostTracker,
+    EpisodicMemory,
     FeedbackEntry,
     FeedbackLogReader,
     MetricsCollector,
@@ -207,6 +208,7 @@ class WorkflowContext:
         policy_auto_tuner: PolicyAutoTuner,
         self_correction_manager: Optional[SelfCorrectionManager] = None,
         world_model_store: Optional[WorldModelStore] = None,
+        episodic_memory: Optional[EpisodicMemory] = None,
     ):
 
         self.config = config
@@ -243,6 +245,7 @@ class WorkflowContext:
         self.tuning_profile = tuning_profile
         self.policy_auto_tuner = policy_auto_tuner
         self.world_model_store = world_model_store
+        self.episodic_memory = episodic_memory
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
@@ -499,6 +502,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     # 2. Initialize Core Services (All 9+ services)
     self_correction_manager = SelfCorrectionManager(config=config)
     world_model_store = WorldModelStore(config=config, redis_client=redis_client)
+    episodic_memory = EpisodicMemory(config=config, redis_client=redis_client)
     feedback_reader = FeedbackLogReader(
         config.meta_loop_config.feedback_log_path,
         self_correction_manager=self_correction_manager,
@@ -547,6 +551,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         tuning_profile=tuning_profile,
         policy_auto_tuner=policy_auto_tuner,
         world_model_store=world_model_store,
+        episodic_memory=episodic_memory,
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
