@@ -171,6 +171,69 @@ class StrategyPlan(V10Model):
     coordinator_summary: Optional[str] = None
 
 
+class RAGPlan(V10Model):
+    goal: str = Field(..., description="Primary retrieval objective")
+    context_inputs: List[str] = Field(
+        default_factory=list,
+        description="Ordered list of state inputs considered during planning",
+    )
+    retrieval_queries: List[str] = Field(
+        default_factory=list,
+        description="Deterministic queries to execute across retrieval tools",
+    )
+    prioritization: List[str] = Field(
+        default_factory=list,
+        description="Heuristics used to rank retrieved evidence",
+    )
+    risk_checks: List[str] = Field(
+        default_factory=list,
+        description="Manual checks applied before sharing RAG output",
+    )
+
+
+class BulletPlan(V10Model):
+    target_sections: List[str] = Field(
+        default_factory=list,
+        description="Resume or draft sections that require new bullets",
+    )
+    highlight_order: List[str] = Field(
+        default_factory=list,
+        description="Ordered list of experiences to emphasize",
+    )
+    metrics_focus: List[str] = Field(
+        default_factory=list,
+        description="Quantitative signals to surface inside bullets",
+    )
+    style_guidelines: List[str] = Field(
+        default_factory=list,
+        description="Tone + structure rules for bullet generation",
+    )
+    validation_checks: List[str] = Field(
+        default_factory=list,
+        description="Self-checklist that runs before handing bullets downstream",
+    )
+
+
+class DraftPlan(V10Model):
+    structure: List[str] = Field(
+        default_factory=list,
+        description="Ordered sections or beats in the narrative draft",
+    )
+    tone: str = Field("Professional", description="Target tone for the draft")
+    key_messages: List[str] = Field(
+        default_factory=list,
+        description="Key story beats or claims that must be included",
+    )
+    review_gates: List[str] = Field(
+        default_factory=list,
+        description="Sequenced validation checks prior to release",
+    )
+    risks: List[str] = Field(
+        default_factory=list,
+        description="Known risks or gaps that the draft must monitor",
+    )
+
+
 # ---------------------------------------------------------------------------
 # PROMPTS MODELS
 # ---------------------------------------------------------------------------
@@ -305,6 +368,9 @@ __all__ = [
     "PlannerAssessment",
     "ScenarioSimulationResult",
     "StrategyPlan",
+    "RAGPlan",
+    "BulletPlan",
+    "DraftPlan",
     "GeneratedPrompts",
     "BulletList",
     "CritiqueResult",
