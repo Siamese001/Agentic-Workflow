@@ -57,6 +57,14 @@ FLAT_TO_SOURCES: Dict[str, List[str]] = {
     "tests_flat/test_core_runtime_flat_v10_7.py": [
         "tests/integration/test_core_runtime_v10_7.py",
     ],
+    "tests_flat/test_safety_flat_v10_8.py": [
+        "tests/safety/test_safety_policy_stack_basic.py",
+        "tests/policy/test_policy_stack_basic.py",
+        "tests/constitution/test_constitutional_engine_basic.py",
+        "tests/state/test_safety_state_persistence.py",
+        "tests/layering/test_orchestrator_delegation_to_l5.py",
+        "tests/integration/test_safety_pipeline_e2e.py",
+    ],
 }
 
 
