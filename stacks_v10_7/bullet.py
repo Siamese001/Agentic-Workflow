@@ -456,17 +456,34 @@ class AsyncBulletGeneratorAgent(BaseAgent):
         strategy: StrategyPlan,
         workflow_id: str,
     ) -> Dict[str, Any]:
+        workflow_id = workflow_id or ""
+        episodic = getattr(self.context, "episodic_memory", None)
+        if episodic and workflow_id:
+            prior = episodic.get(workflow_id)
+            self.log_debug(
+                f"Episodic prior events: {len(prior.get('events', []))}"
+            )
         base_result = await self._execute_bullet_generator(
             task_context,
             strategy,
             workflow_id,
         )
-        return await self._maybe_self_correct(
+        result = await self._maybe_self_correct(
             task_context,
             strategy,
             workflow_id,
             base_result,
         )
+        if episodic and workflow_id:
+            episodic.append(
+                workflow_id,
+                {
+                    "stack": "bullets",
+                    "event": "bullets_generated",
+                    "count": len(result.get("bullets") or []),
+                },
+            )
+        return result
 
     async def _execute_bullet_generator(
         self,
