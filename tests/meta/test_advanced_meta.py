@@ -8,7 +8,7 @@ from core_v10_7 import (
     MetricsCollector,
     StrategyPlan,
 )
-from stacks_v10_7.prompting import PromptEngineerAgent
+from agent_stacks_v10_8.components.prompting import PromptEngineerAgent
 
 
 @pytest.mark.asyncio

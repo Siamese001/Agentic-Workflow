@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from core_v10_7 import PersonaConsensus, StrategyPlan
-from stacks_v10_7.hil import (
+from agent_stacks_v10_8.components.hil import (
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
     HILFeedbackSummarizerAgent,

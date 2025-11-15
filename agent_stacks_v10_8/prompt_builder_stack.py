@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from stacks_v10_7.prompting import PromptEngineerAgent
+from agent_stacks_v10_8.components.prompting import PromptEngineerAgent
 
 
 class PromptBuilderStack:

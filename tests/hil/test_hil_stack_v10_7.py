@@ -5,7 +5,7 @@ import pytest
 
 from core_v10_7 import PersonaConsensus, StrategyPlan
 from core_v10_7.models import HILFeedbackIntent
-from stacks_v10_7.hil import (
+from agent_stacks_v10_8.components.hil import (
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
     HILReconciliationAgent,
@@ -78,8 +78,14 @@ async def test_hil_feedback_router_routes_to_drafting_by_default(workflow_contex
 
         return _Council()
 
-    monkeypatch.setattr("stacks_v10_7.hil.HILFeedbackSummarizerAgent", fake_summarizer)
-    monkeypatch.setattr("stacks_v10_7.hil.VirtualReviewerCouncilAgent", fake_council)
+    monkeypatch.setattr(
+        "agent_stacks_v10_8.components.hil.HILFeedbackSummarizerAgent",
+        fake_summarizer,
+    )
+    monkeypatch.setattr(
+        "agent_stacks_v10_8.components.hil.VirtualReviewerCouncilAgent",
+        fake_council,
+    )
 
     agent = HILFeedbackRouterAgent(workflow_context)
     route = await agent.run_async("Looks fine, just minor edits", workflow_id="wf-route")
