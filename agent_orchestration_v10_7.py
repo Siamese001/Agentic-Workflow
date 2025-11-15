@@ -180,39 +180,32 @@ def apply_robustness(stage_name: str):
 def add_node_with_policies(
     workflow: StateGraph,
     name: str,
-    func: Callable[..., Awaitable[Dict[str, Any]]],
+    fn: Callable[..., Awaitable[Dict[str, Any]]],
     workflow_context: WorkflowContext,
     *,
-    timeout_wrapper: Optional[Callable[[Callable[..., Awaitable[Any]]], Callable[..., Awaitable[Any]]]] = None,
     enable_timeout: bool = True,
     enable_robustness: bool = True,
     enable_mcp: bool = True,
 ) -> None:
-    """Register an async node with the standard policy stack.
+    """Apply all orchestration policies in a single, deterministic location."""
 
-    Wrappers are layered so the timeout guard remains outermost, followed by
-    MCP initialisation and finally the robustness stack—matching the original
-    decorator order and keeping behavior unchanged.
-    """
-
-    node_callable: Callable[..., Awaitable[Dict[str, Any]]] = partial(
-        func, workflow_context=workflow_context
+    wrapped: Callable[..., Awaitable[Dict[str, Any]]] = partial(
+        fn, workflow_context=workflow_context
     )
 
-    if enable_robustness:
-        node_callable = apply_robustness(name)(node_callable)
+    if enable_mcp and getattr(workflow_context, "wrap_mcp_nodes", True):
+        wrapped = wrap_mcp(wrapped)
 
-    if enable_mcp:
-        node_callable = wrap_mcp(node_callable)
+    if enable_robustness:
+        wrapped = apply_robustness(stage_name=name)(wrapped)
 
     if enable_timeout:
-        if timeout_wrapper is None:
-            raise WorkflowError(
-                f"Timeout wrapper is required when enable_timeout=True for node '{name}'"
-            )
-        node_callable = timeout_wrapper(node_callable)
+        timeout_sec = (
+            workflow_context.config.performance_config.workflow_node_timeout_seconds
+        )
+        wrapped = get_timeout_decorator(timeout_sec)(wrapped)
 
-    workflow.add_node(name, node_callable)
+    workflow.add_node(name, wrapped)
 
 
 # ============================================================================
@@ -1219,11 +1212,6 @@ def get_graph_app(
 
     workflow = StateGraph(dict)
 
-    timeout_seconds = (
-        workflow_context.config.performance_config.workflow_node_timeout_seconds
-    )
-    timeout_wrapper = get_timeout_decorator(timeout_seconds)
-
     def register_node(
         name: str,
         func: Callable[..., Awaitable[Dict[str, Any]]],
@@ -1237,7 +1225,6 @@ def get_graph_app(
             name,
             func,
             workflow_context,
-            timeout_wrapper=timeout_wrapper,
             enable_timeout=enable_timeout,
             enable_robustness=enable_robustness,
             enable_mcp=enable_mcp,
@@ -1251,11 +1238,23 @@ def get_graph_app(
     register_node("run_arbitration_after_strategy", run_arbitration_after_strategy)
     register_node("run_detect_ambiguity", run_detect_ambiguity) # 3
     # prepare_parallel_run is synchronous fan-out prep; no resilience/MCP wrapping.
-    workflow.add_node("prepare_parallel_run", prepare_parallel_run) # 3.5 (Fix #5)
+    register_node(
+        "prepare_parallel_run",
+        prepare_parallel_run,
+        enable_timeout=False,
+        enable_robustness=False,
+        enable_mcp=False,
+    ) # 3.5 (Fix #5)
     register_node("run_prompt_engineering", run_prompt_engineering) # 4
     register_node("run_rag_stack", run_rag_stack) # 5
     # join_rag_and_prompt is a synchronous merge helper and remains unwrapped.
-    workflow.add_node("join_rag_and_prompt", join_rag_and_prompt) # 5.5 (Fix #5)
+    register_node(
+        "join_rag_and_prompt",
+        join_rag_and_prompt,
+        enable_timeout=False,
+        enable_robustness=False,
+        enable_mcp=False,
+    ) # 5.5 (Fix #5)
     register_node("run_arbitration_after_join", run_arbitration_after_join)
     register_node("run_generate_bullets", run_generate_bullets) # 6
     register_node("run_critique_bullets", run_critique_bullets) # 7
@@ -1266,7 +1265,13 @@ def get_graph_app(
     register_node("run_arbitration_after_qa", run_arbitration_after_qa)
     register_node("run_constitutional_review", run_constitutional_review) # 9.5 (Fix #30)
     # HIL pause is a UI-only barrier; keep it synchronous with no extra wrapping.
-    workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
+    register_node(
+        "HIL_PAUSE",
+        human_in_the_loop_node,
+        enable_timeout=False,
+        enable_robustness=False,
+        enable_mcp=False,
+    ) # 10
     register_node("run_feedback_router", run_feedback_router) # 11
     register_node(
         "run_prepare_hil_strategy_reentry",
