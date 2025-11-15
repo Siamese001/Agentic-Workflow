@@ -42,6 +42,18 @@ async def test_arbitration_disabled_returns_accept():
 
     assert report.decision == "ACCEPT"
     assert any("disabled" in reason.lower() for reason in report.reasons)
+    assert report.suggested_route == "ACCEPT"
+
+
+@pytest.mark.asyncio
+async def test_strategy_success_sets_accept_route():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"strategy": {"strategy_plan": {"focus_areas": ["impact"], "tone": "bold"}}}
+
+    report = await engine.run_check("strategy_post_plan", state)
+
+    assert report.decision == "ACCEPT"
+    assert report.suggested_route == "ACCEPT"
 
 
 @pytest.mark.asyncio
@@ -75,6 +87,28 @@ async def test_qa_failed_requests_revise():
 
     assert report.decision == "REQUEST_REVISE"
     assert report.suggested_route == "RETRY_QA"
+
+
+@pytest.mark.asyncio
+async def test_prompt_rag_warn_sets_retry_route():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"rag": {"results": []}}
+
+    report = await engine.run_check("prompt_rag_join", state)
+
+    assert report.decision == "WARN"
+    assert report.suggested_route == "RETRY_RAG"
+
+
+@pytest.mark.asyncio
+async def test_bullets_empty_requests_retry_route():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"bullets": {"critiqued_bullets": []}}
+
+    report = await engine.run_check("bullets_post_selection", state)
+
+    assert report.decision == "REQUEST_REVISE"
+    assert report.suggested_route == "RETRY_BULLETS"
 
 
 def test_arbitration_attachment_helper():
