@@ -74,6 +74,15 @@ CONCEPTUAL_DAG: List[ConceptualNode] = [
     ),
 ]
 
+CONCEPTUAL_EDGES = [
+    ("SafetyGuardStack", "StrategyStack"),
+    ("StrategyStack", "RAGStack"),
+    ("RAGStack", "BulletStack"),
+    ("BulletStack", "DraftingStack"),
+    ("DraftingStack", "QAStack"),
+    ("QAStack", "HILInteractionStack"),
+]
+
 
 def conceptual_node_map() -> Dict[str, ConceptualNode]:
     """Return a lookup dictionary for conceptual nodes by name."""
@@ -102,4 +111,11 @@ def iter_concrete_nodes(node_names: Iterable[str]) -> Iterable[str]:
         yield from conceptual.concrete_nodes
 
 
-__all__ = ["ConceptualNode", "CONCEPTUAL_DAG", "conceptual_node_map", "all_concrete_nodes", "iter_concrete_nodes"]
+__all__ = [
+    "ConceptualNode",
+    "CONCEPTUAL_DAG",
+    "CONCEPTUAL_EDGES",
+    "conceptual_node_map",
+    "all_concrete_nodes",
+    "iter_concrete_nodes",
+]
