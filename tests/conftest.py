@@ -71,6 +71,7 @@ class DummyEmbeddingFunction:
 # ---- Core fixtures pulled together like your v10_7 tests ----
 from core_v10_7 import (
     ArbitrationEngine,
+    AdvancedMetaLearner,
     CacheManager,
     ConfigV10_7,
     ContextBudgetManager,
@@ -133,6 +134,7 @@ def workflow_context(config: ConfigV10_7) -> WorkflowContext:
         embedding_function=embedding_fn, arbitration_engine=arbitration_engine,
         predictive_cache_manager=predictive_cache_manager, precompute_engine=precompute_engine,
         tuning_profile=tuning_profile, policy_auto_tuner=policy_auto_tuner,
+        advanced_meta_learner=AdvancedMetaLearner(config=config, metrics=metrics),
     )
     ctx.context_budget_manager = ContextBudgetManager(config=config, model_client_getter=ctx.get_model_client)
     precompute_engine.context = ctx
