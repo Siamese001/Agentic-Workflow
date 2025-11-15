@@ -4,9 +4,9 @@ from typing import Any, Dict
 from typing import Any, Dict
 
 import pytest
-import stacks_v10_7.drafting as drafting_module
+import agent_stacks_v10_8.components.drafting as drafting_module
 from agent_tools_v10_7 import EvidenceBriefAssemblerTool, EvidenceClarificationTool
-from stacks_v10_7.drafting import DraftingGuildCoordinator
+from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
 
 
 @pytest.fixture

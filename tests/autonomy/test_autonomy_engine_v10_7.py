@@ -4,7 +4,7 @@ from types import MethodType, SimpleNamespace
 import pytest
 
 from core_v10_7.services import AutonomyEngine
-from stacks_v10_7.drafting import DraftingGuildCoordinator
+from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
 
 
 class _DummyMetrics:
