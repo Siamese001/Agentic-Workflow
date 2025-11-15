@@ -21,6 +21,9 @@ class RAGExecutionStack(BaseAgent):
         self.chroma_client = context.chromadb_client
         self.embedding_function = context.embedding_function
         self.collection_name = context.config.chromadb_config.default_collection_name
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
 
     async def run_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
