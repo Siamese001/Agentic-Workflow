@@ -45,7 +45,9 @@ from core_v10_7 import (
     ConstitutionalReviewResult, # v10.7 (Fix #30)
     PersonaConsensus,
     wrap_mcp,
-    MCPClientStub
+    MCPClientStub,
+    NodeResult,
+    NodeStatus,
 )
 from mcp import get_agent
 from langgraph.graph import StateGraph, END
@@ -104,6 +106,60 @@ from agent_tools_v10_7 import (
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_7")
+
+NODE_RESULT_KEY = "__node_result__"
+
+
+def node_success(node: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Create a serializable success envelope for node outputs."""
+
+    return NodeResult(node=node, status=NodeStatus.SUCCESS, payload=payload).model_dump()
+
+
+def node_error(
+    node: str,
+    status: NodeStatus,
+    error_kind: str,
+    error_message: str,
+    payload: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Create a standardized error envelope for node outputs."""
+
+    return NodeResult(
+        node=node,
+        status=status,
+        error_kind=error_kind,
+        error_message=error_message,
+        payload=payload or {},
+    ).model_dump()
+
+
+def _extract_node_result(state: Dict[str, Any], expected_node: str) -> Optional[Dict[str, Any]]:
+    """Fetch the most recent NodeResult for a specific node."""
+
+    result = state.get(NODE_RESULT_KEY)
+    if not isinstance(result, dict):
+        return None
+    node_name = result.get("node")
+    if node_name != expected_node:
+        return None
+    return result
+
+
+def _result_status(result: Optional[Dict[str, Any]]) -> Optional[NodeStatus]:
+    """Normalize status value from a stored NodeResult payload."""
+
+    if not result:
+        return None
+    status_value = result.get("status")
+    if isinstance(status_value, NodeStatus):
+        return status_value
+    if isinstance(status_value, str):
+        try:
+            return NodeStatus(status_value)
+        except ValueError:
+            logger.warning("Unknown node status encountered: %s", status_value)
+    return None
 
 # ============================================================================
 # MCP STACK ROUTING HELPERS
@@ -566,7 +622,9 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
     bullets = state['bullets']['generated_bullets']
     critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
-    return {"bullets": {"critiqued_bullets": critiques}}
+    payload = {"bullets": {"critiqued_bullets": critiques}}
+    node_result = node_success("run_critique_bullets", payload)
+    return {NODE_RESULT_KEY: node_result, **payload}
 
 @wrap_mcp
 @exponential_backoff_retry()
@@ -602,10 +660,12 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     
     validation = await route_to_stack("QAStack", context, state, workflow_id)
     log_event("QAStack", "completed", {"workflow_id": workflow_id})
-    return {
+    payload = {
         "qa": {"validation_results": validation, "qa_passed": validation.get("qa_passed", False)},
-        "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}}
+        "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}},
     }
+    node_result = node_success("run_qa_validation", payload)
+    return {NODE_RESULT_KEY: node_result, **payload}
 
 async def run_constitutional_review(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9.5: Constitutional Review (v10.7 Fix #30)"""
@@ -702,7 +762,23 @@ def check_ambiguity(state: dict) -> str:
 
 def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     """Node 7 conditional: Check bullet quality and retries"""
-    critiques = state.get('bullets', {}).get('critiqued_bullets', [])
+    result = _extract_node_result(state, "run_critique_bullets")
+    status = _result_status(result)
+    payload = result.get("payload") if result else None
+    if status and status is not NodeStatus.SUCCESS:
+        logger.warning(
+            "Node run_critique_bullets returned non-success status %s. Routing to global replanner.",
+            status.value,
+        )
+        return "global_replanner"
+
+    bullet_state = {}
+    if isinstance(payload, dict) and isinstance(payload.get("bullets"), dict):
+        bullet_state = payload.get("bullets", {})
+    else:
+        bullet_state = state.get('bullets', {})
+
+    critiques = bullet_state.get('critiqued_bullets', [])
     if not critiques:
         return "global_replanner"
     avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / len(critiques)
@@ -718,9 +794,27 @@ def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     
 def check_qa_passed(state: dict) -> str:
     """Node 9 conditional: Check QA and retries (v10.7: Rerouted)"""
-    if state.get('qa', {}).get('qa_passed', False):
+    result = _extract_node_result(state, "run_qa_validation")
+    status = _result_status(result)
+    payload = result.get("payload") if result else None
+
+    if status and status is not NodeStatus.SUCCESS:
+        logger.error(
+            "QA validation returned status %s (%s). Escalating to global replanner.",
+            status.value,
+            result.get("error_kind") if result else "unknown",
+        )
+        return "global_replanner"
+
+    qa_data = None
+    if isinstance(payload, dict) and isinstance(payload.get("qa"), dict):
+        qa_data = payload.get("qa")
+    else:
+        qa_data = state.get('qa', {})
+
+    if qa_data.get('qa_passed', False):
         return "qa_passed" # Route to constitutional review
-    
+
     retries = state.get('metadata', {}).get('retries', {}).get('qa_retries', 0)
     if retries < 1: # Max 1 QA retry
         if 'metadata' not in state: state['metadata'] = {}

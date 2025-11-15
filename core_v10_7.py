@@ -41,6 +41,7 @@ import time
 import random # v10.7: Added for Fix #29
 from functools import wraps
 from typing import TYPE_CHECKING
+from enum import Enum
 
 from pydantic import BaseModel, Field, ValidationError as PydanticValidationError
 from chromadb.utils import embedding_functions
@@ -2080,6 +2081,43 @@ def detect_bias(context: WorkflowContext, text: str, workflow_id: str = "") -> D
     }
 
     return result
+
+# ============================================================================
+# NODE RESULT CONTRACTS (v10.7: Phase 3)
+# ============================================================================
+
+
+class V10Model(BaseModel):
+    """Base Pydantic model with stricter defaults for v10.7 contracts."""
+
+    class Config:
+        arbitrary_types_allowed = True
+        extra = "forbid"
+
+
+class NodeStatus(str, Enum):
+    """Normalized node execution outcomes for orchestration decisions."""
+
+    SUCCESS = "success"
+    RETRIABLE_ERROR = "retriable_error"
+    FATAL_ERROR = "fatal_error"
+    BLOCKED = "blocked"
+
+
+class NodeResult(V10Model):
+    """Serializable envelope describing the outcome of a graph node."""
+
+    node: str = Field(..., description="Node name")
+    status: NodeStatus = Field(..., description="Outcome classification")
+    error_kind: Optional[str] = Field(default=None)
+    error_message: Optional[str] = Field(default=None)
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
+    def __init__(self, **data: Any):
+        if "payload" not in data or data["payload"] is None:
+            data["payload"] = {}
+        super().__init__(**data)
+
 
 # ============================================================================
 # STATE MODELS (v10.7: Fix #10 - A2A Comms)
