@@ -1704,7 +1704,33 @@ class PolicyAutoTuner:
 
 
 class ArbitrationEngine:
-    """Lightweight arbitration service for cross-stack decisions."""
+    """Lightweight arbitration service for cross-stack decisions.
+
+    The engine produces :class:`ArbitrationReport` objects whose
+    ``suggested_route`` field is now normalized to a small, explicit set of
+    routing codes so orchestration layers can treat arbitration as the
+    authoritative policy plane. The canonical codes are:
+
+    * ``"ACCEPT"`` – continue forward; equivalent to no-op.
+    * ``"REPLAN_STRATEGY"`` – rerun the strategy stack.
+    * ``"RETRY_RAG"`` – re-run RAG / prompt-join logic.
+    * ``"RETRY_BULLETS"`` – retry bullet generation + critique.
+    * ``"RETRY_DRAFTING"`` – revisit drafting before QA.
+    * ``"RETRY_QA"`` – retry QA validation (may still branch through
+      drafting depending on orchestration wiring).
+    * ``"GLOBAL_REPLAN"`` – escalate to the global replanner / halt.
+
+    Future codes must be added here so downstream orchestration can continue
+    to rely on an explicit and finite routing vocabulary.
+    """
+
+    ROUTE_ACCEPT = "ACCEPT"
+    ROUTE_REPLAN_STRATEGY = "REPLAN_STRATEGY"
+    ROUTE_RETRY_RAG = "RETRY_RAG"
+    ROUTE_RETRY_BULLETS = "RETRY_BULLETS"
+    ROUTE_RETRY_DRAFTING = "RETRY_DRAFTING"
+    ROUTE_RETRY_QA = "RETRY_QA"
+    ROUTE_GLOBAL_REPLAN = "GLOBAL_REPLAN"
 
     def __init__(self, config: ConfigV10_7, metrics: MetricsCollector):
         self.config = config
@@ -1734,37 +1760,33 @@ class ArbitrationEngine:
         return {"enabled": False}
 
     async def run_check(self, stage: str, state: Dict[str, Any]) -> ArbitrationReport:
+        def _short_circuit(reason: str) -> ArbitrationReport:
+            report = ArbitrationReport(
+                stage=stage,
+                decision="ACCEPT",
+                reasons=[reason],
+                confidence=1.0,
+                suggested_route=self.ROUTE_ACCEPT,
+                metrics_snapshot={"stage": stage, "decision": "ACCEPT"},
+            )
+            return report
+
         try:
             arb_cfg = getattr(self.config, "arbitration_config")
         except AttributeError:
-            return ArbitrationReport(
-                stage=stage,
-                decision="ACCEPT",
-                reasons=["Arbitration config missing"],
-                confidence=1.0,
-            )
+            return _short_circuit("Arbitration config missing")
 
         if not getattr(arb_cfg, "enabled", False):
-            return ArbitrationReport(
-                stage=stage,
-                decision="ACCEPT",
-                reasons=["Arbitration disabled"],
-                confidence=1.0,
-            )
+            return _short_circuit("Arbitration disabled")
 
         stage_cfg = self._stage_config(stage)
         if not stage_cfg.get("enabled", False):
-            return ArbitrationReport(
-                stage=stage,
-                decision="ACCEPT",
-                reasons=["Stage disabled"],
-                confidence=1.0,
-            )
+            return _short_circuit("Stage disabled")
 
         decision = "ACCEPT"
         reasons: List[str] = []
         confidence = 0.8
-        suggested_route: Optional[str] = None
+        suggested_route: str = self.ROUTE_ACCEPT
 
         if stage == "strategy_post_plan":
             strategy = state.get("strategy", {}).get("strategy_plan", {})
@@ -1778,7 +1800,7 @@ class ArbitrationEngine:
                 decision = "REQUEST_REVISE"
                 reasons.append("Strategy plan missing focus_areas or tone.")
                 confidence = 0.7
-                suggested_route = "REPLAN_STRATEGY"
+                suggested_route = self.ROUTE_REPLAN_STRATEGY
 
         elif stage == "prompt_rag_join":
             rag_patch = state.get("rag", {})
@@ -1786,7 +1808,7 @@ class ArbitrationEngine:
                 decision = "WARN"
                 reasons.append("RAG returned no results after join.")
                 confidence = 0.6
-                suggested_route = "RETRY_RAG"
+                suggested_route = self.ROUTE_RETRY_RAG
 
         elif stage == "draft_post_assembly":
             draft_sections = state.get("draft", {}).get("sections")
@@ -1794,7 +1816,7 @@ class ArbitrationEngine:
                 decision = "REQUEST_REVISE"
                 reasons.append("Draft sections are empty.")
                 confidence = 0.8
-                suggested_route = "RETRY_DRAFTING"
+                suggested_route = self.ROUTE_RETRY_DRAFTING
 
         elif stage == "bullets_post_selection":
             bullets_bucket = state.get("bullets", {})
@@ -1803,7 +1825,7 @@ class ArbitrationEngine:
                 decision = "REQUEST_REVISE"
                 reasons.append("No bullets generated or selected.")
                 confidence = 0.8
-                suggested_route = "RETRY_BULLETS"
+                suggested_route = self.ROUTE_RETRY_BULLETS
 
         elif stage == "qa_post_validation":
             qa_ctx = state.get("qa", {})
@@ -1811,7 +1833,7 @@ class ArbitrationEngine:
                 decision = "REQUEST_REVISE"
                 reasons.append("QA did not pass; arbitration suggests revision.")
                 confidence = 0.85
-                suggested_route = "RETRY_QA"
+                suggested_route = self.ROUTE_RETRY_QA
 
         if not reasons:
             reasons.append("No issues detected.")
@@ -1821,7 +1843,7 @@ class ArbitrationEngine:
             decision=decision,
             reasons=reasons,
             confidence=confidence,
-            suggested_route=suggested_route or "",
+            suggested_route=suggested_route,
             metrics_snapshot={"stage": stage, "decision": decision},
         )
 
