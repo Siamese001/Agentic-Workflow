@@ -33,6 +33,7 @@ from .models import (
 )
 from .services import (
     ArbitrationEngine,
+    AutonomyEngine,
     CacheManager,
     ContextBudgetManager,
     CostTracker,
@@ -209,6 +210,7 @@ class WorkflowContext:
         self_correction_manager: Optional[SelfCorrectionManager] = None,
         world_model_store: Optional[WorldModelStore] = None,
         episodic_memory: Optional[EpisodicMemory] = None,
+        autonomy_engine: Optional[AutonomyEngine] = None,
     ):
 
         self.config = config
@@ -246,6 +248,7 @@ class WorkflowContext:
         self.policy_auto_tuner = policy_auto_tuner
         self.world_model_store = world_model_store
         self.episodic_memory = episodic_memory
+        self.autonomy_engine = autonomy_engine
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
@@ -530,6 +533,12 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
     metrics_collector.predictive_cache_manager = predictive_cache_manager
 
+    autonomy_engine = AutonomyEngine(
+        config=config,
+        metrics=metrics_collector,
+        episodic_memory=None,  # Placeholder for PR9 wiring
+    )
+
     # 3. Initialize Context (Partial)
     context = WorkflowContext(
         config=config,
@@ -552,6 +561,7 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
         policy_auto_tuner=policy_auto_tuner,
         world_model_store=world_model_store,
         episodic_memory=episodic_memory,
+        autonomy_engine=autonomy_engine,
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
