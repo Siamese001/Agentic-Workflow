@@ -4,6 +4,7 @@ from .rag_execution_stack import RAGExecutionStack
 from .qa_validation_stack import QAValidationStack
 from .drafting_execution_stack import DraftingExecutionStack
 from .bullet_execution_stack import BulletExecutionStack
+from .prompt_builder_stack import PromptBuilderStack
 from .strategy_stack import StrategyStackV10_8
 from .safety_stack import SafetyStackV10_8
 from .hil_stack import HILStackV10_8
@@ -14,6 +15,7 @@ __all__ = [
     "QAValidationStack",
     "DraftingExecutionStack",
     "BulletExecutionStack",
+    "PromptBuilderStack",
     "StrategyStackV10_8",
     "SafetyStackV10_8",
     "HILStackV10_8",
