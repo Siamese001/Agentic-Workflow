@@ -20,6 +20,9 @@ class RAGOrchestratorStack(BaseAgent):
         self._adapter = StateAdapterStack(context, debug_mode)
         self._planning = RAGPlanningStack(context, debug_mode)
         self._execution = RAGExecutionStack(context, debug_mode)
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
 
     async def run_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None

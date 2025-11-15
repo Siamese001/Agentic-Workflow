@@ -23,6 +23,9 @@ class BulletExecutionStack(BaseAgent):
         self.bullets_per_experience = max(
             1, getattr(self.config.agent_stacks, "bullets_per_experience", 2)
         )
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
 
     async def generate_from_state_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
