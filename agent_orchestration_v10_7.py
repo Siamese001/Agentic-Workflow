@@ -813,7 +813,7 @@ async def run_arbitration_after_strategy(state: dict, workflow_context: Workflow
 async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 3: Proactive HIL ambiguity check"""
     context = workflow_context
-    if not context.config.agent_stacks.enable_hil_stack:
+    if not _is_hil_runtime_enabled(workflow_context):
         if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
             profile = workflow_context.tuning_profile
             new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
@@ -1035,6 +1035,9 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
     """Node 11: HIL Feedback Router"""
     context = workflow_context
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    if not _is_hil_runtime_enabled(workflow_context):
+        logger.info("HIL disabled; skipping feedback routing.")
+        return state
     hil_stack = HILStackV10_8(context)
     hil_patch = await hil_stack.route_from_state_async(state, workflow_id)
     log_event("HILStack", "completed", {"workflow_id": workflow_id, "next_step": hil_patch.get("hil", {}).get("next_step")})
@@ -1048,8 +1051,11 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
 
 def human_in_the_loop_node(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 10: HIL Pause"""
+    if not _is_hil_runtime_enabled(workflow_context):
+        logger.info("HIL disabled or unavailable. Skipping pause.")
+        return node_success("HIL_PAUSE", state)
     if not HIL_AVAILABLE:
-        logger.warning("HIL not available. Skipping pause.")
+        logger.warning("human_in_the_loop dependency missing. Skipping pause.")
         return node_success("HIL_PAUSE", state)
     try:
         human_in_the_loop(timeout=3600)
@@ -1063,6 +1069,9 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
     """Node 12: Inject HIL Edits"""
     context = workflow_context
     logger.info("Injecting human-in-the-loop edits...")
+    if not _is_hil_runtime_enabled(workflow_context):
+        logger.info("HIL disabled; skipping edit injection.")
+        return node_success("run_inject_hil_edit", state)
     hil_stack = HILStackV10_8(context)
     patch = await hil_stack.inject_edit_from_state_async(
         state,
@@ -1089,6 +1098,9 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
 async def run_reconcile_specialists(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 11.5: Reconcile specialist contributions."""
     context = workflow_context
+    if not _is_hil_runtime_enabled(workflow_context):
+        logger.info("HIL disabled; skipping specialist reconciliation.")
+        return node_success("run_reconcile_specialists", state)
     hil_stack = HILStackV10_8(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     reconciliation_patch = await hil_stack.reconcile_from_state_async(state, workflow_id)
@@ -1208,6 +1220,9 @@ def check_hil_reentry_allowed(result: dict, workflow_context: WorkflowContext) -
     """Conditional guard to stop the graph when HIL loop bounds are exceeded."""
     state = _extract_node_payload(result)
 
+    if not _is_hil_runtime_enabled(workflow_context):
+        return "halt"
+
     if state.get("hil", {}).get("max_reentry_reached"):
         return "halt"
 
@@ -1251,51 +1266,61 @@ def _get_current_hil_retries(state: dict) -> int:
     return int(state.get("metadata", {}).get("retries", {}).get("hil_retries", 0))
 
 
-def increment_hil_retries(state: dict, max_loops: int) -> bool:
+def _hil_stack_configured(workflow_context: WorkflowContext) -> bool:
+    config = getattr(workflow_context, "config", None)
+    if not config:
+        return False
+    hil_config = getattr(config, "hil_config", None)
+    hil_enabled = getattr(hil_config, "enabled", True) if hil_config else True
+    agent_stacks = getattr(config, "agent_stacks", None)
+    hil_stack_enabled = getattr(agent_stacks, "enable_hil_stack", False) if agent_stacks else False
+    return bool(hil_enabled and hil_stack_enabled)
+
+
+def _is_hil_runtime_enabled(workflow_context: WorkflowContext) -> bool:
+    runtime_flag = getattr(workflow_context, "hil_runtime_enabled", None)
+    if runtime_flag is not None:
+        return bool(runtime_flag)
+    return bool(_hil_stack_configured(workflow_context))
+
+
+def increment_hil_retries(state: dict, workflow_context: WorkflowContext) -> bool:
     """Increment the HIL retry counter and signal whether another loop is permitted."""
+
+    hil_cfg = getattr(getattr(workflow_context, "config", None), "hil_config", None)
+    max_loops = getattr(hil_cfg, "max_reentry_loops", DEFAULT_MAX_HIL_REENTRY_LOOPS)
+    try:
+        max_loops_int = max(1, int(max_loops))
+    except (TypeError, ValueError):
+        max_loops_int = DEFAULT_MAX_HIL_REENTRY_LOOPS
 
     retries = state.setdefault("metadata", {}).setdefault("retries", {})
     current = int(retries.get("hil_retries", 0)) + 1
     retries["hil_retries"] = current
-    return current <= max_loops
 
-
-def _enforce_hil_loop_budget(
-    state: dict,
-    workflow_context: WorkflowContext,
-    *,
-    workflow_id: str,
-    route: str,
-) -> bool:
-    """Ensure HIL re-entry loops remain within the configured bound."""
-
-    max_loops = _get_hil_max_reentry_loops(workflow_context)
-    if increment_hil_retries(state, max_loops):
-        return True
-
-    hil_state = state.setdefault("hil", {})
-    hil_state["max_reentry_reached"] = True
-    log_event(
-        "HILStack",
-        "max_reentry_reached",
-        {
-            "workflow_id": workflow_id,
-            "route": route,
-            "max_reentry_loops": max_loops,
-            "hil_retries": _get_current_hil_retries(state),
-        },
-    )
-    return False
+    return current <= max_loops_int
 
 
 async def run_prepare_hil_strategy_reentry(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Bounded re-entry prep for the Strategy stack."""
     workflow_id = state.get('metadata', {}).get('workflow_id', workflow_context.workflow_id)
-    if not _enforce_hil_loop_budget(
-        state,
-        workflow_context,
-        workflow_id=workflow_id,
-        route="strategy",
-    ):
+    if not _is_hil_runtime_enabled(workflow_context):
+        return node_success("run_prepare_hil_strategy_reentry", state)
+
+    within_limit = increment_hil_retries(state, workflow_context)
+    if not within_limit:
+        hil_state = state.setdefault("hil", {})
+        hil_state["max_reentry_reached"] = True
+        log_event(
+            "HILStack",
+            "max_reentry_reached",
+            {
+                "workflow_id": workflow_id,
+                "route": "strategy",
+                "max_reentry_loops": _get_hil_max_reentry_loops(workflow_context),
+                "hil_retries": _get_current_hil_retries(state),
+            },
+        )
         return node_success("run_prepare_hil_strategy_reentry", state)
 
     _append_hil_a2a(state, "HIL_REENTRY_STRATEGY", {"workflow_id": workflow_id})
@@ -1313,13 +1338,25 @@ async def run_prepare_hil_strategy_reentry(state: dict, workflow_context: Workfl
 
 
 async def run_prepare_hil_drafting_reentry(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Bounded re-entry prep for the Drafting stack."""
     workflow_id = state.get('metadata', {}).get('workflow_id', workflow_context.workflow_id)
-    if not _enforce_hil_loop_budget(
-        state,
-        workflow_context,
-        workflow_id=workflow_id,
-        route="drafting",
-    ):
+    if not _is_hil_runtime_enabled(workflow_context):
+        return node_success("run_prepare_hil_drafting_reentry", state)
+
+    within_limit = increment_hil_retries(state, workflow_context)
+    if not within_limit:
+        hil_state = state.setdefault("hil", {})
+        hil_state["max_reentry_reached"] = True
+        log_event(
+            "HILStack",
+            "max_reentry_reached",
+            {
+                "workflow_id": workflow_id,
+                "route": "drafting",
+                "max_reentry_loops": _get_hil_max_reentry_loops(workflow_context),
+                "hil_retries": _get_current_hil_retries(state),
+            },
+        )
         return node_success("run_prepare_hil_drafting_reentry", state)
 
     _append_hil_a2a(state, "HIL_REENTRY_DRAFTING", {"workflow_id": workflow_id})
@@ -1348,8 +1385,8 @@ def get_graph_app(
 ):
     """Build complete LangGraph workflow with v10.7 resilience."""
 
-    global HIL_AVAILABLE
-    HIL_AVAILABLE = HIL_AVAILABLE and enable_hil and workflow_context.config.agent_stacks.enable_hil_stack
+    hil_runtime_enabled = bool(enable_hil and _hil_stack_configured(workflow_context))
+    workflow_context.hil_runtime_enabled = hil_runtime_enabled
 
     if enable_mcp is not None:
         workflow_context.wrap_mcp_nodes = enable_mcp
@@ -1486,7 +1523,7 @@ def get_graph_app(
     workflow.add_conditional_edges(
         "run_constitutional_review", check_constitution,
         {
-            "passed_constitution": "HIL_PAUSE" if HIL_AVAILABLE else END, # 9.5 -> 10 or END
+            "passed_constitution": "HIL_PAUSE" if hil_runtime_enabled else END, # 9.5 -> 10 or END
             "failed_constitution": END # Fail the job
         }
     )

@@ -204,6 +204,7 @@
     "rag_feedback_aware": true
   },
   "hil_config": {
+    "enabled": true,
     "max_reentry_loops": 2
   },
   "model_config": {
