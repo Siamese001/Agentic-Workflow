@@ -230,6 +230,32 @@ def _attach_arbitration_report(state: dict, stage: str, report: ArbitrationRepor
     state["arbitration"][stage] = report.model_dump()
 
 
+def _read_arbitration_route(state: dict, stage: str) -> Tuple[str, bool]:
+    """Return (route, has_report) for the requested arbitration stage."""
+
+    arbitration_section = state.get("arbitration")
+    if not isinstance(arbitration_section, dict):
+        return "", False
+
+    report_data = arbitration_section.get(stage)
+    if report_data is None:
+        return "", False
+
+    if isinstance(report_data, ArbitrationReport):
+        route = report_data.suggested_route or ""
+        if not route and report_data.decision == "ACCEPT":
+            route = "ACCEPT"
+        return route, True
+
+    if isinstance(report_data, dict):
+        route = report_data.get("suggested_route") or ""
+        if not route and report_data.get("decision") == "ACCEPT":
+            route = "ACCEPT"
+        return route, True
+
+    return "", False
+
+
 def _get_robustness_stack(workflow_context: WorkflowContext) -> RobustnessStack:
     stack = getattr(workflow_context, "_robustness_stack", None)
     if stack is None:
@@ -1093,35 +1119,67 @@ def check_ambiguity(result: dict) -> str:
     return "continue_workflow"
 
 def check_bullets_passed(result: dict, workflow_context: WorkflowContext) -> str:
-    """Node 7 conditional: Check bullet quality and retries"""
-    state = _extract_node_payload(result)
+    """Node 7 conditional driven primarily by arbitration decisions."""
 
+    state = _extract_node_payload(result)
+    robustness = _get_robustness_stack(workflow_context)
+    route, has_report = _read_arbitration_route(state, "bullets_post_selection")
+
+    if route == "GLOBAL_REPLAN":
+        return "global_replanner"
+
+    if route == "RETRY_BULLETS":
+        if robustness.should_retry("bullets_quality", "arbitration_retry"):
+            return "retry_bullets"
+        return "global_replanner"
+
+    if route in ("", "ACCEPT") and has_report:
+        robustness.reset("bullets_quality")
+        return "bullets_passed"
+
+    # Fallback: arbitration report missing, so fall back to legacy heuristics.
     critiques = state.get('bullets', {}).get('critiqued_bullets', [])
     if not critiques:
         return "global_replanner"
 
-    avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / len(critiques)
-    robustness = _get_robustness_stack(workflow_context)
+    avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / max(len(critiques), 1)
     if avg_score >= 7.0:
         robustness.reset("bullets_quality")
         return "bullets_passed"
 
     if robustness.should_retry("bullets_quality", "score_below_threshold"):
         return "retry_bullets"
+
     return "global_replanner"
 
 
 def check_qa_passed(result: dict, workflow_context: WorkflowContext) -> str:
-    """Node 9 conditional: Check QA and retries (v10.7: Rerouted)"""
-    state = _extract_node_payload(result)
+    """Node 9 conditional prioritizing arbitration + centralized resilience."""
 
+    state = _extract_node_payload(result)
     robustness = _get_robustness_stack(workflow_context)
+    route, has_report = _read_arbitration_route(state, "qa_post_validation")
+
+    if route == "GLOBAL_REPLAN":
+        return "global_replanner"
+
+    if route in {"RETRY_QA", "RETRY_DRAFTING"}:
+        if robustness.should_retry("qa_validation", "arbitration_retry"):
+            return "retry_drafting"
+        return "global_replanner"
+
+    if route in ("", "ACCEPT") and has_report:
+        robustness.reset("qa_validation")
+        return "qa_passed"
+
+    # Fallback legacy heuristic when arbitration signal is missing.
     if state.get('qa', {}).get('qa_passed', False):
         robustness.reset("qa_validation")
-        return "qa_passed"  # Route to constitutional review
+        return "qa_passed"
 
     if robustness.should_retry("qa_validation", "qa_failed"):
         return "retry_drafting"
+
     return "global_replanner"
 
 def check_constitution(result: dict) -> str:
