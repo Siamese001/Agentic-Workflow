@@ -13,6 +13,7 @@ from agent_stacks_v10_8 import (
     SafetyStackV10_8,
     StateAdapterStack,
     StrategyStackV10_8,
+    RobustnessStack,
 )
 
 
@@ -26,6 +27,7 @@ from agent_stacks_v10_8 import (
         StrategyStackV10_8,
         SafetyStackV10_8,
         HILStackV10_8,
+        RobustnessStack,
     ],
 )
 def test_stack_instantiation(stack_cls, mock_workflow_context):
