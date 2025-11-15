@@ -1,384 +1,40 @@
-"""Agentic RAG conductor stack."""
+"""Agentic RAG shim that delegates to the v10.8 execution stack."""
 
-import asyncio
-import json
-import uuid
-from typing import Any, Dict, List, Optional, Tuple
+from __future__ import annotations
 
-from core_v10_7 import (
-    A2AMessage,
-    BaseAgent,
-    PydanticSchemaError,
-    WorkflowContext,
-    track_metrics,
-    _format_prompt_with_defaults,
-)
-from agent_tools_v10_7 import HyDETool, ChromaDBSearchTool, BM25SearchTool
+from typing import Any, Dict, List
+
+from core_v10_7.agents import BaseAgent
+from agent_stacks_v10_8 import RAGExecutionStack as RAGExecutionStackV10_8
 
 
 class RAG_SearchAgent(BaseAgent):
-    """Agentic RAG conductor that orchestrates resume search tooling."""
+    """Compatibility wrapper preserving the v10.7 stack interface."""
 
-    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+    def __init__(self, context: Any, debug_mode: bool = False):
         super().__init__(context, debug_mode)
-        self.tools = {
-            "search_resume_database": ChromaDBSearchTool(context, debug_mode),
-            "search_resume_bm25": BM25SearchTool(context, debug_mode),
-            "generate_hypothetical_documents": HyDETool(context, debug_mode),
-        }
-        self.tool_schemas = [t.get_schema() for t in self.tools.values()]
-        self.chroma_client = self.context.chromadb_client
-        self.collection_name = self.config.chromadb_config.default_collection_name
-        self.embedding_function = self.context.embedding_function
+        self._stack = RAGExecutionStackV10_8(context, debug_mode)
 
-    async def _ingest_resume_to_chroma_async(
-        self,
-        resume_experience: List[Dict[str, Any]],
-        workflow_id: str,
-    ) -> None:
-        self.log_info(
-            f"Ingesting {len(resume_experience)} experience blocks into ChromaDB..."
-        )
-        try:
-            collection = self.chroma_client.get_or_create_collection(
-                name=self.collection_name,
-                embedding_function=self.embedding_function,
-            )
-            documents: List[str] = []
-            metadatas: List[Dict[str, Any]] = []
-            ids: List[str] = []
-            for exp in resume_experience:
-                for bullet in exp.get("bullet_pool", []):
-                    documents.append(bullet)
-                    metadatas.append(
-                        {
-                            "workflow_id": workflow_id,
-                            "company": exp.get("company", "N/A"),
-                            "title": exp.get("title", "N/A"),
-                            "experience_object": json.dumps(exp),
-                        }
-                    )
-                    ids.append(f"{workflow_id}_{uuid.uuid4()}")
-
-            if documents:
-                await asyncio.to_thread(
-                    collection.add,
-                    documents=documents,
-                    metadatas=metadatas,
-                    ids=ids,
-                )
-        except Exception as exc:  # pragma: no cover - defensive logging
-            self.log_error(f"ChromaDB ingestion failed: {exc}")
-
-    def _build_bm25_corpus(
-        self, resume_experience: List[Dict[str, Any]]
-    ) -> tuple[list[str], list[Dict[str, Any]]]:
-        corpus_text: List[str] = []
-        corpus_metadata: List[Dict[str, Any]] = []
-        for exp in resume_experience:
-            doc = (
-                f"{exp.get('title')} {exp.get('company')} "
-                f"{' '.join(exp.get('bullet_pool', []))}"
-            )
-            corpus_text.append(doc)
-            corpus_metadata.append(exp)
-        return corpus_text, corpus_metadata
-
-    def _merge_and_deduplicate(self, all_results: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
-        merged: Dict[str, Dict[str, Any]] = {}
-        for result_list in all_results:
-            for item in result_list:
-                key = f"{item.get('company')}_{item.get('title')}"
-                merged.setdefault(key, item)
-        return list(merged.values())
-
-    async def rerank_results(
-        self, query: str, candidates: List[Dict[str, Any]], client: Any
-    ) -> List[Dict[str, Any]]:
-        self.log_info(f"Reranking {len(candidates)} hybrid candidates...")
-        prompt_template = self.prompt_manager.get_template("rerank_results")
-
-        prompt = await _format_prompt_with_defaults(
-            prompt_template,
-            {"query": query, "strategy": "N/A", "candidates": json.dumps(candidates)},
-            self.budget_manager,
-            client.goal_state,
-            client.top_failures,
-        )
-
-        response = await client.chat_completion_async(
-            messages=[{"role": "user", "content": prompt}],
-            temperature=self.config.model_config.reranker_model.temperature,
-            response_format="json_object",
-        )
-        try:
-            content, error = self.validator.validate(response["content"], dict)
-            if error:
-                raise PydanticSchemaError(error)
-            ranked_list = content.get("ranked")
-            if isinstance(ranked_list, list):
-                ranked = ranked_list[: self.config.agent_stacks.reranking_top_k]
-            else:
-                ranked = candidates[: self.config.agent_stacks.reranking_top_k]
-        except Exception:
-            ranked = candidates[: self.config.agent_stacks.reranking_top_k]
-        return ranked
-
-    @track_metrics("run_agentic_rag")
     async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
         workflow_id = state.get("metadata", {}).get("workflow_id", "")
-        collab = getattr(self.context, "collaboration_engine", None)
-        if collab and collab.enabled():
-            team = collab.form_team(self.__class__.__name__)
-            state.setdefault("a2a_team", team)
-        autonomy = getattr(self.context, "autonomy_engine", None)
-        if autonomy and autonomy.enabled():
-            hints = autonomy.decide(workflow_id)
-            self.log_debug(f"Autonomy hints: {hints}")
-            state.setdefault("autonomy_hints", {}).update(hints)
-        adv = getattr(self.context, "advanced_meta_learner", None)
-        if adv and adv.enabled():
-            hints = adv.analyze(workflow_id)
-            state.setdefault("meta_hints", {}).update(hints)
-        episodic = getattr(self.context, "episodic_memory", None)
-        if episodic and workflow_id:
-            prior = episodic.get(workflow_id)
-            self.log_debug(
-                f"Episodic prior events: {len(prior.get('events', []))}"
-            )
-        # Predictive caching hook: prefetch embeddings and HyDE doc
-        pcm = self.context.predictive_cache_manager
-        if pcm and pcm.enabled():
-            job_title = state.get("job", {}).get("job_title", "")
-            company = state.get("job", {}).get("company", "")
-            query = f"{job_title} at {company}".strip()
-            pcm.schedule({
-                "coroutine": (lambda q=query: self.context.precompute_engine.precompute_embeddings(q))
-            })
-            pcm.schedule({
-                "coroutine": (lambda q=query: self.context.precompute_engine.precompute_hyde_document(q))
-            })
-            await pcm.run_scheduled()
-        if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
-            if self.context.tuning_profile.rag_force_multi_tool:
-                state.setdefault("rag", {})["force_multi_tool"] = True
-        base_result, meta = await self._execute_rag(state)
-        result = await self._maybe_self_correct(state, base_result, meta)
-        if episodic and workflow_id:
-            episodic.append(
-                workflow_id,
-                {
-                    "stack": "rag",
-                    "event": "rag_results",
-                    "count": meta.get("experience_bullets", 0),
-                },
-            )
-        return result
+        patch = await self._stack.run_async(state, workflow_id)
 
-    async def _execute_rag(
-        self,
-        state: Dict[str, Any],
-        self_heal_hint: Optional[Dict[str, Any]] = None,
-    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
-        self.log_info("Running Agentic RAG Conductor (v10.7)...")
-
-        workflow_id = state.get("metadata", {}).get("workflow_id", "")
-        query = f"{state['job']['job_title']} at {state['job']['company']}"
-        resume_experience = state["resume"]["master_resume"].get(
-            "professional_experience", []
+        resume = state.setdefault("resume", {})
+        resume["experience_bullets"] = patch.get("resume", {}).get(
+            "experience_bullets", []
         )
-        a2a_messages = state.get("a2a", {}).get("messages", [])
+        if "rag" in patch:
+            state["rag"] = patch["rag"]
+        return state
 
-        await self._ingest_resume_to_chroma_async(resume_experience, workflow_id)
-        corpus_text, corpus_metadata = self._build_bm25_corpus(resume_experience)
-
-        client = self.get_model_client("react_conductor_model")
-        rerank_client = self.get_model_client("reranker_model")
-        hint = self_heal_hint or {}
-        max_steps = hint.get("max_steps", self.config.agent_stacks.conductor_max_steps)
-
-        react_prompt_template = f"""
-        {client.goal_state}
-        {client.top_failures}
-        -------------------
-        MODE: ORCHESTRATION
-        TASK: You are an Agentic RAG Conductor. Find relevant resume sections.
-        Query: "{query}"
-        Tools: {json.dumps(self.tool_schemas)}
-        Plan:
-        1. Call `search_resume_database` (vector) and `search_resume_bm25` (keyword).
-        2. THINK: Analyze merged results.
-        3. If results are good (> 3), stop.
-        4. If results are poor (< 3), call `generate_hypothetical_documents`.
-        5. Loop to step 1 with the new query.
-        6. Output final list.
-        """
-
-        if hint.get("force_multi_tool"):
-            react_prompt_template += "\nREFRESH: Always call both search tools before finishing."
-
-        messages = [{"role": "user", "content": react_prompt_template}]
-        current_query = query
-        all_tool_results: List[List[Dict[str, Any]]] = []
-
-        if hint.get("prefetch_hyde"):
-            try:
-                hyde_tool = self.tools.get("generate_hypothetical_documents")
-                if hyde_tool:
-                    hyde_result = await hyde_tool.run_async({"query": query}, workflow_id)
-                    if hyde_result.get("status") == "success":
-                        current_query = hyde_result.get("hypothetical_document", query)
-                        messages.append({
-                            "role": "user",
-                            "content": f"Prefetched HyDE query: {current_query}",
-                        })
-            except Exception as exc:  # pragma: no cover - defensive logging
-                self.log_warning(f"HyDE prefetch failed: {exc}")
-
-        for step in range(max_steps):
-            response = await client.chat_completion_async(
-                messages=messages,
-                temperature=self.config.agent_stacks.conductor_temperature,
-                response_format="json_object",
-            )
-
-            step_data, error = self.validator.validate(response["content"], dict)
-            if error:
-                messages.append({"role": "user", "content": f"Error: Invalid JSON: {error}"})
-                continue
-
-            messages.append({"role": "assistant", "content": json.dumps(step_data)})
-
-            if "final_results" in step_data:
-                self.log_info(f"RAG agent finished in {step + 1} steps.")
-                merged = self._merge_and_deduplicate([step_data["final_results"]])
-                ranked = await self.rerank_results(query, merged, rerank_client)
-                self._record_world_model_rag_run(workflow_id, query, ranked)
-                return {
-                    "resume": {"experience_bullets": ranked},
-                    "a2a": {"messages": a2a_messages},
-                }, {"experience_bullets": len(ranked)}
-
-            if "tool_call" in step_data:
-                tool_name = step_data["tool_call"].get("name")
-                tool_input = step_data["tool_call"].get("input", {})
-                if tool_name not in self.tools:
-                    messages.append({"role": "user", "content": f"Error: Tool '{tool_name}' not found."})
-                    continue
-                if tool_name == "search_resume_bm25":
-                    tool_input["corpus_text"] = corpus_text
-                    tool_input["corpus_metadata"] = corpus_metadata
-                if "query" not in tool_input:
-                    tool_input["query"] = current_query
-                try:
-                    tool = self.tools[tool_name]
-                    tool_result = await tool.run_async(tool_input, workflow_id)
-                    if (
-                        tool_name == "generate_hypothetical_documents"
-                        and tool_result.get("status") == "success"
-                    ):
-                        current_query = tool_result["hypothetical_document"]
-                    elif tool_name in [
-                        "search_resume_database",
-                        "search_resume_bm25",
-                    ]:
-                        all_tool_results.append(tool_result.get("search_results", []))
-                    messages.append(
-                        {"role": "user", "content": f"Tool Result: {json.dumps(tool_result)}"}
-                    )
-                except Exception as exc:  # pragma: no cover - defensive logging
-                    self.log_error(f"RAG Tool {tool_name} failed: {exc}")
-                    messages.append(
-                        {
-                            "role": "user",
-                            "content": f"Error: Tool '{tool_name}' failed: {exc}",
-                        }
-                    )
-
-        self.log_warning("RAG agent reached max steps. Reranking gathered results.")
-
-        a2a_messages.append(
-            A2AMessage(
-                sender="RAG_SearchAgent",
-                recipient="ALL",
-                message_type="ERROR",
-                payload={"error": "RAG_SearchAgent max steps reached."},
-            ).model_dump()
-        )
-
-        if hint.get("force_multi_tool") and not all_tool_results:
-            for tool_name in ["search_resume_database", "search_resume_bm25"]:
-                tool = self.tools.get(tool_name)
-                if not tool:
-                    continue
-                fallback_input = {"query": current_query}
-                if tool_name == "search_resume_bm25":
-                    fallback_input["corpus_text"] = corpus_text
-                    fallback_input["corpus_metadata"] = corpus_metadata
-                try:
-                    fallback_result = await tool.run_async(fallback_input, workflow_id)
-                    all_tool_results.append(fallback_result.get("search_results", []))
-                except Exception as exc:  # pragma: no cover - defensive logging
-                    self.log_warning(f"Forced {tool_name} call failed: {exc}")
-
-        merged = self._merge_and_deduplicate(all_tool_results)
-        ranked = await self.rerank_results(query, merged, rerank_client)
-        self._record_world_model_rag_run(workflow_id, query, ranked)
-        return {"resume": {"experience_bullets": ranked}, "a2a": {"messages": a2a_messages}}, {"experience_bullets": len(ranked)}
-
-    def _record_world_model_rag_run(self, workflow_id: str, query: str, ranked: List[Dict[str, Any]]) -> None:
-        store = getattr(self.context, "world_model_store", None)
-        if not store or not store.enabled():
+    @staticmethod
+    def _record_world_model_rag_run(
+        agent: Any, workflow_id: str, query: str, ranked: List[Any]
+    ) -> None:
+        store = getattr(getattr(agent, "context", None), "world_model_store", None)
+        if not store or not getattr(store, "enabled", lambda: False)():
             return
         store.set_json(
             f"rag_last_run:{workflow_id}",
-            {
-                "query": query,
-                "num_results": len(ranked or []),
-            },
+            {"query": query, "num_results": len(ranked or [])},
         )
-
-    async def _maybe_self_correct(
-        self,
-        state: Dict[str, Any],
-        base_result: Dict[str, Any],
-        meta: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        manager = getattr(self, "self_correction_manager", None)
-        if not manager:
-            return base_result
-        workflow_id = state["metadata"].get("workflow_id", "")
-        if not manager.can_retry(workflow_id, "rag"):
-            return base_result
-
-        baseline_count = len(base_result.get("resume", {}).get("experience_bullets", []) or [])
-        if baseline_count >= 3:
-            return base_result
-
-        report = manager.start_retry(
-            workflow_id,
-            "rag",
-            issue="sparse_rag_results",
-            action="expand_hybrid_search",
-            metadata={"initial_results": baseline_count},
-        )
-
-        corrected_result, corrected_meta = await self._execute_rag(
-            state,
-            self_heal_hint={
-                "prefetch_hyde": True,
-                "force_multi_tool": True,
-                "max_steps": self.config.agent_stacks.conductor_max_steps + 2,
-            },
-        )
-        corrected_count = len(corrected_result.get("resume", {}).get("experience_bullets", []) or [])
-        resolved = corrected_count > baseline_count
-        manager.finalize_retry(
-            report,
-            resolved,
-            {"corrected_results": corrected_count},
-        )
-        if resolved:
-            corrected_result.setdefault("self_correction", {})["rag"] = report.model_dump()
-            return corrected_result
-        return base_result
