@@ -127,6 +127,10 @@ class RAG_SearchAgent(BaseAgent):
     @track_metrics("run_agentic_rag")
     async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
         workflow_id = state.get("metadata", {}).get("workflow_id", "")
+        collab = getattr(self.context, "collaboration_engine", None)
+        if collab and collab.enabled():
+            team = collab.form_team(self.__class__.__name__)
+            state.setdefault("a2a_team", team)
         autonomy = getattr(self.context, "autonomy_engine", None)
         if autonomy and autonomy.enabled():
             hints = autonomy.decide(workflow_id)
