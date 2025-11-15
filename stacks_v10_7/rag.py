@@ -152,7 +152,7 @@ class RAG_SearchAgent(BaseAgent):
     ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         self.log_info("Running Agentic RAG Conductor (v10.7)...")
 
-        workflow_id = state["metadata"]["workflow_id"]
+        workflow_id = state.get("metadata", {}).get("workflow_id", "")
         query = f"{state['job']['job_title']} at {state['job']['company']}"
         resume_experience = state["resume"]["master_resume"].get(
             "professional_experience", []
@@ -223,6 +223,7 @@ class RAG_SearchAgent(BaseAgent):
                 self.log_info(f"RAG agent finished in {step + 1} steps.")
                 merged = self._merge_and_deduplicate([step_data["final_results"]])
                 ranked = await self.rerank_results(query, merged, rerank_client)
+                self._record_world_model_rag_run(workflow_id, query, ranked)
                 return {
                     "resume": {"experience_bullets": ranked},
                     "a2a": {"messages": a2a_messages},
@@ -292,7 +293,20 @@ class RAG_SearchAgent(BaseAgent):
 
         merged = self._merge_and_deduplicate(all_tool_results)
         ranked = await self.rerank_results(query, merged, rerank_client)
+        self._record_world_model_rag_run(workflow_id, query, ranked)
         return {"resume": {"experience_bullets": ranked}, "a2a": {"messages": a2a_messages}}, {"experience_bullets": len(ranked)}
+
+    def _record_world_model_rag_run(self, workflow_id: str, query: str, ranked: List[Dict[str, Any]]) -> None:
+        store = getattr(self.context, "world_model_store", None)
+        if not store or not store.enabled():
+            return
+        store.set_json(
+            f"rag_last_run:{workflow_id}",
+            {
+                "query": query,
+                "num_results": len(ranked or []),
+            },
+        )
 
     async def _maybe_self_correct(
         self,
