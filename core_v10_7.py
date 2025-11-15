@@ -37,6 +37,7 @@ import logging
 import hashlib
 import asyncio
 import importlib
+import sys
 import time
 import random # v10.7: Added for Fix #29
 from functools import wraps
@@ -48,6 +49,13 @@ from chromadb.utils import embedding_functions
 
 from mcp import get_tool, get_schema, sync_context
 from telemetry_v10_7 import log_event
+import core_v10_7_services as _core_v10_7_services
+from core_v10_7_services import (
+    ArbitrationEngine,
+    ArbitrationReport,
+    RobustnessStack,
+    SelfCorrectionManager,
+)
 try:
     import anthropic
     import google.generativeai as genai
@@ -63,6 +71,8 @@ from asyncio import TimeoutError as AsyncTimeoutError
 
 # v10.7: Logger name updated
 logger = logging.getLogger("core_v10_7")
+services = _core_v10_7_services
+sys.modules[__name__ + ".services"] = _core_v10_7_services
 
 redis_module = get_tool("redis")
 chromadb_module = get_tool("chromadb")
@@ -1712,6 +1722,14 @@ class WorkflowContext:
         self.metrics_collector = metrics_collector
         self.semantic_validator = semantic_validator
         self.embedding_function = embedding_function
+
+        self.robustness_stack = RobustnessStack(config=config)
+        self.self_correction_manager = SelfCorrectionManager()
+        self.arbitration_engine = ArbitrationEngine(
+            config=config,
+            robustness_stack=self.robustness_stack,
+            self_correction_manager=self.self_correction_manager,
+        )
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None # type: ignore

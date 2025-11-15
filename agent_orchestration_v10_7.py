@@ -49,6 +49,12 @@ from core_v10_7 import (
     NodeResult,
     NodeStatus,
 )
+from core_v10_7_services import (
+    ArbitrationEngine,
+    ArbitrationReport,
+    RobustnessStack,
+    SelfCorrectionManager,
+)
 from mcp import get_agent
 from langgraph.graph import StateGraph, END
 from langgraph.errors import GraphRecursionError
@@ -160,6 +166,112 @@ def _result_status(result: Optional[Dict[str, Any]]) -> Optional[NodeStatus]:
         except ValueError:
             logger.warning("Unknown node status encountered: %s", status_value)
     return None
+
+
+def _get_robustness_stack(workflow_context: WorkflowContext) -> RobustnessStack:
+    stack = getattr(workflow_context, "robustness_stack", None)
+    if isinstance(stack, RobustnessStack):
+        return stack
+    stack = RobustnessStack(config=workflow_context.config)
+    workflow_context.robustness_stack = stack
+    return stack
+
+
+def _get_self_correction_manager(workflow_context: WorkflowContext) -> SelfCorrectionManager:
+    manager = getattr(workflow_context, "self_correction_manager", None)
+    if isinstance(manager, SelfCorrectionManager):
+        return manager
+    manager = SelfCorrectionManager()
+    workflow_context.self_correction_manager = manager
+    return manager
+
+
+def _get_arbitration_engine(workflow_context: WorkflowContext) -> ArbitrationEngine:
+    engine = getattr(workflow_context, "arbitration_engine", None)
+    if isinstance(engine, ArbitrationEngine):
+        return engine
+    engine = ArbitrationEngine(
+        config=workflow_context.config,
+        robustness_stack=_get_robustness_stack(workflow_context),
+        self_correction_manager=_get_self_correction_manager(workflow_context),
+    )
+    workflow_context.arbitration_engine = engine
+    return engine
+
+
+def _merge_arbitration_payload(
+    state: Dict[str, Any], stage: str, report: ArbitrationReport
+) -> Dict[str, Any]:
+    existing = state.get("arbitration")
+    merged: Dict[str, Any] = {}
+    if isinstance(existing, dict):
+        merged.update(existing)
+    merged[stage] = report.to_payload()
+    return merged
+
+
+def _extract_arbitration_route(
+    state: Dict[str, Any], payload: Optional[Dict[str, Any]], stage: str
+) -> str:
+    def _from_container(container: Any) -> str:
+        if not isinstance(container, dict):
+            return ""
+        report = container.get(stage)
+        if isinstance(report, dict):
+            route = report.get("suggested_route")
+            if isinstance(route, str):
+                return route
+        return ""
+
+    if isinstance(payload, dict):
+        route = _from_container(payload.get("arbitration"))
+        if route:
+            return route
+    return _from_container(state.get("arbitration"))
+
+
+def _prepare_bullet_arbitration_payload(
+    critiques: List[Dict[str, Any]], workflow_context: WorkflowContext
+) -> Dict[str, Any]:
+    scores: List[float] = []
+    for bullet in critiques:
+        critique = bullet.get("critique", {}) if isinstance(bullet, dict) else {}
+        score = critique.get("score") if isinstance(critique, dict) else None
+        if isinstance(score, (int, float)):
+            scores.append(float(score))
+    avg_score = sum(scores) / len(scores) if scores else None
+    threshold = getattr(
+        getattr(workflow_context.config, "agent_stacks", object()),
+        "bullet_accept_threshold",
+        7.0,
+    )
+    return {
+        "scores": scores,
+        "avg_score": avg_score,
+        "threshold": threshold,
+        "critique_count": len(critiques),
+    }
+
+
+def _prepare_qa_arbitration_payload(validation: Dict[str, Any]) -> Dict[str, Any]:
+    issues = validation.get("blocking_issues")
+    if issues is None:
+        issues = validation.get("failures")
+    if issues is None:
+        issues = validation.get("issues")
+    severity = validation.get("severity") or (
+        "critical" if validation.get("has_blockers") else "minor"
+    )
+    payload = {
+        "qa_passed": bool(validation.get("qa_passed")),
+        "issues": issues or [],
+        "severity": severity,
+        "needs_new_draft": bool(
+            validation.get("needs_new_draft") or validation.get("requires_new_draft")
+        ),
+        "reason": validation.get("summary") or validation.get("reason", ""),
+    }
+    return payload
 
 # ============================================================================
 # MCP STACK ROUTING HELPERS
@@ -622,7 +734,11 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
     critique_prompt = state['prompts']['prompts'].get('critique_prompt', "Critique bullets")
     bullets = state['bullets']['generated_bullets']
     critiques = await critique_agent.run_async(bullets, critique_prompt, workflow_id)
-    payload = {"bullets": {"critiqued_bullets": critiques}}
+    payload: Dict[str, Any] = {"bullets": {"critiqued_bullets": critiques}}
+    arbitration_engine = _get_arbitration_engine(workflow_context)
+    arbitration_payload = _prepare_bullet_arbitration_payload(critiques, workflow_context)
+    report = arbitration_engine.run_check("bullets_post_selection", arbitration_payload)
+    payload["arbitration"] = _merge_arbitration_payload(state, "bullets_post_selection", report)
     node_result = node_success("run_critique_bullets", payload)
     return {NODE_RESULT_KEY: node_result, **payload}
 
@@ -660,10 +776,14 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
     
     validation = await route_to_stack("QAStack", context, state, workflow_id)
     log_event("QAStack", "completed", {"workflow_id": workflow_id})
-    payload = {
+    payload: Dict[str, Any] = {
         "qa": {"validation_results": validation, "qa_passed": validation.get("qa_passed", False)},
         "artifacts": {"artifacts": {"final_resume": state['draft']['sections'], "qa_report": validation}},
     }
+    arbitration_engine = _get_arbitration_engine(workflow_context)
+    arbitration_payload = _prepare_qa_arbitration_payload(validation)
+    report = arbitration_engine.run_check("qa_post_validation", arbitration_payload)
+    payload["arbitration"] = _merge_arbitration_payload(state, "qa_post_validation", report)
     node_result = node_success("run_qa_validation", payload)
     return {NODE_RESULT_KEY: node_result, **payload}
 
@@ -772,6 +892,19 @@ def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
         )
         return "global_replanner"
 
+    route = _extract_arbitration_route(state, payload, "bullets_post_selection")
+    robustness = _get_robustness_stack(workflow_context)
+    if route == "RETRY_BULLETS":
+        return "retry_bullets"
+    if route in {"GLOBAL_REPLAN", "REPLAN_STRATEGY"}:
+        return "global_replanner"
+    if route == "ACCEPT":
+        robustness.reset("bullets_quality")
+        return "bullets_passed"
+    if route and route != "ACCEPT":
+        return "global_replanner"
+
+    # TODO: Remove fallback logic once all stacks emit arbitration data.
     bullet_state = {}
     if isinstance(payload, dict) and isinstance(payload.get("bullets"), dict):
         bullet_state = payload.get("bullets", {})
@@ -783,16 +916,13 @@ def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
         return "global_replanner"
     avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / len(critiques)
     if avg_score >= 7.0:
+        robustness.reset("bullets_quality")
         return "bullets_passed"
-    retries = state.get('metadata', {}).get('retries', {}).get('bullet_retries', 0)
-    if retries < workflow_context.config.agent_stacks.max_local_retries:
-        if 'metadata' not in state: state['metadata'] = {}
-        if 'retries' not in state['metadata']: state['metadata']['retries'] = {}
-        state['metadata']['retries']['bullet_retries'] = retries + 1
+    if robustness.should_retry("bullets_quality", "fallback_avg_score"):
         return "retry_bullets"
     return "global_replanner"
     
-def check_qa_passed(state: dict) -> str:
+def check_qa_passed(state: dict, workflow_context: WorkflowContext) -> str:
     """Node 9 conditional: Check QA and retries (v10.7: Rerouted)"""
     result = _extract_node_result(state, "run_qa_validation")
     status = _result_status(result)
@@ -806,6 +936,27 @@ def check_qa_passed(state: dict) -> str:
         )
         return "global_replanner"
 
+    route = _extract_arbitration_route(state, payload, "qa_post_validation")
+    robustness = _get_robustness_stack(workflow_context)
+
+    if route in {"RETRY_QA", "RETRY_DRAFTING"}:
+        if route == "RETRY_DRAFTING":
+            return "retry_drafting"
+        if robustness.should_retry("qa_validation", "qa_failed"):
+            return "retry_drafting"
+        return "global_replanner"
+
+    if route in {"GLOBAL_REPLAN", "REPLAN_STRATEGY"}:
+        return "global_replanner"
+
+    if route == "ACCEPT":
+        robustness.reset("qa_validation")
+        return "qa_passed"
+
+    if route:
+        return "global_replanner"
+
+    # TODO: Remove fallback logic once all stacks emit arbitration data.
     qa_data = None
     if isinstance(payload, dict) and isinstance(payload.get("qa"), dict):
         qa_data = payload.get("qa")
@@ -813,13 +964,10 @@ def check_qa_passed(state: dict) -> str:
         qa_data = state.get('qa', {})
 
     if qa_data.get('qa_passed', False):
+        robustness.reset("qa_validation")
         return "qa_passed" # Route to constitutional review
 
-    retries = state.get('metadata', {}).get('retries', {}).get('qa_retries', 0)
-    if retries < 1: # Max 1 QA retry
-        if 'metadata' not in state: state['metadata'] = {}
-        if 'retries' not in state['metadata']: state['metadata']['retries'] = {}
-        state['metadata']['retries']['qa_retries'] = retries + 1
+    if robustness.should_retry("qa_validation", "fallback_qa_failed"):
         return "retry_drafting"
     return "global_replanner"
 
@@ -929,7 +1077,7 @@ def get_graph_app(
     
     # v10.7 (Fix #30): Reroute for constitutional review
     workflow.add_conditional_edges(
-        "run_qa_validation", check_qa_passed,
+        "run_qa_validation", partial(check_qa_passed, workflow_context=workflow_context),
         {
             "qa_passed": "run_constitutional_review", # 9 -> 9.5
             "retry_drafting": "run_drafting", # 9 -> 8
