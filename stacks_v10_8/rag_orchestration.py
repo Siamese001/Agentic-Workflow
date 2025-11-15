@@ -28,28 +28,58 @@ class RAGOrchestratorStack(BaseAgent):
         current_state = state
 
         plan_patch = await self._planning.run_async(current_state, workflow_id)
+        plan_payload = self._ensure_plan_metadata(plan_patch)
         current_state = self._adapter.apply_patch(current_state, plan_patch)
         self._append_a2a_message(
             current_state,
-            message_type="RAG_PLAN_CREATED",
+            message_type="PLAN_CREATED",
             payload={
                 "workflow_id": workflow_id,
-                "goal": (plan_patch.get("rag", {}) or {}).get("plan", {}).get("goal", ""),
+                "goal": plan_payload.get("goal", ""),
             },
+        )
+        self.log_feedback(
+            workflow_id,
+            "rag_plan",
+            "signal",
+            {"goal": plan_payload.get("goal"), "use_hyde": plan_payload.get("use_hyde", True)},
+        )
+
+        self._append_a2a_message(
+            current_state,
+            message_type="EXECUTION_STARTED",
+            payload={"workflow_id": workflow_id, "query_count": len(plan_payload.get("retrieval_queries", []))},
+        )
+        self.log_feedback(
+            workflow_id,
+            "rag_execution",
+            "signal",
+            {"phase": "start", "queries": len(plan_payload.get("retrieval_queries", []))},
         )
 
         execution_patch = await self._execution.run_async(current_state, workflow_id)
         current_state = self._adapter.apply_patch(current_state, execution_patch)
+        current_state = await self._maybe_retry_rag(
+            current_state, workflow_id, plan_payload
+        )
+
         bullets = current_state.get("resume", {}).get("experience_bullets", [])
         self._append_a2a_message(
             current_state,
-            message_type="RAG_EXECUTED",
+            message_type="EXECUTION_COMPLETED",
             payload={
                 "workflow_id": workflow_id,
                 "bullet_count": len(bullets),
             },
         )
+        self.log_feedback(
+            workflow_id,
+            "rag_execution",
+            "success",
+            {"phase": "complete", "bullets": len(bullets)},
+        )
 
+        await self._record_arbitration(current_state, workflow_id)
         return current_state
 
     def _append_a2a_message(
@@ -65,4 +95,72 @@ class RAGOrchestratorStack(BaseAgent):
                 "payload": payload,
                 "timestamp": datetime.utcnow().isoformat(),
             }
+        )
+
+    def _ensure_plan_metadata(self, plan_patch: Dict[str, Any]) -> Dict[str, Any]:
+        plan_payload = (plan_patch.get("rag", {}) or {}).get("plan", {})
+        if isinstance(plan_payload, dict) and "use_hyde" not in plan_payload:
+            plan_payload["use_hyde"] = True
+        return plan_payload
+
+    async def _maybe_retry_rag(
+        self,
+        state: Dict[str, Any],
+        workflow_id: str,
+        plan_payload: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        scm = getattr(self, "self_correction_manager", None)
+        bullets = state.get("resume", {}).get("experience_bullets", [])
+        should_retry = plan_payload.get("use_hyde", True) and not bullets
+        if not (should_retry and scm and scm.can_retry(workflow_id, "rag")):
+            return state
+
+        report = scm.start_retry(
+            workflow_id,
+            "rag",
+            issue="hyde_zero_results",
+            action="rerun_without_hyde",
+            metadata={"query_count": len(plan_payload.get("retrieval_queries", []))},
+        )
+        plan_payload["use_hyde"] = False
+        self._append_a2a_message(
+            state,
+            message_type="RETRY_TRIGGERED",
+            payload={"workflow_id": workflow_id, "reason": "hyde_zero_results"},
+        )
+        self.log_feedback(
+            workflow_id,
+            "rag_retry",
+            "retry",
+            {"reason": "hyde_zero_results"},
+        )
+
+        retry_patch = await self._execution.run_async(state, workflow_id)
+        state = self._adapter.apply_patch(state, retry_patch)
+        bullets_after = state.get("resume", {}).get("experience_bullets", [])
+        resolved = bool(bullets_after)
+        scm.finalize_retry(report, resolved, {"bullet_count": len(bullets_after)})
+        self.log_feedback(
+            workflow_id,
+            "rag_retry",
+            "success" if resolved else "failure",
+            {"resolved": resolved, "bullet_count": len(bullets_after)},
+        )
+        return state
+
+    async def _record_arbitration(self, state: Dict[str, Any], workflow_id: str) -> None:
+        engine = getattr(self.context, "arbitration_engine", None)
+        if engine is None:
+            return
+        report = await engine.run_check("prompt_rag_join", state)
+        bucket = state.setdefault("arbitration", {})
+        bucket["prompt_rag_join"] = report.model_dump()
+        self.log_feedback(
+            workflow_id,
+            "rag_arbitration",
+            "signal",
+            {
+                "decision": report.decision,
+                "confidence": report.confidence,
+            },
         )
