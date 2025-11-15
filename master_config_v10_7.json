@@ -79,6 +79,11 @@
     "generated_tools_path": "./generated_tools_v10_7",
     "enable_hot_reloading": true
   },
+  "meta_learning_advanced_config": {
+    "enabled": false,
+    "max_patterns": 100,
+    "prune_threshold_auto": true
+  },
   "feedback_config": {
     "enable_feedback_aware_agents": true,
     "feedback_cache_ttl_seconds": 60,
