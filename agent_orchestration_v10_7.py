@@ -39,14 +39,13 @@ import asyncio
 import os
 import importlib.util
 import inspect
-import time
 from typing import Dict, Any, List, Callable, Awaitable, Tuple, Optional
 from functools import wraps, partial
 
 # v10.7: Import from new core
 from core_v10_7 import (
     WorkflowContext, BaseAgent, StrategyPlan, PydanticSchemaError,
-    exponential_backoff_retry, CircuitBreakerOpenError,
+    CircuitBreakerOpenError,
     CircuitBreaker, WorkflowTimeoutError, AsyncTimeoutError, WorkflowError,
     ConfigV10_7, BaseTool,
     track_metrics,
@@ -74,17 +73,6 @@ except ImportError:
     )
 
 # v10.7: Import from new stacks
-from agent_stacks_v10_7 import (
-    PIISanitizerAgent,
-    BiasDetectorAgent,
-    PromptInjectionDetectorAgent,
-    QueryComplexityClassifier,
-    ToTStrategistAgent,
-    HILAmbiguityDetectorAgent,
-    HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent, # v10.7 (Fix #30)
-    DraftingGuildCoordinator
-)
 from agent_stacks_v10_8 import (
     BulletExecutionStack,
     DraftingExecutionStack,
@@ -94,6 +82,7 @@ from agent_stacks_v10_8 import (
     RAGExecutionStack,
     StateAdapterStack,
     StrategyStackV10_8,
+    RobustnessStack,
 )
 
 # v10.7: Import from new tools file
@@ -155,6 +144,35 @@ def _attach_arbitration_report(state: dict, stage: str, report: ArbitrationRepor
     if "arbitration" not in state or not isinstance(state["arbitration"], dict):
         state["arbitration"] = {}
     state["arbitration"][stage] = report.model_dump()
+
+
+def _get_robustness_stack(workflow_context: WorkflowContext) -> RobustnessStack:
+    stack = getattr(workflow_context, "_robustness_stack", None)
+    if stack is None:
+        stack = RobustnessStack(workflow_context)
+        setattr(workflow_context, "_robustness_stack", stack)
+    return stack
+
+
+def apply_robustness(stage_name: str):
+    """Decorator that routes node execution through the robustness stack."""
+
+    def decorator(func: Callable[..., Awaitable[Dict[str, Any]]]):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            workflow_context = kwargs.get("workflow_context")
+            if workflow_context is None and len(args) >= 2:
+                workflow_context = args[1]
+            robustness = _get_robustness_stack(workflow_context)
+
+            async def operation():
+                return await func(*args, **kwargs)
+
+            return await robustness.run_with_resilience(stage_name, operation)
+
+        return wrapper
+
+    return decorator
 
 
 # ============================================================================
@@ -521,98 +539,97 @@ class MetaLearningLoop(BaseAgent):
 # --- NODE DEFINITIONS (v10.7) ---
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_sanitize_pii")
 async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 0: Sanitize PII"""
+
     context = workflow_context
-    context.complexity = state.get('metadata', {}).get('complexity', 'unknown')
-    pii_agent = PIISanitizerAgent(context)
-    collector = getattr(context, "metrics_collector", None)
-
-    async def _invoke_with_metrics(callable_obj, agent_name: str, task_name: str, *args):
-        decorated = hasattr(callable_obj, "__wrapped__")
-        start = time.perf_counter()
-        try:
-            result = await asyncio.to_thread(callable_obj, *args)
-        except Exception as exc:
-            if collector and hasattr(collector, "record") and not decorated:
-                collector.record(
-                    agent_name,
-                    task_name,
-                    (time.perf_counter() - start) * 1000,
-                    success=False,
-                    error=str(exc),
-                    metadata={},
-                )
-            raise
-        else:
-            if collector and hasattr(collector, "record") and not decorated:
-                collector.record(
-                    agent_name,
-                    task_name,
-                    (time.perf_counter() - start) * 1000,
-                    success=True,
-                    error=None,
-                    metadata={},
-                )
-            return result
-
-    sanitized = await _invoke_with_metrics(pii_agent.run, "PIISanitizerAgent", "run_pii_sanitizer", state['resume']['master_resume'])
-
-    bias_agent = BiasDetectorAgent(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    bias_result = await _invoke_with_metrics(bias_agent.run, "BiasDetectorAgent", "run_bias_detector", state['job']['raw_jd'], workflow_id)
+    safety_stack = SafetyStackV10_8(context)
+
+    sanitized = await asyncio.to_thread(
+        safety_stack.sanitize_resume,
+        state.get('resume', {}).get('master_resume', {}),
+    )
+    bias_result = await asyncio.to_thread(
+        safety_stack.detect_bias,
+        state.get('job', {}).get('raw_jd', ''),
+        workflow_id,
+    )
+
+    patch = {
+        "resume": {"sanitized_resume": sanitized},
+        "safety": {"bias_detected": bias_result.get('bias_detected', False)},
+    }
+    adapter = StateAdapterStack(context)
+    new_state = adapter.apply_patch(state, patch)
 
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
 
-    return {
-        "resume": {"sanitized_resume": sanitized},
-        "safety": {"bias_detected": bias_result['bias_detected']}
-    }
+    return new_state
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_detect_prompt_injection")
 async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 0.5: Detect Prompt Injection"""
-    context = workflow_context
-    if not context.config.agent_stacks.enable_prompt_injection_detection:
-        if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
-            profile = workflow_context.tuning_profile
-            new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
-            workflow_context.tuning_profile = new_profile
-        return {"safety": {"injection_detected": False}}
 
-    workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    jd_result = await route_to_stack("SafetyGuardStack", context, state['job']['raw_jd'], workflow_id)
-    log_event("SafetyGuardStack", "run", {"workflow_id": workflow_id})
+    context = workflow_context
+    safety_stack = SafetyStackV10_8(context)
+
+    if not context.config.agent_stacks.enable_prompt_injection_detection:
+        patch = {"safety": {"injection_detected": False}}
+    else:
+        workflow_id = state.get('metadata', {}).get('workflow_id', '')
+        detection = await safety_stack.detect_prompt_injection_async(
+            state.get('job', {}).get('raw_jd', ''),
+            workflow_id,
+        )
+        log_event("SafetyGuardStack", "run", {"workflow_id": workflow_id})
+        patch = {
+            "safety": {
+                "injection_detected": detection.get('injection_detected', False)
+            }
+        }
+
+    adapter = StateAdapterStack(context)
+    new_state = adapter.apply_patch(state, patch)
 
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
 
-    return {"safety": {"injection_detected": jd_result.get('injection_detected', False)}}
+    return new_state
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_classify_complexity")
 async def run_classify_complexity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 1: Classify Complexity"""
+
     context = workflow_context
-    classifier = QueryComplexityClassifier(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    complexity = await classifier.run_async(state['job']['raw_jd'], workflow_id)
+    strategy_stack = StrategyStackV10_8(context)
+    complexity = await strategy_stack.classify_complexity_async(
+        state.get('job', {}).get('raw_jd', ''),
+        workflow_id,
+    )
     context.complexity = complexity
+
+    adapter = StateAdapterStack(context)
+    new_state = adapter.apply_patch(state, {"metadata": {"complexity": complexity}})
+
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"metadata": {"complexity": complexity}}
+
+    return new_state
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_tot_strategy")
 async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 2: ToT strategy"""
     context = workflow_context
@@ -639,7 +656,7 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
 
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_arbitration_after_strategy")
 async def run_arbitration_after_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after Strategy stack completion."""
 
@@ -652,7 +669,7 @@ async def run_arbitration_after_strategy(state: dict, workflow_context: Workflow
     return {"arbitration": state.get("arbitration", {})}
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_detect_ambiguity")
 async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 3: Proactive HIL ambiguity check"""
     context = workflow_context
@@ -662,24 +679,29 @@ async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -
             new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
             workflow_context.tuning_profile = new_profile
         return {"hil": {"ambiguity_report": {"ambiguity_detected": False, "confidence": 1.0, "reason": "HIL disabled", "question_for_human": ""}}}
-        
-    detector = HILAmbiguityDetectorAgent(context)
+
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
-    
-    strategy_plan = state['strategy']['strategy_plan']
-    if isinstance(strategy_plan, dict):
-        strategy_plan = StrategyPlan.model_validate(strategy_plan)
-    
-    ambiguity_result = await detector.run_async(strategy_plan, workflow_id)
+    hil_stack = HILStackV10_8(context)
+
+    strategy_plan = state.get('strategy', {}).get('strategy_plan')
+    ambiguity_result = await hil_stack.detect_ambiguity_async(strategy_plan, workflow_id)
     report = ambiguity_result.get("ambiguity_report")
-    if report.confidence < context.config.agent_stacks.ambiguity_confidence_threshold:
+    if report is None:
+        report = {"ambiguity_detected": False, "confidence": 0.0}
+    confidence_threshold = context.config.agent_stacks.ambiguity_confidence_threshold
+    if hasattr(report, "confidence") and report.confidence < confidence_threshold:
+        if hasattr(report, "ambiguity_detected"):
             report.ambiguity_detected = False
-    
+
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"hil": {"ambiguity_report": report.model_dump()}}
+
+    serialized = report.model_dump() if hasattr(report, "model_dump") else report
+    patch = {"hil": {"ambiguity_report": serialized}}
+    adapter = StateAdapterStack(context)
+    return adapter.apply_patch(state, patch)
 
 # v10.7 (Fix #5): Dummy node for parallel fork
 def prepare_parallel_run(state: dict) -> dict:
@@ -688,7 +710,7 @@ def prepare_parallel_run(state: dict) -> dict:
     return {}
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_prompt_engineering")
 async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 4: Generate dynamic prompts"""
     context = workflow_context
@@ -714,7 +736,7 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
     return state
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_rag_stack")
 async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5: Agentic RAG (v10.7 Fix #10: A2A enabled)"""
     context = workflow_context
@@ -738,7 +760,7 @@ def join_rag_and_prompt(state: dict) -> dict:
 
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_arbitration_after_join")
 async def run_arbitration_after_join(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after prompt/RAG join."""
 
@@ -751,7 +773,7 @@ async def run_arbitration_after_join(state: dict, workflow_context: WorkflowCont
     return {"arbitration": state.get("arbitration", {})}
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_generate_bullets")
 async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 6: Generate bullets (4-step)"""
     context = workflow_context
@@ -778,7 +800,7 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
     return state
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_critique_bullets")
 async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 7: Critique bullets"""
     context = workflow_context
@@ -801,7 +823,7 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
 
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_arbitration_after_bullets")
 async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after bullet critique/selection."""
 
@@ -814,7 +836,7 @@ async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowC
     return {"arbitration": state.get("arbitration", {})}
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_drafting")
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
     context = workflow_context
@@ -850,7 +872,7 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
 
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_arbitration_after_drafting")
 async def run_arbitration_after_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after drafting."""
 
@@ -883,7 +905,7 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
 
 
 @wrap_mcp
-@exponential_backoff_retry()
+@apply_robustness("run_arbitration_after_qa")
 async def run_arbitration_after_qa(state: dict, workflow_context: WorkflowContext) -> dict:
     """Arbitration node after QA validation."""
 
@@ -898,7 +920,7 @@ async def run_arbitration_after_qa(state: dict, workflow_context: WorkflowContex
 async def run_constitutional_review(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9.5: Constitutional Review (v10.7 Fix #30)"""
     context = workflow_context
-    agent = ConstitutionalReviewerAgent(context)
+    safety_stack = SafetyStackV10_8(context)
     artifacts_bucket = state.get('artifacts', {})
     final_resume: Any = None
     if isinstance(artifacts_bucket, dict):
@@ -922,12 +944,14 @@ async def run_constitutional_review(state: dict, workflow_context: WorkflowConte
 
     draft_text = json.dumps(final_resume)
     workflow_id = state.get('metadata', {}).get('workflow_id', context.workflow_id)
-    result = await agent.run_async(draft_text, workflow_id)
+    result = await safety_stack.run_constitutional_review_async(draft_text, workflow_id)
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"qa": {"constitutional_review": result.model_dump()}}
+    payload = result.model_dump() if hasattr(result, "model_dump") else result
+    adapter = StateAdapterStack(context)
+    return adapter.apply_patch(state, {"qa": {"constitutional_review": payload}})
 
 # HIL Nodes
 async def run_feedback_router(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -936,7 +960,7 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     human_feedback = state.get('hil', {}).get('raw_feedback') or "Default to drafting"
     hil_stack = HILStackV10_8(context)
-    route = await hil_stack.route_feedback_async(human_feedback, workflow_id)
+    route = await hil_stack.route_feedback_async(human_feedback, workflow_id, state)
     log_event("HILStack", "completed", {"workflow_id": workflow_id, "next_step": route.get("next_step")})
     hil_patch = {
         "hil": {
@@ -971,7 +995,7 @@ def human_in_the_loop_node(state: dict) -> dict:
 
 async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 12: Inject HIL Edits"""
-    _ = workflow_context
+    context = workflow_context
     logger.info("Injecting human-in-the-loop edits...")
     payload = state.get("hil", {}).get("payload")
     if not payload:
@@ -980,26 +1004,37 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
             profile = workflow_context.tuning_profile
             new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
             workflow_context.tuning_profile = new_profile
-        return {}
-    if 'sections' not in state['draft']:
-        state['draft']['sections'] = {}
+        return state
+
     reconciliation = state.get('hil', {}).get('reconciliation')
     if reconciliation and reconciliation.get('integrated_text'):
-        state['draft']['sections']['summary'] = reconciliation['integrated_text']
+        summary_text = reconciliation['integrated_text']
     else:
-        state['draft']['sections']['summary'] = f"[EDITED BY HUMAN]: {payload}"
+        summary_text = f"[EDITED BY HUMAN]: {payload}"
+
+    existing_summary = state.get('draft', {}).get('sections', {}).get('summary')
+    if isinstance(existing_summary, dict):
+        summary_payload = dict(existing_summary)
+        summary_payload['draft'] = summary_text
+    else:
+        summary_payload = {"draft": summary_text}
+
+    patch = {"draft": {"sections": {"summary": summary_payload}}}
+    adapter = StateAdapterStack(context)
+    new_state = adapter.apply_patch(state, patch)
     logger.info("HIL edit injected into draft summary.")
+
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"draft": state['draft']}
+    return new_state
 
 
 async def run_reconcile_specialists(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 11.5: Reconcile specialist contributions."""
     context = workflow_context
-    agent = HILReconciliationAgent(context)
+    hil_stack = HILStackV10_8(context)
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     specialist_feedback = state.get('hil', {}).get('specialist_feedback', [])
     persona_consensus_data = state.get('hil', {}).get('persona_consensus')
@@ -1011,12 +1046,19 @@ async def run_reconcile_specialists(state: dict, workflow_context: WorkflowConte
             logger.warning(f"Failed to parse persona consensus for reconciliation: {exc}")
 
     draft_sections = state.get('draft', {}).get('sections', {})
-    result = await agent.run_async(draft_sections, specialist_feedback, persona_consensus, workflow_id)
+    result = await hil_stack.reconcile_feedback_async(
+        draft_sections,
+        specialist_feedback,
+        persona_consensus,
+        workflow_id,
+    )
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"hil": {"reconciliation": result.model_dump()}}
+    reconciliation_payload = result.model_dump() if hasattr(result, "model_dump") else result
+    adapter = StateAdapterStack(context)
+    return adapter.apply_patch(state, {"hil": {"reconciliation": reconciliation_payload}})
 
 # --- CONDITIONAL EDGES (v10.7: Fix #30) ---
 
@@ -1036,30 +1078,31 @@ def check_ambiguity(state: dict) -> str:
 
 def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     """Node 7 conditional: Check bullet quality and retries"""
+
     critiques = state.get('bullets', {}).get('critiqued_bullets', [])
     if not critiques:
         return "global_replanner"
+
     avg_score = sum(b.get('critique', {}).get('score', 0) for b in critiques) / len(critiques)
+    robustness = _get_robustness_stack(workflow_context)
     if avg_score >= 7.0:
+        robustness.reset("bullets_quality")
         return "bullets_passed"
-    retries = state.get('metadata', {}).get('retries', {}).get('bullet_retries', 0)
-    if retries < workflow_context.config.agent_stacks.max_local_retries:
-        if 'metadata' not in state: state['metadata'] = {}
-        if 'retries' not in state['metadata']: state['metadata']['retries'] = {}
-        state['metadata']['retries']['bullet_retries'] = retries + 1
+
+    if robustness.should_retry("bullets_quality", "score_below_threshold"):
         return "retry_bullets"
     return "global_replanner"
-    
-def check_qa_passed(state: dict) -> str:
+
+
+def check_qa_passed(state: dict, workflow_context: WorkflowContext) -> str:
     """Node 9 conditional: Check QA and retries (v10.7: Rerouted)"""
+
+    robustness = _get_robustness_stack(workflow_context)
     if state.get('qa', {}).get('qa_passed', False):
-        return "qa_passed" # Route to constitutional review
-    
-    retries = state.get('metadata', {}).get('retries', {}).get('qa_retries', 0)
-    if retries < 1: # Max 1 QA retry
-        if 'metadata' not in state: state['metadata'] = {}
-        if 'retries' not in state['metadata']: state['metadata']['retries'] = {}
-        state['metadata']['retries']['qa_retries'] = retries + 1
+        robustness.reset("qa_validation")
+        return "qa_passed"  # Route to constitutional review
+
+    if robustness.should_retry("qa_validation", "qa_failed"):
         return "retry_drafting"
     return "global_replanner"
 
@@ -1181,7 +1224,7 @@ def get_graph_app(
     workflow.add_edge("run_qa_validation", "run_arbitration_after_qa") # 9 -> arbitration
 
     workflow.add_conditional_edges(
-        "run_arbitration_after_qa", check_qa_passed,
+        "run_arbitration_after_qa", partial(check_qa_passed, workflow_context=workflow_context),
         {
             "qa_passed": "run_constitutional_review", # 9 -> 9.5
             "retry_drafting": "run_drafting", # 9 -> 8
