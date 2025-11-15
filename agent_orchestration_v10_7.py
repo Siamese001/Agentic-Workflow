@@ -81,7 +81,6 @@ from agent_stacks_v10_7 import (
     QueryComplexityClassifier,
     ToTStrategistAgent,
     PromptEngineerAgent,
-    RAG_SearchAgent,
     AsyncBulletGeneratorAgent,
     AsyncBulletCritiqueAgent,
     HILAmbiguityDetectorAgent,
@@ -89,6 +88,7 @@ from agent_stacks_v10_7 import (
     ConstitutionalReviewerAgent, # v10.7 (Fix #30)
     DraftingGuildCoordinator
 )
+from agent_stacks_v10_8 import RAGExecutionStack
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -708,13 +708,21 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
 async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5: Agentic RAG (v10.7 Fix #10: A2A enabled)"""
     context = workflow_context
-    state_patch = await route_to_stack("RAGStack", context, state)
-    log_event("RAGStack", "completed", {"workflow_id": state.get('metadata', {}).get('workflow_id', '')})
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    stack = RAGExecutionStack(context)
+    patch = await stack.run_async(state, workflow_id)
+
+    resume = state.setdefault('resume', {})
+    resume['experience_bullets'] = patch.get('resume', {}).get('experience_bullets', [])
+    if 'rag' in patch:
+        state['rag'] = patch['rag']
+
+    log_event("RAGStack", "completed", {"workflow_id": workflow_id})
     if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state_patch
+    return state
 
 # v10.7 (Fix #5): Dummy node for parallel join
 def join_rag_and_prompt(state: dict) -> dict:
