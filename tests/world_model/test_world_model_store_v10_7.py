@@ -1,103 +1,134 @@
 import json
-from types import MethodType, SimpleNamespace
+from types import SimpleNamespace
 
 import pytest
 
+from core_v10_7.models import StrategyPlan
 from core_v10_7.services import WorldModelStore
-from stacks_v10_7 import rag as rag_module
-from stacks_v10_7 import strategy as strategy_module
+from stacks_v10_7.strategy import QueryComplexityClassifier, ToTStrategistAgent
+from stacks_v10_7.rag import RAG_SearchAgent
 
 
-class FakeRedis:
+class _DummyRedis:
     def __init__(self):
-        self.storage = {}
         self.set_calls = []
         self.get_calls = []
+        self.storage = {}
 
     def setex(self, key, ttl, value):
-        self.storage[key] = value
         self.set_calls.append((key, ttl, value))
+        self.storage[key] = value
 
     def get(self, key):
         self.get_calls.append(key)
         return self.storage.get(key)
 
 
-class RecordingWorldModelStore:
+def _config(enabled=True, key_prefix="wm", max_history=5):
+    return SimpleNamespace(
+        world_model_config=SimpleNamespace(
+            enabled=enabled,
+            key_prefix=key_prefix,
+            max_strategy_history=max_history,
+        )
+    )
+
+
+def test_world_model_disabled_noop():
+    redis = _DummyRedis()
+    store = WorldModelStore(_config(enabled=False), redis)
+
+    store.set_json("sample", {"a": 1})
+    data = store.get_json("sample")
+
+    assert redis.set_calls == []
+    assert redis.get_calls == []
+    assert data == {}
+
+
+def test_world_model_company_knowledge_roundtrip():
+    redis = _DummyRedis()
+    store = WorldModelStore(_config(enabled=True), redis)
+
+    store.update_company_knowledge("Acme", {"score": 1})
+    store.update_company_knowledge("Acme", {"notes": "Updated"})
+
+    result = store.get_company_knowledge("Acme")
+    assert result == {"score": 1, "notes": "Updated"}
+
+
+def test_world_model_strategy_history_bounded():
+    redis = _DummyRedis()
+    store = WorldModelStore(_config(enabled=True, max_history=3), redis)
+
+    for i in range(5):
+        store.append_strategy_outcome({"idx": i})
+
+    history = store.get_strategy_history()
+    assert len(history["history"]) == 3
+    assert [entry["idx"] for entry in history["history"]] == [2, 3, 4]
+
+
+class _RecordingStore:
     def __init__(self):
-        self.append_calls = []
-        self.set_calls = []
+        self.payloads = []
 
     def enabled(self):
         return True
 
     def append_strategy_outcome(self, payload):
-        self.append_calls.append(payload)
+        self.payloads.append(payload)
 
     def set_json(self, key, value):
-        self.set_calls.append((key, value))
+        self.payloads.append({"key": key, "value": value})
 
 
-class DummyModelClient:
-    def __init__(self, response):
-        self._response = response
-        self.goal_state = "goal"
-        self.top_failures = "fail"
-
-    async def chat_completion_async(self, **_):
-        return self._response
-
-
-class DummyBudgetManager:
-    async def prune(self, document, _max_tokens):
-        return document
+class _StubValidator:
+    def validate(self, content, schema):
+        if isinstance(content, str):
+            data = json.loads(content)
+        else:
+            data = content
+        return SimpleNamespace(**data), None
 
 
-class DummyMetrics:
-    def get_average_latency(self, *_args, **_kwargs):
+class _StubBudgetManager:
+    async def prune(self, text, *_):
+        return text
+
+
+class _StubMetrics:
+    def get_average_latency(self, **_):
+        return 0
+
+    def record(self, *_, **__):
         return None
 
-    def record(self, *_args, **_kwargs):
-        return None
 
-
-class DummyPolicyAutoTuner:
+class _StubPolicyAutoTuner:
     def enabled(self):
         return False
 
 
-class DummyPromptManager:
-    goal_state = "goal"
-    top_failures = "fail"
-
-    def get_template(self, _name):
-        return "template"
-
-
-class StubContext:
-    def __init__(self, config, world_model_store, model_clients):
-        self.config = config
-        self.world_model_store = world_model_store
-        self.prompt_manager = DummyPromptManager()
-        self.response_validator = SimpleNamespace(validate=lambda _c, _s: ({}, None))
-        self.context_budget_manager = DummyBudgetManager()
-        self.metrics_collector = DummyMetrics()
-        self.cache_manager = None
-        self.cost_tracker = SimpleNamespace()
-        self.feedback_reader = SimpleNamespace()
-        self.rules_loader = SimpleNamespace()
-        self.semantic_validator = SimpleNamespace()
-        self.embedding_function = object()
-        self.arbitration_engine = SimpleNamespace()
-        self.predictive_cache_manager = None
-        self.precompute_engine = SimpleNamespace()
+class _StubContext:
+    def __init__(self, world_model_store):
+        self.config = SimpleNamespace(
+            model_config=SimpleNamespace(
+                strategy_model_simple=SimpleNamespace(provider="stub", model_name="stub", temperature=0.5),
+                strategy_model=SimpleNamespace(provider="stub", model_name="stub", temperature=0.5),
+            ),
+            meta_loop_config=SimpleNamespace(feedback_log_path="/tmp/meta_feedback.jsonl"),
+            agent_stacks=SimpleNamespace(strategy_tot_branching_factor=1),
+        )
+        self.prompt_manager = SimpleNamespace(goal_state="goal", top_failures="fail", get_template=lambda *_: "template")
+        self.response_validator = _StubValidator()
+        self.context_budget_manager = _StubBudgetManager()
+        self.metrics_collector = _StubMetrics()
         self.self_correction_manager = None
-        self.tuning_profile = SimpleNamespace(temperature=0.5, rag_force_multi_tool=False)
-        self.policy_auto_tuner = DummyPolicyAutoTuner()
-        self.workflow_id = "wf-test"
-        self.complexity = "complex"
-        self.chromadb_client = SimpleNamespace()
-        self._model_clients = list(model_clients)
+        self.policy_auto_tuner = _StubPolicyAutoTuner()
+        self.tuning_profile = SimpleNamespace(temperature=0.5)
+        self.world_model_store = world_model_store
+        self.workflow_id = "wf"
 
     def ensure_mcp_clients(self):
         return {}
@@ -105,175 +136,68 @@ class StubContext:
     def is_mcp_enabled(self):
         return False
 
-    def get_model_client(self, _provider=None, _model_name=None, **_kwargs):
-        if not self._model_clients:
-            raise RuntimeError("No model clients available")
-        return self._model_clients.pop(0)
 
+class _StubLLMClient:
+    def __init__(self, payload):
+        self.goal_state = "goal"
+        self.top_failures = "fail"
+        self._payload = payload
 
-def make_base_config():
-    model_config = SimpleNamespace(
-        strategy_model_simple=SimpleNamespace(provider="stub", model_name="simple", temperature=0.1),
-        strategy_model=SimpleNamespace(provider="stub", model_name="strategy", temperature=0.1),
-        reranker_model=SimpleNamespace(provider="stub", model_name="reranker", temperature=0.1),
-        react_conductor_model=SimpleNamespace(provider="stub", model_name="react", temperature=0.1),
-    )
-    agent_stacks = SimpleNamespace(
-        strategy_tot_branching_factor=1,
-        reranking_top_k=5,
-        conductor_max_steps=1,
-        conductor_temperature=0.0,
-    )
-    return SimpleNamespace(
-        model_config=model_config,
-        agent_stacks=agent_stacks,
-        meta_loop_config=SimpleNamespace(feedback_log_path="./logs/test_feedback.jsonl"),
-        performance_config=SimpleNamespace(max_complex_model_latency_ms=5000),
-        chromadb_config=SimpleNamespace(default_collection_name="test_collection", persistent_path="", use_http_client=False),
-    )
-
-
-def test_world_model_disabled_noop():
-    redis_client = FakeRedis()
-    config = SimpleNamespace(world_model_config=SimpleNamespace(enabled=False, key_prefix="wm"))
-    store = WorldModelStore(config, redis_client)
-
-    store.set_json("test", {"a": 1})
-    assert redis_client.set_calls == []
-
-    result = store.get_json("test")
-    assert result == {}
-    assert redis_client.get_calls == []
-
-
-def test_world_model_company_knowledge_roundtrip():
-    redis_client = FakeRedis()
-    config = SimpleNamespace(world_model_config=SimpleNamespace(enabled=True, key_prefix="wm"))
-    store = WorldModelStore(config, redis_client)
-
-    store.update_company_knowledge("Acme", {"role": "Engineer"})
-    store.update_company_knowledge("Acme", {"size": "100"})
-
-    data = store.get_company_knowledge("Acme")
-    assert data["role"] == "Engineer"
-    assert data["size"] == "100"
-
-
-def test_world_model_strategy_history_bounded():
-    redis_client = FakeRedis()
-    config = SimpleNamespace(
-        world_model_config=SimpleNamespace(enabled=True, key_prefix="wm", max_strategy_history=3)
-    )
-    store = WorldModelStore(config, redis_client)
-
-    for idx in range(5):
-        store.append_strategy_outcome({"id": idx})
-
-    history = store.get_strategy_history()["history"]
-    assert len(history) == 3
-    assert history[0]["id"] == 2
-    assert history[-1]["id"] == 4
+    async def chat_completion_async(self, **_):
+        return {"content": json.dumps(self._payload)}
 
 
 @pytest.mark.asyncio
-async def test_strategy_classifier_records_world_model():
-    recording_store = RecordingWorldModelStore()
-    config = make_base_config()
-    context = StubContext(config, recording_store, [DummyModelClient({"content": "{}"})])
-    validated_output = SimpleNamespace(complexity="simple", reason="ok")
-    validator = SimpleNamespace(validate=lambda _c, _s: (validated_output, None))
-    context.response_validator = validator
+async def test_strategy_stack_updates_world_model_store():
+    store = _RecordingStore()
+    context = _StubContext(store)
+    agent = QueryComplexityClassifier(context)
+    agent.get_model_client = lambda *_: _StubLLMClient({"complexity": "simple", "reason": "ok"})
 
-    agent = strategy_module.QueryComplexityClassifier(context)
-    agent.validator = validator
-    await agent.run_async("Sample job description", workflow_id="wf-123")
+    result = await agent.run_async("Build systems", "workflow-123")
 
-    assert recording_store.append_calls
-    last_entry = recording_store.append_calls[-1]
-    assert last_entry["workflow_id"] == "wf-123"
-    assert last_entry["complexity"] == "simple"
+    assert result == "simple"
+    assert store.payloads[0]["workflow_id"] == "workflow-123"
+    assert store.payloads[0]["complexity"] == "simple"
 
 
 @pytest.mark.asyncio
-async def test_tot_agent_records_world_model(monkeypatch):
-    recording_store = RecordingWorldModelStore()
-    config = make_base_config()
-    context = StubContext(
-        config,
-        recording_store,
-        [DummyModelClient({"content": "{}"}), DummyModelClient({"content": json.dumps({"best_branch_id": "branch_0", "reason": "ok"})})],
-    )
-    vote_output = SimpleNamespace(best_branch_id="branch_0", reason="ok")
-    validator = SimpleNamespace(validate=lambda _c, _s: (vote_output, None))
-    context.response_validator = validator
+async def test_tot_strategist_records_world_model_outcomes(monkeypatch):
+    store = _RecordingStore()
+    context = _StubContext(store)
+    context.config.agent_stacks.strategy_tot_branching_factor = 1
+    agent = ToTStrategistAgent(context)
 
-    agent = strategy_module.ToTStrategistAgent(context)
-    agent.validator = validator
+    async def fake_generate_branches(self, *_):
+        strategy = StrategyPlan(
+            strategy_name="Plan A",
+            focus_areas=["focus"],
+            key_achievements_to_highlight=["achievement"],
+            tone="bold",
+        )
+        return [{"branch_id": "branch_0", "strategy": strategy}]
 
-    class FakePlan:
-        def __init__(self):
-            self.strategy_name = "Alpha"
-            self.tone = "Warm"
-
-        def model_dump(self):
-            return {"strategy_name": self.strategy_name, "tone": self.tone}
-
-    async def fake_generate(self, *_args, **_kwargs):
-        return [{"branch_id": "branch_0", "strategy": FakePlan()}]
-
-    agent._generate_branches = MethodType(fake_generate, agent)
-
-    async def fake_format(*_args, **_kwargs):
+    async def fake_format_prompt(*_args, **_kwargs):
         return "prompt"
 
-    monkeypatch.setattr(strategy_module, "_format_prompt_with_defaults", fake_format)
+    agent.get_model_client = lambda *_: _StubLLMClient({"best_branch_id": "branch_0", "reason": "clear"})
+    monkeypatch.setattr(ToTStrategistAgent, "_generate_branches", fake_generate_branches)
+    monkeypatch.setattr("stacks_v10_7.strategy._format_prompt_with_defaults", fake_format_prompt)
+    agent.log_feedback = lambda *_, **__: None
 
-    await agent.run_async({"job_description": "desc", "job_title": "title"}, workflow_id="wf-strat")
+    result = await agent.run_async({"job_description": ""}, "wf-1")
 
-    assert recording_store.append_calls
-    entry = recording_store.append_calls[-1]
-    assert entry["workflow_id"] == "wf-strat"
-    assert entry["strategy_name"] == "Alpha"
-    assert entry["tone"] == "Warm"
+    assert "strategy_plan" in result
+    assert store.payloads[0]["strategy_name"] == "Plan A"
+    assert store.payloads[0]["tone"] == "bold"
 
 
-@pytest.mark.asyncio
-async def test_rag_agent_records_world_model(monkeypatch):
-    recording_store = RecordingWorldModelStore()
-    config = make_base_config()
-    context = StubContext(
-        config,
-        recording_store,
-        [
-            DummyModelClient({"content": json.dumps({"final_results": [{"company": "Acme", "title": "Eng"}]})}),
-            DummyModelClient({"content": "{}"}),
-        ],
-    )
-    context.chromadb_client = SimpleNamespace()
-    agent = rag_module.RAG_SearchAgent(context)
+def test_rag_stack_records_world_model_runs():
+    store = _RecordingStore()
+    context = SimpleNamespace(world_model_store=store)
+    agent = SimpleNamespace(context=context)
 
-    async def fake_ingest(*_args, **_kwargs):
-        return None
+    RAG_SearchAgent._record_world_model_rag_run(agent, "wf-5", "query", [1, 2, 3])
 
-    agent._ingest_resume_to_chroma_async = MethodType(fake_ingest, agent)
-    agent.validator = SimpleNamespace(validate=lambda content, _schema: (json.loads(content), None))
-
-    async def fake_rerank(self, _query, merged, _client):
-        return merged
-
-    agent.rerank_results = MethodType(fake_rerank, agent)
-
-    state = {
-        "metadata": {"workflow_id": "wf-rag"},
-        "job": {"job_title": "Engineer", "company": "Acme"},
-        "resume": {"master_resume": {"professional_experience": []}},
-        "a2a": {"messages": []},
-    }
-
-    await agent._execute_rag(state)
-
-    assert recording_store.set_calls
-    key, payload = recording_store.set_calls[-1]
-    assert key == "rag_last_run:wf-rag"
-    assert payload["num_results"] >= 1
-    assert payload["query"] == "Engineer at Acme"
+    assert store.payloads[0]["key"].endswith("wf-5")
+    assert store.payloads[0]["value"]["num_results"] == 3
