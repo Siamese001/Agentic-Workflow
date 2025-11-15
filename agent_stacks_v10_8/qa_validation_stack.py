@@ -20,6 +20,8 @@ from agent_tools_v10_7 import (
     QAWordCountValidatorTool,
 )
 
+from core_v10_7 import StrategyPlan
+
 
 class QAValidationStack:
     """Runs the QA tool suite and emits a normalized patch."""
@@ -86,6 +88,27 @@ class QAValidationStack:
                 "qa_passed": qa_passed,
             }
         }
+
+    async def run_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Normalize the strategy plan and delegate to ``run_async``."""
+
+        workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
+        strategy_payload = state.get("strategy", {}).get("strategy_plan")
+        typed_plan: Optional[StrategyPlan] = None
+        needs_patch = False
+        if isinstance(strategy_payload, dict):
+            typed_plan = StrategyPlan.model_validate(strategy_payload)
+            needs_patch = True
+        elif isinstance(strategy_payload, StrategyPlan):
+            typed_plan = strategy_payload
+
+        patch = await self.run_async(state, workflow_id)
+        if needs_patch and typed_plan is not None:
+            strategy_patch = {"strategy": {"strategy_plan": typed_plan}}
+            patch = self._merge_patch(patch, strategy_patch)
+        return patch
 
     def _build_tool_input(self, state: Dict[str, Any]) -> Dict[str, Any]:
         draft_sections = state.get("draft", {}).get("sections", {})
@@ -188,6 +211,21 @@ class QAValidationStack:
             return f"All {total} QA validators passed."
         plural = "issue" if issue_count == 1 else "issues"
         return f"{issue_count} {plural} flagged across {total} validators."
+
+    def _merge_patch(self, base: Dict[str, Any], addition: Dict[str, Any]) -> Dict[str, Any]:
+        merged: Dict[str, Any] = dict(base)
+        for key, value in addition.items():
+            if (
+                key in merged
+                and isinstance(merged[key], dict)
+                and isinstance(value, dict)
+            ):
+                merged[key] = self._merge_patch(
+                    merged[key], value
+                )  # type: ignore[arg-type]
+            else:
+                merged[key] = value
+        return merged
 
 
 __all__ = ["QAValidationStack"]
