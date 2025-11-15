@@ -138,6 +138,14 @@ class ToTStrategistAgent(BaseAgent):
     ) -> Dict[str, Any]:
         self.log_info("Generating ToT strategy with voting (v10.7)...")
 
+        workflow_id = workflow_id or ""
+        episodic = getattr(self.context, "episodic_memory", None)
+        if episodic and workflow_id:
+            prior = episodic.get(workflow_id)
+            self.log_debug(
+                f"Episodic prior events: {len(prior.get('events', []))}"
+            )
+
         branching_factor = self.config.agent_stacks.strategy_tot_branching_factor
         client = self.get_model_client("strategy_model")
 
@@ -225,7 +233,17 @@ class ToTStrategistAgent(BaseAgent):
         # ======================================================
         # 🔥 CRITICAL FIX — ALWAYS RETURN DICTS, NEVER MODELS
         # ======================================================
-        return {
+        result = {
             "strategy_plan": selected_strategy.model_dump(),
             "tot_branches": [b["strategy"].model_dump() for b in branches],
         }
+        if episodic and workflow_id:
+            episodic.append(
+                workflow_id,
+                {
+                    "stack": "strategy",
+                    "event": "strategy_selected",
+                    "strategy_name": selected_strategy.strategy_name,
+                },
+            )
+        return result

@@ -126,6 +126,13 @@ class RAG_SearchAgent(BaseAgent):
 
     @track_metrics("run_agentic_rag")
     async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        workflow_id = state.get("metadata", {}).get("workflow_id", "")
+        episodic = getattr(self.context, "episodic_memory", None)
+        if episodic and workflow_id:
+            prior = episodic.get(workflow_id)
+            self.log_debug(
+                f"Episodic prior events: {len(prior.get('events', []))}"
+            )
         # Predictive caching hook: prefetch embeddings and HyDE doc
         pcm = self.context.predictive_cache_manager
         if pcm and pcm.enabled():
@@ -143,7 +150,17 @@ class RAG_SearchAgent(BaseAgent):
             if self.context.tuning_profile.rag_force_multi_tool:
                 state.setdefault("rag", {})["force_multi_tool"] = True
         base_result, meta = await self._execute_rag(state)
-        return await self._maybe_self_correct(state, base_result, meta)
+        result = await self._maybe_self_correct(state, base_result, meta)
+        if episodic and workflow_id:
+            episodic.append(
+                workflow_id,
+                {
+                    "stack": "rag",
+                    "event": "rag_results",
+                    "count": meta.get("experience_bullets", 0),
+                },
+            )
+        return result
 
     async def _execute_rag(
         self,
