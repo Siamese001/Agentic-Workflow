@@ -169,7 +169,8 @@ async def run_workflow_async(
              raise WorkflowError("Workflow rejected, likely due to prompt injection.")
         
         # v10.7 (Fix #30): Check for constitutional failure
-        if "failed_constitution" in final_state_dict.get("qa", {}).get("constitutional_review", {}):
+        review = final_state_dict.get("qa", {}).get("constitutional_review", {})
+        if isinstance(review, dict) and not review.get("passed", True):
              logger.error(f"Workflow {workflow_id} FAILED CONSTITUTIONAL REVIEW.")
              raise WorkflowError("Workflow rejected due to constitutional failure.")
 

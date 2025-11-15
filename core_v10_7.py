@@ -49,6 +49,7 @@ from chromadb.utils import embedding_functions
 
 from mcp import get_tool, get_schema, sync_context
 from telemetry_v10_7 import log_event
+from stacks_v10_8.constitutional_engine import ConstitutionalReviewResult
 import core_v10_7_services as _core_v10_7_services
 from core_v10_7_services import (
     ArbitrationEngine,
@@ -418,12 +419,6 @@ class HILFeedbackRoute(BaseModel):
         None,
         description="Latest reconciliation result from specialist feedback"
     )
-
-# v10.7 (Fix #30): New model for Constitutional AI
-class ConstitutionalReviewResult(BaseModel):
-    review_passed: bool = Field(..., description="True if the output passes all constitutional principles")
-    violations_found: List[str] = Field(..., description="A list of principles that were violated")
-    feedback: str = Field(..., description="Specific feedback on how to correct the violations")
 
 # ============================================================================
 # v10.7: RESILIENCE & OBSERVABILITY (Preserved)
@@ -978,7 +973,7 @@ MODE: ETHICAL
 TASK: Review the final draft against the constitution.
 Constitution: {constitution}
 Draft: {final_draft}
-Example: {{"review_passed": false, "violations_found": ["Principle of Humility"], "feedback": "Draft is too arrogant."}}
+Example: {{"passed": false, "violations": [{{"rule_id": "no_discriminatory_framing", "message": "Draft excludes applicants"}}]}}
 REFLECTION: Does this draft truly align with all principles?
 Your Review:
 """, # v10.7 (Fix #30)

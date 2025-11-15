@@ -42,7 +42,6 @@ from core_v10_7 import (
     ConfigV10_7, BaseTool,
     track_metrics,
     _format_prompt_with_defaults,
-    ConstitutionalReviewResult, # v10.7 (Fix #30)
     PersonaConsensus,
     wrap_mcp,
     MCPClientStub,
@@ -83,11 +82,11 @@ from agent_stacks_v10_7 import (
     AsyncBulletCritiqueAgent,
     HILAmbiguityDetectorAgent,
     HILFeedbackRouterAgent,
-    ConstitutionalReviewerAgent, # v10.7 (Fix #30)
     DraftingGuildCoordinator
 )
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack, SafetyReport
 from stacks_v10_8.policy_stack import PolicyStack
+from stacks_v10_8.constitutional_engine import ConstitutionalEngine
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -829,10 +828,10 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
 async def run_constitutional_review(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9.5: Constitutional Review (v10.7 Fix #30)"""
     context = workflow_context
-    agent = ConstitutionalReviewerAgent(context)
+    engine = getattr(context, "constitutional_engine", ConstitutionalEngine())
     draft_text = json.dumps(state['artifacts']['artifacts']['final_resume'])
-    result = await agent.run_async(draft_text, state['metadata']['workflow_id'])
-    return {"qa": {"constitutional_review": result.model_dump()}}
+    result = engine.review_text(draft_text)
+    return {"qa": {"constitutional_review": result.dict()}}
 
 # HIL Nodes
 async def run_feedback_router(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -1049,12 +1048,13 @@ def check_qa_passed(
 def check_constitution(state: dict) -> str:
     """Node 9.5 conditional: Check constitutional review (v10.7 Fix #30)"""
     review = state.get('qa', {}).get('constitutional_review', {})
-    if review.get("review_passed", False):
+    if review.get("passed", False):
         return "passed_constitution"
-    else:
-        logger.error(f"!!! CONSTITUTIONAL REVIEW FAILED. Halting workflow. !!!")
-        logger.error(f"Violations: {review.get('violations_found')}")
-        return "failed_constitution"
+
+    logger.error("!!! CONSTITUTIONAL REVIEW FAILED. Halting workflow. !!!")
+    violations = review.get("violations", [])
+    logger.error(f"Violations: {violations}")
+    return "failed_constitution"
 
 def route_feedback(state: dict) -> str:
     """Node 11 conditional: Route based on human feedback"""

@@ -5,6 +5,7 @@ from typing import Any, Dict
 
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack
 from stacks_v10_8.policy_stack import PolicyStack
+from stacks_v10_8.constitutional_engine import ConstitutionalEngine
 
 
 class DraftingExecutionStack:
@@ -22,6 +23,11 @@ class DraftingExecutionStack:
             context,
             "policy_stack",
             PolicyStack(context, debug_mode),
+        )
+        self.constitutional_engine = getattr(
+            context,
+            "constitutional_engine",
+            ConstitutionalEngine(),
         )
 
     async def run_async(
@@ -41,4 +47,6 @@ class DraftingExecutionStack:
         state_patch["safety_report"] = safety_report.to_dict()
         decision = self.policy_stack.guard_output(state_patch)
         state_patch["policy"] = decision.model_dump()
+        review = self.constitutional_engine.review_node(state_patch)
+        state_patch["constitutional_review"] = review.dict()
         return state_patch
