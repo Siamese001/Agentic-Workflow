@@ -73,3 +73,27 @@ class HILStackV10_8:
         """Convene the existing virtual reviewer council."""
 
         return await self._virtual_council.run_async(human_feedback, intent_clusters, workflow_id)
+
+    async def inject_edit_from_state_async(
+        self, state: Dict[str, Any], workflow_id: str
+    ) -> Dict[str, Any]:
+        """Build the summary patch for a HIL edit injection."""
+
+        payload = state.get("hil", {}).get("payload")
+        if not payload:
+            return {}
+
+        reconciliation = state.get("hil", {}).get("reconciliation")
+        if reconciliation and reconciliation.get("integrated_text"):
+            summary_text = reconciliation["integrated_text"]
+        else:
+            summary_text = f"[EDITED BY HUMAN]: {payload}"
+
+        existing_summary = state.get("draft", {}).get("sections", {}).get("summary")
+        if isinstance(existing_summary, dict):
+            summary_payload = dict(existing_summary)
+            summary_payload["draft"] = summary_text
+        else:
+            summary_payload = {"draft": summary_text}
+
+        return {"draft": {"sections": {"summary": summary_payload}}}
