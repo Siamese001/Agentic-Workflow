@@ -192,6 +192,32 @@ class AutonomyEngine:
         return routing_hints
 
 
+class CollaborationEngine:
+    """
+    v10.7: Manages agent teams, A2A feedback merging, and
+    multi-agent coordination signals.
+    """
+
+    def __init__(self, config, episodic_memory=None):
+        self.config = config
+        self.episodic_memory = episodic_memory
+        self.logger = logging.getLogger(f"{__name__}.CollaborationEngine")
+
+    def enabled(self):
+        cfg = getattr(self.config, "collaboration_config", None)
+        return bool(cfg and getattr(cfg, "enabled", False))
+
+    def form_team(self, stack_name: str) -> List[str]:
+        if not self.enabled():
+            return [stack_name]
+        return [stack_name, f"{stack_name}_aux"]
+
+    def merge_feedback(self, messages: List[Dict[str, Any]]) -> Dict[str, Any]:
+        if not self.enabled():
+            return {}
+        return {"merged_feedback_count": len(messages)}
+
+
 class SelfCorrectionManager:
     """Central registry for stack-local self-healing attempts."""
 
