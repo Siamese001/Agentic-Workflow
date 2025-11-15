@@ -247,12 +247,18 @@ class SelfCorrectionManager:
     _STACK_ALIASES = {
         "draftingstack": "drafting",
         "drafting": "drafting",
+        "draftstack": "drafting",
         "ragstack": "rag",
         "rag": "rag",
         "promptstack": "prompt",
         "prompt": "prompt",
         "qastack": "qa",
         "qa": "qa",
+        "bulletstack": "bullets",
+        "bullets": "bullets",
+        "bullet_generation": "bullets",
+        "hilstack": "hil",
+        "hil": "hil",
     }
 
     def __init__(self, config: ConfigV10_7):
@@ -265,6 +271,8 @@ class SelfCorrectionManager:
             "rag": heuristics_cfg.get("rag", {"enable": True}),
             "prompt": heuristics_cfg.get("prompt", {"enable": True}),
             "qa": heuristics_cfg.get("qa", {"enable": True}),
+            "bullets": heuristics_cfg.get("bullets", {"enable": True}),
+            "hil": heuristics_cfg.get("hil", {"enable": True}),
         }
         self.logger = logging.getLogger(f"{__name__}.SelfCorrectionManager")
         self._attempts: Dict[Tuple[str, str], int] = {}
@@ -1148,10 +1156,8 @@ class FeedbackLogReader:
                     except (json.JSONDecodeError, TypeError):
                         continue
                     entries.append(entry)
-                    if (
-                        self.self_correction_manager
-                        and entry.feedback_type == "failure"
-                    ):
+                    should_signal = entry.feedback_type in {"failure", "signal", "retry"}
+                    if self.self_correction_manager and should_signal:
                         self.self_correction_manager.register_signal(
                             entry.workflow_id,
                             "feedback",
@@ -1159,6 +1165,7 @@ class FeedbackLogReader:
                                 "agent": entry.agent_name,
                                 "task": entry.task,
                                 "details": entry.details,
+                                "feedback_type": entry.feedback_type,
                             },
                         )
             self._cache = entries
@@ -1779,6 +1786,7 @@ class ArbitrationEngine:
                 decision = "WARN"
                 reasons.append("RAG returned no results after join.")
                 confidence = 0.6
+                suggested_route = "RETRY_RAG"
 
         elif stage == "draft_post_assembly":
             draft_sections = state.get("draft", {}).get("sections")
@@ -1813,7 +1821,7 @@ class ArbitrationEngine:
             decision=decision,
             reasons=reasons,
             confidence=confidence,
-            suggested_route=suggested_route,
+            suggested_route=suggested_route or "",
             metrics_snapshot={"stage": stage, "decision": decision},
         )
 

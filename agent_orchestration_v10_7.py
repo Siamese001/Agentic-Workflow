@@ -39,6 +39,7 @@ import asyncio
 import os
 import importlib.util
 import inspect
+from datetime import datetime
 from typing import Dict, Any, List, Callable, Awaitable, Tuple, Optional
 from functools import wraps, partial
 
@@ -1102,6 +1103,56 @@ def route_feedback(state: dict) -> str:
     if next_step == "DELEGATE_SPECIALIST": return "to_delegation"
     return "to_drafting"
 
+
+def _append_hil_a2a(state: dict, message_type: str, payload: Dict[str, Any]) -> None:
+    channel = state.setdefault("a2a", {})
+    messages = channel.setdefault("messages", [])
+    messages.append(
+        {
+            "sender": "HILRouter",
+            "recipient": "ALL",
+            "message_type": message_type,
+            "payload": payload,
+            "timestamp": datetime.utcnow().isoformat(),
+        }
+    )
+
+
+async def run_prepare_hil_strategy_reentry(state: dict, workflow_context: WorkflowContext) -> dict:
+    workflow_id = state.get('metadata', {}).get('workflow_id', workflow_context.workflow_id)
+    _append_hil_a2a(state, "HIL_REENTRY_STRATEGY", {"workflow_id": workflow_id})
+    retries = state.setdefault("metadata", {}).setdefault("retries", {})
+    retries["hil_retries"] = retries.get("hil_retries", 0) + 1
+    log_event("HILStack", "strategy_reentry", {"workflow_id": workflow_id})
+    scm = getattr(workflow_context, "self_correction_manager", None)
+    if scm:
+        scm.register_signal(
+            workflow_id,
+            "hil",
+            {"route": "strategy"},
+        )
+    hil_state = state.setdefault("hil", {})
+    hil_state["next_step"] = "STRATEGY"
+    return state
+
+
+async def run_prepare_hil_drafting_reentry(state: dict, workflow_context: WorkflowContext) -> dict:
+    workflow_id = state.get('metadata', {}).get('workflow_id', workflow_context.workflow_id)
+    _append_hil_a2a(state, "HIL_REENTRY_DRAFTING", {"workflow_id": workflow_id})
+    retries = state.setdefault("metadata", {}).setdefault("retries", {})
+    retries["hil_retries"] = retries.get("hil_retries", 0) + 1
+    log_event("HILStack", "drafting_reentry", {"workflow_id": workflow_id})
+    scm = getattr(workflow_context, "self_correction_manager", None)
+    if scm:
+        scm.register_signal(
+            workflow_id,
+            "hil",
+            {"route": "drafting"},
+        )
+    hil_state = state.setdefault("hil", {})
+    hil_state["next_step"] = "DRAFTING"
+    return state
+
 # ============================================================================
 # LANGGRAPH WORKFLOW BUILDER (Design-Aligned v10.7: Fix #5, #30)
 # ============================================================================
@@ -1155,6 +1206,8 @@ def get_graph_app(
     add_async_node("run_constitutional_review", partial(run_constitutional_review, workflow_context=workflow_context)) # 9.5 (Fix #30)
     workflow.add_node("HIL_PAUSE", human_in_the_loop_node) # 10
     add_async_node("run_feedback_router", partial(run_feedback_router, workflow_context=workflow_context)) # 11
+    add_async_node("run_prepare_hil_strategy_reentry", partial(run_prepare_hil_strategy_reentry, workflow_context=workflow_context))
+    add_async_node("run_prepare_hil_drafting_reentry", partial(run_prepare_hil_drafting_reentry, workflow_context=workflow_context))
     add_async_node("run_reconcile_specialists", partial(run_reconcile_specialists, workflow_context=workflow_context)) # 11.5
     add_async_node("run_inject_hil_edit", partial(run_inject_hil_edit, workflow_context=workflow_context)) # 12
     
@@ -1222,14 +1275,17 @@ def get_graph_app(
     workflow.add_conditional_edges(
         "run_feedback_router", route_feedback,
         {
-            "to_strategy": "run_tot_strategy",
+            "to_strategy": "run_prepare_hil_strategy_reentry",
             "to_bullets": "run_generate_bullets",
-            "to_drafting": "run_drafting",
+            "to_drafting": "run_prepare_hil_drafting_reentry",
             "to_inject_edit": "run_inject_hil_edit",
             "to_delegation": "run_reconcile_specialists"
         }
     )
 
+    workflow.add_edge("run_prepare_hil_strategy_reentry", "run_tot_strategy")
+
+    workflow.add_edge("run_prepare_hil_drafting_reentry", "run_drafting")
     workflow.add_edge("run_reconcile_specialists", "run_inject_hil_edit") # 11.5 -> 12
     
     workflow.add_edge("run_inject_hil_edit", "run_qa_validation") # 12 -> 9 (Re-run QA)
