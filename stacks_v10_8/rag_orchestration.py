@@ -83,6 +83,20 @@ class RAGOrchestratorStack(BaseAgent):
         )
 
         await self._record_arbitration(current_state, workflow_id)
+        safety_report = current_state.get("safety_report") or {}
+        policy_decision = current_state.get("policy_decision") or {}
+        constitutional_review = current_state.get("constitutional_review") or {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(safety_report or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(policy_decision or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(constitutional_review or {})}
+            )()
+        current_state["safety_report"] = safety_report.dict()
+        current_state["policy_decision"] = policy_decision.dict()
+        current_state["constitutional_review"] = constitutional_review.dict()
         return current_state
 
     def _append_a2a_message(

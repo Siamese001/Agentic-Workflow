@@ -52,7 +52,7 @@ class DraftingExecutionStack(BaseAgent):
             }
         }
 
-        return {
+        patch = {
             "draft": {
                 "plan": plan.model_dump(),
                 "sections": final_sections,
@@ -61,6 +61,21 @@ class DraftingExecutionStack(BaseAgent):
             },
             "artifacts": {"artifacts": artifacts},
         }
+        safety_report = state.get("safety_report") or {}
+        policy_decision = state.get("policy_decision") or {}
+        constitutional_review = state.get("constitutional_review") or {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(safety_report or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(policy_decision or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(constitutional_review or {})}
+            )()
+        patch["safety_report"] = safety_report.dict()
+        patch["policy_decision"] = policy_decision.dict()
+        patch["constitutional_review"] = constitutional_review.dict()
+        return patch
 
     def _plan_from_state(self, state: Dict[str, Any]) -> DraftPlan:
         plan_payload = state.get("draft", {}).get("plan")
