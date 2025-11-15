@@ -55,6 +55,8 @@ from core_v10_7 import (
     wrap_mcp,
     MCPClientStub,
     ArbitrationReport,
+    NodeResult,
+    NodeStatus,
 )
 from mcp import get_agent
 from langgraph.graph import StateGraph, END
@@ -110,6 +112,87 @@ from agent_tools_v10_7 import (
 
 # v10.7: Logger name updated
 logger = logging.getLogger("agent_orchestration_v10_7")
+
+NODE_RESULT_KEYS = {"node", "status", "payload"}
+
+
+def node_success(node: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+    """Build a SUCCESS NodeResult for the given node and payload."""
+
+    return NodeResult(
+        node=node,
+        status=NodeStatus.SUCCESS,
+        payload=dict(payload or {}),
+    ).model_dump()
+
+
+def node_error(
+    node: str,
+    status: NodeStatus,
+    error_kind: str,
+    error_message: str,
+    payload: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Build an error NodeResult for the given node."""
+
+    return NodeResult(
+        node=node,
+        status=status,
+        error_kind=error_kind,
+        error_message=error_message,
+        payload=dict(payload or {}),
+    ).model_dump()
+
+
+def _looks_like_node_result(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    if not NODE_RESULT_KEYS.issubset(value.keys()):
+        return False
+    status_value = value.get("status")
+    if isinstance(status_value, NodeStatus):
+        return True
+    if isinstance(status_value, str) and status_value in NodeStatus._value2member_map_:
+        return True
+    return False
+
+
+def _extract_node_payload(state: Dict[str, Any]) -> Dict[str, Any]:
+    if _looks_like_node_result(state):
+        payload = state.get("payload") or {}
+        if isinstance(payload, dict):
+            return payload
+        return {}
+    return state
+
+
+def _ensure_node_result(node_name: str, result: Any) -> Dict[str, Any]:
+    sanitized = result
+    if isinstance(result, dict):
+        sanitized = dict(result)
+        status_value = sanitized.get("status")
+        if isinstance(status_value, str):
+            try:
+                sanitized["status"] = NodeStatus(status_value)
+            except ValueError as exc:
+                raise WorkflowError(
+                    f"Node '{node_name}' returned unknown status '{status_value}'"
+                ) from exc
+        for optional_field in ("error_kind", "error_message"):
+            if sanitized.get(optional_field) is None:
+                sanitized.pop(optional_field, None)
+    try:
+        return NodeResult.model_validate(sanitized).model_dump()
+    except Exception as exc:  # pragma: no cover - defensive
+        raise WorkflowError(
+            f"Node '{node_name}' did not return a valid NodeResult: {exc}"
+        ) from exc
+
+
+def unwrap_node_result(result: Dict[str, Any]) -> Dict[str, Any]:
+    """Utility for modules that need to recover the workflow state from a node result."""
+
+    return _extract_node_payload(result)
 
 # ============================================================================
 # MCP STACK ROUTING HELPERS
@@ -188,9 +271,14 @@ def add_node_with_policies(
 ) -> None:
     """Apply all orchestration policies in a single, deterministic location."""
 
-    wrapped: Callable[..., Awaitable[Dict[str, Any]]] = partial(
-        fn, workflow_context=workflow_context
-    )
+    async def base_executor(state: Dict[str, Any], *args, **kwargs) -> Dict[str, Any]:
+        payload = _extract_node_payload(state)
+        result = fn(payload, *args, workflow_context=workflow_context, **kwargs)
+        if asyncio.iscoroutine(result):
+            result = await result
+        return result
+
+    wrapped: Callable[..., Awaitable[Dict[str, Any]]] = base_executor
 
     if enable_mcp and getattr(workflow_context, "wrap_mcp_nodes", True):
         wrapped = wrap_mcp(wrapped)
@@ -204,7 +292,13 @@ def add_node_with_policies(
         )
         wrapped = get_timeout_decorator(timeout_sec)(wrapped)
 
-    workflow.add_node(name, wrapped)
+    async def enforce_contract(state: Dict[str, Any], *args, **kwargs) -> Dict[str, Any]:
+        result = wrapped(state, *args, **kwargs)
+        if asyncio.iscoroutine(result):
+            result = await result
+        return _ensure_node_result(name, result)
+
+    workflow.add_node(name, enforce_contract)
 
 
 # ============================================================================
@@ -599,7 +693,7 @@ async def run_sanitize_pii(state: dict, workflow_context: WorkflowContext) -> di
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
 
-    return new_state
+    return node_success("run_sanitize_pii", new_state)
 
 async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 0.5: Detect Prompt Injection"""
@@ -630,7 +724,7 @@ async def run_detect_prompt_injection(state: dict, workflow_context: WorkflowCon
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
 
-    return new_state
+    return node_success("run_detect_prompt_injection", new_state)
 
 async def run_classify_complexity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 1: Classify Complexity"""
@@ -652,7 +746,7 @@ async def run_classify_complexity(state: dict, workflow_context: WorkflowContext
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
 
-    return new_state
+    return node_success("run_classify_complexity", new_state)
 
 async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 2: ToT strategy"""
@@ -676,7 +770,7 @@ async def run_tot_strategy(state: dict, workflow_context: WorkflowContext) -> di
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state
+    return node_success("run_tot_strategy", state)
 
 
 async def run_arbitration_after_strategy(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -688,7 +782,7 @@ async def run_arbitration_after_strategy(state: dict, workflow_context: Workflow
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"arbitration": state.get("arbitration", {})}
+    return node_success("run_arbitration_after_strategy", state)
 
 async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 3: Proactive HIL ambiguity check"""
@@ -698,7 +792,19 @@ async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -
             profile = workflow_context.tuning_profile
             new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
             workflow_context.tuning_profile = new_profile
-        return {"hil": {"ambiguity_report": {"ambiguity_detected": False, "confidence": 1.0, "reason": "HIL disabled", "question_for_human": ""}}}
+        patch = {
+            "hil": {
+                "ambiguity_report": {
+                    "ambiguity_detected": False,
+                    "confidence": 1.0,
+                    "reason": "HIL disabled",
+                    "question_for_human": "",
+                }
+            }
+        }
+        adapter = StateAdapterStack(context)
+        new_state = adapter.apply_patch(state, patch)
+        return node_success("run_detect_ambiguity", new_state)
 
     workflow_id = state.get('metadata', {}).get('workflow_id', '')
     hil_stack = HILStackV10_8(context)
@@ -721,13 +827,14 @@ async def run_detect_ambiguity(state: dict, workflow_context: WorkflowContext) -
     serialized = report.model_dump() if hasattr(report, "model_dump") else report
     patch = {"hil": {"ambiguity_report": serialized}}
     adapter = StateAdapterStack(context)
-    return adapter.apply_patch(state, patch)
+    new_state = adapter.apply_patch(state, patch)
+    return node_success("run_detect_ambiguity", new_state)
 
 # v10.7 (Fix #5): Dummy node for parallel fork
-def prepare_parallel_run(state: dict) -> dict:
+def prepare_parallel_run(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 3.5: Gateway for parallel execution."""
     logger.info("Forking graph for parallel RAG and Prompt Engineering.")
-    return {}
+    return node_success("prepare_parallel_run", state)
 
 async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 4: Generate dynamic prompts"""
@@ -751,7 +858,7 @@ async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext)
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state
+    return node_success("run_rag_stack", state)
 
 async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5: Agentic RAG (v10.7 Fix #10: A2A enabled)"""
@@ -766,13 +873,13 @@ async def run_rag_stack(state: dict, workflow_context: WorkflowContext) -> dict:
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state
+    return node_success("run_generate_bullets", state)
 
 # v10.7 (Fix #5): Dummy node for parallel join
-def join_rag_and_prompt(state: dict) -> dict:
+def join_rag_and_prompt(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 5.5: Gateway for parallel join."""
     logger.info("Joining graph from parallel RAG and Prompt Engineering.")
-    return {}
+    return node_success("join_rag_and_prompt", state)
 
 
 async def run_arbitration_after_join(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -784,7 +891,7 @@ async def run_arbitration_after_join(state: dict, workflow_context: WorkflowCont
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"arbitration": state.get("arbitration", {})}
+    return node_success("run_arbitration_after_join", state)
 
 async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 6: Generate bullets (4-step)"""
@@ -798,7 +905,7 @@ async def run_generate_bullets(state: dict, workflow_context: WorkflowContext) -
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state
+    return node_success("run_critique_bullets", state)
 
 async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 7: Critique bullets"""
@@ -812,7 +919,7 @@ async def run_critique_bullets(state: dict, workflow_context: WorkflowContext) -
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state
+    return node_success("run_feedback_router", state)
 
 
 async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -824,7 +931,7 @@ async def run_arbitration_after_bullets(state: dict, workflow_context: WorkflowC
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"arbitration": state.get("arbitration", {})}
+    return node_success("run_arbitration_after_bullets", state)
 
 async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 8: Draft assembly with ReAct Conductor"""
@@ -839,7 +946,7 @@ async def run_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state
+    return node_success("run_drafting", state)
 
 
 async def run_arbitration_after_drafting(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -851,7 +958,7 @@ async def run_arbitration_after_drafting(state: dict, workflow_context: Workflow
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"arbitration": state.get("arbitration", {})}
+    return node_success("run_arbitration_after_drafting", state)
 
 async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9: Final QA with ReAct Conductor"""
@@ -866,7 +973,7 @@ async def run_qa_validation(state: dict, workflow_context: WorkflowContext) -> d
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return state
+    return node_success("run_qa_validation", state)
 
 
 async def run_arbitration_after_qa(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -878,7 +985,7 @@ async def run_arbitration_after_qa(state: dict, workflow_context: WorkflowContex
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return {"arbitration": state.get("arbitration", {})}
+    return node_success("run_arbitration_after_qa", state)
 
 async def run_constitutional_review(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 9.5: Constitutional Review (v10.7 Fix #30)"""
@@ -894,7 +1001,8 @@ async def run_constitutional_review(state: dict, workflow_context: WorkflowConte
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
     adapter = StateAdapterStack(context)
-    return adapter.apply_patch(state, review_patch)
+    new_state = adapter.apply_patch(state, review_patch)
+    return node_success("run_constitutional_review", new_state)
 
 # HIL Nodes
 async def run_feedback_router(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -912,18 +1020,18 @@ async def run_feedback_router(state: dict, workflow_context: WorkflowContext) ->
         workflow_context.tuning_profile = new_profile
     return state
 
-def human_in_the_loop_node(state: dict) -> dict:
+def human_in_the_loop_node(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 10: HIL Pause"""
     if not HIL_AVAILABLE:
         logger.warning("HIL not available. Skipping pause.")
-        return {}
+        return node_success("HIL_PAUSE", state)
     try:
-        human_in_the_loop(timeout=3600) 
+        human_in_the_loop(timeout=3600)
     except GraphRecursionError:
         logger.info("HIL pause interrupted by user feedback.")
     except Exception as e:
         logger.error(f"HIL node failed: {e}")
-    return {}
+    return node_success("HIL_PAUSE", state)
 
 async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 12: Inject HIL Edits"""
@@ -940,7 +1048,7 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
             profile = workflow_context.tuning_profile
             new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
             workflow_context.tuning_profile = new_profile
-        return state
+        return node_success("run_inject_hil_edit", state)
     adapter = StateAdapterStack(context)
     new_state = adapter.apply_patch(state, patch)
     logger.info("HIL edit injected into draft summary.")
@@ -949,7 +1057,7 @@ async def run_inject_hil_edit(state: dict, workflow_context: WorkflowContext) ->
         profile = workflow_context.tuning_profile
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
-    return new_state
+    return node_success("run_inject_hil_edit", new_state)
 
 
 async def run_reconcile_specialists(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -963,26 +1071,30 @@ async def run_reconcile_specialists(state: dict, workflow_context: WorkflowConte
         new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
         workflow_context.tuning_profile = new_profile
     adapter = StateAdapterStack(context)
-    return adapter.apply_patch(state, reconciliation_patch)
+    new_state = adapter.apply_patch(state, reconciliation_patch)
+    return node_success("run_reconcile_specialists", new_state)
 
 # --- CONDITIONAL EDGES (v10.7: Fix #30) ---
 
-def check_prompt_injection(state: dict) -> str:
+def check_prompt_injection(result: dict) -> str:
     """Node 0.5 conditional"""
+    state = _extract_node_payload(result)
     if state.get("safety", {}).get("injection_detected", False):
         logger.error(f"!!! PROMPT INJECTION DETECTED. Halting workflow. !!!")
         return "injection_detected"
     return "injection_safe"
 
-def check_ambiguity(state: dict) -> str:
+def check_ambiguity(result: dict) -> str:
     """Node 3 conditional: Route to HIL or continue"""
+    state = _extract_node_payload(result)
     report = state.get("hil", {}).get("ambiguity_report", {})
     if report.get("ambiguity_detected", False):
         return "pause_for_human"
     return "continue_workflow"
 
-def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
+def check_bullets_passed(result: dict, workflow_context: WorkflowContext) -> str:
     """Node 7 conditional: Check bullet quality and retries"""
+    state = _extract_node_payload(result)
 
     critiques = state.get('bullets', {}).get('critiqued_bullets', [])
     if not critiques:
@@ -999,8 +1111,9 @@ def check_bullets_passed(state: dict, workflow_context: WorkflowContext) -> str:
     return "global_replanner"
 
 
-def check_qa_passed(state: dict, workflow_context: WorkflowContext) -> str:
+def check_qa_passed(result: dict, workflow_context: WorkflowContext) -> str:
     """Node 9 conditional: Check QA and retries (v10.7: Rerouted)"""
+    state = _extract_node_payload(result)
 
     robustness = _get_robustness_stack(workflow_context)
     if state.get('qa', {}).get('qa_passed', False):
@@ -1011,8 +1124,9 @@ def check_qa_passed(state: dict, workflow_context: WorkflowContext) -> str:
         return "retry_drafting"
     return "global_replanner"
 
-def check_constitution(state: dict) -> str:
+def check_constitution(result: dict) -> str:
     """Node 9.5 conditional: Check constitutional review (v10.7 Fix #30)"""
+    state = _extract_node_payload(result)
     review = state.get('qa', {}).get('constitutional_review', {})
     if review.get("review_passed", False):
         return "passed_constitution"
@@ -1021,8 +1135,9 @@ def check_constitution(state: dict) -> str:
         logger.error(f"Violations: {review.get('violations_found')}")
         return "failed_constitution"
 
-def route_feedback(state: dict) -> str:
+def route_feedback(result: dict) -> str:
     """Node 11 conditional: Route based on human feedback"""
+    state = _extract_node_payload(result)
     next_step = state.get("hil", {}).get("next_step", "DRAFTING")
     if next_step == "STRATEGY": return "to_strategy"
     if next_step == "BULLET_GENERATION": return "to_bullets"
@@ -1031,8 +1146,9 @@ def route_feedback(state: dict) -> str:
     return "to_drafting"
 
 
-def check_hil_reentry_allowed(state: dict, workflow_context: WorkflowContext) -> str:
+def check_hil_reentry_allowed(result: dict, workflow_context: WorkflowContext) -> str:
     """Conditional guard to stop the graph when HIL loop bounds are exceeded."""
+    state = _extract_node_payload(result)
 
     if state.get("hil", {}).get("max_reentry_reached"):
         return "halt"
@@ -1122,7 +1238,7 @@ async def run_prepare_hil_strategy_reentry(state: dict, workflow_context: Workfl
         workflow_id=workflow_id,
         route="strategy",
     ):
-        return state
+        return node_success("run_prepare_hil_strategy_reentry", state)
 
     _append_hil_a2a(state, "HIL_REENTRY_STRATEGY", {"workflow_id": workflow_id})
     log_event("HILStack", "strategy_reentry", {"workflow_id": workflow_id})
@@ -1135,7 +1251,7 @@ async def run_prepare_hil_strategy_reentry(state: dict, workflow_context: Workfl
         )
     hil_state = state.setdefault("hil", {})
     hil_state["next_step"] = "STRATEGY"
-    return state
+    return node_success("run_prepare_hil_strategy_reentry", state)
 
 
 async def run_prepare_hil_drafting_reentry(state: dict, workflow_context: WorkflowContext) -> dict:
@@ -1146,7 +1262,7 @@ async def run_prepare_hil_drafting_reentry(state: dict, workflow_context: Workfl
         workflow_id=workflow_id,
         route="drafting",
     ):
-        return state
+        return node_success("run_prepare_hil_drafting_reentry", state)
 
     _append_hil_a2a(state, "HIL_REENTRY_DRAFTING", {"workflow_id": workflow_id})
     log_event("HILStack", "drafting_reentry", {"workflow_id": workflow_id})
@@ -1159,7 +1275,7 @@ async def run_prepare_hil_drafting_reentry(state: dict, workflow_context: Workfl
         )
     hil_state = state.setdefault("hil", {})
     hil_state["next_step"] = "DRAFTING"
-    return state
+    return node_success("run_prepare_hil_drafting_reentry", state)
 
 # ============================================================================
 # LANGGRAPH WORKFLOW BUILDER (Design-Aligned v10.7: Fix #5, #30)
