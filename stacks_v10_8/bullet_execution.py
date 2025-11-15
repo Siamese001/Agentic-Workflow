@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 
 from core_v10_7 import BaseAgent, BulletPlan
-from stacks_v10_7.bullet import BulletCoordinatorAgent
+from agent_stacks_v10_8.components.bullet import BulletCoordinatorAgent
 
 
 class BulletExecutionStack(BaseAgent):

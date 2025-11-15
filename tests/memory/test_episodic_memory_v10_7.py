@@ -4,7 +4,7 @@ import pytest
 
 from core_v10_7.models import StrategyPlan
 from core_v10_7.services import EpisodicMemory
-from stacks_v10_7.bullet import AsyncBulletGeneratorAgent
+from agent_stacks_v10_8.components.bullet import AsyncBulletGeneratorAgent
 
 
 class FakeRedis:
