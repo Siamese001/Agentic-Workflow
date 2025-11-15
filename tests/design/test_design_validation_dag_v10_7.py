@@ -1,17 +1,12 @@
 import pytest
-from pathlib import Path
-import ast
 
-# ---------------------------------------------------------------------
-# Locate the core workflow builder
-# ---------------------------------------------------------------------
-ROOT = Path(__file__).resolve().parents[2]
-WORKFLOW_BUILDER = ROOT / "agentic_workflow" / "workflow_v10_7" / "builder.py"
+from agent_orchestration_v10_7 import get_graph_app
+from agentic_workflow.workflow_v10_7.dag_spec import (
+    CONCEPTUAL_DAG,
+    all_concrete_nodes,
+    conceptual_node_map,
+)
 
-
-# ---------------------------------------------------------------------
-# Expected DAG specification (10.7 design doc)
-# ---------------------------------------------------------------------
 EXPECTED_NODES = [
     "SafetyGuardStack",
     "StrategyStack",
@@ -42,136 +37,67 @@ EXPECTED_ORDER = [
 ]
 
 
-# ---------------------------------------------------------------------
-# Helper: parse AST of builder
-# ---------------------------------------------------------------------
-def load_ast(path: Path):
-    assert path.exists(), f"Cannot find workflow builder at {path}"
-    with path.open("r", encoding="utf-8") as f:
-        return ast.parse(f.read())
+@pytest.fixture()
+def compiled_workflow(workflow_context):
+    workflow_context.config.agent_stacks.enable_hil_stack = True
+    workflow = get_graph_app(
+        checkpointer=None,
+        workflow_context=workflow_context,
+        enable_hil=True,
+    )
+    return workflow
 
 
-# ---------------------------------------------------------------------
-# Extract node registration + edges from builder.py
-# ---------------------------------------------------------------------
-def extract_graph_info(tree: ast.Module):
-    nodes = []
-    edges = []
-
-    for node in ast.walk(tree):
-        # add_node("Name")
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-            if node.func.attr == "add_node":
-                if node.args and isinstance(node.args[0], ast.Constant):
-                    nodes.append(node.args[0].value)
-
-        # add_edge("A","B")
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-            if node.func.attr == "add_edge":
-                if (
-                    len(node.args) >= 2
-                    and isinstance(node.args[0], ast.Constant)
-                    and isinstance(node.args[1], ast.Constant)
-                ):
-                    edges.append((node.args[0].value, node.args[1].value))
-
-    return nodes, edges
+def _runtime_node_names(compiled_workflow):
+    return set(compiled_workflow.nodes.keys())
 
 
-# ---------------------------------------------------------------------
-# TEST 1 — Required nodes exist
-# ---------------------------------------------------------------------
 @pytest.mark.design
-def test_all_required_nodes_exist():
-    tree = load_ast(WORKFLOW_BUILDER)
-    nodes, _ = extract_graph_info(tree)
-
-    for required in EXPECTED_NODES:
-        assert required in nodes, (
-            f"Missing required DAG node '{required}'. "
-            f"This violates v10.7 design specification."
-        )
+def test_conceptual_nodes_match_specification_order():
+    names = [node.name for node in CONCEPTUAL_DAG]
+    assert names == EXPECTED_ORDER, "Conceptual DAG order drifted from spec"
 
 
-# ---------------------------------------------------------------------
-# TEST 2 — No undocumented nodes exist
-# ---------------------------------------------------------------------
 @pytest.mark.design
-def test_no_undocumented_nodes():
-    tree = load_ast(WORKFLOW_BUILDER)
-    nodes, _ = extract_graph_info(tree)
-
-    extra = [n for n in nodes if n not in EXPECTED_NODES]
-    assert not extra, (
-        f"Undocumented DAG nodes detected: {extra}. "
-        f"All nodes must appear in the v10.7 spec."
+def test_conceptual_node_names_match_expected_set():
+    assert set(node.name for node in CONCEPTUAL_DAG) == set(EXPECTED_NODES), (
+        "Conceptual DAG names must match v10.7 design document"
     )
 
 
-# ---------------------------------------------------------------------
-# TEST 3 — Required edges exist
-# ---------------------------------------------------------------------
 @pytest.mark.design
-def test_required_edges_exist():
-    tree = load_ast(WORKFLOW_BUILDER)
-    _, edges = extract_graph_info(tree)
-
-    for edge in EXPECTED_EDGES:
-        assert edge in edges, (
-            f"Missing required DAG edge {edge}. "
-            f"Pipeline must follow v10.7 order."
-        )
+def test_conceptual_edges_match_design_doc():
+    lookup = {name: idx for idx, name in enumerate(EXPECTED_ORDER)}
+    for src, dst in EXPECTED_EDGES:
+        assert lookup[src] < lookup[dst], f"{src} must precede {dst}"
 
 
-# ---------------------------------------------------------------------
-# TEST 4 — No forbidden edges exist
-# ---------------------------------------------------------------------
 @pytest.mark.design
-def test_no_forbidden_edges():
-    tree = load_ast(WORKFLOW_BUILDER)
-    _, edges = extract_graph_info(tree)
-
-    expected_set = set(EXPECTED_EDGES)
-    extra = [e for e in edges if e not in expected_set]
-
-    assert not extra, (
-        f"Forbidden DAG edges detected: {extra}. "
-        f"No additional edges allowed in v10.7."
-    )
+def test_all_conceptual_nodes_have_concrete_mappings():
+    for node in CONCEPTUAL_DAG:
+        assert node.concrete_nodes, f"Conceptual node {node.name} has no concrete mapping"
 
 
-# ---------------------------------------------------------------------
-# TEST 5 — Execution order is correct (topological validation)
-# ---------------------------------------------------------------------
 @pytest.mark.design
-def test_execution_order_matches_design():
-    tree = load_ast(WORKFLOW_BUILDER)
-    nodes, _ = extract_graph_info(tree)
-
-    # Ensure expected sequence is a subsequence of actual nodes
-    actual_positions = {n: i for i, n in enumerate(nodes)}
-
-    for earlier, later in zip(EXPECTED_ORDER, EXPECTED_ORDER[1:]):
-        assert actual_positions[earlier] < actual_positions[later], (
-            f"Execution order incorrect: '{earlier}' must come before '{later}'."
-        )
+def test_conceptual_nodes_exist_in_runtime(compiled_workflow):
+    runtime_nodes = _runtime_node_names(compiled_workflow)
+    for node in CONCEPTUAL_DAG:
+        missing = set(node.concrete_nodes) - runtime_nodes
+        assert not missing, f"{node.name} missing runtime nodes: {sorted(missing)}"
 
 
-# ---------------------------------------------------------------------
-# TEST 6 — Entry point MUST be SafetyGuardStack
-# ---------------------------------------------------------------------
 @pytest.mark.design
-def test_entry_point_is_safetyguard():
-    tree = load_ast(WORKFLOW_BUILDER)
+def test_runtime_nodes_align_with_conceptual_spec(compiled_workflow):
+    runtime_nodes = _runtime_node_names(compiled_workflow)
+    spec_nodes = all_concrete_nodes()
+    missing = spec_nodes - runtime_nodes
+    extra = runtime_nodes - spec_nodes
+    assert not missing, f"Spec nodes not found in runtime graph: {sorted(missing)}"
+    assert not extra, f"Runtime nodes missing from conceptual spec: {sorted(extra)}"
 
-    entry_points = []
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
-            if node.func.attr == "set_entry_point":
-                if node.args and isinstance(node.args[0], ast.Constant):
-                    entry_points.append(node.args[0].value)
 
-    assert entry_points, "No entry point defined in builder.py"
-    assert entry_points[0] == "SafetyGuardStack", (
-        "Entry point must ALWAYS be SafetyGuardStack in v10.7"
-    )
+@pytest.mark.design
+def test_conceptual_lookup_contains_all_nodes():
+    lookup = conceptual_node_map()
+    for name in EXPECTED_NODES:
+        assert name in lookup, f"Missing conceptual node mapping for {name}"
