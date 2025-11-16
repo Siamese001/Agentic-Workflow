@@ -29,6 +29,7 @@ from .models import (
     ConstitutionalReviewResult,
     EphemeralState,
     GeneratedPrompts,
+    WorkflowPhase,
     HILAmbiguityReport,
     MemoryState,
     StrategyPlan,
@@ -820,6 +821,7 @@ class MainGraphState:
     a2a: A2AContext = field(default_factory=A2AContext)  # v10.7 (Fix #10)
     memory: MemoryState = MemoryState()
     ephemeral: EphemeralState = EphemeralState()
+    phase: WorkflowPhase = WorkflowPhase.INIT
 
     def to_dict(self) -> Dict[str, Any]:
         """v10.7: Custom serializer to handle nested Pydantic models."""
@@ -846,6 +848,13 @@ class MainGraphState:
     def from_dict(cls, data: Dict[str, Any]) -> "MainGraphState":
         """v10.7: Custom deserializer to reconstruct nested Pydantic models."""
         state = cls()
+
+        phase_value = data.get("phase")
+        if phase_value:
+            try:
+                state.phase = WorkflowPhase(phase_value)
+            except ValueError:
+                logger.warning("Soft mode: unknown phase %s; defaulting to INIT", phase_value)
 
         # Deserialize dataclasses
         state.resume = ResumeContext(**data.get("resume", {}))
