@@ -1,0 +1,170 @@
+import pytest
+from workflow.runner import run_workflow
+
+
+# ---------------------------------------------------------------------
+# Helper: normalize QA issues
+# ---------------------------------------------------------------------
+def _issues(out):
+    qa = (
+        out.get("qa")
+        or out.get("resume", {}).get("qa")
+        or {}
+    )
+    return qa.get("issues", [])
+
+
+# ---------------------------------------------------------------------
+# 1. Confidence score must be present and numeric
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+def test_confidence_score_numeric_and_in_range():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "ConfidenceTest", "jd": "AI Exec"})
+    qa = out["resume"]["qa"]
+
+    assert "confidence" in qa, "QA missing confidence score"
+    conf = qa["confidence"]
+
+    assert isinstance(conf, (int, float)), f"Confidence must be numeric; got {type(conf)}"
+    assert 0 <= conf <= 1, f"Confidence must be in [0,1], got {conf}"
+
+
+# ---------------------------------------------------------------------
+# 2. SemanticValidator must fire when summary contradicts JD/context
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+@pytest.mark.parametrize("resume,jd", [
+    ("Expert in cooking recipes and culinary arts", "Director, AI"),
+    ("Certified yoga instructor with deep knowledge of anatomy", "AWS Cloud Security Lead"),
+])
+def test_semantic_mismatch_triggers_issues(resume, jd):
+    out = run_workflow({"compat_mode": "v10_7", "resume": resume, "jd": jd})
+    issues = _issues(out)
+
+    assert isinstance(issues, list), "QA issues must be list-like"
+    assert len(issues) > 0, (
+        "Semantic mismatch between resume and JD went undetected; "
+        "SemanticValidator or QAValidator may not be firing."
+    )
+
+
+# ---------------------------------------------------------------------
+# 3. Summary must not contain conflicts with RAG claims
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+def test_conflicting_summary_and_rag_claims_flagged():
+    """
+    If summary contradicts retrieved RAG document signals, SemanticValidator must flag it.
+    A conflict can be simulated by using a special trigger input.
+    """
+    out = run_workflow({"compat_mode": "v10_7", "resume": "CONFLICT_TRIGGER", "jd": "AI Exec"})
+    issues = _issues(out)
+
+    assert len(issues) > 0, (
+        "Summary/RAG conflict not detected — semantic consistency check failing"
+    )
+
+
+# ---------------------------------------------------------------------
+# 4. QA must add issues for incomplete or empty summaries
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+@pytest.mark.parametrize("text", ["", " ", None])
+def test_empty_summary_triggers_qa_issue(text):
+    out = run_workflow({"compat_mode": "v10_7", "resume": text, "jd": "Anthropic"})
+    issues = _issues(out)
+
+    assert len(issues) > 0, "Empty/invalid summary must trigger QA issues"
+
+
+# ---------------------------------------------------------------------
+# 5. QA must NOT allow duplicate/conflicting claims to survive
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+@pytest.mark.parametrize("resume", [
+    "Managed teams of 500 engineers",
+    "Managed teams of 3 engineers",
+])
+def test_conflicting_claims_not_allowed(resume):
+    """
+    If resume content produces contradictory outputs across Drafting/RAG/QA,
+    QA must normalize or flag the contradiction.
+    """
+    out = run_workflow({"compat_mode": "v10_7", "resume": resume, "jd": "AI Director"})
+    issues = _issues(out)
+
+    # At least one of conflicting claims should be flagged
+    assert any("conflict" in str(i).lower() for i in issues) or len(issues) > 0, (
+        "Conflicting claims not flagged — QA consistency invariant broken"
+    )
+
+
+# ---------------------------------------------------------------------
+# 6. Issue detection must activate under known problematic role types
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+@pytest.mark.parametrize("role", ["UnknownRoleType", "AmbiguousRole", "Undefined JD"])
+def test_role_semantics_invalid_trigger(role):
+    out = run_workflow({"compat_mode": "v10_7", "resume": "RoleTest", "jd": role})
+    issues = _issues(out)
+
+    assert len(issues) > 0, (
+        f"Invalid or ambiguous JD '{role}' did not produce QA issues"
+    )
+
+
+# ---------------------------------------------------------------------
+# 7. MetricsCollector must register semantic validator operations
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+def test_semantic_validator_updates_metrics():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "MetricsCase", "jd": "AWS"})
+    
+    metrics = out.get("metrics") or out.get("resume", {}).get("metrics") or {}
+
+    # Expect at least one semantic-related metric
+    keys = [k.lower() for k in metrics.keys()]
+    assert any("semantic" in k or "consistency" in k for k in keys), (
+        f"No semantic metrics found. MetricsCollector may not be attached. Keys={keys}"
+    )
+
+
+# ---------------------------------------------------------------------
+# 8. Draft → QA consistency invariant: QA summary must reference draft content
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+def test_draft_to_qa_alignment():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "DQATest", "jd": "AI Exec"})
+    resume = out["resume"]
+
+    summary = resume.get("summary")
+    qa_sum = resume["qa"]["summary"]
+
+    # QA summary must not contradict draft summary structure
+    assert isinstance(qa_sum, str), "QA summary must be string"
+    assert len(qa_sum) > 0, "QA summary empty"
+    assert qa_sum != summary, (
+        "QA summary identical to draft summary — no QA transformation detected"
+    )
+
+
+# ---------------------------------------------------------------------
+# 9. Low confidence must generate actionable remediation suggestions
+# ---------------------------------------------------------------------
+@pytest.mark.validation
+@pytest.mark.parametrize("resume_text", [
+    "This is vague and incomplete",
+    "Unclear responsibilities",
+])
+def test_low_confidence_generates_remediation(resume_text):
+    out = run_workflow({"compat_mode": "v10_7", "resume": resume_text, "jd": "Analyst"})
+    qa = out["resume"]["qa"]
+
+    issues = qa.get("issues", [])
+    assert len(issues) > 0, "Low-confidence resume did not trigger QA issues"
+
+    # At least one issue should include suggestion-like text
+    suggestions = [i for i in issues if "suggest" in str(i).lower() or "improve" in str(i).lower()]
+    assert len(suggestions) >= 1, (
+        "QA issues must include actionable suggestions for low-confidence cases"
+    )
