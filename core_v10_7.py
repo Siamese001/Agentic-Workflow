@@ -1370,6 +1370,30 @@ class CostTracker:
 # BASE AGENT CLASS (v10.7: Fix #15 - Cost/Latency Routing)
 # ============================================================================
 
+
+class OrchestratorBase:
+    """Lightweight L3-only base class for orchestrators."""
+
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False) -> None:
+        self.context = context
+        self.config = context.config
+        self.debug_mode = debug_mode
+
+        # L4 state adapter access
+        from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+
+        self._adapter = StateAdapterStack(context, debug_mode)
+
+        # L5 safety/policy/constitutional stacks
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
+
+        # Optional arbitration/robustness metrics
+        self.arbitration_engine = getattr(context, "arbitration_engine", None)
+        self.robustness_stack = getattr(context, "robustness_stack", None)
+
+
 class BaseAgent:
     """Base class for all agents with v10.7 context injection"""
     

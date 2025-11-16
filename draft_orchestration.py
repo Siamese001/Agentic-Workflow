@@ -4,29 +4,26 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict
 
-from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
 from bullet_execution import BulletExecutionStack
 from bullet_planning import BulletPlanningStack
+from core_v10_7 import OrchestratorBase
 from draft_execution import DraftingExecutionStack
 from draft_planning import DraftPlanningStack
 from telemetry_v10_7 import log_event
 
 
-class DraftOrchestratorStack:
+class DraftOrchestratorStack(OrchestratorBase):
     """L3 orchestrator that limits itself to control-flow coordination."""
 
     def __init__(self, context: Any, debug_mode: bool = False) -> None:
-        self.context = context
-        self.config = getattr(context, "config", None)
-        self.debug_mode = debug_mode
-        self._adapter = StateAdapterStack(context, debug_mode)
+        super().__init__(context, debug_mode)
         self._bullet_planning = BulletPlanningStack(context, debug_mode)
         self._bullet_execution = BulletExecutionStack(context, debug_mode)
         self._draft_planning = DraftPlanningStack(context, debug_mode)
         self._draft_execution = DraftingExecutionStack(context, debug_mode)
 
-    async def run_async(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        workflow_id = state.get("metadata", {}).get("workflow_id", "")
+    async def run_async(self, state: Dict[str, Any], workflow_id: str | None = None) -> Dict[str, Any]:
+        workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
         current_state = deepcopy(state)
         cumulative_patch: Dict[str, Any] = {}
 
@@ -99,4 +96,27 @@ class DraftOrchestratorStack:
             payload={"workflow_id": workflow_id},
         )
         cumulative_patch = self._adapter.merge_patch(cumulative_patch, completion_patch)
+
+        safety_patch = self._evaluate_safety(draft_exec_patch)
+        if safety_patch:
+            cumulative_patch = self._adapter.merge_patch(cumulative_patch, safety_patch)
+            current_state = self._adapter.apply_patch(current_state, safety_patch)
+
         return cumulative_patch
+
+    def _evaluate_safety(self, node_output: Dict[str, Any]) -> Dict[str, Any]:
+        safety_patch: Dict[str, Any] = {}
+        safety = self.safety_policy.evaluate_node(node_output) if self.safety_policy else None
+        policy = self.policy_stack.guard_output(node_output) if self.policy_stack else None
+        review = (
+            self.constitutional_engine.review_node(node_output)
+            if self.constitutional_engine
+            else None
+        )
+        if safety is not None:
+            safety_patch["safety_report"] = safety.to_dict() if hasattr(safety, "to_dict") else safety.dict()
+        if policy is not None:
+            safety_patch["policy_decision"] = policy.to_dict() if hasattr(policy, "to_dict") else policy.dict()
+        if review is not None:
+            safety_patch["constitutional_review"] = review.to_dict() if hasattr(review, "to_dict") else review.dict()
+        return safety_patch
