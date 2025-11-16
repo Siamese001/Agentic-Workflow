@@ -13,7 +13,7 @@ from utils_types import BudgetConfig
 
 
 def test_context_budget_prunes_buffers():
-    budget = ContextBudget(BudgetConfig(max_messages=2, max_rag_items=1, max_summary_chars=5))
+    budget = ContextBudget(BudgetConfig(max_messages=2, max_rag_items=1, max_summary_chars=5, max_world_items=1))
 
     messages = budget.prune_messages([
         {"role": "user", "content": "1"},
@@ -21,8 +21,10 @@ def test_context_budget_prunes_buffers():
         {"role": "assistant", "content": "3"},
     ])
     rag_items = budget.prune_rag_items([{"id": 1}, {"id": 2}])
+    world_items = budget.prune_world([{"id": 1}, {"id": 2}])
     summary = budget.prune_summary("abcdef")
 
     assert len(messages) == 2 and messages[0]["content"] == "2"
     assert rag_items == [{"id": 2}]
+    assert world_items == [{"id": 2}]
     assert summary == "bcdef"

@@ -27,14 +27,17 @@ class MemoryManager:
         messages: List[Message] = normalized.get("messages", []) or []
         rag_history: List[dict] = normalized.get("rag_history", []) or []
         summary: str = normalized.get("summary", "") or ""
+        world: List[dict] = normalized.get("world", []) or []
 
         messages = self.context_budget.prune_messages(messages)
         rag_history = self.context_budget.prune_rag_items(rag_history)
         summary = self.context_budget.prune_summary(summary)
+        world = self.context_budget.prune_world(world)
 
         normalized["messages"] = messages
         normalized["rag_history"] = rag_history
         normalized["summary"] = summary
+        normalized["world"] = world
         return normalized
 
     def add_messages(self, state: Dict[str, Any], new_messages: List[Message]) -> Dict[str, Any]:
@@ -60,4 +63,20 @@ class MemoryManager:
 
         merged = copy.deepcopy(state)
         merged["summary"] = self.context_budget.prune_summary(summary)
+        return merged
+
+    def add_world_facts(self, state: Dict[str, Any], facts: List[dict]) -> Dict[str, Any]:
+        """Append world-model facts and prune according to the budget."""
+
+        merged = copy.deepcopy(state)
+        merged.setdefault("world", [])
+        merged["world"].extend(copy.deepcopy(facts))
+        merged["world"] = self.context_budget.prune_world(merged["world"])
+        return merged
+
+    def prune_world(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        """Apply world-model pruning to the provided state copy."""
+
+        merged = copy.deepcopy(state)
+        merged["world"] = self.context_budget.prune_world(merged.get("world", []) or [])
         return merged
