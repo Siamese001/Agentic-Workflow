@@ -11,6 +11,15 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from chromadb.utils import embedding_functions
 
+pytest_plugins = ["tests_flat.conftest"]
+
+REPO_ROOT = Path(__file__).resolve().parent
+TESTS_FLAT_ROOT = REPO_ROOT / "tests_flat"
+for _path in (REPO_ROOT, TESTS_FLAT_ROOT):
+    _path_str = str(_path)
+    if _path_str not in sys.path:
+        sys.path.insert(0, _path_str)
+
 from core_v10_7 import (
     ArbitrationEngine,
     CacheManager,
