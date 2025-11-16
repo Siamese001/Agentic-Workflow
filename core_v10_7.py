@@ -50,6 +50,7 @@ from chromadb.utils import embedding_functions
 from mcp import get_tool, get_schema, sync_context
 from telemetry_v10_7 import log_event
 from stacks_v10_8.constitutional_engine import ConstitutionalReviewResult
+from stacks_v10_8.prompt_injection_detector import PromptInjectionDetector
 import core_v10_7_services as _core_v10_7_services
 from core_v10_7_services import (
     ArbitrationEngine,
@@ -1749,6 +1750,7 @@ class WorkflowContext:
             robustness_stack=self.robustness_stack,
             self_correction_manager=self.self_correction_manager,
         )
+        self.prompt_injection_detector = PromptInjectionDetector()
 
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None # type: ignore
