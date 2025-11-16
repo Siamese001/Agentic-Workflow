@@ -47,6 +47,10 @@ class SafetyGateway:
                     "constitutional": constitutional_patch.get("constitutional_evaluation", {}),
                     "policy": policy_patch.get("policy_evaluation", {}),
                     "injection": injection_patch.get("injection_scan", {}),
+                    "content_safety": {
+                        "pii": constitutional_patch.get("constitutional_evaluation", {}).get("pii", {}),
+                        "bias": constitutional_patch.get("constitutional_evaluation", {}).get("bias", {}),
+                    },
                     "status": "blocked" if (
                         constitutional_patch.get("constitutional_evaluation", {}).get("violations")
                         or injection_patch.get("injection_scan", {}).get("is_injection")
