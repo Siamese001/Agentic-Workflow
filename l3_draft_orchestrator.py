@@ -63,12 +63,12 @@ class DraftOrchestrator:
         def run_safety(context: Dict[str, Any]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
-            safety_payload = {
+            payload = {
                 "content": current_state.get("draft", {}),
                 "intent": plan,
                 "context_tags": ["l3_orchestrator"],
             }
-            safety_patch = self.safety_gateway.evaluate(safety_payload)
+            safety_patch = self.safety_gateway.evaluate(payload)
             final_state = self.state_adapter.apply_patch(safety_patch)
             return NodeResult(
                 NodeStatus.SUCCESS, {"safety_patch": safety_patch, "state": final_state}
