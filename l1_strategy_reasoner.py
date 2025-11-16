@@ -87,6 +87,6 @@ class StrategyReasoner(Reasoner):
             "objective": objective,
             "sensitivity": "low",
             "audience": state.get("audience", "general"),
-            "tags": ["planning", "deterministic"],
+            "tags": ["planning"],
         }
         return plan
