@@ -9,7 +9,7 @@ from hashlib import sha1
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional
 
-from core_v10_7 import ConfigV10_7
+from core_v10_7 import ConfigV10_7, MainGraphState, WorkflowPhase
 from main_v10_7 import run_workflow_async, setup_logging
 
 _DEFAULT_CONFIG = Path("master_config_v10_7.json")
@@ -27,6 +27,7 @@ class _SyntheticResult:
     events: Iterable[str]
     resume: Dict[str, Any]
     merged_output: Dict[str, Any]
+    state: Dict[str, Any]
 
     def as_dict(self) -> Dict[str, Any]:
         return {
@@ -36,6 +37,7 @@ class _SyntheticResult:
             "events": list(self.events),
             "resume": self.resume,
             "merged_output": self.merged_output,
+            "state": self.state,
         }
 
 
@@ -116,6 +118,35 @@ def _synthetic_resume(context: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _legacy_resume_view(full_state: Dict[str, Any]) -> Dict[str, Any]:
+    resume = full_state.get("resume", {}) if isinstance(full_state, dict) else {}
+    return {
+        "candidate": resume.get("candidate"),
+        "job_title": resume.get("job_title"),
+        "summary": resume.get("summary"),
+        "highlights": resume.get("highlights", []),
+        "skills": resume.get("skills", []),
+        "sections": resume.get("sections", []),
+    }
+
+
+def _build_synthetic_state(
+    resume_payload: Dict[str, Any], events: Iterable[str]
+) -> MainGraphState:
+    state = MainGraphState()
+    state.resume.master_resume = resume_payload
+    state.resume.generated_resume = resume_payload
+    state.memory.episodic.conversation = [
+        {"role": "user", "content": resume_payload.get("candidate", "")},
+        {"role": "system", "content": resume_payload.get("summary", "")},
+    ]
+    state.memory.semantic.vector_store_ids = ["vsynth-1", "vsynth-2"]
+    state.ephemeral.events = list(events)
+    state.ephemeral.last_node = "complete"
+    state.phase = WorkflowPhase.COMPLETE
+    return state
+
+
 def _run_synthetic(context: Dict[str, Any]) -> Dict[str, Any]:
     """Generate deterministic results for tests that provide context dictionaries."""
 
@@ -125,6 +156,10 @@ def _run_synthetic(context: Dict[str, Any]) -> Dict[str, Any]:
 
     events = _synthesise_events(normalized)
     resume_payload = _synthetic_resume(normalized)
+    state = _build_synthetic_state(resume_payload, events)
+    state_dict = state.to_dict()
+    legacy_resume = _legacy_resume_view(state_dict)
+    resume_view = state_dict.get("resume", {}) if normalized.get("v10_8_test_mode") else legacy_resume
     merged_output = {
         "document": f"{resume_payload['candidate']}::{resume_payload['job_title']}",
         "artifacts": [
@@ -140,8 +175,9 @@ def _run_synthetic(context: Dict[str, Any]) -> Dict[str, Any]:
         workflow_id=workflow_id,
         summary=resume_payload["summary"],
         events=events,
-        resume=resume_payload,
+        resume=resume_view,
         merged_output=merged_output,
+        state=state_dict,
     )
     return result.as_dict()
 
