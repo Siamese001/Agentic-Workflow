@@ -14,6 +14,9 @@ def test_state_schema_defaults_include_world_and_metadata():
     adapter = StateAdapter()
     state = adapter.state
 
+    expected_keys = {"messages", "rag_history", "summary", "world", "session", "metadata", "phase"}
+    assert expected_keys.issubset(state.keys())
+
     assert isinstance(state.get("messages"), list)
     assert isinstance(state.get("rag_history"), list)
     assert isinstance(state.get("summary"), str)
@@ -23,13 +26,37 @@ def test_state_schema_defaults_include_world_and_metadata():
     assert isinstance(state.get("phase"), str)
 
 
-def test_state_schema_backward_compatibility_with_message_patch():
+def test_apply_patch_preserves_default_fields_when_not_patched():
     adapter = StateAdapter()
-    patch = StatePatch({"messages": [{"role": "user", "content": "hello"}]})
+    base_state = adapter.state
 
-    state = adapter.apply_patch(patch)
+    patch = StatePatch({
+        "summary": "updated summary",
+        "messages": [{"role": "user", "content": "hello"}],
+    })
 
-    assert state["messages"][-1]["content"] == "hello"
-    assert "world" in state and isinstance(state["world"], list)
-    assert "session" in state and isinstance(state["session"], dict)
-    assert "metadata" in state and isinstance(state["metadata"], dict)
+    updated_state = adapter.apply_patch(patch)
+
+    expected_keys = {"messages", "rag_history", "summary", "world", "session", "metadata", "phase"}
+    assert expected_keys.issubset(updated_state.keys())
+
+    assert updated_state["summary"] == "updated summary"
+    assert updated_state["messages"][-1]["content"] == "hello"
+
+    assert updated_state["rag_history"] == base_state["rag_history"]
+    assert updated_state["world"] == base_state["world"]
+    assert updated_state["session"] == base_state["session"]
+    assert updated_state["metadata"] == base_state["metadata"]
+    assert updated_state["phase"] == base_state["phase"]
+
+
+def test_apply_patch_retains_defaults_for_new_fields():
+    adapter = StateAdapter()
+
+    patch = StatePatch({"rag_history": [{"query": "foo", "context": []}]})
+    updated_state = adapter.apply_patch(patch)
+
+    assert updated_state["rag_history"][-1]["query"] == "foo"
+    assert updated_state["world"] == []
+    assert updated_state["session"] == {}
+    assert updated_state["metadata"] == {}
