@@ -6,5 +6,53 @@ Responsibilities:
     • Apply tone, style, and constraint guidance from L1 drafting reasoners.
     • Return deterministic drafts and deltas for L4 state management.
 
-This file is scaffolded for Priority 0; implementation comes later.
+Consumes PlanObject inputs and returns StatePatch outputs deterministically.
 """
+from __future__ import annotations
+
+from typing import Any, Dict, List
+
+from l2_tool_base import ExecutionAgent
+from utils_types import PlanObject, StatePatch
+
+
+def _compose_section(title: str, tone: str, audience: str) -> str:
+    """Build a deterministic section string."""
+
+    return f"[{title}] Tone: {tone}; Audience: {audience}."
+
+
+class DraftingExecutionAgent(ExecutionAgent):
+    """Create draft content without performing any tool calls."""
+
+    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+        tone = str(plan.get("tone", "neutral"))
+        audience = str(plan.get("audience", "general"))
+        sections: List[str] = [str(section) for section in plan.get("sections", [])]
+        if not sections:
+            sections = ["Introduction", "Body", "Conclusion"]
+
+        paragraphs = [_compose_section(title, tone, audience) for title in sections]
+        draft = "\n\n".join(paragraphs)
+
+        messages = list(state.get("messages", [])) + [
+            {
+                "role": "assistant",
+                "content": draft,
+                "format": "draft",
+            }
+        ]
+
+        patch: StatePatch = StatePatch(
+            {
+                "messages": messages,
+                "draft": {
+                    "objective": plan.get("objective"),
+                    "tone": tone,
+                    "audience": audience,
+                    "sections": sections,
+                    "content": draft,
+                },
+            }
+        )
+        return patch
