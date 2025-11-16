@@ -12,31 +12,34 @@ from __future__ import annotations
 
 from typing import Dict, List
 
+from safety_config import PolicyRule, SafetyConfig, load_default_safety_config
 from utils_types import StatePatch
 
 
 class PolicyEngine:
     """Deterministic policy evaluation engine."""
 
-    DEFAULT_DENIED_ACTIONS: List[str] = ["exfiltrate_data", "execute_code", "publish_unreviewed"]
-
-    def __init__(self, denied_actions: List[str] | None = None) -> None:
-        self.denied_actions = sorted(denied_actions or list(self.DEFAULT_DENIED_ACTIONS))
+    def __init__(self, config: SafetyConfig | None = None) -> None:
+        self._config = config or load_default_safety_config()
 
     def evaluate(self, intent: Dict[str, str] | None = None) -> StatePatch:
         """Return a StatePatch describing policy allowances for the given intent."""
 
         intent = intent or {}
         action = intent.get("action", "unspecified")
-        allowed = action not in self.denied_actions
+        rule = next(
+            (policy_rule for policy_rule in self._config.policy_rules if policy_rule.action == action),
+            PolicyRule(action=action, allowed=True, reason=None),
+        )
+        allowed = rule.allowed
 
         patch: StatePatch = StatePatch(
             {
                 "policy_evaluation": {
                     "action": action,
                     "allowed": allowed,
-                    "denied_reason": None if allowed else "action blocked by policy",
-                    "denied_actions": self.denied_actions,
+                    "denied_reason": rule.reason if not allowed else None,
+                    "denied_actions": [policy_rule.action for policy_rule in self._config.policy_rules if not policy_rule.allowed],
                 }
             }
         )
