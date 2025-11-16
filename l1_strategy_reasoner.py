@@ -83,4 +83,10 @@ class StrategyReasoner(Reasoner):
                 },
             }
         )
+        plan["safety_metadata"] = {
+            "objective": objective,
+            "sensitivity": "low",
+            "audience": state.get("audience", "general"),
+            "tags": ["planning", "deterministic"],
+        }
         return plan
