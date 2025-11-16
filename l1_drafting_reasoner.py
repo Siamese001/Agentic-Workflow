@@ -54,4 +54,10 @@ class DraftingReasoner(Reasoner):
                 },
             }
         )
+        plan["safety_metadata"] = {
+            "objective": str(objective),
+            "sensitivity": "low",
+            "audience": audience,
+            "tags": ["planning", "deterministic"],
+        }
         return plan
