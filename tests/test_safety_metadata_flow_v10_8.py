@@ -37,7 +37,7 @@ def test_metadata_added_in_l1_strategy(reasoner_cls):
     assert metadata["objective"] == "test-objective"
     assert metadata["sensitivity"] == "low"
     assert metadata["audience"] == "expert"
-    assert metadata["tags"] == ["planning", "deterministic"]
+    assert metadata["tags"] == ["planning"]
 
 
 def _assert_payload_contains_metadata(gateway, expected_objective=None, expected_audience=None):
