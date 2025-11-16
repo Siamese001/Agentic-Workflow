@@ -121,7 +121,8 @@ class StateAdapterStack:
             },
         )
 
-        return wrapper_cls(validated_state.to_dict())
+        wrapped_state = wrapper_cls(validated_state.to_dict())
+        return self._enforce_budget(wrapped_state)
 
     def _normalize_patch(self, value: Any) -> Any:
         if isinstance(value, Mapping):
@@ -146,6 +147,16 @@ class StateAdapterStack:
             else:
                 base[key] = patch_value
         return base
+
+    def _enforce_budget(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        budget_manager = getattr(self.context, "context_budget_manager", None)
+        if not budget_manager or not hasattr(budget_manager, "enforce_all"):
+            return state
+        try:
+            return budget_manager.enforce_all(state)
+        except Exception as exc:  # pragma: no cover - defensive soft mode
+            logger.warning("Soft mode: context budget enforcement skipped (%s)", exc)
+            return state
 
     def patch_memory(
         self,
