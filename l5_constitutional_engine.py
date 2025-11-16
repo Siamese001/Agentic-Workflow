@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import Dict, List
 
 from utils_types import StatePatch
+from l5_content_safety import detect_bias, detect_pii
 
 
 class ConstitutionalEngine:
@@ -44,6 +45,8 @@ class ConstitutionalEngine:
                 "constitutional_evaluation": {
                     "violations": violations,
                     "compliant": len(violations) == 0,
+                    "pii": detect_pii(content),
+                    "bias": detect_bias(content),
                 }
             }
         )
