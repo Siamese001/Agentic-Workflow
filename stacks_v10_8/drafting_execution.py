@@ -11,6 +11,7 @@ from agent_stacks_v10_8.components.drafting import (
     NarrativeStylistAgent,
     StructureLeadAgent,
 )
+from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
 
 
 class DraftingExecutionStack(BaseAgent):
@@ -24,6 +25,7 @@ class DraftingExecutionStack(BaseAgent):
         self.safety_policy = getattr(context, "safety_policy", None)
         self.policy_stack = getattr(context, "policy_stack", None)
         self.constitutional_engine = getattr(context, "constitutional_engine", None)
+        self._adapter = StateAdapterStack(context, debug_mode)
 
     async def run_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
@@ -61,6 +63,10 @@ class DraftingExecutionStack(BaseAgent):
             },
             "artifacts": {"artifacts": artifacts},
         }
+        mem_patch = self._adapter.patch_memory(
+            agent_notes=self._append_agent_note(state, plan, final_sections)
+        )
+        patch.update(mem_patch.model_dump(exclude_none=True))
         safety_report = state.get("safety_report") or {}
         policy_decision = state.get("policy_decision") or {}
         constitutional_review = state.get("constitutional_review") or {}
@@ -101,6 +107,18 @@ class DraftingExecutionStack(BaseAgent):
         if base.tone != plan.tone:
             base.tone = plan.tone
         return base
+
+    def _append_agent_note(
+        self,
+        state: Dict[str, Any],
+        plan: DraftPlan,
+        sections: Dict[str, Any],
+    ) -> list[str]:
+        existing = state.get("memory", {}).get("episodic", {}).get("agent_notes") or []
+        note = (
+            f"Draft assembled with {len(sections)} sections; tone set to {plan.tone}"
+        )
+        return [*existing, note]
 
     def _apply_plan_structure(
         self, plan: DraftPlan, sections: Dict[str, Any]

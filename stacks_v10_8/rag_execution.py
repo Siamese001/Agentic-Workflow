@@ -8,6 +8,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from agent_tools_v10_7 import BM25SearchTool, ChromaDBSearchTool, HyDETool
 from core_v10_7 import BaseAgent, PydanticSchemaError, RAGPlan, _format_prompt_with_defaults
+from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
 
 
 class RAGExecutionStack(BaseAgent):
@@ -24,6 +25,7 @@ class RAGExecutionStack(BaseAgent):
         self.safety_policy = getattr(context, "safety_policy", None)
         self.policy_stack = getattr(context, "policy_stack", None)
         self.constitutional_engine = getattr(context, "constitutional_engine", None)
+        self._adapter = StateAdapterStack(context, debug_mode)
 
     async def run_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
@@ -73,6 +75,11 @@ class RAGExecutionStack(BaseAgent):
             "resume": {"experience_bullets": ranked},
             "rag": {"plan": plan.model_dump(), "metadata": metadata},
         }
+        memory_patch = self._adapter.patch_memory(
+            agent_notes=self._append_agent_note(state, metadata),
+            vector_store_ids=self._collect_vector_ids(state, candidate_batches),
+        )
+        patch.update(memory_patch.model_dump(exclude_none=True))
         safety_report = state.get("safety_report") or {}
         policy_decision = state.get("policy_decision") or {}
         constitutional_review = state.get("constitutional_review") or {}
@@ -88,6 +95,37 @@ class RAGExecutionStack(BaseAgent):
         patch["policy_decision"] = policy_decision.dict()
         patch["constitutional_review"] = constitutional_review.dict()
         return patch
+
+    def _append_agent_note(
+        self, state: Dict[str, Any], metadata: Dict[str, Any]
+    ) -> List[str]:
+        existing = state.get("memory", {}).get("episodic", {}).get("agent_notes") or []
+        note = (
+            f"RAG retrieved {metadata.get('candidate_count', 0)} candidates; "
+            f"top source: {metadata.get('top_candidate', {}).get('source', 'n/a')}"
+        )
+        return [*existing, note]
+
+    def _collect_vector_ids(
+        self, state: Dict[str, Any], batches: Sequence[Sequence[Dict[str, Any]]]
+    ) -> List[str]:
+        existing_ids = state.get("memory", {}).get("semantic", {}).get(
+            "vector_store_ids", []
+        ) or []
+        collected: List[str] = list(existing_ids)
+        seen = set(existing_ids)
+        for batch in batches:
+            for record in batch:
+                for key in ("id", "doc_id", "document_id"):
+                    value = record.get(key)
+                    if value is None:
+                        continue
+                    str_value = str(value)
+                    if str_value in seen:
+                        continue
+                    seen.add(str_value)
+                    collected.append(str_value)
+        return collected
 
     async def run_from_state_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
