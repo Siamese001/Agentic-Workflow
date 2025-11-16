@@ -35,6 +35,7 @@ class BudgetConfig:
     max_messages: int = 50
     max_rag_items: int = 20
     max_summary_chars: int = 4000
+    max_world_items: int = 50
 
 
 class Phase(str, Enum):
@@ -60,3 +61,9 @@ class ExecutionAgentProtocol(Protocol):
 
     def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
         ...
+
+
+# World-model related aliases (lightweight and dependency-free)
+WorldModel = Dict[str, Any]
+UserProfile = Dict[str, Any]
+SessionMetadata = Dict[str, Any]
