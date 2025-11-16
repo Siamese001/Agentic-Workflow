@@ -86,7 +86,7 @@ from agent_stacks_v10_8 import (
     StrategyStackV10_8,
     RobustnessStack,
 )
-from stacks_v10_8 import RAGOrchestratorStack
+from stacks_v10_8 import RAGOrchestratorStack, PromptRendererStack
 
 # v10.7: Import from new tools file
 from agent_tools_v10_7 import (
@@ -862,6 +862,46 @@ def prepare_parallel_run(state: dict, workflow_context: WorkflowContext) -> dict
     logger.info("Forking graph for parallel RAG and Prompt Engineering.")
     return node_success("prepare_parallel_run", state)
 
+async def run_prompt_builder(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Node: Build structured prompts using the PromptBuilder stack."""
+
+    context = workflow_context
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    strategy_plan = state['strategy']['strategy_plan']
+    if isinstance(strategy_plan, dict):
+        strategy_plan = StrategyPlan.model_validate(strategy_plan)
+
+    complexity = state.get('metadata', {}).get('complexity', 'unknown')
+    prompt_builder = PromptBuilderStack(context)
+    prompts_patch = await prompt_builder.run_async(
+        strategy_plan,
+        complexity,
+        workflow_id,
+        state,
+    )
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, prompts_patch)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
+    return node_success("run_prompt_builder", state)
+
+async def run_prompt_renderer(state: dict, workflow_context: WorkflowContext) -> dict:
+    """Node: Render PromptEnvelope into final prompt with safety context."""
+
+    context = workflow_context
+    workflow_id = state.get('metadata', {}).get('workflow_id', '')
+    renderer = PromptRendererStack(context)
+    prompts_patch = await renderer.run_async(state, workflow_id=workflow_id)
+    adapter = StateAdapterStack(context)
+    state = adapter.apply_patch(state, prompts_patch)
+    if workflow_context.policy_auto_tuner and workflow_context.policy_auto_tuner.enabled():
+        profile = workflow_context.tuning_profile
+        new_profile = workflow_context.policy_auto_tuner.tune_profile(profile)
+        workflow_context.tuning_profile = new_profile
+    return node_success("run_prompt_renderer", state)
+
 async def run_prompt_engineering(state: dict, workflow_context: WorkflowContext) -> dict:
     """Node 4: Generate dynamic prompts"""
     context = workflow_context
@@ -1428,6 +1468,8 @@ def get_graph_app(
         enable_robustness=False,
         enable_mcp=False,
     ) # 3.5 (Fix #5)
+    register_node("run_prompt_builder", run_prompt_builder)
+    register_node("run_prompt_renderer", run_prompt_renderer)
     register_node("run_prompt_engineering", run_prompt_engineering) # 4
     register_node("run_rag_stack", run_rag_stack) # 5
     # join_rag_and_prompt is a synchronous merge helper and remains unwrapped.
@@ -1479,20 +1521,30 @@ def get_graph_app(
     ) # 0.5 -> 1 or END
     
     workflow.add_edge("run_classify_complexity", "run_tot_strategy") # 1 -> 2
-    workflow.add_edge("run_tot_strategy", "run_arbitration_after_strategy") # 2 -> arbitration
-    workflow.add_edge("run_arbitration_after_strategy", "run_detect_ambiguity") # arbitration -> 3
-    
-    # v10.7 (Fix #5): Reroute for parallel execution
-    workflow.add_conditional_edges(
-        "run_detect_ambiguity", check_ambiguity,
-        {"pause_for_human": "HIL_PAUSE", "continue_workflow": "prepare_parallel_run"}
-    ) # 3 -> 10 or 3.5
-    
-    workflow.add_edge("prepare_parallel_run", "run_prompt_engineering") # 3.5 -> 4
-    workflow.add_edge("prepare_parallel_run", "run_rag_stack") # 3.5 -> 5
-    workflow.add_edge("run_prompt_engineering", "join_rag_and_prompt") # 4 -> 5.5
-    workflow.add_edge("run_rag_stack", "join_rag_and_prompt") # 5 -> 5.5
 
+    new_prompt_path = bool(getattr(workflow_context, "enable_v10_8_prompts", False))
+
+    if new_prompt_path:
+        workflow.add_edge("run_tot_strategy", "run_prompt_builder")
+        workflow.add_edge("run_prompt_builder", "run_prompt_renderer")
+        workflow.add_edge("run_prompt_renderer", "run_rag_stack")
+        workflow.add_edge("run_prompt_renderer", "run_generate_bullets")
+        workflow.add_edge("run_prompt_renderer", "run_drafting")
+    else:
+        workflow.add_edge("run_tot_strategy", "run_arbitration_after_strategy") # 2 -> arbitration
+        workflow.add_edge("run_arbitration_after_strategy", "run_detect_ambiguity") # arbitration -> 3
+
+        # v10.7 (Fix #5): Reroute for parallel execution
+        workflow.add_conditional_edges(
+            "run_detect_ambiguity", check_ambiguity,
+            {"pause_for_human": "HIL_PAUSE", "continue_workflow": "prepare_parallel_run"}
+        ) # 3 -> 10 or 3.5
+
+        workflow.add_edge("prepare_parallel_run", "run_prompt_engineering") # 3.5 -> 4
+        workflow.add_edge("prepare_parallel_run", "run_rag_stack") # 3.5 -> 5
+        workflow.add_edge("run_prompt_engineering", "join_rag_and_prompt") # 4 -> 5.5
+
+    workflow.add_edge("run_rag_stack", "join_rag_and_prompt") # 5 -> 5.5
     workflow.add_edge("join_rag_and_prompt", "run_arbitration_after_join") # 5.5 -> arbitration
     workflow.add_edge("run_arbitration_after_join", "run_generate_bullets") # arbitration -> 6
     
