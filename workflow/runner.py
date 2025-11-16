@@ -190,24 +190,16 @@ def _run_synthetic(context: Dict[str, Any], compat_mode: Optional[str] = None) -
     return result.as_dict()
 
 
-def run_workflow(
-    context_or_job_input: Optional[Dict[str, Any] | str | Path] = None,
+def _run_workflow_legacy(
+    context_or_job_input: Optional[Dict[str, Any] | str | Path],
     *,
-    job_input_path: Optional[str | Path] = None,
-    master_resume_path: Optional[str | Path] = None,
-    config_path: Optional[str | Path] = None,
-    compat_mode: Optional[str] = None,
-    enable_hil: bool = True,
-    enable_mcp: Optional[bool] = None,
-    debug_mode: bool = False,
+    job_input_path: Optional[str | Path],
+    master_resume_path: Optional[str | Path],
+    config_path: Optional[str | Path],
+    enable_hil: bool,
+    enable_mcp: Optional[bool],
+    debug_mode: bool,
 ) -> Dict[str, Any]:
-    """Entry point used by tests to execute the workflow."""
-
-    if isinstance(context_or_job_input, dict):
-        request = dict(context_or_job_input)
-        compat_mode = request.pop("compat_mode", compat_mode)
-        return _run_synthetic(request, compat_mode=compat_mode)
-
     cfg_path = Path(config_path or _DEFAULT_CONFIG)
     config = ConfigV10_7(str(cfg_path))
     _ensure_runtime_paths(config)
@@ -224,9 +216,70 @@ def run_workflow(
         debug_mode=debug_mode,
         enable_hil=enable_hil,
         enable_mcp=enable_mcp,
-        compat_mode=compat_mode,
+        compat_mode="v10_7",
     )
     return asyncio.run(coro)
+
+
+def _run_workflow_v10_8(
+    context_or_job_input: Optional[Dict[str, Any] | str | Path],
+    *,
+    job_input_path: Optional[str | Path],
+    master_resume_path: Optional[str | Path],
+    config_path: Optional[str | Path],
+    enable_hil: bool,
+    enable_mcp: Optional[bool],
+    debug_mode: bool,
+) -> Dict[str, Any]:
+    cfg_path = Path(config_path or _DEFAULT_CONFIG)
+    config = ConfigV10_7(str(cfg_path))
+    _ensure_runtime_paths(config)
+
+    setup_logging(config, debug_mode=debug_mode)
+
+    job_path = Path(job_input_path or context_or_job_input or _DEFAULT_JOB_INPUT)
+    resume_path = Path(master_resume_path or _DEFAULT_MASTER_RESUME)
+
+    coro = run_workflow_async(
+        config=config,
+        job_input_path=str(job_path),
+        master_resume_path=str(resume_path),
+        debug_mode=debug_mode,
+        enable_hil=enable_hil,
+        enable_mcp=enable_mcp,
+        compat_mode="v10_8",
+    )
+    return asyncio.run(coro)
+
+
+def run_workflow(
+    context_or_job_input: Optional[Dict[str, Any] | str | Path] = None,
+    *,
+    job_input_path: Optional[str | Path] = None,
+    master_resume_path: Optional[str | Path] = None,
+    config_path: Optional[str | Path] = None,
+    compat_mode: str = "v10_7",
+    enable_hil: bool = True,
+    enable_mcp: Optional[bool] = None,
+    debug_mode: bool = False,
+) -> Dict[str, Any]:
+    """Entry point used by tests to execute the workflow."""
+
+    if isinstance(context_or_job_input, dict):
+        request = dict(context_or_job_input)
+        compat_mode = request.pop("compat_mode", compat_mode)
+        return _run_synthetic(request, compat_mode=compat_mode)
+
+    runner = _run_workflow_legacy if compat_mode == "v10_7" else _run_workflow_v10_8
+    return runner(
+        context_or_job_input,
+        job_input_path=job_input_path,
+        master_resume_path=master_resume_path,
+        config_path=config_path,
+        enable_hil=enable_hil,
+        enable_mcp=enable_mcp,
+        debug_mode=debug_mode,
+    )
 
 
 __all__ = ["run_workflow"]
