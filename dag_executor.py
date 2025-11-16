@@ -36,7 +36,10 @@ class DAGExecutor:
         trace = context.setdefault("_trace", {}).setdefault("nodes", {})
 
         parents = self._build_parents_map(dag)
-        ready: List[str] = sorted([name for name, deps in parents.items() if not deps])
+        parallel_children = self._collect_parallel_children(dag)
+        ready: List[str] = sorted(
+            [name for name, deps in parents.items() if not deps and name not in parallel_children]
+        )
         executed: Set[str] = set()
 
         while ready:
@@ -45,64 +48,65 @@ class DAGExecutor:
                 continue
 
             node = dag.nodes[node_name]
-            node_trace = {
-                "start_time": None,
-                "end_time": None,
-                "status": None,
-                "retries": 0,
-            }
-            attempts = 0
-            start_time = datetime.utcnow().isoformat()
-
-            while True:
-                result = node.run(deepcopy(context))
-                attempts += 1
-                node_trace["status"] = result.status.value
-                if result.status is NodeStatus.RETRY and self._should_retry(node, attempts):
-                    node_trace["retries"] = attempts
-                    self._deterministic_backoff(node, attempts)
-                    continue
-                break
-
-            end_time = datetime.utcnow().isoformat()
-            node_trace["start_time"] = start_time
-            node_trace["end_time"] = end_time
-            node_trace["retries"] = attempts - 1
+            result, context, node_trace = self._execute_node(node_name, node, context)
             trace[node_name] = node_trace
-
-            context = {**context, **result.output}
             executed.add(node_name)
 
             if result.status is NodeStatus.FAILURE:
-                fallback_edges = (node.conditional_edges or {}).get(NodeStatus.FAILURE.value)
-                if fallback_edges:
-                    self._enqueue_targets(
-                        dag, fallback_edges, parents, executed, ready
+                policy = getattr(node, "on_failure", "halt")
+                if policy == "fallback":
+                    outgoing = [node.fallback_edge] if node.fallback_edge else []
+                    self._enqueue_targets(dag, outgoing, parents, executed, ready)
+                    continue
+                if policy == "continue":
+                    outgoing = self._determine_outgoing_edges(
+                        dag, node_name, node, result, context
                     )
-                else:
-                    raise NodeExecutionError(f"Node '{node_name}' failed execution.")
-                continue
+                    self._enqueue_targets(dag, outgoing, parents, executed, ready)
+                    continue
+                raise NodeExecutionError(f"Node '{node_name}' failed execution.")
 
-            outgoing = self._determine_outgoing_edges(dag, node_name, node, result)
+            if node.parallel:
+                context = self._execute_parallel_nodes(
+                    dag, node, context, trace, executed
+                )
+
+            outgoing = self._determine_outgoing_edges(dag, node_name, node, result, context)
             self._enqueue_targets(dag, outgoing, parents, executed, ready)
 
         return context
 
     def _should_retry(self, node: Any, attempts: int) -> bool:
-        policy = node.retry_policy or {}
-        max_retries = int(policy.get("max_retries", 0))
+        max_retries = getattr(node, "retries", 0) or 0
         return attempts <= max_retries
 
     def _deterministic_backoff(self, node: Any, attempts: int) -> None:
         # Deterministic placeholder for retry backoff; intentionally no sleep.
-        _ = (self.backoff_strategy, attempts, node.name)
+        _ = (self.backoff_strategy, attempts, getattr(node, "retry_backoff", 0.0), node.name)
 
     def _determine_outgoing_edges(
-        self, dag: DAG, node_name: str, node: Any, result: NodeResult
+        self,
+        dag: DAG,
+        node_name: str,
+        node: Any,
+        result: NodeResult,
+        context: Dict[str, Any],
     ) -> List[str]:
         if result.next_edges is not None:
             return result.next_edges
-        if node.conditional_edges:
+        if getattr(node, "condition", None):
+            try:
+                condition_result = node.condition(context)
+            except Exception:
+                condition_result = False
+            if condition_result and node.conditional_edges is not None:
+                if isinstance(node.conditional_edges, dict):
+                    override = node.conditional_edges.get("condition_true")
+                else:
+                    override = node.conditional_edges
+                if override is not None:
+                    return override
+        if node.conditional_edges and isinstance(node.conditional_edges, dict):
             status_key = result.status.value
             if status_key in node.conditional_edges:
                 return node.conditional_edges[status_key]
@@ -114,6 +118,13 @@ class DAGExecutor:
             for target in targets:
                 parents[target].add(source)
         return parents
+
+    def _collect_parallel_children(self, dag: DAG) -> Set[str]:
+        parallel_children: Set[str] = set()
+        for node in dag.nodes.values():
+            if node.parallel:
+                parallel_children.update(node.parallel)
+        return parallel_children
 
     def _enqueue_targets(
         self,
@@ -131,3 +142,87 @@ class DAGExecutor:
             if parents[target].issubset(executed) and target not in ready:
                 ready.append(target)
         ready.sort()
+
+    def _execute_node(
+        self, node_name: str, node: Any, context: Dict[str, Any]
+    ) -> tuple[NodeResult, Dict[str, Any], Dict[str, Any]]:
+        node_trace: Dict[str, Any] = {
+            "start_time": None,
+            "end_time": None,
+            "status": None,
+            "retries": 0,
+        }
+        attempts = 0
+        start_time = datetime.utcnow().isoformat()
+
+        while True:
+            result = node.run(deepcopy(context))
+            attempts += 1
+            node_trace["status"] = result.status.value
+            if result.status is NodeStatus.RETRY and self._should_retry(node, attempts):
+                node_trace["retries"] = attempts
+                self._deterministic_backoff(node, attempts)
+                continue
+            break
+
+        end_time = datetime.utcnow().isoformat()
+        node_trace["start_time"] = start_time
+        node_trace["end_time"] = end_time
+        node_trace["retries"] = attempts - 1
+
+        context = {**context, **result.output}
+        return result, context, node_trace
+
+    def _execute_parallel_nodes(
+        self,
+        dag: DAG,
+        node: Any,
+        context: Dict[str, Any],
+        trace: Dict[str, Any],
+        executed: Set[str],
+    ) -> Dict[str, Any]:
+        parallel_bucket = context.setdefault("_parallel", {}).setdefault(node.name, {})
+
+        for child_name in node.parallel or []:
+            if child_name not in dag.nodes:
+                raise NodeExecutionError(
+                    f"Parallel target '{child_name}' is not a defined node in the DAG."
+                )
+
+            child_node = dag.nodes[child_name]
+            child_result, context, child_trace = self._execute_node(
+                child_name, child_node, context
+            )
+            trace[child_name] = child_trace
+            executed.add(child_name)
+            parallel_bucket[child_name] = {
+                "status": child_result.status.value,
+                "output": child_result.output,
+            }
+
+            if child_result.status is NodeStatus.FAILURE:
+                policy = getattr(child_node, "on_failure", "halt")
+                if policy == "halt":
+                    raise NodeExecutionError(
+                        f"Parallel node '{child_name}' failed execution."
+                    )
+                if policy == "fallback":
+                    fallback_target = getattr(child_node, "fallback_edge", None)
+                    if fallback_target:
+                        if fallback_target not in dag.nodes:
+                            raise NodeExecutionError(
+                                f"Fallback target '{fallback_target}' is not defined in the DAG."
+                            )
+                        fb_node = dag.nodes[fallback_target]
+                        fallback_result, context, fallback_trace = self._execute_node(
+                            fallback_target, fb_node, context
+                        )
+                        trace[fallback_target] = fallback_trace
+                        executed.add(fallback_target)
+                        parallel_bucket[fallback_target] = {
+                            "status": fallback_result.status.value,
+                            "output": fallback_result.output,
+                        }
+                # continue policy simply proceeds
+
+        return context
