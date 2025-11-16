@@ -40,7 +40,7 @@ from .services import (
     AutonomyEngine,
     CacheManager,
     CollaborationEngine,
-    ContextBudgetManager,
+    ContextBudgetManager as LegacyContextBudgetManager,
     CostTracker,
     EpisodicMemory,
     FeedbackEntry,
@@ -57,6 +57,8 @@ from .services import (
     TuningProfile,
     WorldModelStore,
 )
+from context_budget_v10_8 import ContextBudgetConfig as ContextBudgetConfigV10_8
+from context_budget_v10_8 import ContextBudgetManager as ContextBudgetManagerV10_8
 
 logger = logging.getLogger("core_v10_7")
 
@@ -587,13 +589,17 @@ def create_workflow_context(config: ConfigV10_7, db: int = 0) -> WorkflowContext
     )
 
     # 4. v10.7 (Fix #14): Resolve circular dependency for ContextBudgetManager
-    context_budget_manager = ContextBudgetManager(
+    legacy_context_budget_manager = LegacyContextBudgetManager(
         config=config,
         model_client_getter=context.get_model_client,  # Pass the method
         self_correction_manager=self_correction_manager,
         workflow_id_getter=lambda: context.workflow_id,
     )
+    context_budget_manager = ContextBudgetManagerV10_8(
+        ContextBudgetConfigV10_8(), delegate=legacy_context_budget_manager
+    )
     # 5. Inject the final service
+    context.legacy_context_budget_manager = legacy_context_budget_manager
     context.context_budget_manager = context_budget_manager
 
     # Wire the precompute engine now that context exists
