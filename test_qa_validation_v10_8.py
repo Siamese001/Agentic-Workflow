@@ -8,3 +8,15 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
+from l2_qa_validation import QAValidationAgent
+
+
+def test_qa_validation_reports_checks():
+    plan = {"mode": "drafting"}
+    state = {"messages": [{"role": "assistant", "content": "draft"}]}
+
+    patch = QAValidationAgent().execute(plan, state)
+    checks = patch["qa_report"]["checks"]
+
+    assert "tone_alignment" in checks
+    assert all(finding["status"] == "pass" for finding in patch["qa_report"]["findings"])
