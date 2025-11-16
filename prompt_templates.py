@@ -14,6 +14,7 @@ from copy import deepcopy
 from typing import Any, Dict
 
 from prompt_envelope import PromptEnvelope
+from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
 
 
 DEFAULT_TEMPLATE = {
@@ -23,6 +24,13 @@ DEFAULT_TEMPLATE = {
     "Instructions": "Follow the requested format and stay within scope.",
     "Safety Signals": "Respect safety directives from the gateway.",
     "Output Schema": "Return plain text content respecting the schema.",
+}
+
+DEFAULT_TEMPLATE_METADATA = {
+    "taxonomy": {
+        "sections": [s.value for s in PromptSection],
+        "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
+    }
 }
 
 
@@ -39,6 +47,10 @@ def envelope_from_template(name: str | None = None, overrides: Dict[str, Any] | 
 
     template = load_template(name)
     overrides = overrides or {}
+    metadata = overrides.get("metadata")
+    if metadata is None:
+        metadata = deepcopy(DEFAULT_TEMPLATE_METADATA)
+
     envelope = PromptEnvelope(
         framing=overrides.get("framing", template.get("Framing", "")),
         context=overrides.get("context", template.get("Context", "")),
@@ -46,6 +58,6 @@ def envelope_from_template(name: str | None = None, overrides: Dict[str, Any] | 
         instructions=overrides.get("instructions", template.get("Instructions", "")),
         safety_signals=overrides.get("safety_signals", template.get("Safety Signals", "")),
         output_schema=overrides.get("output_schema", template.get("Output Schema", "")),
-        metadata=overrides.get("metadata", {}),
+        metadata=metadata,
     )
     return envelope
