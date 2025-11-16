@@ -21,6 +21,7 @@ from agent_tools_v10_7 import (
 )
 
 from core_v10_7 import StrategyPlan
+from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
 
 
 class QAValidationStack:
@@ -56,6 +57,7 @@ class QAValidationStack:
         self._validators: Tuple[Tuple[str, Any], ...] = (
             tuple(validators) if validators is not None else self._build_validators()
         )
+        self._adapter = StateAdapterStack(context, debug_mode)
 
     def _build_validators(self) -> Tuple[Tuple[str, Any], ...]:
         instances: List[Tuple[str, Any]] = []
@@ -87,7 +89,9 @@ class QAValidationStack:
                 "summary": summary,
                 "qa_passed": qa_passed,
             }
-        }
+        } | self._adapter.patch_memory(
+            agent_notes=self._append_agent_note(state, summary)
+        ).model_dump(exclude_none=True)
 
     async def run_from_state_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
@@ -226,6 +230,11 @@ class QAValidationStack:
             else:
                 merged[key] = value
         return merged
+
+    def _append_agent_note(self, state: Dict[str, Any], summary: str) -> List[str]:
+        existing = state.get("memory", {}).get("episodic", {}).get("agent_notes") or []
+        note = f"QA summary: {summary}"
+        return [*existing, note]
 
 
 __all__ = ["QAValidationStack"]

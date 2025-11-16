@@ -15,6 +15,7 @@ from core_v10_7 import (
     track_metrics,
     _format_prompt_with_defaults,
 )
+from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
 
 
 class QueryComplexityClassifier(BaseAgent):
@@ -81,6 +82,10 @@ class QueryComplexityClassifier(BaseAgent):
 
 class ToTStrategistAgent(BaseAgent):
     """Tree-of-Thought strategist with self-consistency voting."""
+
+    def __init__(self, context: Any, debug_mode: bool = False) -> None:
+        super().__init__(context, debug_mode)
+        self._adapter = StateAdapterStack(context, debug_mode)
 
     async def _generate_branches(
         self,
@@ -257,6 +262,16 @@ class ToTStrategistAgent(BaseAgent):
             "strategy_plan": selected_strategy.model_dump(),
             "tot_branches": [b["strategy"].model_dump() for b in branches],
         }
+        notes = []
+        if isinstance(state_ref, dict):
+            notes = state_ref.get("memory", {}).get("episodic", {}).get(
+                "agent_notes", []
+            ) or []
+        summary_note = (
+            f"Strategy selected: {selected_strategy.strategy_name} (tone: {selected_strategy.tone})"
+        )
+        mem_patch = self._adapter.patch_memory(agent_notes=[*notes, summary_note])
+        result.update(mem_patch.model_dump(exclude_none=True))
         if episodic and workflow_id:
             episodic.append(
                 workflow_id,
