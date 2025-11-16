@@ -58,6 +58,6 @@ class DraftingReasoner(Reasoner):
             "objective": str(objective),
             "sensitivity": "low",
             "audience": audience,
-            "tags": ["planning", "deterministic"],
+            "tags": ["planning"],
         }
         return plan
