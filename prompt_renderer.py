@@ -62,3 +62,6 @@ class PromptRenderer:
         if isinstance(template, str):
             return load_template(template)
         return dict(template)
+
+    def get_render_metadata(self) -> Dict[str, Any]:
+        return getattr(self, "_last_render_metadata", {})
