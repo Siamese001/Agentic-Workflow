@@ -14,6 +14,7 @@ from typing import Any, Dict, List
 
 from l1_reasoner_base import Reasoner
 from utils_types import PlanObject
+from rag_config import RetrievalConfig
 
 
 def _latest_user_message(state: Dict[str, Any]) -> str:
@@ -54,17 +55,21 @@ class RAGReasoner(Reasoner):
         filters = state.get("rag_filters") or {}
         objective = state.get("objective", "unspecified-objective")
 
+        rc = RetrievalConfig(
+            queries=queries,
+            filters=filters,
+            ranking={
+                "strategy": "relevance_then_recency",
+                "limit": state.get("rag_limit", 5),
+            },
+        )
+
         plan: PlanObject = PlanObject(
             {
                 "layer": "l1",
                 "mode": "rag",
                 "objective": str(objective),
-                "queries": queries,
-                "filters": filters,
-                "ranking": {
-                    "strategy": "relevance_then_recency",
-                    "limit": state.get("rag_limit", 5),
-                },
+                "retrieval": rc.to_plan_fragment(),
                 "handoff": {
                     "target_layer": "l2",
                     "preferred_executor": "rag",
