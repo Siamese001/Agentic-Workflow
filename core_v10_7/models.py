@@ -72,6 +72,18 @@ class NodeStatus(str, Enum):
     BLOCKED = "blocked"
 
 
+class WorkflowPhase(str, Enum):
+    INIT = "init"
+    SAFETY = "safety"
+    STRATEGY = "strategy"
+    RAG = "rag"
+    BULLETS = "bullets"
+    DRAFTING = "drafting"
+    QA = "qa"
+    HIL = "hil"
+    COMPLETE = "complete"
+
+
 class NodeResult(V10Model):
     node: str = Field(..., description="Node name / identifier.")
     status: NodeStatus = Field(..., description="Outcome classification.")
@@ -399,6 +411,7 @@ class EphemeralState(BaseModel):
 
 __all__ = [
     "NodeStatus",
+    "WorkflowPhase",
     "NodeResult",
     "BaseToolOutput",
     "DraftStrategyOutput",
