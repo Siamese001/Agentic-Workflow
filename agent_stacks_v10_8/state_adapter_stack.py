@@ -147,6 +147,23 @@ class StateAdapterStack:
                 base[key] = patch_value
         return base
 
+    def patch_memory(
+        self,
+        *,
+        conversation: Iterable[dict] | None = None,
+        agent_notes: Iterable[str] | None = None,
+        vector_store_ids: Iterable[str] | None = None,
+        tags: Iterable[str] | None = None,
+    ) -> StatePatch:
+        """Delegate to the module-level memory patch builder."""
+
+        return patch_memory(
+            conversation=conversation,
+            agent_notes=agent_notes,
+            vector_store_ids=vector_store_ids,
+            tags=tags,
+        )
+
 
 def patch_memory(
     *,
