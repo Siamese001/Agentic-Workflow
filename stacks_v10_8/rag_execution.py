@@ -291,22 +291,26 @@ class RAGExecutionStack(BaseAgent):
         if not candidates:
             return [], {"scores": []}
         rerank_client = self.get_model_client("reranker_model")
-        prompt_template = self.prompt_manager.get_template("rerank_results")
         strategy = state.get("strategy", {}).get("strategy_plan", {})
         strategy_payload = (
             strategy.model_dump() if hasattr(strategy, "model_dump") else strategy
         )
-        prompt = await _format_prompt_with_defaults(
-            prompt_template,
-            {
-                "query": plan.goal,
-                "strategy": json.dumps(strategy_payload, default=str),
-                "candidates": json.dumps(candidates, default=str),
-            },
-            self.budget_manager,
-            rerank_client.goal_state,
-            rerank_client.top_failures,
-        )
+        final_prompt = state.get("prompts", {}).get("final_prompt")
+        if final_prompt:
+            prompt = final_prompt
+        else:
+            prompt_template = self.prompt_manager.get_template("rerank_results")
+            prompt = await _format_prompt_with_defaults(
+                prompt_template,
+                {
+                    "query": plan.goal,
+                    "strategy": json.dumps(strategy_payload, default=str),
+                    "candidates": json.dumps(candidates, default=str),
+                },
+                self.budget_manager,
+                rerank_client.goal_state,
+                rerank_client.top_failures,
+            )
         try:
             response = await rerank_client.chat_completion_async(
                 messages=[{"role": "user", "content": prompt}],
