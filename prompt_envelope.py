@@ -13,6 +13,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
+from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
+
 
 @dataclass
 class PromptEnvelope:
@@ -24,7 +26,14 @@ class PromptEnvelope:
     instructions: str = ""
     safety_signals: str = ""
     output_schema: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(
+        default_factory=lambda: {
+            "taxonomy": {
+                "sections": [s.value for s in PromptSection],
+                "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
+            }
+        }
+    )
 
     def to_sections(self) -> Dict[str, str]:
         """Return an ordered mapping of envelope sections."""
