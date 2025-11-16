@@ -285,6 +285,21 @@ class GeneratedPrompts(V10Model):
     qa_prompts: Optional[Dict[str, str]] = None
 
 
+class PromptEnvelope(V10Model):
+    """Structured prompt envelope used by the renderer stack."""
+
+    framing: str = ""
+    context: str = ""
+    reasoning: str = ""
+    instructions: str = ""
+    tool_context: str = ""
+    safety_context: Dict[str, Any] = Field(default_factory=dict)
+    output_schema: str = ""
+
+    def __str__(self) -> str:
+        return self.model_dump_json()
+
+
 # ---------------------------------------------------------------------------
 # SELF-CORRECTION MODELS
 # ---------------------------------------------------------------------------
