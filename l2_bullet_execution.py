@@ -6,5 +6,39 @@ Responsibilities:
     • Respect formatting and structural constraints provided by L1 strategy reasoners.
     • Produce deterministic updates for L4 state without coordinating other agents.
 
-This file is scaffolded for Priority 0; implementation comes later.
+Consumes PlanObject inputs and returns StatePatch outputs deterministically.
 """
+from __future__ import annotations
+
+from typing import Any, Dict, List
+
+from l2_tool_base import ExecutionAgent
+from utils_types import PlanObject, StatePatch
+
+
+class BulletExecutionAgent(ExecutionAgent):
+    """Convert planning intents into bulletized state patches."""
+
+    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+        items: List[str] = [str(item) for item in plan.get("deliverables", plan.get("items", []))]
+        if not items:
+            items = [str(plan.get("objective", "unspecified-objective"))]
+
+        bullets = [f"- {item}" for item in items]
+        message = "\n".join(bullets)
+
+        messages = list(state.get("messages", [])) + [
+            {
+                "role": "assistant",
+                "content": message,
+                "format": "bullets",
+            }
+        ]
+
+        patch: StatePatch = StatePatch(
+            {
+                "messages": messages,
+                "last_bullets": bullets,
+            }
+        )
+        return patch
