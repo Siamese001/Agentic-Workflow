@@ -261,6 +261,9 @@ class WorkflowContext:
         self.collaboration_engine = collaboration_engine
         self.advanced_meta_learner = advanced_meta_learner
 
+        # Feature flags
+        self.enable_v10_8_prompts: bool = False
+
         # This is injected *after* __init__ to break circular dependency
         self.context_budget_manager: ContextBudgetManager = None  # type: ignore
 
