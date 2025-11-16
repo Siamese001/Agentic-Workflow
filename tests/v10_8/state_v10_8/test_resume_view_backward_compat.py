@@ -17,7 +17,7 @@ def test_legacy_resume_view_is_filtered():
 
 
 def test_full_state_available_in_v10_8_mode():
-    out = run_workflow({"resume": "CompatUser", "jd": "Engineer"})
+    out = run_workflow({"resume": "CompatUser", "jd": "Engineer"}, compat_mode="v10_8")
 
     assert "master_resume" in out["resume"]
     assert out["state"]["memory"]["episodic"]["conversation"]
