@@ -31,6 +31,13 @@ class ContextBudget:
             return items
         return items[-self.config.max_rag_items :]
 
+    def prune_world(self, items: List[dict]) -> List[dict]:
+        """Trim world-model facts to the configured limit."""
+
+        if len(items) <= self.config.max_world_items:
+            return items
+        return items[-self.config.max_world_items :]
+
     def prune_summary(self, summary: str) -> str:
         """Constrain the summary to a maximum character budget."""
 
