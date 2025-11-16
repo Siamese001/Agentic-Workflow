@@ -26,6 +26,9 @@ class StateAdapter:
             "messages": [],
             "rag_history": [],
             "summary": "",
+            "world": [],
+            "session": {},
+            "metadata": {},
             "phase": self.state_machine.phase.value,
         }
 
