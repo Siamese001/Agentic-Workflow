@@ -26,3 +26,24 @@ def test_context_budget_prunes_buffers():
     assert len(messages) == 2 and messages[0]["content"] == "2"
     assert rag_items == [{"id": 2}]
     assert summary == "bcdef"
+
+
+def test_context_budget_prunes_world_buffer():
+    budget = ContextBudget(BudgetConfig(max_world_items=2))
+
+    world = budget.prune_world([
+        {"id": 1},
+        {"id": 2},
+        {"id": 3},
+    ])
+
+    assert world == [{"id": 2}, {"id": 3}]
+
+
+def test_world_pruning_matches_rag_semantics():
+    config = BudgetConfig(max_rag_items=2, max_world_items=2)
+    budget = ContextBudget(config)
+
+    items = [{"id": 1}, {"id": 2}, {"id": 3}]
+
+    assert budget.prune_world(items) == budget.prune_rag_items(items)
