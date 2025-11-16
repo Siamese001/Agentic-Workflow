@@ -66,15 +66,18 @@ class SafetyGateway:
         patch: StatePatch = StatePatch(
             {
                 "safety_gateway": {
-                    "constitutional": constitutional_eval,
-                    "policy": policy_eval,
-                    "injection": injection_eval,
+                    "constitutional": constitutional_patch.get("constitutional_evaluation", {}),
+                    "policy": policy_patch.get("policy_evaluation", {}),
+                    "injection": injection_patch.get("injection_scan", {}),
                     "content_safety": {
-                        "pii": constitutional_eval.get("pii", {}),
-                        "bias": constitutional_eval.get("bias", {}),
+                        "pii": constitutional_patch.get("constitutional_evaluation", {}).get("pii", {}),
+                        "bias": constitutional_patch.get("constitutional_evaluation", {}).get("bias", {}),
                     },
-                    "status": "blocked" if blocked else "allowed",
-                    "mode": self.safety_mode.value,
+                    "status": "blocked" if (
+                        constitutional_patch.get("constitutional_evaluation", {}).get("violations")
+                        or injection_patch.get("injection_scan", {}).get("is_injection")
+                        or policy_patch.get("policy_evaluation", {}).get("allowed") is False
+                    ) else "allowed",
                 }
             }
         )
