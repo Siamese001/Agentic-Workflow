@@ -73,11 +73,8 @@ class SafetyGateway:
                         "pii": constitutional_patch.get("constitutional_evaluation", {}).get("pii", {}),
                         "bias": constitutional_patch.get("constitutional_evaluation", {}).get("bias", {}),
                     },
-                    "status": "blocked" if (
-                        constitutional_patch.get("constitutional_evaluation", {}).get("violations")
-                        or injection_patch.get("injection_scan", {}).get("is_injection")
-                        or policy_patch.get("policy_evaluation", {}).get("allowed") is False
-                    ) else "allowed",
+                    "status": "blocked" if blocked else "allowed",
+                    "mode": self.safety_mode.value,
                 }
             }
         )
