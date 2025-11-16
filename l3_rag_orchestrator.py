@@ -73,9 +73,24 @@ class RAGOrchestrator:
 
         dag = DAG(
             nodes={
-                "plan_node": DAGNode(name="plan_node", run=run_plan),
-                "execute_node": DAGNode(name="execute_node", run=run_execute),
-                "patch_node": DAGNode(name="patch_node", run=run_patch),
+                "plan_node": DAGNode(
+                    name="plan_node",
+                    run=run_plan,
+                    condition=lambda ctx: bool(ctx.get("force_execute")),
+                    conditional_edges={"condition_true": ["execute_node"]},
+                ),
+                "execute_node": DAGNode(
+                    name="execute_node",
+                    run=run_execute,
+                    on_failure="fallback",
+                    fallback_edge="plan_node",
+                    retries=1,
+                ),
+                "patch_node": DAGNode(
+                    name="patch_node",
+                    run=run_patch,
+                    parallel=["safety_node"],
+                ),
                 "safety_node": DAGNode(name="safety_node", run=run_safety),
             },
             edges={
