@@ -37,6 +37,9 @@ class BaseAgent:
         self.budget_manager = context.context_budget_manager
         self.metrics = context.metrics_collector
         self.self_correction_manager = getattr(context, "self_correction_manager", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
+        self.prompt_injection_detector = getattr(context, "prompt_injection_detector", None)
 
         # v10.7 MCP integration
         self.mcp_clients = context.ensure_mcp_clients() if context.is_mcp_enabled() else {}
