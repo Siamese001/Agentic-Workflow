@@ -8,3 +8,20 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
+from l1_rag_reasoner import RAGReasoner
+from l2_rag_execution import RAGExecutionAgent
+
+
+def test_rag_execution_pipeline_round_trip():
+    state = {
+        "objective": "explain determinism",
+        "messages": [{"role": "user", "content": "How does this work?"}],
+    }
+
+    plan = RAGReasoner().plan(state)
+    assert plan["mode"] == "rag"
+    assert plan["queries"]
+
+    patch = RAGExecutionAgent().execute(plan, state)
+    assert patch["last_retrieval"]["status"] == "completed"
+    assert len(patch["rag_history"]) == len(plan["queries"])
