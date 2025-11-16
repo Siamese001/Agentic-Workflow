@@ -74,7 +74,7 @@ class PromptRenderer:
         return dict(template)
 
     def get_render_metadata(self) -> Dict[str, Any]:
-        return getattr(self, "_last_render_metadata", {})
+        return self.get_last_render_metadata()
 
     def get_last_render_metadata(self):
         return getattr(self, "_last_render_metadata", {})
