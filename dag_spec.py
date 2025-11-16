@@ -22,12 +22,21 @@ class DAGNode:
 
     name: str
     run: Callable[[Dict[str, Any]], NodeResult]
-    retry_policy: Optional[Dict[str, Any]] = field(default=None)
-    conditional_edges: Optional[Dict[str, List[str]]] = field(default=None)
+    condition: Optional[Callable[[Dict[str, Any]], bool]] = None
+    conditional_edges: Optional[Any] = field(default=None)
+    parallel: Optional[List[str]] = None
+    on_failure: str = "halt"
+    fallback_edge: Optional[str] = None
+    retries: int = 0
+    retry_backoff: float = 0.0
 
     def __post_init__(self) -> None:
         if not self.name:
             raise DAGValidationError("DAG nodes require a non-empty name.")
+        if self.on_failure not in {"halt", "continue", "fallback"}:
+            raise DAGValidationError(
+                "on_failure must be one of {'halt', 'continue', 'fallback'}"
+            )
 
 
 @dataclass
