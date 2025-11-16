@@ -376,6 +376,27 @@ class ArbitrationReport(V10Model):
     )
 
 
+class EpisodicMemory(BaseModel):
+    conversation: list[dict] = []
+    agent_notes: list[str] = []
+
+
+class SemanticMemoryRef(BaseModel):
+    vector_store_ids: list[str] = []
+    tags: list[str] = []
+
+
+class MemoryState(BaseModel):
+    episodic: EpisodicMemory = EpisodicMemory()
+    semantic: SemanticMemoryRef = SemanticMemoryRef()
+
+
+class EphemeralState(BaseModel):
+    events: list = []
+    debug_traces: list[str] = []
+    last_node: str | None = None
+
+
 __all__ = [
     "NodeStatus",
     "NodeResult",
@@ -412,4 +433,8 @@ __all__ = [
     "HILFeedbackRoute",
     "ConstitutionalReviewResult",
     "ArbitrationReport",
+    "EpisodicMemory",
+    "SemanticMemoryRef",
+    "MemoryState",
+    "EphemeralState",
 ]
