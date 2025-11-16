@@ -1,3 +1,3 @@
-from core_v10_7.context import MainGraphState
+from core_v10_7 import MainGraphState, WorkflowPhase
 
-__all__ = ["MainGraphState"]
+__all__ = ["MainGraphState", "WorkflowPhase"]

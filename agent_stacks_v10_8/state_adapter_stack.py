@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import copy
 from dataclasses import asdict, is_dataclass
 from typing import Any, Dict, Iterable, Mapping, MutableMapping
@@ -15,7 +16,10 @@ from core_v10_7 import (
     MainGraphState,
     MemoryState,
     SemanticMemoryRef,
+    WorkflowPhase,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class StatePatch(BaseModel):
@@ -39,9 +43,29 @@ class StatePatch(BaseModel):
 class StateAdapterStack:
     """L4 Memory & State: the ONLY component allowed to mutate workflow state."""
 
+    LEGAL_NEXT_PHASES: Dict[WorkflowPhase, set[WorkflowPhase]] = {
+        WorkflowPhase.INIT: {WorkflowPhase.SAFETY},
+        WorkflowPhase.SAFETY: {WorkflowPhase.STRATEGY, WorkflowPhase.COMPLETE},
+        WorkflowPhase.STRATEGY: {WorkflowPhase.RAG},
+        WorkflowPhase.RAG: {WorkflowPhase.BULLETS, WorkflowPhase.DRAFTING},
+        WorkflowPhase.BULLETS: {WorkflowPhase.DRAFTING},
+        WorkflowPhase.DRAFTING: {WorkflowPhase.QA},
+        WorkflowPhase.QA: {WorkflowPhase.HIL, WorkflowPhase.COMPLETE},
+        WorkflowPhase.HIL: {WorkflowPhase.COMPLETE},
+    }
+
     def __init__(self, context: Any, debug_mode: bool = False) -> None:
         self.context = context
         self.debug_mode = debug_mode
+
+    def set_phase(self, state: MainGraphState, next_phase: WorkflowPhase) -> MainGraphState:
+        if next_phase not in self.LEGAL_NEXT_PHASES.get(state.phase, set()):
+            logger.warning(
+                "Soft mode: illegal transition %s->%s", state.phase, next_phase
+            )
+            return state
+        state.phase = next_phase
+        return state
 
     def apply_patch(
         self, state_dict: Dict[str, Any], patch: Dict[str, Any] | StatePatch
