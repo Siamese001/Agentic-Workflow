@@ -36,6 +36,8 @@ import uuid
 from datetime import datetime
 from typing import Dict, Any, Optional
 
+from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+
 # v10.7: Import from new core
 from core_v10_7 import (
     ConfigV10_7, WorkflowContext, MainGraphState,
@@ -127,8 +129,29 @@ async def run_workflow_async(
     initial_state.job.company = job_input_data['company_name']
     initial_state.job.job_title = job_input_data['job_title']
     initial_state.metadata.workflow_id = workflow_id
-    
+
     state_dict = initial_state.to_dict()
+
+    adapter = StateAdapterStack(context, debug_mode)
+    episodic_conversation = state_dict.get("memory", {}).get("episodic", {}).get(
+        "conversation", []
+    )
+    conversation_patch = adapter.patch_memory(
+        conversation=list(episodic_conversation)
+        + [
+            {
+                "role": "user",
+                "type": "job_description",
+                "content": job_input_data.get("job_description", ""),
+            },
+            {
+                "role": "user",
+                "type": "master_resume",
+                "content": master_resume,
+            },
+        ]
+    )
+    state_dict = adapter.apply_patch(state_dict, conversation_patch)
     
     logger.info(f"Workflow ID: {workflow_id}")
     
