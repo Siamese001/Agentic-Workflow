@@ -27,8 +27,10 @@ from .exceptions import MCPClientInitializationError
 from .mcp import MCPClientSpec, MCPClientStub, instantiate_mcp_client, parse_mcp_client_specs
 from .models import (
     ConstitutionalReviewResult,
+    EphemeralState,
     GeneratedPrompts,
     HILAmbiguityReport,
+    MemoryState,
     StrategyPlan,
 )
 from .services import (
@@ -816,6 +818,8 @@ class MainGraphState:
     feedback: FeedbackContext = field(default_factory=FeedbackContext)
     hil: HILContext = field(default_factory=HILContext)
     a2a: A2AContext = field(default_factory=A2AContext)  # v10.7 (Fix #10)
+    memory: MemoryState = MemoryState()
+    ephemeral: EphemeralState = EphemeralState()
 
     def to_dict(self) -> Dict[str, Any]:
         """v10.7: Custom serializer to handle nested Pydantic models."""
@@ -830,6 +834,11 @@ class MainGraphState:
             data["hil"]["ambiguity_report"] = self.hil.ambiguity_report.model_dump()
         if self.qa.constitutional_review:  # v10.7 (Fix #30)
             data["qa"]["constitutional_review"] = self.qa.constitutional_review.model_dump()
+
+        if hasattr(self.memory, "model_dump"):
+            data["memory"] = self.memory.model_dump()
+        if hasattr(self.ephemeral, "model_dump"):
+            data["ephemeral"] = self.ephemeral.model_dump()
 
         return data
 
@@ -848,6 +857,8 @@ class MainGraphState:
         state.safety = SafetyContext(**data.get("safety", {}))
         state.feedback = FeedbackContext(**data.get("feedback", {}))
         state.a2a = A2AContext(**data.get("a2a", {}))  # v10.7 (Fix #10)
+        state.memory = MemoryState(**data.get("memory", {}))
+        state.ephemeral = EphemeralState(**data.get("ephemeral", {}))
 
         # Deserialize QA
         qa_data = data.get("qa", {})
