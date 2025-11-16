@@ -196,6 +196,7 @@ def run_workflow(
     job_input_path: Optional[str | Path] = None,
     master_resume_path: Optional[str | Path] = None,
     config_path: Optional[str | Path] = None,
+    compat_mode: Optional[str] = None,
     enable_hil: bool = True,
     enable_mcp: Optional[bool] = None,
     debug_mode: bool = False,
@@ -204,7 +205,7 @@ def run_workflow(
 
     if isinstance(context_or_job_input, dict):
         request = dict(context_or_job_input)
-        compat_mode = request.pop("compat_mode", None)
+        compat_mode = request.pop("compat_mode", compat_mode)
         return _run_synthetic(request, compat_mode=compat_mode)
 
     cfg_path = Path(config_path or _DEFAULT_CONFIG)
@@ -223,6 +224,7 @@ def run_workflow(
         debug_mode=debug_mode,
         enable_hil=enable_hil,
         enable_mcp=enable_mcp,
+        compat_mode=compat_mode,
     )
     return asyncio.run(coro)
 
