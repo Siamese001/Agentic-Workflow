@@ -30,8 +30,10 @@ class RAGExecutionAgent(ExecutionAgent):
     """Deterministic retrieval executor that returns state patches only."""
 
     def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
-        queries: List[str] = [str(q) for q in plan.get("queries", [])]
-        filters = plan.get("filters", {})
+        retrieval = plan.get("retrieval", {})
+        queries: List[str] = [str(q) for q in retrieval.get("queries", [])]
+        filters = retrieval.get("filters", {})
+        ranking = retrieval.get("ranking", {})
         results = [_synthesize_result(query, idx) for idx, query in enumerate(queries)]
 
         history = list(state.get("rag_history", [])) + results
@@ -41,7 +43,7 @@ class RAGExecutionAgent(ExecutionAgent):
                 "last_retrieval": {
                     "queries": queries,
                     "filters": filters,
-                    "ranking": plan.get("ranking", {}),
+                    "ranking": ranking,
                     "status": "completed",
                 },
             }

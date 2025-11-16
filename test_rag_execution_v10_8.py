@@ -20,8 +20,12 @@ def test_rag_execution_pipeline_round_trip():
 
     plan = RAGReasoner().plan(state)
     assert plan["mode"] == "rag"
-    assert plan["queries"]
+    assert "retrieval" in plan
+    retrieval = plan["retrieval"]
+    assert retrieval["queries"]
 
     patch = RAGExecutionAgent().execute(plan, state)
     assert patch["last_retrieval"]["status"] == "completed"
-    assert len(patch["rag_history"]) == len(plan["queries"])
+    assert patch["last_retrieval"]["queries"] == retrieval["queries"]
+    assert patch["last_retrieval"]["filters"] == retrieval["filters"]
+    assert len(patch["rag_history"]) == len(retrieval["queries"])
