@@ -1,20 +1,23 @@
 # Flattened test view
 
-The `tests_flat/` directory is an upload-friendly mirror of a subset of the
-canonical suite that lives under `tests/`.  Each flattened module simply embeds
-one or more source files verbatim so ChatGPT users can share ~12 aggregates
-instead of dozens of individual files.
+`tests_flat/` is the production test surface. Every file in this directory is
+automatically generated from the canonical sources in `tests/` by running
+`python tools/flatten_tests.py`. The generator embeds each source module
+verbatim so pytest can execute the flattened copies without mutating the
+original hierarchy.
 
-## Can we deprecate `tests/` now?
+Key guarantees:
+- The canonical suite under `tests/` remains untouched and authoritative.
+- Each flattened file contains an embedded copy of its source plus a lightweight
+  execution shim so imports and fixtures work when pytest runs against
+  `tests_flat/`.
+- `tests_flat/manifest.json` records the source→flat mapping and feeds
+  `tests/test_flat_equivalence_v10_7.py`, which enforces byte-for-byte parity.
 
-No.  The source tree in `tests/` remains the authoritative location for every
-pytest module.  The flattened copies only exist for convenience and do not
-replace or supersede the originals.  Several v10.7 additions (e.g. the new core
-and HIL regression suites) currently live exclusively inside `tests/`, and the
-spec explicitly forbids deleting or renaming those files.
-
-To guard against the two layouts drifting apart, the repository contains
-`tests/test_flat_equivalence_v10_7.py`, which parametrically compares every
-embedded block against its source file and fails if any flattened snippet stops
-matching.  This gives high confidence that `tests_flat/` remains a faithful
-mirror while keeping the canonical hierarchy intact.
+Workflow reminders:
+- Do **not** edit files in `tests_flat/` by hand. Regenerate them with
+  `python tools/flatten_tests.py`.
+- Add new tests under `tests/` first; the manifest and flattened copies must be
+  refreshed afterward.
+- Pytest is configured to collect from `tests_flat/` only, so keeping the
+  flattened mirror in sync is required for a green test run.
