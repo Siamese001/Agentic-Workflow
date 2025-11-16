@@ -30,6 +30,7 @@ class StateAdapter:
             "session": {},
             "metadata": {},
             "phase": self.state_machine.phase.value,
+            "phase_metadata": {"phase": self.state_machine.phase.value},
         }
 
     @property
@@ -50,6 +51,8 @@ class StateAdapter:
             if self.state_machine.phase != phase:
                 self.state_machine.transition(phase)
         updated["phase"] = self.state_machine.phase.value
+        metadata = self.state_machine.on_enter_phase(self.state_machine.phase)
+        updated["phase_metadata"] = metadata
         self._state = updated
         return self.state
 
