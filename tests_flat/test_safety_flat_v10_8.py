@@ -8,6 +8,8 @@
 #   - tests/integration/test_safety_pipeline_e2e.py
 # ------------------------------------------------------------------
 # ----- BEGIN: tests/safety/test_safety_policy_stack_basic.py -----
+import pytest
+
 from stacks_v10_8.safety_policy_stack import SafetyPolicyStack
 
 
