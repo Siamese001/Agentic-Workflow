@@ -11,7 +11,8 @@ extend-exclude = [
     "stacks_v10_7/prompting.py",
 
     # Tests are intentionally excluded from strict linting
-    "tests",
+    "tests_flat",
+    "tests",  # legacy suite retained for reference, now deprecated
 ]
 
 [lint]
