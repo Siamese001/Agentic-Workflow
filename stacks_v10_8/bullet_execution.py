@@ -32,8 +32,16 @@ class BulletExecutionStack(BaseAgent):
     ) -> Dict[str, Any]:
         """Extract inputs from state and delegate to ``generate_async``."""
 
-        prompts_bucket = state.get("prompts", {}).get("prompts", {})
-        prompt = prompts_bucket.get("bullet_generation_prompt", "Generate bullets")
+        prompts_bucket = state.get("prompts", {})
+        final_prompt = prompts_bucket.get("final_prompt")
+        legacy_prompts = prompts_bucket.get("prompts", {}) if isinstance(prompts_bucket, dict) else {}
+        prompt = final_prompt or legacy_prompts.get("bullet_generation_prompt")
+        if not prompt:
+            prompt = (
+                self.prompt_manager.get_template("bullet_generation_prompt")
+                if self.prompt_manager
+                else "Generate bullets"
+            )
         strategy_payload = state.get("strategy", {}).get("strategy_plan")
         if isinstance(strategy_payload, StrategyPlan):
             strategy = strategy_payload
@@ -62,11 +70,16 @@ class BulletExecutionStack(BaseAgent):
     ) -> Dict[str, Any]:
         """Extract bullets and critique prompt directly from shared state."""
 
-        critique_prompt = (
-            state.get("prompts", {})
-            .get("prompts", {})
-            .get("critique_prompt", "Critique bullets")
-        )
+        prompts_bucket = state.get("prompts", {})
+        final_prompt = prompts_bucket.get("final_prompt")
+        legacy_prompts = prompts_bucket.get("prompts", {}) if isinstance(prompts_bucket, dict) else {}
+        critique_prompt = final_prompt or legacy_prompts.get("critique_prompt")
+        if not critique_prompt:
+            critique_prompt = (
+                self.prompt_manager.get_template("critique_prompt")
+                if self.prompt_manager
+                else "Critique bullets"
+            )
         bullets = state.get("bullets", {}).get("generated_bullets", [])
         return await self.critique_async(
             bullets,
