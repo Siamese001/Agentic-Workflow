@@ -8,3 +8,14 @@ Responsibilities:
 
 This test file is scaffolded for Priority 0; implementation comes later.
 """
+from l4_state_adapter import StateAdapter
+from utils_types import Phase, StatePatch
+
+
+def test_state_adapter_applies_patch_and_phase():
+    adapter = StateAdapter()
+    patch = StatePatch({"messages": [{"role": "assistant", "content": "hi"}], "phase": Phase.PLANNING.value})
+
+    state = adapter.apply_patch(patch)
+    assert state["messages"][-1]["content"] == "hi"
+    assert adapter.state_machine.phase == Phase.PLANNING
