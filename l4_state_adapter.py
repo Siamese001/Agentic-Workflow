@@ -29,6 +29,7 @@ class StateAdapter:
             "world": [],
             "session": {},
             "metadata": {},
+            "phase_metadata": {"phase": self.state_machine.phase.value},
             "phase": self.state_machine.phase.value,
         }
 
@@ -44,12 +45,19 @@ class StateAdapter:
         updated = apply_patch(self._state, patch)
         updated = self.memory_manager.reconcile_state(updated)
         # Sync FSM if the patch contains a phase directive
+        previous_phase = self.state_machine.phase
         phase_value = updated.get("phase")
         if phase_value is not None:
             phase = Phase(phase_value)
             if self.state_machine.phase != phase:
                 self.state_machine.transition(phase)
         updated["phase"] = self.state_machine.phase.value
+        if self.state_machine.phase != previous_phase:
+            updated["phase_metadata"] = self.state_machine.on_enter_phase(self.state_machine.phase)
+        else:
+            updated["phase_metadata"] = updated.get(
+                "phase_metadata", self.state_machine.on_enter_phase(self.state_machine.phase)
+            )
         self._state = updated
         return self.state
 

@@ -5,7 +5,7 @@ Provides deterministic transitions between orchestration phases.
 """
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, List
 
 from utils_types import Phase
 
@@ -24,6 +24,7 @@ class StateMachine:
 
     def __init__(self, initial: Phase = Phase.INIT) -> None:
         self.phase = initial
+        self._history: List[Phase] = [initial]
 
     def can_transition(self, target: Phase) -> bool:
         """Return True if the transition is legal."""
@@ -36,9 +37,18 @@ class StateMachine:
         if not self.can_transition(target):
             raise ValueError(f"Illegal transition from {self.phase} to {target}")
         self.phase = target
+        self._history.append(target)
         return self.phase
 
     def serialize(self) -> Dict[str, str]:
         """Return a serializable representation of the current phase."""
 
         return {"phase": self.phase.value}
+
+    def on_enter_phase(self, target: Phase) -> Dict[str, str]:
+        """Return metadata hints for the target phase."""
+
+        return {"phase": target.value}
+
+    def history(self) -> List[str]:
+        return [phase.value for phase in self._history]
