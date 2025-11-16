@@ -147,7 +147,11 @@ def _build_synthetic_state(
     return state
 
 
-def _run_synthetic(context: Dict[str, Any]) -> Dict[str, Any]:
+def _full_resume_view(full_state: Dict[str, Any]) -> Dict[str, Any]:
+    return full_state.get("resume", {}) if isinstance(full_state, dict) else {}
+
+
+def _run_synthetic(context: Dict[str, Any], compat_mode: Optional[str] = None) -> Dict[str, Any]:
     """Generate deterministic results for tests that provide context dictionaries."""
 
     normalized = json.loads(json.dumps(context, sort_keys=True))
@@ -158,8 +162,12 @@ def _run_synthetic(context: Dict[str, Any]) -> Dict[str, Any]:
     resume_payload = _synthetic_resume(normalized)
     state = _build_synthetic_state(resume_payload, events)
     state_dict = state.to_dict()
-    legacy_resume = _legacy_resume_view(state_dict)
-    resume_view = state_dict.get("resume", {}) if normalized.get("v10_8_test_mode") else legacy_resume
+
+    resume_view = (
+        _legacy_resume_view(state_dict)
+        if compat_mode == "v10_7"
+        else _full_resume_view(state_dict)
+    )
     merged_output = {
         "document": f"{resume_payload['candidate']}::{resume_payload['job_title']}",
         "artifacts": [
@@ -195,7 +203,9 @@ def run_workflow(
     """Entry point used by tests to execute the workflow."""
 
     if isinstance(context_or_job_input, dict):
-        return _run_synthetic(context_or_job_input)
+        request = dict(context_or_job_input)
+        compat_mode = request.pop("compat_mode", None)
+        return _run_synthetic(request, compat_mode=compat_mode)
 
     cfg_path = Path(config_path or _DEFAULT_CONFIG)
     config = ConfigV10_7(str(cfg_path))
