@@ -50,5 +50,8 @@ class PromptEnvelope:
     def to_dict(self) -> Dict[str, Any]:
         """Materialize the envelope as a serializable dictionary."""
 
-        data = {"sections": self.to_sections(), "metadata": self.metadata}
+        metadata = dict(self.metadata)
+        metadata["instructional_injection_types"] = INSTRUCTIONAL_INJECTION_ALL
+
+        data = {"sections": self.to_sections(), "metadata": metadata}
         return data
