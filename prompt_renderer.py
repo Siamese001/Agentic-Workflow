@@ -14,18 +14,19 @@ from typing import Any, Dict, Optional
 
 from prompt_envelope import PromptEnvelope
 from prompt_templates import envelope_from_template, load_template
+from prompt_taxonomy import PromptSection, INSTRUCTIONAL_INJECTION_ALL
 
 
 class PromptRenderer:
     """Render composite prompts from envelopes and templates."""
 
     SECTION_ORDER = [
-        "Framing",
-        "Context",
-        "Reasoning",
-        "Instructions",
-        "Safety Signals",
-        "Output Schema",
+        PromptSection.FRAMING.value,
+        PromptSection.CONTEXT.value,
+        PromptSection.REASONING.value,
+        PromptSection.INSTRUCTIONS.value,
+        PromptSection.SAFETY.value,
+        PromptSection.OUTPUT_SCHEMA.value,
     ]
 
     def __init__(self, default_template: str | None = "default") -> None:
@@ -54,6 +55,15 @@ class PromptRenderer:
                 pass
             rendered_sections.append(f"[{name}]\n{content}".strip())
 
+        render_metadata = {}
+        for sec in self.SECTION_ORDER:
+            render_metadata[sec] = {
+                "section_type": sec,
+                "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
+            }
+
+        self._last_render_metadata = render_metadata
+
         return "\n\n".join(rendered_sections)
 
     def _resolve_template(self, template: str | Dict[str, str] | None) -> Dict[str, str]:
@@ -64,4 +74,7 @@ class PromptRenderer:
         return dict(template)
 
     def get_render_metadata(self) -> Dict[str, Any]:
+        return getattr(self, "_last_render_metadata", {})
+
+    def get_last_render_metadata(self):
         return getattr(self, "_last_render_metadata", {})
