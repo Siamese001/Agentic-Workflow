@@ -24,7 +24,7 @@ class ContextBudgetManager:
     while the P4/P5 migration is in progress.
     """
 
-    _TRIGGER_RATIO: float = 2.0
+    _TRIGGER_RATIO: float = 1.0
 
     def __init__(
         self,
@@ -71,7 +71,7 @@ class ContextBudgetManager:
         episodic["conversation"] = conversation[-limit:]
         memory["episodic"] = episodic
         state["memory"] = memory
-        self.logger.warning("Soft mode: episodic memory pruned to %s messages", limit)
+        self.logger.info("Episodic memory pruned to %s messages", limit)
 
     def _trim_rag_history(self, state: MutableMapping[str, Any]) -> None:
         rag = self._ensure_mapping(state.get("rag"))
@@ -86,7 +86,7 @@ class ContextBudgetManager:
 
         rag["history"] = history[-limit:]
         state["rag"] = rag
-        self.logger.warning("Soft mode: RAG history trimmed to %s documents", limit)
+        self.logger.info("RAG history trimmed to %s documents", limit)
 
     def _trim_summary(self, state: MutableMapping[str, Any]) -> None:
         summary_parent = None
@@ -114,7 +114,7 @@ class ContextBudgetManager:
         summary_parent[summary_key] = trimmed
         if resume is summary_parent:
             state["resume"] = resume
-        self.logger.warning("Soft mode: summary truncated to %s characters", limit)
+        self.logger.info("Summary truncated to %s characters", limit)
 
     def _coerce_mapping(self, state: Any) -> Optional[MutableMapping[str, Any]]:
         if isinstance(state, MutableMapping):
