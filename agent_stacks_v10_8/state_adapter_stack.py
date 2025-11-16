@@ -60,10 +60,7 @@ class StateAdapterStack:
 
     def set_phase(self, state: MainGraphState, next_phase: WorkflowPhase) -> MainGraphState:
         if next_phase not in self.LEGAL_NEXT_PHASES.get(state.phase, set()):
-            logger.warning(
-                "Soft mode: illegal transition %s->%s", state.phase, next_phase
-            )
-            return state
+            raise ValueError(f"Illegal transition {state.phase}->{next_phase}")
         state.phase = next_phase
         return state
 
@@ -137,11 +134,18 @@ class StateAdapterStack:
 
     def _deep_merge(self, base: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
         for key, patch_value in patch.items():
+            if isinstance(patch_value, Mapping) and patch_value.get("__delete__"):
+                base.pop(key, None)
+                continue
             if isinstance(patch_value, Mapping):
                 existing = base.get(key)
                 if not isinstance(existing, Mapping):
                     existing = {}
                 base[key] = self._deep_merge(dict(existing), dict(patch_value))
+            elif patch_value is None and key in base:
+                raise ValueError(
+                    f"Deletion of '{key}' requires explicit __delete__ flag"
+                )
             elif isinstance(patch_value, list):
                 base[key] = copy.deepcopy(patch_value)
             else:
