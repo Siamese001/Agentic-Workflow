@@ -76,6 +76,7 @@ class GraphOrchestrator:
             safety_payload = {
                 "content": self._latest_content(current_state),
                 "intent": plan,
+                "context_tags": ["l3_orchestrator"],
             }
             safety_patch = self.safety_gateway.evaluate(safety_payload)
             final_state = self.state_adapter.apply_patch(safety_patch)
