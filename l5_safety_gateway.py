@@ -15,7 +15,7 @@ from typing import Any, Dict
 from l5_constitutional_engine import ConstitutionalEngine
 from l5_injection_detector import InjectionDetector
 from l5_policy_engine import PolicyEngine
-from safety_modes import SafetyMode, mode_defaults
+from safety_modes import SafetyMode
 from utils_logger import log_safety_decision
 from utils_types import StatePatch
 
@@ -53,15 +53,13 @@ class SafetyGateway:
         is_injection = injection_eval.get("is_injection")
         policy_allowed = policy_eval.get("allowed")
 
-        block_on = mode_defaults(self.safety_mode).get("block_on", [])
-
         blocked = False
-        if "violation" in block_on and violations:
-            blocked = True
-        if "injection" in block_on and is_injection:
-            blocked = True
-        if "policy_denied" in block_on and policy_allowed is False:
-            blocked = True
+        if self.safety_mode == SafetyMode.STRICT:
+            blocked = bool(violations) or bool(is_injection) or policy_allowed is False
+        elif self.safety_mode == SafetyMode.BALANCED:
+            blocked = bool(is_injection) or policy_allowed is False
+        elif self.safety_mode == SafetyMode.PERMISSIVE:
+            blocked = bool(is_injection)
 
         patch: StatePatch = StatePatch(
             {
