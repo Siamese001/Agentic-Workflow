@@ -97,7 +97,8 @@ async def run_workflow_async(
     master_resume_path: str,
     debug_mode: bool = False,
     enable_hil: bool = True,
-    enable_mcp: Optional[bool] = None
+    enable_mcp: Optional[bool] = None,
+    compat_mode: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run workflow asynchronously with v10.7 streaming and validation"""
     
@@ -117,6 +118,8 @@ async def run_workflow_async(
 
     checkpointer = get_checkpointer(config)
     
+    context.enable_v10_8_prompts = compat_mode != "v10_7"
+
     app = get_graph_app(checkpointer, context, enable_hil=enable_hil, enable_mcp=enable_mcp)
     
     workflow_id = str(uuid.uuid4())
