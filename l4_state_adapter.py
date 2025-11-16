@@ -29,7 +29,6 @@ class StateAdapter:
             "world": [],
             "session": {},
             "metadata": {},
-            "phase_metadata": {"phase": self.state_machine.phase.value},
             "phase": self.state_machine.phase.value,
         }
 
