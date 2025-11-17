@@ -14,12 +14,14 @@ from typing import Any, Dict, List
 
 from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
 from l2_tool_base import ExecutionAgent
+from evidence_fusion import fuse_results
 from rag_transformers import (
     normalize_documents,
     dedupe_results,
     rerank_results,
     fuse_sources,
     truncate_by_budget,
+    apply_ranker,
 )
 from utils_types import BudgetConfig, PlanObject, StatePatch
 
@@ -42,12 +44,14 @@ class RAGExecutionAgent(ExecutionAgent):
         queries: List[str] = [str(q) for q in retrieval.get("queries", [])]
         filters = retrieval.get("filters", {})
         ranking = retrieval.get("ranking", {})
+        metadata = retrieval.get("metadata", {})
         results = [_synthesize_result(query, idx) for idx, query in enumerate(queries)]
 
         transformed = normalize_documents(results)
         transformed = dedupe_results(transformed)
         transformed = rerank_results(transformed, ranking.get("strategy"))
-        transformed = fuse_sources(transformed)
+        transformed = apply_ranker(transformed, metadata.get("ranker_strategy") or ranking.get("strategy"))
+        transformed = fuse_results([fuse_sources(transformed)])
         transformed = truncate_by_budget(transformed, BudgetConfig())
 
         history = list(state.get("rag_history", [])) + transformed
@@ -58,6 +62,7 @@ class RAGExecutionAgent(ExecutionAgent):
                     "queries": queries,
                     "filters": filters,
                     "ranking": ranking,
+                    "metadata": metadata,
                     "status": "completed",
                 },
             }
@@ -67,4 +72,5 @@ class RAGExecutionAgent(ExecutionAgent):
             "evidence_binding_enabled": DEFAULT_TOOLING_PROFILE.evidence_binding_enabled,
             "cross_tool_reconciliation": DEFAULT_TOOLING_PROFILE.cross_tool_reconciliation,
         }
+        patch["retrieval_injection"] = {"hybrid_ranker_enabled": True}
         return patch
