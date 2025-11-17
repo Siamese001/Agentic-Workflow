@@ -1,0 +1,1352 @@
+==== agent_stacks_v10_8/components/bullet.py ====
+"""Bullet generation and review stack."""
+
+import asyncio
+import json
+import re
+from collections import Counter, defaultdict
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, Field
+
+from core_v10_7 import (
+    BaseAgent,
+    BulletList,
+    CritiqueResult,
+    StrategyPlan,
+    WorkflowContext,
+    track_metrics,
+    _format_prompt_with_defaults,
+)
+
+
+class BulletEntityExtractionAgent(BaseAgent):
+    """Extracts key entities from bullet text."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        entities: List[Dict[str, Any]] = Field(default_factory=list)
+        raw_text: str
+        experience_id: Optional[str] = None
+
+    ENTITY_PATTERN = re.compile(r"\b([A-Z][a-zA-Z]+(?: [A-Z][a-zA-Z]+){0,3})\b")
+    ORGANIZATION_HINTS = {"inc", "corp", "llc", "ltd", "company", "technologies"}
+    TECHNOLOGY_HINTS = {
+        "aws",
+        "gcp",
+        "azure",
+        "python",
+        "sql",
+        "spark",
+        "docker",
+        "kubernetes",
+        "hadoop",
+        "tensorflow",
+        "pytorch",
+        "salesforce",
+    }
+
+    @track_metrics("run_bullet_entity_extraction")
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        experience: Dict[str, Any],
+        workflow_id: str,
+    ) -> Dict[str, Any]:
+        text = bullet_text or ""
+        entities: List[Dict[str, Any]] = []
+        seen = set()
+
+        for match in self.ENTITY_PATTERN.finditer(text):
+            candidate = match.group(1).strip()
+            if not candidate or candidate.lower() in seen:
+                continue
+            seen.add(candidate.lower())
+            lower_candidate = candidate.lower()
+            ent_type = "proper_noun"
+            if any(hint in lower_candidate for hint in self.ORGANIZATION_HINTS):
+                ent_type = "organization"
+            elif any(
+                lower_candidate.endswith(hint) or hint in lower_candidate
+                for hint in self.ORGANIZATION_HINTS
+            ):
+                ent_type = "organization"
+            elif any(
+                lower_candidate == hint or hint in lower_candidate.split()
+                for hint in self.TECHNOLOGY_HINTS
+            ):
+                ent_type = "technology"
+            entities.append(
+                {
+                    "name": candidate,
+                    "type": ent_type,
+                    "span": [match.start(), match.end()],
+                }
+            )
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            entities=entities,
+            raw_text=text,
+            experience_id=experience.get("id") if isinstance(experience, dict) else None,
+        )
+        return output.model_dump()
+
+
+class BulletMetricsEnrichmentAgent(BaseAgent):
+    """Annotates bullets with derived metrics metadata."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        has_metric: bool
+        metrics: Dict[str, List[str]] = Field(default_factory=dict)
+        raw_numbers: List[str] = Field(default_factory=list)
+        raw_text: str
+
+    METRIC_PATTERN = re.compile(r"(?P<number>-?\d+(?:[\.,]\d+)?)(?P<suffix>%|x|X|\b)")
+    CURRENCY_PATTERN = re.compile(r"\$[\d,]+(?:\.\d+)?")
+
+    @track_metrics("run_bullet_metrics_enrichment")
+    async def run_async(
+        self, bullet_id: str, bullet_text: str, workflow_id: str
+    ) -> Dict[str, Any]:
+        text = bullet_text or ""
+        metrics: Dict[str, List[str]] = defaultdict(list)
+        raw_numbers: List[str] = []
+
+        for match in self.METRIC_PATTERN.finditer(text):
+            number = match.group("number")
+            suffix = match.group("suffix")
+            raw = f"{number}{suffix.strip()}".strip()
+            raw_numbers.append(raw)
+            if suffix.strip() == "%":
+                metrics["percentage"].append(raw)
+            elif suffix.strip().lower() == "x":
+                metrics["multipliers"].append(raw)
+            else:
+                metrics["absolute"].append(raw)
+
+        for money in self.CURRENCY_PATTERN.findall(text):
+            metrics["currency"].append(money)
+            raw_numbers.append(money)
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            has_metric=bool(raw_numbers),
+            metrics={k: sorted(set(v)) for k, v in metrics.items()},
+            raw_numbers=sorted(set(raw_numbers)),
+            raw_text=text,
+        )
+        return output.model_dump()
+
+
+class BulletNarrativeSynthesisAgent(BaseAgent):
+    """Produces narrative scaffolding for each bullet."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        storyline: str
+        highlights: List[str] = Field(default_factory=list)
+        tone: str
+
+    @track_metrics("run_bullet_narrative_synthesis")
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        metrics_payload: Dict[str, Any],
+        workflow_id: str,
+    ) -> Dict[str, Any]:
+        text = bullet_text or ""
+        fragments = [
+            frag.strip() for frag in re.split(r"[.;]", text) if frag.strip()
+        ]
+        tone = "impact" if metrics_payload.get("has_metric") else "descriptive"
+        if not fragments:
+            fragments = [text.strip()] if text else []
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            storyline="; ".join(fragments[:2]),
+            highlights=fragments[:3],
+            tone=tone,
+        )
+        return output.model_dump()
+
+
+class BulletEvidenceLinkerAgent(BaseAgent):
+    """Links bullets back to resume evidence."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        evidence: List[str] = Field(default_factory=list)
+        confidence: float
+
+    @track_metrics("run_bullet_evidence_linker")
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_text: str,
+        resume_section: Dict[str, Any],
+        workflow_id: str,
+    ) -> Dict[str, Any]:
+        evidence: List[str] = []
+        section_bullets = resume_section.get("bullet_pool", [])
+        for existing in section_bullets[:5]:
+            if bullet_text and existing.lower() in bullet_text.lower():
+                evidence.append(existing)
+        if not evidence and section_bullets:
+            evidence.append(section_bullets[0])
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            evidence=evidence,
+            confidence=0.7 if evidence else 0.3,
+        )
+        return output.model_dump()
+
+
+class BulletConfidenceScoringAgent(BaseAgent):
+    """Scores bullet readiness for publication."""
+
+    class Output(BaseModel):
+        bullet_id: str
+        score: float
+        rationale: str
+
+    @track_metrics("run_bullet_confidence_scoring")
+    async def run_async(
+        self,
+        bullet_id: str,
+        bullet_payload: Dict[str, Any],
+        workflow_id: str,
+    ) -> Dict[str, Any]:
+        score = 0.5
+        rationale: List[str] = []
+        if bullet_payload.get("metrics", {}).get("has_metric"):
+            score += 0.2
+            rationale.append("Contains quantifiable metric.")
+        if bullet_payload.get("entities", {}).get("entities"):
+            score += 0.1
+            rationale.append("References specific entities.")
+        if bullet_payload.get("storyline", {}).get("storyline"):
+            score += 0.1
+            rationale.append("Narrative structure present.")
+        score = min(score, 1.0)
+
+        output = self.Output(
+            bullet_id=bullet_id,
+            score=round(score, 2),
+            rationale=" ".join(rationale) or "Baseline confidence.",
+        )
+        return output.model_dump()
+
+
+class BulletCoordinatorAgent(BaseAgent):
+    """Coordinates bullet enrichment agents."""
+
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.entity_agent = BulletEntityExtractionAgent(context, debug_mode)
+        self.metrics_agent = BulletMetricsEnrichmentAgent(context, debug_mode)
+        self.narrative_agent = BulletNarrativeSynthesisAgent(context, debug_mode)
+        self.evidence_agent = BulletEvidenceLinkerAgent(context, debug_mode)
+        self.confidence_agent = BulletConfidenceScoringAgent(context, debug_mode)
+
+    @track_metrics("run_bullet_coordinator")
+    async def run_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        resume: Dict[str, Any],
+        workflow_id: str,
+    ) -> List[Dict[str, Any]]:
+        self.log_info("Coordinating bullet enrichment agents...")
+
+        enriched_bullets = []
+        for bullet in bullets:
+            bullet_id = bullet.get("id", "unknown")
+            text = bullet.get("text", "")
+            experience = bullet.get("experience", {})
+
+            entities = await self.entity_agent.run_async(
+                bullet_id, text, experience, workflow_id
+            )
+            metrics = await self.metrics_agent.run_async(bullet_id, text, workflow_id)
+            narrative = await self.narrative_agent.run_async(
+                bullet_id, text, metrics, workflow_id
+            )
+            evidence = await self.evidence_agent.run_async(
+                bullet_id,
+                text,
+                experience if isinstance(experience, dict) else {},
+                workflow_id,
+            )
+            confidence = await self.confidence_agent.run_async(
+                bullet_id,
+                {
+                    "metrics": metrics,
+                    "entities": entities,
+                    "storyline": narrative,
+                },
+                workflow_id,
+            )
+
+            enriched_bullets.append(
+                {
+                    "id": bullet_id,
+                    "text": text,
+                    "experience": experience,
+                    "entities": entities,
+                    "metrics": metrics,
+                    "narrative": narrative,
+                    "evidence": evidence,
+                    "confidence": confidence,
+                }
+            )
+
+        return enriched_bullets
+
+
+class BulletProvenanceAuditorAgent(BaseAgent):
+    """Audits bullet provenance and ensures traceability."""
+
+    @track_metrics("run_bullet_provenance_auditor")
+    async def run_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        workflow_id: str,
+    ) -> Dict[str, Any]:
+        self.log_info("Auditing bullet provenance...")
+        missing_evidence = [
+            bullet["id"]
+            for bullet in bullets
+            if not bullet.get("evidence", {}).get("evidence")
+        ]
+        duplicates = [
+            item
+            for item, count in Counter(b["text"] for b in bullets).items()
+            if count > 1
+        ]
+        return {
+            "missing_evidence": missing_evidence,
+            "duplicate_text": duplicates,
+        }
+
+
+class AsyncBulletGeneratorAgent(BaseAgent):
+    """Generates and validates bullets asynchronously."""
+
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.coordinator = BulletCoordinatorAgent(context, debug_mode)
+
+    async def _generate_customized(
+        self,
+        prompt: str,
+        experience: Dict[str, Any],
+        client: Any,
+        temperature: Optional[float] = None,
+    ) -> List[str]:
+        gen_prompt = f"""
+        {client.goal_state}
+        {client.top_failures}
+        -------------------
+        MODE: CREATIVE
+        TASK: {prompt}\nCustomize these bullets:\n{json.dumps(experience.get('bullet_pool', []))}
+        REFLECTION: Are these bullets customized to the prompt?
+        Output: JSON array of 2-3 achievement bullets.
+        """
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": gen_prompt}],
+            temperature=(
+                temperature
+                if temperature is not None
+                else self.config.model_config.bullet_generator_model.temperature
+            ),
+            response_format="json_object",
+        )
+        content, error = self.validator.validate(response["content"], (list, dict))
+        if error:
+            return []
+        if isinstance(content, list):
+            return content
+        if isinstance(content, dict) and "bullets" in content:
+            return content["bullets"]
+        return []
+
+    async def _generate_synthetic(
+        self,
+        prompt: str,
+        experience: Dict[str, Any],
+        client: Any,
+        temperature: Optional[float] = None,
+    ) -> List[str]:
+        gen_prompt = f"""
+        {client.goal_state}
+        {client.top_failures}
+        -------------------
+        MODE: CREATIVE
+        TASK: {prompt}\nExperience (no bullets):\n{json.dumps({'title': experience.get('title'), 'company': experience.get('company')})}
+        REFLECTION: Are these bullets new and metrics-driven?
+        Output: JSON array of 2 new achievement bullets.
+        """
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": gen_prompt}],
+            temperature=(
+                temperature
+                if temperature is not None
+                else self.config.model_config.bullet_generator_model.temperature
+            ),
+            response_format="json_object",
+        )
+        content, error = self.validator.validate(response["content"], (list, dict))
+        if error:
+            return []
+        if isinstance(content, list):
+            return content
+        if isinstance(content, dict) and "bullets" in content:
+            return content["bullets"]
+        return []
+
+    @track_metrics("run_fact_check_bullets")
+    async def run_fact_check(
+        self,
+        bullets: List[str],
+        experience: Dict[str, Any],
+        strategy: StrategyPlan,
+        client: Any,
+    ) -> List[str]:
+        self.log_info("Fact-checking bullets (v10.7)...")
+
+        prompt_template = self.prompt_manager.get_template(
+            "bullet_generation_fact_check"
+        )
+
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {
+                "experience": json.dumps(experience),
+                "bullets": json.dumps(bullets),
+                "strategy": strategy.model_dump_json(),
+            },
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures,
+        )
+
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.model_config.bullet_fact_check_model.temperature,
+            response_format="json_object",
+        )
+
+        validated_output, error = self.validator.validate(response["content"], BulletList)
+        if error:
+            self.log_warning(
+                f"Fact-check validation failed: {error}. Returning original bullets."
+            )
+            return bullets
+
+        return validated_output.verified_bullets
+
+    @track_metrics("run_bullet_generator")
+    async def run_async(
+        self,
+        task_context: Dict[str, Any],
+        strategy: StrategyPlan,
+        workflow_id: str,
+    ) -> Dict[str, Any]:
+        workflow_id = workflow_id or ""
+        episodic = getattr(self.context, "episodic_memory", None)
+        if episodic and workflow_id:
+            prior = episodic.get(workflow_id)
+            self.log_debug(
+                f"Episodic prior events: {len(prior.get('events', []))}"
+            )
+        base_result = await self._execute_bullet_generator(
+            task_context,
+            strategy,
+            workflow_id,
+        )
+        result = await self._maybe_self_correct(
+            task_context,
+            strategy,
+            workflow_id,
+            base_result,
+        )
+        if episodic and workflow_id:
+            episodic.append(
+                workflow_id,
+                {
+                    "stack": "bullets",
+                    "event": "bullets_generated",
+                    "count": len(result.get("bullets") or []),
+                },
+            )
+        return result
+
+    async def _execute_bullet_generator(
+        self,
+        task_context: Dict[str, Any],
+        strategy: StrategyPlan,
+        workflow_id: str,
+        self_heal_hint: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        self.log_info("Generating bullets asynchronously...")
+
+        hint = self_heal_hint or {}
+        generation_client = self.get_model_client("bullet_generator_model")
+        fact_check_client = self.get_model_client("bullet_fact_check_model")
+
+        bullet_prompts = task_context.get("prompts", [])
+        resume_experience = task_context.get("experience", [])
+
+        temperature_override = hint.get("temperature")
+        force_synthetic = hint.get("force_synthetic", False)
+
+        generation_tasks = []
+        for prompt in bullet_prompts:
+            for experience in resume_experience:
+                use_customized = experience.get("bullet_pool") and not force_synthetic
+                if use_customized:
+                    generation_tasks.append(
+                        self._generate_customized(
+                            prompt,
+                            experience,
+                            generation_client,
+                            temperature=temperature_override,
+                        )
+                    )
+                else:
+                    generation_tasks.append(
+                        self._generate_synthetic(
+                            prompt,
+                            experience,
+                            generation_client,
+                            temperature=temperature_override,
+                        )
+                    )
+
+        generated_results = await asyncio.gather(*generation_tasks)
+        flat_generated = [bullet for result in generated_results for bullet in result]
+
+        fact_checked = await self.run_fact_check(
+            flat_generated,
+            resume_experience[0] if resume_experience else {},
+            strategy,
+            fact_check_client,
+        )
+
+        enriched_payload = await self.coordinator.run_async(
+            [
+                {
+                    "id": f"gen_{idx}",
+                    "text": bullet_text,
+                    "experience": resume_experience[idx % len(resume_experience)]
+                    if resume_experience
+                    else {},
+                }
+                for idx, bullet_text in enumerate(fact_checked)
+            ],
+            {"master_resume": {"professional_experience": resume_experience}},
+            workflow_id,
+        )
+
+        return {
+            "bullets": enriched_payload,
+            "raw_generated": flat_generated,
+        }
+
+    async def _maybe_self_correct(
+        self,
+        task_context: Dict[str, Any],
+        strategy: StrategyPlan,
+        workflow_id: str,
+        base_result: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
+            return base_result
+        if not manager.can_retry(workflow_id, "bullet"):
+            return base_result
+
+        baseline_count = len(base_result.get("bullets") or [])
+        retry_threshold = getattr(
+            self.config.agent_stacks,
+            "bullet_retry_threshold",
+            3,
+        )
+        if baseline_count >= retry_threshold:
+            return base_result
+
+        report = manager.start_retry(
+            workflow_id,
+            "bullet",
+            issue="insufficient_bullets",
+            action="regenerate_with_synthetic_override",
+            metadata={"initial_count": baseline_count},
+        )
+
+        corrected_result = await self._execute_bullet_generator(
+            task_context,
+            strategy,
+            workflow_id,
+            self_heal_hint={
+                "force_synthetic": True,
+                "temperature": max(
+                    0.0,
+                    self.config.model_config.bullet_generator_model.temperature - 0.15,
+                ),
+            },
+        )
+
+        corrected_count = len(corrected_result.get("bullets") or [])
+        resolved = corrected_count > baseline_count
+        manager.finalize_retry(
+            report,
+            resolved,
+            {"corrected_count": corrected_count},
+        )
+        if resolved:
+            corrected_result.setdefault("self_correction", {})["bullet"] = report.model_dump()
+            return corrected_result
+        return base_result
+
+
+class AsyncBulletCritiqueAgent(BaseAgent):
+    """Critiques bullets in parallel and aggregates feedback."""
+
+    @track_metrics("run_bullet_critique")
+    async def run_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        critique_prompt: str,
+        workflow_id: str,
+    ) -> List[Dict[str, Any]]:
+        self.log_info("Critiquing bullets with validation (v10.7)...")
+
+        client = self.get_model_client("critique_model")
+        bullet_texts = [b["text"] for b in bullets]
+        critique_tasks = []
+        for bullet in bullet_texts:
+            task_prompt = f"""
+            {client.goal_state}
+            {client.top_failures}
+            -------------------
+            MODE: ANALYTICAL
+            TASK: {critique_prompt}\nBullet: {bullet}
+            REFLECTION: Is this critique specific?
+            Output: JSON with score 0-10 and suggestions.
+            """
+            critique_tasks.append(
+                client.chat_completion_async(
+                    messages=[{"role": "user", "content": task_prompt}],
+                    temperature=self.config.model_config.critique_model.temperature,
+                    response_format="json_object",
+                )
+            )
+        responses = await asyncio.gather(*critique_tasks)
+
+        critique_results: List[CritiqueResult] = []
+        for res in responses:
+            validated_output, error = self.validator.validate(res["content"], CritiqueResult)
+            if error:
+                critique_results.append(
+                    CritiqueResult(score=0.0, suggestions=["Validation failed"])
+                )
+            else:
+                critique_results.append(validated_output)
+
+        self.log_feedback(
+            workflow_id,
+            "parallel_critique",
+            "success",
+            {"bullets_critiqued": len(bullets)},
+        )
+
+        final_critiqued_bullets = []
+        for bullet, critique in zip(bullets, critique_results):
+            final_critiqued_bullets.append(
+                {
+                    "text": bullet["text"],
+                    "experience": bullet.get("experience"),
+                    "critique": critique.model_dump(),
+                }
+            )
+
+        return final_critiqued_bullets
+
+==== agent_stacks_v10_8/components/drafting.py ====
+"""Drafting guild stack with specialist agents."""
+
+import copy
+import json
+from typing import Any, Dict, List, Optional, Tuple
+
+from core_v10_7 import BaseAgent, StrategyPlan, WorkflowContext, track_metrics
+from agent_tools_v10_7 import (
+    EvidenceBriefAssemblerTool,
+    EvidenceClarificationTool,
+)
+
+from .models import (
+    CritiqueFindingRecord,
+    CritiquePanelPacket,
+    EvidenceBriefRecord,
+    EvidenceClarificationRecord,
+    EvidenceLiaisonPacket,
+    SpecialistDraftPacket,
+)
+
+
+class StructureLeadAgent(BaseAgent):
+    """Produces the structural outline for the draft."""
+
+    @track_metrics("run_structure_lead")
+    async def run_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        strategy: StrategyPlan,
+        workflow_id: str,
+    ) -> SpecialistDraftPacket:
+        self.log_info("Drafting Guild >> Structure Lead assembling sections...")
+
+        summary_pivots = (
+            strategy.key_achievements_to_highlight[:3]
+            if strategy.key_achievements_to_highlight
+            else []
+        )
+        bullet_texts = [b.get("text", "") for b in bullets]
+
+        summary_content = (
+            "; ".join(summary_pivots)
+            if summary_pivots
+            else " ".join(bullet_texts[:2])
+        ).strip()
+
+        experience_entries: List[Dict[str, Any]] = []
+        for bullet in bullets:
+            experience = bullet.get("experience", {}) or {}
+            entry: Dict[str, Any] = {
+                "company": experience.get("company", ""),
+                "title": experience.get("title", ""),
+                "bullet": bullet.get("text", ""),
+                "metrics_present": any(ch.isdigit() for ch in bullet.get("text", "")),
+            }
+            if experience.get("years"):
+                entry["tenure"] = experience.get("years")
+            experience_entries.append(entry)
+
+        sections = {
+            "summary": {
+                "draft": summary_content,
+                "focus_areas": strategy.focus_areas,
+                "tone": strategy.tone,
+                "evidence_points": summary_pivots,
+                "open_questions": [],
+            },
+            "experience": {
+                "entries": experience_entries,
+                "open_questions": [],
+            },
+        }
+
+        notes = [
+            (
+                "Summary seeded from strategy achievements."
+                if summary_pivots
+                else "Summary derived from top-scoring bullets."
+            ),
+            f"Experience entries organized ({len(experience_entries)} bullets).",
+        ]
+
+        return SpecialistDraftPacket(
+            specialist="Structure Lead",
+            focus_area=strategy.strategy_name,
+            sections=sections,
+            notes=notes,
+            dependencies=[],
+        )
+
+
+class NarrativeStylistAgent(BaseAgent):
+    """Harmonizes voice and narrative flow across sections."""
+
+    @track_metrics("run_narrative_stylist")
+    async def run_async(
+        self,
+        structured_sections: Dict[str, Any],
+        strategy: StrategyPlan,
+        workflow_id: str,
+    ) -> SpecialistDraftPacket:
+        self.log_info("Drafting Guild >> Narrative Stylist polishing tone...")
+
+        styled_sections: Dict[str, Any] = {}
+        for section_name, section_payload in structured_sections.items():
+            payload_copy = json.loads(json.dumps(section_payload))
+            if section_name == "summary":
+                base_text = payload_copy.get("draft", "")
+                payload_copy["draft"] = self._apply_tone(base_text, strategy.tone)
+                style_notes = payload_copy.setdefault("style_notes", [])
+                style_notes.append(f"Tone harmonized to '{strategy.tone}'.")
+            elif section_name == "experience":
+                entries = payload_copy.get("entries", [])
+                for entry in entries:
+                    entry["bullet"] = self._tighten_language(entry.get("bullet", ""))
+                payload_copy["entries"] = entries
+            styled_sections[section_name] = payload_copy
+
+        notes = [
+            "Tone calibrated across summary and experience.",
+            f"Maintained narrative focus on {', '.join(strategy.focus_areas)}.",
+        ]
+
+        return SpecialistDraftPacket(
+            specialist="Narrative Stylist",
+            focus_area=strategy.tone,
+            sections=styled_sections,
+            notes=notes,
+            dependencies=[],
+        )
+
+    def _apply_tone(self, text: str, tone: str) -> str:
+        if not text:
+            return ""
+        prefix = tone.capitalize() if tone else "Professional"
+        if not text.lower().startswith(prefix.lower()):
+            return f"{prefix} focus: {text}".strip()
+        return text
+
+    def _tighten_language(self, bullet: str) -> str:
+        bullet = bullet.strip()
+        if not bullet:
+            return bullet
+        bullet = bullet.replace("Responsible for", "Led")
+        bullet = bullet.replace("Worked on", "Delivered")
+        return bullet
+
+
+class ComplianceEditorAgent(BaseAgent):
+    """Ensures stylistic and policy compliance for the guild."""
+
+    @track_metrics("run_compliance_editor")
+    async def run_async(
+        self,
+        narrative_sections: Dict[str, Any],
+        workflow_id: str,
+    ) -> SpecialistDraftPacket:
+        self.log_info("Drafting Guild >> Compliance Editor auditing sections...")
+
+        compliant_sections = json.loads(json.dumps(narrative_sections))
+        notes: List[str] = []
+        dependencies: List[str] = []
+
+        summary = compliant_sections.get("summary", {})
+        summary_text = summary.get("draft", "")
+        if summary_text and len(summary_text.split()) < 40:
+            summary.setdefault("open_questions", []).append(
+                "Expand summary to ~40 words for recruiter context."
+            )
+        compliant_sections["summary"] = summary
+
+        experience = compliant_sections.get("experience", {})
+        entries = experience.get("entries", [])
+        for entry in entries:
+            bullet_text = entry.get("bullet", "")
+            if bullet_text and not bullet_text.startswith("•"):
+                entry["bullet"] = f"• {bullet_text}"
+            if entry.get("metrics_present") is False:
+                dependencies.append(
+                    f"Add measurable outcomes for {entry.get('company', 'experience')}"
+                )
+        experience["entries"] = entries
+        compliant_sections["experience"] = experience
+
+        if dependencies:
+            notes.append("Metrics enrichment required for some experience entries.")
+
+        return SpecialistDraftPacket(
+            specialist="Compliance Editor",
+            focus_area="Policy & Style",
+            sections=compliant_sections,
+            notes=notes or ["No stylistic adjustments required."],
+            dependencies=dependencies,
+        )
+
+
+class EvidenceLiaisonAgent(BaseAgent):
+    """Coordinates clarification loops and evidence briefs."""
+
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.clarification_tool = EvidenceClarificationTool(context, debug_mode)
+        self.brief_tool = EvidenceBriefAssemblerTool(context, debug_mode)
+
+    @track_metrics("run_evidence_liaison")
+    async def run_async(
+        self,
+        sections: Dict[str, Any],
+        resume: Dict[str, Any],
+        workflow_id: str,
+    ) -> EvidenceLiaisonPacket:
+        self.log_info("Drafting Guild >> Evidence Liaison orchestrating clarifications...")
+
+        clarifications: List[EvidenceClarificationRecord] = []
+        briefs: List[EvidenceBriefRecord] = []
+
+        for section_name, payload in sections.items():
+            payload_dict = payload if isinstance(payload, dict) else {"draft": payload}
+            open_questions = payload_dict.get("open_questions", [])
+            evidence_points = payload_dict.get("evidence_points") or self._harvest_resume_evidence(
+                section_name, resume
+            )
+
+            if open_questions:
+                clar_payload = {
+                    "recipient": "bullet_team"
+                    if section_name == "experience"
+                    else "rag_team",
+                    "questions": open_questions,
+                    "context_summary": payload_dict.get("draft", "")[:200],
+                }
+                clar_dict = await self.clarification_tool.run_async(clar_payload, workflow_id)
+                record = EvidenceClarificationTool.ClarificationRequestOutput.model_validate(
+                    clar_dict
+                )
+                clarifications.append(
+                    EvidenceClarificationRecord(**record.model_dump())
+                )
+
+            brief_payload = {
+                "section": section_name,
+                "draft_content": payload_dict.get("draft", payload_dict),
+                "evidence_points": evidence_points,
+                "open_questions": open_questions,
+            }
+            brief_dict = await self.brief_tool.run_async(brief_payload, workflow_id)
+            brief_record = EvidenceBriefAssemblerTool.EvidenceBriefOutput.model_validate(
+                brief_dict
+            )
+            briefs.append(EvidenceBriefRecord(**brief_record.model_dump()))
+
+        return EvidenceLiaisonPacket(clarifications=clarifications, briefs=briefs)
+
+    def _harvest_resume_evidence(
+        self, section_name: str, resume: Dict[str, Any]
+    ) -> List[str]:
+        evidence: List[str] = []
+        if section_name == "experience":
+            for experience in resume.get("professional_experience", []):
+                company = experience.get("company", "")
+                for bullet in experience.get("bullet_pool", [])[:3]:
+                    evidence.append(f"{company}: {bullet}")
+        else:
+            summary_points = resume.get("summary", []) or resume.get("highlights", [])
+            if isinstance(summary_points, list):
+                evidence.extend(summary_points[:3])
+        return evidence
+
+
+class CritiqueRoutingPanel(BaseAgent):
+    """Routes specialist critiques (style, fact, policy)."""
+
+    @track_metrics("run_critique_routing_panel")
+    async def run_async(
+        self,
+        sections: Dict[str, Any],
+        liaison_packet: EvidenceLiaisonPacket,
+        workflow_id: str,
+    ) -> CritiquePanelPacket:
+        self.log_info("Drafting Guild >> Critique panel aggregating findings...")
+
+        findings = [
+            self._style_critic(sections),
+            self._fact_critic(liaison_packet),
+            self._policy_critic(sections),
+        ]
+
+        severity_rank = {"approved": 0, "info": 1, "revise": 2, "block": 3}
+        overall_status = "approved"
+        for finding in findings:
+            level = finding.severity
+            if severity_rank.get(level, 0) > severity_rank.get(overall_status, 0):
+                overall_status = level
+
+        return CritiquePanelPacket(findings=findings, overall_status=overall_status)
+
+    def _style_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+        summary = sections.get("summary", {})
+        text = ""
+        if isinstance(summary, dict):
+            text = summary.get("draft", "")
+        issues: List[str] = []
+        recommendations: List[str] = []
+        severity = "approved"
+
+        if text and len(text.split()) < 35:
+            severity = "info"
+            issues.append("Summary is shorter than the recommended range.")
+            recommendations.append("Add more context or achievements to the summary.")
+
+        return CritiqueFindingRecord(
+            critic="Style Critic",
+            severity=severity,
+            issues=issues,
+            recommendations=recommendations,
+            blockers=[],
+        )
+
+    def _fact_critic(self, liaison_packet: EvidenceLiaisonPacket) -> CritiqueFindingRecord:
+        outstanding = [
+            brief for brief in liaison_packet.briefs if brief.outstanding_questions
+        ]
+        clarifications_pending = [
+            clar for clar in liaison_packet.clarifications if clar.questions
+        ]
+
+        severity = "approved"
+        issues: List[str] = []
+        recommendations: List[str] = []
+
+        if outstanding:
+            severity = "revise"
+            issues.append("Outstanding questions remain in evidence briefs.")
+            recommendations.append("Resolve open questions before final synthesis.")
+        elif clarifications_pending:
+            severity = "info"
+            issues.append("Clarification requests have been queued.")
+            recommendations.append("Monitor responses from bullet/RAG agents.")
+
+        return CritiqueFindingRecord(
+            critic="Fact Critic",
+            severity=severity,
+            issues=issues,
+            recommendations=recommendations,
+            blockers=[],
+        )
+
+    def _policy_critic(self, sections: Dict[str, Any]) -> CritiqueFindingRecord:
+        banned_terms = {"confidential", "classified", "secret"}
+        text_blob = json.dumps(sections).lower()
+        offenders = [term for term in banned_terms if term in text_blob]
+
+        severity = "approved"
+        issues: List[str] = []
+        blockers: List[str] = []
+        recommendations: List[str] = []
+
+        if offenders:
+            severity = "block"
+            issues.append(
+                f"Policy-sensitive terms detected: {', '.join(offenders)}"
+            )
+            blockers = offenders
+            recommendations.append(
+                "Remove or sanitize policy-sensitive language."
+            )
+
+        return CritiqueFindingRecord(
+            critic="Policy Critic",
+            severity=severity,
+            issues=issues,
+            recommendations=recommendations,
+            blockers=blockers,
+        )
+
+
+class DraftingGuildCoordinator(BaseAgent):
+    """Coordinates drafting specialists and synthesizes outputs."""
+
+    def __init__(self, context: WorkflowContext, debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        self.structure_lead = StructureLeadAgent(context, debug_mode)
+        self.narrative_stylist = NarrativeStylistAgent(context, debug_mode)
+        self.compliance_editor = ComplianceEditorAgent(context, debug_mode)
+        self.evidence_liaison = EvidenceLiaisonAgent(context, debug_mode)
+        self.critique_panel = CritiqueRoutingPanel(context, debug_mode)
+
+    @track_metrics("run_drafting_guild_coordinator")
+    async def run_async(
+        self,
+        task_context: Dict[str, Any],
+        workflow_id: str,
+        state: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        workflow_id = workflow_id or ""
+        state_ref = state if isinstance(state, dict) else None
+        if state_ref is None and isinstance(task_context, dict):
+            state_ref = task_context
+
+        autonomy = getattr(self.context, "autonomy_engine", None)
+        if autonomy and autonomy.enabled():
+            hints = autonomy.decide(workflow_id)
+            self.log_debug(f"Autonomy hints: {hints}")
+            if state_ref is not None:
+                state_ref.setdefault("autonomy_hints", {}).update(hints)
+        adv = getattr(self.context, "advanced_meta_learner", None)
+        if adv and adv.enabled():
+            hints = adv.analyze(workflow_id)
+            target_state = state_ref if state_ref is not None else state
+            if isinstance(target_state, dict):
+                target_state.setdefault("meta_hints", {}).update(hints)
+
+        episodic = getattr(self.context, "episodic_memory", None)
+        if episodic and workflow_id:
+            prior = episodic.get(workflow_id)
+            self.log_debug(
+                f"Episodic prior events: {len(prior.get('events', []))}"
+            )
+        pcm = self.context.predictive_cache_manager
+        if pcm and pcm.enabled():
+            bullets = task_context.get("bullets", [])
+            for bullet in bullets[:3]:
+                text = bullet.get("text", "") if isinstance(bullet, dict) else ""
+                if not text:
+                    continue
+                pcm.schedule({
+                    "coroutine": (lambda t=text: self.context.precompute_engine.precompute_embeddings(t))
+                })
+            await pcm.run_scheduled()
+        base_result, meta = await self._execute_guild(task_context, workflow_id)
+        result = await self._maybe_self_correct(
+            task_context, workflow_id, base_result, meta
+        )
+        if episodic and workflow_id:
+            result_status = result.get("overall_status")
+            episodic.append(
+                workflow_id,
+                {
+                    "stack": "drafting",
+                    "event": "draft_completed",
+                    "status": result_status,
+                },
+            )
+        return result
+
+    def _merge_sections(self, *layers: Dict[str, Any]) -> Dict[str, Any]:
+        merged: Dict[str, Any] = {}
+        for layer in layers:
+            for key, value in layer.items():
+                merged[key] = json.loads(json.dumps(value))
+        return merged
+
+    async def _execute_guild(
+        self,
+        task_context: Dict[str, Any],
+        workflow_id: str,
+        overrides: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        self.log_info("Drafting Guild Coordinator orchestrating specialists...")
+
+        overrides = overrides or {}
+        if self.context.policy_auto_tuner and self.context.policy_auto_tuner.enabled():
+            tp = self.context.tuning_profile
+            if tp.drafting_expand_summary:
+                overrides.setdefault("expand_summary", True)
+            if tp.drafting_boost_metrics:
+                overrides.setdefault("boost_metrics", True)
+
+        working_context = self._apply_overrides(task_context, overrides)
+
+        strategy = working_context.get("strategy")
+        if isinstance(strategy, dict):
+            strategy = StrategyPlan.model_validate(strategy)
+
+        bullets = working_context.get("bullets", [])
+        resume = working_context.get("resume", {})
+
+        structure_packet = await self.structure_lead.run_async(
+            bullets, strategy, workflow_id
+        )
+        narrative_packet = await self.narrative_stylist.run_async(
+            structure_packet.sections, strategy, workflow_id
+        )
+        compliance_packet = await self.compliance_editor.run_async(
+            narrative_packet.sections, workflow_id
+        )
+        liaison_packet = await self.evidence_liaison.run_async(
+            compliance_packet.sections, resume, workflow_id
+        )
+        critique_packet = await self.critique_panel.run_async(
+            compliance_packet.sections, liaison_packet, workflow_id
+        )
+
+        final_sections = self._merge_sections(
+            structure_packet.sections,
+            narrative_packet.sections,
+            compliance_packet.sections,
+        )
+
+        for brief in liaison_packet.briefs:
+            section_payload = final_sections.setdefault(brief.section, {})
+            if isinstance(section_payload, dict):
+                section_payload.setdefault("evidence_brief", brief.brief)
+                if brief.key_points:
+                    section_payload.setdefault("evidence_points", brief.key_points)
+                if brief.outstanding_questions:
+                    section_payload.setdefault("open_questions", []).extend(
+                        brief.outstanding_questions
+                    )
+            final_sections[brief.section] = section_payload
+
+        guild_metadata = {
+            "structure": structure_packet.model_dump(),
+            "narrative": narrative_packet.model_dump(),
+            "compliance": compliance_packet.model_dump(),
+            "evidence": liaison_packet.model_dump(),
+            "critique": critique_packet.model_dump(),
+        }
+
+        result = {
+            "final_output": final_sections,
+            "guild_metadata": guild_metadata,
+            "overall_status": critique_packet.overall_status,
+            "phases_executed": 5,
+        }
+        meta = {
+            "critique": critique_packet,
+            "overrides": overrides or {},
+        }
+        return result, meta
+
+    def _apply_overrides(
+        self,
+        task_context: Dict[str, Any],
+        overrides: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        if not overrides:
+            return task_context
+        context_copy = copy.deepcopy(task_context)
+        strategy = context_copy.get("strategy")
+        if isinstance(strategy, StrategyPlan):
+            strategy_payload = strategy.model_dump()
+        else:
+            strategy_payload = copy.deepcopy(strategy or {})
+
+        if overrides.get("expand_summary"):
+            achievements = strategy_payload.get("key_achievements_to_highlight", []) or []
+            if isinstance(achievements, list):
+                seed_texts = [b.get("text") for b in context_copy.get("bullets", []) if isinstance(b, dict)]
+                for text in seed_texts[:3]:
+                    if text and text not in achievements:
+                        achievements.append(text)
+                strategy_payload["key_achievements_to_highlight"] = achievements
+
+        context_copy["strategy"] = strategy_payload
+
+        if overrides.get("boost_metrics"):
+            context_copy["bullets"] = self._boost_metric_bullets(context_copy.get("bullets", []))
+
+        if overrides.get("sanitize_policy_terms"):
+            context_copy["resume"] = self._sanitize_resume(context_copy.get("resume", {}))
+
+        return context_copy
+
+    def _boost_metric_bullets(self, bullets: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        boosted: List[Dict[str, Any]] = []
+        for bullet in bullets or []:
+            bullet_copy = copy.deepcopy(bullet)
+            text = bullet_copy.get("text", "")
+            if text and not any(ch.isdigit() for ch in text):
+                bullet_copy["text"] = f"{text} (+ quantified impact)"
+            boosted.append(bullet_copy)
+        return boosted
+
+    def _sanitize_resume(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+        sanitized = copy.deepcopy(resume)
+        banned_terms = {"confidential", "classified", "secret"}
+
+        def _clean_text(value: str) -> str:
+            lowered = value
+            for term in banned_terms:
+                lowered = lowered.replace(term, "[redacted]")
+                lowered = lowered.replace(term.title(), "[Redacted]")
+            return lowered
+
+        summary = sanitized.get("summary")
+        if isinstance(summary, str):
+            sanitized["summary"] = _clean_text(summary)
+
+        for exp in sanitized.get("professional_experience", []) or []:
+            for key in ["company", "title"]:
+                if isinstance(exp.get(key), str):
+                    exp[key] = _clean_text(exp[key])
+            bullets = exp.get("bullet_pool", [])
+            cleaned_bullets = []
+            for text in bullets:
+                cleaned_bullets.append(_clean_text(text) if isinstance(text, str) else text)
+            exp["bullet_pool"] = cleaned_bullets
+        return sanitized
+
+    async def _maybe_self_correct(
+        self,
+        task_context: Dict[str, Any],
+        workflow_id: str,
+        base_result: Dict[str, Any],
+        meta: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        manager = getattr(self, "self_correction_manager", None)
+        if not manager:
+            return base_result
+        if not manager.can_retry(workflow_id, "drafting"):
+            return base_result
+
+        critique_packet = meta.get("critique")
+        severity = self._extract_severity(critique_packet)
+        if self._severity_rank(severity) <= self._severity_rank("info"):
+            return base_result
+
+        overrides = self._build_override_flags(critique_packet)
+        if not overrides:
+            return base_result
+
+        report = manager.start_retry(
+            workflow_id,
+            "drafting",
+            issue=f"critique_{severity}",
+            action="reassemble_with_overrides",
+            metadata={"overrides": overrides},
+        )
+
+        corrected_result, corrected_meta = await self._execute_guild(
+            task_context,
+            workflow_id,
+            overrides=overrides,
+        )
+
+        corrected_severity = self._extract_severity(corrected_meta.get("critique"))
+        resolved = self._severity_rank(corrected_severity) < self._severity_rank(severity)
+        manager.finalize_retry(
+            report,
+            resolved,
+            {"corrected_severity": corrected_severity},
+        )
+        if resolved:
+            corrected_result.setdefault("self_correction", {})["drafting"] = report.model_dump()
+            return corrected_result
+        return base_result
+
+    def _build_override_flags(self, critique_packet: Any) -> Dict[str, bool]:
+        overrides: Dict[str, bool] = {}
+        findings = getattr(critique_packet, "findings", []) if critique_packet else []
+        for finding in findings:
+            critic = getattr(finding, "critic", "")
+            severity = getattr(finding, "severity", "")
+            if critic == "Style Critic" and severity in {"info", "revise"}:
+                overrides["expand_summary"] = True
+            if critic == "Fact Critic" and severity in {"info", "revise"}:
+                overrides["boost_metrics"] = True
+            if critic == "Policy Critic" and severity == "block":
+                overrides["sanitize_policy_terms"] = True
+        return overrides
+
+    def _extract_severity(self, critique_packet: Any) -> str:
+        if not critique_packet:
+            return "approved"
+        return getattr(critique_packet, "overall_status", "approved")
+
+    def _severity_rank(self, severity: str) -> int:
+        ranks = {"approved": 0, "info": 1, "revise": 2, "block": 3}
+        return ranks.get(severity or "approved", 0)
+

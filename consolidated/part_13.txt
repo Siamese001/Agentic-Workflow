@@ -1,0 +1,1831 @@
+==== tests/shared/fixtures.py ====
+from __future__ import annotations
+
+import asyncio
+import json
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional
+from unittest.mock import AsyncMock, MagicMock
+
+import pytest
+
+from core_v10_7 import (
+    AdvancedMetaLearner,
+    ArbitrationEngine,
+    CacheManager,
+    ConfigV10_7,
+    ContextBudgetManager,
+    CostTracker,
+    FeedbackLogReader,
+    MetricsCollector,
+    PolicyAutoTuner,
+    PredictiveCacheManager,
+    PrecomputeEngine,
+    PromptTemplateManager,
+    ProposedRulesLoader,
+    ResponseValidator,
+    SemanticValidator,
+    TuningProfile,
+    WorkflowContext,
+)
+from tests.shared.mock_clients import (
+    DeterministicEmbeddingFunction,
+    DummyEmbeddingFunction,
+    FakeChromaClient,
+    FakeCollection,
+    FakeRedisClient,
+    InMemoryRedis,
+    TraceRecorder,
+)
+
+
+@pytest.fixture(scope="session")
+def config() -> ConfigV10_7:
+    return ConfigV10_7("master_config_v10_7.json")
+
+
+@pytest.fixture()
+def cache_manager(config: ConfigV10_7) -> CacheManager:
+    collection = FakeCollection()
+    chroma = FakeChromaClient(collection)
+    redis_client = InMemoryRedis()
+    embedding_fn = DummyEmbeddingFunction()
+    return CacheManager(config, redis_client, chroma, embedding_fn)
+
+
+@pytest.fixture()
+def workflow_context(config: ConfigV10_7) -> WorkflowContext:
+    redis_client = InMemoryRedis()
+    collection = FakeCollection()
+    chroma = FakeChromaClient(collection)
+    embedding_fn = DummyEmbeddingFunction()
+    cache_mgr = CacheManager(config, redis_client, chroma, embedding_fn)
+    cost_tracker = CostTracker()
+    feedback_reader = FeedbackLogReader(config.meta_loop_config.feedback_log_path)
+    rules_loader = ProposedRulesLoader(config.meta_loop_config.proposed_rules_path)
+    prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
+    response_validator = ResponseValidator()
+    metrics = MetricsCollector()
+    tuning_profile = TuningProfile()
+    policy_auto_tuner = PolicyAutoTuner(config, metrics)
+    predictive_cache_manager = PredictiveCacheManager(
+        config=config,
+        cache_manager=cache_mgr,
+        metrics=metrics,
+    )
+    precompute_engine = PrecomputeEngine(context=None)
+    semantic_validator = SemanticValidator(metrics_collector=metrics)
+    arbitration_engine = ArbitrationEngine(config=config, metrics=metrics)
+    metrics.predictive_cache_manager = predictive_cache_manager
+    ctx = WorkflowContext(
+        config=config,
+        redis_client=redis_client,
+        chromadb_client=chroma,
+        cache_manager=cache_mgr,
+        cost_tracker=cost_tracker,
+        feedback_reader=feedback_reader,
+        rules_loader=rules_loader,
+        prompt_manager=prompt_manager,
+        response_validator=response_validator,
+        metrics_collector=metrics,
+        semantic_validator=semantic_validator,
+        embedding_function=embedding_fn,
+        arbitration_engine=arbitration_engine,
+        predictive_cache_manager=predictive_cache_manager,
+        precompute_engine=precompute_engine,
+        tuning_profile=tuning_profile,
+        policy_auto_tuner=policy_auto_tuner,
+        advanced_meta_learner=AdvancedMetaLearner(config=config, metrics=metrics),
+    )
+    ctx.context_budget_manager = ContextBudgetManager(
+        config=config, model_client_getter=ctx.get_model_client
+    )
+    precompute_engine.context = ctx
+    ctx.reset_mcp_clients()
+    return ctx
+
+
+@pytest.fixture()
+def benchmark():
+    """Lightweight stand-in for pytest-benchmark's fixture."""
+
+    def _runner(func, *args, **kwargs):
+        return func(*args, **kwargs)
+
+    return _runner
+
+
+@pytest.fixture()
+def mock_llm_client() -> MagicMock:
+    client = MagicMock(name="MockLLMClient")
+    client._run_idempotency_check = AsyncMock(name="_run_idempotency_check")
+
+    async def _chat_completion_async(*args, **kwargs):
+        await client._run_idempotency_check(*args, **kwargs)
+        return client.chat_completion_async.return_value
+
+    client.chat_completion_async = AsyncMock(
+        name="chat_completion_async", side_effect=_chat_completion_async
+    )
+    client.goal_state = "Deliver standout resume artifacts"
+    client.top_failures = ["BiasDetectorAgent::run_bias_detector"]
+    client.model_name = "gemini-2.5-pro"
+    return client
+
+
+@pytest.fixture()
+def mock_chromadb_client() -> MagicMock:
+    collection = FakeCollection()
+    client = MagicMock(name="MockChromaClient")
+    client.get_or_create_collection.return_value = collection
+    client.get_collection.return_value = collection
+    client._collection = collection
+    return client
+
+
+@pytest.fixture()
+def feedback_log_path(tmp_path: Path) -> Path:
+    path = tmp_path / "feedback.log"
+    path.write_text("")
+    return path
+
+
+@pytest.fixture()
+def proposed_rules_path(tmp_path: Path) -> Path:
+    path = tmp_path / "proposed_rules.log"
+    path.write_text("")
+    return path
+
+
+@pytest.fixture()
+def workflow_harness(
+    mock_llm_client: MagicMock,
+    mock_chromadb_client: MagicMock,
+    feedback_log_path: Path,
+    proposed_rules_path: Path,
+) -> WorkflowContext:
+    config = ConfigV10_7("master_config_v10_7.json")
+    redis_client = FakeRedisClient()
+    embedding = DeterministicEmbeddingFunction()
+    cache_manager = CacheManager(config, redis_client, mock_chromadb_client, embedding)
+    cost_tracker = CostTracker()
+    feedback_reader = FeedbackLogReader(str(feedback_log_path))
+    rules_loader = ProposedRulesLoader(str(proposed_rules_path))
+    prompt_manager = PromptTemplateManager(feedback_reader=feedback_reader)
+    response_validator = ResponseValidator()
+    metrics_collector = MetricsCollector()
+    tuning_profile = TuningProfile()
+    policy_auto_tuner = PolicyAutoTuner(config, metrics_collector)
+    predictive_cache_manager = PredictiveCacheManager(
+        config=config,
+        cache_manager=cache_manager,
+        metrics=metrics_collector,
+    )
+    precompute_engine = PrecomputeEngine(context=None)
+    semantic_validator = SemanticValidator(metrics_collector=metrics_collector)
+    arbitration_engine = ArbitrationEngine(config=config, metrics=metrics_collector)
+    context_budget_manager = ContextBudgetManager(
+        config,
+        model_client_getter=lambda *_args, **_kwargs: mock_llm_client,
+    )
+    if not hasattr(context_budget_manager, "register_workflow"):
+        context_budget_manager.register_workflow = (  # type: ignore[attr-defined]
+            lambda *_args, **_kwargs: None
+        )
+    context_budget_manager.register_workflow("test-workflow", 1000)
+
+    metrics_collector.predictive_cache_manager = predictive_cache_manager
+    workflow_context = WorkflowContext(
+        config=config,
+        redis_client=redis_client,
+        chromadb_client=mock_chromadb_client,
+        cache_manager=cache_manager,
+        cost_tracker=cost_tracker,
+        feedback_reader=feedback_reader,
+        rules_loader=rules_loader,
+        prompt_manager=prompt_manager,
+        response_validator=response_validator,
+        metrics_collector=metrics_collector,
+        semantic_validator=semantic_validator,
+        embedding_function=embedding,
+        arbitration_engine=arbitration_engine,
+        predictive_cache_manager=predictive_cache_manager,
+        precompute_engine=precompute_engine,
+        tuning_profile=tuning_profile,
+        policy_auto_tuner=policy_auto_tuner,
+    )
+    workflow_context.context_budget_manager = context_budget_manager
+    precompute_engine.context = workflow_context
+    workflow_context.workflow_id = "test-workflow"
+    workflow_context.get_model_client = MagicMock(return_value=mock_llm_client)
+    context_budget_manager.get_model_client = workflow_context.get_model_client
+
+    return workflow_context
+
+
+@pytest.fixture()
+def mock_workflow_context(workflow_harness: WorkflowContext) -> WorkflowContext:
+    return workflow_harness
+
+
+@pytest.fixture()
+def prompt_manager(workflow_harness: WorkflowContext) -> PromptTemplateManager:
+    return workflow_harness.prompt_manager
+
+
+@pytest.fixture()
+def metrics_collector(workflow_harness: WorkflowContext) -> MetricsCollector:
+    return workflow_harness.metrics_collector
+
+
+@pytest.fixture()
+def redis_client(workflow_harness: WorkflowContext) -> FakeRedisClient:
+    return workflow_harness.redis_client
+
+
+@pytest.fixture()
+def cost_tracker(workflow_harness: WorkflowContext) -> CostTracker:
+    return workflow_harness.cost_tracker
+
+
+@pytest.fixture()
+def base_state() -> Dict[str, Any]:
+    strategy_plan = {
+        "strategy_name": "AI Leadership",
+        "focus_areas": ["innovation", "team building"],
+        "key_achievements_to_highlight": ["Scaled platform to millions of users"],
+        "tone": "executive",
+        "planner_assessments": [],
+        "aggregated_decision": "approve",
+        "aggregated_confidence": 0.9,
+        "aggregated_rationale": "Validated by coordinator",
+        "feedback_signals": [],
+        "scenario_simulations": [],
+        "coordinator_summary": "Ready for drafting",
+    }
+
+    return {
+        "metadata": {"workflow_id": "wf-test", "complexity": "unknown"},
+        "job": {
+            "company": "OpenAI",
+            "job_title": "AI Executive",
+            "job_description": "Lead AI initiatives",
+        },
+        "resume": {
+            "candidate": "Test Candidate",
+            "job_title": "AI Executive",
+            "summary": "Experienced AI leader",
+            "highlights": ["Built AI products"],
+            "skills": ["Python", "ML"],
+            "sections": [
+                {
+                    "title": "Experience",
+                    "entries": [
+                        {
+                            "title": "Senior Manager",
+                            "bullet_pool": [
+                                "Led cross-functional team to deliver ML platform",
+                                "Increased model throughput by 30%",
+                            ],
+                        }
+                    ],
+                }
+            ],
+        },
+        "strategy": {"strategy_plan": strategy_plan},
+        "a2a": {"messages": []},
+    }
+
+
+@pytest.fixture()
+def mock_context_budget_manager():
+    manager = MagicMock(name="MockContextBudgetManager")
+
+    async def _prune(document: str, *_args, **_kwargs):
+        return document
+
+    manager.prune = AsyncMock(side_effect=_prune)
+    return manager
+
+
+@pytest.fixture()
+def mock_config(tmp_path: Path) -> ConfigV10_7:
+    config = ConfigV10_7("master_config_v10_7.json")
+
+    feedback_log = tmp_path / "feedback_log.jsonl"
+    feedback_log.touch()
+    config.meta_loop_config.feedback_log_path = str(feedback_log)
+
+    proposed_rules = tmp_path / "proposed_rules.jsonl"
+    proposed_rules.touch()
+    config.meta_loop_config.proposed_rules_path = str(proposed_rules)
+
+    return config
+
+
+@pytest.fixture()
+def response_validator() -> ResponseValidator:
+    return ResponseValidator()
+
+
+@pytest.fixture()
+def semantic_validator(metrics_collector: MetricsCollector) -> SemanticValidator:
+    return SemanticValidator(metrics_collector=metrics_collector)
+
+
+@pytest.fixture()
+def workflow_state_factory(base_state: Dict[str, Any]) -> Callable[[Dict[str, Any]], Dict[str, Any]]:
+    def _factory(overrides: Dict[str, Any]) -> Dict[str, Any]:
+        merged = json.loads(json.dumps(base_state))
+        merged.update(overrides)
+        return merged
+
+    return _factory
+
+
+@pytest.fixture()
+def dummy_cache_entry(cache_manager: CacheManager) -> Dict[str, Any]:
+    payload = {"bullets": ["Managed ML org"], "summary": "Seasoned leader"}
+    asyncio.run(
+        cache_manager.set_llm_cache(
+            provider="google",
+            model="gemini-2.5-pro",
+            prompt="summarize",
+            temperature=0.2,
+            response=payload,
+        )
+    )
+    return payload
+
+
+@pytest.fixture()
+def trace_recorder() -> TraceRecorder:
+    return TraceRecorder()
+
+
+@pytest.fixture()
+def feedback_log_entries(feedback_log_path: Path) -> List[Dict[str, Any]]:
+    entries = [
+        {
+            "timestamp": "2024-01-01T00:00:00Z",
+            "workflow_id": "wf-test",
+            "agent_name": "DraftingGuildCoordinator",
+            "task": "draft",
+            "feedback_type": "success",
+            "details": {"summary": "Strong tone"},
+        },
+        {
+            "timestamp": "2024-01-01T00:05:00Z",
+            "workflow_id": "wf-test",
+            "agent_name": "BiasDetectorAgent",
+            "task": "audit",
+            "feedback_type": "failure",
+            "details": {"issue": "gendered language"},
+        },
+    ]
+    with feedback_log_path.open("w", encoding="utf-8") as handle:
+        for entry in entries:
+            handle.write(json.dumps(entry) + "\n")
+    return entries
+
+
+@pytest.fixture()
+def proposed_rules_entries(proposed_rules_path: Path) -> List[Dict[str, Any]]:
+    entries = [
+        {
+            "timestamp": "2024-01-02T00:00:00Z",
+            "status": "APPROVED",
+            "pattern": {
+                "type": "constitution",
+                "description": "Prevent bias",
+                "config_changes": {"minimum_score": 0.8},
+                "id": "rule-1",
+            },
+        },
+        {
+            "timestamp": "2024-01-02T00:05:00Z",
+            "status": "PROPOSED",
+            "pattern": {
+                "type": "moral_constitution",
+                "description": "Cite achievements",
+                "config_changes": {"max_sections": 5},
+                "id": "rule-2",
+            },
+        },
+    ]
+    with proposed_rules_path.open("w", encoding="utf-8") as handle:
+        for entry in entries:
+            handle.write(json.dumps(entry) + "\n")
+    return entries
+
+
+@pytest.fixture()
+def workflow_context_factory(workflow_harness: WorkflowContext) -> Callable[[str], WorkflowContext]:
+    def _factory(workflow_id: str) -> WorkflowContext:
+        context = workflow_harness
+        context.workflow_id = workflow_id
+        return context
+
+    return _factory
+
+
+@pytest.fixture()
+def strategy_plan_payload() -> Dict[str, Any]:
+    return {
+        "strategy_name": "Impact",
+        "focus_areas": ["delivery", "mentorship"],
+        "key_achievements_to_highlight": ["Launched automation pipeline"],
+        "tone": "confident",
+    }
+
+
+@pytest.fixture()
+def draft_sections() -> Dict[str, Any]:
+    return {
+        "summary": {"draft": "Delivered AI roadmap"},
+        "experience": {
+            "records": [
+                {
+                    "company": "OpenAI",
+                    "impacts": ["Scaled LLM infra"],
+                }
+            ]
+        },
+    }
+
+==== tests/shared/mock_clients.py ====
+from __future__ import annotations
+
+import json
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple
+
+from chromadb.utils import embedding_functions
+
+
+class DeterministicEmbeddingFunction(embedding_functions.EmbeddingFunction):
+    """Predictable embedding function leveraged by caching fixtures."""
+
+    def __call__(self, prompts: List[str]) -> List[List[float]]:
+        return [[float(len(prompt))] for prompt in prompts]
+
+
+class DummyEmbeddingFunction:
+    def __call__(self, prompts: List[str]) -> List[List[float]]:
+        return [[float(len(p))] for p in prompts]
+
+
+class FakeRedisClient:
+    def __init__(self) -> None:
+        self.store: Dict[str, Tuple[str, int]] = {}
+
+    def setex(self, name: str, ttl: int, value: str) -> None:
+        self.store[name] = (value, ttl)
+
+    def get(self, name: str) -> str | None:
+        return (self.store.get(name) or (None, 0))[0]
+
+    def delete(self, name: str) -> None:
+        self.store.pop(name, None)
+
+    def ping(self) -> bool:
+        return True
+
+
+class InMemoryRedis:
+    def __init__(self) -> None:
+        self.store: Dict[str, str] = {}
+
+    def setex(self, name: str, ttl: int, value: str) -> None:
+        self.store[name] = value
+
+    def get(self, name: str) -> str | None:
+        return self.store.get(name)
+
+    def ping(self) -> bool:
+        return True
+
+
+class FakeCollection:
+    def __init__(self) -> None:
+        self.records: Dict[str, Dict[str, Any]] = {}
+
+    def add(
+        self,
+        *,
+        documents: List[str],
+        metadatas: List[Dict[str, Any]],
+        ids: List[str],
+        embeddings: Optional[List[List[float]]] = None,
+        **_: Any,
+    ) -> None:
+        embeddings = embeddings or [[0.0] * 1 for _ in documents]
+        for doc, metadata, record_id, embedding in zip(
+            documents, metadatas, ids, embeddings
+        ):
+            self.records[record_id] = {
+                "document": doc,
+                "metadata": metadata,
+                "embedding": embedding,
+            }
+
+    def query(
+        self,
+        *,
+        query_texts: Optional[List[str]] = None,
+        query_embeddings: Optional[List[List[float]]] = None,
+        n_results: int,
+        where: Dict[str, Any],
+        **_: Any,
+    ) -> Dict[str, Any]:
+        matches: List[Dict[str, Any]] = []
+        for record in self.records.values():
+            metadata = record["metadata"]
+            if all(metadata.get(k) == v for k, v in where.items()):
+                matches.append(record)
+        documents = [[rec["document"] for rec in matches[:n_results]]]
+        metadatas = [[rec["metadata"] for rec in matches[:n_results]]]
+        distances = [[0.0 for _ in range(len(documents[0]))]]
+        return {"documents": documents, "metadatas": metadatas, "distances": distances}
+
+
+class FakeChromaClient:
+    def __init__(self, collection: FakeCollection) -> None:
+        self.collection = collection
+
+    def get_or_create_collection(self, name: str, embedding_function: Any) -> FakeCollection:
+        return self.collection
+
+    def get_collection(self, name: str, embedding_function: Any) -> FakeCollection:
+        return self.collection
+
+
+@dataclass
+class TraceEvent:
+    name: str
+    payload: Dict[str, Any]
+
+
+class TraceRecorder:
+    """Simple in-memory telemetry recorder mimicking production logging."""
+
+    def __init__(self) -> None:
+        self._events: List[TraceEvent] = []
+
+    def record(self, name: str, **payload: Any) -> None:
+        self._events.append(TraceEvent(name=name, payload=payload))
+
+    def find(self, name: str) -> List[TraceEvent]:
+        return [event for event in self._events if event.name == name]
+
+    def as_dicts(self) -> List[Dict[str, Any]]:
+        return [dict(name=event.name, payload=event.payload) for event in self._events]
+
+
+__all__ = [
+    "DeterministicEmbeddingFunction",
+    "DummyEmbeddingFunction",
+    "FakeChromaClient",
+    "FakeCollection",
+    "FakeRedisClient",
+    "InMemoryRedis",
+    "TraceEvent",
+    "TraceRecorder",
+]
+
+==== tests/shared/test_suite_unified.py ====
+import os
+
+
+def test_test_suite_unified():
+    assert not os.path.exists("tests_flat"), "tests_flat should not exist"
+    assert os.path.isdir("tests/v10_7")
+    assert os.path.isdir("tests/v10_8")
+
+==== tests/shared/test_utils.py ====
+from __future__ import annotations
+
+import asyncio
+import contextlib
+import sys
+import types
+from typing import Any, List
+
+import pytest
+
+
+def install_langgraph_stub() -> None:
+    if "langgraph" in sys.modules:
+        return
+
+    langgraph = types.ModuleType("langgraph")
+    graph_module = types.ModuleType("langgraph.graph")
+
+    class StateGraph:  # type: ignore[override]
+        def __init__(self, _state_type):
+            self.nodes = {}
+
+        def add_node(self, name, func):
+            self.nodes[name] = func
+
+        def set_entry_point(self, _name):
+            return None
+
+        def add_edge(self, *_args, **_kwargs):
+            return None
+
+    graph_module.StateGraph = StateGraph
+    graph_module.END = "END"
+
+    errors_module = types.ModuleType("langgraph.errors")
+
+    class GraphRecursionError(Exception):
+        ...
+
+    errors_module.GraphRecursionError = GraphRecursionError
+
+    langgraph.graph = graph_module
+    langgraph.errors = errors_module
+    sys.modules["langgraph"] = langgraph
+    sys.modules["langgraph.graph"] = graph_module
+    sys.modules["langgraph.errors"] = errors_module
+
+
+def pytest_configure(config: pytest.Config) -> None:
+    config.addinivalue_line("markers", "asyncio: enable asyncio event loop")
+    config.addinivalue_line("markers", "slow_graph: mark tests that execute the compiled graph")
+
+
+def pytest_addoption(parser: pytest.Parser) -> None:
+    parser.addoption(
+        "--run-slow-graph",
+        action="store_true",
+        default=False,
+        help="run tests marked as slow_graph",
+    )
+
+
+@contextlib.contextmanager
+def _run_loop():
+    loop = asyncio.new_event_loop()
+    try:
+        yield loop
+    finally:
+        loop.run_until_complete(loop.shutdown_asyncgens())
+        loop.close()
+
+
+def pytest_pyfunc_call(pyfuncitem):
+    marker = pyfuncitem.get_closest_marker("asyncio")
+    if marker and asyncio.iscoroutinefunction(pyfuncitem.obj):
+        argnames = getattr(pyfuncitem._fixtureinfo, "argnames", ()) or ()
+        kwargs = {name: pyfuncitem.funcargs[name] for name in argnames}
+        with _run_loop() as loop:
+            loop.run_until_complete(pyfuncitem.obj(**kwargs))
+        return True
+    return False
+
+
+def pytest_collection_modifyitems(config: pytest.Config, items: List[pytest.Item]) -> None:
+    if config.getoption("--run-slow-graph"):
+        return
+    skip_marker = pytest.mark.skip(reason="pass --run-slow-graph to execute this test")
+    for item in items:
+        if "slow_graph" in item.keywords:
+            item.add_marker(skip_marker)
+
+
+__all__ = [
+    "install_langgraph_stub",
+    "pytest_collection_modifyitems",
+    "pytest_configure",
+    "pytest_pyfunc_call",
+]
+
+==== tests/v10_7/README.md ====
+# Flattened test view
+
+`tests_flat/` is the production test surface. Every file in this directory is
+automatically generated from the canonical sources in `tests/` by running
+`python tools/flatten_tests.py`. The generator embeds each source module
+verbatim so pytest can execute the flattened copies without mutating the
+original hierarchy.
+
+Key guarantees:
+- The canonical suite under `tests/` remains untouched and authoritative.
+- Each flattened file contains an embedded copy of its source plus a lightweight
+  execution shim so imports and fixtures work when pytest runs against
+  `tests_flat/`.
+- `tests_flat/manifest.json` records the source→flat mapping and feeds
+  `tests/test_flat_equivalence_v10_7.py`, which enforces byte-for-byte parity.
+
+Workflow reminders:
+- Do **not** edit files in `tests_flat/` by hand. Regenerate them with
+  `python tools/flatten_tests.py`.
+- Add new tests under `tests/` first; the manifest and flattened copies must be
+  refreshed afterward.
+- Pytest is configured to collect from `tests_flat/` only, so keeping the
+  flattened mirror in sync is required for a green test run.
+
+==== tests/v10_7/__init__.py ====
+from __future__ import annotations
+
+import sys
+import types
+from pathlib import Path
+
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_TESTS_ROOT = _REPO_ROOT / "tests"
+_TESTS_FLAT_ROOT = _REPO_ROOT / "tests_flat"
+
+for _candidate in (_REPO_ROOT, _TESTS_FLAT_ROOT):
+    _candidate_str = str(_candidate)
+    if _candidate_str not in sys.path:
+        sys.path.insert(0, _candidate_str)
+
+_tests_pkg = sys.modules.setdefault("tests", types.ModuleType("tests"))
+_tests_pkg.__path__ = list({*(getattr(_tests_pkg, "__path__", []) or []), str(_TESTS_ROOT), str(_TESTS_FLAT_ROOT)})
+
+__all__ = []
+
+==== tests/v10_7/architecture/test_architecture_compliance_v10_7.py ====
+import ast
+import os
+from pathlib import Path
+import pytest
+
+
+# ----------------------------------------------------------------------
+# Paths
+# ----------------------------------------------------------------------
+ROOT = Path(__file__).resolve().parents[2]
+AGENTIC_ROOT = ROOT
+STACKS_DIR = AGENTIC_ROOT / "agent_stacks_v10_8" / "components"
+TOOLS_DIR = AGENTIC_ROOT / "tools_v10_7"
+
+
+# ----------------------------------------------------------------------
+# Helper: Parse Python module into AST
+# ----------------------------------------------------------------------
+def load_ast(path: Path) -> ast.Module:
+    with path.open("r", encoding="utf-8") as f:
+        return ast.parse(f.read())
+
+
+# ----------------------------------------------------------------------
+# 1. No global CONFIG imports anywhere in stacks or tools.
+# ----------------------------------------------------------------------
+@pytest.mark.architecture
+@pytest.mark.parametrize("path", list(STACKS_DIR.rglob("*.py")) + list(TOOLS_DIR.rglob("*.py")))
+def test_no_global_config_imports(path: Path):
+    """
+    v10.7 design forbids global config imports. All services must be DI-injected.
+    """
+    text = path.read_text()
+    forbidden = [
+        "from core import CONFIG",
+        "import CONFIG",
+        "from config import CONFIG",
+        "from .config import CONFIG",
+    ]
+
+    for pattern in forbidden:
+        assert pattern not in text, f"Forbidden global CONFIG import in {path}"
+
+
+# ----------------------------------------------------------------------
+# 2. No service locator patterns allowed.
+# ----------------------------------------------------------------------
+@pytest.mark.architecture
+@pytest.mark.parametrize("path", list(AGENTIC_ROOT.rglob("*.py")))
+def test_no_service_locator_patterns(path: Path):
+    """
+    Ensures no file uses Registry.get(), Container.resolve(), or other DI anti-patterns.
+    """
+    forbidden = [
+        "Registry.get",
+        "Container.resolve",
+        "ServiceLocator",
+        "dependency_registry",
+    ]
+
+    text = path.read_text()
+    for f in forbidden:
+        assert f not in text, f"Service locator anti-pattern detected in {path}: {f}"
+
+
+# ----------------------------------------------------------------------
+# 3. No stack may import another stack (strict layering).
+# ----------------------------------------------------------------------
+@pytest.mark.architecture
+@pytest.mark.parametrize("path", list(STACKS_DIR.rglob("*.py")))
+def test_no_cross_stack_imports(path: Path):
+    """
+    StrategyStack cannot import QAStack, DraftingStack cannot import RAGStack, etc.
+    Prevents architecture collapse and circular dependencies.
+    """
+    text = path.read_text()
+
+    # Extract stack directory names:
+    stack_names = [p.name for p in STACKS_DIR.iterdir() if p.is_dir()]
+    stack_names_lower = [name.lower() for name in stack_names]
+
+    for other_stack in stack_names_lower:
+        if other_stack in path.name.lower():
+            continue  # Allow self-import inside a stack
+        import_pattern = f"import {other_stack}"
+        from_pattern = f"from {other_stack}"
+        assert import_pattern not in text, f"Cross-stack import '{import_pattern}' found in {path}"
+        assert from_pattern not in text, f"Cross-stack import '{from_pattern}' found in {path}"
+
+
+# ----------------------------------------------------------------------
+# 4. Agents must implement required interface structure: must have 'run'.
+# ----------------------------------------------------------------------
+def _get_classes_with_name(module_ast: ast.Module):
+    for node in module_ast.body:
+        if isinstance(node, ast.ClassDef):
+            yield node
+
+
+@pytest.mark.architecture
+@pytest.mark.parametrize("pyfile", list(STACKS_DIR.rglob("*.py")))
+def test_agents_have_run_method(pyfile: Path):
+    """
+    Ensures every agent class in stack directories has a 'run' method.
+    This enforces the agent interface.
+
+    Only classes ending in 'Agent' are checked.
+    """
+    tree = load_ast(pyfile)
+    for cls in _get_classes_with_name(tree):
+        if not cls.name.endswith("Agent"):
+            continue
+
+        has_run = any(
+            isinstance(n, ast.FunctionDef) and n.name == "run"
+            for n in cls.body
+        )
+
+        assert has_run, f"Agent '{cls.name}' must implement a run() method ({pyfile})"
+
+
+# ----------------------------------------------------------------------
+# 5. Stacks must not instantiate WorkflowContext internally.
+# ----------------------------------------------------------------------
+@pytest.mark.architecture
+@pytest.mark.parametrize("path", list(STACKS_DIR.rglob("*.py")))
+def test_no_context_instantiation(path: Path):
+    """
+    v10.7 design prohibits stacks from creating new WorkflowContext instances inside the agent.
+    All context objects must be injected.
+
+    Looks for 'WorkflowContext(' constructor usage.
+    """
+    text = path.read_text()
+    assert "WorkflowContext(" not in text, (
+        f"'WorkflowContext' must not be instantiated inside stack {path}. "
+        f"Context is DI-provided."
+    )
+
+
+# ----------------------------------------------------------------------
+# 6. No circular imports among stack modules.
+# ----------------------------------------------------------------------
+def _extract_imports(tree: ast.Module):
+    imports = []
+    for node in tree.body:
+        if isinstance(node, ast.Import):
+            for n in node.names:
+                imports.append(n.name)
+        elif isinstance(node, ast.ImportFrom):
+            if node.module:
+                imports.append(node.module)
+    return imports
+
+
+@pytest.mark.architecture
+def test_no_circular_imports():
+    """
+    Builds a simple dependency graph and ensures no A → B → A cycles.
+    We only check stack files because other layers have external deps.
+    """
+    graph = {}
+    files = list(STACKS_DIR.rglob("*.py"))
+
+    # Build graph
+    for f in files:
+        tree = load_ast(f)
+        imports = _extract_imports(tree)
+        graph[f] = []
+        for imp in imports:
+            # Map import to a file if it lives under the stack components package
+            for candidate in files:
+                if candidate.stem == imp or candidate.stem == imp.split(".")[-1]:
+                    graph[f].append(candidate)
+
+    # Detect cycles (DFS)
+    visited = set()
+    stack = set()
+
+    def dfs(node):
+        if node in stack:
+            raise AssertionError(f"Circular import detected at: {node}")
+        if node in visited:
+            return
+        visited.add(node)
+        stack.add(node)
+        for nxt in graph[node]:
+            dfs(nxt)
+        stack.remove(node)
+
+    for f in files:
+        dfs(f)
+
+==== tests/v10_7/architecture/test_config_v10_7.py ====
+import pytest
+
+from core_v10_7 import ConfigV10_7
+
+
+def test_config_provides_nested_sections(config: ConfigV10_7) -> None:
+    assert config.logging_config.log_level == "INFO"
+    assert config.agent_stacks.enable_constitutional_review is True
+    assert config.agent_stacks.conductor_max_steps == 10
+
+
+def test_config_missing_section_raises_attribute_error(config: ConfigV10_7) -> None:
+    with pytest.raises(AttributeError):
+        _ = config.this_section_does_not_exist
+
+==== tests/v10_7/architecture/test_node_policy_wrapper_v10_7.py ====
+import asyncio
+from types import SimpleNamespace
+
+import pytest
+
+import agent_orchestration_v10_7 as orchestration
+from agent_orchestration_v10_7 import add_node_with_policies
+from core_v10_7 import WorkflowTimeoutError
+from core_v10_7.models import NodeStatus
+from agent_orchestration_v10_7 import node_success
+from langgraph.graph import StateGraph, END
+
+
+class DummyWorkflow:
+    def __init__(self) -> None:
+        self.nodes = {}
+        self.added = []
+
+    def add_node(self, name, func):
+        self.nodes[name] = func
+        self.added.append(name)
+
+
+def make_context(*, wrap_mcp_nodes: bool = True, timeout: float = 0.05):
+    performance_config = SimpleNamespace(workflow_node_timeout_seconds=timeout)
+    config = SimpleNamespace(performance_config=performance_config)
+    return SimpleNamespace(config=config, wrap_mcp_nodes=wrap_mcp_nodes)
+
+
+@pytest.mark.asyncio
+async def test_wrapper_applies_timeout(monkeypatch):
+    workflow = DummyWorkflow()
+    workflow_context = make_context(wrap_mcp_nodes=False, timeout=0.05)
+
+    async def slow_node(state, workflow_context):
+        await asyncio.sleep(0.2)
+        return node_success("slow_node", {"slow": True})
+
+    # Disable robustness to isolate timeout behavior
+    monkeypatch.setattr(
+        orchestration,
+        "apply_robustness",
+        lambda stage_name=None: (lambda fn: fn),
+    )
+
+    add_node_with_policies(workflow, "slow_node", slow_node, workflow_context)
+
+    with pytest.raises(WorkflowTimeoutError):
+        await workflow.nodes["slow_node"]({})
+
+
+@pytest.mark.asyncio
+async def test_wrapper_applies_robustness(monkeypatch):
+    workflow = DummyWorkflow()
+    workflow_context = make_context()
+
+    stage_calls = []
+
+    class DummyRobustness:
+        async def run_with_resilience(self, stage, operation):
+            stage_calls.append(stage)
+            return await operation()
+
+    dummy_stack = DummyRobustness()
+    monkeypatch.setattr(orchestration, "_get_robustness_stack", lambda ctx: dummy_stack)
+    monkeypatch.setattr(orchestration, "wrap_mcp", lambda fn: fn)
+
+    async def sample_node(state, workflow_context):
+        return node_success("robust_node", {"ok": True})
+
+    add_node_with_policies(workflow, "robust_node", sample_node, workflow_context)
+    result = await workflow.nodes["robust_node"]({})
+
+    assert result["status"] == NodeStatus.SUCCESS.value
+    assert result["payload"] == {"ok": True}
+    assert stage_calls == ["robust_node"]
+
+
+@pytest.mark.asyncio
+async def test_wrapper_applies_mcp_when_enabled(monkeypatch):
+    workflow = DummyWorkflow()
+    workflow_context = make_context()
+
+    mcp_called = {"count": 0}
+
+    def tracking_wrap_mcp(fn):
+        async def wrapper(*args, **kwargs):
+            mcp_called["count"] += 1
+            return await fn(*args, **kwargs)
+
+        return wrapper
+
+    monkeypatch.setattr(orchestration, "wrap_mcp", tracking_wrap_mcp)
+    monkeypatch.setattr(
+        orchestration,
+        "apply_robustness",
+        lambda stage_name=None: (lambda fn: fn),
+    )
+
+    async def sample_node(state, workflow_context):
+        return node_success("mcp_node", {"wrapped": True})
+
+    add_node_with_policies(workflow, "mcp_node", sample_node, workflow_context)
+    result = await workflow.nodes["mcp_node"]({})
+
+    assert result["status"] == NodeStatus.SUCCESS.value
+    assert result["payload"] == {"wrapped": True}
+    assert mcp_called["count"] == 1
+
+
+@pytest.mark.asyncio
+async def test_wrapper_supports_opt_out_flags(monkeypatch):
+    workflow = DummyWorkflow()
+    workflow_context = make_context()
+
+    monkeypatch.setattr(
+        orchestration,
+        "wrap_mcp",
+        lambda fn: pytest.fail("MCP should be opt-out"),
+    )
+    monkeypatch.setattr(
+        orchestration,
+        "apply_robustness",
+        lambda stage_name=None: (
+            lambda fn: pytest.fail("Robustness should be opt-out")
+        ),
+    )
+
+    async def fast_node(state, workflow_context):
+        return node_success("fast_node", {"fast": True})
+
+    add_node_with_policies(
+        workflow,
+        "fast_node",
+        fast_node,
+        workflow_context,
+        enable_timeout=False,
+        enable_robustness=False,
+        enable_mcp=False,
+    )
+
+    result = await workflow.nodes["fast_node"]({})
+    assert result["status"] == NodeStatus.SUCCESS.value
+    assert result["payload"] == {"fast": True}
+
+
+def test_wrapper_preserves_node_name(monkeypatch):
+    workflow = DummyWorkflow()
+    workflow_context = make_context(wrap_mcp_nodes=False)
+    monkeypatch.setattr(orchestration, "wrap_mcp", lambda fn: fn)
+    monkeypatch.setattr(
+        orchestration,
+        "apply_robustness",
+        lambda stage_name=None: (lambda fn: fn),
+    )
+
+    async def trivial(state, workflow_context):
+        return node_success("preserved", state)
+
+    add_node_with_policies(workflow, "preserved", trivial, workflow_context, enable_timeout=False)
+    assert workflow.added == ["preserved"]
+
+
+@pytest.mark.asyncio
+async def test_compiled_dag_contains_wrapped_nodes(monkeypatch):
+    workflow = StateGraph(dict)
+    workflow_context = make_context(timeout=0.01)
+
+    robustness_calls = []
+    mcp_calls = []
+
+    def fake_apply_robustness(stage_name):
+        def decorator(fn):
+            async def wrapper(*args, **kwargs):
+                robustness_calls.append(stage_name)
+                return await fn(*args, **kwargs)
+
+            return wrapper
+
+        return decorator
+
+    def fake_wrap_mcp(fn):
+        async def wrapper(*args, **kwargs):
+            mcp_calls.append(True)
+            return await fn(*args, **kwargs)
+
+        return wrapper
+
+    monkeypatch.setattr(orchestration, "apply_robustness", fake_apply_robustness)
+    monkeypatch.setattr(orchestration, "wrap_mcp", fake_wrap_mcp)
+
+    async def node_a(state, workflow_context):
+        state["a"] = True
+        return node_success("node_a", state)
+
+    async def node_b(state, workflow_context):
+        state["b"] = True
+        return node_success("node_b", state)
+
+    add_node_with_policies(workflow, "node_a", node_a, workflow_context)
+    add_node_with_policies(workflow, "node_b", node_b, workflow_context)
+    workflow.set_entry_point("node_a")
+    workflow.add_edge("node_a", "node_b")
+    workflow.add_edge("node_b", END)
+
+    compiled = workflow.compile()
+    graph = getattr(compiled, "_graph", workflow)
+
+    for node in ("node_a", "node_b"):
+        assert node in graph.nodes
+        await graph.nodes[node]({})
+
+    assert robustness_calls == ["node_a", "node_b"]
+    assert len(mcp_calls) == 2
+
+==== tests/v10_7/auto_tuning/test_auto_tuning_v10_7.py ====
+import copy
+
+import pytest
+
+from core_v10_7 import ConfigV10_7, MetricsCollector, PolicyAutoTuner, TuningProfile
+
+
+CONFIG_PATH = "master_config_v10_7.json"
+
+
+def _enabled_config() -> ConfigV10_7:
+    cfg = ConfigV10_7(CONFIG_PATH)
+    cfg.auto_tuning_config.enabled = True
+    return cfg
+
+
+def _make_metrics(*entries):
+    metrics = MetricsCollector()
+    for entry in entries:
+        metrics.metrics.append(entry)
+    return metrics
+
+
+def _drafting_metric(duration_ms: float, workflow_id: str = "wf-1"):
+    return {
+        "agent_name": "DraftingStrategistTool",
+        "task_name": "tool_drafting_llm",
+        "duration_ms": duration_ms,
+        "success": True,
+        "metadata": {"workflow_id": workflow_id},
+    }
+
+
+def _rag_metric(duration_ms: float, workflow_id: str = "wf-1"):
+    return {
+        "agent_name": "RAG_SearchAgent",
+        "task_name": "run_agentic_rag",
+        "duration_ms": duration_ms,
+        "success": True,
+        "metadata": {"workflow_id": workflow_id},
+    }
+
+
+def _drafting_signal_metric(stage: str):
+    return {
+        "agent_name": "ArbitrationEngine",
+        "task_name": "run_check",
+        "duration_ms": 5,
+        "success": True,
+        "metadata": {"stage": stage, "workflow_id": "wf-2"},
+    }
+
+
+def test_auto_tuning_disabled_no_change():
+    cfg = ConfigV10_7(CONFIG_PATH)
+    metrics = _make_metrics(_drafting_metric(2500))
+    tuner = PolicyAutoTuner(cfg, metrics)
+    profile = TuningProfile()
+    before = copy.deepcopy(profile.model_dump())
+
+    updated = tuner.tune_profile(profile)
+
+    assert updated.temperature == before["temperature"]
+    assert updated.history == []
+    assert updated.drafting_expand_summary == before["drafting_expand_summary"]
+
+
+def test_temperature_adjusts_with_latency():
+    cfg = _enabled_config()
+    metrics = _make_metrics(_drafting_metric(4000))
+    tuner = PolicyAutoTuner(cfg, metrics)
+    profile = TuningProfile(temperature=0.5)
+    original_prune = profile.prune_factor
+
+    updated = tuner.tune_profile(profile)
+
+    assert pytest.approx(updated.temperature) == 0.45
+    assert updated.prune_factor == original_prune
+
+
+def test_rag_force_multi_tool_engages():
+    cfg = _enabled_config()
+    metrics = _make_metrics(
+        _drafting_metric(2000),
+        _rag_metric(cfg.auto_tuning_config.latency_target_ms * 1.2),
+    )
+    tuner = PolicyAutoTuner(cfg, metrics)
+    profile = TuningProfile()
+
+    updated = tuner.tune_profile(profile)
+
+    assert updated.rag_force_multi_tool is True
+
+
+def test_drafting_overrides_trigger():
+    cfg = _enabled_config()
+    metrics = _make_metrics(
+        _drafting_metric(2000),
+        _drafting_signal_metric("draft_post_assembly"),
+    )
+    tuner = PolicyAutoTuner(cfg, metrics)
+    profile = TuningProfile()
+
+    updated = tuner.tune_profile(profile)
+
+    assert updated.drafting_expand_summary is True
+    assert updated.drafting_boost_metrics is True
+
+
+def test_profile_history_populates():
+    cfg = _enabled_config()
+    metrics = _make_metrics(_drafting_metric(2000))
+    tuner = PolicyAutoTuner(cfg, metrics)
+    profile = TuningProfile()
+
+    updated = tuner.tune_profile(profile)
+
+    assert len(updated.history) == 1
+    record = updated.history[0]
+    assert "timestamp" in record
+    assert record["temperature"] == updated.temperature
+    assert updated.last_update >= record["timestamp"]
+
+==== tests/v10_7/autonomy/test_autonomy_engine_v10_7.py ====
+import logging
+from types import MethodType, SimpleNamespace
+
+import pytest
+
+from core_v10_7.services import AutonomyEngine
+from agent_stacks_v10_8.components.drafting import DraftingGuildCoordinator
+
+
+class _DummyMetrics:
+    def record(self, *_, **__):
+        return None
+
+    def get_average_latency(self, *_, **__):
+        return None
+
+
+def _build_agent(agent_cls, context):
+    agent = agent_cls.__new__(agent_cls)
+    agent.context = context
+    agent.config = context.config
+    agent.logger = logging.getLogger(agent_cls.__name__)
+    agent.debug_mode = False
+    agent.prompt_manager = context.prompt_manager
+    agent.validator = context.response_validator
+    agent.budget_manager = context.context_budget_manager
+    agent.metrics = context.metrics_collector
+    agent.self_correction_manager = None
+    return agent
+
+
+def test_autonomy_disabled_noop():
+    config = SimpleNamespace(autonomy_config=SimpleNamespace(enabled=False))
+    engine = AutonomyEngine(config=config, metrics=None)
+
+    assert engine.enabled() is False
+    assert engine.decide("wf-0") == {}
+
+
+def test_autonomy_generates_routing_hints_from_signals():
+    events = [
+        {"event": "rag_iteration"},
+        {"event": "qa_validation"},
+    ]
+    episodic_memory = SimpleNamespace(get=lambda _workflow_id: {"events": events})
+    config = SimpleNamespace(autonomy_config=SimpleNamespace(enabled=True))
+    engine = AutonomyEngine(config=config, metrics=None, episodic_memory=episodic_memory)
+
+    hints = engine.decide("wf-123")
+
+    assert hints["rag_branch_factor"] == 2
+    assert hints["qa_temperature_bias"] == -0.1
+
+
+@pytest.mark.asyncio
+async def test_autonomy_injected_into_stacks_without_breakage():
+    class _StubAutonomy:
+        def __init__(self):
+            self.calls = []
+
+        def enabled(self):
+            return True
+
+        def decide(self, workflow_id):
+            self.calls.append(workflow_id)
+            return {"drafting_override": True}
+
+    predictive_cfg = SimpleNamespace(enabled=False, max_background_tasks=0)
+    config = SimpleNamespace(
+        predictive_caching_config=predictive_cfg,
+        auto_tuning_config=SimpleNamespace(enabled=False),
+        agent_stacks=SimpleNamespace(conductor_max_steps=1),
+    )
+    context = SimpleNamespace(
+        config=config,
+        predictive_cache_manager=SimpleNamespace(
+            enabled=lambda: False,
+            schedule=lambda *_: None,
+            run_scheduled=lambda: None,
+        ),
+        precompute_engine=SimpleNamespace(),
+        metrics_collector=_DummyMetrics(),
+        prompt_manager=SimpleNamespace(goal_state="", top_failures="", get_template=lambda *_: ""),
+        response_validator=SimpleNamespace(),
+        context_budget_manager=SimpleNamespace(),
+        self_correction_manager=None,
+        is_mcp_enabled=lambda: False,
+        ensure_mcp_clients=lambda: {},
+        policy_auto_tuner=SimpleNamespace(enabled=lambda: False),
+        tuning_profile=SimpleNamespace(),
+        episodic_memory=None,
+        autonomy_engine=_StubAutonomy(),
+    )
+
+    agent = _build_agent(DraftingGuildCoordinator, context)
+
+    async def fake_execute(self, task_context, workflow_id, overrides=None):
+        return {"final_output": {}}, {}
+
+    async def fake_self_correct(self, task_context, workflow_id, base_result, meta):
+        return base_result
+
+    agent._execute_guild = MethodType(fake_execute, agent)
+    agent._maybe_self_correct = MethodType(fake_self_correct, agent)
+
+    state = {"metadata": {"workflow_id": "wf-test"}}
+    task_context = {"bullets": [], "strategy": {}, "resume": {}}
+
+    result = await agent.run_async(task_context, "wf-test", state=state)
+
+    assert result == {"final_output": {}}
+    assert state["autonomy_hints"]["drafting_override"] is True
+
+==== tests/v10_7/conftest.py ====
+pytest_plugins = ["tests.shared.conftest"]
+
+==== tests/v10_7/contracts/test_contract_invariants_v10_7.py ====
+import pytest
+from workflow.runner import run_workflow
+from time import perf_counter
+
+
+# --------------------------------------------------------------------
+# Helper to assert "resume-like" dict structure
+# --------------------------------------------------------------------
+def _assert_resume_structure(resume: dict):
+    assert isinstance(resume, dict), "Resume output must be a dict"
+
+    # Minimal required blocks for v10.7
+    assert "strategy" in resume, "Missing strategy block"
+    assert "qa" in resume, "Missing QA block"
+
+    # At least one of these required narrative outputs:
+    assert any(
+        k in resume for k in ("summary", "bullets", "body")
+    ), "Resume must contain summary/bullets/body"
+
+
+# --------------------------------------------------------------------
+# 1. API Envelope Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_api_envelope_structure():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "AI Exec", "jd": "Databricks"})
+
+    assert isinstance(out, dict), "Workflow must return dict"
+    assert "status" in out, "Missing top-level status"
+    assert "events" in out, "Missing top-level events"
+    assert "resume" in out, "Missing top-level resume payload"
+
+    _assert_resume_structure(out["resume"])
+
+
+# --------------------------------------------------------------------
+# 2. Status Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_status_values_are_valid():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "AI Exec", "jd": "CoreWeave"})
+
+    valid = {"success", "fail", "blocked"}
+    assert out["status"] in valid, (
+        f"Invalid status '{out['status']}'. Allowed: {valid}"
+    )
+
+    if out["status"] == "blocked":
+        # SafetyGuard block reason must exist
+        assert "events" in out
+        assert any("safety" in e.lower() for e in out["events"]), (
+            "Blocked status must accompany safety-related event"
+        )
+
+
+# --------------------------------------------------------------------
+# 3. Event Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_event_list_is_properly_structured():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "AuditCase", "jd": "AI Director"})
+    events = out["events"]
+
+    assert isinstance(events, list), "Events must be list"
+    assert len(events) >= 1, "Event list may not be empty"
+
+    for e in events:
+        assert isinstance(e, (str, dict)), (
+            f"Event `{e}` must be string or dict"
+        )
+
+
+@pytest.mark.contract
+def test_retry_events_present_when_low_confidence():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "RetryCase", "jd": "AI Exec", "low_confidence": True})
+
+    # Must produce retry event
+    ev = out.get("events", [])
+    assert any("retry" in str(e).lower() for e in ev), (
+        f"Expected retry event missing. Events={ev}"
+    )
+
+
+# --------------------------------------------------------------------
+# 4. Strategy Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_strategy_block_fields_correct():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "AI Exec", "jd": "Anthropic"})
+    strat = out["resume"]["strategy"]
+
+    assert isinstance(strat, dict)
+    for field in ["steps", "goal", "context"]:
+        assert field in strat, f"Strategy block missing field `{field}`"
+        assert strat[field] not in (None, "", []), (
+            f"Strategy field `{field}` cannot be empty"
+        )
+
+
+# --------------------------------------------------------------------
+# 5. QA Block Invariants
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_qa_block_fields_correct():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "AI Exec", "jd": "AWS"})
+    qa = out["resume"]["qa"]
+
+    for field in ["confidence", "summary", "issues"]:
+        assert field in qa, f"QA block missing field `{field}`"
+
+    assert isinstance(qa["issues"], list), "`issues` must be list-like"
+
+
+# --------------------------------------------------------------------
+# 6. Summary must be shorter than resume input
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_summary_shorter_than_input():
+    text = "This is a long AI-related resume description intended to test summary shortening."
+    out = run_workflow({"compat_mode": "v10_7", "resume": text, "jd": "Databricks"})
+
+    summary = out["resume"].get("summary")
+    assert summary, "Summary missing from resume output"
+
+    assert len(summary) < len(text), (
+        f"Summary not shorter than input.\n"
+        f"Summary({len(summary)} chars): {summary}\n"
+        f"Input({len(text)} chars): {text}"
+    )
+
+
+# --------------------------------------------------------------------
+# 7. Response must return rapidly and never None (simple SLA)
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_response_not_none_and_under_3s():
+    start = perf_counter()
+    out = run_workflow({"compat_mode": "v10_7", "resume": "PerfTest", "jd": "Citi"})
+    elapsed = perf_counter() - start
+
+    assert out is not None, "Workflow returned None"
+    assert elapsed < 3.0, f"Workflow exceeded 3-second SLA (elapsed={elapsed:.2f}s)"
+
+
+# --------------------------------------------------------------------
+# 8. Error contract: malformed input must produce structured failure
+# --------------------------------------------------------------------
+@pytest.mark.contract
+@pytest.mark.parametrize("bad_input", [None, 123, ["not valid"], {"oops": "no resume"}])
+def test_error_contract_for_malformed_input(bad_input):
+    """
+    Ensures no raw stack traces leak. The workflow must normalize errors
+    into a proper {status:'fail', error:{...}} envelope.
+    """
+    out = run_workflow({"compat_mode": "v10_7", "resume": bad_input, "jd": "AI Exec"})
+
+    # Must not throw
+    assert isinstance(out, dict), "Workflow must return a dict even for bad input"
+
+    # Failure must be normalized
+    assert out["status"] in {"fail", "blocked"}, (
+        f"Malformed input should produce fail/blocked status, not {out['status']}"
+    )
+
+    # Must include a structured error block
+    assert "error" in out or "issues" in out["resume"].get("qa", {}), (
+        "Malformed input must provide structured error information"
+    )
+
+
+# --------------------------------------------------------------------
+# 9. Resume always enriched: must contain >=3 top-level fields
+# --------------------------------------------------------------------
+@pytest.mark.contract
+def test_resume_enrichment_minimum_structure():
+    out = run_workflow({"compat_mode": "v10_7", "resume": "StructuralTest", "jd": "Google"})
+    resume = out["resume"]
+
+    assert len(resume.keys()) >= 3, (
+        f"Resume output not sufficiently enriched: keys={list(resume.keys())}"
+    )
+
+==== tests/v10_7/contracts/test_contract_schemas_v10_7.py ====
+import pytest
+from workflow.runner import run_workflow
+from schema import ResumeOutputSchema
+
+@pytest.mark.parametrize("jd", ["AWS","Anthropic","Databricks","CoreWeave","Citi"])
+def test_resume_schema_compliance(jd):
+    out = run_workflow({"compat_mode": "v10_7", "resume":"AI Exec", "jd": jd})
+    ResumeOutputSchema(**out["resume"])  # raises if invalid
+
+@pytest.mark.parametrize("repeat", [1,2,3,4,5])
+def test_idempotency(repeat):
+    ctx={"compat_mode": "v10_7", "resume":"repeatable","jd":"same"}
+    outs=[run_workflow(ctx) for _ in range(repeat)]
+    assert all(o==outs[0] for o in outs)
+
+==== tests/v10_7/core/test_arbitration_engine_v10_7.py ====
+import copy
+from types import SimpleNamespace
+
+import pytest
+
+from agent_orchestration_v10_7 import _attach_arbitration_report
+from core_v10_7.config import ConfigSection
+from core_v10_7.models import ArbitrationReport
+from core_v10_7.services import ArbitrationEngine, MetricsCollector
+
+
+BASE_STAGES = {
+    "strategy_post_plan": {"enabled": True, "allow_revision": True},
+    "prompt_rag_join": {"enabled": True, "allow_revision": False},
+    "draft_post_assembly": {"enabled": True, "allow_revision": True},
+    "bullets_post_selection": {"enabled": True, "allow_revision": True},
+    "qa_post_validation": {"enabled": True, "allow_revision": True},
+}
+
+
+def make_config(*, enabled: bool = True, stage_overrides: dict | None = None):
+    cfg = {
+        "enabled": enabled,
+        "default_mode": "observe_only",
+        "max_revision_loops_per_stage": 1,
+        "stages": copy.deepcopy(BASE_STAGES),
+    }
+    if stage_overrides:
+        for stage, overrides in stage_overrides.items():
+            current = cfg["stages"].get(stage, {})
+            merged = {**current, **overrides}
+            cfg["stages"][stage] = merged
+    return SimpleNamespace(arbitration_config=ConfigSection(cfg))
+
+
+@pytest.mark.asyncio
+async def test_arbitration_disabled_returns_accept():
+    engine = ArbitrationEngine(config=make_config(enabled=False), metrics=MetricsCollector())
+    state = {"strategy": {"strategy_plan": {"focus_areas": ["impact"], "tone": "bold"}}}
+
+    report = await engine.run_check("strategy_post_plan", state)
+
+    assert report.decision == "ACCEPT"
+    assert any("disabled" in reason.lower() for reason in report.reasons)
+    assert report.suggested_route == "ACCEPT"
+
+
+@pytest.mark.asyncio
+async def test_strategy_success_sets_accept_route():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"strategy": {"strategy_plan": {"focus_areas": ["impact"], "tone": "bold"}}}
+
+    report = await engine.run_check("strategy_post_plan", state)
+
+    assert report.decision == "ACCEPT"
+    assert report.suggested_route == "ACCEPT"
+
+
+@pytest.mark.asyncio
+async def test_strategy_missing_fields_requests_revise():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"strategy": {"strategy_plan": {"focus_areas": [], "tone": ""}}}
+
+    report = await engine.run_check("strategy_post_plan", state)
+
+    assert report.decision == "REQUEST_REVISE"
+    assert report.suggested_route == "REPLAN_STRATEGY"
+
+
+@pytest.mark.asyncio
+async def test_draft_empty_requests_revise():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"draft": {"sections": {}}}
+
+    report = await engine.run_check("draft_post_assembly", state)
+
+    assert report.decision == "REQUEST_REVISE"
+    assert report.suggested_route == "RETRY_DRAFTING"
+
+
+@pytest.mark.asyncio
+async def test_qa_failed_requests_revise():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"qa": {"qa_passed": False}}
+
+    report = await engine.run_check("qa_post_validation", state)
+
+    assert report.decision == "REQUEST_REVISE"
+    assert report.suggested_route == "RETRY_QA"
+
+
+@pytest.mark.asyncio
+async def test_prompt_rag_warn_sets_retry_route():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"rag": {"results": []}}
+
+    report = await engine.run_check("prompt_rag_join", state)
+
+    assert report.decision == "WARN"
+    assert report.suggested_route == "RETRY_RAG"
+
+
+@pytest.mark.asyncio
+async def test_bullets_empty_requests_retry_route():
+    engine = ArbitrationEngine(config=make_config(), metrics=MetricsCollector())
+    state = {"bullets": {"critiqued_bullets": []}}
+
+    report = await engine.run_check("bullets_post_selection", state)
+
+    assert report.decision == "REQUEST_REVISE"
+    assert report.suggested_route == "RETRY_BULLETS"
+
+
+def test_arbitration_attachment_helper():
+    state: dict = {}
+    report = ArbitrationReport(
+        stage="qa_post_validation",
+        decision="ACCEPT",
+        reasons=["ok"],
+        confidence=1.0,
+    )
+
+    _attach_arbitration_report(state, "qa_post_validation", report)
+
+    assert "qa_post_validation" in state["arbitration"]
+    assert state["arbitration"]["qa_post_validation"]["decision"] == "ACCEPT"
+
+==== tests/v10_7/core/test_context_budget_manager_v10_7.py ====
+import pytest
+
+from core_v10_7 import ConfigV10_7, ContextBudgetManager
+
+
+class StubSummarizer:
+    def __init__(self, response: str | None = None, should_fail: bool = False):
+        self.response = response or "short summary"
+        self.should_fail = should_fail
+        self.calls = 0
+
+    async def chat_completion_async(self, *_, **__):
+        self.calls += 1
+        if self.should_fail:
+            raise RuntimeError("LLM unavailable")
+        return {"content": self.response}
+
+
+@pytest.mark.asyncio
+async def test_no_pruning_below_threshold():
+    config = ConfigV10_7("master_config_v10_7.json")
+    config.performance_config.default_token_limit = 512
+    manager = ContextBudgetManager(config=config, model_client_getter=lambda *_: StubSummarizer())
+
+    text = "Concise document"
+    result = await manager.prune(text, max_tokens=512)
+
+    assert result == text
+
+
+@pytest.mark.asyncio
+async def test_pruning_uses_agentic_path_when_long():
+    config = ConfigV10_7("master_config_v10_7.json")
+    config.performance_config.default_token_limit = 64
+    summarizer = StubSummarizer("crunched")
+    manager = ContextBudgetManager(config=config, model_client_getter=lambda *_: summarizer)
+
+    long_doc = "data " * 500
+    result = await manager.prune(long_doc, max_tokens=64)
+
+    assert "DOCUMENT PRUNED (AGENTIC)" in result
+    assert "crunched" in result
+    assert summarizer.calls == 1
+
+
+@pytest.mark.asyncio
+async def test_fallback_truncation_on_agentic_error():
+    config = ConfigV10_7("master_config_v10_7.json")
+    config.performance_config.default_token_limit = 64
+    summarizer = StubSummarizer(should_fail=True)
+    manager = ContextBudgetManager(config=config, model_client_getter=lambda *_: summarizer)
+
+    long_doc = "failure " * 400
+    result = await manager.prune(long_doc, max_tokens=64)
+
+    assert "AGENTIC_FAILURE" in result
+    assert summarizer.calls == 1
+
+==== tests/v10_7/core/test_cost_tracker_v10_7.py ====
+from core_v10_7 import CostTracker
+
+
+def test_cost_tracker_records_calls_and_sums():
+    tracker = CostTracker()
+    tracker.record_call("wf1", "google", "gemini-2.5-pro", input_tokens=1000, output_tokens=500)
+    summary = tracker.get_cost_summary("wf1")
+    assert abs(summary["total_workflow_cost"] - 0.005) < 1e-9
+    assert summary["calls"]
+
+
+def test_unknown_provider_no_cost():
+    tracker = CostTracker()
+    tracker.record_call("wf2", "unknown", "mystery-model", input_tokens=1000, output_tokens=1000)
+    summary = tracker.get_cost_summary("wf2")
+    assert summary["total_workflow_cost"] == 0
+
+
+def test_multiple_calls_aggregated():
+    tracker = CostTracker()
+    tracker.record_call("wf3", "google", "gemini-2.5-flash", input_tokens=500, output_tokens=500)
+    tracker.record_call("wf3", "google", "gemini-2.5-pro", input_tokens=500, output_tokens=500)
+    summary = tracker.get_cost_summary("wf3")
+    assert summary["total_workflow_cost"] > 0
+    assert len(summary["calls"]) == 2
+
