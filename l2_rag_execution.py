@@ -13,7 +13,12 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from l2_tool_base import ExecutionAgent
-from utils_types import PlanObject, StatePatch
+from rag_transformers import (
+    normalize_documents,
+    dedupe_results,
+    truncate_by_budget,
+)
+from utils_types import BudgetConfig, PlanObject, StatePatch
 
 
 def _synthesize_result(query: str, index: int) -> Dict[str, Any]:
@@ -36,7 +41,11 @@ class RAGExecutionAgent(ExecutionAgent):
         ranking = retrieval.get("ranking", {})
         results = [_synthesize_result(query, idx) for idx, query in enumerate(queries)]
 
-        history = list(state.get("rag_history", [])) + results
+        transformed = normalize_documents(results)
+        transformed = dedupe_results(transformed)
+        transformed = truncate_by_budget(transformed, BudgetConfig())
+
+        history = list(state.get("rag_history", [])) + transformed
         patch: StatePatch = StatePatch(
             {
                 "rag_history": history,
