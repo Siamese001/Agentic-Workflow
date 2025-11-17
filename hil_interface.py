@@ -1,3 +1,5 @@
+"""Human-in-the-loop interface module."""
+
 import copy
 
 

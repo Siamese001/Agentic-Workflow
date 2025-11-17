@@ -1,8 +1,10 @@
+"""Meta profile definitions."""
+
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-from optimization_hints import compute_optimization_hint
-from self_correction_surfaces import SelfCorrectionSurface
+from observability import compute_optimization_hint
+from self_correction import SelfCorrectionSurface
 
 
 @dataclass

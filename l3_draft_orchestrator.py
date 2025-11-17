@@ -12,20 +12,20 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
-from dag_executor import DAGExecutor
-from dag_spec import DAG, DAGNode
-from cost_tracker import CostTracker
-from l1_drafting_reasoner import DraftingReasoner
-from l2_drafting_execution import DraftingExecutionAgent
-from l3_graph_orchestrator import OrchestrationResult
-from l4_state_adapter import StateAdapter
-from l5_safety_gateway import SafetyGateway
+from l3_orchestration import DAGExecutor
+from l3_orchestration import DAG, DAGNode
+from observability import CostTracker
+from l1_reasoning import DraftingReasoner
+from l2_execution import DraftingExecutionAgent
+from l3_orchestration import OrchestrationResult
+from l4_state import StateAdapter
+from l5_safety import SafetyGateway
 from node_result import NodeResult, NodeStatus
-from correction_supervisor import evaluate_correction
-from correction_journal import record_correction_event
-from self_correction_surfaces import SelfCorrectionSurface
-from telemetry_store import record_event
-from optimization_hints import compute_optimization_hint
+from self_correction import evaluate_correction
+from self_correction import record_correction_event
+from self_correction import SelfCorrectionSurface
+from observability import record_event
+from observability import compute_optimization_hint
 from meta_profile import update_meta_profile_from_spans_and_self_correction
 from utils_types import StatePatch
 

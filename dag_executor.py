@@ -4,7 +4,7 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any, Dict, List, Set
 
-from dag_spec import DAG
+from l3_orchestration import DAG
 from errors_controlflow import NodeExecutionError
 from node_result import NodeResult, NodeStatus
 
