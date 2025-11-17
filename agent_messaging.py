@@ -19,5 +19,8 @@ def route_to_specialist(graph, message: AgentMessage):
     """
     for node in graph.nodes:
         if node.role == message.recipient:
+            metadata = message.metadata if message.metadata is not None else {}
+            metadata["route_trace"] = [message.sender.value, node.role.value]
+            message.metadata = metadata
             return node
     return None
