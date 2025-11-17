@@ -1,0 +1,26 @@
+{
+  "schema_version": "master_config_v10.7",
+  "default_model": "gpt-4o",
+  "model_aliases": {
+    "gpt-4": "gpt-4o",
+    "gpt-3.5-turbo": "gpt-4o-mini",
+    "claude-2": "claude-3-sonnet"
+  },
+  "cache": {
+    "enabled": true,
+    "ttl_seconds": 900
+  },
+  "budget": {
+    "max_tokens": 32000
+  },
+  "telemetry": {
+    "enabled": true,
+    "endpoint": "stdout"
+  },
+  "validators": {
+    "require_answer": true
+  },
+  "tuning": {
+    "profiles": []
+  }
+}
