@@ -66,6 +66,8 @@ class PromptRenderer:
             "reason_then_answer": True
         }
 
+        render_metadata["injection_tooling"] = {"model_switch_awareness": True}
+
         self._last_render_metadata = render_metadata
 
         return "\n\n".join(rendered_sections)

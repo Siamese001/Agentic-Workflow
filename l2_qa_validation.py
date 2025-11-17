@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
 from l2_tool_base import ExecutionAgent
 from utils_types import PlanObject, StatePatch
 from memory_views import get_evidence_view
@@ -62,6 +63,10 @@ class QAValidationAgent(ExecutionAgent):
                     "findings": findings,
                     "confidence": confidence_score,
                     "error_simulation": {"simulated": False},
+                    "shadow_validation": {
+                        "performed": False,
+                        "enabled": DEFAULT_TOOLING_PROFILE.shadow_validation_enabled,
+                    },
                 }
             }
         )
