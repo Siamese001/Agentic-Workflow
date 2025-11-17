@@ -14,6 +14,7 @@ from typing import Any, Dict, List
 
 from l2_tool_base import ExecutionAgent
 from utils_types import PlanObject, StatePatch
+from memory_views import get_evidence_view
 
 
 def _build_checks(plan: PlanObject) -> List[str]:
@@ -47,6 +48,7 @@ class QAValidationAgent(ExecutionAgent):
     """Perform deterministic QA validation that emits state patches only."""
 
     def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
+        evidence = get_evidence_view(state)
         checks = _build_checks(plan)
         findings = _derive_findings(state, checks)
 
