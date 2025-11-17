@@ -15,6 +15,7 @@ from typing import Any, Dict, List
 from l1_reasoner_base import Reasoner
 from utils_types import PlanObject
 from rag_config import RetrievalConfig
+from memory_views import get_evidence_view
 
 
 def _latest_user_message(state: Dict[str, Any]) -> str:
@@ -51,6 +52,7 @@ class RAGReasoner(Reasoner):
     """Plan deterministic retrieval intents for downstream execution."""
 
     def plan(self, state: Dict[str, Any]) -> PlanObject:
+        evidence_view = get_evidence_view(state)
         queries = _build_queries(state)
         filters = state.get("rag_filters") or {}
         objective = state.get("objective", "unspecified-objective")
