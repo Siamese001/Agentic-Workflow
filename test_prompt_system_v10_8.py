@@ -8,6 +8,9 @@ from prompt_templates import (
     envelope_from_template,
 )
 from prompt_taxonomy import PromptSection
+from prompt_builder import build_prompt_from_plan_and_state
+from client_strategy import run_model_for_plan
+from l3_graph_orchestrator import GraphOrchestrator
 
 
 def test_validate_sections_detects_order_and_missing():
@@ -68,3 +71,36 @@ def test_renderer_metadata_preserves_injection_and_adds_taxonomy_validation():
     assert metadata.get("injection_reasoning", {}).get("reason_then_answer") is True
     assert metadata.get("injection_output") == DEFAULT_TEMPLATE_OUTPUT_INJECTION
     assert metadata.get("injection_tooling", {}).get("model_switch_awareness") is True
+
+
+def test_prompt_builder_renders_prompt_with_framing():
+    plan = {"objective": "demo", "mode": "graph", "routing": {}}
+    state = {"summary": "context", "messages": [{"role": "user", "content": "hello"}]}
+
+    rendered = build_prompt_from_plan_and_state(plan, state)
+
+    assert rendered["prompt"].startswith("[Framing]")
+
+
+def test_run_model_for_plan_updates_routing_and_prompt():
+    plan = {
+        "objective": "demo-objective",
+        "mode": "graph",
+        "routing": {"complexity": "medium", "latency_target": 1.5, "cost_ceiling": 0.01},
+        "safety_metadata": {"sensitivity": "low"},
+    }
+    state = {"messages": [{"role": "user", "content": "hi"}]}
+
+    result = run_model_for_plan(plan, state)
+
+    assert plan.get("routing", {}).get("selected_model")
+    assert plan.get("routing", {}).get("endpoint")
+    assert "completion" in result.get("model_output", {})
+
+
+def test_orchestrator_state_contains_model_output():
+    orchestrator = GraphOrchestrator()
+    outcome = orchestrator.orchestrate({"objective": "integration"})
+
+    assert "model_output" in outcome.state
+    assert outcome.plan.get("routing", {}).get("selected_model")
