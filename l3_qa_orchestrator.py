@@ -22,6 +22,8 @@ from l4_state_adapter import StateAdapter
 from l5_safety_gateway import SafetyGateway
 from node_result import NodeResult, NodeStatus
 from arbitration_engine import ArbitrationEngine
+from correction_supervisor import evaluate_correction
+from correction_journal import record_correction_event
 from self_correction_surfaces import SelfCorrectionSurface
 from utils_types import StatePatch
 
@@ -136,6 +138,22 @@ class QAOrchestrator:
             }
         )
         final_state = self.state_adapter.apply_patch(arbitration_patch)
+
+        surface = SelfCorrectionSurface.QA_RECHECK
+        recommendation = evaluate_correction(surface, final_state, final_context)
+        record_correction_event(surface.value, recommendation, final_context.get("plan", {}))
+
+        self_correction = final_state.get("self_correction", {})
+        if not isinstance(self_correction, dict):
+            self_correction = {}
+        self_correction.update(
+            {
+                "surface": surface.value,
+                "decision": decision,
+                "recommendation": recommendation,
+            }
+        )
+        final_state = self.state_adapter.apply_patch(StatePatch({"self_correction": self_correction}))
 
         ct_patch = StatePatch({"telemetry": self.cost_tracker.snapshot()})
         final_state = self.state_adapter.apply_patch(ct_patch)
