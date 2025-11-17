@@ -11,3 +11,4 @@ def apply_hil_feedback(state: Dict[str, Any], feedback: Any) -> Dict[str, Any]:
     new_state = copy.deepcopy(state) if state is not None else {}
     new_state["hil_feedback"] = feedback
     return new_state
+
