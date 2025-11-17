@@ -27,6 +27,7 @@ from correction_journal import record_correction_event
 from self_correction_surfaces import SelfCorrectionSurface
 from telemetry_store import record_event
 from optimization_hints import compute_optimization_hint
+from meta_profile import update_meta_profile_from_spans_and_self_correction
 from utils_types import StatePatch
 
 
@@ -128,7 +129,11 @@ class QAOrchestrator:
 
         updated_state = final_context.get("state", {})
         safety_patch = final_context.get("safety_patch", StatePatch({}))
-        qa_report = updated_state.get("qa_report", {})
+        execution_patch = final_context.get("execution_patch", StatePatch({}))
+        qa_report = updated_state.get("qa_report", execution_patch.get("qa_report", {}))
+        if not qa_report:
+            qa_report = {"findings": [{"status": "pending"}]}
+            execution_patch = StatePatch({"qa_report": qa_report})
         decision = self.arbitration_engine.evaluate(updated_state, qa_report, safety_patch)
 
         arbitration_patch: StatePatch = StatePatch(
@@ -142,7 +147,7 @@ class QAOrchestrator:
         final_state = self.state_adapter.apply_patch(arbitration_patch)
 
         surface = SelfCorrectionSurface.QA_RECHECK
-        recommendation = evaluate_correction(surface, final_state, final_context)
+        recommendation = evaluate_correction(surface, final_state, execution_patch)
         record_correction_event(surface.value, recommendation, final_context.get("plan", {}))
 
         self_correction = final_state.get("self_correction", {})
@@ -183,6 +188,15 @@ class QAOrchestrator:
             predictive_cache = {}
         predictive_cache["next_hint"] = optimization
         final_state = self.state_adapter.apply_patch(StatePatch({"predictive_cache": predictive_cache}))
+
+        self_correction_block = (
+            final_state.get("self_correction") if isinstance(final_state, dict) else {}
+        )
+        if not isinstance(self_correction_block, dict):
+            self_correction_block = {}
+        update_meta_profile_from_spans_and_self_correction(
+            spans.get("spans", []), self_correction_block
+        )
 
         return OrchestrationResult(
             final_context.get("plan"),
