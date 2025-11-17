@@ -1,16 +1,8 @@
-"""
-Control-flow DAG specification used by orchestrators.
-
-This module defines the structural components for DAG orchestration
-without embedding runtime execution policies. Nodes and edges are
-represented with simple data structures plus validation utilities to
-ensure the graph is well-formed and acyclic.
-"""
+"""Control-flow DAG specification used by orchestrators."""
 from __future__ import annotations
 
-from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from typing import Any, Callable, Deque, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional
 
 from errors_controlflow import DAGValidationError
 from node_result import NodeResult
@@ -23,20 +15,14 @@ class DAGNode:
     name: str
     run: Callable[[Dict[str, Any]], NodeResult]
     condition: Optional[Callable[[Dict[str, Any]], bool]] = None
-    conditional_edges: Optional[Any] = field(default=None)
-    parallel: Optional[List[str]] = None
-    on_failure: str = "halt"
-    fallback_edge: Optional[str] = None
+    conditional_edges: Dict[str, List[str]] = field(default_factory=dict)
     retries: int = 0
-    retry_backoff: float = 0.0
+    fallback_edge: Optional[str] = None
+    parallel: List[str] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         if not self.name:
             raise DAGValidationError("DAG nodes require a non-empty name.")
-        if self.on_failure not in {"halt", "continue", "fallback"}:
-            raise DAGValidationError(
-                "on_failure must be one of {'halt', 'continue', 'fallback'}"
-            )
 
 
 @dataclass
@@ -61,70 +47,33 @@ class DAG:
         for source, targets in self.edges.items():
             if source not in self.nodes:
                 raise DAGValidationError(f"Edge source '{source}' is not a defined node.")
-            if not isinstance(targets, list):
-                raise DAGValidationError(
-                    f"Edges for '{source}' must be provided as a list of target names."
-                )
             for target in targets:
                 if target not in self.nodes:
                     raise DAGValidationError(
                         f"Edge target '{target}' from '{source}' is not a defined node."
                     )
 
-        self._ensure_acyclic()
-
     def topological_sort(self) -> List[str]:
         """Return a deterministic topological ordering of the DAG nodes."""
 
         self.validate()
-        in_degree = self._calculate_in_degree()
+        in_degree: Dict[str, int] = {name: 0 for name in self.nodes}
+        for targets in self.edges.values():
+            for target in targets:
+                in_degree[target] += 1
 
-        ready: List[str] = sorted([name for name, degree in in_degree.items() if degree == 0])
-        queue: Deque[str] = deque(ready)
+        ready = sorted([name for name, degree in in_degree.items() if degree == 0])
         order: List[str] = []
 
-        adjacency = defaultdict(list)
-        for source, targets in self.edges.items():
-            adjacency[source].extend(targets)
-
-        while queue:
-            current = queue.popleft()
+        while ready:
+            current = ready.pop(0)
             order.append(current)
-
-            for neighbor in sorted(adjacency.get(current, [])):
+            for neighbor in sorted(self.edges.get(current, [])):
                 in_degree[neighbor] -= 1
                 if in_degree[neighbor] == 0:
-                    queue.append(neighbor)
+                    ready.append(neighbor)
 
         if len(order) != len(self.nodes):
             raise DAGValidationError("DAG contains cycles; topological sort failed.")
 
         return order
-
-    def _calculate_in_degree(self) -> Dict[str, int]:
-        in_degree: Dict[str, int] = {name: 0 for name in self.nodes}
-        for targets in self.edges.values():
-            for target in targets:
-                in_degree[target] += 1
-        return in_degree
-
-    def _ensure_acyclic(self) -> None:
-        visited: Set[str] = set()
-        recursion_stack: Set[str] = set()
-
-        def visit(node_name: str) -> None:
-            if node_name in recursion_stack:
-                raise DAGValidationError("Cycle detected in DAG.")
-            if node_name in visited:
-                return
-
-            visited.add(node_name)
-            recursion_stack.add(node_name)
-
-            for neighbor in self.edges.get(node_name, []):
-                visit(neighbor)
-
-            recursion_stack.remove(node_name)
-
-        for node_name in self.nodes:
-            visit(node_name)
