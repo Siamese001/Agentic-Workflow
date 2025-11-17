@@ -9,14 +9,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Dict, List, Optional
+from typing import Any, Dict
 
 
-class NodeStatus(str, Enum):
+class NodeStatus(Enum):
     SUCCESS = "success"
     FAILURE = "failure"
-    RETRY = "retry"
-    SKIP = "skip"
 
 
 @dataclass
@@ -24,6 +22,4 @@ class NodeResult:
     """Outcome of a DAG node execution."""
 
     status: NodeStatus
-    output: Dict = field(default_factory=dict)
-    error: Optional[str] = None
-    next_edges: Optional[List[str]] = None
+    payload: Dict[str, Any] = field(default_factory=dict)
