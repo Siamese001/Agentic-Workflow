@@ -47,6 +47,12 @@ class QAOrchestrator:
         def run_plan(context: Dict[str, Any]) -> NodeResult:
             current_state = context.get("state", {})
             plan = self.reasoner.plan(current_state)
+            plan["routing"] = {
+                "complexity": "medium",
+                "latency_target": 2.0,
+                "cost_ceiling": 0.02,
+                "risk_level": "normal",
+            }
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
         def run_execute(context: Dict[str, Any]) -> NodeResult:
