@@ -91,6 +91,12 @@ class StrategyReasoner(Reasoner):
             "scope_boundaries": DEFAULT_FRAMING_PROFILE.scope_boundaries,
             "cost_latency": DEFAULT_FRAMING_PROFILE.cost_latency,
         }
+        plan["injection_reasoning"] = {
+            "failure_anticipation_enabled": True,
+            "self_consistency_enabled": True,
+            "reason_then_answer": True,
+            "error_simulation_enabled": True,
+        }
         plan["safety_metadata"] = {
             "objective": objective,
             "sensitivity": "low",
