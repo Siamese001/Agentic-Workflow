@@ -17,11 +17,11 @@ def test_get_routing_plan_returns_routing_metadata():
 
 
 def test_get_routing_model_name_returns_deterministic_value():
-    plan = {"routing": {"complexity": "advanced"}}
+    plan = {"routing": {"complexity": "advanced", "selected_model": "gpt-4o-mini"}}
 
     model_name = get_routing_model_name(plan)
 
-    assert model_name == "advanced"
+    assert model_name == "gpt-4o-mini"
 
 
 def test_get_routing_metadata_is_read_only():
@@ -35,11 +35,13 @@ def test_get_routing_metadata_is_read_only():
 
 
 def test_configure_for_routing_constructs_deterministic_client_config():
-    route = {"complexity": "expert"}
+    route = {"complexity": "expert", "model": "gpt-4o-mini", "endpoint": "fast"}
 
     config = configure_for_routing(route)
 
     assert config == {
-        "model_name": "stub-model-for-expert",
-        "endpoint": "/v1/expert",
+        "model": "gpt-4o-mini",
+        "model_name": "gpt-4o-mini",
+        "endpoint": "fast",
+        "route": route,
     }
