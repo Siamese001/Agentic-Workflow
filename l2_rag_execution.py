@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
 from l2_tool_base import ExecutionAgent
 from rag_transformers import (
     normalize_documents,
@@ -61,4 +62,9 @@ class RAGExecutionAgent(ExecutionAgent):
                 },
             }
         )
+        patch["tooling_injection"] = {
+            "tool_feedback_enabled": DEFAULT_TOOLING_PROFILE.tool_feedback_enabled,
+            "evidence_binding_enabled": DEFAULT_TOOLING_PROFILE.evidence_binding_enabled,
+            "cross_tool_reconciliation": DEFAULT_TOOLING_PROFILE.cross_tool_reconciliation,
+        }
         return patch
