@@ -14,6 +14,7 @@ from typing import Any, Dict, Iterable, List
 
 from injection_profiles import DEFAULT_FRAMING_PROFILE
 from l1_reasoner_base import Reasoner
+from meta_profile import META_PROFILE
 from utils_types import PlanObject
 
 
@@ -48,6 +49,9 @@ class StrategyReasoner(Reasoner):
         dependencies = sorted(_as_list(state.get("dependencies")))
         deliverables = sorted(_as_list(state.get("deliverables"))) or ["summary", "next-actions"]
 
+        if META_PROFILE.planning_bias.get("conservative"):
+            deliverables = deliverables[:2]
+
         steps = [
             {
                 "id": "clarify",
@@ -67,6 +71,9 @@ class StrategyReasoner(Reasoner):
                 "constraints": constraints,
             },
         ]
+
+        if META_PROFILE.planning_bias.get("conservative"):
+            steps = steps[:2]
 
         plan: PlanObject = PlanObject(
             {
