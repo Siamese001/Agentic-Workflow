@@ -17,7 +17,9 @@ from l5_constitutional_engine import ConstitutionalEngine
 from l5_injection_detector import InjectionDetector
 from l5_policy_engine import PolicyEngine
 from prompt_taxonomy import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL
+from routing_permissions import evaluate_routing_permissions
 from safety_modes import SafetyMode
+from tool_permissions import permissions as tool_permissions
 from utils_logger import log_safety_decision
 from utils_types import StatePatch
 
@@ -42,6 +44,7 @@ class SafetyGateway:
 
         content = str(payload.get("content", ""))
         intent = payload.get("intent") if isinstance(payload.get("intent"), dict) else {}
+        routing_permissions = evaluate_routing_permissions(payload)
 
         constitutional_patch = self.constitutional_engine.evaluate(content)
         policy_patch = self.policy_engine.evaluate(intent)
@@ -69,10 +72,13 @@ class SafetyGateway:
                     "constitutional": constitutional_patch.get("constitutional_evaluation", {}),
                     "policy": policy_patch.get("policy_evaluation", {}),
                     "injection": injection_patch.get("injection_scan", {}),
+                    "tool_permissions": tool_permissions,
+                    "routing_permissions": routing_permissions,
                     "taxonomy": {
                         "primitive_injection_patterns": DEFAULT_INJECTION_PATTERNS,
                         "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
                     },
+                },
                 "content_safety": {
                     "pii": constitutional_patch.get("constitutional_evaluation", {}).get("pii", {}),
                     "bias": constitutional_patch.get("constitutional_evaluation", {}).get("bias", {}),
@@ -87,7 +93,6 @@ class SafetyGateway:
                 "status": "blocked" if blocked else "allowed",
                 "mode": self.safety_mode.value,
             }
-        }
         )
         log_safety_decision(payload, patch)
         return patch
