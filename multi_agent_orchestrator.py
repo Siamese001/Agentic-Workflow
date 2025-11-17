@@ -17,9 +17,14 @@ class MultiAgentOrchestrator:
         recipient = recipient_node.role if recipient_node else None
 
         multi_agent_block: Dict[str, Any] = {
-            "last_message": message.content,
+            "last_message": {
+                "content": message.content,
+                "sender": message.sender.value,
+                "recipient": message.recipient.value,
+            },
             "sender": message.sender.value,
             "recipient": recipient.value if recipient else None,
+            "routed_to": recipient.value if recipient else None,
             "delegation": delegation_metadata(message.sender, recipient) if recipient else None,
             "graph_summary": summarize_graph(self.graph),
         }
