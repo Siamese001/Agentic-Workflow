@@ -134,3 +134,25 @@ def test_full_pipeline_is_deterministic_with_rerank_and_fuse():
 
     assert [entry["query"] for entry in transformed] == ["query-a", "query-b", "query-c"]
     assert [entry["rank"] for entry in transformed] == [3, 2, 1]
+
+
+def test_rag_execution_applies_token_and_count_budgets(monkeypatch):
+    def _limited_budget():
+        return BudgetConfig(max_rag_items=3, max_retrieval_tokens=5)
+
+    monkeypatch.setattr("l2_rag_execution.BudgetConfig", _limited_budget)
+
+    queries = [f"q-{idx}" for idx in range(5)]
+    plan = {
+        "retrieval": {
+            "queries": queries,
+            "filters": {},
+            "ranking": {"strategy": "relevance"},
+        }
+    }
+
+    patch = RAGExecutionAgent().execute(plan, {})
+
+    assert len(patch["rag_history"]) == 1
+    assert patch["rag_history"][0]["query"] == "q-4"
+    assert patch["last_retrieval"]["queries"] == queries
