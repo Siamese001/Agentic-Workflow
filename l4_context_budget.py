@@ -16,6 +16,12 @@ class ContextBudget:
 
     def __init__(self, config: BudgetConfig | None = None) -> None:
         self.config = config or BudgetConfig()
+        self.pruning_rules = {
+            "messages": "preserve order and trim to max_messages",
+            "rag_history": "preserve order and trim to max_rag_items",
+            "world": "preserve order and trim to max_world_items",
+            "summary": "trim to max_summary_chars",
+        }
 
     def prune_messages(self, messages: List[Message]) -> List[Message]:
         """Trim messages to the configured maximum count while preserving order."""

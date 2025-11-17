@@ -24,10 +24,23 @@ class MemoryManager:
         """Ensure memory-related keys exist and respect budgeting constraints."""
 
         normalized = copy.deepcopy(state)
+        normalized.setdefault("metadata", {})
         messages: List[Message] = normalized.get("messages", []) or []
         rag_history: List[dict] = normalized.get("rag_history", []) or []
         summary: str = normalized.get("summary", "") or ""
         world: List[dict] = normalized.get("world", []) or []
+
+        canonical_messages: List[Message] = []
+        for message in messages:
+            if isinstance(message, dict):
+                message_copy: Dict[str, Any] = copy.deepcopy(message)
+            else:
+                message_copy = {"role": "unknown", "content": str(message)}
+            message_copy.setdefault("role", "")
+            message_copy.setdefault("content", "")
+            canonical_messages.append(message_copy)
+
+        messages = canonical_messages
 
         messages = self.context_budget.prune_messages(messages)
         rag_history = self.context_budget.prune_rag_items(rag_history)
@@ -38,6 +51,7 @@ class MemoryManager:
         normalized["rag_history"] = rag_history
         normalized["summary"] = summary
         normalized["world"] = world
+        normalized["metadata"]["context_consistency"] = "unchecked"
         return normalized
 
     def add_messages(self, state: Dict[str, Any], new_messages: List[Message]) -> Dict[str, Any]:
