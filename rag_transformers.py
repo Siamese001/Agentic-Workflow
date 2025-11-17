@@ -1,5 +1,6 @@
-import copy
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
+from rankers import bm25_rank, dense_rank, hybrid_rank
 from utils_types import BudgetConfig
 
 
@@ -42,3 +43,13 @@ def truncate_by_budget(results: List[Dict[str, Any]], config: BudgetConfig) -> L
     if len(results) <= config.max_rag_items:
         return results
     return results[-config.max_rag_items:]
+
+
+def apply_ranker(results: List[Dict[str, Any]], strategy: str | None = None) -> List[Dict[str, Any]]:
+    if strategy == "bm25":
+        return bm25_rank(results)
+    if strategy == "dense":
+        return dense_rank(results)
+    if strategy == "hybrid":
+        return hybrid_rank(results)
+    return rerank_results(results, strategy or "relevance_then_recency")
