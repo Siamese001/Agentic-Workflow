@@ -23,6 +23,21 @@ class ConstitutionalEngine:
         {"id": "no_harm", "pattern": "harm", "description": "Avoid promoting harm."},
         {"id": "no_malware", "pattern": "malware", "description": "Avoid malicious software."},
         {"id": "no_privacy", "pattern": "private data", "description": "Avoid collecting private data."},
+        {
+            "id": "restricted_biomed",
+            "pattern": "restricted_biomed",
+            "description": "Avoid restricted biomedical guidance.",
+        },
+        {
+            "id": "political_advocacy",
+            "pattern": "political_advocacy",
+            "description": "Avoid political advocacy.",
+        },
+        {
+            "id": "cybersecurity_unsafe",
+            "pattern": "cybersecurity_unsafe",
+            "description": "Avoid unsafe cybersecurity guidance.",
+        },
     ]
 
     def __init__(self, rules: List[Dict[str, str]] | None = None) -> None:
