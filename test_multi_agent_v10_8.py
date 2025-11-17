@@ -11,6 +11,7 @@ from agent_topology import (
 )
 from council_voting import deterministic_vote
 from delegation_policy import can_delegate, delegation_metadata
+from l3_graph_orchestrator import GraphOrchestrator
 from l4_state_adapter import StateAdapter
 from multi_agent_orchestrator import MultiAgentOrchestrator
 
@@ -109,13 +110,39 @@ def test_multi_agent_orchestrator_metadata():
     state = orchestrator.dispatch(message, adapter.state)
     multi_agent = state["multi_agent"]
 
-    assert multi_agent["last_message"] == {"result": "ok"}
+    assert multi_agent["last_message"] == {
+        "content": {"result": "ok"},
+        "sender": AgentRole.QA.value,
+        "recipient": AgentRole.QA.value,
+    }
     assert multi_agent["sender"] == AgentRole.QA.value
     assert multi_agent["recipient"] == AgentRole.QA.value
+    assert multi_agent["routed_to"] == AgentRole.QA.value
     assert multi_agent["delegation"] == {
         "from": AgentRole.QA.value,
         "to": AgentRole.QA.value,
         "allowed": False,
+    }
+    assert multi_agent["graph_summary"] == summarize_graph(COUNCIL_OF_QA)
+    assert multi_agent["council_vote"] == {
+        "id": 1,
+        "score": 0.7,
+        "rationale": "baseline",
+    }
+
+
+def test_graph_orchestrator_runs_multi_agent_block():
+    orchestrator = GraphOrchestrator()
+
+    result = orchestrator.orchestrate({"objective": "ship", "audience": "ops"})
+
+    multi_agent = result.state.get("multi_agent")
+
+    assert multi_agent is not None
+    assert multi_agent["delegation"] == {
+        "from": AgentRole.PLANNER.value,
+        "to": AgentRole.QA.value,
+        "allowed": True,
     }
     assert multi_agent["graph_summary"] == summarize_graph(COUNCIL_OF_QA)
     assert multi_agent["council_vote"] == {
