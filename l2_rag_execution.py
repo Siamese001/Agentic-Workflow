@@ -16,6 +16,8 @@ from l2_tool_base import ExecutionAgent
 from rag_transformers import (
     normalize_documents,
     dedupe_results,
+    rerank_results,
+    fuse_sources,
     truncate_by_budget,
 )
 from utils_types import BudgetConfig, PlanObject, StatePatch
@@ -43,6 +45,8 @@ class RAGExecutionAgent(ExecutionAgent):
 
         transformed = normalize_documents(results)
         transformed = dedupe_results(transformed)
+        transformed = rerank_results(transformed, ranking.get("strategy"))
+        transformed = fuse_sources(transformed)
         transformed = truncate_by_budget(transformed, BudgetConfig())
 
         history = list(state.get("rag_history", [])) + transformed
