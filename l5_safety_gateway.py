@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
+from injection_output_profiles import DEFAULT_SAFETY_OUTPUT_PROFILE
 from l5_constitutional_engine import ConstitutionalEngine
 from l5_injection_detector import InjectionDetector
 from l5_policy_engine import PolicyEngine
@@ -72,14 +73,21 @@ class SafetyGateway:
                         "primitive_injection_patterns": DEFAULT_INJECTION_PATTERNS,
                         "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
                     },
-                    "content_safety": {
-                        "pii": constitutional_patch.get("constitutional_evaluation", {}).get("pii", {}),
-                        "bias": constitutional_patch.get("constitutional_evaluation", {}).get("bias", {}),
-                    },
-                    "status": "blocked" if blocked else "allowed",
-                    "mode": self.safety_mode.value,
-                }
+                "content_safety": {
+                    "pii": constitutional_patch.get("constitutional_evaluation", {}).get("pii", {}),
+                    "bias": constitutional_patch.get("constitutional_evaluation", {}).get("bias", {}),
+                },
+                "injection_safety": {
+                    "prompt_shield": DEFAULT_SAFETY_OUTPUT_PROFILE.prompt_shield,
+                    "data_instruction_separation": DEFAULT_SAFETY_OUTPUT_PROFILE.data_instruction_separation,
+                    "constitutional_guardrails_enabled": DEFAULT_SAFETY_OUTPUT_PROFILE.constitutional_guardrails_enabled,
+                    "delegation_guardrails_enabled": DEFAULT_SAFETY_OUTPUT_PROFILE.delegation_guardrails_enabled,
+                    "adversarial_mode_enabled": DEFAULT_SAFETY_OUTPUT_PROFILE.adversarial_mode_enabled,
+                },
+                "status": "blocked" if blocked else "allowed",
+                "mode": self.safety_mode.value,
             }
+        }
         )
         log_safety_decision(payload, patch)
         return patch

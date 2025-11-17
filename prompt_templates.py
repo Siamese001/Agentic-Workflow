@@ -30,6 +30,14 @@ DEFAULT_TEMPLATE_INJECTION = {
     "reason_then_answer": True
 }
 
+DEFAULT_TEMPLATE_OUTPUT_INJECTION = {
+    "strict_json_output": False,
+    "schema_enforcement": False,
+    "stability_contracts": True,
+    "error_normalization": True,
+    "minimality_constraints": True,
+}
+
 DEFAULT_TEMPLATE_METADATA = {
     "taxonomy": {
         "sections": [s.value for s in PromptSection],
@@ -37,6 +45,8 @@ DEFAULT_TEMPLATE_METADATA = {
     },
     "injection_reasoning": DEFAULT_TEMPLATE_INJECTION,
 }
+
+DEFAULT_TEMPLATE_METADATA["output_injection"] = DEFAULT_TEMPLATE_OUTPUT_INJECTION
 
 
 def load_template(name: str | None = None) -> Dict[str, str]:
