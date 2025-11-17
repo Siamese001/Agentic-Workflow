@@ -44,6 +44,8 @@ DEFAULT_TEMPLATE_METADATA = {
         "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
     },
     "injection_reasoning": DEFAULT_TEMPLATE_INJECTION,
+    "stable_ordering": True,
+    "taxonomy_version": "v5",
 }
 
 DEFAULT_TEMPLATE_METADATA["output_injection"] = DEFAULT_TEMPLATE_OUTPUT_INJECTION
@@ -65,6 +67,9 @@ def envelope_from_template(name: str | None = None, overrides: Dict[str, Any] | 
     metadata = overrides.get("metadata")
     if metadata is None:
         metadata = deepcopy(DEFAULT_TEMPLATE_METADATA)
+    else:
+        metadata = deepcopy(metadata)
+        metadata.setdefault("taxonomy_version", "v5")
 
     envelope = PromptEnvelope(
         framing=overrides.get("framing", template.get("Framing", "")),

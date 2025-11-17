@@ -33,7 +33,8 @@ class PromptEnvelope:
             "taxonomy": {
                 "sections": [s.value for s in PromptSection],
                 "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
-            }
+            },
+            "taxonomy_version": "v5",
         }
     )
 
