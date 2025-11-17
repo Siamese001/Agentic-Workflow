@@ -62,8 +62,13 @@ class RAGReasoner(Reasoner):
             queries=queries,
             filters=filters,
             ranking={
-                "strategy": "relevance_then_recency",
+                "strategy": "hybrid",
                 "limit": state.get("rag_limit", 5),
+            },
+            metadata={
+                "ranker_strategy": "hybrid",
+                "fusion_strategy": "query_rank_merge",
+                "hybrid_ranker_enabled": True,
             },
         )
 
@@ -82,6 +87,7 @@ class RAGReasoner(Reasoner):
                 },
             }
         )
+        plan["retrieval_metadata"] = retrieval_fragment.get("metadata", {})
         plan["injection_framing"] = {
             "global_goal": DEFAULT_FRAMING_PROFILE.global_goal,
             "success_criteria": DEFAULT_FRAMING_PROFILE.success_criteria,
