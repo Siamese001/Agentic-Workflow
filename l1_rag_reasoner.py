@@ -64,12 +64,15 @@ class RAGReasoner(Reasoner):
             },
         )
 
+        retrieval_fragment = rc.to_plan_fragment()
+
         plan: PlanObject = PlanObject(
             {
                 "layer": "l1",
                 "mode": "rag",
                 "objective": str(objective),
-                "retrieval": rc.to_plan_fragment(),
+                "retrieval": retrieval_fragment,
+                "ranking": retrieval_fragment["ranking"],
                 "handoff": {
                     "target_layer": "l2",
                     "preferred_executor": "rag",
