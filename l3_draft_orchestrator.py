@@ -20,6 +20,7 @@ from l3_graph_orchestrator import OrchestrationResult
 from l4_state_adapter import StateAdapter
 from l5_safety_gateway import SafetyGateway
 from node_result import NodeResult, NodeStatus
+from self_correction_surfaces import SelfCorrectionSurface
 from utils_types import StatePatch
 
 
@@ -114,9 +115,19 @@ class DraftOrchestrator:
         initial_context = {"state": self.state_adapter.state}
         final_context = executor.run(dag, initial_context)
 
+        final_state = final_context.get("state", {})
+        existing_self_correction = final_state.get("self_correction", {})
+        if not isinstance(existing_self_correction, dict):
+            existing_self_correction = {}
+        if not existing_self_correction or existing_self_correction.get("surface") is None:
+            sc_patch: StatePatch = StatePatch(
+                {"self_correction": {"surface": SelfCorrectionSurface.DRAFT_RETRY.value}}
+            )
+            final_state = self.state_adapter.apply_patch(sc_patch)
+
         return OrchestrationResult(
             final_context.get("plan"),
             final_context.get("execution_patch"),
             final_context.get("safety_patch"),
-            final_context.get("state", {}),
+            final_state,
         )
