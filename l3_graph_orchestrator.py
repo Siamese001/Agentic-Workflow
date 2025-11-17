@@ -15,6 +15,7 @@ from typing import Any, Dict, Optional
 
 from dag_executor import DAGExecutor
 from dag_spec import DAG, DAGNode
+from client_strategy import run_model_for_plan
 from cost_tracker import CostTracker
 from l1_strategy_reasoner import StrategyReasoner
 from l2_rag_execution import RAGExecutionAgent
@@ -195,6 +196,9 @@ class GraphOrchestrator:
         final_state = self.state_adapter.apply_patch(StatePatch({"predictive_cache": predictive_cache}))
 
         final_state["tooling_injection"] = {"cross_tool_reconciliation": True}
+
+        model_data = run_model_for_plan(plan, final_state)
+        final_state = self.state_adapter.apply_patch(StatePatch({"model_output": model_data}))
 
         return OrchestrationResult(
             final_context.get("plan"),
