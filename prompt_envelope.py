@@ -14,6 +14,7 @@ from dataclasses import dataclass, field
 from typing import Any, Dict
 
 from injection_profiles import DEFAULT_CONTEXT_PROFILE, DEFAULT_FRAMING_PROFILE
+from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
 from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
 
 
@@ -65,6 +66,9 @@ class PromptEnvelope:
                 "canonicalize_inputs": DEFAULT_CONTEXT_PROFILE.canonicalize_inputs,
                 "apply_pruning_rules": DEFAULT_CONTEXT_PROFILE.apply_pruning_rules,
                 "enforce_structured_ordering": DEFAULT_CONTEXT_PROFILE.enforce_structured_ordering,
+            },
+            "tooling": {
+                "model_switch_awareness": DEFAULT_TOOLING_PROFILE.model_switch_awareness
             },
         }
 
