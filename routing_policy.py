@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, Dict
 
+from meta_profile import META_PROFILE
+
 
 @dataclass
 class RoutingCriteria:
@@ -45,10 +47,20 @@ def decide_route(criteria: RoutingCriteria) -> RoutingDecision:
         )
 
     if not criteria.model_available:
-        return RoutingDecision(
+        decision = RoutingDecision(
             model="gpt-4o-mini",
             endpoint="fast",
             rationale="Primary route unavailable; using fallback fast endpoint.",
+        )
+
+    if META_PROFILE.routing_bias.get("prefer_fast") and decision.endpoint in (
+        "fast",
+        "default",
+    ):
+        decision = RoutingDecision(
+            model=decision.model,
+            endpoint="fast",
+            rationale=decision.rationale,
         )
 
     return decision
