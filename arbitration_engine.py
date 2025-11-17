@@ -13,18 +13,34 @@ class ArbitrationEngine:
         # 1) If safety is blocked → escalate
         sg = safety_patch.get("safety_gateway", {})
         if sg.get("status") == "blocked":
-            return {"action": "escalate", "reason": "safety_blocked"}
+            return {
+                "action": "escalate",
+                "reason": "safety_blocked",
+                "surface_hint": "strategy_replan",
+            }
 
         # 2) If QA findings are pending → retry
         findings = qa_report.get("findings", [])
         for f in findings:
             if f.get("status") == "pending":
-                return {"action": "retry", "reason": "qa_pending"}
+                return {
+                    "action": "retry",
+                    "reason": "qa_pending",
+                    "surface_hint": "qa_recheck",
+                }
 
         # 3) If there are no messages at all → replan
         messages = state.get("messages", [])
         if not messages:
-            return {"action": "replan", "reason": "no_messages"}
+            return {
+                "action": "replan",
+                "reason": "no_messages",
+                "surface_hint": "strategy_replan",
+            }
 
         # 4) Default: accept
-        return {"action": "accept", "reason": "default_accept"}
+        return {
+            "action": "accept",
+            "reason": "default_accept",
+            "surface_hint": "qa_recheck",
+        }
