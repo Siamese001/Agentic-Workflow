@@ -21,6 +21,7 @@ from l2_rag_execution import RAGExecutionAgent
 from l4_state_adapter import StateAdapter
 from l5_safety_gateway import SafetyGateway
 from node_result import NodeResult, NodeStatus
+from routing_policy import RoutingCriteria, RoutingDecision, decide_route
 from self_correction_surfaces import SelfCorrectionSurface
 from utils_types import PlanObject, StatePatch
 
@@ -68,6 +69,16 @@ class GraphOrchestrator:
                 "cost_ceiling": 0.02,
                 "risk_level": "normal",
             }
+            routing_decision: RoutingDecision = decide_route(
+                RoutingCriteria(
+                    task_type="graph_orchestration",
+                    complexity=str(plan["routing"].get("complexity", "low")),
+                    latency_target_ms=int(plan["routing"].get("latency_target", 0) * 1000),
+                    cost_ceiling_usd=float(plan["routing"].get("cost_ceiling", 0.0)),
+                    risk_level=str(plan["routing"].get("risk_level", "normal")),
+                )
+            )
+            plan["routing"]["selected_model"] = routing_decision.model
             return NodeResult(NodeStatus.SUCCESS, {"plan": plan})
 
         def run_execute(context: Dict[str, Any]) -> NodeResult:
@@ -109,7 +120,6 @@ class GraphOrchestrator:
                     name="execute_node",
                     run=run_execute,
                     retries=1,
-                    fallback_edge="plan_node",
                 ),
                 "patch_node": DAGNode(
                     name="patch_node",
