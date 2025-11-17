@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional
 
+from context_budget_v10_8 import ContextBudgetConfigV10_8, ContextBudgetManagerV10_8
+
 from .clients import build_client
 from .config import ConfigV10_7, load_config
 from .constants import CANONICAL_MODEL_DEFAULT, LEGACY_MODEL_ALIASES
@@ -58,9 +60,30 @@ class WorkflowContext:
         self.precompute_engine: PrecomputeEngine = overrides.get(
             "precompute_engine", PrecomputeEngine()
         )
-        self.context_budget_manager: ContextBudgetManager = overrides.get(
-            "context_budget_manager", ContextBudgetManager(self.config.budget.get("max_tokens", 32000))
+
+        self.legacy_context_budget_manager: ContextBudgetManager = overrides.get(
+            "legacy_context_budget_manager", self._build_legacy_budget_manager()
         )
+        self.context_budget_manager: ContextBudgetManagerV10_8 = overrides.get(
+            "context_budget_manager",
+            ContextBudgetManagerV10_8(
+                ContextBudgetConfigV10_8(),
+                delegate=self.legacy_context_budget_manager,
+            ),
+        )
+
+        self.precompute_engine.context = self
+
+    def _build_legacy_budget_manager(self) -> ContextBudgetManager:
+        try:
+            return ContextBudgetManager(
+                config=self.config,
+                model_client_getter=self.get_model_client,
+                self_correction_manager=self.self_correction_manager,
+                workflow_id_getter=lambda: getattr(self, "workflow_id", None),
+            )
+        except TypeError:
+            return ContextBudgetManager(self.config.budget.get("max_tokens", 32000))
 
     def get_model_client(self, model_name: Optional[str] = None):
         """Resolve and instantiate an async client for the requested model."""
