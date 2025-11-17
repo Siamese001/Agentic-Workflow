@@ -28,6 +28,7 @@ from routing_policy import RoutingCriteria, RoutingDecision, decide_route
 from self_correction_surfaces import SelfCorrectionSurface
 from telemetry_store import record_event
 from optimization_hints import compute_optimization_hint
+from meta_profile import update_meta_profile_from_spans_and_self_correction
 from utils_types import PlanObject, StatePatch
 
 
@@ -199,6 +200,15 @@ class GraphOrchestrator:
 
         model_data = run_model_for_plan(plan, final_state)
         final_state = self.state_adapter.apply_patch(StatePatch({"model_output": model_data}))
+
+        self_correction_block = (
+            final_state.get("self_correction") if isinstance(final_state, dict) else {}
+        )
+        if not isinstance(self_correction_block, dict):
+            self_correction_block = {}
+        update_meta_profile_from_spans_and_self_correction(
+            spans.get("spans", []), self_correction_block
+        )
 
         return OrchestrationResult(
             final_context.get("plan"),
