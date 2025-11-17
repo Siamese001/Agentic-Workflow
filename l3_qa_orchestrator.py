@@ -14,6 +14,7 @@ from typing import Any, Dict, Optional
 
 from dag_executor import DAGExecutor
 from dag_spec import DAG, DAGNode
+from cost_tracker import CostTracker
 from l1_strategy_reasoner import StrategyReasoner
 from l2_qa_validation import QAValidationAgent
 from l3_graph_orchestrator import OrchestrationResult
@@ -40,6 +41,7 @@ class QAOrchestrator:
         self.state_adapter = state_adapter or StateAdapter()
         self.safety_gateway = safety_gateway or SafetyGateway()
         self.arbitration_engine = ArbitrationEngine()
+        self.cost_tracker = CostTracker()
 
     def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
         """Run plan→execute→patch→safety in order."""
@@ -49,7 +51,9 @@ class QAOrchestrator:
 
         def run_plan(context: Dict[str, Any]) -> NodeResult:
             current_state = context.get("state", {})
+            self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
+            self.cost_tracker.end_span("planning")
             plan["routing"] = {
                 "complexity": "medium",
                 "latency_target": 2.0,
@@ -61,7 +65,9 @@ class QAOrchestrator:
         def run_execute(context: Dict[str, Any]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
+            self.cost_tracker.start_span("execution")
             execution_patch = self.executor.execute(plan, current_state)
+            self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
         def run_patch(context: Dict[str, Any]) -> NodeResult:
@@ -131,6 +137,9 @@ class QAOrchestrator:
             }
         )
         final_state = self.state_adapter.apply_patch(arbitration_patch)
+
+        ct_patch = StatePatch({"telemetry": {"spans": self.cost_tracker.snapshot()}})
+        final_state = self.state_adapter.apply_patch(ct_patch)
 
         return OrchestrationResult(
             final_context.get("plan"),
