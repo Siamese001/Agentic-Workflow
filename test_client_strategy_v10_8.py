@@ -12,17 +12,17 @@ def test_build_client_for_route_returns_model_client():
 def test_complete_returns_expected_keys():
     client = ModelClient()
     prompt = "Hello world"
-    config = {"model_name": "test-model", "endpoint": "local"}
+    config = {"model": "test-model", "endpoint": "local"}
 
     result = client.complete(prompt, config)
 
-    assert set(result.keys()) == {"completion", "model", "endpoint"}
+    assert set(result.keys()) == {"completion", "model"}
 
 
 def test_complete_is_deterministic():
     client = ModelClient()
     prompt = "Consistent prompt"
-    config = {"model_name": "deterministic", "endpoint": "offline"}
+    config = {"model": "deterministic", "endpoint": "offline"}
 
     first_result = client.complete(prompt, config)
     second_result = client.complete(prompt, config)
