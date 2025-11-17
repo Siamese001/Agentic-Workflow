@@ -1,35 +1,92 @@
-"""Core constants and enumerations for the v10.7 runtime layer."""
+"""
+Core constants and enumerations for the v10_9 runtime layer.
+
+This module centralizes:
+  • Workflow phases (aligned with Phase enum in utils_types)
+  • Execution status codes (L2 tool/executor responses)
+  • Canonical model defaults + legacy alias map
+  • Shared string constants used across L1–L5
+
+This ensures that all orchestration, safety, planning, and execution
+components reference the same deterministic contract.
+"""
+
 from __future__ import annotations
 
 from enum import Enum
 from typing import Dict
 
 
+# ======================================================================
+# EXECUTION STATUS (L2)
+# ======================================================================
+
 class NodeStatus(Enum):
-    """Lifecycle status for node execution."""
+    """Lifecycle status for a node/tool execution."""
 
     SUCCESS = "success"
     FAILURE = "failure"
+    RETRY = "retry"
+    SKIPPED = "skipped"
     PENDING = "pending"
 
 
+# ======================================================================
+# WORKFLOW PHASES (mirrors utils_types.Phase)
+# ======================================================================
+
 class WorkflowPhase(Enum):
-    """Phases for workflow execution surfaces."""
+    """
+    High-level workflow lifecycle.
+
+    Must remain in sync with:
+      • utils_types.Phase
+      • l4_state_machine.StateMachine._TRANSITIONS
+      • l3_orchestration phase routing logic
+    """
 
     INIT = "init"
-    EXECUTION = "execution"
-    POST_PROCESS = "post_process"
+    PLANNING = "planning"
+    EXECUTING = "executing"
+    REVIEWING = "reviewing"
     COMPLETE = "complete"
     FAILED = "failed"
 
 
+# ======================================================================
+# MODEL DEFAULTS + LEGACY ALIASES
+# ======================================================================
+
+CANONICAL_MODEL_DEFAULT = "gpt-4.1"
+
 LEGACY_MODEL_ALIASES: Dict[str, str] = {
-    "gpt-4": "gpt-4o",
-    "gpt-4-0613": "gpt-4o",
-    "gpt-3.5-turbo": "gpt-4o-mini",
+    # OpenAI historical mappings
+    "gpt-4": "gpt-4.1",
+    "gpt-4-turbo": "gpt-4.1",
+    "gpt-4-0613": "gpt-4.1",
+    "gpt-3.5-turbo": "gpt-4.1-mini",
+
+    # Anthropic
     "claude-2": "claude-3-sonnet",
+    "claude-instant": "claude-3-haiku",
+
+    # Gemini
     "gemini-pro": "gemini-1.5-pro",
+    "gemini-ultra": "gemini-1.5-ultra",
 }
 
 
-CANONICAL_MODEL_DEFAULT = "gpt-4o"
+# ======================================================================
+# STRING CONSTANTS (shared across layers)
+# ======================================================================
+
+SYSTEM_ROLE = "system"
+USER_ROLE = "user"
+ASSISTANT_ROLE = "assistant"
+
+STATE_KEY_MESSAGES = "messages"
+STATE_KEY_RAG = "rag_history"
+STATE_KEY_SUMMARY = "summary"
+STATE_KEY_WORLD = "world"
+STATE_KEY_METADATA = "metadata"
+STATE_KEY_PHASE = "phase"
