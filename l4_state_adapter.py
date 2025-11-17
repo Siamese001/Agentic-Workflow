@@ -12,6 +12,7 @@ from typing import Any, Dict
 
 from l4_memory_manager import MemoryManager
 from l4_state_machine import StateMachine
+from state_validation import validate
 from utils_patch_helpers import apply_patch
 from utils_types import Phase, StatePatch
 
@@ -53,6 +54,8 @@ class StateAdapter:
         updated["phase"] = self.state_machine.phase.value
         metadata = self.state_machine.on_enter_phase(self.state_machine.phase)
         updated["phase_metadata"] = metadata
+        updated.setdefault("metadata", {})
+        updated["metadata"]["validation"] = validate(updated)
         self._state = updated
         return self.state
 
