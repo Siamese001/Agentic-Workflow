@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
+from injection_profiles import DEFAULT_FRAMING_PROFILE
 from l1_reasoner_base import Reasoner
 from utils_types import PlanObject
 from rag_config import RetrievalConfig
@@ -81,6 +82,13 @@ class RAGReasoner(Reasoner):
                 },
             }
         )
+        plan["injection_framing"] = {
+            "global_goal": DEFAULT_FRAMING_PROFILE.global_goal,
+            "success_criteria": DEFAULT_FRAMING_PROFILE.success_criteria,
+            "task_mode": DEFAULT_FRAMING_PROFILE.task_mode,
+            "scope_boundaries": DEFAULT_FRAMING_PROFILE.scope_boundaries,
+            "cost_latency": DEFAULT_FRAMING_PROFILE.cost_latency,
+        }
         plan["safety_metadata"] = {
             "objective": str(objective),
             "sensitivity": "low",

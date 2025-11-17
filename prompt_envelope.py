@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
+from injection_profiles import DEFAULT_CONTEXT_PROFILE, DEFAULT_FRAMING_PROFILE
 from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
 
 
@@ -53,6 +54,19 @@ class PromptEnvelope:
         metadata = dict(self.metadata)
         metadata["instructional_injection_types"] = INSTRUCTIONAL_INJECTION_ALL
         metadata["routing"] = (plan or {}).get("routing", {})
+        metadata["injection"] = {
+            "framing": {
+                "global_goal": DEFAULT_FRAMING_PROFILE.global_goal,
+                "success_criteria": DEFAULT_FRAMING_PROFILE.success_criteria,
+                "task_mode": DEFAULT_FRAMING_PROFILE.task_mode,
+            },
+            "context": {
+                "untrusted_block_wrapping": DEFAULT_CONTEXT_PROFILE.untrusted_block_wrapping,
+                "canonicalize_inputs": DEFAULT_CONTEXT_PROFILE.canonicalize_inputs,
+                "apply_pruning_rules": DEFAULT_CONTEXT_PROFILE.apply_pruning_rules,
+                "enforce_structured_ordering": DEFAULT_CONTEXT_PROFILE.enforce_structured_ordering,
+            },
+        }
 
         data = {"sections": self.to_sections(), "metadata": metadata}
         return data
