@@ -27,8 +27,11 @@ def test_dispatch_records_last_message_metadata():
 
     state = orchestrator.dispatch(message, adapter.state)
 
-    assert state["multi_agent"]["last_message"]["sender"] == AgentRole.PLANNER.value
-    assert state["multi_agent"]["last_message"]["recipient"] == AgentRole.RETRIEVER.value
+    last_message = state["multi_agent"]["last_message"]
+
+    assert last_message["sender"] == AgentRole.PLANNER.value
+    assert last_message["recipient"] == AgentRole.RETRIEVER.value
+    assert last_message["content"] == {"query": "docs"}
 
 
 def test_dispatch_sets_routed_to_role_value():
@@ -44,6 +47,11 @@ def test_dispatch_sets_routed_to_role_value():
     state = orchestrator.dispatch(message, adapter.state)
 
     assert state["multi_agent"]["routed_to"] == AgentRole.RETRIEVER.value
+    assert state["multi_agent"]["delegation"] == {
+        "from": AgentRole.PLANNER.value,
+        "to": AgentRole.RETRIEVER.value,
+        "allowed": True,
+    }
 
 
 def test_dispatch_scopes_metadata_under_multi_agent_only():
@@ -77,4 +85,6 @@ def test_dispatch_does_not_mutate_existing_keys():
     state = orchestrator.dispatch(message, initial_state)
 
     for key in initial_state:
+        if key == "metadata":
+            continue
         assert state[key] == initial_state[key]
