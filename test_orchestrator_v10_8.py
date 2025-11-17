@@ -19,6 +19,10 @@ def test_bullet_orchestrator_sequences_calls():
     result = orchestrator.orchestrate({"objective": "share highlights", "deliverables": ["alpha"]})
 
     assert result.plan["mode"] == "strategy"
+    assert result.plan["routing"]["complexity"] == "medium"
+    assert result.plan["routing"]["latency_target"] == 2.0
+    assert result.plan["routing"]["cost_ceiling"] == 0.02
+    assert result.plan["routing"]["risk_level"] == "normal"
     assert result.state["messages"]
     assert "safety_gateway" in result.state
 
@@ -27,6 +31,10 @@ def test_rag_orchestrator_runs_end_to_end():
     orchestrator = RAGOrchestrator()
     result = orchestrator.orchestrate({"objective": "collect"})
 
+    assert result.plan["routing"]["complexity"] == "medium"
+    assert result.plan["routing"]["latency_target"] == 2.0
+    assert result.plan["routing"]["cost_ceiling"] == 0.02
+    assert result.plan["routing"]["risk_level"] == "normal"
     assert result.execution_patch["last_retrieval"]["status"] == "completed"
     assert result.safety_patch["safety_gateway"]["status"] == "allowed"
 
@@ -36,6 +44,10 @@ def test_draft_orchestrator_integrates_safety():
     result = orchestrator.orchestrate({"objective": "compose", "tone": "warm"})
 
     assert result.plan["mode"] == "drafting"
+    assert result.plan["routing"]["complexity"] == "medium"
+    assert result.plan["routing"]["latency_target"] == 2.0
+    assert result.plan["routing"]["cost_ceiling"] == 0.02
+    assert result.plan["routing"]["risk_level"] == "normal"
     assert result.state.get("draft", {}).get("tone") == "warm"
     assert "safety_gateway" in result.state
 
@@ -44,5 +56,9 @@ def test_qa_orchestrator_validates_state():
     orchestrator = QAOrchestrator()
     result = orchestrator.orchestrate({"messages": [{"role": "assistant", "content": "draft"}]})
 
+    assert result.plan["routing"]["complexity"] == "medium"
+    assert result.plan["routing"]["latency_target"] == 2.0
+    assert result.plan["routing"]["cost_ceiling"] == 0.02
+    assert result.plan["routing"]["risk_level"] == "normal"
     assert result.execution_patch["qa_report"]["checks"]
     assert result.state["safety_gateway"]["status"] == "allowed"

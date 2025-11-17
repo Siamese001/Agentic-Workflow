@@ -47,11 +47,12 @@ class PromptEnvelope:
             "Output Schema": self.output_schema.strip(),
         }
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self, plan: Dict[str, Any] | None = None) -> Dict[str, Any]:
         """Materialize the envelope as a serializable dictionary."""
 
         metadata = dict(self.metadata)
         metadata["instructional_injection_types"] = INSTRUCTIONAL_INJECTION_ALL
+        metadata["routing"] = (plan or {}).get("routing", {})
 
         data = {"sections": self.to_sections(), "metadata": metadata}
         return data
