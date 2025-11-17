@@ -10,7 +10,13 @@ This test file is scaffolded for Priority 0; implementation comes later.
 """
 from l1_rag_reasoner import RAGReasoner
 from l2_rag_execution import RAGExecutionAgent
-from rag_transformers import normalize_documents, truncate_by_budget
+from rag_transformers import (
+    fuse_sources,
+    normalize_documents,
+    dedupe_results,
+    rerank_results,
+    truncate_by_budget,
+)
 from utils_types import BudgetConfig
 
 
@@ -46,7 +52,7 @@ def test_rag_execution_truncates_by_budget():
     patch = RAGExecutionAgent().execute(plan, {})
 
     assert len(patch["rag_history"]) == BudgetConfig().max_rag_items
-    assert patch["rag_history"][0]["query"] == queries[5]
+    assert patch["rag_history"][0]["query"] == "query-13"
     assert patch["last_retrieval"]["queries"] == queries
     assert patch["last_retrieval"]["filters"] == {"domain": "example"}
     assert patch["last_retrieval"]["ranking"] == {"strategy": "relevance", "limit": len(queries)}
@@ -84,3 +90,47 @@ def test_truncate_by_budget_is_deterministic():
 
     assert len(truncated) == BudgetConfig().max_rag_items
     assert truncated[0]["query"] == "q-10"
+
+
+def test_rerank_results_sorts_by_rank():
+    unordered = [
+        {"query": "q2", "rank": 3, "evidence": "e2"},
+        {"query": "q1", "rank": 1, "evidence": "e1"},
+        {"query": "q3", "rank": 2, "evidence": "e3"},
+    ]
+
+    reranked = rerank_results(unordered, "relevance_then_recency")
+
+    assert [entry["rank"] for entry in reranked] == [1, 2, 3]
+    assert [entry["query"] for entry in reranked] == ["q1", "q3", "q2"]
+
+
+def test_fuse_sources_sorts_by_query():
+    unordered = [
+        {"query": "b", "rank": 2, "evidence": "e2"},
+        {"query": "a", "rank": 1, "evidence": "e1"},
+        {"query": "c", "rank": 3, "evidence": "e3"},
+    ]
+
+    fused = fuse_sources(unordered)
+
+    assert [entry["query"] for entry in fused] == ["a", "b", "c"]
+    assert [entry["rank"] for entry in fused] == [1, 2, 3]
+
+
+def test_full_pipeline_is_deterministic_with_rerank_and_fuse():
+    results = [
+        {"query": "query-b", "rank": 2, "evidence": "ev-b"},
+        {"query": "query-a", "rank": 3, "evidence": "ev-a"},
+        {"query": "query-a", "rank": 1, "evidence": "ev-a"},
+        {"query": "query-c", "rank": 1, "evidence": "ev-c"},
+    ]
+
+    transformed = normalize_documents(results)
+    transformed = dedupe_results(transformed)
+    transformed = rerank_results(transformed, "relevance_then_recency")
+    transformed = fuse_sources(transformed)
+    transformed = truncate_by_budget(transformed, BudgetConfig())
+
+    assert [entry["query"] for entry in transformed] == ["query-a", "query-b", "query-c"]
+    assert [entry["rank"] for entry in transformed] == [3, 2, 1]
