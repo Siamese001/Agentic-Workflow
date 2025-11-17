@@ -15,6 +15,7 @@ from typing import Any, Dict, Optional
 
 from dag_executor import DAGExecutor
 from dag_spec import DAG, DAGNode
+from cost_tracker import CostTracker
 from l1_strategy_reasoner import StrategyReasoner
 from l2_rag_execution import RAGExecutionAgent
 from l4_state_adapter import StateAdapter
@@ -48,6 +49,7 @@ class GraphOrchestrator:
         self.executor = executor or RAGExecutionAgent()
         self.state_adapter = state_adapter or StateAdapter()
         self.safety_gateway = safety_gateway or SafetyGateway()
+        self.cost_tracker = CostTracker()
 
     def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
         """Execute the deterministic orchestration sequence without side effects."""
@@ -57,7 +59,9 @@ class GraphOrchestrator:
 
         def run_plan(context: Dict[str, Any]) -> NodeResult:
             current_state = context.get("state", {})
+            self.cost_tracker.start_span("planning")
             plan = self.reasoner.plan(current_state)
+            self.cost_tracker.end_span("planning")
             plan["routing"] = {
                 "complexity": "medium",
                 "latency_target": 2.0,
@@ -69,7 +73,9 @@ class GraphOrchestrator:
         def run_execute(context: Dict[str, Any]) -> NodeResult:
             current_state = context.get("state", {})
             plan = context.get("plan")
+            self.cost_tracker.start_span("execution")
             execution_patch = self.executor.execute(plan, current_state)
+            self.cost_tracker.end_span("execution")
             return NodeResult(NodeStatus.SUCCESS, {"execution_patch": execution_patch})
 
         def run_patch(context: Dict[str, Any]) -> NodeResult:
@@ -134,6 +140,9 @@ class GraphOrchestrator:
                 {"self_correction": {"surface": SelfCorrectionSurface.STRATEGY_REPLAN.value}}
             )
             final_state = self.state_adapter.apply_patch(sc_patch)
+
+        ct_patch = StatePatch({"telemetry": {"spans": self.cost_tracker.snapshot()}})
+        final_state = self.state_adapter.apply_patch(ct_patch)
 
         return OrchestrationResult(
             final_context.get("plan"),
