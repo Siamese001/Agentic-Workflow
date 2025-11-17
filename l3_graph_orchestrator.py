@@ -144,6 +144,14 @@ class GraphOrchestrator:
         ct_patch = StatePatch({"telemetry": {"spans": self.cost_tracker.snapshot()}})
         final_state = self.state_adapter.apply_patch(ct_patch)
 
+        cache_patch = StatePatch(
+            {
+                "predictive_cache": {"snapshot": {}},
+                "tuning": {"suggestion": {"temperature": 0.3, "max_tokens": 500}},
+            }
+        )
+        final_state = self.state_adapter.apply_patch(cache_patch)
+
         return OrchestrationResult(
             final_context.get("plan"),
             final_context.get("execution_patch"),
