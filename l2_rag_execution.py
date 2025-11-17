@@ -13,9 +13,9 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from l2_tool_base import ExecutionAgent
-from evidence_fusion import fuse_results
-from rag_transformers import (
+from l2_execution import ExecutionAgent
+from retrieval import fuse_results
+from retrieval import (
     normalize_documents,
     dedupe_results,
     rerank_results,
@@ -23,7 +23,7 @@ from rag_transformers import (
     truncate_by_budget,
     apply_ranker,
 )
-from l4_context_budget import ContextBudget
+from l4_memory import ContextBudget
 from utils_types import BudgetConfig, PlanObject, StatePatch
 
 

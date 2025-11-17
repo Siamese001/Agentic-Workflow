@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Dict, Any
-from agent_topology import AgentRole
+from multi_agent import AgentRole
 
 
 @dataclass

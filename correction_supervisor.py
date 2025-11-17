@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from self_correction_surfaces import SelfCorrectionSurface, should_retry
+from self_correction import SelfCorrectionSurface, should_retry
 
 
 def evaluate_correction(
