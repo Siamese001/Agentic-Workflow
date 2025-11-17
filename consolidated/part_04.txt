@@ -1,0 +1,1363 @@
+==== agent_stacks_v10_8/qa_validation_stack.py ====
+"""Layer-5 QA validation stack for v10.8."""
+
+from __future__ import annotations
+
+import json
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
+
+from agent_tools_v10_7 import (
+    QAAdversarialReviewerTool,
+    QABiasDetectorTool,
+    QAClaimValidatorTool,
+    QAJDSkillsValidatorTool,
+    QAMissedOpportunityTool,
+    QANarrativeThreadTool,
+    QAThematicAlignmentTool,
+    QAToneValidatorTool,
+    QATenureValidatorTool,
+    QASemanticEntailmentTool,
+    QASignalScoreValidatorTool,
+    QAWordCountValidatorTool,
+)
+
+from core_v10_7 import StrategyPlan
+from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+
+
+class QAValidationStack:
+    """Runs the QA tool suite and emits a normalized patch."""
+
+    STYLE_GUIDE = "Style: Ensure professional, clear, and unbiased language."
+    WORD_COUNT_RANGE = (50, 150)
+
+    _TOOL_BUILDERS: Tuple[Tuple[str, Any], ...] = (
+        ("validate_claims", QAClaimValidatorTool),
+        ("validate_tone", QAToneValidatorTool),
+        ("validate_thematic_alignment", QAThematicAlignmentTool),
+        ("validate_semantic_entailment", QASemanticEntailmentTool),
+        ("validate_narrative_thread", QANarrativeThreadTool),
+        ("validate_jd_skills", QAJDSkillsValidatorTool),
+        ("validate_signal_score", QASignalScoreValidatorTool),
+        ("validate_bias", QABiasDetectorTool),
+        ("validate_tenure", QATenureValidatorTool),
+        ("find_missed_opportunities", QAMissedOpportunityTool),
+        ("validate_word_count", QAWordCountValidatorTool),
+        ("adversarial_review", QAAdversarialReviewerTool),
+    )
+
+    def __init__(
+        self,
+        context: Any,
+        debug_mode: bool = False,
+        *,
+        validators: Optional[Sequence[Tuple[str, Any]]] = None,
+    ) -> None:
+        self.context = context
+        self.debug_mode = debug_mode
+        self._validators: Tuple[Tuple[str, Any], ...] = (
+            tuple(validators) if validators is not None else self._build_validators()
+        )
+        self._adapter = StateAdapterStack(context, debug_mode)
+
+    def _build_validators(self) -> Tuple[Tuple[str, Any], ...]:
+        instances: List[Tuple[str, Any]] = []
+        for tool_name, tool_cls in self._TOOL_BUILDERS:
+            instances.append((tool_name, tool_cls(self.context, self.debug_mode)))
+        return tuple(instances)
+
+    async def run_async(self, state: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        """Execute all QA validators and return a structured patch."""
+
+        tool_input = self._build_tool_input(state)
+        validator_results: List[Tuple[str, Dict[str, Any]]] = []
+
+        for tool_name, tool in self._validators:
+            result = await tool.run_async(dict(tool_input), workflow_id)
+            normalized_result = result if isinstance(result, dict) else {"status": "unknown"}
+            validator_results.append((tool_name, normalized_result))
+
+        issues = self._collect_issues(validator_results)
+        qa_passed = len(issues) == 0
+        total_validators = max(len(validator_results), 1)
+        confidence = 1.0 if qa_passed else max(0.0, 1.0 - len(issues) / total_validators)
+        summary = self._summarize_results(qa_passed, len(issues), total_validators)
+
+        return {
+            "qa": {
+                "issues": issues,
+                "confidence": round(confidence, 3),
+                "summary": summary,
+                "qa_passed": qa_passed,
+            }
+        } | self._adapter.patch_memory(
+            agent_notes=self._append_agent_note(state, summary)
+        ).model_dump(exclude_none=True)
+
+    async def run_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Normalize the strategy plan and delegate to ``run_async``."""
+
+        workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
+        strategy_payload = state.get("strategy", {}).get("strategy_plan")
+        typed_plan: Optional[StrategyPlan] = None
+        needs_patch = False
+        if isinstance(strategy_payload, dict):
+            typed_plan = StrategyPlan.model_validate(strategy_payload)
+            needs_patch = True
+        elif isinstance(strategy_payload, StrategyPlan):
+            typed_plan = strategy_payload
+
+        patch = await self.run_async(state, workflow_id)
+        if needs_patch and typed_plan is not None:
+            strategy_patch = {"strategy": {"strategy_plan": typed_plan}}
+            patch = self._merge_patch(patch, strategy_patch)
+        return patch
+
+    def _build_tool_input(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        draft_sections = state.get("draft", {}).get("sections", {})
+        resume_payload = state.get("resume", {}).get("master_resume", {})
+        job_description = state.get("job", {}).get("raw_jd", "")
+        strategy_plan = self._normalize_strategy(state.get("strategy", {}).get("strategy_plan"))
+        summary_text = self._extract_summary_text(draft_sections)
+        min_words, max_words = self.WORD_COUNT_RANGE
+
+        return {
+            "draft_text": json.dumps(draft_sections, default=str),
+            "master_resume": resume_payload,
+            "job_description": job_description,
+            "strategy": strategy_plan,
+            "style_guide": self.STYLE_GUIDE,
+            "text_to_check": summary_text,
+            "min_words": min_words,
+            "max_words": max_words,
+            "llm_reported_count": len(summary_text.split()),
+        }
+
+    def _normalize_strategy(self, strategy: Any) -> Dict[str, Any]:
+        if hasattr(strategy, "model_dump"):
+            return strategy.model_dump()
+        if isinstance(strategy, dict):
+            return strategy
+        return {}
+
+    def _extract_summary_text(self, draft_sections: Any) -> str:
+        summary = draft_sections.get("summary") if isinstance(draft_sections, dict) else None
+        if isinstance(summary, str):
+            return summary
+        if isinstance(summary, dict):
+            for candidate_key in ("draft", "text", "content"):
+                value = summary.get(candidate_key)
+                if isinstance(value, str):
+                    return value
+            return json.dumps(summary, default=str)
+        return ""
+
+    def _collect_issues(
+        self, validator_results: Iterable[Tuple[str, Dict[str, Any]]]
+    ) -> List[Dict[str, Any]]:
+        issues: List[Dict[str, Any]] = []
+        for tool_name, result in validator_results:
+            issue_description = self._detect_issue(tool_name, result)
+            if issue_description:
+                issues.append(
+                    {
+                        "tool": tool_name,
+                        "description": issue_description,
+                        "details": result,
+                        "severity": self._severity_for(tool_name),
+                    }
+                )
+        return issues
+
+    def _detect_issue(self, tool_name: str, result: Dict[str, Any]) -> Optional[str]:
+        if tool_name == "validate_claims" and result.get("unsupported_claims", 0) > 0:
+            return f"{result['unsupported_claims']} unsupported claims detected"
+        if tool_name == "validate_tone" and not result.get("tone_match", True):
+            tone = result.get("current_tone", "unknown")
+            return f"Tone mismatch detected (found: {tone})"
+        if tool_name == "validate_thematic_alignment" and result.get("alignment_score", 1.0) < 0.75:
+            return "Low thematic alignment score"
+        if tool_name == "validate_semantic_entailment" and result.get("entailment_score", 1.0) < 0.7:
+            return "Semantic entailment below threshold"
+        if tool_name == "validate_narrative_thread" and not result.get("narrative_clear", True):
+            return "Narrative thread unclear"
+        if tool_name == "validate_jd_skills" and result.get("missing_keywords"):
+            return f"Missing critical keywords: {', '.join(result['missing_keywords'])}"
+        if tool_name == "validate_signal_score" and result.get("avg_signal_score", 10) < 6:
+            return "Average signal score is low"
+        if tool_name == "validate_bias" and result.get("bias_detected"):
+            score = result.get("bias_score")
+            return f"Bias patterns detected (score={score})"
+        if tool_name == "validate_tenure" and (
+            result.get("gaps_found", 0) > 0 or result.get("overlaps_found", 0) > 0
+        ):
+            return "Tenure inconsistencies detected"
+        if tool_name == "find_missed_opportunities" and result.get("opportunities_found"):
+            return "Relevant opportunities were omitted"
+        if tool_name == "validate_word_count" and not result.get("validation_passed", True):
+            return result.get("message", "Word count outside range")
+        if tool_name == "adversarial_review" and result.get("red_flags"):
+            return "Adversarial reviewer raised red flags"
+        return None
+
+    def _severity_for(self, tool_name: str) -> str:
+        high_severity = {
+            "validate_claims",
+            "validate_bias",
+            "adversarial_review",
+            "validate_tenure",
+        }
+        return "high" if tool_name in high_severity else "medium"
+
+    def _summarize_results(self, qa_passed: bool, issue_count: int, total: int) -> str:
+        if qa_passed:
+            return f"All {total} QA validators passed."
+        plural = "issue" if issue_count == 1 else "issues"
+        return f"{issue_count} {plural} flagged across {total} validators."
+
+    def _merge_patch(self, base: Dict[str, Any], addition: Dict[str, Any]) -> Dict[str, Any]:
+        merged: Dict[str, Any] = dict(base)
+        for key, value in addition.items():
+            if (
+                key in merged
+                and isinstance(merged[key], dict)
+                and isinstance(value, dict)
+            ):
+                merged[key] = self._merge_patch(
+                    merged[key], value
+                )  # type: ignore[arg-type]
+            else:
+                merged[key] = value
+        return merged
+
+    def _append_agent_note(self, state: Dict[str, Any], summary: str) -> List[str]:
+        existing = state.get("memory", {}).get("episodic", {}).get("agent_notes") or []
+        note = f"QA summary: {summary}"
+        return [*existing, note]
+
+
+__all__ = ["QAValidationStack"]
+
+
+==== agent_stacks_v10_8/rag_execution_stack.py ====
+"""Compatibility shim that re-exports the v10.8 RAG execution stack."""
+
+from stacks_v10_8.rag_execution import RAGExecutionStack
+
+__all__ = ["RAGExecutionStack"]
+
+==== agent_stacks_v10_8/robustness_stack.py ====
+"""Layer-5 resilience stack that centralizes retry logic."""
+
+from __future__ import annotations
+
+import asyncio
+import random
+from typing import Any, Awaitable, Callable, Dict, Optional
+
+
+class RobustnessStack:
+    """Implements workflow-wide retry and backoff heuristics."""
+
+    def __init__(
+        self,
+        context: Any,
+        debug_mode: bool = False,
+        *,
+        max_retries: Optional[int] = None,
+        base_backoff: Optional[float] = None,
+        max_backoff: Optional[float] = None,
+    ) -> None:
+        self.context = context
+        self.debug_mode = debug_mode
+        config = getattr(context, "config", None)
+        stack_config = getattr(config, "agent_stacks", None) if config else None
+        perf_config = getattr(config, "performance_config", None) if config else None
+
+        self.max_retries = (
+            max_retries
+            if max_retries is not None
+            else getattr(stack_config, "max_local_retries", 1)
+        )
+        self.base_backoff = (
+            base_backoff
+            if base_backoff is not None
+            else getattr(perf_config, "node_retry_backoff_seconds", 0.5)
+        )
+        self.max_backoff = (
+            max_backoff
+            if max_backoff is not None
+            else getattr(perf_config, "node_retry_max_backoff_seconds", 4.0)
+        )
+        self._failure_counts: Dict[str, int] = {}
+
+    async def run_with_resilience(
+        self, stage: str, operation: Callable[[], Awaitable[Any]]
+    ) -> Any:
+        """Run an async operation with centralized retry controls."""
+
+        while True:
+            try:
+                result = await operation()
+            except Exception:
+                if not self.should_retry(stage, "operation_failed"):
+                    raise
+                await asyncio.sleep(self._compute_backoff(stage))
+                continue
+            else:
+                self.reset(stage)
+                return result
+
+    def should_retry(self, stage: str, error: Optional[str]) -> bool:
+        """Decide whether a stage should retry after a failure."""
+
+        failures = self._failure_counts.get(stage, 0)
+        if failures >= self.max_retries:
+            return False
+        self._failure_counts[stage] = failures + 1
+        return True
+
+    def reset(self, stage: str) -> None:
+        """Clear retry history for a stage after success."""
+
+        self._failure_counts.pop(stage, None)
+
+    def _compute_backoff(self, stage: str) -> float:
+        attempt = self._failure_counts.get(stage, 1)
+        delay = min(self.base_backoff * (2 ** max(attempt - 1, 0)), self.max_backoff)
+        jitter = random.uniform(0, self.base_backoff / 2)
+        return delay + jitter
+
+
+__all__ = ["RobustnessStack"]
+
+
+==== agent_stacks_v10_8/safety_stack.py ====
+"""Safety stack shim for v10.8."""
+
+from __future__ import annotations
+
+import json
+from typing import Any, Dict
+
+from agent_stacks_v10_8.components.safety import (
+    BiasDetectorAgent,
+    ConstitutionalReviewerAgent,
+    PIISanitizerAgent,
+    PromptInjectionDetectorAgent,
+)
+
+
+class SafetyStackV10_8:
+    """Wrapper that exposes safety-only capabilities."""
+
+    def __init__(self, context: Any, debug_mode: bool = False) -> None:
+        self.context = context
+        self.debug_mode = debug_mode
+        self._pii_sanitizer = PIISanitizerAgent(context, debug_mode)
+        self._bias_detector = BiasDetectorAgent(context, debug_mode)
+        self._prompt_injection_detector = PromptInjectionDetectorAgent(
+            context, debug_mode
+        )
+        self._constitutional_reviewer = ConstitutionalReviewerAgent(
+            context, debug_mode
+        )
+
+    def sanitize_resume(self, resume: Dict[str, Any]) -> Dict[str, Any]:
+        """Run the legacy PII sanitizer."""
+
+        return self._pii_sanitizer.run(resume)
+
+    def detect_bias(self, text: str, workflow_id: str = "") -> Dict[str, Any]:
+        """Run the local bias detector."""
+
+        return self._bias_detector.run(text, workflow_id)
+
+    async def detect_prompt_injection_async(
+        self, user_input: str, workflow_id: str
+    ) -> Dict[str, Any]:
+        """Delegate to the v10.7 prompt injection detector."""
+
+        return await self._prompt_injection_detector.run_async(user_input, workflow_id)
+
+    async def run_constitutional_review_async(
+        self, final_draft: str, workflow_id: str
+    ) -> Any:
+        """Delegate final constitutional review without changing behavior."""
+
+        return await self._constitutional_reviewer.run_async(final_draft, workflow_id)
+
+    async def constitutional_review_from_state_async(
+        self, state: Dict[str, Any], workflow_id: str
+    ) -> Dict[str, Any]:
+        """Extract the final resume payload using the legacy fallback chain."""
+
+        artifacts_bucket = state.get("artifacts", {})
+        final_resume: Any = None
+        if isinstance(artifacts_bucket, dict):
+            inner = artifacts_bucket.get("artifacts", {})
+            if isinstance(inner, dict):
+                final_resume = inner.get("final_resume")
+
+        if final_resume is None:
+            draft_state = state.get("draft", {})
+            if isinstance(draft_state, dict):
+                final_resume = draft_state.get("final_draft")
+                if final_resume is None:
+                    sections = draft_state.get("sections", {})
+                    if isinstance(sections, dict):
+                        summary = sections.get("summary", {})
+                        if isinstance(summary, dict):
+                            final_resume = summary.get("draft")
+
+        if final_resume is None:
+            final_resume = state.get("resume", {}).get("master_resume", {})
+
+        draft_text = json.dumps(final_resume)
+        result = await self.run_constitutional_review_async(
+            draft_text,
+            workflow_id or state.get("metadata", {}).get("workflow_id", ""),
+        )
+        payload = result.model_dump() if hasattr(result, "model_dump") else result
+        return {"qa": {"constitutional_review": payload}}
+
+==== agent_stacks_v10_8/state_adapter_stack.py ====
+"""Layer-4 state adapter responsible for applying typed patches."""
+
+from __future__ import annotations
+
+import logging
+import copy
+from dataclasses import asdict, is_dataclass
+from typing import Any, Dict, Iterable, Mapping, MutableMapping
+
+from pydantic import BaseModel, ConfigDict
+
+from core_v10_7 import (
+    A2AMessage,
+    EphemeralState,
+    EpisodicMemory,
+    MainGraphState,
+    MemoryState,
+    SemanticMemoryRef,
+    WorkflowPhase,
+)
+
+logger = logging.getLogger(__name__)
+
+
+class StatePatch(BaseModel):
+    resume: dict | None = None
+    strategy: dict | None = None
+    rag: dict | None = None
+    bullets: dict | None = None
+    drafting: dict | None = None
+    qa: dict | None = None
+    artifacts: dict | None = None
+    safety_report: dict | None = None
+    policy_decision: dict | None = None
+    constitutional_review: dict | None = None
+    memory: MemoryState | None = None
+    ephemeral: EphemeralState | None = None
+    extra: dict | None = None
+
+    model_config = ConfigDict(extra="allow")
+
+
+class StateAdapterStack:
+    """L4 Memory & State: the ONLY component allowed to mutate workflow state."""
+
+    LEGAL_NEXT_PHASES: Dict[WorkflowPhase, set[WorkflowPhase]] = {
+        WorkflowPhase.INIT: {WorkflowPhase.SAFETY},
+        WorkflowPhase.SAFETY: {WorkflowPhase.STRATEGY, WorkflowPhase.COMPLETE},
+        WorkflowPhase.STRATEGY: {WorkflowPhase.RAG},
+        WorkflowPhase.RAG: {WorkflowPhase.BULLETS, WorkflowPhase.DRAFTING},
+        WorkflowPhase.BULLETS: {WorkflowPhase.DRAFTING},
+        WorkflowPhase.DRAFTING: {WorkflowPhase.QA},
+        WorkflowPhase.QA: {WorkflowPhase.HIL, WorkflowPhase.COMPLETE},
+        WorkflowPhase.HIL: {WorkflowPhase.COMPLETE},
+    }
+
+    def __init__(self, context: Any, debug_mode: bool = False) -> None:
+        self.context = context
+        self.debug_mode = debug_mode
+
+    def set_phase(self, state: MainGraphState, next_phase: WorkflowPhase) -> MainGraphState:
+        if next_phase not in self.LEGAL_NEXT_PHASES.get(state.phase, set()):
+            raise ValueError(f"Illegal transition {state.phase}->{next_phase}")
+        state.phase = next_phase
+        return state
+
+    def apply_patch(
+        self, state_dict: Dict[str, Any], patch: Dict[str, Any] | StatePatch
+    ) -> Dict[str, Any]:
+        """Apply a schema-validated patch to the workflow state."""
+
+        if not isinstance(state_dict, MutableMapping):
+            state_dict = {}
+
+        patch_obj: StatePatch
+        if isinstance(patch, StatePatch):
+            patch_obj = patch
+        elif isinstance(patch, Mapping):
+            patch_obj = StatePatch(**patch)
+        else:
+            return copy.deepcopy(state_dict)
+
+        typed_state = MainGraphState.from_dict(copy.deepcopy(state_dict))
+        merged_dict = typed_state.to_dict()
+
+        for key in patch_obj.model_fields:
+            if key == "extra":
+                continue
+            value = getattr(patch_obj, key)
+            if value is None:
+                continue
+            if hasattr(value, "model_dump") and callable(value.model_dump):
+                merged_dict[key] = self._normalize_patch(value.model_dump())
+            elif isinstance(value, Mapping):
+                existing = merged_dict.get(key, {})
+                merged_dict[key] = self._deep_merge(
+                    dict(existing) if isinstance(existing, Mapping) else {},
+                    self._normalize_patch(value),
+                )
+            else:
+                merged_dict[key] = copy.deepcopy(value)
+
+        extra = getattr(patch_obj, "model_extra", None) or getattr(
+            patch_obj, "__pydantic_extra__", {}
+        )
+        if patch_obj.extra:
+            extra = self._deep_merge(extra, self._normalize_patch(patch_obj.extra))
+        if extra:
+            merged_dict = self._deep_merge(merged_dict, self._normalize_patch(extra))
+
+        validated_state = MainGraphState.from_dict(merged_dict)
+
+        wrapper_cls = type(
+            "StateWrapper",
+            (dict,),
+            {
+                "__getattr__": lambda self, key: self.get(key),
+            },
+        )
+
+        wrapped_state = wrapper_cls(validated_state.to_dict())
+        return self._enforce_budget(wrapped_state)
+
+    def _normalize_patch(self, value: Any) -> Any:
+        if isinstance(value, Mapping):
+            return {k: self._normalize_patch(v) for k, v in value.items()}
+        if isinstance(value, list):
+            return [self._normalize_patch(v) for v in value]
+        if hasattr(value, "model_dump") and callable(value.model_dump):
+            return self._normalize_patch(value.model_dump())
+        if is_dataclass(value):
+            return self._normalize_patch(asdict(value))
+        return copy.deepcopy(value)
+
+    def _deep_merge(self, base: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
+        for key, patch_value in patch.items():
+            if isinstance(patch_value, Mapping) and patch_value.get("__delete__"):
+                base.pop(key, None)
+                continue
+            if isinstance(patch_value, Mapping):
+                existing = base.get(key)
+                if not isinstance(existing, Mapping):
+                    existing = {}
+                base[key] = self._deep_merge(dict(existing), dict(patch_value))
+            elif patch_value is None and key in base:
+                raise ValueError(
+                    f"Deletion of '{key}' requires explicit __delete__ flag"
+                )
+            elif isinstance(patch_value, list):
+                base[key] = copy.deepcopy(patch_value)
+            else:
+                base[key] = patch_value
+        return base
+
+    def _enforce_budget(self, state: Dict[str, Any]) -> Dict[str, Any]:
+        budget_manager = getattr(self.context, "context_budget_manager", None)
+        if not budget_manager or not hasattr(budget_manager, "enforce_all"):
+            return state
+        try:
+            return budget_manager.enforce_all(state)
+        except Exception as exc:  # pragma: no cover - defensive soft mode
+            logger.warning("Soft mode: context budget enforcement skipped (%s)", exc)
+            return state
+
+    def patch_memory(
+        self,
+        *,
+        conversation: Iterable[dict] | None = None,
+        agent_notes: Iterable[str] | None = None,
+        vector_store_ids: Iterable[str] | None = None,
+        tags: Iterable[str] | None = None,
+    ) -> StatePatch:
+        """Delegate to the module-level memory patch builder."""
+
+        return patch_memory(
+            conversation=conversation,
+            agent_notes=agent_notes,
+            vector_store_ids=vector_store_ids,
+            tags=tags,
+        )
+
+
+def patch_memory(
+    *,
+    conversation: Iterable[dict] | None = None,
+    agent_notes: Iterable[str] | None = None,
+    vector_store_ids: Iterable[str] | None = None,
+    tags: Iterable[str] | None = None,
+) -> StatePatch:
+    """Build a memory-focused state patch with explicit replacements."""
+
+    episodic = None
+    semantic = None
+
+    if conversation is not None or agent_notes is not None:
+        episodic = EpisodicMemory(
+            conversation=list(conversation or []),
+            agent_notes=list(agent_notes or []),
+        )
+    if vector_store_ids is not None or tags is not None:
+        semantic = SemanticMemoryRef(
+            vector_store_ids=list(vector_store_ids or []),
+            tags=list(tags or []),
+        )
+
+    if episodic is None and semantic is None:
+        return StatePatch()
+
+    memory = MemoryState()
+    if episodic is not None:
+        memory.episodic = episodic
+    if semantic is not None:
+        memory.semantic = semantic
+
+    return StatePatch(memory=memory)
+
+
+def patch_ephemeral_events(
+    *,
+    events: Iterable[Any] | None = None,
+    debug_traces: Iterable[str] | None = None,
+    last_node: str | None = None,
+) -> StatePatch:
+    """Build a patch targeting ephemeral execution metadata."""
+
+    if events is None and debug_traces is None and last_node is None:
+        return StatePatch()
+
+    ephemeral = EphemeralState()
+    if events is not None:
+        ephemeral.events = list(events)
+    if debug_traces is not None:
+        ephemeral.debug_traces = list(debug_traces)
+    if last_node is not None:
+        ephemeral.last_node = last_node
+
+    return StatePatch(ephemeral=ephemeral)
+
+
+def build_a2a_message_patch(
+    *,
+    sender: str,
+    message_type: str,
+    payload: Dict[str, Any],
+    recipient: str = "ALL",
+    timestamp: str | None = None,
+) -> StatePatch:
+    """Construct a patch that appends a new A2A message."""
+
+    message_kwargs = dict(
+        sender=sender,
+        recipient=recipient,
+        message_type=message_type,
+        payload=payload,
+    )
+    if timestamp is not None:
+        message_kwargs["timestamp"] = timestamp
+
+    message = A2AMessage(**message_kwargs)
+    return StatePatch(**{"a2a": {"messages": [message.model_dump()]}})
+
+==== agent_stacks_v10_8/strategy_stack.py ====
+"""Strategy stack shim for v10.8."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, Optional
+
+from agent_stacks_v10_8.components.strategy import (
+    QueryComplexityClassifier,
+    ToTStrategistAgent,
+)
+
+
+class StrategyStackV10_8:
+    """Layer-pure facade around the v10.7 strategy agents."""
+
+    def __init__(self, context: Any, debug_mode: bool = False) -> None:
+        self.context = context
+        self.debug_mode = debug_mode
+        self._complexity_classifier = QueryComplexityClassifier(context, debug_mode)
+        self._strategist = ToTStrategistAgent(context, debug_mode)
+
+    async def classify_complexity_async(
+        self, job_description: str, workflow_id: str
+    ) -> str:
+        """Delegate complexity classification to the v10.7 classifier."""
+
+        return await self._complexity_classifier.run_async(job_description, workflow_id)
+
+    async def plan_strategy_async(
+        self,
+        job_context: Dict[str, Any],
+        workflow_id: str,
+        state: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Delegate strategy planning to the v10.7 Tree-of-Thought strategist."""
+
+        return await self._strategist.run_async(job_context, workflow_id, state)
+
+==== agent_tools_v10_7.py ====
+# --- Vendor path bootstrap for Codex offline environment ---
+import sys
+import os
+
+VENDOR_PATH = os.path.join(os.path.dirname(__file__), "vendor")
+if VENDOR_PATH not in sys.path:
+    sys.path.insert(0, VENDOR_PATH)
+
+# File: agent_tools_v10_7.py
+# Version: 10.7 (Refactored)
+#
+# v10.7 REFACTOR CHANGES:
+# - UPDATED: All versioning to v10_7.
+# - REFACTORED (Fix #14, #17, #19, #20, #24): All tools (Drafting, RAG, QA)
+#   refactored to use the new *asynchronous* _format_prompt_with_defaults
+#   from core_v10_7. This correctly injects Goal State, Top Failures,
+#   Cognitive Modes, Reflection steps, and uses agentic pruning.
+#
+# v10.7 MAJOR CHANGES:
+# - IMPLEMENTED (Fix #8): Added new stubbed tools 'UIUpdateElementTool'
+#   and 'UIFireEventTool' for UI control.
+# - FIXED: All v10_5 imports and class names updated to v10_7.
+# - FIXED (Bug): QABiasDetectorTool now correctly calls the synchronous
+#   'bias_agent.run' method from within its async method using
+#   'asyncio.to_thread' to prevent blocking the event loop.
+
+import json
+import logging
+import asyncio
+import uuid
+from typing import Dict, Any, List, Type, Optional
+
+from pydantic import BaseModel, Field
+from chromadb.utils import embedding_functions
+try:
+    from rank_bm25 import BM25Okapi
+    BM25_AVAILABLE = True
+except ImportError:
+    BM25_AVAILABLE = False
+    logging.getLogger("agent_tools_v10_7").warning(
+        "rank_bm25 not installed. BM25SearchTool will be unavailable. "
+        "Run 'pip install rank-bm25'"
+    )
+
+# v10.7: Import from new core
+from core_v10_7 import (
+    WorkflowContext,
+    PydanticSchemaError,
+    # Import all 15 Pydantic output models
+    BaseToolOutput,
+    DraftStrategyOutput,
+    RedTeamOutput,
+    RefineSectionOutput,
+    AddMetricsOutput,
+    QAClaimOutput,
+    QAToneOutput,
+    QAThematicAlignmentOutput,
+    QASemanticEntailmentOutput,
+    QANarrativeThreadOutput,
+    QAJDSkillsOutput,
+    QASignalScoreOutput,
+    QATenureOutput,
+    QAMissedOpportunitiesOutput,
+    QAAdversarialOutput,
+    QABiasOutput,
+    # v10.7: Import new decorator
+    track_metrics,
+    BaseTool,
+    # v10.7: Import centralized prompt formatter
+    _format_prompt_with_defaults,
+    detect_bias,
+    MCPClientStub
+)
+
+# v10.7: Logger name updated
+logger = logging.getLogger("agent_tools_v10_7")
+
+
+def resolve_mcp_client(
+    tool: "BaseTool",
+    name: str,
+    *,
+    optional: bool = False,
+    fallback_parameters: Optional[Dict[str, Any]] = None,
+):
+    """Helper that returns an MCP client or a stub fallback."""
+
+    fallback_parameters = fallback_parameters or {}
+
+    try:
+        return tool.get_mcp_client(name)
+    except KeyError as exc:
+        if optional:
+            tool.log_warning(
+                f"MCP client '{name}' unavailable: {exc}. Using stub fallback."
+            )
+            stub = MCPClientStub(name, fallback_parameters)
+            tool.context.get_mcp_client(name, default=stub)
+            return stub
+        raise
+
+class DraftingLLMTool(BaseTool):
+    """Shared async flow for drafting LLM tools."""
+
+    model_client_key: str = ""
+    output_model: Type[BaseToolOutput] = BaseToolOutput
+    log_action: str = ""
+
+    @track_metrics('tool_drafting_llm')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        action = self.log_action or f"Running {self.tool_name}"
+        self.log_info(f"Tool: {action} (v10.7)...")
+
+        client = self.get_model_client(self.model_client_key)
+        prompt_template = self.prompt_manager.get_template(self.tool_name)
+
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            tool_input,
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+
+        temperature = self._get_model_temperature()
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            response_format="json_object"
+        )
+
+        validated_output, error = self.validator.validate(response["content"], self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+
+        return validated_output.model_dump()
+
+    def _get_model_temperature(self) -> float:
+        try:
+            model_config = getattr(self.config.model_config, self.model_client_key)
+        except AttributeError as exc:
+            raise AttributeError(
+                f"Model config '{self.model_client_key}' not found for {self.__class__.__name__}"
+            ) from exc
+
+        temperature = getattr(model_config, 'temperature', None)
+        if temperature is None:
+            raise AttributeError(
+                f"Model config '{self.model_client_key}' for {self.__class__.__name__} lacks a 'temperature' value"
+            )
+        return float(temperature)
+
+
+class DraftingStrategistTool(DraftingLLMTool):
+    """(Gemini 2.5 Pro) Reviews the overall strategy and ensures the draft aligns."""
+
+    tool_name = "review_draft_strategy"
+    model_client_key = "drafting_strategist_model"
+    output_model = DraftStrategyOutput
+    log_action = "Reviewing draft strategy"
+
+
+class DraftingRedTeamTool(DraftingLLMTool):
+    """(Claude 4.1 Opus) Aggressively critiques the draft for weaknesses."""
+
+    tool_name = "red_team_critique"
+    model_client_key = "drafting_redteam_model"
+    output_model = RedTeamOutput
+    log_action = "Red teaming draft"
+
+
+class DraftingRefinerTool(DraftingLLMTool):
+    """(GPT-5) Refines and rewrites specific sections."""
+
+    tool_name = "refine_section"
+    model_client_key = "drafting_refiner_model"
+    output_model = RefineSectionOutput
+    log_action = "Refining section (Debate Pattern)"
+
+
+class DraftingMetricsTool(DraftingLLMTool):
+    """(Gemini 2.5 Flash) Finds opportunities to add metrics to bullets."""
+
+    tool_name = "add_metrics"
+    model_client_key = "drafting_metrics_model"
+    output_model = AddMetricsOutput
+    log_action = "Adding metrics"
+
+
+class EvidenceClarificationTool(BaseTool):
+    """Allows the evidence liaison to raise clarification requests."""
+
+    tool_name = "request_evidence_clarification"
+
+    class ClarificationRequestOutput(BaseToolOutput):
+        request_id: str = Field(..., description="Unique id for the clarification request")
+        recipient: str = Field(..., description="Who should receive the request (e.g., 'bullet_team', 'rag_team')")
+        questions: List[str] = Field(..., description="Questions that need clarification")
+        priority: str = Field("normal", description="Request priority level")
+        context_summary: str = Field("", description="Short summary of the ambiguity driving the request")
+
+    output_model = ClarificationRequestOutput
+
+    @track_metrics('tool_request_evidence_clarification')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Tool: Logging clarification request (v10.7 Guild)...")
+
+        recipient = tool_input.get("recipient", "bullet_team")
+        questions = [q for q in tool_input.get("questions", []) if isinstance(q, str) and q.strip()]
+        if not questions:
+            questions = ["Please confirm the data points for this section."]
+
+        request_payload = {
+            "status": "queued",
+            "request_id": f"clar-{uuid.uuid4()}",
+            "recipient": recipient,
+            "questions": questions,
+            "priority": tool_input.get("priority", "normal"),
+            "context_summary": tool_input.get("context_summary", ""),
+        }
+
+        validated_output, error = self.validator.validate(request_payload, self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+
+        return validated_output.model_dump()
+
+
+class EvidenceBriefAssemblerTool(BaseTool):
+    """Synthesizes structured evidence briefs for the drafting specialists."""
+
+    tool_name = "assemble_evidence_brief"
+
+    class EvidenceBriefOutput(BaseToolOutput):
+        section: str = Field(..., description="Name of the section the brief supports")
+        brief: str = Field(..., description="Short narrative of the supporting evidence")
+        key_points: List[str] = Field(default_factory=list, description="Bullet-ready evidence points")
+        citations: List[str] = Field(default_factory=list, description="Reference identifiers or source hints")
+        outstanding_questions: List[str] = Field(default_factory=list, description="Clarifications still pending")
+
+    output_model = EvidenceBriefOutput
+
+    @track_metrics('tool_assemble_evidence_brief')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Tool: Assembling evidence brief (v10.7 Guild)...")
+
+        section_name = tool_input.get("section", "general")
+        draft_excerpt = tool_input.get("draft_content", "")
+        evidence_points = tool_input.get("evidence_points", [])
+        outstanding = [q for q in tool_input.get("open_questions", []) if isinstance(q, str)]
+
+        if isinstance(draft_excerpt, dict):
+            draft_excerpt = json.dumps(draft_excerpt)
+
+        if not isinstance(evidence_points, list):
+            evidence_points = [str(evidence_points)]
+
+        brief_text = f"Evidence for {section_name}: "
+        if evidence_points:
+            brief_text += "; ".join(str(pt) for pt in evidence_points[:5])
+        elif draft_excerpt:
+            brief_text += draft_excerpt[:200]
+        else:
+            brief_text += "No direct evidence captured."
+
+        result_dict = {
+            "section": section_name,
+            "brief": brief_text,
+            "key_points": [str(pt) for pt in evidence_points[:5]],
+            "citations": tool_input.get("citations", []),
+            "outstanding_questions": outstanding,
+        }
+
+        validated_output, error = self.validator.validate(result_dict, self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+
+        return validated_output.model_dump()
+
+# ============================================================================
+# ROW 7: RAG STACK TOOLS (v10.7: Refactored)
+# ============================================================================
+
+class HyDETool(BaseTool):
+    """(HyDE) Generates hypothetical documents for query expansion."""
+    tool_name = "generate_hypothetical_documents"
+
+    class HyDEOutput(BaseModel):
+        hypothetical_document: str = Field(..., description="A hypothetical document that answers the query.")
+
+    @track_metrics('run_hyde_tool')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info(f"Tool: Running HyDE (v10.7)...")
+        client = self.get_model_client("hyde_model")
+        
+        query = tool_input.get("query", "")
+        if not query:
+            return {"status": "error", "hypothetical_document": "No query provided."}
+
+        prompt_template = self.prompt_manager.get_template("hyde_generation")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template, tool_input, self.budget_manager,
+            client.goal_state, client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.model_config.hyde_model.temperature,
+            response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], self.HyDEOutput)
+        if error:
+            self.log_warning(f"HyDE validation failed: {error}. Using raw query.")
+            return {"status": "error", "hypothetical_document": query} # Fallback
+            
+        return {"status": "success", "hypothetical_document": validated_output.hypothetical_document}
+
+
+class ChromaDBSearchTool(BaseTool):
+    """v10.7: Searches the resume database using ChromaDB (Vector Search)."""
+    tool_name = "search_resume_database"
+
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        # v10.7: Use injected embedding function
+        self.embedding_function = self.context.embedding_function
+        self.collection_name = self.config.chromadb_config.default_collection_name
+        self.chroma_client = self.context.chromadb_client
+        
+    @track_metrics('run_chroma_tool')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        query = tool_input.get("query", "")
+        self.log_info(f"Searching ChromaDB (Vector) for: {query}")
+
+        try:
+            collection = self.chroma_client.get_collection(
+                name=self.collection_name,
+                embedding_function=self.embedding_function
+            )
+            
+            results = await asyncio.to_thread(
+                collection.query,
+                query_texts=[query],
+                n_results=5,
+                where={"workflow_id": workflow_id}
+            )
+            
+            search_results = []
+            documents = results.get('documents', [[]])[0]
+            metadatas = results.get('metadatas', [[]])[0]
+            
+            for doc, meta in zip(documents, metadatas):
+                experience_obj_str = meta.get("experience_object")
+                if experience_obj_str:
+                    search_results.append(json.loads(experience_obj_str))
+
+            self.log_feedback(workflow_id, "chroma_search", "success", {"results_found": len(search_results)})
+            return {"search_results": search_results}
+            
+        except Exception as e:
+            self.log_error(f"Failed to run ChromaDB search: {e}")
+            return {"search_results": []}
+
+class BM25SearchTool(BaseTool):
+    """v10.7: Searches the resume using BM25 (Keyword Search)."""
+    tool_name = "search_resume_bm25"
+
+    def __init__(self, context: 'WorkflowContext', debug_mode: bool = False):
+        super().__init__(context, debug_mode)
+        if not BM25_AVAILABLE:
+            self.log_error("BM25SearchTool disabled: 'rank_bm25' not installed.")
+    
+    @track_metrics('run_bm25_tool')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        if not BM25_AVAILABLE:
+            return {"search_results": []}
+            
+        query = tool_input.get("query", "")
+        corpus_text = tool_input.get("corpus_text", [])
+        corpus_metadata = tool_input.get("corpus_metadata", [])
+        self.log_info(f"Searching BM25 (Keyword) for: {query}")
+
+        if not corpus_text or not corpus_metadata:
+            self.log_warning("BM25SearchTool received empty corpus.")
+            return {"search_results": []}
+
+        try:
+            def do_bm25_search():
+                tokenized_corpus = [doc.split(" ") for doc in corpus_text]
+                bm25 = BM25Okapi(tokenized_corpus)
+                tokenized_query = query.split(" ")
+                doc_scores = bm25.get_scores(tokenized_query)
+                indexed_scores = [(i, score) for i, score in enumerate(doc_scores)]
+                indexed_scores.sort(key=lambda x: x[1], reverse=True)
+                search_results = [corpus_metadata[i] for i, score in indexed_scores[:5] if score > 0]
+                return search_results
+            
+            search_results = await asyncio.to_thread(do_bm25_search)
+
+            self.log_feedback(workflow_id, "bm25_search", "success", {"results_found": len(search_results)})
+            return {"search_results": search_results}
+            
+        except Exception as e:
+            self.log_error(f"Failed to run BM25 search: {e}")
+            return {"search_results": []}
+
+# ============================================================================
+# ROW 7: QA STACK (ReAct Conductor with 11+ REAL Tools)
+# ============================================================================
+
+class QABaseValidatorTool(BaseTool):
+    """Base class for the 10 T2 validator tools"""
+
+    model_config_name = "qa_validator_model" # Gemini 2.5 Flash
+    output_model: Any = BaseToolOutput
+
+    @track_metrics('tool_qa_validator')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info(f"Tool: Running {self.tool_name} (v10.7)...")
+        client = self.get_model_client(self.model_config_name)
+
+        prompt_template = self.prompt_manager.get_template(self.tool_name)
+
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template, tool_input, self.budget_manager,
+            client.goal_state, client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.model_config.qa_validator_model.temperature,
+            response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+            
+        return validated_output.model_dump()
+
+class QAClaimValidatorTool(QABaseValidatorTool):
+    """(NLI) Checks if claims in the draft are supported by the master resume."""
+
+    tool_name = "validate_claims"
+    output_model = QAClaimOutput
+
+
+class QAToneValidatorTool(QABaseValidatorTool):
+    """Checks if the draft's tone matches the strategy (e.g., 'leadership')."""
+
+    tool_name = "validate_tone"
+    output_model = QAToneOutput
+
+
+class QAThematicAlignmentTool(QABaseValidatorTool):
+    """Ensures all sections support the central strategy theme."""
+
+    tool_name = "validate_thematic_alignment"
+    output_model = QAThematicAlignmentOutput
+
+
+class QASemanticEntailmentTool(QABaseValidatorTool):
+    """Checks if bullets are semantically entailed by the job description."""
+
+    tool_name = "validate_semantic_entailment"
+    output_model = QASemanticEntailmentOutput
+
+
+class QANarrativeThreadTool(QABaseValidatorTool):
+    """Checks for a consistent career story/narrative."""
+
+    tool_name = "validate_narrative_thread"
+    output_model = QANarrativeThreadOutput
+
+
+class QAJDSkillsValidatorTool(QABaseValidatorTool):
+    """Ensures keywords/skills from the JD are present in the draft."""
+
+    tool_name = "validate_jd_skills"
+    output_model = QAJDSkillsOutput
+
+
+class QASignalScoreValidatorTool(QABaseValidatorTool):
+    """Rates the 'signal' (achievement) vs 'noise' (fluff) of each bullet."""
+
+    tool_name = "validate_signal_score"
+    output_model = QASignalScoreOutput
+
+
+class QATenureValidatorTool(QABaseValidatorTool):
+    """Checks for consistency in dates and tenure."""
+
+    tool_name = "validate_tenure"
+    output_model = QATenureOutput
+
+
+class QAMissedOpportunityTool(QABaseValidatorTool):
+    """Looks for experience in the master resume that was omitted but is relevant."""
+
+    tool_name = "find_missed_opportunities"
+    output_model = QAMissedOpportunitiesOutput
+
+class QAAdversarialReviewerTool(BaseTool):
+    """(Claude 4.1 Opus) Acts as a skeptical hiring manager to find flaws."""
+    tool_name = "adversarial_review"
+    output_model = QAAdversarialOutput 
+
+    @track_metrics('tool_qa_adversarial')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info(f"Tool: Running Adversarial Review (v10.7)...")
+        client = self.get_model_client("qa_adversarial_model")
+        prompt_template = self.prompt_manager.get_template(self.tool_name)
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template, tool_input, self.budget_manager,
+            client.goal_state, client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.config.model_config.qa_adversarial_model.temperature,
+            response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+            
+        return validated_output.model_dump()
+
+class QABiasDetectorTool(BaseTool):
+    """(Local) Runs the local bias detector tool on the final draft."""
+    tool_name = "validate_bias"
+    output_model = QABiasOutput
+
+    @track_metrics('tool_qa_bias_detector')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info(f"Tool: Running local bias detector (v10.7)...")
+        draft_text = json.dumps(tool_input.get("draft_text", ""))
+
+        # v10.7 (FIX): Call the sync function in a thread to avoid blocking
+        result_dict = await asyncio.to_thread(detect_bias, self.context, draft_text, workflow_id)
+        
+        validated_output, error = self.validator.validate(result_dict, self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed validation: {error}")
+            
+        return validated_output.model_dump()
+
+class QAWordCountValidatorTool(BaseTool):
+    """(Local) Runs deterministic word count check."""
+    tool_name = "validate_word_count"
+    
+    class WordCountOutput(BaseToolOutput):
+        validation_passed: bool
+        message: str
+        deterministic_count: int
+
+    output_model = WordCountOutput
+
+    @track_metrics('tool_qa_word_count')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info(f"Tool: Running Word Count Validator (v10.7)...")
+        
+        text_to_check = tool_input.get("text_to_check", "")
+        min_words = tool_input.get("min_words", 50)
+        max_words = tool_input.get("max_words", 150)
+        llm_reported_count = tool_input.get("llm_reported_count")
+        
+        validator = self.context.semantic_validator
+        
+        validation_passed, message = validator.check_word_count(
+            text=text_to_check,
+            min_words=min_words,
+            max_words=max_words,
+            llm_reported_count=llm_reported_count,
+            workflow_id=workflow_id
+        )
+        
+        result_dict = {
+            "status": "success",
+            "validation_passed": validation_passed,
+            "message": message,
+            "deterministic_count": len(text_to_check.split())
+        }
+
+        validated_output, error = self.validator.validate(result_dict, self.output_model)
+        if error:
+            raise PydanticSchemaError(f"Tool {self.tool_name} failed its own output validation: {error}")
+            
+        return validated_output.model_dump()
+
+# ============================================================================
+# v10.7 (Fix #8): UI CONTROL TOOLS (STUBS)
+# ============================================================================
+
+class UIUpdateElementTool(BaseTool):
+    """(Stub) Simulates updating a UI element."""
+    tool_name = "ui_update_element"
+    output_model = BaseToolOutput
+
+    @track_metrics('tool_ui_update_element')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        element_id = tool_input.get("element_id", "unknown")
+        content = tool_input.get("content", "")
+        
+        self.log_info(f"Tool: UI STUB >> Updating element '{element_id}' with content: '{content[:30]}...'")
+        
+        # In a real system, this would dispatch an event.
+        # For v10.7, we just log and return success.
+        
+        return {"status": "success"}
+
+class UIFireEventTool(BaseTool):
+    """(Stub) Simulates firing a UI event."""
+    tool_name = "ui_fire_event"
+    output_model = BaseToolOutput
+
+    @track_metrics('tool_ui_fire_event')
+    async def _run_async_internal(self, tool_input: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        event_name = tool_input.get("event_name", "unknown_event")
+        payload = tool_input.get("payload", {})
+        
+        self.log_info(f"Tool: UI STUB >> Firing event '{event_name}' with payload: {payload}")
+        
+        return {"status": "success"}
+
+# ============================================================================
+# END OF agent_tools_v10_7.py
+# ============================================================================
+

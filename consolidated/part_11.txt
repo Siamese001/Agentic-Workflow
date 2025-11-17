@@ -1,0 +1,1819 @@
+==== run_learning_v10_7.py ====
+# --- Vendor path bootstrap for Codex offline environment ---
+import sys
+import os
+
+VENDOR_PATH = os.path.join(os.path.dirname(__file__), "vendor")
+if VENDOR_PATH not in sys.path:
+    sys.path.insert(0, VENDOR_PATH)
+
+# File: run_learning_v10_7.py
+# Version: 10.7 (Refactored)
+#
+# v10.7 REFACTOR CHANGES:
+# - UPDATED: All versioning to v10_7.
+# - UPDATED: create_workflow_context call updated to v10_7.
+# - REFACTORED (Fix #14, #17, #19, #20, #24): All async agents
+#   (Summarizer, PatternFinder, Hypothesis, etc.) now use the new
+#   async `_format_prompt_with_defaults` from core. This injects
+#   Cognitive Modes, Goal State, Failure Warnings, and Reflection steps
+#   into all meta-learning LLM calls.
+#
+# v10.7 MAJOR CHANGES:
+# - FIXED: All v10_5 imports and class names updated to v10_7.
+# - FIXED: State object 'MetaGraphState' (from core) now used.
+
+import json
+import logging
+import os
+import uuid
+import asyncio
+from datetime import datetime
+from typing import Any, Dict, List, Tuple
+
+# v10.7: Import from new core
+from core_v10_7 import (
+    BaseAgent,
+    ConfigV10_7,
+    MetaGraphState,
+    WorkflowContext,
+    WorkflowError,
+    create_workflow_context,
+    PydanticSchemaError,
+    track_metrics,
+    _format_prompt_with_defaults, # v10.7: Import async formatter
+    get_checkpointer,
+    MCPClientStub,
+)
+from langgraph.graph import StateGraph, END
+
+# v10.7: Logger name updated
+logger = logging.getLogger("meta_learner_v10_7")
+
+# ============================================================================
+# MODULE HELPERS
+# ============================================================================
+
+
+def _read_log_tail(path: str, limit: int = 50) -> Tuple[str, int]:
+    """Return the last ``limit`` lines of ``path`` and a count of entries."""
+
+    if not path or not os.path.exists(path):
+        return "", 0
+
+    try:
+        with open(path, 'r') as f:
+            lines = f.readlines()
+    except Exception:
+        return "", 0
+
+    tail = lines[-limit:]
+    if not tail:
+        return "", 0
+
+    joined = "\n".join(line.rstrip('\n') for line in tail)
+    entry_count = sum(1 for line in tail if line.strip())
+    return joined, entry_count
+
+
+def _count_feedback_entries(config: ConfigV10_7) -> int:
+    meta_cfg = getattr(config, "meta_loop_config", None)
+    if not meta_cfg:
+        return 0
+    _, count = _read_log_tail(getattr(meta_cfg, "feedback_log_path", ""))
+    return count
+
+
+def _redis_available(redis_client: Any) -> bool:
+    if redis_client is None or isinstance(redis_client, MCPClientStub):
+        return False
+
+    ping_fn = getattr(redis_client, "ping", None)
+    if not callable(ping_fn):
+        return False
+
+    try:  # pragma: no cover - requires Redis
+        ping_fn()
+        return True
+    except Exception:
+        return False
+
+
+# ============================================================================
+# ROW 7: HOT-RELOAD RULE MANAGER (Preserved)
+# ============================================================================
+
+class HotReloadRuleManager:
+    """ROW 7: Manages hot-reload of proposed rules"""
+    
+    def __init__(self, rules_path: str, auto_approve_threshold: float = 0.85):
+        self.rules_path = rules_path
+        self.auto_approve_threshold = auto_approve_threshold
+    
+    def write_proposed_rule(self, rule: Dict[str, Any], confidence: float) -> bool:
+        try:
+            status = "APPROVED" if confidence >= self.auto_approve_threshold else "PROPOSED"
+            log_entry = {
+                "timestamp": datetime.now().isoformat(), "status": status,
+                "confidence": confidence, "pattern": rule,
+            }
+            os.makedirs(os.path.dirname(self.rules_path), exist_ok=True)
+            with open(self.rules_path, 'a') as f:
+                json.dump(log_entry, f)
+                f.write('\n')
+            logger.info(f"Rule written: {rule.get('type', 'unknown')} - Status: {status}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to write rule: {e}")
+            return False
+
+# ============================================================================
+# META-LEARNING AGENTS (v10.7: Refactored)
+# ============================================================================
+
+class LogReaderAgent(BaseAgent):
+    """Reads raw logs from disk"""
+    @track_metrics('meta_read_logs')
+    def run(self) -> Dict[str, str]:
+        self.log_info("Reading feedback and preference logs...")
+        logs = {"feedback_log": "", "preference_log": ""}
+        feedback_log_path = self.config.meta_loop_config.feedback_log_path
+        preference_log_path = self.config.meta_loop_config.preference_log_path
+
+        try:
+            feedback_tail, _ = _read_log_tail(feedback_log_path)
+            logs["feedback_log"] = feedback_tail
+        except Exception:
+            pass
+        try:
+            preference_tail, _ = _read_log_tail(preference_log_path)
+            logs["preference_log"] = preference_tail
+        except Exception:
+            pass
+        
+        return logs
+
+class AsyncLogSummarizerAgent(BaseAgent):
+    """Async LLM-based log summarizer"""
+    @track_metrics('meta_summarize_logs')
+    async def run_async(self, raw_logs: Dict[str, str], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Summarizing logs with LLM (v10.7)...")
+        client = self.get_model_client("qa_model")
+        
+        prompt_template = self.prompt_manager.get_template("meta_log_reader")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {
+                "feedback_log": raw_logs.get('feedback_log', 'No feedback log'),
+                "preference_log": raw_logs.get('preference_log', 'No preference log')
+            },
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2, response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], dict)
+        if error:
+            raise PydanticSchemaError(f"LogSummarizer failed validation: {error}")
+        
+        self.log_feedback(workflow_id, "log_summarization", "success", {})
+        return validated_output
+
+class AsyncPatternFinderAgent(BaseAgent):
+    """Async pattern detection"""
+    @track_metrics('meta_find_patterns')
+    async def run_async(self, log_summary: Dict[str, Any], workflow_id: str) -> List[Dict]:
+        self.log_info("Finding patterns in logs (v10.7)...")
+        client = self.get_model_client("strategy_model")
+        
+        prompt_template = self.prompt_manager.get_template("meta_pattern_finder")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {"log_data": json.dumps(log_summary)},
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3, response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], dict)
+        if error:
+            raise PydanticSchemaError(f"PatternFinder failed validation: {error}")
+            
+        patterns = validated_output.get("patterns", [])
+        self.log_feedback(workflow_id, "pattern_finding", "success", {"patterns_found": len(patterns)})
+        return patterns
+
+class AsyncHypothesisGeneratorAgent(BaseAgent):
+    """Async hypothesis generation"""
+    @track_metrics('meta_gen_hypotheses')
+    async def run_async(self, patterns: List[Dict], previous_critique: Dict[str, Any], workflow_id: str) -> List[Dict]:
+        self.log_info("Generating hypotheses (v10.7)...")
+        client = self.get_model_client("strategy_model")
+        
+        prompt_template = self.prompt_manager.get_template("meta_hypothesis_generator")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {
+                "patterns": json.dumps(patterns),
+                "critique": json.dumps(previous_critique)
+            },
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.5, response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], dict)
+        if error:
+            raise PydanticSchemaError(f"HypothesisGenerator failed validation: {error}")
+            
+        hypotheses = validated_output.get("hypotheses", [])
+        self.log_feedback(workflow_id, "hypothesis_generation", "success", {"hypotheses_generated": len(hypotheses)})
+        return hypotheses
+
+class AsyncProposalDrafterAgent(BaseAgent):
+    """Async proposal drafting"""
+    @track_metrics('meta_draft_proposal')
+    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info(f"Drafting proposal for hypothesis (v10.7)...")
+        client = self.get_model_client("prompt_engineer_model")
+        
+        prompt_template = self.prompt_manager.get_template("meta_proposal_drafter")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {"hypothesis": json.dumps(hypothesis)},
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4, response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], dict)
+        if error:
+            raise PydanticSchemaError(f"ProposalDrafter failed validation: {error}")
+        
+        validated_output["hypothesis_id"] = hypothesis.get("id", "unknown")
+        validated_output["confidence"] = hypothesis.get("confidence", 0.5)
+        validated_output["hypothesis_type"] = hypothesis.get("type", "rule_change")
+        self.log_feedback(workflow_id, "proposal_drafting", "success", {})
+        return validated_output
+
+class AsyncProposalCritiqueAgent(BaseAgent):
+    """Async proposal critique"""
+    @track_metrics('meta_critique_proposal')
+    async def run_async(self, proposal: Dict[str, Any], patterns: List[Dict], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Critiquing proposal (v10.7)...")
+        client = self.get_model_client("critique_model")
+        
+        prompt_template = self.prompt_manager.get_template("meta_proposal_critique")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {
+                "patterns": json.dumps(patterns),
+                "proposal": json.dumps(proposal)
+            },
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2, response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], dict)
+        if error:
+            raise PydanticSchemaError(f"ProposalCritique failed validation: {error}")
+            
+        self.log_feedback(workflow_id, "proposal_critique", "success" if validated_output.get("critique_passed") else "failure", {})
+        return validated_output
+
+class AsyncToolGeneratorAgent(BaseAgent):
+    """Async LLM-based tool code generator."""
+    @track_metrics('meta_generate_tool')
+    async def run_async(self, hypothesis: Dict[str, Any], workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Generating new tool code from hypothesis (v10.7)...")
+        client = self.get_model_client("meta_tool_generator_model")
+        
+        prompt_template = self.prompt_manager.get_template("meta_tool_generator")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {"hypothesis": json.dumps(hypothesis)},
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.4, response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], dict)
+        if error:
+            raise PydanticSchemaError(f"ToolGenerator failed validation: {error}")
+            
+        tool_code = validated_output.get("tool_code", "")
+        tool_name = validated_output.get("tool_name", f"tool_{uuid.uuid4().hex[:6]}")
+        
+        self.log_feedback(workflow_id, "tool_generation", "success", {"tool_name": tool_name})
+        return {"generated_tool_code": tool_code, "generated_tool_name": tool_name}
+
+class AsyncToolCritiqueAgent(BaseAgent):
+    """Async LLM-based tool code critique."""
+    @track_metrics('meta_critique_tool')
+    async def run_async(self, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+        self.log_info("Critiquing generated tool code (v10.7)...")
+        client = self.get_model_client("meta_tool_critique_model")
+        
+        prompt_template = self.prompt_manager.get_template("meta_tool_critique")
+        
+        # v10.7 REFACTOR: Use centralized async formatter
+        prompt = await _format_prompt_with_defaults(
+            prompt_template,
+            {"generated_tool_code": tool_code},
+            self.budget_manager,
+            client.goal_state,
+            client.top_failures
+        )
+        
+        response = await client.chat_completion_async(
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.2, response_format="json_object"
+        )
+        
+        validated_output, error = self.validator.validate(response["content"], dict)
+        if error:
+            raise PydanticSchemaError(f"ToolCritique failed validation: {error}")
+        
+        self.log_feedback(workflow_id, "tool_critique", "success" if validated_output.get("critique_passed") else "failure", {})
+        return validated_output
+
+class GeneratedToolWriterAgent(BaseAgent):
+    """Local agent to write generated tool code to disk."""
+    @track_metrics('meta_write_tool')
+    def run(self, tool_name: str, tool_code: str, workflow_id: str) -> Dict[str, Any]:
+        self.log_info(f"Writing generated tool '{tool_name}' to disk...")
+        
+        try:
+            tools_dir = self.config.meta_loop_config.generated_tools_path
+            os.makedirs(tools_dir, exist_ok=True)
+            
+            safe_filename = f"{tool_name.lower().replace(' ', '_')}.py"
+            file_path = os.path.join(tools_dir, safe_filename)
+            
+            with open(file_path, 'w') as f:
+                f.write(f"# Generated by Meta-Learning Workflow ID: {workflow_id}\n")
+                f.write(f"# Timestamp: {datetime.now().isoformat()}\n\n")
+                f.write(tool_code)
+                
+            self.log_info(f"Successfully wrote new tool to {file_path}")
+            return {"status": "success", "file_path": file_path}
+        except Exception as e:
+            self.log_error(f"Failed to write generated tool: {e}")
+            return {"status": "error", "reason": str(e)}
+
+# ============================================================================
+# META-LEARNING CONDITIONAL EDGE FUNCTIONS (v10.7: Preserved)
+# ============================================================================
+
+def check_proposal_type(state: MetaGraphState) -> str:
+    """v10.7: Routes to tool gen or rule gen branch."""
+    critique_passed = state.critique.get("critique_passed", False)
+    if not critique_passed:
+        return "replan"
+    
+    proposal_type = state.proposal.get("hypothesis_type", "rule_change")
+    if proposal_type == "tool_generation":
+        logger.info("Proposal critique passed. Routing to TOOL generation.")
+        return "generate_tool"
+    else:
+        logger.info("Proposal critique passed. Routing to RULE generation.")
+        return "write_rules"
+
+def check_tool_critique(state: MetaGraphState) -> str:
+    """v10.7: Checks if generated tool code passed critique."""
+    critique_passed = state.critique.get("critique_passed", False)
+    if critique_passed:
+        logger.info("Tool critique passed. Routing to write_tool.")
+        return "write_tool"
+    else:
+        logger.info("Tool critique FAILED. Looping back to generate_tool.")
+        return "replan"
+
+# ============================================================================
+# META-LEARNING GRAPH BUILDER (v10.7: Refactored Nodes)
+# ============================================================================
+
+def build_meta_learning_graph(context: WorkflowContext, checkpointer: Any):
+    """Build complete async meta-learning graph"""
+    
+    workflow = StateGraph(MetaGraphState)
+    
+    # --- Meta-Graph Nodes (v10.7: Refactored) ---
+    
+    async def read_logs_node(state: MetaGraphState) -> MetaGraphState:
+        log_reader = LogReaderAgent(context)
+        state.raw_logs = await asyncio.to_thread(log_reader.run)
+        return state
+    
+    async def summarize_logs_node(state: MetaGraphState) -> MetaGraphState:
+        summarizer = AsyncLogSummarizerAgent(context)
+        state.log_summary = await summarizer.run_async(state.raw_logs, state.workflow_id)
+        return state
+    
+    async def find_patterns_node(state: MetaGraphState) -> MetaGraphState:
+        pattern_finder = AsyncPatternFinderAgent(context)
+        state.patterns = await pattern_finder.run_async(state.log_summary, state.workflow_id)
+        return state
+    
+    async def generate_hypotheses_node(state: MetaGraphState) -> MetaGraphState:
+        hypothesis_gen = AsyncHypothesisGeneratorAgent(context)
+        previous_critique = state.critique or {}
+        state.hypotheses = await hypothesis_gen.run_async(state.patterns, previous_critique, state.workflow_id)
+        return state
+    
+    async def draft_proposals_node(state: MetaGraphState) -> MetaGraphState:
+        drafter = AsyncProposalDrafterAgent(context)
+        hypotheses = state.hypotheses or []
+        if not hypotheses: 
+            state.proposal = {}
+            return state
+        
+        proposal_tasks = [drafter.run_async(hyp, state.workflow_id) for hyp in hypotheses[:3]]
+        proposals = await asyncio.gather(*proposal_tasks)
+        best_proposal = max(proposals, key=lambda p: p.get("confidence", 0.0))
+        state.proposal = best_proposal
+        return state
+    
+    async def critique_proposal_node(state: MetaGraphState) -> MetaGraphState:
+        critique_agent = AsyncProposalCritiqueAgent(context)
+        state.critique = await critique_agent.run_async(state.proposal, state.patterns, state.workflow_id)
+        return state
+    
+    async def write_rules_node(state: MetaGraphState) -> MetaGraphState:
+        rule_manager = HotReloadRuleManager(
+            rules_path=context.config.meta_loop_config.proposed_rules_path
+        )
+        critique = state.critique or {}
+        proposal = state.proposal or {}
+        
+        if critique.get("critique_passed", False):
+            confidence = proposal.get("confidence", 0.5)
+            await asyncio.to_thread(rule_manager.write_proposed_rule, proposal, confidence)
+        else:
+            logger.info("✗ Proposal (rule) did not pass critique, not writing rule")
+        return state
+
+    async def generate_tool_node(state: MetaGraphState) -> MetaGraphState:
+        tool_gen = AsyncToolGeneratorAgent(context)
+        tool_gen_output = await tool_gen.run_async(state.proposal, state.workflow_id)
+        state.generated_tool_code = tool_gen_output.get("generated_tool_code")
+        state.proposal["generated_tool_name"] = tool_gen_output.get("generated_tool_name")
+        return state
+
+    async def critique_tool_node(state: MetaGraphState) -> MetaGraphState:
+        tool_critique = AsyncToolCritiqueAgent(context)
+        critique_output = await tool_critique.run_async(state.generated_tool_code, state.workflow_id)
+        state.critique = critique_output
+        return state
+
+    async def write_tool_node(state: MetaGraphState) -> MetaGraphState:
+        tool_writer = GeneratedToolWriterAgent(context)
+        await asyncio.to_thread(
+            tool_writer.run,
+            tool_name=state.proposal.get("generated_tool_name", "unknown_tool"),
+            tool_code=state.generated_tool_code,
+            workflow_id=state.workflow_id
+        )
+        return state
+
+    # --- Conditional Edges ---
+    
+    def conditional_check_proposal_type(state: MetaGraphState) -> str:
+        return check_proposal_type(state)
+
+    def conditional_check_tool_critique(state: MetaGraphState) -> str:
+        return check_tool_critique(state)
+
+    def should_replan_hypothesis(state: MetaGraphState) -> str:
+        replan_count = state.replan_count + 1
+        state.replan_count = replan_count
+        max_replans = context.config.meta_loop_config.max_meta_replan_loops
+        
+        if replan_count < max_replans:
+            logger.warning(f"Replanning hypothesis (Attempt {replan_count})...")
+            return "replan"
+        logger.error("Max hypothesis replans reached. Ending meta-loop.")
+        return "end"
+    
+    # --- Build Graph ---
+    workflow.add_node("read_logs", read_logs_node)
+    workflow.add_node("summarize_logs", summarize_logs_node)
+    workflow.add_node("find_patterns", find_patterns_node)
+    workflow.add_node("generate_hypotheses", generate_hypotheses_node)
+    workflow.add_node("draft_proposals", draft_proposals_node)
+    workflow.add_node("critique_proposal", critique_proposal_node)
+    workflow.add_node("write_rules", write_rules_node)
+    workflow.add_node("generate_tool", generate_tool_node)
+    workflow.add_node("critique_tool", critique_tool_node)
+    workflow.add_node("write_tool", write_tool_node)
+    
+    workflow.set_entry_point("read_logs")
+    workflow.add_edge("read_logs", "summarize_logs")
+    workflow.add_edge("summarize_logs", "find_patterns")
+    workflow.add_edge("find_patterns", "generate_hypotheses")
+    workflow.add_edge("generate_hypotheses", "draft_proposals")
+    workflow.add_edge("draft_proposals", "critique_proposal")
+    
+    workflow.add_conditional_edges(
+        "critique_proposal",
+        conditional_check_proposal_type,
+        {
+            "replan": "generate_hypotheses",
+            "generate_tool": "generate_tool",
+            "write_rules": "write_rules"
+        }
+    )
+    
+    workflow.add_edge("generate_tool", "critique_tool")
+    workflow.add_conditional_edges(
+        "critique_tool",
+        conditional_check_tool_critique,
+        {
+            "write_tool": "write_tool",
+            "replan": "generate_tool"
+        }
+    )
+
+    workflow.add_edge("write_rules", END)
+    workflow.add_edge("write_tool", END)
+    
+    return workflow.compile(checkpointer=checkpointer)
+
+# ============================================================================
+# MAIN META-LEARNING RUNNER (v10.7: Refactored)
+# ============================================================================
+
+async def run_meta_learning(config: ConfigV10_7):
+    """
+    v10.7: Runs async meta-learning graph.
+    """
+    
+    logger.info(f"===== Starting v10.7 Meta-Learning =====")
+
+    if not config.meta_loop_config.enable_meta_learning:
+        logger.info("Meta-learning disabled in config. Exiting.")
+        return
+
+    feedback_log_entries = _count_feedback_entries(config)
+
+    try:
+        # --- v10.7: REFACTOR: COMPOSITION ROOT ---
+        meta_db = config.redis_config.db + 10
+        context = create_workflow_context(config, db=meta_db)
+        logger.info("Initialized WorkflowContext for meta-learning (v10.7)")
+
+        checkpointer = get_checkpointer(
+            config,
+            db=meta_db,
+            allow_memory_fallback=True
+        )
+        # --- v10.7: REFACTOR END ---
+
+        app = build_meta_learning_graph(context, checkpointer)
+
+        workflow_id = str(uuid.uuid4())
+        run_config = {"configurable": {"thread_id": workflow_id}}
+
+        initial_state = MetaGraphState(workflow_id=workflow_id, replan_count=0)
+
+        redis_available = _redis_available(context.redis_client)
+        logger.info(
+            "Meta-learning bootstrap | redis_available=%s | feedback_log_entries=%d | patterns_found=%d",
+            redis_available,
+            feedback_log_entries,
+            0,
+        )
+
+        logger.info(f"Executing meta-learning graph (ID: {workflow_id})...")
+
+        final_state = None
+        async for s in app.astream(initial_state, run_config):
+            node_name = list(s.keys())[0]
+            logger.info(f"--- Meta-Node: {node_name} ---")
+            final_state = s[node_name]
+            store = getattr(context, "world_model_store", None)
+            if store and store.enabled() and final_state is not None:
+                patterns = getattr(final_state, "patterns", None) or []
+                store.set_json(
+                    "meta_last_snapshot",
+                    {
+                        "feedback_entries": feedback_log_entries,
+                        "patterns_count": len(patterns),
+                    },
+                )
+
+        if final_state is None:
+             raise WorkflowError("Meta-learning graph did not return a final state.")
+
+        patterns_found = len(final_state.patterns)
+        critique_passed = final_state.critique.get("critique_passed", False)
+        
+        logger.info("META-LEARNING RESULTS (v10.7):")
+        logger.info(f"  Patterns Found: {patterns_found}")
+        logger.info(f"  Critique Passed: {critique_passed}")
+
+        if patterns_found == 0 and feedback_log_entries == 0:
+            logger.info("Meta-learning skipped: no data available (harmless).")
+
+        cost_summary = context.cost_tracker.get_cost_summary(workflow_id)
+        logger.info(f"Meta-learning cost: ${cost_summary['total_workflow_cost']:.4f}")
+        logger.info("===== v10.7 Meta-Learning Complete =====")
+        
+    except Exception as e:
+        logger.error(f"Meta-Learning failed: {e}", exc_info=True)
+        raise
+
+# v10.7: This file is not a main entry point.
+# ============================================================================
+# END OF run_learning_v10_7.py
+# ============================================================================
+
+==== schema/__init__.py ====
+"""Lightweight schema helpers used during tests."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List
+
+
+@dataclass
+class ResumeOutputSchema:
+    """Minimal structure validator for resume payloads in tests."""
+
+    candidate: str
+    job_title: str
+    summary: str
+    highlights: List[str] = field(default_factory=list)
+    skills: List[str] = field(default_factory=list)
+    sections: List[Dict[str, Any]] = field(default_factory=list)
+
+    def __post_init__(self) -> None:
+        if not self.candidate:
+            raise ValueError("candidate must be provided")
+        if not self.job_title:
+            raise ValueError("job_title must be provided")
+        if not self.summary:
+            raise ValueError("summary must be provided")
+
+
+__all__ = ["ResumeOutputSchema"]
+
+==== simulations/__init__.py ====
+"""Simulation subsystem package."""
+
+==== simulations/engines/__init__.py ====
+"""Simulation engine implementations."""
+
+from .strategy_sim import StrategySimulator
+from .rag_sim import RAGSimulator
+from .draft_sim import DraftSimulator
+from .safety_sim import SafetySimulator
+
+__all__ = [
+    "StrategySimulator",
+    "RAGSimulator",
+    "DraftSimulator",
+    "SafetySimulator",
+]
+
+==== simulations/engines/draft_sim.py ====
+"""Synthetic draft simulator."""
+
+import random
+from typing import Any, Dict
+
+from simulations.models.draft_simulation import (
+    DraftSimMetrics,
+    DraftSimRequest,
+    DraftSimResult,
+)
+from simulations.utils import model_to_payload
+
+
+class DraftSimulator:
+    """Simulates draft-level properties."""
+
+    async def run(self, request: DraftSimRequest) -> DraftSimResult:
+        section_count = len(request.draft_sections)
+        entropy = round(random.uniform(0.2, 0.9), 3)
+        cohesion = round(max(0.0, min(1.0, 0.5 + section_count * 0.05 + random.uniform(-0.2, 0.3))), 3)
+        rhythm_score = round(random.uniform(0.3, 0.95), 3)
+        metrics = DraftSimMetrics(entropy=entropy, cohesion=cohesion, rhythm_score=rhythm_score)
+        preview: Dict[str, Any] = {}
+        if request.draft_sections:
+            first_key = next(iter(request.draft_sections))
+            preview = {first_key: request.draft_sections[first_key]}
+        return DraftSimResult(
+            simulation_id=request.simulation_id,
+            success=True,
+            metrics=model_to_payload(metrics),
+            details={"section_preview": preview},
+        )
+
+==== simulations/engines/rag_sim.py ====
+"""Synthetic RAG simulator."""
+
+import random
+from typing import List
+
+from simulations.models.rag_simulation import (
+    RAGSimMetrics,
+    RAGSimRequest,
+    RAGSimResult,
+)
+from simulations.utils import model_to_payload
+
+
+class RAGSimulator:
+    """Runs retrieval quality simulations."""
+
+    async def run(self, request: RAGSimRequest) -> RAGSimResult:
+        doc_count = len(request.documents)
+        diversity_bonus = min(doc_count / 10.0, 0.3)
+        recall = round(min(1.0, 0.4 + diversity_bonus + random.uniform(0.0, 0.4)), 3)
+        precision = round(min(1.0, 0.5 + random.uniform(-0.2, 0.3)), 3)
+        redundancy = round(max(0.0, 0.2 + random.uniform(-0.1, 0.5)), 3)
+        metrics = RAGSimMetrics(
+            recall=max(0.0, recall),
+            precision=max(0.0, precision),
+            redundancy=min(1.0, redundancy),
+        )
+        top_docs: List[str] = request.documents[:3]
+        return RAGSimResult(
+            simulation_id=request.simulation_id,
+            success=True,
+            metrics=model_to_payload(metrics),
+            details={"top_documents": top_docs},
+        )
+
+==== simulations/engines/safety_sim.py ====
+"""Synthetic safety simulator."""
+
+import random
+
+from simulations.models.safety_simulation import (
+    SafetySimMetrics,
+    SafetySimRequest,
+    SafetySimResult,
+)
+from simulations.utils import model_to_payload
+
+
+class SafetySimulator:
+    """Simulates safety assessments."""
+
+    async def run(self, request: SafetySimRequest) -> SafetySimResult:
+        base_risk = 0.2 if len(request.text) < 100 else 0.4
+        pii_risk = round(min(1.0, base_risk + random.uniform(0.0, 0.4)), 3)
+        injection_risk = round(min(1.0, 0.1 + random.uniform(0.0, 0.5)), 3)
+        bias_risk = round(max(0.0, 0.05 + random.uniform(0.0, 0.4)), 3)
+        metrics = SafetySimMetrics(
+            pii_risk=pii_risk,
+            injection_risk=injection_risk,
+            bias_risk=bias_risk,
+        )
+        snippet = request.text[:100]
+        return SafetySimResult(
+            simulation_id=request.simulation_id,
+            success=True,
+            metrics=model_to_payload(metrics),
+            details={"text_snippet": snippet},
+        )
+
+==== simulations/engines/strategy_sim.py ====
+"""Synthetic strategy simulator."""
+
+import random
+from typing import Any
+
+from simulations.models.strategy_simulation import (
+    StrategySimMetrics,
+    StrategySimRequest,
+    StrategySimResult,
+)
+from simulations.utils import model_to_payload
+
+
+class StrategySimulator:
+    """Runs a lightweight strategy simulation."""
+
+    async def run(self, request: StrategySimRequest) -> StrategySimResult:
+        metrics = StrategySimMetrics(
+            clarity_score=round(random.uniform(0.5, 1.0), 3),
+            alignment_score=round(random.uniform(0.3, 1.0), 3),
+            risk_score=round(random.uniform(0.0, 0.7), 3),
+            notes=["synthetic simulation only"],
+        )
+        strategy_name = None
+        strategy_plan: Any = request.strategy_plan or {}
+        if isinstance(strategy_plan, dict):
+            strategy_name = strategy_plan.get("strategy_name")
+        return StrategySimResult(
+            simulation_id=request.simulation_id,
+            success=True,
+            metrics=model_to_payload(metrics),
+            details={"strategy_preview": strategy_name},
+        )
+
+==== simulations/models/__init__.py ====
+"""Pydantic models for simulation subsystem."""
+
+from .simulation_base import SimulationInput, SimulationResult, SimulationBatchResult
+from .strategy_simulation import (
+    StrategySimRequest,
+    StrategySimResult,
+    StrategySimMetrics,
+)
+from .rag_simulation import (
+    RAGSimRequest,
+    RAGSimResult,
+    RAGSimMetrics,
+)
+from .draft_simulation import (
+    DraftSimRequest,
+    DraftSimResult,
+    DraftSimMetrics,
+)
+from .safety_simulation import (
+    SafetySimRequest,
+    SafetySimResult,
+    SafetySimMetrics,
+)
+
+__all__ = [
+    "SimulationInput",
+    "SimulationResult",
+    "SimulationBatchResult",
+    "StrategySimRequest",
+    "StrategySimResult",
+    "StrategySimMetrics",
+    "RAGSimRequest",
+    "RAGSimResult",
+    "RAGSimMetrics",
+    "DraftSimRequest",
+    "DraftSimResult",
+    "DraftSimMetrics",
+    "SafetySimRequest",
+    "SafetySimResult",
+    "SafetySimMetrics",
+]
+
+==== simulations/models/draft_simulation.py ====
+"""Draft simulation models."""
+
+from typing import Any, Dict
+
+from pydantic import BaseModel
+
+from .simulation_base import SimulationInput, SimulationResult
+
+
+class DraftSimRequest(SimulationInput):
+    """Input payload for draft simulation."""
+
+    draft_sections: Dict[str, Any]
+
+
+class DraftSimMetrics(BaseModel):
+    """Metrics produced by draft simulations."""
+
+    entropy: float
+    cohesion: float
+    rhythm_score: float
+
+
+class DraftSimResult(SimulationResult):
+    """Result model for draft simulations."""
+
+    pass
+
+==== simulations/models/rag_simulation.py ====
+"""RAG simulation models."""
+
+from typing import List
+
+from pydantic import BaseModel
+
+from .simulation_base import SimulationInput, SimulationResult
+
+
+class RAGSimRequest(SimulationInput):
+    """Input payload for RAG simulation."""
+
+    query: str
+    documents: List[str]
+
+
+class RAGSimMetrics(BaseModel):
+    """Metrics produced by the RAG simulation."""
+
+    recall: float
+    precision: float
+    redundancy: float
+
+
+class RAGSimResult(SimulationResult):
+    """Result model for RAG simulations."""
+
+    pass
+
+==== simulations/models/safety_simulation.py ====
+"""Safety simulation models."""
+
+from pydantic import BaseModel
+
+from .simulation_base import SimulationInput, SimulationResult
+
+
+class SafetySimRequest(SimulationInput):
+    """Input payload for safety simulation."""
+
+    text: str
+
+
+class SafetySimMetrics(BaseModel):
+    """Metrics produced by safety simulations."""
+
+    pii_risk: float
+    injection_risk: float
+    bias_risk: float
+
+
+class SafetySimResult(SimulationResult):
+    """Result model for safety simulations."""
+
+    pass
+
+==== simulations/models/simulation_base.py ====
+"""Base models for simulations."""
+
+from typing import Any, Dict, List
+
+from pydantic import BaseModel, Field
+
+
+class SimulationInput(BaseModel):
+    """Base class for simulation input payloads."""
+
+    simulation_id: str = Field(...)
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SimulationResult(BaseModel):
+    """Base class for simulation results."""
+
+    simulation_id: str
+    success: bool
+    metrics: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SimulationBatchResult(BaseModel):
+    """Aggregated simulation result container."""
+
+    results: List[SimulationResult] = Field(default_factory=list)
+
+==== simulations/models/strategy_simulation.py ====
+"""Strategy simulation models."""
+
+from typing import Any, Dict, List
+
+from pydantic import BaseModel, Field
+
+from .simulation_base import SimulationInput, SimulationResult
+
+
+class StrategySimRequest(SimulationInput):
+    """Input payload for strategy simulation."""
+
+    job_title: str
+    company: str
+    strategy_plan: Dict[str, Any]
+
+
+class StrategySimMetrics(BaseModel):
+    """Metrics produced by a strategy simulation."""
+
+    clarity_score: float
+    alignment_score: float
+    risk_score: float
+    notes: List[str] = Field(default_factory=list)
+
+
+class StrategySimResult(SimulationResult):
+    """Result model for strategy simulations."""
+
+    metrics: Dict[str, Any]
+    details: Dict[str, Any]
+
+==== simulations/registry.py ====
+"""Simulation registry to look up simulator instances."""
+
+from simulations.engines import (
+    DraftSimulator,
+    RAGSimulator,
+    SafetySimulator,
+    StrategySimulator,
+)
+
+SIMULATION_REGISTRY = {
+    "strategy": StrategySimulator(),
+    "rag": RAGSimulator(),
+    "draft": DraftSimulator(),
+    "safety": SafetySimulator(),
+}
+
+
+def get_simulator(name: str):
+    """Return a simulator instance by name."""
+
+    return SIMULATION_REGISTRY.get(name)
+
+==== simulations/runner.py ====
+"""Simulation runner utilities."""
+
+import asyncio
+from typing import Any, Dict, List
+
+from simulations.models import (
+    DraftSimRequest,
+    RAGSimRequest,
+    SafetySimRequest,
+    SimulationBatchResult,
+    SimulationResult,
+    StrategySimRequest,
+)
+from simulations.registry import get_simulator
+
+
+REQUEST_MODEL_MAP = {
+    "strategy": StrategySimRequest,
+    "rag": RAGSimRequest,
+    "draft": DraftSimRequest,
+    "safety": SafetySimRequest,
+}
+
+
+async def run_simulation(sim_type: str, payload: Dict[str, Any]) -> SimulationResult:
+    """Run a single simulation request."""
+
+    simulator = get_simulator(sim_type)
+    if not simulator:
+        raise ValueError(f"Unknown simulation type: {sim_type}")
+    request_model = REQUEST_MODEL_MAP.get(sim_type)
+    if not request_model:
+        raise ValueError(f"No request model registered for simulation type: {sim_type}")
+    request = request_model(**payload)
+    return await simulator.run(request)
+
+
+async def run_batch(sim_requests: List[Dict[str, Any]]) -> SimulationBatchResult:
+    """Run a batch of simulations sequentially."""
+
+    results = []
+    for req in sim_requests:
+        sim_type = req.get("sim_type")
+        payload = req.get("payload", {})
+        if not sim_type:
+            raise ValueError("Each batch request must include 'sim_type'")
+        results.append(await run_simulation(sim_type, payload))
+    return SimulationBatchResult(results=results)
+
+
+def run_simulation_sync(sim_type: str, payload: Dict[str, Any]) -> SimulationResult:
+    """Convenience synchronous wrapper."""
+
+    return asyncio.run(run_simulation(sim_type, payload))
+
+==== simulations/utils.py ====
+"""Utility helpers for simulation subsystem."""
+
+from typing import Any, Dict
+
+
+def model_to_payload(model: Any) -> Dict[str, Any]:
+    """Return a dict of public fields from a pydantic model."""
+
+    if model is None:
+        return {}
+    data = {}
+    for key, value in getattr(model, "__dict__", {}).items():
+        if key.startswith("__"):
+            continue
+        data[key] = value
+    return data
+
+==== stacks_v10_8/__init__.py ====
+"""v10.8 planning + execution stacks used across the workflow."""
+
+from .rag_planning import RAGPlanningStack
+from .bullet_planning import BulletPlanningStack
+from .draft_planning import DraftPlanningStack
+from .rag_execution import RAGExecutionStack
+from .bullet_execution import BulletExecutionStack
+from .drafting_execution import DraftingExecutionStack
+from .rag_orchestration import RAGOrchestratorStack
+from .draft_orchestration import DraftOrchestratorStack
+
+__all__ = [
+    "RAGPlanningStack",
+    "BulletPlanningStack",
+    "DraftPlanningStack",
+    "RAGExecutionStack",
+    "BulletExecutionStack",
+    "DraftingExecutionStack",
+    "RAGOrchestratorStack",
+    "DraftOrchestratorStack",
+]
+
+==== stacks_v10_8/bullet_execution.py ====
+"""Pure action implementation of the v10.8 bullet execution stack."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
+
+from core_v10_7 import BaseAgent, BulletPlan, StrategyPlan
+from agent_stacks_v10_8.components.bullet import (
+    AsyncBulletCritiqueAgent,
+    AsyncBulletGeneratorAgent,
+    BulletCoordinatorAgent,
+)
+
+
+class BulletExecutionStack(BaseAgent):
+    """Generates deterministic bullets by applying a BulletPlan to resume data."""
+
+    def __init__(self, context: Any, debug_mode: bool = False) -> None:
+        super().__init__(context, debug_mode)
+        self.coordinator = BulletCoordinatorAgent(context, debug_mode)
+        self.generator = AsyncBulletGeneratorAgent(context, debug_mode)
+        self.critique_agent = AsyncBulletCritiqueAgent(context, debug_mode)
+        self.bullets_per_experience = max(
+            1, getattr(self.config.agent_stacks, "bullets_per_experience", 2)
+        )
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
+
+    async def generate_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Extract inputs from state and delegate to ``generate_async``."""
+
+        prompts_bucket = state.get("prompts", {})
+        final_prompt = prompts_bucket.get("final_prompt")
+        legacy_prompts = prompts_bucket.get("prompts", {}) if isinstance(prompts_bucket, dict) else {}
+        prompt = final_prompt or legacy_prompts.get("bullet_generation_prompt")
+        if not prompt:
+            prompt = (
+                self.prompt_manager.get_template("bullet_generation_prompt")
+                if self.prompt_manager
+                else "Generate bullets"
+            )
+        strategy_payload = state.get("strategy", {}).get("strategy_plan")
+        if isinstance(strategy_payload, StrategyPlan):
+            strategy = strategy_payload
+        elif strategy_payload:
+            strategy = StrategyPlan.model_validate(strategy_payload)
+        else:
+            strategy = StrategyPlan(
+                strategy_name="bullet_generation",
+                focus_areas=["impact"],
+                key_achievements_to_highlight=[],
+                tone="Confident",
+            )
+
+        experiences = list(state.get("resume", {}).get("experience_bullets", []))
+        experience_slice = experiences[:3]
+
+        return await self.generate_async(
+            prompt,
+            experience_slice,
+            strategy,
+            workflow_id or state.get("metadata", {}).get("workflow_id", ""),
+        )
+
+    async def critique_from_state_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Extract bullets and critique prompt directly from shared state."""
+
+        prompts_bucket = state.get("prompts", {})
+        final_prompt = prompts_bucket.get("final_prompt")
+        legacy_prompts = prompts_bucket.get("prompts", {}) if isinstance(prompts_bucket, dict) else {}
+        critique_prompt = final_prompt or legacy_prompts.get("critique_prompt")
+        if not critique_prompt:
+            critique_prompt = (
+                self.prompt_manager.get_template("critique_prompt")
+                if self.prompt_manager
+                else "Critique bullets"
+            )
+        bullets = state.get("bullets", {}).get("generated_bullets", [])
+        return await self.critique_async(
+            bullets,
+            critique_prompt,
+            workflow_id or state.get("metadata", {}).get("workflow_id", ""),
+        )
+
+    async def generate_async(
+        self,
+        prompt: str,
+        experiences: List[Dict[str, Any]],
+        strategy: StrategyPlan,
+        workflow_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Generate bullets by delegating to the async generator helper."""
+
+        task_context = {"prompts": [prompt], "experience": experiences}
+        result = await self.generator.run_async(
+            task_context,
+            strategy if isinstance(strategy, StrategyPlan) else StrategyPlan.model_validate(strategy),
+            workflow_id or "",
+        )
+        bullets = result.get("bullets", [])
+        patch = {"bullets": {"generated_bullets": bullets}}
+        safety_report = result.get("safety_report") or {}
+        policy_decision = result.get("policy_decision") or {}
+        constitutional_review = result.get("constitutional_review") or {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(result.get("safety_report") or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(result.get("policy_decision") or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(result.get("constitutional_review") or {})}
+            )()
+        patch["safety_report"] = safety_report.dict()
+        patch["policy_decision"] = policy_decision.dict()
+        patch["constitutional_review"] = constitutional_review.dict()
+        return patch
+
+    async def critique_async(
+        self,
+        bullets: List[Dict[str, Any]],
+        critique_prompt: str,
+        workflow_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Critique generated bullets using the critique helper."""
+
+        critiqued = await self.critique_agent.run_async(
+            bullets,
+            critique_prompt,
+            workflow_id or "",
+        )
+        patch = {"bullets": {"critiqued_bullets": critiqued}}
+        safety_report = critiqued.get("safety_report") if isinstance(critiqued, dict) else {}
+        policy_decision = critiqued.get("policy_decision") if isinstance(critiqued, dict) else {}
+        constitutional_review = critiqued.get("constitutional_review") if isinstance(critiqued, dict) else {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(safety_report or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(policy_decision or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(constitutional_review or {})}
+            )()
+        patch["safety_report"] = safety_report.dict()
+        patch["policy_decision"] = policy_decision.dict()
+        patch["constitutional_review"] = constitutional_review.dict()
+        return patch
+
+    async def run_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
+        plan = self._plan_from_state(state)
+        experiences = self._extract_experiences(state)
+        raw_bullets = self._generate_bullets(plan, experiences, workflow_id)
+        resume_section = state.get("resume", {}).get("master_resume", {})
+        enriched = await self.coordinator.run_async(raw_bullets, resume_section, workflow_id)
+
+        patch = {
+            "bullets": {
+                "plan": plan.model_dump(),
+                "generated_bullets": enriched,
+                "instructions": self._plan_instructions(plan),
+            }
+        }
+        safety_report = state.get("safety_report") or {}
+        policy_decision = state.get("policy_decision") or {}
+        constitutional_review = state.get("constitutional_review") or {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(safety_report or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(policy_decision or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(constitutional_review or {})}
+            )()
+        patch["safety_report"] = safety_report.dict()
+        patch["policy_decision"] = policy_decision.dict()
+        patch["constitutional_review"] = constitutional_review.dict()
+        return patch
+
+    def _plan_from_state(self, state: Dict[str, Any]) -> BulletPlan:
+        plan_payload = state.get("bullets", {}).get("plan")
+        if plan_payload is None:
+            raise ValueError("Bullet plan missing from state['bullets']['plan']")
+        if isinstance(plan_payload, BulletPlan):
+            return plan_payload
+        return BulletPlan.model_validate(plan_payload)
+
+    def _extract_experiences(self, state: Dict[str, Any]) -> List[Dict[str, Any]]:
+        resume = state.get("resume", {})
+        master_resume = resume.get("master_resume") or {}
+        experiences = master_resume.get("professional_experience") or []
+        return list(experiences)
+
+    def _plan_instructions(self, plan: BulletPlan) -> Dict[str, Any]:
+        return {
+            "target_sections": plan.target_sections,
+            "highlight_order": plan.highlight_order,
+            "metrics_focus": plan.metrics_focus,
+            "style_guidelines": plan.style_guidelines,
+            "validation_checks": plan.validation_checks,
+        }
+
+    def _generate_bullets(
+        self,
+        plan: BulletPlan,
+        experiences: List[Dict[str, Any]],
+        workflow_id: str,
+    ) -> List[Dict[str, Any]]:
+        generated: List[Dict[str, Any]] = []
+        guidelines = "; ".join(plan.style_guidelines)
+        metrics_hint = ", ".join(plan.metrics_focus) or "impact metrics"
+        highlights = plan.highlight_order or []
+
+        for exp_index, experience in enumerate(experiences):
+            company = experience.get("company", "")
+            title = experience.get("title", "")
+            exp_label = highlights[exp_index % len(highlights)] if highlights else "Key win"
+            summary = experience.get("impact_summary") or experience.get("bullet_pool", [""])[0]
+            for slot in range(self.bullets_per_experience):
+                bullet_id = f"{workflow_id or 'wf'}-exp{exp_index}-b{slot}"
+                focus_metric = plan.metrics_focus[slot % len(plan.metrics_focus)] if plan.metrics_focus else metrics_hint
+                bullet_text = self._compose_text(
+                    title=title,
+                    company=company,
+                    exp_label=exp_label,
+                    focus_metric=focus_metric,
+                    summary=summary,
+                    guidelines=guidelines,
+                )
+                generated.append(
+                    {
+                        "id": bullet_id,
+                        "text": bullet_text,
+                        "experience": experience,
+                    }
+                )
+        return generated
+
+    def _compose_text(
+        self,
+        *,
+        title: str,
+        company: str,
+        exp_label: str,
+        focus_metric: str,
+        summary: str,
+        guidelines: str,
+    ) -> str:
+        parts = [p for p in [title, company] if p]
+        header = " at ".join(parts) if parts else exp_label
+        summary_fragment = summary or exp_label
+        guideline_fragment = guidelines.split(";")[0] if guidelines else "Impact-first phrasing"
+        return (
+            f"{header}: Delivered {summary_fragment} while emphasizing {focus_metric}. "
+            f"[{guideline_fragment.strip()}]"
+        )
+
+==== stacks_v10_8/bullet_planning.py ====
+"""Deterministic Level-1 plan for bullet generation."""
+
+from __future__ import annotations
+
+from typing import Any, Dict, List, Optional
+
+from core_v10_7 import BaseAgent, BulletPlan
+
+from .planning_utils import (
+    collect_sections,
+    describe_experience,
+    detect_metrics,
+    extract_job_profile,
+    extract_resume_profile,
+)
+
+
+class BulletPlanningStack(BaseAgent):
+    """Outlines which bullets to generate before invoking execution stacks."""
+
+    def __init__(self, context: Any, debug_mode: bool = False) -> None:
+        super().__init__(context, debug_mode)
+
+    async def run_async(
+        self, state: Dict[str, Any], workflow_id: Optional[str] = None
+    ) -> Dict[str, Any]:
+        plan = self._build_plan(state)
+        return {"bullets": {"plan": plan.model_dump()}}
+
+    def _build_plan(self, state: Dict[str, Any]) -> BulletPlan:
+        job_profile = extract_job_profile(state)
+        resume_profile = extract_resume_profile(state)
+        experiences = resume_profile["experiences"]
+        sections = collect_sections(state)
+        highlight_order = self._highlight_order(job_profile, experiences)
+        metrics_focus = detect_metrics(experiences)
+        style_guidelines = self._style_guidelines(job_profile, state)
+        validation_checks = self._validation_checks(job_profile, experiences)
+        return BulletPlan(
+            target_sections=sections,
+            highlight_order=highlight_order,
+            metrics_focus=metrics_focus,
+            style_guidelines=style_guidelines,
+            validation_checks=validation_checks,
+        )
+
+    def _highlight_order(
+        self, job_profile: Dict[str, Any], experiences: List[Dict[str, Any]]
+    ) -> List[str]:
+        if experiences:
+            ordered = [describe_experience(exp) for exp in experiences[:3]]
+            return ordered
+        title = job_profile["title"] or "Target role"
+        return [f"Show relevant wins for {title}"]
+
+    def _style_guidelines(
+        self, job_profile: Dict[str, Any], state: Dict[str, Any]
+    ) -> List[str]:
+        strategy_plan = state.get("strategy", {}).get("strategy_plan") or {}
+        if hasattr(strategy_plan, "model_dump"):
+            strategy_plan = strategy_plan.model_dump()
+        tone = strategy_plan.get("tone") or "Professional"
+        guidelines = [
+            f"Use a {tone.lower()} tone anchored in measurable outcomes",
+            "Lead with action + metric + outcome structure",
+        ]
+        if job_profile["requirements"]:
+            guidelines.append(
+                f"Mirror JD keywords such as {', '.join(job_profile['requirements'][:3])}"
+            )
+        return guidelines
+
+    def _validation_checks(
+        self, job_profile: Dict[str, Any], experiences: List[Dict[str, Any]]
+    ) -> List[str]:
+        checks = [
+            "Each bullet must cite a unique accomplishment",
+            "Avoid repeating the same metric more than once",
+            "Ensure bullets stay within 1 sentence",
+        ]
+        if job_profile["company"]:
+            checks.append(
+                f"Map at least one bullet to {job_profile['company']} priorities"
+            )
+        if not experiences:
+            checks.append("Fallback to summary insights if experience is sparse")
+        return checks
+
+==== stacks_v10_8/draft_orchestration.py ====
+"""Layer-3 orchestration for bullet + draft generation."""
+
+from __future__ import annotations
+
+import copy
+from datetime import datetime
+from typing import Any, Dict, Optional, Tuple
+
+from agent_stacks_v10_8.state_adapter_stack import StateAdapterStack
+from core_v10_7 import BaseAgent
+
+from .bullet_execution import BulletExecutionStack
+from .bullet_planning import BulletPlanningStack
+from .draft_planning import DraftPlanningStack
+from .drafting_execution import DraftingExecutionStack
+
+
+class DraftOrchestratorStack(BaseAgent):
+    """Runs the deterministic sequencing for bullets + draft assembly."""
+
+    def __init__(self, context: Any, debug_mode: bool = False) -> None:
+        super().__init__(context, debug_mode)
+        self._adapter = StateAdapterStack(context, debug_mode)
+        self._bullet_planning = BulletPlanningStack(context, debug_mode)
+        self._bullet_execution = BulletExecutionStack(context, debug_mode)
+        self._draft_planning = DraftPlanningStack(context, debug_mode)
+        self._draft_execution = DraftingExecutionStack(context, debug_mode)
+        self.safety_policy = getattr(context, "safety_policy", None)
+        self.policy_stack = getattr(context, "policy_stack", None)
+        self.constitutional_engine = getattr(context, "constitutional_engine", None)
+
+    async def run_async(
+        self,
+        state: Dict[str, Any],
+        workflow_id: Optional[str] = None,
+        state_snapshot: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        workflow_id = workflow_id or state.get("metadata", {}).get("workflow_id", "")
+        current_state = state
+        baseline = state_snapshot or state
+        hil_next_step = (state.get("hil", {}).get("next_step") or "").upper()
+        run_bullet_phase = hil_next_step != "DRAFTING"
+
+        if run_bullet_phase:
+            bullet_plan_patch = await self._bullet_planning.run_async(current_state, workflow_id)
+            current_state, bullet_plan = self._apply_plan_patch(
+                current_state, bullet_plan_patch, bucket="bullets"
+            )
+            self._append_a2a_message(
+                current_state,
+                message_type="BULLETS_PLANNED",
+                payload={
+                    "workflow_id": workflow_id,
+                    "sections": len(bullet_plan.get("target_sections", [])),
+                },
+            )
+            self.log_feedback(
+                workflow_id,
+                "bullet_planning",
+                "signal",
+                {"target_sections": len(bullet_plan.get("target_sections", []))},
+            )
+
+            bullet_execution_patch = await self._bullet_execution.run_async(current_state, workflow_id)
+            current_state = self._apply_state_patch(current_state, bullet_execution_patch)
+            bullets = current_state.get("bullets", {}).get("generated_bullets", [])
+            self._append_a2a_message(
+                current_state,
+                message_type="BULLETS_GENERATED",
+                payload={
+                    "workflow_id": workflow_id,
+                    "bullet_count": len(bullets),
+                },
+            )
+            self.log_feedback(
+                workflow_id,
+                "bullet_generation",
+                "success",
+                {"bullet_count": len(bullets)},
+            )
+            await self._record_arbitration(current_state, "bullets_post_selection", workflow_id)
+
+        draft_plan_patch = await self._draft_planning.run_async(current_state, workflow_id)
+        current_state, draft_plan = self._apply_plan_patch(
+            current_state, draft_plan_patch, bucket="draft"
+        )
+        self._append_a2a_message(
+            current_state,
+            message_type="DRAFT_PLANNED",
+            payload={
+                "workflow_id": workflow_id,
+                "structure": len(draft_plan.get("structure", [])),
+            },
+        )
+        self.log_feedback(
+            workflow_id,
+            "draft_planning",
+            "signal",
+            {"structure": len(draft_plan.get("structure", []))},
+        )
+
+        draft_execution_patch = await self._draft_execution.run_async(
+            current_state,
+            workflow_id,
+        )
+        current_state = self._apply_state_patch(current_state, draft_execution_patch)
+        current_state = await self._maybe_retry_drafting(current_state, workflow_id)
+
+        sections = current_state.get("draft", {}).get("sections", {})
+        self._append_a2a_message(
+            current_state,
+            message_type="DRAFT_EXECUTED",
+            payload={
+                "workflow_id": workflow_id,
+                "sections": len(sections),
+                "baseline_sections": len(baseline.get("draft", {}).get("sections", {})),
+            },
+        )
+        self.log_feedback(
+            workflow_id,
+            "draft_execution",
+            "success",
+            {"sections": len(sections)},
+        )
+        await self._record_arbitration(current_state, "draft_post_assembly", workflow_id)
+
+        safety_report = current_state.get("safety_report") or {}
+        policy_decision = current_state.get("policy_decision") or {}
+        constitutional_review = current_state.get("constitutional_review") or {}
+        if not hasattr(safety_report, "dict"):
+            safety_report = type("_Wrapper", (), {"dict": lambda self: dict(safety_report or {})})()
+        if not hasattr(policy_decision, "dict"):
+            policy_decision = type("_Wrapper", (), {"dict": lambda self: dict(policy_decision or {})})()
+        if not hasattr(constitutional_review, "dict"):
+            constitutional_review = type(
+                "_Wrapper", (), {"dict": lambda self: dict(constitutional_review or {})}
+            )()
+        current_state["safety_report"] = safety_report.dict()
+        current_state["policy_decision"] = policy_decision.dict()
+        current_state["constitutional_review"] = constitutional_review.dict()
+
+        return current_state
+
+    def _append_a2a_message(
+        self, state: Dict[str, Any], *, message_type: str, payload: Dict[str, Any]
+    ) -> None:
+        channel = state.setdefault("a2a", {})
+        messages = channel.setdefault("messages", [])
+        messages.append(
+            {
+                "sender": self.__class__.__name__,
+                "recipient": "ALL",
+                "message_type": message_type,
+                "payload": payload,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+        )
+
+    async def _record_arbitration(
+        self, state: Dict[str, Any], stage: str, workflow_id: str
+    ) -> None:
+        engine = getattr(self.context, "arbitration_engine", None)
+        if engine is None:
+            return
+        report = await engine.run_check(stage, state)
+        bucket = state.setdefault("arbitration", {})
+        bucket[stage] = report.model_dump()
+        self.log_feedback(
+            workflow_id,
+            f"{stage}_arbitration",
+            "signal",
+            {"decision": report.decision, "confidence": report.confidence},
+        )
+
+    async def _maybe_retry_drafting(
+        self, state: Dict[str, Any], workflow_id: str
+    ) -> Dict[str, Any]:
+        scm = getattr(self, "self_correction_manager", None)
+        critique_status = self._extract_critique_status(state)
+        if critique_status not in {"revise", "block"}:
+            return state
+        if not (scm and scm.can_retry(workflow_id, "drafting")):
+            return state
+
+        report = scm.start_retry(
+            workflow_id,
+            "drafting",
+            issue="critique_panel_requested_changes",
+            action="rerun_drafting",
+            metadata={"critique_status": critique_status},
+        )
+        self._append_a2a_message(
+            state,
+            message_type="DRAFT_RETRY_TRIGGERED",
+            payload={"workflow_id": workflow_id, "status": critique_status},
+        )
+        self.log_feedback(
+            workflow_id,
+            "drafting_retry",
+            "retry",
+            {"status": critique_status},
+        )
+
+        retry_patch = await self._draft_execution.run_async(state, workflow_id)
+        state = self._apply_state_patch(state, retry_patch)
+        updated_status = self._extract_critique_status(state)
+        resolved = updated_status not in {"revise", "block"}
+        scm.finalize_retry(report, resolved, {"critique_status": updated_status})
+        self.log_feedback(
+            workflow_id,
+            "drafting_retry",
+            "success" if resolved else "failure",
+            {"resolved": resolved, "status": updated_status},
+        )
+        return state
+
+    def _extract_critique_status(self, state: Dict[str, Any]) -> str:
+        draft_bucket = state.get("draft", {})
+        artifacts = draft_bucket.get("artifacts", {})
+        possible_payloads = []
+        if isinstance(draft_bucket.get("critique_panel"), dict):
+            possible_payloads.append(draft_bucket["critique_panel"])
+        if isinstance(artifacts, dict):
+            if isinstance(artifacts.get("critique"), dict):
+                possible_payloads.append(artifacts.get("critique"))
+            draft_artifacts = artifacts.get("draft")
+            if isinstance(draft_artifacts, dict) and isinstance(draft_artifacts.get("critique"), dict):
+                possible_payloads.append(draft_artifacts.get("critique"))
+
+        # Some stacks emit critiques into the top-level artifacts bucket before the
+        # draft adapter normalizes them. Capture those payloads as well to maintain
+        # parity with older stack structures.
+        top_level_artifacts = state.get("artifacts", {})
+        if isinstance(top_level_artifacts, dict):
+            nested_artifacts = top_level_artifacts.get("artifacts")
+            if isinstance(nested_artifacts, dict):
+                if isinstance(nested_artifacts.get("critique"), dict):
+                    possible_payloads.append(nested_artifacts.get("critique"))
+                draft_artifacts = nested_artifacts.get("draft")
+                if (
+                    isinstance(draft_artifacts, dict)
+                    and isinstance(draft_artifacts.get("critique"), dict)
+                ):
+                    possible_payloads.append(draft_artifacts.get("critique"))
+
+        for payload in possible_payloads:
+            status = payload.get("overall_status")
+            if status:
+                return str(status).lower()
+        return "approved"
+
+    def _apply_plan_patch(
+        self,
+        state: Dict[str, Any],
+        patch: Dict[str, Any],
+        *,
+        bucket: str,
+    ) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        sanitized_patch = copy.deepcopy(patch)
+        plan_payload: Dict[str, Any] = {}
+        preserved_plan = self._detach_plan(state, bucket)
+        bucket_body = sanitized_patch.get(bucket)
+        if isinstance(bucket_body, dict):
+            plan_payload = copy.deepcopy(bucket_body.pop("plan", {}) or {})
+            if not bucket_body:
+                sanitized_patch.pop(bucket, None)
+        state = self._apply_state_patch(state, sanitized_patch)
+        final_plan = plan_payload or preserved_plan
+        if final_plan:
+            state.setdefault(bucket, {})["plan"] = final_plan
+        return state, final_plan
+
+    def _detach_plan(self, state: Dict[str, Any], bucket: str) -> Dict[str, Any]:
+        container = state.get(bucket)
+        if isinstance(container, dict) and "plan" in container:
+            preserved = copy.deepcopy(container["plan"])
+            container.pop("plan", None)
+            if not container:
+                state.pop(bucket, None)
+            return preserved
+        return {}
+
+    def _apply_state_patch(self, state: Dict[str, Any], patch: Dict[str, Any]) -> Dict[str, Any]:
+        preserved_plans = {
+            "draft": self._detach_plan(state, "draft"),
+            "bullets": self._detach_plan(state, "bullets"),
+        }
+        updated_state = self._adapter.apply_patch(state, patch)
+        for bucket, plan in preserved_plans.items():
+            if plan:
+                updated_state.setdefault(bucket, {})["plan"] = plan
+        return updated_state
+
