@@ -13,8 +13,8 @@ from __future__ import annotations
 import re
 from typing import Dict, List
 
-from prompt_taxonomy import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL
-from safety_config import InjectionPattern, SafetyConfig, load_default_safety_config
+from prompt_system import DEFAULT_INJECTION_PATTERNS, INSTRUCTIONAL_INJECTION_ALL
+from l5_policy import InjectionPattern, SafetyConfig, load_default_safety_config
 from utils_types import StatePatch
 
 
