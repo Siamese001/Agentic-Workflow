@@ -20,6 +20,8 @@ from l3_graph_orchestrator import OrchestrationResult
 from l4_state_adapter import StateAdapter
 from l5_safety_gateway import SafetyGateway
 from node_result import NodeResult, NodeStatus
+from arbitration_engine import ArbitrationEngine
+from self_correction_surfaces import SelfCorrectionSurface
 from utils_types import StatePatch
 
 
@@ -37,6 +39,7 @@ class QAOrchestrator:
         self.executor = executor or QAValidationAgent()
         self.state_adapter = state_adapter or StateAdapter()
         self.safety_gateway = safety_gateway or SafetyGateway()
+        self.arbitration_engine = ArbitrationEngine()
 
     def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
         """Run plan→execute→patch→safety in order."""
@@ -114,9 +117,24 @@ class QAOrchestrator:
         initial_context = {"state": self.state_adapter.state}
         final_context = executor.run(dag, initial_context)
 
+        updated_state = final_context.get("state", {})
+        safety_patch = final_context.get("safety_patch", StatePatch({}))
+        qa_report = updated_state.get("qa_report", {})
+        decision = self.arbitration_engine.evaluate(updated_state, qa_report, safety_patch)
+
+        arbitration_patch: StatePatch = StatePatch(
+            {
+                "self_correction": {
+                    "surface": SelfCorrectionSurface.QA_RECHECK.value,
+                    "decision": decision,
+                }
+            }
+        )
+        final_state = self.state_adapter.apply_patch(arbitration_patch)
+
         return OrchestrationResult(
             final_context.get("plan"),
             final_context.get("execution_patch"),
             final_context.get("safety_patch"),
-            final_context.get("state", {}),
+            final_state,
         )
