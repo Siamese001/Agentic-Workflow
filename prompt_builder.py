@@ -30,9 +30,24 @@ def _format_context(context: Dict[str, Any]) -> str:
     )
 
 
-def build_prompt_from_plan_and_state(
-    plan: Dict[str, Any], state: Dict[str, Any]
-) -> Dict[str, Any]:
+def _format_prompt_with_defaults(prompt_body: str, goal_state: str = "", top_failures: str = "") -> str:
+    """Inject governance metadata into prompt text."""
+
+    governance_header = "\n".join(
+        filter(
+            None,
+            [
+                f"Goal State: {goal_state}".strip(),
+                f"Top Failures: {top_failures}".strip(),
+            ],
+        )
+    ).strip()
+
+    parts = [governance_header, prompt_body]
+    return "\n\n".join([p for p in parts if p])
+
+
+def build_prompt_from_plan_and_state(plan: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
     """Construct a rendered prompt using plan intent and orchestration state."""
 
     context = get_prompt_context_view(state)
@@ -56,6 +71,14 @@ def build_prompt_from_plan_and_state(
 
     renderer = PromptRenderer()
     rendered_prompt = renderer.render(envelope, runtime_context=context)
+    rendered_prompt = _format_prompt_with_defaults(
+        rendered_prompt,
+        goal_state=plan.get("goal_state", ""),
+        top_failures=plan.get("top_failures", ""),
+    )
     metadata = renderer.get_last_render_metadata()
 
     return {"prompt": rendered_prompt, "envelope": envelope, "metadata": metadata}
+
+
+__all__ = ["build_prompt_from_plan_and_state", "_format_prompt_with_defaults"]
