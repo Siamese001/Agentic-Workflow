@@ -53,8 +53,6 @@ class DAGExecutor:
             attempted.add(node_name)
             if last_result.status is NodeStatus.SUCCESS:
                 return last_result, attempted
-        if node.fallback_edge:
-            attempted.add(node.fallback_edge)
         assert last_result is not None
         return NodeResult(NodeStatus.FAILURE, last_result.payload), attempted
 
@@ -74,8 +72,9 @@ class DAGExecutor:
             for target in targets:
                 parents[target].add(source)
         for node in dag.nodes.values():
-            if node.fallback_edge:
-                parents[node.fallback_edge].add(node.name)
+            for conditional_targets in node.conditional_edges.values():
+                for target in conditional_targets:
+                    parents[target].add(node.name)
         return parents
 
     def _enqueue_targets(
