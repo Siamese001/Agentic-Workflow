@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from .exceptions import BudgetExceededError, CacheMiss, ValidationError
 from .models import NodeResult, QAOutputModel, StatePatch
@@ -15,10 +15,16 @@ class CacheManager:
     def __init__(self):
         self._cache: Dict[str, Any] = {}
         self._semantic_cache: Dict[str, Any] = {}
+        self.hits: int = 0
+        self.misses: int = 0
+        self.semantic_hits: int = 0
+        self.semantic_misses: int = 0
 
     def get(self, key: str) -> Any:
         if key not in self._cache:
+            self.misses += 1
             raise CacheMiss(key)
+        self.hits += 1
         return self._cache[key]
 
     def set(self, key: str, value: Any) -> None:
@@ -26,7 +32,9 @@ class CacheManager:
 
     def get_semantic(self, key: str) -> Any:
         if key not in self._semantic_cache:
+            self.semantic_misses += 1
             raise CacheMiss(key)
+        self.semantic_hits += 1
         return self._semantic_cache[key]
 
     def set_semantic(self, key: str, value: Any) -> None:
@@ -45,6 +53,17 @@ class SelfCorrectionManager:
 
     def __init__(self, validator: Optional["ResponseValidator"] = None):
         self.validator = validator
+        self.max_retries = 2
+        self.active_retries: Dict[str, int] = {}
+
+    def can_retry(self, workflow_id: str) -> bool:
+        return self.active_retries.get(workflow_id, 0) < self.max_retries
+
+    def start_retry(self, workflow_id: str) -> None:
+        self.active_retries[workflow_id] = self.active_retries.get(workflow_id, 0) + 1
+
+    def finalize_retry(self, workflow_id: str) -> None:
+        self.active_retries.pop(workflow_id, None)
 
     async def apply(self, result: NodeResult) -> NodeResult:
         if self.validator:
@@ -72,10 +91,22 @@ class MetricsCollector:
     """Collects lightweight runtime metrics."""
 
     def __init__(self):
-        self.metrics: Dict[str, Any] = {}
+        self.metrics: List[Dict[str, Any]] = []
 
-    def record(self, name: str, value: Any) -> None:
-        self.metrics[name] = value
+    def record(self, name: str, value: Any, *, agent: str | None = None, task: str | None = None) -> None:
+        self.metrics.append({"name": name, "value": value, "agent": agent, "task": task})
+
+    def get_average_latency(self, agent_name: str, task_name: str) -> Optional[float]:
+        matching = [
+            m
+            for m in self.metrics
+            if m.get("agent") == agent_name
+            and m.get("task") == task_name
+            and isinstance(m.get("value"), (int, float))
+        ]
+        if not matching:
+            return None
+        return sum(m["value"] for m in matching) / len(matching)
 
 
 class PrecomputeEngine:
@@ -90,10 +121,15 @@ class PromptTemplateManager:
     """Manages prompt templates with runtime injections."""
 
     def __init__(self, templates: Optional[Dict[str, str]] = None):
-        self.templates = templates or {}
+        self.templates = templates or {
+            "default": "Goal: {goal_state}\nFailures: {top_failures}\nContent: {body}",
+        }
+
+    def get_template(self, tool_name: str) -> str:
+        return self.templates.get(tool_name, self.templates.get("default", ""))
 
     def render(self, name: str, **kwargs: Any) -> str:
-        template = self.templates.get(name, "")
+        template = self.get_template(name)
         return template.format(**kwargs)
 
 
@@ -113,18 +149,39 @@ class CostTracker:
 
     def __init__(self):
         self.cost = 0.0
+        self.cost_log: Dict[str, List[float]] = {}
 
     def add_cost(self, amount: float) -> None:
         self.cost += amount
+
+    def log_cost(self, workflow_id: str, amount: float) -> None:
+        self.cost_log.setdefault(workflow_id, []).append(amount)
+        self.add_cost(amount)
+
+    def get_cost_summary(self, workflow_id: str) -> Dict[str, float]:
+        entries = self.cost_log.get(workflow_id, [])
+        return {
+            "workflow_id": workflow_id,
+            "total": sum(entries),
+            "entries": len(entries),
+        }
 
 
 class ArbitrationEngine:
     """Handles arbitration decisions for multiple candidates."""
 
+    def __init__(self):
+        self.history: List[Dict[str, Any]] = []
+
     def choose(self, options: Dict[str, QAOutputModel]) -> Optional[str]:
         if not options:
             return None
         return next(iter(options))
+
+    def decide(self, stage: str, options: Dict[str, QAOutputModel]) -> Optional[str]:
+        choice = self.choose(options)
+        self.history.append({"stage": stage, "choice": choice, "options": list(options.keys())})
+        return choice
 
 
 class MetricsEnvelope:
