@@ -25,6 +25,8 @@ from correction_supervisor import evaluate_correction
 from correction_journal import record_correction_event
 from routing_policy import RoutingCriteria, RoutingDecision, decide_route
 from self_correction_surfaces import SelfCorrectionSurface
+from telemetry_store import record_event
+from optimization_hints import compute_optimization_hint
 from utils_types import PlanObject, StatePatch
 
 
@@ -157,8 +159,26 @@ class GraphOrchestrator:
             StatePatch({"self_correction": existing_self_correction})
         )
 
-        ct_patch = StatePatch({"telemetry": self.cost_tracker.snapshot()})
+        spans = self.cost_tracker.snapshot()
+        ct_patch = StatePatch({"telemetry": spans})
         final_state = self.state_adapter.apply_patch(ct_patch)
+
+        optimization = compute_optimization_hint(spans.get("spans", []))
+        telemetry_block = final_state.get("telemetry", {})
+        if not isinstance(telemetry_block, dict):
+            telemetry_block = {}
+        telemetry_block["optimization"] = optimization
+        final_state = self.state_adapter.apply_patch(StatePatch({"telemetry": telemetry_block}))
+
+        plan = final_context.get("plan", {})
+        record_event(
+            "orchestrator_cycle",
+            {
+                "plan_mode": plan.get("mode") if isinstance(plan, dict) else None,
+                "spans": spans,
+                "optimization": optimization,
+            },
+        )
 
         cache_patch = StatePatch(
             {
@@ -167,6 +187,12 @@ class GraphOrchestrator:
             }
         )
         final_state = self.state_adapter.apply_patch(cache_patch)
+
+        predictive_cache = final_state.get("predictive_cache", {})
+        if not isinstance(predictive_cache, dict):
+            predictive_cache = {}
+        predictive_cache["next_hint"] = optimization
+        final_state = self.state_adapter.apply_patch(StatePatch({"predictive_cache": predictive_cache}))
 
         final_state["tooling_injection"] = {"cross_tool_reconciliation": True}
 
