@@ -12,6 +12,7 @@ from typing import Any, Dict, List
 
 from l4_context_budget import ContextBudget
 from utils_types import Message
+from world_model_contracts import normalize_world_facts
 
 
 class MemoryManager:
@@ -36,16 +37,29 @@ class MemoryManager:
                 message_copy: Dict[str, Any] = copy.deepcopy(message)
             else:
                 message_copy = {"role": "unknown", "content": str(message)}
-            message_copy.setdefault("role", "")
-            message_copy.setdefault("content", "")
+            message_copy["role"] = str(message_copy.get("role", ""))
+            message_copy["content"] = str(message_copy.get("content", ""))
             canonical_messages.append(message_copy)
 
         messages = canonical_messages
 
+        rag_canonical: List[dict] = []
+        for item in rag_history:
+            if isinstance(item, dict):
+                item_copy: Dict[str, Any] = copy.deepcopy(item)
+            else:
+                item_copy = {"query": str(item), "evidence": []}
+            item_copy["query"] = str(item_copy.get("query", ""))
+            evidence = item_copy.get("evidence", [])
+            if not isinstance(evidence, list):
+                evidence = [evidence]
+            item_copy["evidence"] = evidence
+            rag_canonical.append(item_copy)
+
         messages = self.context_budget.prune_messages(messages)
-        rag_history = self.context_budget.prune_rag_items(rag_history)
+        rag_history = self.context_budget.prune_rag_items(rag_canonical)
         summary = self.context_budget.prune_summary(summary)
-        world = self.context_budget.prune_world(world)
+        world = self.context_budget.prune_world(normalize_world_facts(world))
 
         normalized["messages"] = messages
         normalized["rag_history"] = rag_history
