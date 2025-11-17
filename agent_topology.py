@@ -49,3 +49,16 @@ COUNCIL_OF_QA = AgentGraph(
     ],
     edges=[],
 )
+
+
+def summarize_graph(graph):
+    """
+    Deterministic summary of graph nodes and edges.
+    """
+    def _role_value(entry):
+        return entry.role.value if hasattr(entry, "role") else entry.value
+
+    return {
+        "nodes": [_role_value(n) for n in graph.nodes],
+        "edges": [(_role_value(a), _role_value(b)) for (a, b) in graph.edges],
+    }
