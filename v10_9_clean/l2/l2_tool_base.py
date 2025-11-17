@@ -1,22 +1,40 @@
 """
-L2 — Tool Execution Base
+L2 — Tool Execution Base (v10_9)
 
-Contracts for execution agents that consume L1 plans and emit state patches.
-Actual tool orchestration lives in concrete subclasses; this base focuses on
-interfaces only.
+Defines the abstract interface that all L2 execution agents must implement.
+
+Responsibilities:
+    • Consume PlanObject from L1
+    • Execute a single tool, model call, or action
+    • Produce an ExecutionResult (NOT a state patch)
+    • Never mutate state directly (L3+L4 handle that)
+    • Provide a deterministic, pure interface
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Dict, Any
+from typing import Any, Dict
 
-from utils_types import PlanObject, StatePatch
+from ..shared.models import PlanObject, ExecutionResult
 
 
 class ExecutionAgent(ABC):
-    """Abstract executor interface for L2 agents."""
+    """
+    Abstract executor interface for L2 agents.
+
+    Executes a plan step (NOT entire workflow).
+    L3 orchestrator feeds it plan fragments one step at a time.
+    """
 
     @abstractmethod
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
-        """Execute a plan against the current state and return a state patch."""
+    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult:
+        """
+        Execute a plan fragment against the current state.
+
+        MUST:
+            • Not mutate state directly
+            • Return an ExecutionResult
+            • Contain zero business logic outside execution
+        """
         raise NotImplementedError
