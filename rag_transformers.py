@@ -26,6 +26,17 @@ def dedupe_results(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return out
 
 
+def rerank_results(results: List[Dict[str, Any]], strategy: str = "relevance_then_recency") -> List[Dict[str, Any]]:
+    # Deterministic: sort by rank ascending
+    return sorted(results, key=lambda r: r.get("rank", 0))
+
+
+def fuse_sources(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    # Deterministic grouping by query
+    # (Flat output, but stable order)
+    return sorted(results, key=lambda r: r.get("query", ""))
+
+
 def truncate_by_budget(results: List[Dict[str, Any]], config: BudgetConfig) -> List[Dict[str, Any]]:
     # Trim to max_rag_items
     if len(results) <= config.max_rag_items:
