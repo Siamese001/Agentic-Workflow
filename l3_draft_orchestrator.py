@@ -98,7 +98,6 @@ class DraftOrchestrator:
                 "execute_node": DAGNode(
                     name="execute_node",
                     run=run_execute,
-                    on_failure="fallback",
                     fallback_edge="plan_node",
                     retries=1,
                 ),
@@ -131,7 +130,7 @@ class DraftOrchestrator:
             )
             final_state = self.state_adapter.apply_patch(sc_patch)
 
-        ct_patch = StatePatch({"telemetry": {"spans": self.cost_tracker.snapshot()}})
+        ct_patch = StatePatch({"telemetry": self.cost_tracker.snapshot()})
         final_state = self.state_adapter.apply_patch(ct_patch)
 
         return OrchestrationResult(
