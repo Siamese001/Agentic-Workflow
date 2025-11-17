@@ -55,6 +55,8 @@ class PromptEnvelope:
         metadata = dict(self.metadata)
         metadata["instructional_injection_types"] = INSTRUCTIONAL_INJECTION_ALL
         metadata["routing"] = (plan or {}).get("routing", {})
+        from prompt_templates import DEFAULT_TEMPLATE_OUTPUT_INJECTION
+
         metadata["injection"] = {
             "framing": {
                 "global_goal": DEFAULT_FRAMING_PROFILE.global_goal,
@@ -70,6 +72,7 @@ class PromptEnvelope:
             "tooling": {
                 "model_switch_awareness": DEFAULT_TOOLING_PROFILE.model_switch_awareness
             },
+            "output": DEFAULT_TEMPLATE_OUTPUT_INJECTION,
         }
 
         data = {"sections": self.to_sections(), "metadata": metadata}
