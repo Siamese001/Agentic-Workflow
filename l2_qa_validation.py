@@ -51,6 +51,8 @@ class QAValidationAgent(ExecutionAgent):
         evidence = get_evidence_view(state)
         checks = _build_checks(plan)
         findings = _derive_findings(state, checks)
+        has_messages = bool(state.get("messages"))
+        confidence_score = 1.0 if has_messages else 0.5
 
         patch: StatePatch = StatePatch(
             {
@@ -58,6 +60,8 @@ class QAValidationAgent(ExecutionAgent):
                     "plan_mode": plan.get("mode"),
                     "checks": checks,
                     "findings": findings,
+                    "confidence": confidence_score,
+                    "error_simulation": {"simulated": False},
                 }
             }
         )
