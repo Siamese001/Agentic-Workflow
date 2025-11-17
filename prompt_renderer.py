@@ -62,6 +62,10 @@ class PromptRenderer:
                 "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
             }
 
+        render_metadata["injection_reasoning"] = {
+            "reason_then_answer": True
+        }
+
         self._last_render_metadata = render_metadata
 
         return "\n\n".join(rendered_sections)
