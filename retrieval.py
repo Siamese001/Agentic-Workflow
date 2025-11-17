@@ -1,3 +1,24 @@
+"""Retrieval module consolidating RAG configuration and transformers."""
+
+from __future__ import annotations
+from dataclasses import dataclass
+from typing import Any, Dict, List
+
+
+@dataclass
+class RetrievalConfig:
+    queries: List[str]
+    filters: Dict[str, Any]
+    ranking: Dict[str, Any]
+    metadata: Dict[str, Any] | None = None
+
+    def to_plan_fragment(self) -> Dict[str, Any]:
+        return {
+            "queries": self.queries,
+            "filters": self.filters,
+            "ranking": self.ranking,
+            "metadata": self.metadata or {},
+        }
 from typing import Any, Dict, List
 
 from ranking import bm25_rank, dense_rank, hybrid_rank
@@ -53,3 +74,17 @@ def apply_ranker(results: List[Dict[str, Any]], strategy: str | None = None) -> 
     if strategy == "hybrid":
         return hybrid_rank(results)
     return rerank_results(results, strategy or "relevance_then_recency")
+"""Deterministic evidence fusion helpers."""
+
+
+from typing import Any, Dict, Iterable, List
+
+
+def fuse_results(list_of_sources: Iterable[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+    merged: List[Dict[str, Any]] = []
+    for source in list_of_sources:
+        for item in source:
+            merged.append(dict(item))
+
+    return sorted(merged, key=lambda r: (r.get("query", ""), r.get("rank", 0)))
+

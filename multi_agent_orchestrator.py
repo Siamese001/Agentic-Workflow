@@ -1,9 +1,9 @@
 from typing import Dict, Any
 
-from agent_topology import AgentGraph, summarize_graph, COUNCIL_OF_QA
-from agent_messaging import AgentMessage, route_to_specialist
-from council_voting import deterministic_vote
-from delegation_policy import delegation_metadata
+from multi_agent import AgentGraph, summarize_graph, COUNCIL_OF_QA
+from multi_agent import AgentMessage, route_to_specialist
+from multi_agent import deterministic_vote
+from multi_agent import delegation_metadata
 from utils_types import StatePatch
 
 

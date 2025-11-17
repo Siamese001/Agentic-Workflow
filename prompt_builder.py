@@ -1,6 +1,6 @@
 from typing import Any, Dict
 
-from memory_views import get_prompt_context_view
+from l4_memory import get_prompt_context_view
 from prompt_envelope import PromptEnvelope
 from prompt_renderer import PromptRenderer
 from prompt_templates import envelope_from_template

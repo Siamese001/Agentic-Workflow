@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Dict, List
 
 from utils_types import StatePatch
-from l5_content_safety import detect_bias, detect_pii
+from l5_safety import detect_bias, detect_pii
 
 
 class ConstitutionalEngine:

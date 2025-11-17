@@ -1,5 +1,5 @@
 from typing import Dict, Any
-from agent_topology import AgentRole
+from multi_agent import AgentRole
 
 
 def can_delegate(from_role: AgentRole, to_role: AgentRole) -> bool:
