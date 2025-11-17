@@ -13,7 +13,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from injection_profiles import DEFAULT_FRAMING_PROFILE
-from l1_reasoner_base import Reasoner
+from l1_reasoning import Reasoner
 from utils_types import PlanObject
 
 

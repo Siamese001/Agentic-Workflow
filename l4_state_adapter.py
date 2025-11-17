@@ -10,9 +10,9 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict
 
-from l4_memory_manager import MemoryManager
-from l4_state_machine import StateMachine
-from state_validation import validate
+from l4_memory import MemoryManager
+from l4_state import StateMachine
+from l4_state import validate
 from utils_patch_helpers import apply_patch
 from utils_types import Phase, StatePatch
 

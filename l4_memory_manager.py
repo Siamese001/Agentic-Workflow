@@ -10,9 +10,9 @@ from __future__ import annotations
 import copy
 from typing import Any, Dict, List
 
-from l4_context_budget import ContextBudget
+from l4_memory import ContextBudget
 from utils_types import Message
-from world_model_contracts import normalize_world_facts
+from l4_memory import normalize_world_facts
 
 
 class MemoryManager:
