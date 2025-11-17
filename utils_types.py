@@ -34,6 +34,8 @@ class BudgetConfig:
 
     max_messages: int = 50
     max_rag_items: int = 20
+    max_prompt_tokens: int = 4000
+    max_retrieval_tokens: int = 4000
     max_summary_chars: int = 4000
     max_world_items: int = 50
 
