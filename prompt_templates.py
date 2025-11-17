@@ -26,11 +26,16 @@ DEFAULT_TEMPLATE = {
     "Output Schema": "Return plain text content respecting the schema.",
 }
 
+DEFAULT_TEMPLATE_INJECTION = {
+    "reason_then_answer": True
+}
+
 DEFAULT_TEMPLATE_METADATA = {
     "taxonomy": {
         "sections": [s.value for s in PromptSection],
         "instructional_injection_types": INSTRUCTIONAL_INJECTION_ALL,
-    }
+    },
+    "injection_reasoning": DEFAULT_TEMPLATE_INJECTION,
 }
 
 
