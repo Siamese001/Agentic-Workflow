@@ -18,7 +18,8 @@ from prompt_templates import (
     envelope_from_template,
     load_template,
 )
-from prompt_taxonomy import PromptSection, INSTRUCTIONAL_INJECTION_ALL
+from prompt_schema_validator import validate_sections
+from prompt_taxonomy import INSTRUCTIONAL_INJECTION_ALL, PromptSection
 
 
 class PromptRenderer:
@@ -73,6 +74,9 @@ class PromptRenderer:
         render_metadata["injection_tooling"] = {"model_switch_awareness": True}
 
         render_metadata["injection_output"] = DEFAULT_TEMPLATE_OUTPUT_INJECTION
+
+        validation = validate_sections(sections)
+        render_metadata["taxonomy_validation"] = validation
 
         self._last_render_metadata = render_metadata
 
