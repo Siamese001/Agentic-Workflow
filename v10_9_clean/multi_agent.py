@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from shared.models import StatePatch  # updated: used to be utils_types.StatePatch
+from shared.models import StatePatch
 
 
 class AgentRole(str, Enum):
