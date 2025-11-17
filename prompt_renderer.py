@@ -13,7 +13,11 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 from prompt_envelope import PromptEnvelope
-from prompt_templates import envelope_from_template, load_template
+from prompt_templates import (
+    DEFAULT_TEMPLATE_OUTPUT_INJECTION,
+    envelope_from_template,
+    load_template,
+)
 from prompt_taxonomy import PromptSection, INSTRUCTIONAL_INJECTION_ALL
 
 
@@ -67,6 +71,8 @@ class PromptRenderer:
         }
 
         render_metadata["injection_tooling"] = {"model_switch_awareness": True}
+
+        render_metadata["injection_output"] = DEFAULT_TEMPLATE_OUTPUT_INJECTION
 
         self._last_render_metadata = render_metadata
 
