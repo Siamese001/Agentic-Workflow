@@ -61,6 +61,9 @@ class MemoryManager:
         summary = self.context_budget.prune_summary(summary)
         world = self.context_budget.prune_world(normalize_world_facts(world))
 
+        messages = self.context_budget.prune_messages_by_tokens(messages)
+        rag_history = self.context_budget.prune_rag_items_by_tokens(rag_history)
+
         normalized["messages"] = messages
         normalized["rag_history"] = rag_history
         normalized["summary"] = summary
