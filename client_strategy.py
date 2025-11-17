@@ -16,3 +16,10 @@ class ModelClient:
 def build_client_for_route(route: Dict[str, Any]) -> ModelClient:
     # Return a new client; side-effect free
     return ModelClient()
+
+
+def configure_for_routing(route: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "model_name": "stub-model-for-" + route.get("complexity", "default"),
+        "endpoint": "/v1/" + route.get("complexity", "default"),
+    }
