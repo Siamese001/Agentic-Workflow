@@ -23,6 +23,7 @@ from rag_transformers import (
     truncate_by_budget,
     apply_ranker,
 )
+from l4_context_budget import ContextBudget
 from utils_types import BudgetConfig, PlanObject, StatePatch
 
 
@@ -52,7 +53,11 @@ class RAGExecutionAgent(ExecutionAgent):
         transformed = rerank_results(transformed, ranking.get("strategy"))
         transformed = apply_ranker(transformed, metadata.get("ranker_strategy") or ranking.get("strategy"))
         transformed = fuse_results([fuse_sources(transformed)])
-        transformed = truncate_by_budget(transformed, BudgetConfig())
+        budget_config = BudgetConfig()
+        context_budget = ContextBudget(budget_config)
+
+        transformed = truncate_by_budget(transformed, budget_config)
+        transformed = context_budget.prune_rag_items_by_tokens(transformed)
 
         history = list(state.get("rag_history", [])) + transformed
         patch: StatePatch = StatePatch(
