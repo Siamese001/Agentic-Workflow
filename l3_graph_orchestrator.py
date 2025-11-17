@@ -24,6 +24,7 @@ from l5_safety_gateway import SafetyGateway
 from node_result import NodeResult, NodeStatus
 from correction_supervisor import evaluate_correction
 from correction_journal import record_correction_event
+from multi_agent import MultiAgentOrchestrator, AgentMessage, AgentRole, COUNCIL_OF_QA
 from routing_policy import RoutingCriteria, RoutingDecision, decide_route
 from self_correction_surfaces import SelfCorrectionSurface
 from telemetry_store import record_event
@@ -58,7 +59,9 @@ class GraphOrchestrator:
         self.safety_gateway = safety_gateway or SafetyGateway()
         self.cost_tracker = CostTracker()
 
-    def orchestrate(self, state: Optional[Dict[str, Any]] = None) -> OrchestrationResult:
+    def orchestrate(
+        self, state: Optional[Dict[str, Any]] = None, enable_multi_agent: bool = True
+    ) -> OrchestrationResult:
         """Execute the deterministic orchestration sequence without side effects."""
 
         if state is not None:
@@ -145,6 +148,7 @@ class GraphOrchestrator:
         executor = DAGExecutor()
         initial_context = {"state": self.state_adapter.state}
         final_context = executor.run(dag, initial_context)
+        plan = final_context.get("plan", {})
 
         final_state = final_context.get("state", {})
         surface = SelfCorrectionSurface.STRATEGY_REPLAN
@@ -161,6 +165,22 @@ class GraphOrchestrator:
             StatePatch({"self_correction": existing_self_correction})
         )
 
+        if enable_multi_agent:
+            objective = plan.get("objective") if isinstance(plan, dict) else None
+            msg = AgentMessage(
+                sender=AgentRole.PLANNER,
+                recipient=AgentRole.QA,
+                content={"objective": objective},
+                metadata={},
+            )
+            ma_orch = MultiAgentOrchestrator(
+                graph=COUNCIL_OF_QA, state_adapter=self.state_adapter
+            )
+            ma_state = ma_orch.dispatch(msg, final_state)
+            final_state = self.state_adapter.apply_patch(
+                StatePatch({"multi_agent": ma_state.get("multi_agent")})
+            )
+
         spans = self.cost_tracker.snapshot()
         ct_patch = StatePatch({"telemetry": spans})
         final_state = self.state_adapter.apply_patch(ct_patch)
@@ -172,7 +192,6 @@ class GraphOrchestrator:
         telemetry_block["optimization"] = optimization
         final_state = self.state_adapter.apply_patch(StatePatch({"telemetry": telemetry_block}))
 
-        plan = final_context.get("plan", {})
         record_event(
             "orchestrator_cycle",
             {
