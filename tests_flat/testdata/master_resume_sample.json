@@ -1,0 +1,12 @@
+{
+  "name": "Jordan Doe",
+  "title": "Backend Developer",
+  "experience": [
+    {
+      "company": "Sample Co",
+      "role": "Developer",
+      "summary": "Worked on APIs and backend services"
+    }
+  ],
+  "skills": ["Python", "Django", "Testing"]
+}
