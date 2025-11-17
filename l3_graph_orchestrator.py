@@ -152,6 +152,8 @@ class GraphOrchestrator:
         )
         final_state = self.state_adapter.apply_patch(cache_patch)
 
+        final_state["tooling_injection"] = {"cross_tool_reconciliation": True}
+
         return OrchestrationResult(
             final_context.get("plan"),
             final_context.get("execution_patch"),
