@@ -6,7 +6,8 @@ def get_routing_plan(plan: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_routing_model_name(plan: Dict[str, Any]) -> str:
-    return plan.get("routing", {}).get("complexity", "unknown")
+    routing = plan.get("routing", {})
+    return routing.get("selected_model") or routing.get("complexity", "unknown")
 
 
 def get_routing_metadata(plan: Dict[str, Any]) -> Dict[str, Any]:
