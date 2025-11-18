@@ -418,3 +418,141 @@ class Orchestrator:
             # The orchestrator returns an updated state; reconcile through L4
             for key, value in council_state.items():
                 self.state_adapter.apply_patch(StatePatch(key=key, value=value))
+            context["state"] = self.state_adapter.state
+            return context
+
+        def finalize_node(context: Dict[str, Any]) -> Dict[str, Any]:
+            """
+            Finalize context: attach telemetry, optimization hints, etc.
+            """
+            spans = cost_tracker.snapshot()
+            optimization = compute_optimization_hint(spans.get("spans", []))
+
+            # Attach telemetry into state
+            telemetry_block = {
+                "spans": spans.get("spans", []),
+                "optimization": optimization,
+            }
+            self.state_adapter.apply_patch(StatePatch(key="telemetry", value=telemetry_block))
+            context["state"] = self.state_adapter.state
+
+            # Emit a global event
+            record_event(
+                "orchestrator_cycle",
+                {
+                    "plan_mode": mode,
+                    "spans": spans,
+                    "optimization": optimization,
+                },
+            )
+            return context
+
+        # Wrap node callables into DAGNodes
+        nodes: Dict[str, DAGNode] = {
+            "plan_node": DAGNode(name="plan_node", run=plan_node),
+            "execute_node": DAGNode(name="execute_node", run=execute_node),
+            "safety_node": DAGNode(
+                name="safety_node",
+                run=safety_node,
+                condition=safety_condition,
+                conditional_edges={
+                    "proceed": ["qa_council_node", "finalize_node"],
+                    "halt": ["finalize_node"],
+                },
+            ),
+            "qa_council_node": DAGNode(name="qa_council_node", run=qa_council_node),
+            "finalize_node": DAGNode(name="finalize_node", run=finalize_node),
+        }
+
+        # Default edges (when conditional edges don't override)
+        edges: Dict[str, List[str]] = {
+            "plan_node": ["execute_node"],
+            "execute_node": ["safety_node"],
+            "safety_node": [],        # actual edges decided by safety_condition
+            "qa_council_node": ["finalize_node"],
+            "finalize_node": [],
+        }
+
+        dag = DAG(nodes=nodes, edges=edges)
+        executor = DAGExecutor()
+
+        # 5. Phase: PLANNING → EXECUTING
+        machine.transition(WorkflowPhase.EXECUTING.value)
+
+        # 6. Run DAG
+        initial_context = {
+            "plan": plan,
+            "state": self.state_adapter.state,
+            "workflow_phase": machine.current(),
+        }
+        final_context = executor.run(dag, initial_context)
+
+        # 7. Phase: EXECUTING → REVIEWING → COMPLETE
+        machine.transition(WorkflowPhase.REVIEWING.value)
+        machine.transition(WorkflowPhase.COMPLETE.value)
+
+        final_state = self.state_adapter.state
+        workflow_id = str(final_state.get("workflow_id", "workflow_v10_9"))
+        phase_metadata = {
+            "phase": machine.current(),
+            "history": list(machine.history),
+            "note": f"L3 orchestrator completed in mode={mode}",
+        }
+
+        return WorkflowState(
+            workflow_id=workflow_id,
+            phase=machine.current(),
+            nodes={},  # reserved for future graph exports
+            state=final_state,
+            phase_metadata=phase_metadata,
+        )
+
+    # -------------------------------------------------------------------------
+    # Internal helpers
+    # -------------------------------------------------------------------------
+
+    def _apply_execution_to_state(self, mode: str, exec_result: ExecutionResult[Any]) -> None:
+        """
+        Apply an ExecutionResult payload into L4 state via StateAdapter.
+
+        This method is purely about mapping L2 domain payloads to
+        well-defined top-level state keys and *does not* implement
+        state mutation logic directly (delegated to StateAdapter).
+        """
+        payload = exec_result.payload
+        if hasattr(payload, "to_dict"):
+            payload_dict = payload.to_dict()  # type: ignore[assignment]
+        else:
+            payload_dict = dict(payload)
+
+        if mode == "strategy":
+            self.state_adapter.apply_patch(StatePatch(key="strategy_result", value=payload_dict))
+
+        elif mode == "rag":
+            self.state_adapter.apply_patch(StatePatch(key="rag_result", value=payload_dict))
+            # Optionally maintain a rag_history: append documents only
+            existing = self.state_adapter.state.get("rag_history") or []
+            docs = payload_dict.get("documents", [])
+            new_history = list(existing) + docs
+            self.state_adapter.apply_patch(StatePatch(key="rag_history", value=new_history))
+
+        elif mode == "bullets":
+            self.state_adapter.apply_patch(StatePatch(key="bullet_result", value=payload_dict))
+
+        elif mode == "drafting":
+            self.state_adapter.apply_patch(StatePatch(key="draft_result", value=payload_dict))
+
+        elif mode == "qa":
+            self.state_adapter.apply_patch(StatePatch(key="qa_result", value=payload_dict))
+
+        elif mode == "safety":
+            # SafetyExecutor is usually called by the orchestrator only for
+            # a dedicated safety pass; in this pipeline, safety is handled
+            # via L5. However, if plan.mode == "safety", we still respect it.
+            self.state_adapter.apply_patch(StatePatch(key="safety_result", value=payload_dict))
+
+        else:
+            # For unknown modes, we store under a generic bucket
+            generic_key = f"{mode}_result"
+            self.state_adapter.apply_patch(StatePatch(key=generic_key, value=payload_dict))
+
