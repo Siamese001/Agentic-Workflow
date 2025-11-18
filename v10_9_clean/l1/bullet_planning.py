@@ -5,11 +5,11 @@ L1 — Bullet Planning (v10_9)
 Pure planning layer for bullet generation.
 
 Takes orchestration state and produces a PlanObject describing:
-  • which sections to target
-  • highlight order
-  • metrics focus
-  • style guidelines
-  • validation checks
+    • which sections to target
+    • highlight order
+    • metrics focus
+    • style guidelines
+    • validation checks
 
 No execution, no state mutation, no external calls.
 """
@@ -17,7 +17,7 @@ No execution, no state mutation, no external calls.
 from __future__ import annotations
 from typing import Any, Dict, List
 
-from shared.models import PlanObject
+from models import PlanObject
 from .planning_utils import (
     extract_job_profile,
     extract_resume_profile,
