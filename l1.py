@@ -1,15 +1,16 @@
 # FILE: l1.py
 """
-Unified L1 Cognition Layer (v10_9, fully agentic)
+Unified L1 Cognition Layer (v10_9, fully agentic — REFINED)
 
 This module implements ALL L1 responsibilities needed to support a
-v10_9 agentic workflow with feature parity to the legacy v10_7 design,
-but WITHOUT any legacy imports or LangGraph dependencies.
+v10_9 agentic workflow with feature parity to the legacy 10_7 / 10_8
+design, but WITHOUT any execution, orchestration, state mutation, or
+safety decisions.
 
 L1 is *pure cognition*:
 
     • No execution (no LLM calls, no tools)
-    • No orchestration (no graph execution)
+    • No orchestration (no DAGs, no retries)
     • No state mutation (no DB / no I/O)
     • No safety enforcement (only *planning* for safety / QA)
 
@@ -17,8 +18,8 @@ It produces *PlanObject* instances that describe *what* should happen
 at L2–L5:
 
     • StrategyReasoner      – multi-branch strategy / ToT planning
-    • RAGReasoner           – HYDE-aware retrieval planning
-    • DraftingReasoner      – structure, tone, key-message planning
+    • RAGReasoner           – retrieval planning (HYDE-aware)
+    • DraftingReasoner      – drafting structure, tone, risks
     • QACoordinatorPlanner  – QA validation plan (multi-check)
     • SafetyPlanner         – safety / constitutional plan
     • Mode routing          – route_mode / route_plan
@@ -33,11 +34,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field, asdict
 from typing import Any, Dict, Iterable, List, Optional
 
-from runtime_utils import Models, Constants
-
-# Type aliases for clarity
-PlanObject = Models.PlanObject
-WorkflowPhase = Constants.WorkflowPhase
+from models import PlanObject
 
 
 # ============================================================================
@@ -70,8 +67,8 @@ META_PROFILE = MetaProfile()
 @dataclass
 class InjectionConfig:
     """
-    Controls how much explicit "reasoning metadata" is attached
-    to the plans so that L2/L3 can inject it into prompts.
+    Controls how much explicit "reasoning metadata" is attached to the
+    plans so that L2/L3 can inject it into prompts.
 
     failure_anticipation_enabled:
         Include an explicit "top_failure_modes" list in each plan.
@@ -261,13 +258,13 @@ def _latest_user_message(state: Dict[str, Any]) -> str:
 
 
 @dataclass
-class StrategyBranch:
+class StrategyBranchPlan:
     branch_id: str
     strategy_name: str
-    focus_areas: List[str]
-    key_achievements: List[str]
-    tone: str
-    rationale: str
+    focus_areas: List[str] = field(default_factory=list)
+    key_achievements: List[str] = field(default_factory=list)
+    tone: str = "Professional"
+    rationale: str = ""
 
 
 @dataclass
@@ -301,7 +298,7 @@ def _strategy_branches_from_context(
     resume_profile: Dict[str, Any],
     state: Dict[str, Any],
     branching_factor: int,
-) -> List[StrategyBranch]:
+) -> List[StrategyBranchPlan]:
     """
     Deterministically construct "strategy branches" using job & resume context.
 
@@ -325,10 +322,11 @@ def _strategy_branches_from_context(
     if not base_achievements and summary:
         base_achievements.append(f"Leverage summary: {summary[:120]}")
 
-    branches: List[StrategyBranch] = []
+    branches: List[StrategyBranchPlan] = []
     for idx in range(branching_factor):
         suffix = f"Variant {idx + 1}"
         strategy_name = f"{title} @ {company} – {suffix}"
+
         # introduce small deterministic variation by slicing
         focus_slice = base_focus[:]
         if idx == 1 and job_profile["team"]:
@@ -342,11 +340,12 @@ def _strategy_branches_from_context(
         if idx == 2 and len(achievements_slice) > 2:
             achievements_slice = achievements_slice[2:] + achievements_slice[:2]
 
-        tone = state.get("tone") or "Leadership" if "lead" in title.lower() else "Professional"
+        title_lower = title.lower()
+        tone = state.get("tone") or ("Leadership" if "lead" in title_lower else "Professional")
         rationale = f"Branch {idx + 1} balances JD focus with resume strengths."
 
         branches.append(
-            StrategyBranch(
+            StrategyBranchPlan(
                 branch_id=f"branch_{idx + 1}",
                 strategy_name=strategy_name,
                 focus_areas=focus_slice,
@@ -360,7 +359,7 @@ def _strategy_branches_from_context(
 
 
 def _assess_branches(
-    branches: List[StrategyBranch],
+    branches: List[StrategyBranchPlan],
     job_profile: Dict[str, Any],
 ) -> List[PlannerAssessment]:
     """
@@ -406,7 +405,7 @@ def _assess_branches(
             )
         )
 
-    # Simple risk/feasibility: look at number of focus areas & achievements
+    # Simple risk/feasibility: number of focus areas & achievements
     for br in branches:
         focus_count = len(br.focus_areas)
         dup_focus = len({f.lower() for f in br.focus_areas}) != focus_count
@@ -449,7 +448,7 @@ def _assess_branches(
     return assessments
 
 
-def _simulate_scenarios(branches: List[StrategyBranch]) -> List[ScenarioSimulation]:
+def _simulate_scenarios(branches: List[StrategyBranchPlan]) -> List[ScenarioSimulation]:
     """
     Scenario simulations approximate "what if" analysis for hiring manager,
     technical deep-dive, and cross-functional collaboration.
@@ -580,7 +579,6 @@ class StrategyReasoner:
         aggregated_confidence = round(approve_ratio, 3)
         aggregated_rationale = " | ".join(rationales)
 
-        # Compose plan payload
         plan = PlanObject(
             {
                 "layer": "l1",
@@ -630,7 +628,7 @@ class StrategyReasoner:
 
 
 # ============================================================================
-# RAG PLANNING (HYDE, hybrid ranking, risk checks)
+# RAG PLANNING (HYDE-aware, hybrid ranking, risk checks)
 # ============================================================================
 
 
@@ -808,7 +806,7 @@ class DraftingReasoner:
         return plan
 
     def _infer_tone(self, job_profile: Dict[str, Any], state: Dict[str, Any]) -> str:
-        title = job_profile["title"].lower()
+        title = (job_profile["title"] or "").lower()
         if any(token in title for token in ["vp", "chief", "director", "head"]):
             return "Executive"
         if any(token in title for token in ["lead", "manager"]):
@@ -1047,7 +1045,9 @@ def route_mode(state: Dict[str, Any]) -> str:
     if any(k in objective for k in ["retrieve", "rag", "evidence", "hybrid", "hyde"]):
         return "rag"
     if any(k in objective for k in ["bullet", "bullets"]):
-        return "bullets"  # L1 bullets planner would be separate; often folded into drafting
+        # For now, bullets planning is folded into drafting; we can
+        # later add a dedicated BulletReasoner if needed.
+        return "bullets"
     if any(k in objective for k in ["draft", "rewrite", "resume", "summary", "narrative"]):
         return "drafting"
     if "qa" in objective or "validate" in objective:
