@@ -1,245 +1,201 @@
-# FILE: v10_9_clean/runtime_utils.py
+# FILE: runtime_utils.py
 """
-Unified Runtime Utilities (v10_9)
+Unified Runtime Utilities (v10_9) — FULL AGENTIC IMPLEMENTATION
 
-This module consolidates ALL former "shared" components into a single,
-logically-namespaced file using nested classes:
+This module consolidates ALL deterministic utility functions needed by
+the v10_9 agentic runtime:
 
-    • Models       (PlanObject, WorkflowState, ExecutionResult, etc.)
-    • Constants    (WorkflowPhase, NodeStatus, etc.)
-    • Exceptions   (ValidationError, ToolExecutionError, etc.)
-    • Config       (system configuration structures)
-    • Telemetry    (metrics, spans, trace context)
-    • Optimization (cost/latency optimization hints)
-    • Retrieval    (normalize, dedupe, merge, prune)
-    • Ranking      (bm25, dense, hybrid)
-    • RAGUtils     (rag normalization + fusion logic)
+SECTIONS:
+    1. Constants
+    2. Exceptions
+    3. Telemetry
+    4. Optimization (cost + span tracking)
+    5. Retrieval utilities
+    6. Ranking utilities
+    7. RAGUtils (evidence normalization + fusion)
 
-All logic is stateless and safe to import anywhere in the runtime.
-
-Pure utilities only:
-    • No planning (L1)
-    • No execution (L2)
-    • No orchestration (L3)
-    • No state mutation (L4)
-    • No safety/policy (L5)
+Pure utilities:
+    • NO cognition (L1)
+    • NO execution (L2)
+    • NO orchestration (L3)
+    • NO state mutation (L4)
+    • NO policy (L5)
 """
 
 from __future__ import annotations
+
 import time
 import hashlib
-import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 
 # ============================================================================
-# CONSTANTS
+# 1. CONSTANTS
 # ============================================================================
 
 class Constants:
+
     class WorkflowPhase:
-        INIT = "init"
-        PLANNING = "planning"
-        EXECUTING = "executing"
-        REVIEWING = "reviewing"
-        COMPLETE = "complete"
-        FAILED = "failed"
+        INIT       = "init"
+        PLANNING   = "planning"
+        EXECUTING  = "executing"
+        REVIEWING  = "reviewing"
+        COMPLETE   = "complete"
+        FAILED     = "failed"
 
     class NodeStatus:
         SUCCESS = "success"
         FAILURE = "failure"
         PENDING = "pending"
 
+    # Default canonical model
     CANONICAL_MODEL_DEFAULT = "gpt-4.1"
 
 
 # ============================================================================
-# EXCEPTIONS
+# 2. EXCEPTIONS  (lightweight, runtime-safe)
 # ============================================================================
 
-class Exceptions:
-    class ValidationError(Exception):
-        pass
+class ValidationError(Exception):
+    """Malformed state, plan, or configuration."""
 
-    class ModelClientError(Exception):
-        pass
+class ToolExecutionError(Exception):
+    """Execution error during L2 stage."""
 
-    class ToolExecutionError(Exception):
-        pass
+class ModelClientError(Exception):
+    """Model provider call failed."""
 
-    class SafetyException(Exception):
-        pass
+class SafetyException(Exception):
+    """Safety constraint violation."""
 
-
-# ============================================================================
-# MODELS
-# ============================================================================
-
-class Models:
-
-    @dataclass
-    class PlanObject(dict):
-        """
-        Generic dict-backed plan container used by L1 layers.
-        """
-        def __getattr__(self, item):
-            return self.get(item)
-
-    @dataclass
-    class ExecutionResult:
-        status: str
-        payload: Dict[str, Any]
-        model: str
-        usage: Dict[str, Any]
-
-        SUCCESS = "success"
-        FAILURE = "failure"
-
-    @dataclass
-    class WorkflowState:
-        workflow_id: str
-        phase: str
-        nodes: Dict[str, Any]
-        state: Dict[str, Any]
-        phase_metadata: Dict[str, Any]
-
-    @dataclass
-    class PhaseMetadata:
-        phase: str
-        note: str = ""
-
-    @dataclass
-    class StatePatch:
-        key: str
-        value: Any
-        scope: str = "local"
+class WorkflowTimeoutError(Exception):
+    """Async workflow exceeded time budget."""
 
 
 # ============================================================================
-# CONFIG
+# 3. TELEMETRY  (optional, deterministic)
 # ============================================================================
 
-class Config:
-    @dataclass
-    class ConfigV10_9:
-        default_model: str = Constants.CANONICAL_MODEL_DEFAULT
-        model_aliases: Dict[str, str] = field(default_factory=dict)
-        cache: Dict[str, Any] = field(default_factory=dict)
-        budget: Dict[str, Any] = field(default_factory=dict)
-        telemetry: Dict[str, Any] = field(default_factory=dict)
-        validators: Dict[str, Any] = field(default_factory=dict)
-        tuning: Dict[str, Any] = field(default_factory=dict)
+@dataclass
+class MetricEvent:
+    name: str
+    value: float
+    tags: Dict[str, Any]
 
-        def canonical_alias_map(self) -> Dict[str, str]:
-            return {k.lower(): v for k, v in self.model_aliases.items()}
+@dataclass
+class SpanEvent:
+    name: str
+    start_time_ms: float
+    end_time_ms: float
+    tags: Dict[str, Any]
 
+@dataclass
+class TraceContext:
+    trace_id: str
+    spans: Dict[str, SpanEvent]
 
-# ============================================================================
-# TELEMETRY
-# ============================================================================
+_TELEMETRY_EVENTS: List[Dict[str, Any]] = []
 
-class Telemetry:
+def record_event(name: str, payload: Dict[str, Any]) -> None:
+    _TELEMETRY_EVENTS.append({
+        "name": name,
+        "timestamp": time.time(),
+        "payload": payload,
+    })
 
-    @dataclass
-    class MetricEvent:
-        name: str
-        value: float
-        tags: Dict[str, Any]
-
-    @dataclass
-    class SpanEvent:
-        name: str
-        start_time_ms: int
-        end_time_ms: int
-        tags: Dict[str, Any]
-
-    @dataclass
-    class TraceContext:
-        trace_id: str
-        spans: Dict[str, SpanEvent]
-
-    _EVENTS: List[Dict[str, Any]] = []
-
-    @classmethod
-    def record_event(cls, name: str, payload: Dict[str, Any]) -> None:
-        cls._EVENTS.append({"name": name, "payload": payload})
-
-    @classmethod
-    def get_events(cls) -> List[Dict[str, Any]]:
-        return list(cls._EVENTS)
+def get_events() -> List[Dict[str, Any]]:
+    return list(_TELEMETRY_EVENTS)
 
 
 # ============================================================================
-# COST TRACKING & OPTIMIZATION
+# 4. OPTIMIZATION  (cost tracking + deterministic hints)
 # ============================================================================
 
-class Optimization:
+@dataclass
+class CostTracker:
+    spans: Dict[str, Dict[str, float]] = field(default_factory=dict)
 
-    @dataclass
-    class CostTracker:
-        spans: Dict[str, Dict[str, float]] = field(default_factory=dict)
+    def start_span(self, name: str) -> None:
+        self.spans[name] = {"start": time.perf_counter(), "end": None}
 
-        def start_span(self, name: str) -> None:
-            self.spans[name] = {"start": time.perf_counter(), "end": None}
+    def end_span(self, name: str) -> None:
+        if name in self.spans and self.spans[name]["end"] is None:
+            self.spans[name]["end"] = time.perf_counter()
 
-        def end_span(self, name: str) -> None:
-            if name in self.spans and self.spans[name]["end"] is None:
-                self.spans[name]["end"] = time.perf_counter()
+    def snapshot(self) -> Dict[str, Any]:
+        out = []
+        for n, s in sorted(self.spans.items()):
+            start = s["start"]
+            end = s["end"] or start
+            dur = max(0.0, (end - start) * 1000)
+            out.append({"name": n, "duration_ms": dur})
+        return {"spans": out}
 
-        def snapshot(self) -> Dict[str, Any]:
-            data = []
-            for name, span in sorted(self.spans.items()):
-                start = span["start"]
-                end = span["end"] or start
-                duration_ms = max((end - start) * 1000.0, 0.0)
-                data.append({"name": name, "duration_ms": duration_ms})
-            return {"spans": data}
 
-    @staticmethod
-    def compute_optimization_hint(spans: List[Dict[str, Any]]) -> Dict[str, Any]:
-        planning = next((s for s in spans if s.get("name") == "planning"), {"duration_ms": 0})
-        execution = next((s for s in spans if s.get("name") == "execution"), {"duration_ms": 0})
+def compute_optimization_hint(spans: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Deterministic optimization hint based on planning/execution time.
+    """
+    planning = next((s for s in spans if s.get("name") == "planning"), {"duration_ms": 0})
+    execution = next((s for s in spans if s.get("name") == "execution"), {"duration_ms": 0})
 
-        if float(planning.get("duration_ms", 0)) > float(execution.get("duration_ms", 0)):
-            return {"suggestion": "reroute_fast"}
-        return {"suggestion": "normal"}
+    if float(planning["duration_ms"]) > float(execution["duration_ms"]):
+        return {"suggestion": "reroute_fast"}
+    return {"suggestion": "normal"}
 
 
 # ============================================================================
-# RETRIEVAL UTILITIES
+# 5. RETRIEVAL UTILITIES
 # ============================================================================
 
 class Retrieval:
 
     @staticmethod
     def normalize_documents(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Normalize retrieval items into canonical:
+            {query: str, evidence: str, rank: int}
+        """
         out = []
         for r in results:
             out.append({
-                "query": r.get("query", ""),
-                "evidence": r.get("evidence", ""),
-                "rank": r.get("rank", 0),
+                "query": str(r.get("query", "")),
+                "evidence": str(r.get("evidence", "")),
+                "rank": int(r.get("rank", 0)),
             })
         return out
 
     @staticmethod
     def dedupe_results(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Remove duplicate (query, evidence) pairs.
+        """
         seen = set()
         out = []
-        for i in items:
-            k = (i.get("query", ""), i.get("evidence", ""))
-            if k not in seen:
-                seen.add(k)
-                out.append(i)
+        for it in items:
+            key = (it.get("query", ""), it.get("evidence", ""))
+            if key not in seen:
+                seen.add(key)
+                out.append(it)
         return out
 
     @staticmethod
-    def rerank_results(items: List[Dict[str, Any]], strategy: str = "hybrid") -> List[Dict[str, Any]]:
-        return sorted(items, key=lambda x: x.get("rank", 0))
+    def rerank_results(items: List[Dict[str, Any]], strategy: str) -> List[Dict[str, Any]]:
+        """
+        Optional post-ranking shuffle based on strategy.
+        """
+        if not items:
+            return items
+        if strategy == "hybrid":
+            return sorted(items, key=lambda x: x.get("rank", 0))
+        return items
 
     @staticmethod
     def fuse_results(lists: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
+        """
+        Merge multiple retrieval lists.
+        """
         merged = []
         for lst in lists:
             for item in lst:
@@ -248,7 +204,7 @@ class Retrieval:
 
 
 # ============================================================================
-# RANKING UTILITIES
+# 6. RANKING UTILITIES (BM25, dense, hybrid)
 # ============================================================================
 
 class Ranking:
@@ -260,6 +216,9 @@ class Ranking:
 
     @staticmethod
     def bm25_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Heuristic BM25-like ranking based on evidence length.
+        """
         scored = []
         for it in items:
             score = len(str(it.get("evidence", "")))
@@ -268,6 +227,9 @@ class Ranking:
 
     @staticmethod
     def dense_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Heuristic dense ranking based on SHA hash entropy.
+        """
         scored = []
         for it in items:
             score = Ranking._score_dense(str(it.get("query", "")))
@@ -276,6 +238,9 @@ class Ranking:
 
     @staticmethod
     def hybrid_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Hybrid = (dense + BM25)/2.
+        """
         scored = []
         for it in items:
             bm = len(str(it.get("evidence", "")))
@@ -286,16 +251,14 @@ class Ranking:
 
 
 # ============================================================================
-# RAG UTILS (Normalization + Fusion)
+# 7. RAG UTILS (Normalization, Metadata, Fusion)
 # ============================================================================
 
 class RAGUtils:
 
     @staticmethod
     def normalize_evidence(evidence: Any) -> str:
-        if evidence is None:
-            return ""
-        return str(evidence).strip()
+        return "" if evidence is None else str(evidence).strip()
 
     @staticmethod
     def extract_snippet(evidence: str, max_len: int = 350) -> str:
@@ -303,10 +266,11 @@ class RAGUtils:
 
     @staticmethod
     def build_metadata(query: str, evidence: str, rank: int) -> Dict[str, Any]:
+        snippet = RAGUtils.extract_snippet(evidence)
         return {
             "query": query,
             "rank": rank,
-            "snippet": RAGUtils.extract_snippet(evidence),
+            "snippet": snippet,
             "evidence_length": len(evidence),
         }
 
@@ -338,13 +302,18 @@ class RAGUtils:
                 deduped[key] = item
 
         items = list(deduped.values())
+
+        # Assign fusion scores
         for it in items:
             it["_fusion_score"] = (
                 (100 - it.get("rank", 0)) +
                 0.1 * len(str(it.get("evidence", "")))
             )
 
+        # Sort by fusion score descending
         items.sort(key=lambda x: -x["_fusion_score"])
+
+        # Reassign ranks deterministically
         for idx, it in enumerate(items):
             it["rank"] = idx + 1
             del it["_fusion_score"]
