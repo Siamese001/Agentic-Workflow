@@ -2,25 +2,20 @@
 """
 L1 — Safety Planning (v10_9)
 
-Creates deterministic safety plan fragments describing:
-    • which safety checks to run
-    • which redaction rules apply
+Produces a Safety PlanObject that specifies:
+    • safety rules to apply (PII, forbidden content, bias, toxicity)
     • sensitivity mode
     • audience restrictions
-    • expected output (safety_report, sanitized content)
+    • expected L2 safety outputs (safety_report, sanitized_content)
 
-No execution, no state mutation.
+Pure planning layer — no execution, no state mutation.
 """
 
 from __future__ import annotations
 from typing import Any, Dict, List
 
-from shared.models import PlanObject
+from models import PlanObject
 
-
-# ---------------------------------------------------------------------------
-# Safety rule selection
-# ---------------------------------------------------------------------------
 
 def _base_rules() -> List[str]:
     return [
@@ -44,10 +39,6 @@ def _sensitivity_mode(state: Dict[str, Any]) -> str:
         or "normal"
     )
 
-
-# ---------------------------------------------------------------------------
-# Main L1 builder
-# ---------------------------------------------------------------------------
 
 def build_safety_plan(state: Dict[str, Any]) -> PlanObject:
     audience = state.get("audience", "general")
