@@ -1,300 +1,216 @@
 # FILE: agents.py
 """
-Unified Agent Coordination Module (v10_9) — FULL AGENTIC IMPLEMENTATION
+Unified Multi-Agent Coordination Module (v10_9) — FULL AGENTIC IMPLEMENTATION
 
-This module provides all meta-agentic coordination used by v10_9:
+This module provides meta-level multi-agent coordination for v10_9.
+It sits conceptually *above* the L1–L5 layers and owns only:
 
-SECTIONS:
-    1. MultiAgent       – Parallel, round-robin, debate aggregation
-    2. Ensemble         – Majority vote, weighted vote, consensus building
-    3. SelfCorrection   – Heuristic critique + inconsistency checking
-    4. HIL Interface    – Human-in-the-loop override simulation
-    5. AgentRunner      – High-level L1→L3 helper for one-shot tasks
+    • Agent graph definitions (roles, nodes, edges).
+    • Multi-agent QA council orchestration.
+    • Deterministic voting and metadata construction.
 
-Layer boundary:
-    • ABOVE L1–L5 (meta-level)
-    • NO planning (L1)
-    • NO model execution (L2)
-    • NO orchestration (L3)
-    • NO state mutation logic (L4)
-    • NO safety decisions (L5)
+Non-responsibilities (to preserve L1–L5 purity):
+    • NO planning (L1).
+    • NO tool/LLM execution (L2).
+    • NO control-flow orchestration (L3).
+    • NO state mutation logic (L4).
+    • NO safety decisions (L5).
+
+L3 orchestrators may call:
+
+    - MultiAgentOrchestrator(graph=COUNCIL_OF_QA, state_adapter=...)
+        .dispatch_for_qa(state, plan) -> Dict[str, Any]
+
+and then delegate the returned dict to L4.StateAdapter via StatePatch.
 """
 
 from __future__ import annotations
-import asyncio
-from typing import Any, Dict, List, Callable, Awaitable, Optional
 
-from models import PlanObject
-from l1 import route_plan
-from l3 import Orchestrator
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, List, Tuple
 
 
-# ============================================================================
-# 1. MULTI-AGENT COORDINATION
-# ============================================================================
+# =============================================================================
+# 1. AGENT ROLE & GRAPH DEFINITIONS
+# =============================================================================
 
-class MultiAgent:
+
+class AgentRole(str, Enum):
+    PLANNER = "planner"
+    RETRIEVER = "retriever"
+    DRAFTER = "draf ter"
+    BULLET = "bullet"
+    QA = "qa"
+    SAFETY = "safety"
+
+
+@dataclass
+class AgentNode:
+    role: AgentRole
+    config: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class AgentGraph:
+    nodes: List[AgentNode]
+    edges: List[Tuple[AgentRole, AgentRole]]  # (from_role, to_role)
+
+
+def summarize_graph(graph: AgentGraph) -> Dict[str, Any]:
     """
-    Multi-agent coordination modes:
-        • round_robin()
-        • run_parallel()
-        • debate_mode() — multi-output → merged
+    Deterministic summary of an agent graph, exposing only roles & edges.
+    """
+    def _role_value(r: AgentRole) -> str:
+        return r.value
+
+    return {
+        "nodes": [_role_value(n.role) for n in graph.nodes],
+        "edges": [[_role_value(a), _role_value(b)] for (a, b) in graph.edges],
+    }
+
+
+# -----------------------------------------------------------------------------
+# COUNCIL_OF_QA graph: three QA agents, no edges (parallel council)
+# -----------------------------------------------------------------------------
+
+COUNCIL_OF_QA = AgentGraph(
+    nodes=[
+        AgentNode(AgentRole.QA, {"id": 1, "weight": 1.0}),
+        AgentNode(AgentRole.QA, {"id": 2, "weight": 1.0}),
+        AgentNode(AgentRole.QA, {"id": 3, "weight": 1.0}),
+    ],
+    edges=[],  # council members operate in parallel, no directed edges
+)
+
+
+# =============================================================================
+# 2. DETERMINISTIC VOTING HELPERS
+# =============================================================================
+
+
+def _qa_candidate_scores(
+    plan: Dict[str, Any],
+    state: Dict[str, Any],
+    node_config: Dict[str, Any],
+) -> Dict[str, Any]:
+    """
+    Compute a deterministic QA "candidate" with a score for a given
+    council member.
+
+    This is NOT an LLM call. It uses simple heuristics based on plan
+    severity and existing QA issues in the state.
+
+    Higher score → more likely to be selected.
+    """
+    severity = str(plan.get("severity", "normal")).lower()
+    issues = (state.get("qa_result") or {}).get("issues", [])
+    issue_count = len(issues)
+
+    base = 0.5
+    if severity == "strict":
+        base += 0.2
+    if issue_count > 0:
+        base += min(0.3, issue_count * 0.05)
+
+    # Slight deterministic offset based on node id to break ties
+    node_id = int(node_config.get("id", 0) or 0)
+    offset = (node_id % 3) * 0.01
+
+    score = round(base + offset, 3)
+    return {
+        "id": node_id,
+        "score": score,
+        "rationale": f"severity={severity}, issues={issue_count}, node_id={node_id}",
+    }
+
+
+def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Deterministic selection:
+        • Highest score wins.
+        • Ties broken by smallest id.
+    """
+    if not candidates:
+        return {"id": None, "score": 0.0, "rationale": "no_candidates"}
+
+    sorted_candidates = sorted(
+        candidates,
+        key=lambda c: (-float(c.get("score", 0.0)), int(c.get("id", 999999))),
+    )
+    return sorted_candidates[0]
+
+
+# =============================================================================
+# 3. MULTI-AGENT ORCHESTRATOR (META-LEVEL)
+# =============================================================================
+
+
+@dataclass
+class MultiAgentOrchestrator:
+    """
+    Multi-agent meta-orchestrator.
+
+    This sits above L1–L5 and coordinates agent graphs, but does NOT:
+        • call tools/LLMs
+        • mutate state directly
+        • own safety/policy
+
+    L3 orchestrators pass:
+        - graph: AgentGraph (e.g., COUNCIL_OF_QA)
+        - state_adapter: StateAdapter (L4), used only via its public API.
     """
 
-    @staticmethod
-    async def round_robin(
-        state: Dict[str, Any],
-        agents: List[Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]],
-    ) -> List[Dict[str, Any]]:
+    graph: AgentGraph
+    state_adapter: Any  # Typed as Any to avoid import cycles; must expose .state
+
+    # -------------------------------------------------------------------------
+    # QA COUNCIL ENTRYPOINT
+    # -------------------------------------------------------------------------
+
+    def dispatch_for_qa(self, state: Dict[str, Any], plan: Any) -> Dict[str, Any]:
         """
-        Runs each agent sequentially on the same base state.
-        Returns list of outputs.
+        Execute a QA council pass:
+
+            • Build a synthetic "message" capturing the QA objective.
+            • Generate candidates for each QA agent (score + rationale).
+            • Choose a winner via deterministic_vote.
+            • Return a dict of fields to patch into state via L4.
+
+        NOTE: This method does NOT mutate state_adapter internally; L3
+        remains responsible for applying patches via StatePatch.
         """
-        outputs = []
-        for agent in agents:
-            try:
-                outputs.append(await agent(dict(state)))
-            except Exception as e:
-                outputs.append({"error": str(e)})
-        return outputs
+        # Build synthetic message for the council
+        objective = str(getattr(plan, "get", lambda *_: None)("objective", "") if isinstance(plan, dict) else getattr(plan, "objective", "") or "")
+        if not objective and isinstance(plan, dict):
+            objective = str(plan.get("objective", ""))
 
-    @staticmethod
-    async def run_parallel(
-        state: Dict[str, Any],
-        agents: List[Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]],
-    ) -> List[Dict[str, Any]]:
-        """
-        Runs all agents concurrently; gathers all results.
-        """
-        tasks = [agent(dict(state)) for agent in agents]
-        return await asyncio.gather(*tasks, return_exceptions=False)
+        synthetic_message = {
+            "role": "system",
+            "content": f"QA council evaluation for objective: {objective or 'unspecified-objective'}",
+        }
 
-    @staticmethod
-    async def debate_mode(
-        state: Dict[str, Any],
-        agents: List[Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]],
-        merge_fn: Callable[[List[Dict[str, Any]]], Dict[str, Any]],
-    ) -> Dict[str, Any]:
-        """
-        Runs all agents in parallel and merges results via merge_fn().
-        """
-        outputs = await MultiAgent.run_parallel(state, agents)
-        return merge_fn(outputs)
+        # Build candidates
+        plan_dict = plan.to_dict() if hasattr(plan, "to_dict") else dict(plan)
+        candidates: List[Dict[str, Any]] = []
+        for node in self.graph.nodes:
+            if node.role != AgentRole.QA:
+                continue
+            cand = _qa_candidate_scores(plan_dict, state, node.config)
+            candidates.append(cand)
 
-    @staticmethod
-    def default_merge(results: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """
-        Deterministic aggregation:
-            - lists are extended
-            - scalars override last-write-wins
-        """
-        merged: Dict[str, Any] = {}
-        for res in results:
-            for k, v in res.items():
-                if isinstance(v, list):
-                    merged.setdefault(k, []).extend(v)
-                else:
-                    merged[k] = v
-        return merged
+        vote = deterministic_vote(candidates)
 
+        multi_agent_block: Dict[str, Any] = {
+            "last_message": synthetic_message,
+            "sender": "orchestrator",
+            "recipient": "qa_council",
+            "graph_summary": summarize_graph(self.graph),
+            "qa_council_candidates": candidates,
+            "qa_council_vote": vote,
+        }
 
-# ============================================================================
-# 2. ENSEMBLE VOTING
-# ============================================================================
-
-class Ensemble:
-    """
-    Provides deterministic multi-agent voting utilities.
-    """
-
-    @staticmethod
-    def majority_vote(items: List[str]) -> str:
-        if not items:
-            return ""
-        counts: Dict[str, int] = {}
-        for x in items:
-            counts[x] = counts.get(x, 0) + 1
-        return max(counts, key=counts.get)
-
-    @staticmethod
-    def weighted_vote(items: List[str], weights: List[float]) -> str:
-        """
-        Weighted voting for candidate options. 
-        """
-        if not items or not weights or len(items) != len(weights):
-            return ""
-        score: Dict[str, float] = {}
-        for x, w in zip(items, weights):
-            score[x] = score.get(x, 0) + w
-        return max(score, key=score.get)
-
-    @staticmethod
-    def consensus(items: List[str]) -> str:
-        """
-        If unanimous → return that item.
-        Else → return deterministic sorted join.
-        """
-        if not items:
-            return ""
-        if len(set(items)) == 1:
-            return items[0]
-        return " / ".join(sorted(set(items)))
-
-
-# ============================================================================
-# 3. SELF-CORRECTION ENGINE
-# ============================================================================
-
-class SelfCorrection:
-    """
-    Implements deterministic, rule-based critique and adjustment:
-
-        • critique_output       – structural content heuristics
-        • detect_inconsistency  – contradicting keywords
-        • suggest_retry         – signals whether L2 should re-run
-        • apply_corrections     – simple patch injection
-
-    This avoids embedding unsafe generation in prompts, and provides
-    predictable correction behavior.
-    """
-
-    @staticmethod
-    def critique_output(text: str) -> Dict[str, Any]:
-        issues = []
-
-        stripped = text.strip()
-        if len(stripped) < 30:
-            issues.append("too_short")
-
-        if "." not in stripped and "?" not in stripped:
-            issues.append("no_sentence_structure")
-
-        if stripped.lower().count("very") > 2:
-            issues.append("repetitive_language")
-
+        # The caller (L3) will feed this back into StateAdapter via StatePatch
         return {
-            "passed": len(issues) == 0,
-            "issues": issues,
+            "multi_agent": multi_agent_block
         }
-
-    @staticmethod
-    def detect_inconsistency(text: str, reference: str) -> bool:
-        """
-        Simple contradiction detector using deterministic opposing keyword pairs.
-        """
-        if not reference:
-            return False
-
-        ref = set(reference.lower().split())
-        txt = set(text.lower().split())
-
-        contradictions = {
-            ("experienced", "junior"),
-            ("expert", "beginner"),
-            ("leader", "assistant"),
-        }
-
-        for a, b in contradictions:
-            if (a in txt and b in ref) or (b in txt and a in ref):
-                return True
-
-        return False
-
-    @staticmethod
-    def suggest_retry(crit: Dict[str, Any]) -> bool:
-        """
-        Retry L2 if structural issues (short / no sentences / repetitive language).
-        """
-        return not crit.get("passed", True)
-
-    @staticmethod
-    def apply_corrections(original: Dict[str, Any], critique: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Apply simple note-based corrections for downstream L2/L3 consumption.
-        """
-        corrected = dict(original)
-
-        if "too_short" in critique.get("issues", []):
-            corrected["note"] = corrected.get("note", "") + " Expanded for clarity."
-
-        if "no_sentence_structure" in critique.get("issues", []):
-            corrected["note"] = corrected.get("note", "") + " Added sentence punctuation."
-
-        if "repetitive_language" in critique.get("issues", []):
-            corrected["note"] = corrected.get("note", "") + " Reduced repetitive terms."
-
-        return corrected
-
-
-# ============================================================================
-# 4. HUMAN-IN-THE-LOOP (HIL) INTERFACE
-# ============================================================================
-
-class HIL:
-    """
-    Provides deterministic simulation of Human-in-the-Loop overrides:
-
-        • apply_overrides()
-        • run_with_hil()
-
-    This sits above L3 but below UI-level interactions.
-    """
-
-    @staticmethod
-    def apply_overrides(state: Dict[str, Any], overrides: Dict[str, Any]) -> Dict[str, Any]:
-        new_state = dict(state)
-        for k, v in overrides.items():
-            new_state[k] = v
-        return new_state
-
-    @staticmethod
-    async def run_with_hil(
-        initial_state: Dict[str, Any],
-        overrides: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """
-        Executes a full L1→L3 cycle, then applies overrides (if any),
-        then re-executes the pipeline.
-        """
-        # First pass
-        plan1: PlanObject = route_plan(initial_state)
-        orch1 = Orchestrator()
-        first_state = (await orch1.run(plan1, initial_state)).state
-
-        if not overrides:
-            return first_state
-
-        # Apply overrides
-        updated = HIL.apply_overrides(first_state, overrides)
-
-        # Re-run pipeline with updated state
-        plan2: PlanObject = route_plan(updated)
-        orch2 = Orchestrator()
-        second_state = (await orch2.run(plan2, updated)).state
-
-        return second_state
-
-
-# ============================================================================
-# 5. AGENT RUNNER — HIGH-LEVEL ENTRYPOINT
-# ============================================================================
-
-class AgentRunner:
-    """
-    Convenience API for executing a full L1→L3 agentic cycle or
-    multi-step pipelines without requiring orchestrator setup.
-
-    Use:
-        AgentRunner.run_sync({"objective": "draft summary"})
-    """
-
-    @staticmethod
-    async def run(state: Dict[str, Any]) -> Dict[str, Any]:
-        plan = route_plan(state)
-        orch = Orchestrator()
-        result = await orch.run(plan, state)
-        return dict(result.state)
-
-    @staticmethod
-    def run_sync(state: Dict[str, Any]) -> Dict[str, Any]:
-        return asyncio.run(AgentRunner.run(state))
