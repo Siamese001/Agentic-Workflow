@@ -1,6 +1,6 @@
 # FILE: l5.py
 """
-Unified L5 Safety & Policy Layer (v10_9) — FULL AGENTIC IMPLEMENTATION
+Unified L5 Safety & Policy Layer (v10_9) — FULL AGENTIC IMPLEMENTATION (REFINED)
 
 This module implements ALL high-level safety, policy, arbitration, and
 model-routing responsibilities for the v10_9 agentic workflow.
@@ -11,12 +11,12 @@ Responsibilities:
     • Bias scanning          (age-related, gendered, stereotyped patterns)
     • Prompt injection detection (deterministic heuristic detector)
     • Constitutional review  (rule-based)
-    • SafetyEngine           (full safety suite)
+    • SafetyEngine           (full safety report)
     • PolicyEngine           (allow / retry / replan / block)
-    • ArbitrationEngine      (final L5 decision → L3 orchestrator)
-    • ModelRouter            (model selection heuristic)
+    • ArbitrationEngine      (normalize L5 action → L3 orchestrator)
+    • ModelRouter            (model selection heuristic; not used by L3 directly)
 
-Pure L5:
+Layer constraints:
     • NO L1 cognition
     • NO L2 execution
     • NO L3 orchestration
@@ -24,16 +24,19 @@ Pure L5:
 """
 
 from __future__ import annotations
+
 import re
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-from exceptions import SafetyException
+from models import PlanObject
+from runtime_utils import SafetyException
 
 
 # ============================================================================
 # 1. SAFETY CONTRACTS
 # ============================================================================
+
 
 @dataclass
 class SafetyContracts:
@@ -46,9 +49,15 @@ class SafetyContracts:
         • PI patterns
     """
 
-    allowed_audience: List[str] = field(default_factory=lambda: ["general", "professional", "executive"])
-    forbidden_terms: List[str] = field(default_factory=lambda: ["explicit", "violence", "hate", "slur"])
-    pii_patterns: List[str] = field(default_factory=lambda: ["@", "+1", "xxx-xxx"])
+    allowed_audience: List[str] = field(
+        default_factory=lambda: ["general", "professional", "executive"]
+    )
+    forbidden_terms: List[str] = field(
+        default_factory=lambda: ["explicit", "violence", "hate", "slur"]
+    )
+    pii_patterns: List[str] = field(
+        default_factory=lambda: ["@", "+1", "xxx-xxx"]
+    )
     max_toxicity: float = 0.25
     enable_prompt_injection_detection: bool = True
     enable_bias_detection: bool = True
@@ -58,12 +67,12 @@ DEFAULT_SAFETY_CONTRACTS = SafetyContracts()
 
 
 # ============================================================================
-# 2. REDACTION UTILITIES
+# 2. REDACTION UTILITIES (PII)
 # ============================================================================
 
-_EMAIL_RE  = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
-_PHONE_RE  = re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b")
-_SSN_RE    = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
+_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+_PHONE_RE = re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b")
+_SSN_RE = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 
 
 def redact_pii(text: str) -> str:
@@ -77,12 +86,13 @@ def redact_pii(text: str) -> str:
 
 
 # ============================================================================
-# 3. FORBIDDEN CONTENT / TOXICITY / BIAS SCANS
+# 3. FORBIDDEN CONTENT / TOXICITY / BIAS
 # ============================================================================
+
 
 def scan_forbidden(text: str, forbidden_terms: List[str]) -> List[str]:
     """Return list of forbidden terms found in content."""
-    hits = []
+    hits: List[str] = []
     lower = text.lower()
     for term in forbidden_terms:
         if term in lower:
@@ -120,7 +130,7 @@ def scan_bias(text: str) -> List[str]:
         "stereotypes": ["aggressive female", "emotional woman"],
     }
 
-    hits = []
+    hits: List[str] = []
     for label, terms in patterns.items():
         for t in terms:
             if t in lower:
@@ -143,7 +153,7 @@ _PI_PATTERNS = [
 
 def detect_prompt_injection(text: str) -> Dict[str, Any]:
     """
-    Deterministic PI detector using substring + regex patterns.
+    Deterministic prompt injection detector using substring + regex patterns.
     """
     if not text:
         return {"detected": False, "reason": "", "confidence": 0.0}
@@ -165,9 +175,9 @@ def detect_prompt_injection(text: str) -> Dict[str, Any]:
 # ============================================================================
 
 _CONSTITUTION_RULES = {
-    "no_hate":         lambda t: "hate" not in t.lower(),
-    "no_explicit":     lambda t: "explicit" not in t.lower(),
-    "no_violence":     lambda t: "violence" not in t.lower(),
+    "no_hate": lambda t: "hate" not in t.lower(),
+    "no_explicit": lambda t: "explicit" not in t.lower(),
+    "no_violence": lambda t: "violence" not in t.lower(),
     "tone_professional": lambda t: "idiot" not in t.lower() and "stupid" not in t.lower(),
 }
 
@@ -186,7 +196,7 @@ def constitutional_review(text: str) -> Dict[str, Any]:
     if not text:
         return {"passed": True, "violations": [], "confidence": 1.0}
 
-    violations = []
+    violations: List[str] = []
     for rule, fn in _CONSTITUTION_RULES.items():
         if not fn(text):
             violations.append(rule)
@@ -205,6 +215,7 @@ def constitutional_review(text: str) -> Dict[str, Any]:
 # 6. SAFETY ENGINE
 # ============================================================================
 
+
 class SafetyEngine:
     """
     Full safety engine that aggregates:
@@ -214,13 +225,24 @@ class SafetyEngine:
         • prompt injection detection
         • bias scan
         • constitutional review
+
+    Primary API used by L3:
+
+        evaluate_content(state: dict, plan: PlanObject) -> safety_report: dict
+
+    It may still expose a lower-level validate(content, audience) helper
+    for unit testing and tooling, but orchestration goes through
+    evaluate_content.
     """
 
     def __init__(self, contracts: SafetyContracts = DEFAULT_SAFETY_CONTRACTS):
         self.contracts = contracts
 
     def validate(self, content: str, audience: str = "general") -> Dict[str, Any]:
-
+        """
+        Validate a single content string against contracts and return a
+        structured safety report.
+        """
         if audience not in self.contracts.allowed_audience:
             raise SafetyException(f"Audience '{audience}' not permitted.")
 
@@ -229,11 +251,14 @@ class SafetyEngine:
         tox = toxicity_score(content)
         tox_flag = tox > self.contracts.max_toxicity
         bias_issues = scan_bias(content) if self.contracts.enable_bias_detection else []
-        pi = detect_prompt_injection(content) if self.contracts.enable_prompt_injection_detection else {"detected": False}
-
+        pi = (
+            detect_prompt_injection(content)
+            if self.contracts.enable_prompt_injection_detection
+            else {"detected": False, "reason": "", "confidence": 0.0}
+        )
         const = constitutional_review(content)
 
-        issues = []
+        issues: List[str] = []
         if redacted != content:
             issues.append("pii_redacted")
         issues.extend(f"forbidden:{t}" for t in forbidden)
@@ -255,15 +280,48 @@ class SafetyEngine:
             "sanitized": redacted,
         }
 
+    def evaluate_content(self, state: Dict[str, Any], plan: PlanObject) -> Dict[str, Any]:
+        """
+        Main entrypoint used by L3.
+
+        Extracts the relevant content from the orchestration state and
+        evaluates it under the safety contract with respect to the plan.
+        """
+        # Determine audience
+        audience = str(plan.get("audience", state.get("audience", "general")))
+
+        # Content priority:
+        #   1. draft_result["draft"]
+        #   2. messages[-1]["content"]
+        #   3. summary
+        content = ""
+
+        draft_result = state.get("draft_result") or {}
+        draft_list = draft_result.get("draft") or []
+        if isinstance(draft_list, list) and draft_list:
+            content = "\n".join(str(x) for x in draft_list)
+        else:
+            messages = state.get("messages") or []
+            if messages:
+                last = messages[-1]
+                if isinstance(last, dict):
+                    content = str(last.get("content", ""))
+        if not content:
+            content = str(state.get("summary", ""))
+
+        return self.validate(content, audience=audience)
+
 
 # ============================================================================
 # 7. POLICY ENGINE (allow / retry / replan / block)
 # ============================================================================
 
+
 class PolicyEngine:
     """
-    High-level policy enforcement engine. Maps a safety report to a
-    policy decision:
+    High-level policy enforcement engine.
+
+    Maps a safety_report to a policy decision:
         • allow       → proceed
         • retry       → re-run L2 stage
         • replan      → re-run L1 → L2
@@ -271,6 +329,9 @@ class PolicyEngine:
     """
 
     def review(self, safety_report: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Return a structured policy decision from a safety_report.
+        """
         issues = safety_report.get("issues", [])
         passed = safety_report.get("passed", False)
 
@@ -297,12 +358,15 @@ class PolicyEngine:
 
 
 # ============================================================================
-# 8. ARBITRATION ENGINE
+# 8. ARBITRATION ENGINE (policy → orchestrator action)
 # ============================================================================
+
 
 class ArbitrationEngine:
     """
-    Determines final normalized L5 action from policy decision:
+    Determines final normalized L5 action from a policy decision and
+    the underlying safety_report:
+
         • proceed
         • retry_l2
         • rerun_l1
@@ -310,27 +374,28 @@ class ArbitrationEngine:
     """
 
     def decide(self, policy: Dict[str, Any], safety_report: Dict[str, Any]) -> Dict[str, Any]:
-
         decision = policy.get("decision")
 
         if decision == "allow":
-            return {"action": "proceed"}
+            return {"action": "proceed", "reason": policy.get("reason", "no_issues")}
 
         if decision == "retry":
-            return {"action": "retry_l2"}
+            return {"action": "retry_l2", "reason": policy.get("reason", "retry_requested")}
 
         if decision == "replan":
-            return {"action": "rerun_l1"}
+            return {"action": "rerun_l1", "reason": policy.get("reason", "replan_requested")}
 
         if decision == "block":
-            return {"action": "halt"}
+            return {"action": "halt", "reason": policy.get("reason", "blocked_by_policy")}
 
-        return {"action": "proceed"}
+        # Fallback
+        return {"action": "proceed", "reason": "default_allow"}
 
 
 # ============================================================================
-# 9. MODEL ROUTER
+# 9. MODEL ROUTER (optional; not wired into L3 in v10_9)
 # ============================================================================
+
 
 @dataclass
 class RoutingCriteria:
@@ -357,10 +422,13 @@ class ModelRouter:
         • cost
         • risk
         • availability
+
+    NOTE:
+        This router is NOT currently wired into L3, but can be used by
+        future L2 or meta orchestration layers.
     """
 
     def select(self, criteria: RoutingCriteria) -> RoutingDecision:
-
         # High complexity or strict-risk tasks
         if criteria.complexity == "high" or criteria.risk_level in ("strict", "high_safety"):
             selected = RoutingDecision(
