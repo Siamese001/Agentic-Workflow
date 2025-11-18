@@ -2,27 +2,20 @@
 """
 L1 — QA Planning (v10_9)
 
-Creates deterministic QA plan fragments that describe:
-    • what content to validate
-    • which checks to run
-    • expected structure of QA results
-    • severity thresholds
-    • whether the result should trigger replan / retry
+Creates deterministic QA plan fragments describing:
+    • which QA checks to run
+    • severity mode
+    • audience constraints
+    • expected QA outputs (qa_report)
 
-This replaces 10_7 qa_validation_stack's planning surface,
-aligned to the 10_9 L1 cognition layer.
+No execution, no state mutation.
 """
 
 from __future__ import annotations
-
 from typing import Any, Dict, List
 
-from shared.models import PlanObject
+from models import PlanObject
 
-
-# ---------------------------------------------------------------------------
-# QA rule generation
-# ---------------------------------------------------------------------------
 
 def _basic_checks() -> List[str]:
     return [
@@ -41,7 +34,6 @@ def _sensitivity_checks(audience: str) -> List[str]:
 
 
 def _severity_profile(state: Dict[str, Any]) -> str:
-    """Severity defaults to 'normal' unless state overrides."""
     return (
         state.get("qa_severity")
         or state.get("qa", {}).get("severity")
@@ -49,18 +41,7 @@ def _severity_profile(state: Dict[str, Any]) -> str:
     )
 
 
-# ---------------------------------------------------------------------------
-# Main L1 Plan Builder
-# ---------------------------------------------------------------------------
-
 def build_qa_plan(state: Dict[str, Any]) -> PlanObject:
-    """
-    Build a QA PlanObject that defines:
-        • validation checks to run
-        • severity level
-        • expected output: qa_report = { issues[], confidence }
-    """
-
     audience = state.get("audience", "general")
     severity = _severity_profile(state)
 
@@ -97,7 +78,7 @@ def build_qa_plan(state: Dict[str, Any]) -> PlanObject:
         injection_reasoning=state.get("injection_reasoning", {}),
         safety_metadata={
             "objective": str(objective),
-            "sensitivity": "low",
+            "sensitivity": severity,
             "audience": audience,
             "tags": ["planning", "qa"],
         },
@@ -105,5 +86,4 @@ def build_qa_plan(state: Dict[str, Any]) -> PlanObject:
 
 
 def plan(state: Dict[str, Any]):
-    """Public L1 entrypoint."""
     return build_qa_plan(state)
