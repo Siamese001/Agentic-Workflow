@@ -1,18 +1,18 @@
 # FILE: main_v10_9.py
 """
-Main Entry Point — v10_9 Agentic Workflow (FULL IMPLEMENTATION)
+Main Entry Point — v10_9 Agentic Workflow (FULLY AGENTIC, REFINED)
 
 This module provides the official entrypoint for the unified v10_9
 agentic workflow.
 
 High-level pipeline:
-    1. L1: route_plan() – produce PlanObject for the requested task.
+    1. L1: route_plan() – produce a PlanObject for the requested task.
     2. L3: Orchestrator.run() – execute domain-specific pipeline (L2 + L4 + L5).
     3. Observability: summarize_run() – produce a structured run summary.
     4. Return: updated state + phase + summary.
 
 Design guarantees:
-    • No references to previous versions (v10_7, v10_8, LangGraph, etc.)
+    • No direct references to previous versions (10_7, 10_8, LangGraph, etc.)
     • Single-pass execution (one L1 plan → one L3 run)
     • Layer purity (no L1–L5 logic in this file, only coordination)
 """
@@ -31,6 +31,7 @@ from observability import summarize_run
 # ---------------------------------------------------------------------------
 # INTERNAL HELPERS
 # ---------------------------------------------------------------------------
+
 
 def _initialize_state(initial_state: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -63,6 +64,7 @@ def _initialize_state(initial_state: Dict[str, Any]) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 # ASYNC ENTRYPOINT
 # ---------------------------------------------------------------------------
+
 
 async def run_workflow_v10_9(initial_state: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -98,7 +100,8 @@ async def run_workflow_v10_9(initial_state: Dict[str, Any]) -> Dict[str, Any]:
     # ---- L3: ORCHESTRATION + L2/L4/L5 ----
     orchestrator = Orchestrator()
     cost_tracker.start_span("execution")
-    workflow_state = await orchestrator.run(plan, state)
+    # Orchestrator.run is synchronous; we just call it directly.
+    workflow_state = orchestrator.run(plan, state)
     cost_tracker.end_span("execution")
 
     final_state = workflow_state.state
@@ -124,6 +127,7 @@ async def run_workflow_v10_9(initial_state: Dict[str, Any]) -> Dict[str, Any]:
 # ---------------------------------------------------------------------------
 # SYNC WRAPPER
 # ---------------------------------------------------------------------------
+
 
 def run_workflow_sync(initial_state: Dict[str, Any]) -> Dict[str, Any]:
     """
