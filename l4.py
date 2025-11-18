@@ -1,322 +1,552 @@
-# FILE: v10_9_clean/l4.py
+# FILE: l4.py
 """
-Unified L4 State Layer (v10_9) - PRODUCTION READY
+Unified L4 State Layer (v10_9) — FULL AGENTIC IMPLEMENTATION
 
-This module consolidates ALL L4 state management responsibilities, upgrading
-the skeleton to full v10.7 parity with Typed Contracts and Smart Budgeting.
+This module implements ALL state-related responsibilities for the v10_9
+agentic architecture, with feature parity (conceptually) to the richer
+state handling in earlier versions, but rewritten cleanly with no legacy
+dependencies.
 
-Capabilities Restored:
-    • Strict Pydantic State Validation (StatePatch)
-    • Token-Aware Context Budgeting
-    • Agentic Pruning Hooks (Smart Summarization)
-    • Episodic vs. Semantic Memory Isolation
-    • World Model Normalization
+Responsibilities:
+    • Phase-aware StateMachine wrapper
+    • Context-budget aware MemoryManager
+    • World-model normalization (facts, origins, categories)
+    • State validation helpers (type + structural checks)
+    • State views (conversational, retrieval, prompt-context)
+    • Global StateAdapter
+        - apply patches
+        - reconcile memory
+        - enforce phase coherence
+        - maintain validation metadata
+    • Domain-specific adapters:
+        - attach_rag_result
+        - attach_bullet_result
+        - attach_draft_result
+        - attach_qa_result
+        - attach_safety_result
+        - attach_strategy_result
 
 Pure state management:
-    • NO planning (L1)
+    • NO cognition (L1)
     • NO execution (L2)
-    • NO orchestration (L3)
-    • NO safety logic (L5)
+    • NO orchestration logic (L3)
+    • NO safety/policy decisions (L5)
 """
 
 from __future__ import annotations
+
 import copy
-import logging
-from typing import Any, Dict, List, Optional, Union, Callable, Awaitable
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, MutableMapping, Optional
 
-from pydantic import BaseModel, Field, ConfigDict, ValidationError as PydanticError
+from runtime_utils import Constants
 
-from constants import WorkflowPhase
-from exceptions import ValidationError
+WorkflowPhase = Constants.WorkflowPhase
 
-logger = logging.getLogger("v10_9.l4")
 
 # ============================================================================
-# 1. TYPED STATE CONTRACTS (Restoring 10.7 StateAdapterStack Rigor)
+# 1. PHASE-LEVEL STATE MACHINE
 # ============================================================================
 
-class StatePatch(BaseModel):
+class StatePhaseMachine:
     """
-    Strict schema for state mutations.
-    Restores the safety of 10.7's StateAdapterStack.
-    """
-    model_config = ConfigDict(extra="allow")
+    Finite-state machine for orchestrator phase control, mirroring
+    the allowed transitions defined at the orchestration layer.
 
-    # Core Lifecycle
-    phase: Optional[str] = None
-    workflow_id: Optional[str] = None
-    
-    # Domain Buckets
-    messages: Optional[List[Dict[str, Any]]] = None
-    rag_result: Optional[Dict[str, Any]] = None
-    bullet_result: Optional[Dict[str, Any]] = None
-    draft_result: Optional[Dict[str, Any]] = None
-    qa_result: Optional[Dict[str, Any]] = None
-    safety_result: Optional[Dict[str, Any]] = None
-    strategy_result: Optional[Dict[str, Any]] = None
-    
-    # Memory & Metadata
-    summary: Optional[str] = None
-    world_updates: Optional[List[Dict[str, Any]]] = None
-    metadata: Optional[Dict[str, Any]] = None
-
-# ============================================================================
-# 2. STATE MACHINE (Control Flow)
-# ============================================================================
-
-class StateMachine:
-    """
-    Finite-state machine for orchestrator phase control.
+        init       → planning, failed
+        planning   → executing, failed
+        executing  → reviewing, failed
+        reviewing  → complete, planning, failed
+        complete   → (terminal)
+        failed     → (terminal)
     """
 
     _TRANSITIONS = {
-        WorkflowPhase.INIT: {WorkflowPhase.PLANNING, WorkflowPhase.FAILED},
-        WorkflowPhase.PLANNING: {WorkflowPhase.EXECUTING, WorkflowPhase.FAILED},
+        WorkflowPhase.INIT:      {WorkflowPhase.PLANNING, WorkflowPhase.FAILED},
+        WorkflowPhase.PLANNING:  {WorkflowPhase.EXECUTING, WorkflowPhase.FAILED},
         WorkflowPhase.EXECUTING: {WorkflowPhase.REVIEWING, WorkflowPhase.FAILED},
-        WorkflowPhase.REVIEWING: {
-            WorkflowPhase.COMPLETE,
-            WorkflowPhase.PLANNING,  # Loopback for refinement
-            WorkflowPhase.FAILED,
-        },
-        WorkflowPhase.COMPLETE: set(),
-        WorkflowPhase.FAILED: set(),
+        WorkflowPhase.REVIEWING: {WorkflowPhase.COMPLETE, WorkflowPhase.PLANNING, WorkflowPhase.FAILED},
+        WorkflowPhase.COMPLETE:  set(),
+        WorkflowPhase.FAILED:    set(),
     }
 
-    def __init__(self, initial: str = WorkflowPhase.INIT) -> None:
-        self.phase = initial
-        self.history = [initial]
+    def __init__(self, initial: WorkflowPhase = WorkflowPhase.INIT) -> None:
+        self.phase: WorkflowPhase = initial
+        self.history: List[str] = [initial]
 
-    def can_transition(self, target: str) -> bool:
-        # Allow loose string matching for robustness
-        current_transitions = self._TRANSITIONS.get(self.phase, set())
-        return target in current_transitions
+    def can_transition(self, target: WorkflowPhase) -> bool:
+        return target in self._TRANSITIONS[self.phase]
 
-    def transition(self, target: str) -> str:
+    def transition(self, target: WorkflowPhase) -> WorkflowPhase:
         if not self.can_transition(target):
-            logger.warning(f"Illegal transition attempt: {self.phase} → {target}. Forcing transition for recovery.")
-            # In production resilience, we might log and force move if critical
-        
+            raise ValueError(f"Illegal transition {self.phase} → {target}")
         self.phase = target
         self.history.append(target)
         return target
 
+
 # ============================================================================
-# 3. CONTEXT BUDGETING & PRUNING (Restoring 10.7 ContextBudgetManager)
+# 2. WORLD-MODEL NORMALIZATION
+# ============================================================================
+
+_ALLOWED_FACT_CATEGORIES = {"entity", "event", "relation"}
+_ALLOWED_FACT_ORIGINS = {"retrieval", "user", "system"}
+
+
+def _coerce_category(v: Any) -> str:
+    if isinstance(v, str) and v in _ALLOWED_FACT_CATEGORIES:
+        return v
+    return "entity"
+
+
+def _coerce_origin(v: Any) -> str:
+    if isinstance(v, str) and v in _ALLOWED_FACT_ORIGINS:
+        return v
+    return "system"
+
+
+def _coerce_content(v: Any) -> str:
+    if isinstance(v, str):
+        return v
+    if v is None:
+        return ""
+    return str(v)
+
+
+def normalize_world_facts(items: List[Any]) -> List[Dict[str, Any]]:
+    """
+    Normalize arbitrary world facts into a consistent schema:
+
+        {"category": "entity|event|relation",
+         "origin": "retrieval|user|system",
+         "content": "text"}
+    """
+    out: List[Dict[str, Any]] = []
+    for item in items or []:
+        if isinstance(item, dict):
+            d = dict(item)
+        else:
+            d = {"content": item}
+        d["category"] = _coerce_category(d.get("category"))
+        d["origin"] = _coerce_origin(d.get("origin"))
+        d["content"] = _coerce_content(d.get("content"))
+        out.append(d)
+    return out
+
+
+# ============================================================================
+# 3. CONTEXT BUDGET & MEMORY MANAGEMENT
 # ============================================================================
 
 @dataclass
 class BudgetConfig:
-    max_messages: int = 30
-    max_rag_items: int = 20
+    """
+    Soft context-budget configuration.
+    These limits are deliberately conservative and can be tuned.
+    """
+
+    max_messages: int = 40
+    max_rag_items: int = 50
     max_world_items: int = 50
     max_summary_chars: int = 4000
-    max_prompt_tokens: int = 6000
-    # Pruning Strategy
-    enable_agentic_pruning: bool = True
+    max_prompt_tokens: int = 8000
+    max_retrieval_tokens: int = 8000
+
 
 class ContextBudget:
     """
-    Manages token usage and context window limits.
-    Supports 'smart' pruning if an executor callback is provided.
+    Purely deterministic, soft context budget. There is no tokenization
+    dependency; we approximate tokens via whitespace splits.
     """
-    def __init__(self, config: BudgetConfig | None = None) -> None:
+
+    def __init__(self, config: Optional[BudgetConfig] = None) -> None:
         self.config = config or BudgetConfig()
 
-    def estimate_tokens(self, text: str) -> int:
-        # Heuristic: 4 chars ~= 1 token
-        return len(text) // 4
+    def prune_messages(self, msgs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        if len(msgs) <= self.config.max_messages:
+            return msgs
+        return msgs[-self.config.max_messages :]
 
-    async def prune_text(self, text: str, limit_chars: int, executor: Optional[Callable[[str], Awaitable[str]]] = None) -> str:
+    def prune_rag_items(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        if len(items) <= self.config.max_rag_items:
+            return items
+        return items[-self.config.max_rag_items :]
+
+    def prune_world_items(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        if len(items) <= self.config.max_world_items:
+            return items
+        return items[-self.config.max_world_items :]
+
+    def prune_summary(self, summary: str) -> str:
+        if len(summary) <= self.config.max_summary_chars:
+            return summary
+        return summary[-self.config.max_summary_chars :]
+
+    def prune_messages_by_tokens(self, msgs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Smart pruning: Uses LLM summarization if available, else truncation.
+        Approximate token budget for prompts: compute simple token counts,
+        then drop from the front until we're under the limit.
         """
-        if len(text) <= limit_chars:
-            return text
-        
-        if self.config.enable_agentic_pruning and executor:
-            try:
-                # Delegate to L2 execution via callback to avoid circular dep
-                return await executor(text) 
-            except Exception as e:
-                logger.warning(f"Agentic pruning failed: {e}. Falling back to truncation.")
-        
-        # Fallback: Deterministic truncation with indicator
-        return text[:limit_chars] + "\n...[TRUNCATED]..."
+        token_counts = [len(str(m.get("content", "")).split()) for m in msgs]
+        total = sum(token_counts)
+        limit = self.config.max_prompt_tokens
+        if total <= limit:
+            return msgs
 
-    def prune_list(self, items: List[Any], limit: int) -> List[Any]:
-        return items[-limit:] if len(items) > limit else items
+        idx = 0
+        while idx < len(msgs) and total > limit:
+            total -= token_counts[idx]
+            idx += 1
+        return msgs[idx:]
 
-# ============================================================================
-# 4. MEMORY MANAGER (Consolidated Logic)
-# ============================================================================
+    def prune_rag_items_by_tokens(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        token_counts = [len(str(it.get("evidence", "")).split()) for it in items]
+        total = sum(token_counts)
+        limit = self.config.max_retrieval_tokens
+        if total <= limit:
+            return items
+
+        idx = 0
+        while idx < len(items) and total > limit:
+            total -= token_counts[idx]
+            idx += 1
+        return items[idx:]
+
 
 class MemoryManager:
     """
-    Handles state reconciliation, pruning, and world-model updates.
+    Centralized memory & state reconciler.
+
+    Responsibilities:
+        • canonicalize messages (role, content)
+        • canonicalize RAG history
+        • canonicalize world facts
+        • enforce context budgets (messages, rag, world, summary)
+        • annotate state with context-consistency metadata
     """
 
-    def __init__(self, budget: ContextBudget | None = None) -> None:
+    def __init__(self, budget: Optional[ContextBudget] = None) -> None:
         self.budget = budget or ContextBudget()
 
-    async def reconcile_state(self, state: Dict[str, Any], pruner: Optional[Callable] = None) -> Dict[str, Any]:
-        """
-        Applies budget constraints and normalizes data structures.
-        Async to support potential agentic pruning calls.
-        """
+    def reconcile(self, state: Dict[str, Any]) -> Dict[str, Any]:
         s = copy.deepcopy(state)
-        
-        # 1. Normalize Collections
-        msgs = s.get("messages") or []
-        rag_hist = s.get("rag_history") or []
+        s.setdefault("metadata", {})
+
+        messages = s.get("messages") or []
+        rag_history = s.get("rag_history") or []
         world = s.get("world") or []
-        summary = s.get("summary") or ""
+        summary = s.get("summary", "") or ""
 
-        # 2. Enforce Limits (Count-based)
-        msgs = self.budget.prune_list(msgs, self.budget.config.max_messages)
-        rag_hist = self.budget.prune_list(rag_hist, self.budget.config.max_rag_items)
-        world = self.budget.prune_list(world, self.budget.config.max_world_items)
+        canon_msgs: List[Dict[str, Any]] = []
+        for m in messages:
+            if isinstance(m, dict):
+                mm = copy.deepcopy(m)
+            else:
+                mm = {"role": "unknown", "content": str(m)}
+            mm["role"] = str(mm.get("role", ""))
+            mm["content"] = str(mm.get("content", ""))
+            canon_msgs.append(mm)
 
-        # 3. Smart Pruning (Content-based)
-        # If summary exceeds limit, prune it (potentially via LLM)
-        if len(summary) > self.budget.config.max_summary_chars:
-            summary = await self.budget.prune_text(
-                summary, 
-                self.budget.config.max_summary_chars, 
-                pruner
-            )
+        canon_rag: List[Dict[str, Any]] = []
+        for item in rag_history:
+            if isinstance(item, dict):
+                it = copy.deepcopy(item)
+            else:
+                it = {"query": str(item), "evidence": []}
+            it["query"] = str(it.get("query", ""))
+            ev = it.get("evidence", [])
+            if not isinstance(ev, list):
+                ev = [ev]
+            it["evidence"] = ev
+            canon_rag.append(it)
 
-        # 4. Update State
-        s["messages"] = msgs
-        s["rag_history"] = rag_hist
-        s["world"] = world
+        canon_world = normalize_world_facts(world)
+
+        # Apply simple budgets
+        canon_msgs = self.budget.prune_messages(canon_msgs)
+        canon_rag = self.budget.prune_rag_items(canon_rag)
+        canon_world = self.budget.prune_world_items(canon_world)
+        summary = self.budget.prune_summary(summary)
+
+        canon_msgs = self.budget.prune_messages_by_tokens(canon_msgs)
+        canon_rag = self.budget.prune_rag_items_by_tokens(canon_rag)
+
+        s["messages"] = canon_msgs
+        s["rag_history"] = canon_rag
+        s["world"] = canon_world
         s["summary"] = summary
-        
+
+        s["metadata"]["context_consistency"] = "unchecked"  # placeholder; updated by validation
         return s
 
+
 # ============================================================================
-# 5. GLOBAL STATE ADAPTER (The L4 Core)
+# 4. STATE VALIDATION
 # ============================================================================
 
-class StateAdapter:
+_EXPECTED_TYPES: Dict[str, Any] = {
+    "messages": list,
+    "rag_history": list,
+    "world": list,
+    "summary": str,
+    "session": dict,
+    "metadata": dict,
+    "phase": str,
+    "phase_metadata": dict,
+}
+
+
+def validate_state(state: Dict[str, Any]) -> Dict[str, List[str]]:
     """
-    Unified L4 state manager:
-        • Single Source of Truth
-        • Schema Enforcement (Pydantic)
-        • Phase Management
-        • Memory Reconciliation
+    Check for missing fields, type mismatches, and structural warnings.
     """
+    missing: List[str] = []
+    mismatch: List[str] = []
+    warnings: List[str] = []
 
-    def __init__(self, initial_state: Optional[Dict[str, Any]] = None):
-        self.memory = MemoryManager()
-        self.machine = StateMachine()
-        self._state = initial_state or {
-            "messages": [],
-            "rag_history": [],
-            "world": [],
-            "summary": "",
-            "metadata": {},
-            "phase": WorkflowPhase.INIT
-        }
-        # Ensure phase alignment
-        if "phase" in self._state:
-            self.machine.phase = self._state["phase"]
+    for field, t in _EXPECTED_TYPES.items():
+        if field not in state:
+            missing.append(field)
+            continue
+        if not isinstance(state[field], t):
+            mismatch.append(field)
 
-    @property
-    def state(self) -> Dict[str, Any]:
-        return copy.deepcopy(self._state)
+    # Example structural warnings
+    if state.get("draft") is not None and not state.get("messages"):
+        warnings.append("draft present but messages are empty")
 
-    async def apply_patch(self, patch: Union[Dict[str, Any], StatePatch], pruner: Optional[Callable] = None) -> Dict[str, Any]:
-        """
-        Apply a typed patch to the state.
-        """
-        # 1. Validate Patch
-        if isinstance(patch, dict):
-            try:
-                # Enforce schema via Pydantic
-                patch_obj = StatePatch(**patch)
-            except PydanticError as e:
-                logger.error(f"State patch validation failed: {e}")
-                raise ValidationError(f"Invalid state patch: {e}")
-        else:
-            patch_obj = patch
+    if state.get("qa_result") is not None and "plan" not in state:
+        warnings.append("qa_result present but no L1 plan stored")
 
-        # 2. Merge Data
-        updated = copy.deepcopy(self._state)
-        patch_dict = patch_obj.model_dump(exclude_unset=True)
-        
-        for k, v in patch_dict.items():
-            if k == "extra": continue # Skip pydantic extra container
-            
-            # List Append Logic for History Buckets
-            if k in ["messages", "world_updates"] and isinstance(v, list):
-                target_key = "world" if k == "world_updates" else k
-                updated.setdefault(target_key, []).extend(v)
-            
-            # Deep Merge for Dictionaries
-            elif isinstance(v, dict) and k in updated and isinstance(updated[k], dict):
-                updated[k].update(v)
-            
-            # Direct Overwrite for others
-            else:
-                updated[k] = v
+    if state.get("rag_result") is not None and not state.get("rag_history"):
+        warnings.append("rag_result present but rag_history is empty")
 
-        # 3. Handle Phase Transitions
-        if patch_obj.phase:
-            try:
-                new_phase = self.machine.transition(patch_obj.phase)
-                updated["phase"] = new_phase
-            except ValueError as e:
-                logger.warning(str(e))
+    return {"missing": missing, "type_mismatch": mismatch, "warnings": warnings}
 
-        # 4. Reconcile Memory (Pruning & Limits)
-        updated = await self.memory.reconcile_state(updated, pruner)
-
-        self._state = updated
-        return self.state
 
 # ============================================================================
-# 6. DOMAIN-SPECIFIC HELPERS (View Generators)
+# 5. STATE VIEWS (FOR L2/L3/L5)
 # ============================================================================
 
 def get_conversational_view(state: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "messages": copy.deepcopy(state.get("messages") or []),
-        "summary": state.get("summary", "") or "",
+        "summary": str(state.get("summary") or ""),
     }
+
 
 def get_retrieval_view(state: Dict[str, Any]) -> Dict[str, Any]:
     return {
         "rag_history": copy.deepcopy(state.get("rag_history") or []),
         "world": copy.deepcopy(state.get("world") or []),
-        "last_query": state.get("rag_result", {}).get("last_run", {}).get("queries", [])
     }
 
-def attach_rag_result(state: Dict[str, Any], result: Dict[str, Any]) -> StatePatch:
-    """Creates a patch to merge RAG results."""
-    return StatePatch(
-        rag_result={
-            "documents": result.get("documents", []),
-            "last_run": {
-                "queries": result.get("queries", []),
-                "filters": result.get("filters", {})
-            }
-        },
-        # Append documents to history
-        extra={"rag_history": result.get("documents", [])} 
-    )
 
-def attach_execution_result(state: Dict[str, Any], result: Dict[str, Any], mode: str) -> StatePatch:
-    """Generic attachment for any L2 execution result."""
-    patch_data = {}
-    if mode == "drafting":
-        patch_data["draft_result"] = result
-    elif mode == "bullets":
-        patch_data["bullet_result"] = result
-    elif mode == "strategy":
-        patch_data["strategy_result"] = result
-    elif mode == "qa":
-        patch_data["qa_result"] = result
-    elif mode == "safety":
-        patch_data["safety_result"] = result
-    
-    return StatePatch(**patch_data)
+def get_prompt_context_view(state: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "messages": copy.deepcopy(state.get("messages") or []),
+        "summary": str(state.get("summary") or ""),
+        "rag_history": copy.deepcopy(state.get("rag_history") or []),
+        "world": copy.deepcopy(state.get("world") or []),
+    }
+
+
+# ============================================================================
+# 6. GLOBAL STATE ADAPTER
+# ============================================================================
+
+class StateAdapter:
+    """
+    Unified L4 state manager:
+
+        • Owns an internal canonical state dict
+        • Applies key-scoped patches
+        • Delegates to MemoryManager for reconciliation
+        • Enforces phase transitions via StatePhaseMachine
+        • Attaches validation metadata
+    """
+
+    def __init__(
+        self,
+        memory_manager: Optional[MemoryManager] = None,
+        machine: Optional[StatePhaseMachine] = None,
+    ) -> None:
+        self.memory = memory_manager or MemoryManager()
+        self.machine = machine or StatePhaseMachine()
+
+        self._state: Dict[str, Any] = {
+            "messages": [],
+            "rag_history": [],
+            "world": [],
+            "summary": "",
+            "session": {},
+            "metadata": {},
+            "phase": self.machine.phase.value,
+            "phase_metadata": {"phase": self.machine.phase.value},
+        }
+
+    @property
+    def state(self) -> Dict[str, Any]:
+        return copy.deepcopy(self._state)
+
+    def _coerce_mapping(self, value: Any) -> Dict[str, Any]:
+        if isinstance(value, MutableMapping):
+            return dict(value)
+        return {}
+
+    def apply_patch(self, key: str, value: Any) -> Dict[str, Any]:
+        """
+        Apply a patch to a top-level key of the state, then reconcile memory
+        and update phase/validation metadata.
+
+        Returns a (deep-copied) snapshot of the updated state.
+        """
+        updated = copy.deepcopy(self._state)
+        updated[key] = value
+
+        # Reconcile context budgets & canonicalization
+        updated = self.memory.reconcile(updated)
+
+        # Enforce phase coherence (if phase changed externally)
+        phase_value = updated.get("phase", self.machine.phase.value)
+        phase_obj = WorkflowPhase(phase_value)
+        if phase_obj != self.machine.phase:
+            self.machine.transition(phase_obj)
+        updated["phase"] = self.machine.phase.value
+        updated["phase_metadata"] = {
+            "phase": self.machine.phase.value,
+            "history": list(self.machine.history),
+        }
+
+        # Attach validation metadata
+        updated["metadata"]["validation"] = validate_state(updated)
+
+        self._state = updated
+        return self.state
+
+    def advance_phase(self, phase: WorkflowPhase) -> WorkflowPhase:
+        """
+        Force a phase transition on the machine and reflect it in state.
+        """
+        new_phase = self.machine.transition(phase)
+        self._state["phase"] = new_phase.value
+        self._state["phase_metadata"] = {
+            "phase": new_phase.value,
+            "history": list(self.machine.history),
+        }
+        return new_phase
+
+
+# ============================================================================
+# 7. DOMAIN-SPECIFIC STATE ATTACHERS (for L3 Orchestrator)
+# ============================================================================
+
+def attach_rag_result(state: Dict[str, Any], rag_payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Integrate RAG execution result into state:
+        • Extend rag_history
+        • Update rag bucket with results + last_run metadata
+    """
+    s = copy.deepcopy(state)
+    docs = rag_payload.get("documents") or []
+    s.setdefault("rag_history", []).extend(docs)
+    s["rag_result"] = {
+        "documents": docs,
+        "queries": rag_payload.get("queries", []),
+        "ranking_strategy": rag_payload.get("ranking_strategy", "hybrid"),
+        "hyde_used": rag_payload.get("hyde_used", False),
+    }
+    return s
+
+
+def attach_bullet_result(state: Dict[str, Any], bullet_payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Integrate bullet execution result:
+        • Append to bullet_history
+        • Store bullet_result bucket
+    """
+    s = copy.deepcopy(state)
+    bullets = bullet_payload.get("bullets") or []
+    s.setdefault("bullet_history", []).append(bullets)
+    s["bullet_result"] = {
+        "bullets": bullets,
+        "guidelines": bullet_payload.get("guidelines", []),
+        "metrics_focus": bullet_payload.get("metrics_focus", []),
+    }
+    return s
+
+
+def attach_draft_result(state: Dict[str, Any], draft_payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Integrate draft execution result:
+        • Append to draft_history
+        • Store draft_result bucket
+    """
+    s = copy.deepcopy(state)
+    draft = draft_payload.get("draft") or []
+    s.setdefault("draft_history", []).append(draft)
+    s["draft_result"] = {
+        "sections": draft_payload.get("sections", []),
+        "tone": draft_payload.get("tone", ""),
+        "draft": draft,
+        "hints": draft_payload.get("hints", []),
+    }
+    # Optionally reflect a summary snippet
+    if draft and not s.get("summary"):
+        s["summary"] = str(draft[0])[:400]
+    return s
+
+
+def attach_qa_result(state: Dict[str, Any], qa_payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Integrate QA execution result:
+        • Append qa_report to qa_history
+        • Store qa_result bucket
+    """
+    s = copy.deepcopy(state)
+    report = (qa_payload.get("qa_report") or {}).copy()
+    s.setdefault("qa_history", []).append(report)
+    s["qa_result"] = {
+        "report": report,
+        "issues": report.get("issues", []),
+        "passed": report.get("passed", False),
+        "confidence": report.get("confidence", 0.0),
+    }
+    return s
+
+
+def attach_safety_result(state: Dict[str, Any], safety_payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Integrate Safety execution result:
+        • Append safety_report to safety_history
+        • Store safety_result bucket
+    """
+    s = copy.deepcopy(state)
+    report = (safety_payload.get("safety_report") or {}).copy()
+    sanitized = safety_payload.get("sanitized_content", "")
+    s.setdefault("safety_history", []).append(report)
+    s["safety_result"] = {
+        "report": report,
+        "issues": report.get("issues", []),
+        "passed": report.get("passed", False),
+        "toxicity": report.get("toxicity", 0.0),
+        "sanitized_content": sanitized,
+    }
+    return s
+
+
+def attach_strategy_result(state: Dict[str, Any], strat_payload: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Integrate Strategy execution result:
+        • Append to strategy_history
+        • Store strategy_result bucket
+    """
+    s = copy.deepcopy(state)
+    branches = strat_payload.get("strategy_branches") or []
+    selected = strat_payload.get("selected_strategy") or (branches[0] if branches else {})
+    s.setdefault("strategy_history", []).append(selected)
+    s["strategy_result"] = {
+        "branches": branches,
+        "selected_strategy": selected,
+    }
+    return s
