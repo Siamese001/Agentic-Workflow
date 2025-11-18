@@ -10,7 +10,7 @@ No execution, no state mutation, no external calls.
 from __future__ import annotations
 from typing import Any, Dict, List
 
-from shared.models import PlanObject
+from models import PlanObject
 from .planning_utils import extract_job_profile, extract_resume_profile
 
 
