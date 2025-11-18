@@ -2,12 +2,12 @@
 """
 L1 — Draft Planning (v10_9)
 
-Pure deterministic planning logic for narrative/structured draft creation.
+Pure deterministic planning logic for narrative or structured draft generation.
 Consumes orchestration state and emits a PlanObject describing:
     • sections to generate
     • tone, audience, style
-    • content constraints from job & resume
-    • optional hints for L2 drafting executors
+    • contextual hints
+    • content constraints derived from job/resume
 
 No execution, no model calls, no state mutation.
 """
@@ -15,7 +15,7 @@ No execution, no model calls, no state mutation.
 from __future__ import annotations
 from typing import Any, Dict, List
 
-from shared.models import PlanObject
+from models import PlanObject
 from .planning_utils import (
     extract_job_profile,
     extract_resume_profile,
@@ -25,21 +25,18 @@ from .planning_utils import (
 
 
 def _resolve_tone(state: Dict[str, Any]) -> str:
-    """Determine tone based on user or strategy metadata."""
     strategy_plan = state.get("strategy", {}).get("strategy_plan") or {}
     if hasattr(strategy_plan, "model_dump"):
         strategy_plan = strategy_plan.model_dump()
 
-    tone = (
+    return (
         state.get("tone")
         or strategy_plan.get("tone")
         or "Professional"
     )
-    return str(tone)
 
 
 def _resolve_audience(state: Dict[str, Any]) -> str:
-    """Audience defaults to 'general' unless configured."""
     strategy_plan = state.get("strategy", {}).get("strategy_plan") or {}
     if hasattr(strategy_plan, "model_dump"):
         strategy_plan = strategy_plan.model_dump()
@@ -52,18 +49,17 @@ def _resolve_audience(state: Dict[str, Any]) -> str:
 
 
 def _pull_drafting_hints(job_profile: Dict[str, Any], resume_profile: Dict[str, Any]) -> List[str]:
-    """Provide contextual hints based on job + resume signals."""
     hints: List[str] = []
 
     if job_profile.get("summary"):
         hints.append("Align opening paragraph to job summary keywords")
 
     if resume_profile.get("summary"):
-        hints.append("Start with a strong professional summary derived from resume")
+        hints.append("Lead with resume-derived strengths")
 
-    if job_profile.get("requirements"):
-        reqs = ", ".join(job_profile["requirements"][:3])
-        hints.append(f"Integrate priority JD requirements: {reqs}")
+    reqs = job_profile.get("requirements") or []
+    if reqs:
+        hints.append(f"Focus on JD priority skills: {', '.join(reqs[:3])}")
 
     metrics = detect_metrics(resume_profile.get("experiences", []))
     if metrics:
@@ -73,8 +69,6 @@ def _pull_drafting_hints(job_profile: Dict[str, Any], resume_profile: Dict[str, 
 
 
 def build_draft_plan(state: Dict[str, Any]) -> PlanObject:
-    """Construct an L1 drafting PlanObject."""
-
     job_profile = extract_job_profile(state)
     resume_profile = extract_resume_profile(state)
     sections = collect_sections(state)
@@ -126,5 +120,4 @@ def build_draft_plan(state: Dict[str, Any]) -> PlanObject:
 
 
 def plan(state: Dict[str, Any]) -> PlanObject:
-    """L1 public entrypoint."""
     return build_draft_plan(state)
