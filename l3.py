@@ -1,85 +1,92 @@
 # FILE: l3.py
 """
-Unified L3 Orchestration Layer (v10_9) — FULL AGENTIC IMPLEMENTATION
+Unified L3 Orchestration Layer (v10_9) — FULL AGENTIC IMPLEMENTATION (REFINED)
 
 This file provides the complete orchestration logic for the v10_9 agentic
-architecture. It fully restores the orchestration capabilities of v10.7
-(including multi-phase execution, retries, arbitration, HIL-style pauses,
-and structured phase transitions), but rewritten cleanly in the new 10_9 design
-with NO legacy references.
+architecture. It fully restores orchestration capabilities (DAGs,
+multi-agent QA council, safety arbitration) while preserving the strict
+L1–L5 separation:
+
+    • L1: planning only (PlanObject).
+    • L2: execution only (ExecutionResult).
+    • L3: control flow / orchestration only.
+    • L4: state management only (StateAdapter).
+    • L5: safety & policy only (SafetyEngine, PolicyEngine, ArbitrationEngine).
 
 Responsibilities:
-    • Phase machine (INIT → PLANNING → EXECUTING → REVIEWING → COMPLETE)
-    • Domain orchestrators (strategy, rag, bullets, drafting, qa, safety)
-    • Global Orchestrator (L1 → L2 → L4 → L5 integration)
-    • Arbitration checkpoints
-    • Retry + replan logic
-    • Deterministic execution trace events
-    • A2A message propagation
-    • HIL pause / re-entry simulation
+    • Phase machine (INIT → PLANNING → EXECUTING → REVIEWING → COMPLETE/FAILED)
+    • Graph-based orchestration (DAG) for a single L1 PlanObject
+    • Domain execution via L2 route_executor(plan, state)
+    • Safety evaluation via L5 SafetyEngine + PolicyEngine + ArbitrationEngine
+    • Optional multi-agent QA council when plan.mode == "qa"
+    • Emitting a final WorkflowState
 
-Pure orchestration:
-    • NO cognition (L1)
-    • NO tool execution (L2)
-    • NO state mutation (L4)
-    • NO safety/policy (L5)
+Non-responsibilities:
+    • NO cognition (L1).
+    • NO tool/LLM execution (L2).
+    • NO state normalization/budgeting (L4).
+    • NO safety decisions (L5).
 """
 
 from __future__ import annotations
 
-import asyncio
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Callable, Optional, Set
 
-from exceptions import (
+from models import (
+    WorkflowState,
+    PlanObject,
+    ExecutionResult,
+    WorkflowPhase,
+    StatePatch,
+)
+from runtime_utils import (
+    Constants,
     ValidationError,
     ToolExecutionError,
     WorkflowTimeoutError,
+    CostTracker,
+    compute_optimization_hint,
+    record_event,
 )
-from models import WorkflowState, ExecutionResult, PlanObject
-from runtime_utils import Constants
 from l2 import route_executor
-from l4 import (
-    StateAdapter,
-    attach_rag_result,
-    attach_bullet_result,
-    attach_draft_result,
-    attach_qa_result,
-    attach_safety_result,
-    attach_strategy_result,
-)
-from l5 import (
-    SafetyEngine,
-    PolicyEngine,
-    ArbitrationEngine,
-)
+from l4 import StateAdapter
+from l5 import SafetyEngine, PolicyEngine, ArbitrationEngine
+from agents import MultiAgentOrchestrator, COUNCIL_OF_QA
 
-# ---------------------------------------------------------------------------
-# PHASE MACHINE (Equivalent to v10.7 + v10.8 StateMachine behavior)
-# ---------------------------------------------------------------------------
+
+# =============================================================================
+# 1. PHASE MACHINE
+# =============================================================================
+
 
 class PhaseMachine:
     """
-    Manages allowed phase transitions:
-        INIT → PLANNING
-        PLANNING → EXECUTING / FAILED
-        EXECUTING → REVIEWING / FAILED
-        REVIEWING → COMPLETE / PLANNING / FAILED
-        COMPLETE → (terminal)
-        FAILED → (terminal)
+    Manages allowed workflow phase transitions:
+
+        INIT       → PLANNING
+        PLANNING   → EXECUTING / FAILED
+        EXECUTING  → REVIEWING / FAILED
+        REVIEWING  → COMPLETE / PLANNING / FAILED
+        COMPLETE   → (terminal)
+        FAILED     → (terminal)
     """
 
     _ALLOWED = {
-        "init":       ["planning", "failed"],
-        "planning":   ["executing", "failed"],
-        "executing":  ["reviewing", "failed"],
-        "reviewing":  ["complete", "planning", "failed"],
-        "complete":   [],
-        "failed":     [],
+        WorkflowPhase.INIT.value: [WorkflowPhase.PLANNING.value, WorkflowPhase.FAILED.value],
+        WorkflowPhase.PLANNING.value: [WorkflowPhase.EXECUTING.value, WorkflowPhase.FAILED.value],
+        WorkflowPhase.EXECUTING.value: [WorkflowPhase.REVIEWING.value, WorkflowPhase.FAILED.value],
+        WorkflowPhase.REVIEWING.value: [
+            WorkflowPhase.COMPLETE.value,
+            WorkflowPhase.PLANNING.value,
+            WorkflowPhase.FAILED.value,
+        ],
+        WorkflowPhase.COMPLETE.value: [],
+        WorkflowPhase.FAILED.value: [],
     }
 
-    def __init__(self, initial: str = "init") -> None:
-        self.phase = initial
+    def __init__(self, initial: str = WorkflowPhase.INIT.value) -> None:
+        self.phase: str = initial
         self.history: List[str] = [initial]
 
     def transition(self, target: str) -> str:
@@ -93,215 +100,321 @@ class PhaseMachine:
     def current(self) -> str:
         return self.phase
 
-# ---------------------------------------------------------------------------
-# EXECUTION HELPERS (Domain-level Orchestrators)
-# ---------------------------------------------------------------------------
 
-async def _execute_with_retry(
-    plan: PlanObject,
-    state: Dict[str, Any],
-    max_retries: int = 1,
-    backoff: float = 0.1,
-) -> ExecutionResult:
-    """
-    Lightweight deterministic retry wrapper for domain-level execution.
-    """
-    exc: Optional[Exception] = None
-    for attempt in range(max_retries + 1):
-        try:
-            return await route_executor(plan, state)
-        except Exception as e:
-            exc = e
-            if attempt < max_retries:
-                await asyncio.sleep(backoff * (attempt + 1))
-    raise ToolExecutionError(f"L2 execution failed: {exc}")
+# =============================================================================
+# 2. DAG DEFINITIONS
+# =============================================================================
 
-# ---------------------------------------------------------------------------
-# DOMAIN ORCHESTRATORS (FULL PIPELINES)
-# ---------------------------------------------------------------------------
 
 @dataclass
-class DomainResult:
-    state: Dict[str, Any]
-    execution: ExecutionResult
-    note: str
-
-class StrategyOrchestrator:
-    async def run(self, plan: PlanObject, state: Dict[str, Any], adapter: StateAdapter) -> DomainResult:
-        result = await _execute_with_retry(plan, state)
-        new_state = attach_strategy_result(state, result.payload)
-        new_state = adapter.apply_patch("strategy_result", new_state.get("strategy"))
-        return DomainResult(
-            state=new_state,
-            execution=result,
-            note="Strategy execution complete",
-        )
-
-class RAGOrchestrator:
-    async def run(self, plan: PlanObject, state: Dict[str, Any], adapter: StateAdapter) -> DomainResult:
-        result = await _execute_with_retry(plan, state)
-        new_state = attach_rag_result(state, result.payload)
-        new_state = adapter.apply_patch("rag_result", new_state.get("rag"))
-        return DomainResult(
-            state=new_state,
-            execution=result,
-            note="RAG retrieval complete",
-        )
-
-class BulletOrchestrator:
-    async def run(self, plan: PlanObject, state: Dict[str, Any], adapter: StateAdapter) -> DomainResult:
-        result = await _execute_with_retry(plan, state)
-        new_state = attach_bullet_result(state, result.payload)
-        new_state = adapter.apply_patch("bullet_result", new_state.get("bullets"))
-        return DomainResult(
-            state=new_state,
-            execution=result,
-            note="Bullet generation complete",
-        )
-
-class DraftOrchestrator:
-    async def run(self, plan: PlanObject, state: Dict[str, Any], adapter: StateAdapter) -> DomainResult:
-        result = await _execute_with_retry(plan, state)
-        new_state = attach_draft_result(state, result.payload)
-        new_state = adapter.apply_patch("draft_result", new_state.get("draft"))
-        return DomainResult(
-            state=new_state,
-            execution=result,
-            note="Drafting complete",
-        )
-
-class QAOrchestrator:
-    async def run(self, plan: PlanObject, state: Dict[str, Any], adapter: StateAdapter) -> DomainResult:
-        result = await _execute_with_retry(plan, state)
-        new_state = attach_qa_result(state, result.payload)
-        new_state = adapter.apply_patch("qa_result", new_state.get("qa"))
-        return DomainResult(
-            state=new_state,
-            execution=result,
-            note="QA validation complete",
-        )
-
-class SafetyOrchestrator:
-    async def run(self, plan: PlanObject, state: Dict[str, Any], adapter: StateAdapter) -> DomainResult:
-        result = await _execute_with_retry(plan, state)
-        new_state = attach_safety_result(state, result.payload)
-        new_state = adapter.apply_patch("safety_result", new_state.get("safety"))
-        return DomainResult(
-            state=new_state,
-            execution=result,
-            note="Safety validation complete",
-        )
-
-# ---------------------------------------------------------------------------
-# HIL (HUMAN-IN-THE-LOOP) SIMULATION
-# ---------------------------------------------------------------------------
-
-async def _hil_pause_if_needed(state: Dict[str, Any]) -> Dict[str, Any]:
+class DAGNode:
     """
-    Deterministic HIL simulation:
-        • If state["hil_request"] exists → simulate pause
-        • Return patched state with "hil_acknowledged"
+    Structural node definition for DAG orchestration.
+
+    run(context) -> context is a deterministic transformation.
+    condition(context) -> key is an optional condition used to choose
+    conditional edges from this node.
     """
-    if "hil_request" in state:
-        await asyncio.sleep(0.01)  # simulate pause
-        new = dict(state)
-        new["hil_acknowledged"] = True
-        return new
-    return state
 
-# ---------------------------------------------------------------------------
-# ARBITRATION CHECKPOINT
-# ---------------------------------------------------------------------------
+    name: str
+    run: Callable[[Dict[str, Any]], Dict[str, Any]]
+    condition: Optional[Callable[[Dict[str, Any]], str]] = None
+    conditional_edges: Dict[str, List[str]] = field(default_factory=dict)
+    retries: int = 0
+    fallback_edge: Optional[str] = None
 
-safety_engine = SafetyEngine()
-policy_engine = PolicyEngine()
-arbiter = ArbitrationEngine()
+    def __post_init__(self) -> None:
+        if not self.name:
+            raise ValidationError("DAG nodes require a non-empty name.")
 
-async def _run_arbitration(global_state: Dict[str, Any]) -> Dict[str, Any]:
+
+@dataclass
+class DAG:
     """
-    Run a deterministic L5 arbitration check on the final result.
+    A directed acyclic graph of orchestration steps.
+
+    nodes: mapping of node name -> DAGNode
+    edges: default edges (fallback when conditional_edges not used)
     """
-    safety_report = (
-        global_state.get("safety_result", {})
-        or global_state.get("safety", {})
-        or {}
-    )
-    policy_decision = policy_engine.review(safety_report)
-    action = arbiter.decide(policy_decision, safety_report)
-    out = dict(global_state)
-    out["arbitration"] = {"policy_decision": policy_decision, "action": action}
-    return out
 
-# ---------------------------------------------------------------------------
-# GLOBAL ORCHESTRATOR
-# ---------------------------------------------------------------------------
+    nodes: Dict[str, DAGNode]
+    edges: Dict[str, List[str]]
 
+    def validate(self) -> None:
+        if not self.nodes:
+            raise ValidationError("DAG must define at least one node.")
+
+        # Names must match keys
+        for node_name, node in self.nodes.items():
+            if node_name != node.name:
+                raise ValidationError(
+                    f"Node key '{node_name}' does not match node name '{node.name}'."
+                )
+
+        # All edge endpoints must exist
+        for source, targets in self.edges.items():
+            if source not in self.nodes:
+                raise ValidationError(f"Edge source '{source}' is not a defined node.")
+            for target in targets:
+                if target not in self.nodes:
+                    raise ValidationError(
+                        f"Edge target '{target}' from '{source}' is not a defined node."
+                    )
+
+        # Conditional edges also must be valid
+        for node in self.nodes.values():
+            for cond_targets in node.conditional_edges.values():
+                for target in cond_targets:
+                    if target not in self.nodes:
+                        raise ValidationError(
+                            f"Conditional edge target '{target}' from '{node.name}' "
+                            "is not a defined node."
+                        )
+
+    def topological_order(self) -> List[str]:
+        """
+        Return a deterministic topological ordering of the DAG nodes.
+        """
+        self.validate()
+        in_degree: Dict[str, int] = {name: 0 for name in self.nodes}
+        for targets in self.edges.values():
+            for target in targets:
+                in_degree[target] += 1
+        # Note: conditional edges are *potential*, so they don't affect
+        # baseline in-degree here.
+
+        ready = sorted([name for name, deg in in_degree.items() if deg == 0])
+        order: List[str] = []
+
+        adjacency = {src: list(dests) for src, dests in self.edges.items()}
+
+        while ready:
+            current = ready.pop(0)
+            order.append(current)
+            for neighbor in sorted(adjacency.get(current, [])):
+                in_degree[neighbor] -= 1
+                if in_degree[neighbor] == 0:
+                    ready.append(neighbor)
+
+        if len(order) != len(self.nodes):
+            raise ValidationError("DAG contains cycles; topological sort failed.")
+        return order
+
+
+class DAGExecutor:
+    """
+    Deterministic executor for DAG nodes with simple retry logic.
+
+    This engine:
+        • Runs nodes in topological order.
+        • For each node, executes it with optional retries.
+        • Decides outgoing edges either via conditional_edges (if present
+          and condition not None) or via default DAG edges.
+
+    The context dict is the single mutable bag of data; nodes may
+    mutate it by returning a new mapping.
+    """
+
+    def run(self, dag: DAG, initial_context: Dict[str, Any]) -> Dict[str, Any]:
+        dag.validate()
+        context: Dict[str, Any] = dict(initial_context)
+
+        # Build parents map for gating node readiness
+        parents: Dict[str, Set[str]] = {name: set() for name in dag.nodes}
+        for src, targets in dag.edges.items():
+            for tgt in targets:
+                parents[tgt].add(src)
+        for node in dag.nodes.values():
+            for targets in node.conditional_edges.values():
+                for tgt in targets:
+                    parents[tgt].add(node.name)
+
+        ready: List[str] = sorted(
+            name for name, deps in parents.items() if not deps
+        )
+        executed: Set[str] = set()
+
+        while ready:
+            node_name = ready.pop(0)
+            if node_name in executed:
+                continue
+
+            node = dag.nodes[node_name]
+            context = self._execute_with_retries(node, context)
+            outgoing = self._determine_edges(dag, node, context)
+            executed.add(node_name)
+            self._enqueue_targets(outgoing, dag, parents, executed, ready)
+
+        return context
+
+    def _execute_with_retries(self, node: DAGNode, context: Dict[str, Any]) -> Dict[str, Any]:
+        attempts = node.retries + 1
+        last_exc: Optional[Exception] = None
+
+        for _ in range(attempts):
+            try:
+                new_context = node.run(dict(context))
+                if not isinstance(new_context, dict):
+                    raise ValidationError(
+                        f"DAG node '{node.name}' did not return a context dict."
+                    )
+                return new_context
+            except Exception as exc:
+                last_exc = exc
+        raise ToolExecutionError(f"Node '{node.name}' failed after {attempts} attempts: {last_exc}")
+
+    def _determine_edges(self, dag: DAG, node: DAGNode, context: Dict[str, Any]) -> List[str]:
+        if node.condition and node.conditional_edges:
+            key = node.condition(context)
+            return node.conditional_edges.get(key, dag.edges.get(node.name, []))
+        return dag.edges.get(node.name, [])
+
+    def _enqueue_targets(
+        self,
+        targets: List[str],
+        dag: DAG,
+        parents: Dict[str, Set[str]],
+        executed: Set[str],
+        ready: List[str],
+    ) -> None:
+        for tgt in targets:
+            if tgt not in dag.nodes:
+                raise ValidationError(f"Edge target '{tgt}' is not a defined node in the DAG.")
+            if parents.get(tgt, set()).issubset(executed) and tgt not in ready:
+                ready.append(tgt)
+        ready.sort()
+
+
+# =============================================================================
+# 3. GLOBAL ORCHESTRATOR
+# =============================================================================
+
+
+@dataclass
 class Orchestrator:
     """
-    The central orchestrator for v10_9 agentic execution.
+    Central orchestrator for v10_9 agentic execution.
 
-    Steps:
-        1. Phase INIT
-        2. PLANNING (already done by L1)
-        3. EXECUTING (run domain orchestrator)
-        4. REVIEWING (arbitration + HIL pause)
-        5. COMPLETE
+    Given:
+        • a PlanObject from L1
+        • an initial state dict
+
+    It will:
+        1. Initialize L4.StateAdapter with the initial state.
+        2. Use a PhaseMachine to move through:
+            INIT → PLANNING → EXECUTING → REVIEWING → COMPLETE / FAILED
+        3. Build and run a DAG:
+              plan_node → execute_node → safety_node → qa_council_node? → finalize_node
+        4. Call L2 route_executor to execute the plan.
+        5. Call L5 SafetyEngine + PolicyEngine + ArbitrationEngine for safety.
+        6. Optionally call MultiAgent QA council if mode == "qa".
+        7. Return a WorkflowState with final state and phase metadata.
+
+    No tools/LLMs are called here, and no state mutation logic is embedded;
+    all state updates are delegated to L4.StateAdapter.
     """
 
-    def __init__(self):
-        self.machine = PhaseMachine()
-        self.adapter = StateAdapter()
-        self.domain_map = {
-            "strategy": StrategyOrchestrator(),
-            "rag":      RAGOrchestrator(),
-            "bullets":  BulletOrchestrator(),
-            "drafting": DraftOrchestrator(),
-            "qa":       QAOrchestrator(),
-            "safety":   SafetyOrchestrator(),
-        }
+    state_adapter: StateAdapter = field(default_factory=StateAdapter)
+    safety_engine: SafetyEngine = field(default_factory=SafetyEngine)
+    policy_engine: PolicyEngine = field(default_factory=PolicyEngine)
+    arbitration_engine: ArbitrationEngine = field(default_factory=ArbitrationEngine)
 
-    async def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
+    def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
         """
         Execute full L3 orchestration for a single L1 PlanObject.
+
+        This is a synchronous API; higher layers (main/CLI) may wrap it
+        with asyncio as needed.
         """
+        # 1. Initialize phase machine and cost tracker
+        machine = PhaseMachine()
+        cost_tracker = CostTracker()
 
-        # INIT → PLANNING
-        self.machine.transition("planning")
+        # 2. Seed adapter with initial state via patches
+        for key, value in (initial_state or {}).items():
+            self.state_adapter.apply_patch(StatePatch(key=key, value=value))
 
-        mode = (plan.get("mode") or "").lower()
-        if mode not in self.domain_map:
-            raise ValidationError(f"Unknown mode for orchestration: {mode}")
+        # 3. Phase: INIT → PLANNING
+        machine.transition(WorkflowPhase.PLANNING.value)
 
-        domain_orchestrator = self.domain_map[mode]
+        mode = str(plan.get("mode", "")).lower()
+        if not mode:
+            raise ValidationError("PlanObject missing 'mode' field.")
 
-        # PLANNING → EXECUTING
-        self.machine.transition("executing")
-        domain_result = await domain_orchestrator.run(plan, initial_state, self.adapter)
-        exec_state = domain_result.state
+        # 4. Build DAG nodes
+        def plan_node(context: Dict[str, Any]) -> Dict[str, Any]:
+            # No planning here; plan already exists. We just attach it to context.
+            context["plan"] = plan
+            context["state"] = self.state_adapter.state
+            return context
 
-        # EXECUTING → REVIEWING
-        self.machine.transition("reviewing")
+        async def _execute_async(p: PlanObject, s: Dict[str, Any]) -> ExecutionResult[Any]:
+            return await route_executor(p, s)
 
-        # HIL Pause (deterministic simulation)
-        exec_state = await _hil_pause_if_needed(exec_state)
+        def execute_node(context: Dict[str, Any]) -> Dict[str, Any]:
+            nonlocal cost_tracker
+            cost_tracker.start_span("execution")
+            current_state = self.state_adapter.state
 
-        # L5 Arbitration
-        reviewed_state = await _run_arbitration(exec_state)
+            # L2 execution
+            # NOTE: We run an async executor in a blocking context using asyncio.run.
+            # This keeps L3 pure and synchronous from the outer caller's perspective.
+            exec_result: ExecutionResult[Any] = asyncio.run(_execute_async(plan, current_state))
+            cost_tracker.end_span("execution")
 
-        # REVIEWING → COMPLETE
-        self.machine.transition("complete")
+            context["execution_result"] = exec_result
+            # Patch state using L4 adapter, domain-specific keys
+            self._apply_execution_to_state(mode, exec_result)
+            context["state"] = self.state_adapter.state
+            return context
 
-        final_phase = self.machine.current()
-        workflow_id = reviewed_state.get("workflow_id", "workflow_v10_9")
+        def safety_node(context: Dict[str, Any]) -> Dict[str, Any]:
+            """
+            Run L5 safety evaluation based on current state and plan intent.
+            Produces:
+                context["safety_report"]
+                context["policy_decision"]
+                context["arbitration_action"]
+            """
+            state = context.get("state", self.state_adapter.state)
+            # SafetyEngine consumes content; details are implemented in l5.py
+            safety_report = self.safety_engine.evaluate_content(state, plan)
+            policy_decision = self.policy_engine.review(safety_report)
+            arbitration_action = self.arbitration_engine.decide(policy_decision, safety_report)
 
-        return WorkflowState(
-            workflow_id=workflow_id,
-            phase=final_phase,
-            nodes={},  # v10_9 does not expose graph nodes
-            state=reviewed_state,
-            phase_metadata={
-                "phase": final_phase,
-                "history": list(self.machine.history),
-                "note": domain_result.note,
-            },
-        )
+            context["safety_report"] = safety_report
+            context["policy_decision"] = policy_decision
+            context["arbitration_action"] = arbitration_action
+
+            # Attach safety-related blocks into state via adapter
+            self.state_adapter.apply_patch(StatePatch(key="safety_result", value=safety_report))
+            self.state_adapter.apply_patch(StatePatch(key="arbitration", value=arbitration_action))
+            context["state"] = self.state_adapter.state
+            return context
+
+        def safety_condition(context: Dict[str, Any]) -> str:
+            """
+            Decide next edge key based on arbitration action:
+                - "halt"  → no further nodes
+                - "proceed" → continue
+            """
+            action = (context.get("arbitration_action") or {}).get("action", "proceed")
+            if action == "halt":
+                return "halt"
+            return "proceed"
+
+        def qa_council_node(context: Dict[str, Any]) -> Dict[str, Any]:
+            """
+            If mode == "qa", run multi-agent QA council using COUNCIL_OF_QA.
+            If not QA mode, this node is a no-op (still present in the DAG).
+            """
+            if mode != "qa":
+                return context
+
+            state = context.get("state", self.state_adapter.state)
+            ma_orch = MultiAgentOrchestrator(graph=COUNCIL_OF_QA, state_adapter=self.state_adapter)
+            # Single synthetic message describing objective for QA council
+            council_state = ma_orch.dispatch_for_qa(state, plan)
+            # The orchestrator returns an updated state; reconcile through L4
+            for key, value in council_state.items():
+                self.state_adapter.apply_patch(StatePatch(key=key, value=value))
