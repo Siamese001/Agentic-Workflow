@@ -1,87 +1,48 @@
+# FILE: v10_9_clean/l2/tool_router.py
 """
 L2 — Tool Router (v10_9)
 
-Determines which ExecutionAgent should handle a given plan step.
+Maps an L1 PlanObject and its steps to the correct L2 execution function.
 
-Responsibilities:
-    • Inspect plan + step metadata (action, mode, handoff)
-    • Return the correct ExecutionAgent instance
-    • Never execute tools directly
-    • Never mutate state
-    • Keep routing deterministic and L2-local
+This replaces the 10_8/10_7 mixed router behavior and provides:
+    • clean mode-based routing
+    • no orchestration logic
+    • no planning logic
+    • deterministic executor selection
 """
 
 from __future__ import annotations
+from typing import Any, Dict, Callable, Awaitable
 
-from typing import Dict, Any
+from shared.models import PlanObject
+from shared.exceptions import OrchestrationError
 
-from ..shared.exceptions import OrchestrationError
-from ..shared.models import PlanObject
-from .l2_tool_base import ExecutionAgent
+# L2 executors
+from l2.strategy_execution import execute_strategy
+from l2.rag_execution import execute_rag
+from l2.bullet_execution import execute_bullets
+from l2.drafting_execution import execute_drafting
+from l2.qa_execution import execute_qa
+from l2.safety_execution import execute_safety
 
 
-class ToolRouter:
+_EXECUTOR_MAP: Dict[str, Callable[[PlanObject, Dict[str, Any]], Awaitable[Any]]] = {
+    "strategy": execute_strategy,
+    "rag": execute_rag,
+    "bullets": execute_bullets,
+    "drafting": execute_drafting,
+    "qa": execute_qa,
+    "safety": execute_safety,
+}
+
+
+def route_executor(plan: PlanObject) -> Callable[[PlanObject, Dict[str, Any]], Awaitable[Any]]:
     """
-    Registry-based tool router for L2 execution agents.
-
-    Usage:
-        router = ToolRouter(registry={
-            "rag": RagExecutor(...),
-            "bullet": BulletExecutor(...),
-            "drafting": DraftingExecutor(...),
-        })
-
-        agent = router.route(step, plan, state)
+    Determine the correct L2 executor based solely on plan.mode.
     """
+    mode = (plan.mode or "").lower()
 
-    def __init__(self, registry: Dict[str, ExecutionAgent] | None = None) -> None:
-        # registry maps action/mode → Agent instance
-        self.registry = registry or {}
+    if mode not in _EXECUTOR_MAP:
+        raise OrchestrationError(f"No L2 executor found for plan mode: {mode}")
 
-    def register(self, key: str, agent: ExecutionAgent) -> None:
-        """
-        Register an ExecutionAgent for a routing key.
-        Example: "rag" → RagExecutor()
-        """
-        self.registry[key] = agent
-
-    def route(
-        self,
-        step: Dict[str, Any],
-        plan: PlanObject,
-        state: Dict[str, Any],
-    ) -> ExecutionAgent:
-        """
-        Route one plan step to the appropriate ExecutionAgent.
-
-        Routing checks (in order):
-            1. step["executor"]
-            2. plan.handoff["preferred_executor"]
-            3. plan.mode
-            4. step.action
-        """
-
-        # 1 — Step-specified executor
-        explicit = step.get("executor")
-        if explicit and explicit in self.registry:
-            return self.registry[explicit]
-
-        # 2 — Plan-level preferred executor
-        preferred = (plan.handoff or {}).get("preferred_executor")
-        if preferred and preferred in self.registry:
-            return self.registry[preferred]
-
-        # 3 — Mode-based routing ("rag", "drafting", "strategy", etc.)
-        if plan.mode and plan.mode in self.registry:
-            return self.registry[plan.mode]
-
-        # 4 — Action-based routing
-        action = step.get("action")
-        if action and action in self.registry:
-            return self.registry[action]
-
-        # If none match → routing failure
-        raise OrchestrationError(
-            f"No L2 ExecutionAgent found for step={step} "
-            f"mode={plan.mode!r} preferred={preferred!r}"
-        )
+    return _EXECUTOR_MAP[mode]
