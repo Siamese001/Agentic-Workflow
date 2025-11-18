@@ -1,22 +1,27 @@
 # FILE: models.py
 """
-Unified Runtime Models (v10_9) — FULL AGENTIC IMPLEMENTATION (REFINED)
+Unified Runtime Models (v10_9) — FULL AGENTIC IMPLEMENTATION (ENTERPRISE REFINE)
 
 This module defines all canonical data structures used across the
-v10_9 agentic architecture, with enhancements to fully support:
+v10_9 agentic architecture, extended to fully support the
+Enterprise / Production feature set outlined in the 10_7 → 10_9
+refactoring plan:
 
     • Typed PlanObjects for L1 planning outputs
     • Typed Execution payloads for each L2 domain:
         - Strategy
-        - RAG
+        - RAG (core + external/vector RAG)
         - Bullets
         - Drafting
-        - QA
+        - QA (core + tool-suite/guild)
         - Safety
-        - Multi-agent meta signals
+        - HIL (human-in-the-loop)
+        - Meta-learning
+        - Checkpointing / Recovery metadata
     • WorkflowState as the single L3 → external API contract
-    • StatePatch as the L4 patch container (for future extensions)
-    • PhaseMetadata & TraceSpan for observability and debugging
+    • StatePatch as the L4 patch container (for all state writes)
+    • Phase metadata, trace IDs, and meta-learning snapshots
+    • Arbitration outcomes and self-correction surfaces
 
 Design goals:
     • NO cognition (L1) here — only data structures.
@@ -32,7 +37,7 @@ standard library types.
 from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, Optional, List, Iterable, TypeVar, Generic
+from typing import Any, Dict, Optional, List, Iterable, TypeVar, Generic, Union
 import copy
 import enum
 
@@ -61,6 +66,22 @@ class WorkflowPhase(str, enum.Enum):
     FAILED = "failed"
 
 
+class SelfCorrectionSurface(str, enum.Enum):
+    """
+    Surfaces for self-correction / recovery decisions.
+
+    These surfaces are used by L3 orchestrators and meta-learning
+    to decide how to adapt behavior over time.
+    """
+
+    RAG_RETRY = "rag_retry"
+    DRAFT_RETRY = "draft_retry"
+    QA_RECHECK = "qa_recheck"
+    STRATEGY_REPLAN = "strategy_replan"
+    HIL_ESCALATION = "hil_escalation"
+    CHECKPOINT_RECOVERY = "checkpoint_recovery"
+
+
 # =============================================================================
 # 2. BASE DICT-BACKED OBJECT (for PlanObject)
 # =============================================================================
@@ -72,7 +93,7 @@ class DictBacked:
 
         • attribute-style access
         • defensive copying
-        • .get(), .set(), .update()
+        • .get(), .update()
         • .to_dict()
         • deep_clone()
 
@@ -132,9 +153,10 @@ class PlanObject(DictBacked):
     Describes the full L1 cognitive plan for L2 execution.
 
     Examples of required / common fields (depending on mode):
-        • mode: "strategy" | "rag" | "drafting" | "bullets" | "qa" | "safety"
+        • mode: "strategy" | "rag" | "drafting" | "bullets" |
+                 "qa" | "safety" | "hil" | "meta_learning"
         • objective: str
-        • branches / steps / checks / rules
+        • branches / steps / checks / rules / surfaces
         • handoff: {target_layer: "l2", preferred_executor: "..."}
         • injection_framing / injection_reasoning
         • safety_metadata
@@ -157,12 +179,10 @@ class PlanObject(DictBacked):
 # These dataclasses provide typed payloads for ExecutionResult, one per
 # domain. They are OPTIONAL wrappers around the generic payload dict,
 # but serve as the canonical schema for each L2 executor.
-#
-# This closes the “raw dicts” gap while preserving backward compatibility.
 # =============================================================================
 
 # -----------------------------------------------------------------------------
-# 4.1 Strategy (L2 StrategyExecutor)
+# 4.1 Strategy (L2 StrategyExecutor / StrategyGuild)
 # -----------------------------------------------------------------------------
 
 
@@ -189,13 +209,16 @@ class StrategyExecutionPayload:
     aggregated_decision: str = ""
     aggregated_confidence: float = 0.0
     aggregated_rationale: str = ""
+    # Optional meta fields
+    complexity: Optional[str] = None
+    surfaces: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
 # -----------------------------------------------------------------------------
-# 4.2 RAG (L2 RAGExecutor)
+# 4.2 RAG (L2 RAGExecutor + External RAG)
 # -----------------------------------------------------------------------------
 
 
@@ -219,6 +242,8 @@ class RAGExecutionPayload:
     documents: List[RAGDocument] = field(default_factory=list)
     ranking_strategy: str = "hybrid"
     hyde_used: bool = True
+    vector_source: Optional[str] = None
+    bm25_used: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -226,11 +251,31 @@ class RAGExecutionPayload:
             "documents": [asdict(doc) for doc in self.documents],
             "ranking_strategy": self.ranking_strategy,
             "hyde_used": self.hyde_used,
+            "vector_source": self.vector_source,
+            "bm25_used": self.bm25_used,
         }
 
 
+@dataclass
+class RAGExternalStats:
+    """
+    Metadata-only payload describing external/vector RAG behavior.
+
+    Used for observability and optimization, not for direct user output.
+    """
+
+    provider: str
+    collection: str
+    retrieved_count: int
+    latency_ms: float
+    cache_hit: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
 # -----------------------------------------------------------------------------
-# 4.3 Bullets (L2 BulletExecutor)
+# 4.3 Bullets (L2 BulletExecutor + Bullet Guild)
 # -----------------------------------------------------------------------------
 
 
@@ -245,13 +290,15 @@ class BulletExecutionPayload:
     bullets: List[str] = field(default_factory=list)
     guidelines: List[str] = field(default_factory=list)
     metrics_focus: List[str] = field(default_factory=list)
+    # Optional guild metadata
+    guild_passes: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
 # -----------------------------------------------------------------------------
-# 4.4 Drafting (L2 DraftingExecutor)
+# 4.4 Drafting (L2 DraftingExecutor + Drafting Guild)
 # -----------------------------------------------------------------------------
 
 
@@ -274,13 +321,15 @@ class DraftExecutionPayload:
     tone: str = "Professional"
     draft: List[str] = field(default_factory=list)
     hints: List[str] = field(default_factory=list)
+    # Optional guild metadata
+    passes: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
 
 
 # -----------------------------------------------------------------------------
-# 4.5 QA (L2 QAExecutor)
+# 4.5 QA (L2 QAExecutor + QA Tool Suite)
 # -----------------------------------------------------------------------------
 
 
@@ -297,6 +346,9 @@ class QAReport:
     passed: bool = False
     confidence: float = 0.0
     findings: List[QAFinding] = field(default_factory=list)
+    # Optional suite-level signals
+    tool_suite_used: bool = False
+    tools_invoked: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -366,7 +418,106 @@ class SafetyExecutionPayload:
 
 
 # -----------------------------------------------------------------------------
-# 4.7 Multi-Agent / Arbitration Payloads
+# 4.7 HIL (Human-in-the-loop)
+# -----------------------------------------------------------------------------
+
+
+@dataclass
+class HILPrompt:
+    """Structured representation of a HIL question to a human reviewer."""
+
+    question: str
+    context: str
+    recommended_action: str = ""
+    urgency: str = "normal"  # "low" | "normal" | "high"
+
+
+@dataclass
+class HILResponse:
+    """Structured response captured from a human reviewer."""
+
+    approved: bool
+    comments: str = ""
+    requested_changes: List[str] = field(default_factory=list)
+
+
+@dataclass
+class HILExecutionPayload:
+    """
+    Execution payload for HIL interactions.
+
+    Typically returned under ExecutionResult.payload["hil"].
+    """
+
+    prompt: HILPrompt
+    response: Optional[HILResponse] = None
+    surface: str = SelfCorrectionSurface.HIL_ESCALATION.value
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "prompt": asdict(self.prompt),
+            "response": asdict(self.response) if self.response else None,
+            "surface": self.surface,
+        }
+
+
+# -----------------------------------------------------------------------------
+# 4.8 Meta-Learning
+# -----------------------------------------------------------------------------
+
+
+@dataclass
+class MetaLearningFinding:
+    """Single pattern / hypothesis extracted from logs."""
+
+    kind: str  # "pattern" | "hypothesis" | "recommendation"
+    description: str
+    weight: float = 0.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class MetaLearningSnapshot:
+    """
+    Aggregated meta-learning snapshot summarizing a run of the
+    meta-learning graph.
+    """
+
+    workflow_id: str
+    raw_feedback_entries: int
+    raw_preference_entries: int
+    findings: List[MetaLearningFinding] = field(default_factory=list)
+    proposal: Dict[str, Any] = field(default_factory=dict)
+    critique: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "workflow_id": self.workflow_id,
+            "raw_feedback_entries": self.raw_feedback_entries,
+            "raw_preference_entries": self.raw_preference_entries,
+            "findings": [asdict(f) for f in self.findings],
+            "proposal": copy.deepcopy(self.proposal),
+            "critique": copy.deepcopy(self.critique),
+        }
+
+
+@dataclass
+class MetaLearningExecutionPayload:
+    """
+    Execution payload for meta-learning passes.
+
+    Typically attached to state under a meta_learning block, not used
+    for direct user-visible output.
+    """
+
+    snapshot: MetaLearningSnapshot
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {"snapshot": self.snapshot.to_dict()}
+
+
+# -----------------------------------------------------------------------------
+# 4.9 Arbitration / Multi-Agent Payloads
 # -----------------------------------------------------------------------------
 
 
@@ -382,6 +533,7 @@ class MultiAgentCouncilResult:
     """
     Captures council-of-QA or other multi-agent consensus outcomes.
     """
+
     selected_id: Any
     selected_score: float
     votes: List[MultiAgentVote] = field(default_factory=list)
@@ -397,11 +549,36 @@ class ArbitrationDecision:
 
         action: "proceed" | "retry_l2" | "rerun_l1" | "halt"
         reason: short, deterministic explanation
+        surface_hint: optional SelfCorrectionSurface value
     """
 
     action: str
     reason: str
     surface_hint: Optional[str] = None
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
+
+
+# -----------------------------------------------------------------------------
+# 4.10 Checkpointing / Recovery Metadata
+# -----------------------------------------------------------------------------
+
+
+@dataclass
+class CheckpointInfo:
+    """
+    Summary of a persisted checkpoint for recovery and replay.
+
+    This is metadata-only and does not contain full state blobs; those
+    are left to the underlying persistence system.
+    """
+
+    checkpoint_id: str
+    created_at_iso: str
+    phase: str
+    notes: str = ""
+    surface: str = SelfCorrectionSurface.CHECKPOINT_RECOVERY.value
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -465,7 +642,7 @@ class WorkflowState:
 
     Fields:
         • workflow_id: str
-        • phase: WorkflowPhase (string value for API)
+        • phase: str (WorkflowPhase string)
         • nodes: dict (reserved for future graph support)
         • state: full context state dict
         • phase_metadata: dict (phase history, notes, hints)
@@ -486,79 +663,55 @@ class WorkflowState:
 @dataclass
 class StatePatch:
     """
-    Typed patch container for L4.
+    Minimal, key-scoped state patch used by L4.StateAdapter.
 
-    This is intentionally simple for v10_9:
+    In v10_9, StateAdapter.apply_patch expects:
 
-        key: top-level state key to update
-        value: value to assign (or merge, depending on adapter logic)
-        scope: reserved for future multi-session/multi-agent contexts
+        StatePatch(key=<top_level_key>, value=<replacement_or_partial_dict>)
+
+    Semantics:
+        • When both existing state[key] and value are dicts, a shallow
+          merge is performed.
+        • Otherwise, value replaces state[key] entirely.
     """
 
     key: str
     value: Any
-    scope: str = "local"
 
 
 # =============================================================================
-# 8. PHASE METADATA (OPTIONAL)
-# =============================================================================
-
-
-@dataclass
-class PhaseMetadata:
-    """
-    Annotates a workflow phase with human-readable context.
-    """
-
-    phase: str
-    note: str = ""
-    extra: Dict[str, Any] = field(default_factory=dict)
-
-
-# =============================================================================
-# 9. TRACE SPAN / OBSERVABILITY (OPTIONAL)
+# 8. META / UTILITY TYPES
 # =============================================================================
 
 
 @dataclass
 class TraceSpan:
     """
-    Simple trace span for L2/L3/L4 observability.
+    Lightweight representation of a timing span for observability.
 
-    Fields:
-        • name: span name (e.g., "planning", "execution")
-        • start_ms, end_ms: timestamps
-        • tags: metadata for debugging / optimization
+    This is used only for typed observability payloads and is distinct
+    from the runtime_utils telemetry implementation.
     """
 
     name: str
-    start_ms: float
-    end_ms: float
+    duration_ms: float
     tags: Dict[str, Any] = field(default_factory=dict)
 
-    def duration_ms(self) -> float:
-        return max(0.0, self.end_ms - self.start_ms)
-
-
-# =============================================================================
-# 10. EVENT ENVELOPE (OPTIONAL TELEMETRY)
-# =============================================================================
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
-class EventEnvelope:
+class PhaseMetadata:
     """
-    Generic event envelope for optional global telemetry integration.
+    Metadata describing phase transitions for a workflow.
 
-    Example:
-        EventEnvelope(
-            event="qa_validation",
-            timestamp=time.time(),
-            payload={"plan_mode": "qa", "issues": [...]},
-        )
+    This can be embedded under WorkflowState.phase_metadata.
     """
 
-    event: str
-    timestamp: float
-    payload: Dict[str, Any]
+    phase: str
+    history: List[str] = field(default_factory=list)
+    notes: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
