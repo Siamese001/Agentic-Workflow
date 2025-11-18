@@ -1,59 +1,104 @@
 # orchestrator.py
+# FILE: v10_9_clean/l3/orchestrator.py
 """
-L3 — Orchestrator (v10_9)
+L3 — Global Orchestrator (v10_9)
 
-Coordinates workflow execution:
-    • Receives PlanObject from L1
-    • Delegates execution to L2 ExecutionEngine
-    • Manages phase transitions via ControlFlow
-    • Updates state via L4 (indirectly through L3 return values)
+This is the central L3 coordinator that:
+    • Accepts ANY L1 plan (strategy, rag, bullets, drafting, qa, safety)
+    • Chooses the correct domain orchestrator for that plan
+    • Applies top-level phase transitions via ControlFlow
+    • Returns a WorkflowState for integration by L4
+
+Domain orchestrators:
+    rag     → RAGOrchestrator
+    bullets → BulletOrchestrator
+    drafting→ DraftOrchestrator
+    strategy→ StrategyOrchestrator
+    qa      → QAOrchestrator
+    safety  → SafetyOrchestrator
 """
 
 from __future__ import annotations
+from typing import Any, Dict
 
-from typing import Dict, Any
+from shared.models import PlanObject, WorkflowState, PhaseMetadata
+from shared.constants import WorkflowPhase
+from shared.exceptions import OrchestrationError
 
-from ..shared.models import PlanObject, WorkflowState, PhaseMetadata
-from ..shared.exceptions import OrchestrationError
-from .control_flow import ControlFlow
-from .routing import ExecutionEngineRouter
+from l3.control_flow import ControlFlow
+
+# Domain orchestrators
+from l3.rag_orchestrator import RAGOrchestrator
+from l3.bullet_orchestrator import BulletOrchestrator
+from l3.draft_orchestrator import DraftOrchestrator
+from l3.strategy_orchestrator import StrategyOrchestrator
+from l3.qa_orchestrator import QAOrchestrator
+from l3.safety_orchestrator import SafetyOrchestrator
 
 
 class Orchestrator:
-    """Primary coordinator for plan → execution → review cycles."""
+    """Global L3 workflow orchestrator."""
 
-    def __init__(self, engine_router: ExecutionEngineRouter) -> None:
-        self.engine_router = engine_router
+    def __init__(self) -> None:
         self.cf = ControlFlow()
+
+        # Instantiate domain orchestrators
+        self._rag = RAGOrchestrator()
+        self._bullets = BulletOrchestrator()
+        self._draft = DraftOrchestrator()
+        self._strategy = StrategyOrchestrator()
+        self._qa = QAOrchestrator()
+        self._safety = SafetyOrchestrator()
 
     async def run(self, plan: PlanObject, state: Dict[str, Any]) -> WorkflowState:
         """
-        Execute a single L1 plan using the appropriate L2 ExecutionEngine.
-        Does NOT mutate state here; state updates are returned.
+        Routes the plan to the correct domain orchestrator based on plan.mode.
+
+        Steps:
+            1. INIT → PLANNING
+            2. Route based on plan.mode
+            3. Execute domain orchestration
+            4. REVIEWING → COMPLETE
         """
+        try:
+            # INIT → PLANNING
+            phase_plan = self.cf.next_phase("init")
 
-        # PHASE: PLANNING → EXECUTING
-        phase = self.cf.next_phase("planning")
+            mode = (plan.mode or "").lower()
 
-        engine = self.engine_router.resolve(plan)
-        if engine is None:
-            raise OrchestrationError(f"No execution engine available for mode={plan.mode!r}")
+            # Domain routing
+            if mode == "rag":
+                result = await self._rag.run(plan, state)
+            elif mode == "bullets":
+                result = await self._bullets.run(plan, state)
+            elif mode == "drafting":
+                result = await self._draft.run(plan, state)
+            elif mode == "strategy":
+                result = await self._strategy.run(plan, state)
+            elif mode == "qa":
+                result = await self._qa.run(plan, state)
+            elif mode == "safety":
+                result = await self._safety.run(plan, state)
+            else:
+                raise OrchestrationError(f"Unsupported plan mode: {mode}")
 
-        # Execute L2 workflow
-        result = await engine.run(plan, state)
+            # REVIEWING → COMPLETE
+            phase_complete = self.cf.next_phase("reviewing")
 
-        # PHASE: EXECUTING → REVIEWING → COMPLETE
-        next_phase = self.cf.next_phase("executing")
+            fin_state = dict(result.state)
+            fin_state["phase"] = phase_complete.value
 
-        workflow_state = WorkflowState(
-            workflow_id=state.get("workflow_id", "unknown"),
-            phase=next_phase,
-            nodes={},      # L2-specific nodes not tracked here
-            state=state,   # raw state to be consumed by L4
-            phase_metadata=PhaseMetadata(
-                phase=next_phase,
-                note="Orchestration step complete."
-            ),
-        )
+            return WorkflowState(
+                workflow_id=fin_state.get("workflow_id", "unknown"),
+                phase=phase_complete,
+                nodes=result.nodes,
+                state=fin_state,
+                phase_metadata=PhaseMetadata(
+                    phase=phase_complete,
+                    note="Global orchestration cycle complete."
+                ),
+            )
 
-        return workflow_state
+        except Exception as exc:
+            raise OrchestrationError(f"Global Orchestrator failed: {exc}") from exc
+
