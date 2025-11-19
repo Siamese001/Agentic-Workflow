@@ -12,7 +12,7 @@ agentic architecture, with strict L1–L5 separation:
     • Unified StateAdapter:
         - apply patches (StatePatch)
         - reconcile memory via MemoryManager
-        - maintain basic phase metadata (for observability only)
+        - maintain phase metadata (for observability only)
         - attach validation metadata
         - persist episodic events and checkpoints
         - provide explicit state mutators (add_message, add_rag_item, etc.)
@@ -26,12 +26,9 @@ L4 DOES NOT:
     • Evaluate safety/policy rules (L5).
 
 All other layers must treat StateAdapter as the *only* mutable state
-holder.
-
-This file restores v10_8 state-management capabilities (explicit
-mutators, correction journal, domain-specific normalization) in a
-modern v10_9 form, while maximally satisfying the 14 agentic
-subdomains on the State/Memory layer.
+holder. This refactor restores the original v10_9 behavior and the
+lost v10_8 state/correction functionality, while maximizing scores
+across the 14 OpenAI agentic subdomains.
 """
 
 from __future__ import annotations
@@ -43,8 +40,8 @@ import copy
 from models import (
     WorkflowPhase,
     StatePatch,
-    SelfCorrectionSurface,
 )
+
 
 # ============================================================================
 # 1. WORLD FACT NORMALIZATION
@@ -292,7 +289,6 @@ def validate_state(state: Dict[str, Any]) -> Dict[str, List[str]]:
 
     for key, expected_type in _EXPECTED_TYPES.items():
         if key in ("episodic", "checkpoints", "correction_journal"):
-            # Optional: only check if present.
             if key in state and not isinstance(state[key], expected_type):
                 errors.append(f"Key '{key}' must be of type {expected_type.__name__}.")
             continue
@@ -378,6 +374,16 @@ class StateAdapter:
         """Return a deep copy of the current state."""
         return copy.deepcopy(self._state)
 
+    @state.setter
+    def state(self, value: Dict[str, Any]) -> None:
+        """Setter primarily for L3 orchestration initialization."""
+        base = copy.deepcopy(value)
+        base = self.memory.reconcile(base)
+        validation = validate_state(base)
+        base.setdefault("metadata", {})
+        base["metadata"]["validation"] = validation
+        self._state = base
+
     @property
     def phase(self) -> WorkflowPhase:
         return self._phase
@@ -442,7 +448,6 @@ class StateAdapter:
         updated.setdefault("metadata", {})
         updated["metadata"]["validation"] = validation
 
-        # Patch log for traceability
         patch_log = list(updated["metadata"].get("patch_log") or [])
         patch_log.append({"key": key})
         updated["metadata"]["patch_log"] = patch_log
@@ -455,10 +460,7 @@ class StateAdapter:
     # ------------------------------------------------------------------ #
 
     def add_message(self, role: str, content: str, **metadata: Any) -> Dict[str, Any]:
-        """Append a message to state['messages'] and reconcile.
-
-        Restores explicit `add_message` mutator semantics from v10_8.
-        """
+        """Append a message to state['messages'] and reconcile."""
         updated = copy.deepcopy(self._state)
         msgs = list(updated.get("messages") or [])
         msgs.append({"role": str(role), "content": str(content), "metadata": metadata})
@@ -471,10 +473,7 @@ class StateAdapter:
         return self.state
 
     def add_rag_item(self, item: Dict[str, Any]) -> Dict[str, Any]:
-        """Append an item to state['rag_history'] and reconcile.
-
-        Restores explicit `add_rag_item` mutator semantics from v10_8.
-        """
+        """Append an item to state['rag_history'] and reconcile."""
         updated = copy.deepcopy(self._state)
         rag = list(updated.get("rag_history") or [])
         rag.append(copy.deepcopy(item))
@@ -488,20 +487,16 @@ class StateAdapter:
 
     def record_correction_event(
         self,
-        surface: SelfCorrectionSurface,
+        surface: str,
         message: str,
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Record a correction event in the CORRECTION_JOURNAL.
-
-        This restores the v10_8 CORRECTION_JOURNAL behavior in a
-        simple, append-only form.
-        """
+        """Record a correction event in the CORRECTION_JOURNAL."""
         updated = copy.deepcopy(self._state)
         journal = list(updated.get("correction_journal") or [])
         journal.append(
             {
-                "surface": surface.value if isinstance(surface, SelfCorrectionSurface) else str(surface),
+                "surface": str(surface),
                 "message": str(message),
                 "metadata": copy.deepcopy(metadata or {}),
             }
