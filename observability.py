@@ -1,14 +1,12 @@
 # FILE: observability.py
 """
-Unified Observability Module (v10_9) — ENTERPRISE REFACTOR
+Unified Observability Module (v10_9) — META / INFRASTRUCTURE LAYER
 
-This module provides high-level observability utilities for the v10_9
-agentic runtime, sitting *above* the low-level primitives in
-runtime_utils.py.
+This module provides the entire observability subsystem for the v10_9
+agentic runtime. It sits strictly ABOVE L1–L5 and owns:
 
-Responsibilities:
     • Run-level tracing and metrics collection
-    • Span-based performance tracking (phase / stage spans)
+    • Span-based performance tracking
     • Metric recording (counts, ratios, histograms – in memory)
     • Structured run summaries for:
         - Strategy
@@ -19,16 +17,17 @@ Responsibilities:
         - Safety
         - HIL
         - Meta-learning
-    • Simple decorators for instrumenting async call sites
+    • Async span decorators for instrumentation
+    • Telemetry aggregation for end-of-run summaries
 
-Design:
-    • Uses CostTracker + record_event() from runtime_utils
-    • In-memory only (no external dependencies)
-    • Deterministic, safe, and optional (no-op friendly)
+Layer Guardrails:
 
-Layer boundary:
-    • ABOVE L1–L5 (meta layer)
-    • NO cognition, execution, orchestration, state mutation, or safety decisions
+    • NO L1 cognition
+    • NO L2 tool/LLM execution
+    • NO L3 orchestration logic
+    • NO L4 state mutation logic
+    • NO L5 safety/policy decisions
+    • NO provider SDK calls
 """
 
 from __future__ import annotations
@@ -46,9 +45,9 @@ from runtime_utils import CostTracker, record_event
 # 1. BASIC DATA STRUCTURES
 # ============================================================================
 
-
 @dataclass
 class TraceSpan:
+    """Represents a single performance span."""
     name: str
     start_time_ms: float
     end_time_ms: float
@@ -60,6 +59,7 @@ class TraceSpan:
 
 @dataclass
 class Metric:
+    """Represents a single numeric metric."""
     name: str
     value: float
     tags: Dict[str, Any] = field(default_factory=dict)
@@ -72,10 +72,10 @@ class RunSummary:
 
     Fields:
         • workflow_id
-        • phases        – list of phase names (in order)
-        • timings       – span durations by name
-        • counts        – arbitrary counters (e.g., bullets_generated)
-        • issues        – QA / safety / other issues
+        • phases        – ordered list of phases
+        • timings       – span durations
+        • counts        – metric counters
+        • issues        – domain-specific issue lists
     """
     workflow_id: str
     phases: List[str] = field(default_factory=list)
@@ -88,13 +88,12 @@ class RunSummary:
 # 2. IN-MEMORY TELEMETRY BUFFER
 # ============================================================================
 
-
 class TelemetryBuffer:
     """
     Central store for run-level telemetry (in-memory only).
 
-    This is intentionally simple – it can be replaced by any external
-    telemetry backend without affecting call sites.
+    This is pure infra: it holds metrics, spans, and summaries for each
+    workflow_id. It never mutates application state.
     """
 
     def __init__(self):
@@ -105,8 +104,8 @@ class TelemetryBuffer:
     # ---- Metrics ------------------------------------------------------------
 
     def record_metric(self, name: str, value: float, tags: Optional[Dict[str, Any]] = None) -> None:
-        metric = Metric(name=name, value=float(value), tags=tags or {})
-        self._metrics.append(metric)
+        m = Metric(name=name, value=float(value), tags=tags or {})
+        self._metrics.append(m)
         record_event("metric", {"name": name, "value": value, "tags": tags or {}})
 
     def get_metrics(self) -> List[Metric]:
@@ -160,24 +159,19 @@ class TelemetryBuffer:
         return [s for _, s in sorted(self._summaries.items())]
 
 
-# Global buffer
+# Global buffer (safe for in-process execution)
 TELEMETRY = TelemetryBuffer()
 
 
 # ============================================================================
-# 3. DECORATORS FOR ASYNC SPAN TRACING
+# 3. ASYNC SPAN DECORATOR
 # ============================================================================
-
 
 def trace_span_async(span_name: str):
     """
-    Decorator for instrumenting async functions with a named span.
-
-    Example:
-        @trace_span_async("drafting")
-        async def run_drafting(...):
-            ...
+    Decorator for async functions: records a named span in TELEMETRY.
     """
+
     def decorator(fn: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
         @functools.wraps(fn)
         async def wrapper(*args, **kwargs):
@@ -189,20 +183,23 @@ def trace_span_async(span_name: str):
             except Exception as exc:
                 TELEMETRY.end_span(span, extra_tags={"error": str(exc)})
                 raise
+
         return wrapper
+
     return decorator
 
 
 # ============================================================================
-# 4. RUN-LEVEL HELPERS FOR L2/L3 INTEGRATION
+# 4. RUN-LEVEL SUMMARIZATION HELPERS
 # ============================================================================
-
 
 def summarize_strategy(workflow_id: str, state: Dict[str, Any]) -> None:
     strat = state.get("strategy_result", {}) or {}
-    selected = strat.get("selected_strategy") or {}
-    name = selected.get("strategy_name") or selected.get("branch_id") or "unknown"
-    TELEMETRY.record_metric("strategy_branch_selected", 1.0, {"workflow_id": workflow_id, "branch": name})
+    decision = strat.get("decision", {}) or {}
+    name = decision.get("aggregated_decision") or decision.get("strategy_name") or "unknown"
+    TELEMETRY.record_metric(
+        "strategy_decision", 1.0, {"workflow_id": workflow_id, "decision": name}
+    )
 
 
 def summarize_rag(workflow_id: str, state: Dict[str, Any]) -> None:
@@ -224,15 +221,16 @@ def summarize_draft(workflow_id: str, state: Dict[str, Any]) -> None:
 def summarize_qa(workflow_id: str, state: Dict[str, Any]) -> None:
     qa = state.get("qa_result", {}).get("report") or {}
     issues = qa.get("issues", [])
-    for issue in issues:
-        TELEMETRY.record_issue(workflow_id, "qa", str(issue))
+    for iss in issues:
+        TELEMETRY.record_issue(workflow_id, "qa", str(iss))
 
 
 def summarize_safety(workflow_id: str, state: Dict[str, Any]) -> None:
     safety = state.get("safety_result", {}).get("report") or {}
     issues = safety.get("issues", [])
-    for issue in issues:
-        TELEMETRY.record_issue(workflow_id, "safety", str(issue))
+    for iss in issues:
+        # iss is a dict; convert to string for stable logging
+        TELEMETRY.record_issue(workflow_id, "safety", str(iss))
 
 
 def summarize_hil(workflow_id: str, state: Dict[str, Any]) -> None:
@@ -246,14 +244,13 @@ def summarize_hil(workflow_id: str, state: Dict[str, Any]) -> None:
 def summarize_meta_learning(workflow_id: str, state: Dict[str, Any]) -> None:
     meta = state.get("meta_learning_result") or {}
     snapshot = meta.get("snapshot") or {}
-    findings = snapshot.get("findings", [])
+    findings = snapshot.get("findings", []) or []
     TELEMETRY.increment_count(workflow_id, "meta_findings", len(findings))
 
 
 # ============================================================================
 # 5. RUN SUMMARY AGGREGATOR
 # ============================================================================
-
 
 def summarize_run(
     workflow_id: str,
@@ -265,15 +262,13 @@ def summarize_run(
     Build a structured run summary for a workflow, combining:
 
         • phase history
-        • timing spans from CostTracker
-        • domain-specific metrics and issues (strategy, rag, qa, safety, hil, meta-learning)
-
-    Returns a plain dict suitable for JSON serialization.
+        • timing spans (from L3 or main)
+        • domain metrics and issues
     """
     # Record phase history
     TELEMETRY.record_phase_transition(workflow_id, phase_history)
 
-    # Record timings from CostTracker spans
+    # Record timings
     if cost_tracker is not None:
         snapshot = cost_tracker.snapshot()
         for span in snapshot.get("spans", []):
@@ -294,7 +289,6 @@ def summarize_run(
 
     summary = TELEMETRY.get_summary(workflow_id)
     if not summary:
-        # Fallback in degenerate cases
         return {
             "workflow_id": workflow_id,
             "phases": list(phase_history),
