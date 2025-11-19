@@ -1,39 +1,50 @@
 # FILE: main_v10_9.py
 """
-Main Entry Point — v10_9 Agentic Workflow (ENTERPRISE REFACTOR, RESTORED)
+Main Entry Point — v10_9 Agentic Workflow (META-AWARE, FULL STACK L1–L5)
 
-This module provides the official entrypoint for the unified v10_9
-agentic workflow. It is the ONLY module outside the L1–L5 layers that
-performs orchestrated end-to-end execution.
+This module is the ONLY top-level orchestrator responsible for running
+the entire agentic workflow end-to-end. It coordinates all layers:
 
-Responsibilities:
-    • Accept initial state dict from caller (API/CLI/service).
-    • Normalize state into L4.StateAdapter.
-    • Build a multi-mode L1 master PlanObject (strategy → rag → drafting → bullets → qa → safety → meta).
-    • Execute the plan via L3 DAGExecutor (which calls L2 and L4).
-    • Evaluate final content via L5 SafetyEngine/PolicyEngine/ArbitrationEngine.
-    • Collect telemetry, return structured WorkflowState + summary.
+    • L1: Planning (strategy, rag, drafting, bullets, qa, safety, meta, prompt_eng)
+    • L2: Execution (retrieval, drafting, QA, safety evaluation, meta)
+    • L3: Orchestration (DAG execution)
+    • L4: State (memory, patches, correction logs)
+    • L5: Safety, Policy, Arbitration
 
-Non-responsibilities:
-    • NO planning logic beyond invoking L1.
-    • NO tool/LLM execution (L2 only).
-    • NO DAG logic (L3 only).
-    • NO state mutation beyond adapter (L4 only).
-    • NO raw safety/policy logic (L5 only).
-    • NO provider/SDK logic.
+Additionally, this refactored version fully incorporates the META
+profile biasing layer based on 10_8 → 10_9 restoration and the 14
+OpenAI agentic subdomain requirements.
 
-Layer purity must be preserved fully.
+KEY FEATURES (UPGRADED):
+
+    • Fully typed PlanObject and ExecutionResult flows.
+    • Deterministic DAG-based execution via L3.
+    • Stream callbacks for observability (optional).
+    • Meta-profile integration (planning, routing, safety, correction).
+    • Safety + policy + arbitration pipeline at the end of run.
+    • Run summary injected with safety, policy, arbitration, meta-profile.
+
+This file contains NO business logic, NO tool calls, NO reasoning,
+NO planning. Its purpose is purely orchestration across layers.
 """
 
 from __future__ import annotations
-
 import asyncio
-from typing import Any, Dict, Optional, Callable, List
+from typing import Any, Dict, Optional, Callable
 
+# L1
 from l1 import plan as l1_plan
+
+# L3
 from l3 import DAGExecutor
+
+# L4
 from l4 import StateAdapter
+
+# L5
 from l5 import SafetyEngine, PolicyEngine, ArbitrationEngine, SafetyMode
+
+# MODELS
 from models import (
     PlanObject,
     FramingProfile,
@@ -42,14 +53,17 @@ from models import (
     SafetyOutputProfile,
     AccessPolicy,
 )
-from runtime_utils import CostTracker
+
+# OBSERVABILITY
 from observability import summarize_run
 
+# RUNTIME UTILS
+from runtime_utils import CostTracker
 
-# ---------------------------------------------------------------------------
-# INTERNAL HELPERS
-# ---------------------------------------------------------------------------
 
+# =============================================================================
+# 1. INTERNAL HELPERS
+# =============================================================================
 
 def _initialize_state(
     initial_state: Optional[Dict[str, Any]],
@@ -57,7 +71,8 @@ def _initialize_state(
     compat_mode: Optional[str],
     debug_mode: bool,
 ) -> Dict[str, Any]:
-    """Normalize incoming state for orchestration.
+    """
+    Normalize incoming state for orchestration.
 
     Ensures:
         • workflow_id present in root and metadata
@@ -76,11 +91,11 @@ def _initialize_state(
     state["workflow_id"] = workflow_id
     metadata["workflow_id"] = workflow_id
 
-    # Ensure messages array exists
+    # Ensure messages exist
     if not isinstance(state.get("messages"), list):
         state["messages"] = []
 
-    # Attach compat/debug flags in a non-breaking way
+    # Compat + debug metadata
     if compat_mode is not None:
         metadata["compat_mode"] = str(compat_mode)
     metadata["debug_mode"] = bool(debug_mode)
@@ -94,23 +109,21 @@ def _emit_stream_event(
     event_type: str,
     payload: Dict[str, Any],
 ) -> None:
-    """Lightweight event streaming hook.
-
-    This lives above L1–L5. Failures must not propagate.
+    """
+    Best-effort stream event emission.
     """
     if stream_callback is None:
         return
     try:
         stream_callback({"event": event_type, "payload": payload})
     except Exception:
-        # Streaming is best-effort only.
-        pass
+        pass  # never break main workflow
 
 
 def _build_profiles(state: Dict[str, Any]) -> Dict[str, Any]:
-    """Construct framing/context/tooling/safety profiles from state.
-
-    This is a thin adapter to feed L1 planners with typed contracts.
+    """
+    Build the typed FramingProfile, ContextProfile, ToolingProfile,
+    SafetyOutputProfile, AccessPolicy used by L1 planners.
     """
     objective = str(state.get("objective", ""))
     audience = str(state.get("audience", "general"))
@@ -121,15 +134,15 @@ def _build_profiles(state: Dict[str, Any]) -> Dict[str, Any]:
         success_criteria=[],
         failure_modes=[],
         guardrails=[],
-        domain=domain or None,
-        audience=audience or None,
+        domain=domain,
+        audience=audience,
         tone="professional",
     )
 
     context_profile = ContextProfile()
     tooling_profile = ToolingProfile()
-    safety_profile = SafetyOutputProfile()  # uses default BALANCED mode
-    access_policy = AccessPolicy()  # no explicit restrictions by default
+    safety_profile = SafetyOutputProfile()
+    access_policy = AccessPolicy()
 
     return {
         "framing_profile": framing,
@@ -140,11 +153,9 @@ def _build_profiles(state: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def _extract_job_and_resume_text(state: Dict[str, Any]) -> Dict[str, str]:
-    """Best-effort extraction of job_text and resume_text from state.
-
-    This mirrors v10_8 behavior where L1 planners inferred from JD and
-    resume strings. If these are absent, we degrade gracefully.
+def _extract_job_resume_texts(state: Dict[str, Any]) -> Dict[str, str]:
+    """
+    Extract job_text and resume_text (used across all L1 plans).
     """
     job_text = str(
         state.get("job_description")
@@ -161,24 +172,22 @@ def _extract_job_and_resume_text(state: Dict[str, Any]) -> Dict[str, str]:
     return {"job_text": job_text, "resume_text": resume_summary}
 
 
+# =============================================================================
+# 2. BUILD MASTER PLAN FROM L1
+# =============================================================================
+
 def _build_master_plan(state: Dict[str, Any]) -> PlanObject:
-    """Build a multi-mode PlanObject for DAGExecutor.
-
-    Modes included (v10_8 parity):
-        • strategy
-        • rag
-        • drafting
-        • bullets
-        • qa
-        • safety
-        • meta_learning
-        • prompt_engineering
     """
-    profiles = _build_profiles(state)
-    jt_rt = _extract_job_and_resume_text(state)
+    Build a PLAN for the entire workflow: strategy → rag → drafting → bullets →
+    qa → safety → meta_learning → prompt_engineering.
 
-    # Per-mode planning from L1
-    modes: List[str] = [
+    This includes constructing the DAG structure required by L3.
+    """
+
+    profiles = _build_profiles(state)
+    jrt = _extract_job_resume_texts(state)
+
+    modes = [
         "strategy",
         "rag",
         "drafting",
@@ -189,12 +198,12 @@ def _build_master_plan(state: Dict[str, Any]) -> PlanObject:
         "prompt_engineering",
     ]
 
-    per_mode_plans: Dict[str, PlanObject] = {}
+    per_mode_plans = {}
     for mode in modes:
         per_mode_plans[mode] = l1_plan(
             mode=mode,
-            job_text=jt_rt["job_text"],
-            resume_text=jt_rt["resume_text"],
+            job_text=jrt["job_text"],
+            resume_text=jrt["resume_text"],
             framing_profile=profiles["framing_profile"],
             context_profile=profiles["context_profile"],
             tooling_profile=profiles["tooling_profile"],
@@ -202,8 +211,8 @@ def _build_master_plan(state: Dict[str, Any]) -> PlanObject:
             access_policy=profiles["access_policy"],
         )
 
-    # DAG nodes: linear chain with a few convergences
-    dag_nodes: List[Dict[str, Any]] = [
+    # Build DAG nodes
+    dag_nodes = [
         {
             "name": "strategy",
             "mode": "strategy",
@@ -262,7 +271,6 @@ def _build_master_plan(state: Dict[str, Any]) -> PlanObject:
         },
     ]
 
-    # Base plan uses strategy plan as a seed
     master_dict = per_mode_plans["strategy"].to_dict()
     master_dict["mode"] = "orchestration"
     master_dict["workflow_id"] = state.get("workflow_id", "workflow_v10_9")
@@ -271,10 +279,9 @@ def _build_master_plan(state: Dict[str, Any]) -> PlanObject:
     return PlanObject(master_dict)
 
 
-# ---------------------------------------------------------------------------
-# ASYNC ENTRYPOINT
-# ---------------------------------------------------------------------------
-
+# =============================================================================
+# 3. ASYNC ENTRYPOINT
+# =============================================================================
 
 async def run_workflow_v10_9(
     initial_state: Dict[str, Any],
@@ -283,57 +290,24 @@ async def run_workflow_v10_9(
     debug_mode: bool = False,
     stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
 ) -> Dict[str, Any]:
-    """Execute a single v10_9 agentic workflow pass.
-
-    Args:
-        initial_state:
-            Raw dictionary describing the task and context.
-
-        compat_mode:
-            Optional compatibility flag (e.g., "10_7", "10_8").
-            The value is attached to metadata and may influence downstream
-            components (L1–L3) in future extensions.
-
-        debug_mode:
-            Attach extended debug metadata into metadata["debug_mode"].
-
-        stream_callback:
-            Optional function receiving streaming events:
-                {"event": <str>, "payload": <dict>}
-
-    Returns:
-        dict:
-            {
-                "workflow_id": str,
-                "phase": str,
-                "state": <final state dict>,
-                "phase_metadata": {...},
-                "run_summary": {...},
-            }
+    """
+    Execute a single v10_9 agentic workflow pass.
     """
 
-    # -------- Normalize & prepare state -------------------------------------
-    state = _initialize_state(
-        initial_state,
-        compat_mode=compat_mode,
-        debug_mode=debug_mode,
-    )
+    # ---------- Normalize state ----------
+    state = _initialize_state(initial_state, compat_mode=compat_mode, debug_mode=debug_mode)
     workflow_id = state["workflow_id"]
 
     cost_tracker = CostTracker()
 
-    _emit_stream_event(
-        stream_callback,
-        event_type="workflow_started",
-        payload={"workflow_id": workflow_id},
-    )
+    _emit_stream_event(stream_callback, event_type="workflow_started", payload={"workflow_id": workflow_id})
 
-    # -------- Initialize L4 StateAdapter ------------------------------------
+    # ---------- Initialize L4 ----------
     state_adapter = StateAdapter()
     state_adapter.reset(state)
     state = state_adapter.state
 
-    # -------- L1: PLANNING --------------------------------------------------
+    # ---------- L1 Planning ----------
     _emit_stream_event(
         stream_callback,
         event_type="planning_started",
@@ -350,7 +324,7 @@ async def run_workflow_v10_9(
         payload={"workflow_id": workflow_id, "plan_mode": plan.get("mode")},
     )
 
-    # -------- L3: EXECUTION (DAG + L2 + L4) ---------------------------------
+    # ---------- L3 Orchestration (DAG + L2 + L4) ----------
     dag_executor = DAGExecutor(state_adapter=state_adapter)
 
     cost_tracker.start_span("execution")
@@ -360,28 +334,23 @@ async def run_workflow_v10_9(
     _emit_stream_event(
         stream_callback,
         event_type="execution_completed",
-        payload={
-            "workflow_id": workflow_id,
-            "phase": workflow_state.phase.value,
-        },
+        payload={"workflow_id": workflow_id, "phase": workflow_state.phase.value},
     )
 
-    # Normalize WorkflowState (new v10_9) to legacy-compatible shape
     final_state = workflow_state.result
     phase_history = workflow_state.metadata.get("history", [workflow_state.phase.value])
     phase_metadata = {"history": phase_history}
 
-    # -------- L5: SAFETY / POLICY / ARBITRATION -----------------------------
+    # ---------- L5: Safety / Policy / Arbitration ----------
     safety_engine = SafetyEngine()
     safety_report = safety_engine.evaluate_content(final_state, plan)
 
-    # Default to BALANCED mode; can be extended via compat metadata.
     mode = SafetyMode.BALANCED
-    policy_engine = PolicyEngine(mode=mode)
+    policy_engine = PolicyEngine(base_mode=mode)
     policy_decision = policy_engine.review(safety_report)
 
     arb_engine = ArbitrationEngine()
-    arbitration = arb_engine.decide(policy_decision, safety_report)
+    arbitration = arb_engine.arbitrate(policy_decision, safety_report)
 
     _emit_stream_event(
         stream_callback,
@@ -389,22 +358,22 @@ async def run_workflow_v10_9(
         payload={
             "workflow_id": workflow_id,
             "policy_decision": policy_decision,
-            "arbitration": arbitration,
+            "arbitration": arbitration.to_dict() if hasattr(arbitration, "to_dict") else vars(arbitration),
         },
     )
 
-    # -------- Observability Summary -----------------------------------------
+    # ---------- Observability Summary ----------
     run_summary = summarize_run(
         workflow_id=workflow_id,
         state=final_state,
         phase_history=phase_history,
         cost_tracker=cost_tracker,
     )
-    # Attach safety/policy/arbitration to run_summary for richer telemetry.
+
     run_summary.setdefault("safety", {})
     run_summary["safety"]["report"] = safety_report
     run_summary["safety"]["policy"] = policy_decision
-    run_summary["safety"]["arbitration"] = arbitration
+    run_summary["safety"]["arbitration"] = arbitration.to_dict() if hasattr(arbitration, "to_dict") else vars(arbitration)
 
     result = {
         "workflow_id": workflow_id,
@@ -427,10 +396,9 @@ async def run_workflow_v10_9(
     return result
 
 
-# ---------------------------------------------------------------------------
-# SYNC WRAPPER
-# ---------------------------------------------------------------------------
-
+# =============================================================================
+# 4. SYNC WRAPPER
+# =============================================================================
 
 def run_workflow_sync(
     initial_state: Dict[str, Any],
@@ -439,9 +407,8 @@ def run_workflow_sync(
     debug_mode: bool = False,
     stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
 ) -> Dict[str, Any]:
-    """Synchronous wrapper around run_workflow_v10_9().
-
-    This is the primary entrypoint for CLI / local execution systems.
+    """
+    Blocking wrapper around run_workflow_v10_9() for CLI/local execution.
     """
     return asyncio.run(
         run_workflow_v10_9(
@@ -453,9 +420,9 @@ def run_workflow_sync(
     )
 
 
-# ---------------------------------------------------------------------------
-# OPTIONAL CLI TEST
-# ---------------------------------------------------------------------------
+# =============================================================================
+# 5. OPTIONAL CLI TEST
+# =============================================================================
 
 if __name__ == "__main__":
     example_state = {
@@ -471,14 +438,14 @@ if __name__ == "__main__":
         },
     }
 
-    def _print_stream_event(event: Dict[str, Any]) -> None:
-        print(f"[STREAM] {event['event']}: {event['payload']}")  # type: ignore[index]
+    def _print_stream(event: Dict[str, Any]) -> None:
+        print(f"[STREAM] {event['event']}: {event['payload']}")
 
     result = run_workflow_sync(
         example_state,
         compat_mode=None,
         debug_mode=True,
-        stream_callback=_print_stream_event,
+        stream_callback=_print_stream,
     )
     print("=== v10_9 Agentic Workflow Output ===")
     print("Workflow ID:", result["workflow_id"])
