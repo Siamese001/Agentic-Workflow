@@ -1,6 +1,6 @@
 # FILE: retrieval.py
 """
-Retrieval Utilities (v10_9) — ENTERPRISE MODULE
+Retrieval Utilities (v10_9) — PURE META-LAYER RAG INFRA
 
 This module provides higher-level retrieval utilities for the v10_9
 agentic architecture. It is a *pure infrastructure* layer, sitting
@@ -14,15 +14,15 @@ Responsibilities:
     • Provide small, typed helpers that L2 executors (e.g., RAGExecutor)
       and external RAG clients can use.
 
-Non-responsibilities:
-    • NO cognition (L1).
-    • NO tool/LLM execution (L2).
-    • NO orchestration (L3).
-    • NO state management (L4).
-    • NO safety decisions (L5).
+Non-responsibilities (Agentic Guardrails):
+    • NO L1 cognition (no planning).
+    • NO L2 tool/LLM execution.
+    • NO L3 orchestration.
+    • NO L4 state management (no StateAdapter usage).
+    • NO L5 safety decisions.
+    • NO provider/DB/SDK calls.
 
-This module is deliberately stateless and deterministic to maximize
-testability and reusability.
+This module is deterministic and side-effect-free.
 """
 
 from __future__ import annotations
@@ -107,7 +107,7 @@ class RetrievalResult:
 
 
 # =============================================================================
-# 2. CORE HELPERS
+# 2. INTERNAL HELPERS
 # =============================================================================
 
 
@@ -145,14 +145,14 @@ def _limit_items(items: List[Dict[str, Any]], max_items: int) -> List[Dict[str, 
 
 
 # =============================================================================
-# 3. PUBLIC API FUNCTIONS
+# 3. PUBLIC API — SINGLE-SOURCE NORMALIZATION
 # =============================================================================
 
 
 def normalize_raw_results(
     raw_results: List[Dict[str, Any]],
     *,
-    config: Optional[RetrievalConfig] = None,
+    config: Optional{RetrievalConfig} = None,
 ) -> RetrievalResult:
     """
     Normalize raw retrieval results into a canonical RetrievalResult.
@@ -160,9 +160,11 @@ def normalize_raw_results(
     Steps:
         1. Normalize raw dicts into {query, evidence, rank}.
         2. Deduplicate identical (query, evidence) pairs.
-        3. Apply ranking strategy.
-        4. Normalize to RAG-style items with metadata.
+        3. Apply ranking strategy (bm25/dense/hybrid).
+        4. Rerank & fuse results (single-source).
         5. Limit items to config.max_items.
+        6. Normalize to RAG-style items with metadata.
+        7. Return RetrievalResult with specialized RetrievalItem objects.
 
     This function does NOT call any external services; it operates on
     already-fetched raw results (e.g., from a DB, vector store, or LLM).
@@ -178,7 +180,7 @@ def normalize_raw_results(
     # 3. Ranking strategy
     ranked = _apply_ranking_strategy(norm, cfg.ranking_strategy)
 
-    # 4. Algebraic rerank (hybrid) and fusion
+    # 4. Rerank and fuse (single source for now)
     reranked = _Retrieval.rerank_results(ranked, cfg.ranking_strategy)
     fused = _Retrieval.fuse_results([reranked])
 
@@ -203,6 +205,11 @@ def normalize_raw_results(
     return RetrievalResult(items=items, config=cfg)
 
 
+# =============================================================================
+# 4. PUBLIC API — MULTI-SOURCE FUSION
+# =============================================================================
+
+
 def fuse_multiple_sources(
     sources: List[List[Dict[str, Any]]],
     *,
@@ -214,7 +221,7 @@ def fuse_multiple_sources(
     Inputs:
         • sources:
             A list of lists, where each inner list is a set of raw retrieval
-            dicts from a given source (e.g., vector DB, keyword DB, LLM-HyDE).
+            dicts from a given source (e.g., vector DB, keyword DB, LLM-HYDE).
 
         • config:
             Optional RetrievalConfig controlling ranking and max_items.
@@ -223,10 +230,11 @@ def fuse_multiple_sources(
         1. Flatten all sources.
         2. Normalize and dedupe results.
         3. Apply ranking strategy (bm25/dense/hybrid).
-        4. Normalize to canonical RetrievalResult.
+        4. Limit items.
+        5. Normalize to canonical RetrievalResult.
 
     This is designed to be a higher-level wrapper compared to
-    normalize_raw_results() when you already have multiple pre-RAG sources.
+    normalize_raw_results() when you already have multiple raw sources.
     """
     cfg = config or RetrievalConfig()
 
@@ -237,6 +245,11 @@ def fuse_multiple_sources(
             merged.append(dict(item))
 
     return normalize_raw_results(merged, config=cfg)
+
+
+# =============================================================================
+# 5. UTILITY — SIMPLE DICT LIST VIEW
+# =============================================================================
 
 
 def to_simple_dict_list(result: RetrievalResult) -> List[Dict[str, Any]]:
