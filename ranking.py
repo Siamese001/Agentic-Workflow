@@ -40,30 +40,13 @@ def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     Deterministic BM25-like ranking.
 
     Delegates scoring to runtime_utils.Ranking.bm25_rank.
-
-    Input:
-        items:
-            list[dict] containing:
-                {
-                  "query": str,
-                  "evidence": str,
-                  "rank": int,
-                  ...
-                }
-
-    Output:
-        list[dict] with the same shape plus a "score" field per item,
-        sorted in descending score order.
     """
     return _Ranking.bm25_rank(items)
 
 
 def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Deterministic dense-score ranking.
-
-    Delegates scoring to runtime_utils.Ranking.dense_rank.
-    Uses a pseudo-dense heuristic (SHA-based) for stable ordering.
+    Deterministic dense-score ranking (SHA-based pseudo-embedding).
     """
     return _Ranking.dense_rank(items)
 
@@ -71,8 +54,6 @@ def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Combined ranking (BM25 + dense).
-
-    Delegates scoring to runtime_utils.Ranking.hybrid_rank.
     """
     return _Ranking.hybrid_rank(items)
 
@@ -95,21 +76,7 @@ def apply_strategy(
 
     After ranking, all candidates receive a deterministic "rank" field.
 
-    This function never mutates the caller’s list; it always returns a
-    new list with ranks assigned.
-
-    Args:
-        items:
-            list[dict] containing raw retrieval items.
-
-        strategy:
-            Ranking strategy label, one of:
-                - "bm25"
-                - "dense"
-                - "hybrid"
-
-    Returns:
-        list[dict] – ranked items with a "rank" field.
+    This function never mutates the caller’s list.
     """
     s = (strategy or "hybrid").lower().strip()
 
@@ -120,6 +87,7 @@ def apply_strategy(
     else:
         ranked = hybrid(items)
 
+    # Assign integer rank (1-based)
     out: List[Dict[str, Any]] = []
     for idx, item in enumerate(ranked):
         new_item = dict(item)
@@ -145,14 +113,6 @@ def fuse_ranked_groups(groups: List[List[Dict[str, Any]]]) -> List[Dict[str, Any
         5. Re-assign ranks
 
     All behavior purely deterministic.
-
-    Args:
-        groups:
-            list of ranked lists, each containing dicts with at least
-            "query", "evidence", and "rank".
-
-    Returns:
-        list[dict] – fused, deduplicated, re-ranked items.
     """
     flattened: List[Dict[str, Any]] = []
     seen: set[tuple[str, str]] = set()
@@ -171,6 +131,7 @@ def fuse_ranked_groups(groups: List[List[Dict[str, Any]]]) -> List[Dict[str, Any
         )
     )
 
+    # Reassign clean ranks
     for idx, item in enumerate(flattened):
         item["rank"] = idx + 1
 
@@ -196,12 +157,12 @@ def rank_documents(
 
     Returns ranked+sorted list with final deterministic ordering.
     """
-
     if not items:
         return []
 
     ranked = apply_strategy(items, strategy=strategy)
 
+    # Final stability sort
     ranked.sort(
         key=lambda x: (
             int(x.get("rank", 9_999_999)),
