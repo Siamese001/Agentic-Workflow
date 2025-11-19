@@ -1,10 +1,11 @@
 # FILE: l4.py
 """
-Unified L4 State Layer (v10_9) — FULL AGENTIC IMPLEMENTATION (REFINED)
+Unified L4 State Layer (v10_9) — ENTERPRISE REFACTOR
 
 This module implements ALL state-related responsibilities for the v10_9
-agentic architecture, with feature parity to the richer state handling
-in earlier versions, but rewritten cleanly with no legacy dependencies.
+agentic architecture, with feature parity to and extension of the richer
+state handling in earlier versions (v10_7 / v10_8), but rewritten
+cleanly with no legacy dependencies.
 
 Responsibilities:
     • Context-budget aware MemoryManager
@@ -16,6 +17,7 @@ Responsibilities:
         - reconcile memory
         - maintain phase & phase history
         - attach validation metadata
+        - store checkpoints/episodic traces (metadata only)
 
 Pure state management:
     • NO cognition (L1)
@@ -274,6 +276,9 @@ def validate_state(state: Dict[str, Any]) -> Dict[str, List[str]]:
     if state.get("rag_result") is not None and not state.get("rag_history"):
         warnings.append("rag_result present but rag_history is empty")
 
+    if state.get("safety_result") is not None and "arbitration" not in state:
+        warnings.append("safety_result present without arbitration metadata")
+
     return {"missing": missing, "type_mismatch": mismatch, "warnings": warnings}
 
 
@@ -320,6 +325,8 @@ class StateAdapter:
         • Delegates to MemoryManager for reconciliation
         • Attaches validation metadata
         • Tracks phase and phase history as plain strings
+        • Stores simple checkpoint/episodic metadata for higher-level
+          persistence systems (no actual IO here).
     """
 
     memory: MemoryManager = field(default_factory=MemoryManager)
@@ -337,6 +344,9 @@ class StateAdapter:
             "metadata": {},
             "phase": self._phase.value,
             "phase_metadata": {"phase": self._phase.value, "history": list(self._phase_history)},
+            # Optional enterprise fields
+            "checkpoints": [],
+            "episodic": [],
         }
 
     # -------------------------------------------------------------------------
@@ -347,6 +357,35 @@ class StateAdapter:
     def state(self) -> Dict[str, Any]:
         return copy.deepcopy(self._state)
 
+    def _update_phase(self, new_phase: WorkflowPhase) -> None:
+        if new_phase == self._phase:
+            return
+        self._phase = new_phase
+        self._phase_history.append(new_phase.value)
+        self._state["phase"] = new_phase.value
+        self._state["phase_metadata"] = {
+            "phase": new_phase.value,
+            "history": list(self._phase_history),
+        }
+
+    def _merge_value(self, existing: Any, value: Any) -> Any:
+        """
+        Shallow merge semantics used by apply_patch:
+
+            • If both existing and value are dicts, update in place.
+            • If both are lists, concatenate.
+            • Else, value replaces existing.
+        """
+        if isinstance(existing, dict) and isinstance(value, dict):
+            merged = copy.deepcopy(existing)
+            merged.update(value)
+            return merged
+        if isinstance(existing, list) and isinstance(value, list):
+            merged = list(existing)
+            merged.extend(value)
+            return merged
+        return value
+
     def apply_patch(self, patch: StatePatch) -> Dict[str, Any]:
         """
         Apply a StatePatch, reconcile memory, enforce phase metadata,
@@ -355,63 +394,87 @@ class StateAdapter:
         Patch semantics:
             • If both existing state[key] and patch.value are dicts,
               we perform a shallow deep-merge (existing updated in place).
+            • If both are lists, we append.
             • Else we replace the top-level key with patch.value.
         """
         updated = copy.deepcopy(self._state)
         key = patch.key
         value = patch.value
 
-        if isinstance(value, dict) and isinstance(updated.get(key), dict):
-            # shallow deep-merge
-            merged = copy.deepcopy(updated.get(key))
-            merged.update(value)
-            updated[key] = merged
+        if key in updated:
+            updated[key] = self._merge_value(updated[key], value)
         else:
             updated[key] = value
+
+        # Update phase if patch explicitly sets it
+        if key == "phase":
+            try:
+                new_phase = WorkflowPhase(str(value))
+                self._update_phase(new_phase)
+                # sync into updated map as well
+                updated["phase"] = new_phase.value
+                updated["phase_metadata"] = {
+                    "phase": new_phase.value,
+                    "history": list(self._phase_history),
+                }
+            except Exception:
+                # ignore invalid phase values
+                pass
 
         # Reconcile via memory manager
         updated = self.memory.reconcile(updated)
 
-        # Keep phase and phase_metadata consistent
-        phase_value = updated.get("phase", self._phase.value)
-        try:
-            phase_enum = WorkflowPhase(phase_value)
-        except ValueError:
-            # fallback to previous phase if invalid
-            phase_enum = self._phase
-
-        if phase_enum != self._phase:
-            self._phase = phase_enum
-            self._phase_history.append(phase_enum.value)
-
-        updated["phase"] = self._phase.value
-        updated["phase_metadata"] = {
-            "phase": self._phase.value,
-            "history": list(self._phase_history),
-        }
-
-        # Attach validation metadata
+        # Validate and attach validation metadata
+        validation = validate_state(updated)
         updated.setdefault("metadata", {})
-        updated["metadata"]["validation"] = validate_state(updated)
+        updated["metadata"]["validation"] = validation
 
+        # Commit to internal state
         self._state = updated
         return self.state
 
-    def advance_phase(self, phase: WorkflowPhase) -> WorkflowPhase:
+    # -------------------------------------------------------------------------
+    # Convenience helpers for checkpoints and episodic metadata
+    # -------------------------------------------------------------------------
+
+    def record_checkpoint(self, checkpoint_id: str, notes: str = "") -> Dict[str, Any]:
         """
-        Advance phase and reflect it in state; does not perform any
-        orchestration logic — only updates metadata.
+        Record a simple checkpoint metadata object into state["checkpoints"].
+
+        This does not perform any IO or persistence. A higher-level
+        checkpointing system is responsible for actually storing/restoring
+        full state blobs associated with checkpoint_id.
         """
-        if not isinstance(phase, WorkflowPhase):
-            raise ValueError(f"Invalid phase: {phase}")
-        self._phase = phase
-        self._phase_history.append(phase.value)
-        self._state["phase"] = self._phase.value
-        self._state["phase_metadata"] = {
+        cp = {
+            "id": str(checkpoint_id),
             "phase": self._phase.value,
-            "history": list(self._phase_history),
+            "notes": str(notes),
         }
-        # Also re-validate after phase change
-        self._state.setdefault("metadata", {})
-        self._state["metadata"]["validation"] = validate_state(self._state)
-        return self._phase
+        updated = copy.deepcopy(self._state)
+        checkpoints = list(updated.get("checkpoints") or [])
+        checkpoints.append(cp)
+        updated["checkpoints"] = checkpoints
+        updated = self.memory.reconcile(updated)
+        validation = validate_state(updated)
+        updated.setdefault("metadata", {})
+        updated["metadata"]["validation"] = validation
+        self._state = updated
+        return self.state
+
+    def append_episodic_event(self, event: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Append an episodic event into state["episodic"].
+
+        Events are arbitrary, but strongly encouraged to be small
+        metadata blobs (e.g., {"source": "qa", "type": "failure"}).
+        """
+        updated = copy.deepcopy(self._state)
+        episodic = list(updated.get("episodic") or [])
+        episodic.append(copy.deepcopy(event))
+        updated["episodic"] = episodic
+        updated = self.memory.reconcile(updated)
+        validation = validate_state(updated)
+        updated.setdefault("metadata", {})
+        updated["metadata"]["validation"] = validation
+        self._state = updated
+        return self.state
