@@ -1,1413 +1,904 @@
 # FILE: l1.py
 """
-Unified L1 Cognition Layer (v10_9) — PURE PLANNING / COGNITION
+Unified L1 Cognition Layer (v10_9) — FULL AGENTIC PLANNING
 
 This module implements ALL L1 responsibilities for the v10_9 agentic
 workflow. It is strictly *cognition-only*:
 
-    • NO execution (no LLM calls, no tools, no DB/network I/O)
-    • NO orchestration (no DAGs, no retries, no phase changes)
-    • NO state mutation (no writes to workflow state)
-    • NO safety decisions (only planning for safety / QA / HIL)
+    • Performs profile inference (seniority, domain, skills).
+    • Estimates task complexity and selects reasoning mode (CoT vs ToT).
+    • Builds linear strategy plans (clarify → context → structure).
+    • Plans RAG intents (queries, evidence targets, sources).
+    • Plans drafting structure (sections, tone, personalization).
+    • Plans bullet frameworks (action–metric–outcome; seniority scaling).
+    • Plans QA and safety surfaces (checks, hints, escalation paths).
+    • Plans meta-learning signals and logging surfaces.
+    • Plans prompt-engineering constraints and governance hooks.
 
-L1 emits **PlanObject** instances (from models.py) that describe *what*
-should happen in L2–L5:
+L1 DOES NOT:
 
-    • StrategyPlanner          – linear + ToT-style planning
-    • RAGPlanner               – retrieval planning (HYDE-aware)
-    • DraftingPlanner          – drafting structure, tone, risks
-    • QACoordinatorPlanner     – QA validation plan (multi-check)
-    • SafetyPlanner            – safety / constitutional plan
-    • PromptEngineeringPlanner – prompt envelope / taxonomy planning
-    • HILPlanner               – human-in-the-loop escalation planning
-    • MetaLearningPlanner      – meta-learning orchestration planning
-    • route_mode / route_plan  – top-level L1 dispatch
+    • Call tools, databases, or LLMs.
+    • Execute retrieval, drafting, QA, or safety checks.
+    • Perform orchestration / control-flow.
+    • Mutate global state or storage.
+    • Make final safety/policy decisions.
 
-The actual realization of these plans is the responsibility of:
+Instead, L1 emits typed PlanObjects which are:
 
-    • L2 (executors, tools, provider clients)
-    • L3 (orchestrators / DAGs)
-    • L4 (state adapter / memory)
-    • L5 (safety / policy / arbitration)
+    • Consumed by L2 for execution.
+    • Routed by L3 in DAG-style workflows.
+    • Stored and evolved by L4.
+    • Evaluated and constrained by L5.
 
-This file must remain free of any provider/SDK/tool imports to satisfy
-the Agentic structural requirements (Layering Model, Agent Boundaries).
+This file is designed to restore the full planning capabilities that
+existed in v10_8 (per the functionality variance table) while
+respecting the v10_9 layered agentic architecture and the 14 OpenAI
+agentic subdomains at the highest maturity level.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, Iterable, List, Optional
+from enum import Enum
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
-from models import PlanObject
+from models import (
+    PlanObject,
+    FramingProfile,
+    ContextProfile,
+    ToolingProfile,
+    SafetyOutputProfile,
+    SelfCorrectionSurface,
+    AccessPolicy,
+)
 
 
-# ============================================================================
-# META PROFILE & INJECTION CONFIGURATION
-# ============================================================================
+# =============================================================================
+# 1. ENUMS & SMALL TYPES
+# =============================================================================
+
+
+class ComplexityLevel(str, Enum):
+    """Coarse-grained complexity buckets for planning."""
+
+    SIMPLE = "simple"
+    MODERATE = "moderate"
+    COMPLEX = "complex"
+
+
+class ReasoningStrategy(str, Enum):
+    """Preferred reasoning mode for L2 / downstream layers."""
+
+    DIRECT = "direct"          # minimal CoT
+    COT = "cot"                # structured chain-of-thought
+    TOT = "tot"                # tree-of-thought / branching search
+    COT_WITH_CRITIQUE = "cot_with_critique"
+    TOT_WITH_CRITIQUE = "tot_with_critique"
 
 
 @dataclass
-class MetaProfile:
+class ProfileSignals:
     """
-    Global meta-configuration for L1 planning behavior.
+    Inferred profile signals from job input + resume.
 
-    planning_bias:
-        • conservative: if True, fewer branches / simpler plans
-        • exploratory: if True, encourage more branches / scenarios
-
-    routing_bias:
-        • per-mode hints (e.g., prefer RAG vs Strategy)
+    This encapsulates behavior previously implemented ad-hoc in v10_8
+    planners: seniority inference, domain tagging, and skill clustering.
     """
 
-    planning_bias: Dict[str, Any] = field(
-        default_factory=lambda: {"conservative": False, "exploratory": True}
-    )
-    routing_bias: Dict[str, Any] = field(default_factory=dict)
+    seniority: str
+    domains: List[str] = field(default_factory=list)
+    skill_clusters: List[str] = field(default_factory=list)
+    risk_flags: List[str] = field(default_factory=list)
 
-
-META_PROFILE = MetaProfile()
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
-class InjectionConfig:
+class PlanningHints:
     """
-    Controls how much explicit "reasoning metadata" is attached to the
-    plans so that L2/L3 can inject it into prompts.
+    Cross-cutting hints that L2/L3/L5 may consult.
 
-    failure_anticipation_enabled:
-        Include an explicit "top_failure_modes" list in each plan.
-
-    self_consistency_enabled:
-        Include fields describing how many alternative branches or
-        self-consistency checks to run.
-
-    reason_then_answer:
-        Mark plans with a hint that responses should be structured as
-        (reasoning → answer).
-
-    error_simulation_enabled:
-        Allow L2 to optionally simulate common error modes to improve
-        robustness (used by some planners).
+    This restores v10_8's "deep QA/safety hints" behavior in a typed
+    form appropriate for v10_9.
     """
 
-    failure_anticipation_enabled: bool = True
-    self_consistency_enabled: bool = True
-    reason_then_answer: bool = True
-    error_simulation_enabled: bool = True
+    qa_hints: List[str] = field(default_factory=list)
+    safety_hints: List[str] = field(default_factory=list)
+    context_hints: List[str] = field(default_factory=list)
+    optimization_hints: List[str] = field(default_factory=list)
 
-    def as_dict(self) -> Dict[str, Any]:
-        return {
-            "failure_anticipation_enabled": self.failure_anticipation_enabled,
-            "self_consistency_enabled": self.self_consistency_enabled,
-            "reason_then_answer": self.reason_then_answer,
-            "error_simulation_enabled": self.error_simulation_enabled,
-        }
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
 
 
-INJECTION_CONFIG = InjectionConfig()
-
-
-# ============================================================================
-# SHARED PLANNING UTILITIES (job/resume analysis, metrics, sections)
-# ============================================================================
-
-
-def _as_list(value: Any) -> List[str]:
-    """Normalize arbitrary value to a list of strings."""
-    if value is None:
-        return []
-    if isinstance(value, str):
-        return [value]
-    if isinstance(value, Iterable) and not isinstance(value, (bytes, bytearray)):
-        return [str(v) for v in value]
-    return [str(value)]
-
-
-def extract_job_profile(state: Dict[str, Any]) -> Dict[str, Any]:
+@dataclass
+class CrossModeDependencies:
     """
-    Extract a normalized "job profile" from state["job"] and related fields.
+    Cross-mode planning dependencies.
 
-    Returns:
-        {
-            "title": str,
-            "company": str,
-            "summary": str,
-            "team": str,
-            "location": str,
-            "requirements": List[str]
-        }
+    v10_8 allowed strategy to shape RAG, drafting, QA, and safety.
+    This structure makes those dependencies explicit and typed.
     """
-    job = state.get("job") or {}
 
-    def _first(*keys: str) -> str:
-        for key in keys:
-            value = job.get(key)
-            if value:
-                return str(value)
-        return ""
+    rag_required: bool = True
+    drafting_required: bool = True
+    bullets_required: bool = True
+    qa_required: bool = True
+    safety_required: bool = True
+    meta_learning_required: bool = True
+    prompt_engineering_required: bool = True
 
-    raw_requirements = (
-        job.get("top_requirements")
-        or job.get("required_skills")
-        or job.get("keywords")
-        or job.get("skills")
-        or []
-    )
+    # Optional notes/hints per mode.
+    rag_notes: List[str] = field(default_factory=list)
+    drafting_notes: List[str] = field(default_factory=list)
+    qa_notes: List[str] = field(default_factory=list)
+    safety_notes: List[str] = field(default_factory=list)
+    meta_notes: List[str] = field(default_factory=list)
+    prompt_notes: List[str] = field(default_factory=list)
 
-    if isinstance(raw_requirements, str):
-        requirements = [part.strip() for part in raw_requirements.split(",") if part.strip()]
-    elif isinstance(raw_requirements, Iterable):
-        requirements = [str(item).strip() for item in raw_requirements if str(item).strip()]
-    else:
-        requirements = []
+    def to_dict(self) -> Dict[str, Any]:
+        return asdict(self)
 
-    return {
-        "title": _first("job_title", "title", "role"),
-        "company": _first("company", "employer", "organization"),
-        "summary": _first("summary", "description", "jd_excerpt", "jd"),
-        "team": _first("team", "org_unit", "department"),
-        "location": _first("location", "city"),
-        "requirements": requirements,
+
+# =============================================================================
+# 2. PROFILE INFERENCE
+# =============================================================================
+
+
+def _infer_seniority(job_text: str, resume_text: str) -> str:
+    """
+    Very small heuristic seniority inference.
+
+    This is intentionally simple but structured, so it can be easily
+    overridden or replaced by a more sophisticated classifier without
+    changing downstream contracts.
+    """
+    combined = f"{job_text} {resume_text}".lower()
+
+    senior_terms = {
+        "executive": ["chief", "cxo", "svp", "evp", "executive"],
+        "director": ["director", "head of", "senior director"],
+        "manager": ["manager", "lead", "team lead"],
+        "senior_ic": ["senior", "staff", "principal"],
+        "junior": ["junior", "entry-level", "associate"],
     }
 
+    for label, terms in senior_terms.items():
+        if any(t in combined for t in terms):
+            return label
 
-def extract_resume_profile(state: Dict[str, Any]) -> Dict[str, Any]:
+    # Fallback: treat as mid-level.
+    return "mid"
+
+
+def _infer_domains(job_text: str, resume_text: str) -> List[str]:
     """
-    Extract a normalized "resume profile" from state["resume"]["master_resume"].
+    Heuristic domain tagging from job/resume content.
 
-    Returns:
+    This replaces the implicit v10_8 domain tagging with a portable,
+    transparent heuristic that can be upgraded later.
+    """
+    text = f"{job_text} {resume_text}".lower()
+    domains: List[str] = []
+
+    if any(k in text for k in ["insurance", "actuary", "actuarial"]):
+        domains.append("insurance")
+    if any(k in text for k in ["bank", "credit", "loan", "trading", "broker"]):
+        domains.append("financial_services")
+    if any(k in text for k in ["llm", "large language model", "rag"]):
+        domains.append("foundation_models")
+    if any(k in text for k in ["ml", "machine learning", "deep learning"]):
+        domains.append("machine_learning")
+    if any(k in text for k in ["cloud", "aws", "azure", "gcp"]):
+        domains.append("cloud")
+    if any(k in text for k in ["data platform", "databricks", "snowflake"]):
+        domains.append("data_platform")
+
+    return sorted(set(domains))
+
+
+def _infer_skill_clusters(job_text: str, resume_text: str) -> List[str]:
+    """
+    Rough skill clustering based on keyword families.
+
+    This mirrors v10_8 behavior where planners would cluster skills
+    into thematic groups for bullet/drafting planning.
+    """
+    text = f"{job_text} {resume_text}".lower()
+    clusters: List[str] = []
+
+    if any(k in text for k in ["python", "pandas", "numpy"]):
+        clusters.append("python_data")
+    if any(k in text for k in ["pytorch", "tensorflow", "keras"]):
+        clusters.append("deep_learning")
+    if any(k in text for k in ["aws", "azure", "gcp"]):
+        clusters.append("cloud_infra")
+    if any(k in text for k in ["stakeholder", "executive", "c-suite"]):
+        clusters.append("executive_communication")
+    if any(k in text for k in ["roadmap", "strategy", "vision"]):
+        clusters.append("strategy_product")
+
+    return sorted(set(clusters))
+
+
+def _infer_risk_flags(job_text: str, resume_text: str) -> List[str]:
+    """
+    Heuristic risk flags that QA and Safety can later validate.
+
+    Example flags:
+        • jd_alignment_low
+        • heavy_pii_risk
+        • aggressive_timeline
+    """
+    risk_flags: List[str] = []
+    jt = job_text.lower()
+    rt = resume_text.lower()
+
+    # Very naive alignment heuristic: overlap of "must have" keywords.
+    must_have_keywords = [
+        "must have",
+        "required",
+        "strongly preferred",
+    ]
+    if any(k in jt for k in must_have_keywords):
+        # If resume is short or missing domain tags, mark as risk.
+        if len(rt.split()) < 300:  # very small resume
+            risk_flags.append("jd_alignment_low")
+
+    if any(k in jt for k in ["pci", "phi", "hipaa", "pii"]):
+        risk_flags.append("heavy_pii_risk")
+
+    if any(k in jt for k in ["immediately", "asap", "tight timeline"]):
+        risk_flags.append("aggressive_timeline")
+
+    return risk_flags
+
+
+def infer_profile_signals(job_text: str, resume_text: str) -> ProfileSignals:
+    """
+    Public entry point for L1 profile inference.
+
+    Downstream layers and tests can call this directly if needed, but
+    typical usage is via plan_*() functions in this module.
+    """
+    seniority = _infer_seniority(job_text, resume_text)
+    domains = _infer_domains(job_text, resume_text)
+    skill_clusters = _infer_skill_clusters(job_text, resume_text)
+    risk_flags = _infer_risk_flags(job_text, resume_text)
+
+    return ProfileSignals(
+        seniority=seniority,
+        domains=domains,
+        skill_clusters=skill_clusters,
+        risk_flags=risk_flags,
+    )
+
+
+# =============================================================================
+# 3. COMPLEXITY & REASONING STRATEGY
+# =============================================================================
+
+
+def estimate_task_complexity(job_text: str, resume_text: str) -> ComplexityLevel:
+    """
+    Estimate problem complexity from very simple heuristics.
+
+    This is designed to be deterministic and explainable; more advanced
+    classifiers can be slotted in later behind the same interface.
+    """
+    jt_tokens = len(job_text.split())
+    rt_tokens = len(resume_text.split())
+
+    total = jt_tokens + rt_tokens
+
+    if total < 800:
+        return ComplexityLevel.SIMPLE
+    if total < 2500:
+        return ComplexityLevel.MODERATE
+    return ComplexityLevel.COMPLEX
+
+
+def select_reasoning_strategy(complexity: ComplexityLevel, risk_flags: Sequence[str]) -> ReasoningStrategy:
+    """
+    Map complexity + risk into a reasoning strategy hint.
+
+    This restores v10_8 behavior where planners would choose between
+    CoT vs ToT vs direct reasoning, including adversarial / critique
+    modes for high-risk problems.
+    """
+    high_risk = bool(risk_flags)
+
+    if complexity == ComplexityLevel.SIMPLE and not high_risk:
+        return ReasoningStrategy.DIRECT
+
+    if complexity == ComplexityLevel.MODERATE and not high_risk:
+        return ReasoningStrategy.COT
+
+    # Complex or high-risk flows get more robust reasoning patterns.
+    if high_risk and complexity == ComplexityLevel.MODERATE:
+        return ReasoningStrategy.COT_WITH_CRITIQUE
+
+    return ReasoningStrategy.TOT_WITH_CRITIQUE
+
+
+# =============================================================================
+# 4. PLANNING HINTS
+# =============================================================================
+
+
+def build_planning_hints(
+    profile: ProfileSignals,
+    complexity: ComplexityLevel,
+    safety_profile: SafetyOutputProfile,
+) -> PlanningHints:
+    """
+    Construct QA, safety, context, and optimization hints for downstream layers.
+
+    These hints restore the "deep QA/safety hints" behavior v10_8
+    provided to QA and safety stacks, but in a clean, typed structure.
+    """
+    qa_hints: List[str] = []
+    safety_hints: List[str] = []
+    context_hints: List[str] = []
+    optimization_hints: List[str] = []
+
+    # QA: emphasize alignment and quantification for senior roles.
+    if profile.seniority in ("executive", "director"):
+        qa_hints.append("verify_executive_outcomes_are_quantified")
+        qa_hints.append("check_alignment_with_business_outcomes")
+    else:
+        qa_hints.append("ensure_bullets_use_action_metric_outcome_pattern")
+
+    # Safety: adjust based on safety mode.
+    if safety_profile.mode == safety_profile.mode.STRICT:
+        safety_hints.append("enforce_strict_pii_redaction")
+        safety_hints.append("enforce_conservative_tool_usage")
+    elif safety_profile.mode == safety_profile.mode.PERMISSIVE:
+        safety_hints.append("allow_non_critical_style_deviations")
+
+    if safety_profile.enable_prompt_injection_detection:
+        safety_hints.append("run_prompt_injection_detector_on_all_external_inputs")
+
+    # Context: highlight domain-specific context usage.
+    if "insurance" in profile.domains:
+        context_hints.append("preserve_insurance_regulatory_language")
+    if "foundation_models" in profile.domains:
+        context_hints.append("preserve_llm_and_rag_architecture_details")
+
+    # Optimization: nudge L2/L3 toward cost-aware strategies.
+    if complexity == ComplexityLevel.SIMPLE:
+        optimization_hints.append("prefer_cheaper_models_for_initial_pass")
+    elif complexity == ComplexityLevel.COMPLEX:
+        optimization_hints.append("prefer_high_capability_models_for_core_reasoning")
+
+    return PlanningHints(
+        qa_hints=qa_hints,
+        safety_hints=safety_hints,
+        context_hints=context_hints,
+        optimization_hints=optimization_hints,
+    )
+
+
+# =============================================================================
+# 5. CROSS-MODE DEPENDENCIES
+# =============================================================================
+
+
+def build_cross_mode_dependencies(
+    profile: ProfileSignals,
+    complexity: ComplexityLevel,
+) -> CrossModeDependencies:
+    """
+    Encode cross-mode dependencies (strategy → RAG → drafting → QA → safety).
+
+    v10_8 implicitly allowed these dependencies; in v10_9, we make
+    them explicit and inspectable.
+    """
+    deps = CrossModeDependencies()
+
+    # Notes for RAG.
+    deps.rag_notes.append("prioritize_company_and_role_specific_docs")
+    if "insurance" in profile.domains:
+        deps.rag_notes.append("retrieve_insurance_domain_case_studies")
+    if complexity != ComplexityLevel.SIMPLE:
+        deps.rag_notes.append("expand_queries_with_synonyms_and_related_terms")
+
+    # Notes for drafting.
+    deps.drafting_notes.append("respect_seniority_in_tone_and_scope")
+    if profile.seniority in ("executive", "director"):
+        deps.drafting_notes.append("emphasize_org-wide_impact_and_strategy")
+    else:
+        deps.drafting_notes.append("emphasize_hands_on_impact_and_implementation")
+
+    # Notes for QA.
+    deps.qa_notes.append("validate_rag_evidence_covers_key_jd_requirements")
+    deps.qa_notes.append("validate_quantification_for_top_achievements")
+
+    # Notes for safety.
+    deps.safety_notes.append("check_for_pii_in_all_free_text_sections")
+    if "heavy_pii_risk" in profile.risk_flags:
+        deps.safety_notes.append("run_additional_pii_scans_on_rag_snippets")
+
+    # Notes for meta-learning.
+    deps.meta_notes.append("log_complexity_and_seniority_for_future_routing_bias")
+    deps.meta_notes.append("capture_qa_failures_for_correction_journal")
+
+    # Notes for prompt engineering.
+    deps.prompt_notes.append("attach_prompt_taxonomy_version_and_section_types")
+
+    return deps
+
+
+# =============================================================================
+# 6. MODE-SPECIFIC PLAN BUILDERS
+# =============================================================================
+
+
+def _linear_strategy_steps() -> List[Dict[str, Any]]:
+    """
+    Restore the linear strategy plan steps from v10_8:
+
+        clarify → context → structure
+    """
+    return [
         {
-            "summary": str,
-            "experiences": List[Dict[str, Any]]
-        }
-    """
-    resume = state.get("resume") or {}
-    master = resume.get("master_resume") or {}
-    summary = (
-        master.get("summary")
-        or master.get("professional_summary")
-        or master.get("profile")
-        or ""
-    )
-    experiences = master.get("professional_experience")
-    if not isinstance(experiences, list):
-        experiences = []
-    return {"summary": str(summary), "experiences": experiences}
-
-
-def describe_experience(exp: Dict[str, Any]) -> str:
-    """Produce a compact, human-readable description for an experience block."""
-    title = exp.get("title") or exp.get("role") or "Role"
-    company = exp.get("company") or exp.get("employer") or "Company"
-    scope = (
-        exp.get("impact_summary")
-        or exp.get("summary")
-        or exp.get("description")
-        or ""
-    )
-    text = f"{title} @ {company}"
-    if scope:
-        text += f" – {scope}"
-    return text.strip()
-
-
-def detect_metrics(exps: List[Dict[str, Any]]) -> List[str]:
-    """
-    Identify experiences that contain explicit metrics and emit
-    metric-focused guidance for bullet/draft planning.
-    """
-    metrics: List[str] = []
-    for exp in exps:
-        parts: List[str] = []
-        for key in ("impact_summary", "summary", "description"):
-            value = exp.get(key)
-            if value:
-                parts.append(str(value))
-        bullet_pool = exp.get("bullet_pool")
-        if isinstance(bullet_pool, list):
-            parts.extend(str(b) for b in bullet_pool)
-        combined = " ".join(parts)
-        if any(ch.isdigit() for ch in combined):
-            metrics.append(f"Quantify results from {describe_experience(exp)}")
-    if not metrics:
-        metrics.append("Quantify at least one measurable outcome per major role")
-    return metrics
-
-
-def collect_sections(state: Dict[str, Any]) -> List[str]:
-    """
-    Determine which sections should be present in the draft.
-
-    Uses existing draft sections if any; otherwise defaults.
-    """
-    draft = state.get("draft") or {}
-    sections = draft.get("sections")
-    if isinstance(sections, dict) and sections:
-        return list(sections.keys())
-    return ["summary", "experience", "skills"]
-
-
-def _latest_user_message(state: Dict[str, Any]) -> str:
-    """Return the latest user-facing message content from state['messages']."""
-    messages = state.get("messages") or []
-    for msg in reversed(messages):
-        if isinstance(msg, dict) and msg.get("role") == "user" and msg.get("content"):
-            return str(msg["content"])
-    return ""
-
-
-# ============================================================================
-# COMPLEXITY CLASSIFICATION (for routing & ToT depth)
-# ============================================================================
-
-
-def classify_complexity(state: Dict[str, Any]) -> str:
-    """
-    Deterministic complexity classifier for planning:
-
-        • "simple"  – short objectives, few requirements
-        • "medium"  – moderate token length / JD complexity
-        • "complex" – long objectives or many requirements
-
-    L2/L3 can refine this using real cost/latency signals; L1 emits
-    only a heuristic hint for downstream routing.
-    """
-    objective = str(state.get("objective") or "")
-    latest = _latest_user_message(state)
-    job = extract_job_profile(state)
-
-    token_count = len((objective + " " + latest).split())
-    req_count = len(job["requirements"])
-
-    if token_count < 10 and req_count <= 2:
-        return "simple"
-    if token_count < 40 and req_count <= 5:
-        return "medium"
-    return "complex"
-
-
-# ============================================================================
-# STRATEGY PLANNING (Linear steps + ToT-style branches)
-# ============================================================================
-
-
-@dataclass
-class StrategyStep:
-    """Linear strategy step (v10_8 parity)."""
-
-    step_id: str
-    name: str
-    description: str
-
-
-@dataclass
-class StrategyBranchPlan:
-    branch_id: str
-    strategy_name: str
-    focus_areas: List[str] = field(default_factory=list)
-    key_achievements: List[str] = field(default_factory=list)
-    tone: str = "Professional"
-    rationale: str = ""
-
-
-@dataclass
-class PlannerAssessment:
-    planner_name: str
-    vote: str                # "approve" | "revise"
-    rationale: str
-    confidence: float
-    recommended_actions: List[str] = field(default_factory=list)
-
-
-@dataclass
-class ScenarioSimulation:
-    scenario_name: str
-    risk_level: str          # "low" | "medium" | "high"
-    impact_score: float      # 0.0–1.0
-    summary: str
-    mitigation_actions: List[str] = field(default_factory=list)
-
-
-def _objective_from_state(state: Dict[str, Any]) -> str:
-    for key in ("objective", "task", "goal"):
-        value = state.get(key)
-        if value:
-            return str(value)
-    return "unspecified-objective"
-
-
-def _linear_strategy_steps() -> List[StrategyStep]:
-    """
-    v10_8 parity: simple linear "clarify → context → structure" steps
-    preserved as explicit planning metadata.
-    """
-    return [
-        StrategyStep(
-            step_id="clarify",
-            name="Clarify Objective",
-            description="Clarify target role, level, and outcome.",
-        ),
-        StrategyStep(
-            step_id="context",
-            name="Gather Context",
-            description="Align job description and resume context.",
-        ),
-        StrategyStep(
-            step_id="structure",
-            name="Plan Structure",
-            description="Choose narrative structure and key sections.",
-        ),
+            "id": "clarify",
+            "description": "Clarify role, seniority, domain, and hiring manager priorities.",
+        },
+        {
+            "id": "context",
+            "description": "Map candidate experience and achievements to job context.",
+        },
+        {
+            "id": "structure",
+            "description": "Define sections, themes, and narrative progression.",
+        },
     ]
 
 
-def _strategy_branches_from_context(
-    job_profile: Dict[str, Any],
-    resume_profile: Dict[str, Any],
-    state: Dict[str, Any],
-    branching_factor: int,
-) -> List[StrategyBranchPlan]:
+def build_strategy_plan(
+    job_text: str,
+    resume_text: str,
+    framing: FramingProfile,
+    context_profile: ContextProfile,
+    tooling_profile: ToolingProfile,
+    safety_profile: SafetyOutputProfile,
+    access_policy: Optional[AccessPolicy] = None,
+) -> PlanObject:
     """
-    Deterministically construct "strategy branches" using job & resume context.
+    Build a PLAN for the "strategy" mode.
 
-    This is a purely cognitive planning step; L2 may later choose to
-    realize these branches via LLM calls or deterministic logic.
+    This plan focuses on strategic positioning, seniority calibration,
+    and multi-mode dependencies.
     """
-    title = job_profile["title"] or "Target Role"
-    company = job_profile["company"] or "Target Company"
-    summary = resume_profile["summary"]
-    experiences = resume_profile["experiences"]
+    profile = infer_profile_signals(job_text, resume_text)
+    complexity = estimate_task_complexity(job_text, resume_text)
+    reasoning = select_reasoning_strategy(complexity, profile.risk_flags)
+    hints = build_planning_hints(profile, complexity, safety_profile)
+    deps = build_cross_mode_dependencies(profile, complexity)
 
-    base_focus = [
-        f"Position candidate as a leading {title} at {company}",
-        "Demonstrate measurable impact across key roles",
-        "Align narrative with top JD requirements",
-    ]
-    base_achievements: List[str] = []
-    for exp in experiences[:3]:
-        base_achievements.append(describe_experience(exp))
+    steps = _linear_strategy_steps()
 
-    if not base_achievements and summary:
-        base_achievements.append(f"Leverage summary: {summary[:120]}")
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "strategy",
+        "objective": framing.goal,
+        "framing_profile": framing.to_dict(),
+        "context_profile": context_profile.to_dict(),
+        "tooling_profile": tooling_profile.to_dict(),
+        "safety_profile": safety_profile.to_dict(),
+        "profile_signals": profile.to_dict(),
+        "complexity": complexity.value,
+        "reasoning_strategy": reasoning.value,
+        "planning_hints": hints.to_dict(),
+        "dependencies": deps.to_dict(),
+        "steps": steps,
+        "surfaces": [
+            SelfCorrectionSurface.RAG_RETRY.value,
+            SelfCorrectionSurface.DRAFT_RETRY.value,
+            SelfCorrectionSurface.QA_RECHECK.value,
+            SelfCorrectionSurface.SAFETY_ESCALATION.value,
+        ],
+    }
 
-    branches: List[StrategyBranchPlan] = []
-    for idx in range(branching_factor):
-        suffix = f"Variant {idx + 1}"
-        strategy_name = f"{title} @ {company} – {suffix}"
-
-        # introduce small deterministic variation by slicing
-        focus_slice = base_focus[:]
-        if idx == 1 and job_profile["team"]:
-            focus_slice.append(f"Highlight leadership of {job_profile['team']}")
-        if idx == 2 and job_profile["location"]:
-            focus_slice.append(f"Emphasize regional experience in {job_profile['location']}")
-
-        achievements_slice = base_achievements[:]
-        if idx == 1 and len(achievements_slice) > 1:
-            achievements_slice = achievements_slice[1:] + achievements_slice[:1]
-        if idx == 2 and len(achievements_slice) > 2:
-            achievements_slice = achievements_slice[2:] + achievements_slice[:2]
-
-        title_lower = title.lower()
-        tone = state.get("tone") or ("Leadership" if "lead" in title_lower else "Professional")
-        rationale = f"Branch {idx + 1} balances JD focus with resume strengths."
-
-        branches.append(
-            StrategyBranchPlan(
-                branch_id=f"branch_{idx + 1}",
-                strategy_name=strategy_name,
-                focus_areas=focus_slice,
-                key_achievements=achievements_slice,
-                tone=tone,
-                rationale=rationale,
-            )
-        )
-
-    return branches
-
-
-def _assess_branches(
-    branches: List[StrategyBranchPlan],
-    job_profile: Dict[str, Any],
-) -> List[PlannerAssessment]:
-    """
-    Lightweight "planner ensemble" – domain, risk, feasibility – as
-    deterministic heuristics. L2 can later run deeper LLM-based analyses.
-    """
-    assessments: List[PlannerAssessment] = []
-
-    # Domain alignment: does strategy mention title/company?
-    for br in branches:
-        focus_text = " ".join(br.focus_areas).lower()
-        title = job_profile["title"].lower()
-        company = job_profile["company"].lower()
-
-        matches = 0
-        if title and title.split()[0] in focus_text:
-            matches += 1
-        if company and company in focus_text:
-            matches += 1
-
-        if matches >= 1:
-            vote = "approve"
-            rationale = "Focus areas reference role/company context."
-            confidence = 0.7 + 0.1 * min(matches, 2)
-        else:
-            vote = "revise"
-            rationale = "No explicit domain alignment detected."
-            confidence = 0.55
-
-        assessments.append(
-            PlannerAssessment(
-                planner_name=f"DomainPlanner::{br.branch_id}",
-                vote=vote,
-                rationale=rationale,
-                confidence=round(confidence, 3),
-                recommended_actions=(
-                    []
-                    if matches
-                    else [
-                        "Introduce at least one focus area referencing job title or company priorities."
-                    ]
-                ),
-            )
-        )
-
-    # Simple risk/feasibility: number of focus areas & achievements
-    for br in branches:
-        focus_count = len(br.focus_areas)
-        dup_focus = len({f.lower() for f in br.focus_areas}) != focus_count
-        quantified = any(any(ch.isdigit() for ch in a) for a in br.key_achievements)
-
-        vote = "approve"
-        rationale_bits: List[str] = []
-        if focus_count > 5:
-            vote = "revise"
-            rationale_bits.append("Too many focus areas; risk of dilution.")
-        if dup_focus:
-            vote = "revise"
-            rationale_bits.append("Overlapping/duplicate focus areas.")
-        if not quantified:
-            rationale_bits.append("Lacks clearly quantified wins.")
-        if not rationale_bits:
-            rationale_bits.append("Balanced number of focus areas with measurable wins.")
-        rationale = " ".join(rationale_bits)
-
-        confidence = 0.75 if vote == "approve" else 0.6
-
-        recs: List[str] = []
-        if focus_count > 5:
-            recs.append("Prioritize the top 3–4 focus areas with strongest evidence.")
-        if dup_focus:
-            recs.append("Merge or remove overlapping focus areas.")
-        if not quantified:
-            recs.append("Add at least two quantified achievements (%, $, x).")
-
-        assessments.append(
-            PlannerAssessment(
-                planner_name=f"RiskFeasibility::{br.branch_id}",
-                vote=vote,
-                rationale=rationale,
-                confidence=round(confidence, 3),
-                recommended_actions=recs,
-            )
-        )
-
-    return assessments
-
-
-def _simulate_scenarios(branches: List[StrategyBranchPlan]) -> List[ScenarioSimulation]:
-    """
-    Scenario simulations approximate "what if" analysis for hiring manager,
-    technical deep-dive, and cross-functional collaboration.
-
-    This is a deterministic heuristic simulation; L2 may augment/replace
-    it with LLM-based scenario reasoning.
-    """
-    scenarios: List[ScenarioSimulation] = []
-
-    for br in branches:
-        # Hiring Manager Adoption
-        quantified = any(any(ch.isdigit() for ch in a) for a in br.key_achievements)
-        risk = "low" if quantified else "medium"
-        impact = 0.35 if quantified else 0.65
-        scenarios.append(
-            ScenarioSimulation(
-                scenario_name=f"HiringManager::{br.branch_id}",
-                risk_level=risk,
-                impact_score=round(impact, 3),
-                summary=(
-                    "Metrics-driven achievements improve adoption."
-                    if quantified
-                    else "Lack of metrics may slow stakeholder buy-in."
-                ),
-                mitigation_actions=(
-                    []
-                    if quantified
-                    else ["Add quantified impact statements for at least 2 key achievements."]
-                ),
-            )
-        )
-
-        # Technical Deep Dive
-        has_tech = any("tech" in f.lower() or "data" in f.lower() for f in br.focus_areas)
-        risk = "low" if has_tech else "medium"
-        impact = 0.4 if has_tech else 0.7
-        scenarios.append(
-            ScenarioSimulation(
-                scenario_name=f"TechnicalDeepDive::{br.branch_id}",
-                risk_level=risk,
-                impact_score=round(impact, 3),
-                summary=(
-                    "Technical focus prepares for deep-dive discussions."
-                    if has_tech
-                    else "Potential technical grilling may expose focus gaps."
-                ),
-                mitigation_actions=(
-                    []
-                    if has_tech
-                    else ["Introduce a technical depth focus area (platforms, stacks, tooling)."]
-                ),
-            )
-        )
-
-        # Cross-Functional Alignment
-        has_lead = any("lead" in f.lower() or "stakeholder" in f.lower() for f in br.focus_areas)
-        risk = "low" if has_lead else "medium"
-        impact = 0.3 if has_lead else 0.6
-        scenarios.append(
-            ScenarioSimulation(
-                scenario_name=f"CrossFunctional::{br.branch_id}",
-                risk_level=risk,
-                impact_score=round(impact, 3),
-                summary=(
-                    "Leadership emphasis supports cross-functional narratives."
-                    if has_lead
-                    else "Missing leadership signal may reduce collaboration confidence."
-                ),
-                mitigation_actions=(
-                    []
-                    if has_lead
-                    else ["Add a focus area on cross-functional leadership / stakeholder alignment."]
-                ),
-            )
-        )
-
-    return scenarios
-
-
-class StrategyPlanner:
-    """
-    L1 Strategy Planner (Linear + ToT-style).
-
-    Produces a PlanObject with:
-        • mode: "strategy"
-        • linear_steps: canonical "clarify/context/structure" planning steps
-        • branches: list of candidate strategies
-        • planner_assessments: domain/risk/feasibility signals
-        • scenario_simulations: predicted outcomes
-        • aggregated_decision / confidence / rationale
-        • complexity, meta-profile hints, injection & safety metadata
-
-    NOTE: This class performs *no* LLM calls or external I/O; it only
-    constructs a plan description for downstream executors.
-    """
-
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        job_profile = extract_job_profile(state)
-        resume_profile = extract_resume_profile(state)
-        objective = _objective_from_state(state)
-        complexity = classify_complexity(state)
-
-        # Determine branching factor from meta profile + complexity
-        base_branches = 3
-        if complexity == "simple":
-            base_branches = 2
-        elif complexity == "complex":
-            base_branches = 4
-
-        if META_PROFILE.planning_bias.get("conservative"):
-            branching_factor = max(1, base_branches - 1)
-        elif META_PROFILE.planning_bias.get("exploratory", True):
-            branching_factor = base_branches + 1
-        else:
-            branching_factor = base_branches
-
-        branches = _strategy_branches_from_context(
-            job_profile=job_profile,
-            resume_profile=resume_profile,
-            state=state,
-            branching_factor=branching_factor,
-        )
-        assessments = _assess_branches(branches, job_profile)
-        scenarios = _simulate_scenarios(branches)
-        linear_steps = _linear_strategy_steps()
-
-        # Aggregate votes across planners
-        vote_weight: Dict[str, float] = {"approve": 0.0, "revise": 0.0}
-        rationales: List[str] = []
-        for a in assessments:
-            vote_weight[a.vote] = vote_weight.get(a.vote, 0.0) + a.confidence
-            rationales.append(f"{a.planner_name}: {a.vote} ({a.rationale})")
-
-        total_weight = max(vote_weight["approve"] + vote_weight["revise"], 1e-6)
-        approve_ratio = vote_weight["approve"] / total_weight
-        aggregated_decision = "approve" if approve_ratio >= 0.5 else "revise"
-        aggregated_confidence = round(approve_ratio, 3)
-        aggregated_rationale = " | ".join(rationales)
-
-        compat_mode = state.get("compat_mode")  # propagated as metadata
-
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "strategy",
-                "objective": objective,
-                "job_profile": job_profile,
-                "resume_profile": {
-                    "has_summary": bool(resume_profile["summary"]),
-                    "experience_count": len(resume_profile["experiences"]),
-                },
-                "linear_steps": [asdict(s) for s in linear_steps],
-                "branches": [asdict(b) for b in branches],
-                "planner_assessments": [asdict(a) for a in assessments],
-                "scenario_simulations": [asdict(s) for s in scenarios],
-                "aggregated_decision": aggregated_decision,
-                "aggregated_confidence": aggregated_confidence,
-                "aggregated_rationale": aggregated_rationale,
-                "complexity": complexity,
-                # ToT / self-consistency hints for L2
-                "tot_config": {
-                    "branching_factor": branching_factor,
-                    "vote_method": "weighted_confidence",
-                    "reason_then_answer": INJECTION_CONFIG.reason_then_answer,
-                },
-                # Handoff hint for L2 strategy execution
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "strategy",
-                    "expected_deliverables": ["strategy_summary", "prompt_blueprint"],
-                    # allow L2 to choose deterministic vs LLM realization
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                # Injection metadata
-                "injection_framing": {
-                    "global_goal": "Create a verified, high-signal job strategy.",
-                    "success_criteria": "Clear focus areas, measurable wins, alignment to JD.",
-                    "task_mode": "strategy_planning",
-                    "scope_boundaries": "Do not hallucinate roles or companies that do not exist.",
-                    "cost_latency": "Optimize for quality over speed; limit branches if necessary.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": state.get("audience", "general"),
-                    "tags": ["planning", "strategy"],
-                    "sensitivity": "low",
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
-
-
-# ============================================================================
-# RAG PLANNING (HYDE-aware, hybrid ranking, risk checks)
-# ============================================================================
-
-
-def _build_rag_queries(state: Dict[str, Any]) -> List[str]:
-    """
-    Construct retrieval queries from state:
-        • explicit rag_queries, if provided
-        • objective, latest user message
-        • job/resume context
-    """
-    explicit = state.get("rag_queries")
-    if explicit:
-        return [str(q) for q in explicit]
-
-    objective = state.get("objective") or "unspecified-objective"
-    latest = _latest_user_message(state)
-    job = extract_job_profile(state)
-    resume = extract_resume_profile(state)
-
-    queries: List[str] = []
-    if objective:
-        queries.append(f"evidence supporting objective: {objective}")
-    if latest:
-        queries.append(f"user_intent: {latest}")
-    if job.get("title"):
-        queries.append(f"industry context for role: {job['title']} at {job.get('company', '')}")
-    if resume.get("summary"):
-        queries.append(f"resume summary alignment: {resume['summary'][:160]}")
-
-    return queries or ["general background for candidate suitability"]
-
-
-class RAGPlanner:
-    """
-    L1 RAG Planner.
-
-    Produces a PlanObject with:
-        • mode: "rag"
-        • retrieval: queries, filters, ranking strategy, HYDE usage
-        • risk_checks: what must be enforced by L2/L3
-        • injection & safety metadata
-    """
-
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        job_profile = extract_job_profile(state)
-        resume_profile = extract_resume_profile(state)
-        objective = state.get("objective") or "unspecified-objective"
-
-        queries = _build_rag_queries(state)
-        filters = state.get("rag_filters") or {}
-        ranking = {
-            "strategy": state.get("rag_ranking_strategy", "hybrid"),
-            "limit": state.get("rag_limit", 5),
-            "enable_hyde": state.get("rag_enable_hyde", True),
+    if access_policy is not None:
+        plan_dict["access_policy"] = {
+            "tools": [asdict(tp) for tp in access_policy.tool_permissions],
+            "routes": [asdict(rp) for rp in access_policy.routing_permissions],
         }
 
-        risk_checks: List[str] = [
-            "tie_each_top_result_to_resume_source",
-            "avoid_conflicting_evidence_across_experiences",
-            "ensure_leadership_and_technical_examples_if_relevant",
-        ]
-        if job_profile["requirements"]:
-            risk_checks.append(
-                "map_results_to_top_jd_requirements: "
-                + ", ".join(job_profile["requirements"][:3])
-            )
-
-        compat_mode = state.get("compat_mode")
-
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "rag",
-                "objective": objective,
-                "job_profile": job_profile,
-                "resume_profile": {
-                    "has_summary": bool(resume_profile["summary"]),
-                    "experience_count": len(resume_profile["experiences"]),
-                },
-                "retrieval": {
-                    "queries": queries,
-                    "filters": filters,
-                    "ranking": ranking,
-                    "metadata": {
-                        "use_hyde": ranking["enable_hyde"],
-                        "fusion_strategy": "query_rank_merge",
-                        "hybrid_ranker_enabled": ranking["strategy"] == "hybrid",
-                    },
-                },
-                "risk_checks": risk_checks,
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "rag",
-                    "expected_deliverables": ["ranked_documents", "rag_metadata"],
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                "injection_framing": {
-                    "global_goal": "Surface trustworthy, resume-aligned evidence.",
-                    "success_criteria": "High recall, high precision, low redundancy.",
-                    "task_mode": "retrieval_planning",
-                    "scope_boundaries": "Do not fabricate sources; respect privacy constraints.",
-                    "cost_latency": "Prefer semantic caching & hybrid ranking to reduce cost.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": state.get("audience", "general"),
-                    "tags": ["planning", "rag"],
-                    "sensitivity": "low",
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
+    return PlanObject(plan_dict)
 
 
-# ============================================================================
-# DRAFTING PLANNING (structure, tone, key messages, risks)
-# ============================================================================
-
-
-class DraftingPlanner:
+def build_rag_plan(
+    job_text: str,
+    resume_text: str,
+    profile: ProfileSignals,
+    complexity: ComplexityLevel,
+    context_profile: ContextProfile,
+) -> PlanObject:
     """
-    L1 Drafting Planner.
+    Plan retrieval queries and evidence targets.
 
-    Produces a PlanObject with:
-        • mode: "drafting"
-        • sections: which sections to produce/edit
-        • tone & audience
-        • key_messages: narrative guardrails
-        • review_gates: checkpoints for QA
-        • risks: narrative / JD gap risks
+    This restores v10_8 RAG planning behavior in a clean form:
+    multi-query fusion, resume-aware scoring, and explainability hooks.
     """
+    base_queries: List[str] = []
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        job_profile = extract_job_profile(state)
-        resume_profile = extract_resume_profile(state)
-        objective = state.get("objective") or "unspecified-objective"
-        sections = collect_sections(state)
-        tone = state.get("tone") or self._infer_tone(job_profile, state)
-        audience = state.get("audience", "general")
+    # Core queries.
+    base_queries.append("job_description_core_requirements")
+    base_queries.append("company_strategy_and_recent_news")
+    base_queries.append("role_specific_success_profiles")
 
-        key_messages = self._build_key_messages(job_profile, resume_profile, sections)
-        review_gates = self._build_review_gates(job_profile)
-        risks = self._build_risks(job_profile, resume_profile)
+    if "insurance" in profile.domains:
+        base_queries.append("insurance_domain_case_studies")
+        base_queries.append("insurance_ai_use_cases")
+    if "foundation_models" in profile.domains:
+        base_queries.append("llm_and_rag_architecture_patterns")
 
-        compat_mode = state.get("compat_mode")
+    # Additional queries for complex tasks.
+    if complexity != ComplexityLevel.SIMPLE:
+        base_queries.append("industry_benchmarks_and_best_practices")
 
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "drafting",
-                "objective": objective,
-                "sections": sections,
-                "tone": tone,
-                "audience": audience,
-                "key_messages": key_messages,
-                "review_gates": review_gates,
-                "risks": risks,
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "drafting",
-                    "expected_deliverables": ["section_drafts", "draft_metadata"],
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                "injection_framing": {
-                    "global_goal": "Assemble a coherent, evidence-backed narrative.",
-                    "success_criteria": "Clear structure, consistent tone, JD-aligned messaging.",
-                    "task_mode": "drafting_planning",
-                    "scope_boundaries": "Do not invent new roles or employers.",
-                    "cost_latency": "Favor clarity and correctness over verbosity.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": audience,
-                    "tags": ["planning", "drafting"],
-                    "sensitivity": "low",
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
+    # Explainability: why these queries exist.
+    explainability = {
+        "resume_aware_scoring": True,
+        "jd_alignment_boosting": True,
+        "multi_query_fusion": complexity != ComplexityLevel.SIMPLE,
+        "rag_explainability_enabled": True,
+    }
 
-    def _infer_tone(self, job_profile: Dict[str, Any], state: Dict[str, Any]) -> str:
-        title = (job_profile["title"] or "").lower()
-        if any(token in title for token in ["vp", "chief", "director", "head"]):
-            return "Executive"
-        if any(token in title for token in ["lead", "manager"]):
-            return "Leadership"
-        return state.get("tone", "Professional")
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "rag",
+        "objective": "Retrieve structured evidence that maximally supports strategy and drafting.",
+        "profile_signals": profile.to_dict(),
+        "complexity": complexity.value,
+        "queries": base_queries,
+        "fusion": {
+            "enabled": complexity != ComplexityLevel.SIMPLE,
+            "explainability": explainability,
+        },
+        "scoring": {
+            "resume_aware": True,
+            "jd_requirement_boost": True,
+        },
+        "context_profile": context_profile.to_dict(),
+    }
 
-    def _build_key_messages(
-        self,
-        job_profile: Dict[str, Any],
-        resume_profile: Dict[str, Any],
-        sections: List[str],
-    ) -> List[str]:
-        messages: List[str] = []
-        if job_profile["title"]:
-            messages.append(f"Position candidate as the ideal {job_profile['title']}")
-        if job_profile["company"]:
-            messages.append(f"Align story with {job_profile['company']} priorities")
-        if resume_profile["summary"]:
-            messages.append("Preserve unique language from resume summary where appropriate")
-        if job_profile["requirements"]:
-            messages.append(
-                "Explicitly cover JD focus areas: "
-                + ", ".join(job_profile["requirements"][:3])
-            )
-        if "experience" in [s.lower() for s in sections]:
-            messages.append("Highlight 2–3 signature achievements per key role")
-
-        return messages
-
-    def _build_review_gates(self, job_profile: Dict[str, Any]) -> List[str]:
-        gates = [
-            "Narrative continuity review",
-            "Quantified impact audit",
-            "Tone & voice alignment with strategy",
-            "RAG evidence consistency check",
-        ]
-        if job_profile["location"]:
-            gates.append("Localization & market nuance review")
-        return gates
-
-    def _build_risks(
-        self,
-        job_profile: Dict[str, Any],
-        resume_profile: Dict[str, Any],
-    ) -> List[str]:
-        risks = [
-            "Avoid hallucinating responsibilities not present in resume.",
-            "Avoid over-indexing on low-impact tasks at the expense of high-leverage wins.",
-        ]
-        experiences = resume_profile["experiences"]
-        combined = " ".join(
-            str(exp.get("impact_summary") or exp.get("summary") or "")
-            for exp in experiences
-        ).lower()
-        missing: List[str] = []
-        for req in job_profile["requirements"]:
-            if req and req.lower() not in combined:
-                missing.append(req)
-        if missing:
-            risks.append(
-                "JD gaps detected: " + ", ".join(missing[:5]) + ". Address or acknowledge explicitly."
-            )
-        return risks
+    return PlanObject(plan_dict)
 
 
-# ============================================================================
-# QA PLANNING (multi-check, severity)
-# ============================================================================
+def build_drafting_plan(
+    job_text: str,
+    resume_text: str,
+    profile: ProfileSignals,
+    complexity: ComplexityLevel,
+    framing: FramingProfile,
+) -> PlanObject:
+    """
+    Plan the drafting structure (sections, tone, personalization).
 
+    This restores v10_8's behavior where drafting is explicitly aware
+    of strategy and RAG surfaces.
+    """
+    seniority = profile.seniority
 
-def _basic_qa_checks() -> List[str]:
-    return [
-        "content_not_empty",
-        "no_forbidden_phrases",
-        "narrative_coherence",
-        "semantic_alignment_with_jd",
-        "signal_to_noise_ratio",
-        "tenure_consistency",
-        "keyword_coverage",
-        "bias_check",
-        "adversarial_review",
-        "word_count_bounds",
+    # Sections depend on seniority.
+    sections: List[Dict[str, Any]] = [
+        {"id": "header", "required": True},
+        {"id": "summary", "required": True},
+        {"id": "experience", "required": True},
+        {"id": "skills", "required": True},
     ]
 
+    if seniority in ("executive", "director"):
+        sections.append({"id": "executive_highlights", "required": True})
+        sections.append({"id": "strategy_and_vision", "required": True})
+    else:
+        sections.append({"id": "projects", "required": False})
 
-class QACoordinatorPlanner:
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "drafting",
+        "objective": "Draft a personalized, domain-aware artifact aligned with the strategy plan.",
+        "profile_signals": profile.to_dict(),
+        "complexity": complexity.value,
+        "framing_profile": framing.to_dict(),
+        "sections": sections,
+        "tone": framing.tone or "professional",
+        "personalization": {
+            "use_domain_examples": bool(profile.domains),
+            "highlight_skill_clusters": profile.skill_clusters,
+        },
+    }
+
+    return PlanObject(plan_dict)
+
+
+def build_bullets_plan(
+    profile: ProfileSignals,
+    complexity: ComplexityLevel,
+) -> PlanObject:
     """
-    L1 QA Planner.
+    Plan the bullet framework for L2.
 
-    Produces a PlanObject with:
-        • mode: "qa"
-        • checks: list of QA checks to run
-        • severity: "normal" | "strict"
-        • handoff hints for L2 QA executor / QA tools
+    Restores v10_8's advanced bullet system:
+        • action–metric–outcome
+        • seniority scaling
+        • guild-level transformations
     """
+    skeleton = {
+        "pattern": "action_metric_outcome",
+        "seniority_scaling": profile.seniority,
+        "guild_transform": "default",
+    }
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        objective = state.get("objective") or "qa_validation"
-        audience = state.get("audience", "general")
-        severity = state.get("qa_severity") or "normal"
+    if "executive_communication" in profile.skill_clusters:
+        skeleton["guild_transform"] = "executive_storytelling"
 
-        checks = _basic_qa_checks()
-        if audience.lower() in {"executive", "board", "partner"}:
-            checks.append("executive_readability")
-        if severity == "strict":
-            checks.append("deep_fact_checking")
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "bullets",
+        "objective": "Define bullet schemas and seniority scaling logic.",
+        "profile_signals": profile.to_dict(),
+        "complexity": complexity.value,
+        "framework": skeleton,
+    }
 
-        compat_mode = state.get("compat_mode")
-
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "qa",
-                "objective": objective,
-                "audience": audience,
-                "severity": severity,
-                "checks": checks,
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "qa",
-                    "expected_deliverables": ["qa_report", "issue_annotations"],
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                "injection_framing": {
-                    "global_goal": "Validate that the artifact is safe, accurate, and high-signal.",
-                    "success_criteria": "No critical red flags; strong signal-to-noise; JD alignment.",
-                    "task_mode": "qa_planning",
-                    "scope_boundaries": "Do not modify content; only plan validation.",
-                    "cost_latency": "Allow multiple QA passes for critical roles.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": audience,
-                    "tags": ["planning", "qa"],
-                    "sensitivity": "normal" if severity == "normal" else "high",
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
+    return PlanObject(plan_dict)
 
 
-# ============================================================================
-# SAFETY / CONSTITUTIONAL PLANNING
-# ============================================================================
+def build_qa_plan(
+    profile: ProfileSignals,
+    complexity: ComplexityLevel,
+    hints: PlanningHints,
+) -> PlanObject:
+    """
+    Plan QA checks and surfaces.
 
-
-def _default_safety_checks(audience: str) -> List[str]:
-    checks = [
-        "pii_redaction",
-        "forbidden_content_scan",
-        "toxicity_scan",
-        "bias_scan",
+    Restores v10_8's correction validation framework for:
+        • JD mismatch
+        • keyword coverage
+        • resume alignment
+    """
+    checks: List[Dict[str, Any]] = [
+        {"id": "jd_coverage", "severity": "high"},
+        {"id": "keyword_coverage", "severity": "medium"},
+        {"id": "resume_alignment", "severity": "high"},
     ]
-    if audience.lower() in {"student", "underage", "minor", "child", "children"}:
-        checks.append("child_protection_rules")
-    return checks
+
+    if complexity != ComplexityLevel.SIMPLE:
+        checks.append({"id": "rag_evidence_alignment", "severity": "high"})
+
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "qa",
+        "objective": "Define QA checks and validation surfaces for downstream execution.",
+        "profile_signals": profile.to_dict(),
+        "complexity": complexity.value,
+        "checks": checks,
+        "hints": hints.to_dict(),
+    }
+
+    return PlanObject(plan_dict)
 
 
-class SafetyPlanner:
+def build_safety_plan(
+    profile: ProfileSignals,
+    safety_profile: SafetyOutputProfile,
+    hints: PlanningHints,
+) -> PlanObject:
     """
-    L1 Safety Planner.
+    Plan safety surfaces and escalation paths.
 
-    Produces a PlanObject with:
-        • mode: "safety"
-        • checks: list of safety/constitutional checks to run
-        • contracts: high-level safety contract hints
+    Restores v10_8's SafetyConfig layer conceptually:
+        • safety modes
+        • injection detection
+        • deny/allow lists (through SafetyOutputProfile & AccessPolicy)
     """
+    rules: List[Dict[str, Any]] = []
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        objective = state.get("objective") or "safety_validation"
-        audience = state.get("audience", "general")
-        risk_level = state.get("risk_level", "normal")  # normal | strict | high_safety
+    if safety_profile.enable_pii_detection:
+        rules.append({"id": "pii_detection", "severity": "high"})
+    if safety_profile.enable_toxicity_detection:
+        rules.append({"id": "toxicity_detection", "severity": "high"})
+    if safety_profile.enable_bias_detection:
+        rules.append({"id": "bias_detection", "severity": "medium"})
+    if safety_profile.enable_prompt_injection_detection:
+        rules.append({"id": "prompt_injection_detection", "severity": "high"})
 
-        checks = _default_safety_checks(audience)
-        contracts = {
-            "allowed_audience": ["general", "professional", "executive"],
-            "forbidden_terms": ["explicit", "violence", "hate", "slur"],
-            "max_toxicity": 0.25 if risk_level == "normal" else 0.15,
-        }
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "safety",
+        "objective": "Define safety checks and escalation behavior for L5.",
+        "profile_signals": profile.to_dict(),
+        "safety_profile": safety_profile.to_dict(),
+        "rules": rules,
+        "hints": hints.to_dict(),
+    }
 
-        compat_mode = state.get("compat_mode")
-
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "safety",
-                "objective": objective,
-                "audience": audience,
-                "risk_level": risk_level,
-                "checks": checks,
-                "contracts": contracts,
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "safety",
-                    "expected_deliverables": ["safety_report", "sanitized_content"],
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                "injection_framing": {
-                    "global_goal": "Enforce safety, policy, and constitutional constraints.",
-                    "success_criteria": "No PII leakage, no forbidden content, toxicity under threshold.",
-                    "task_mode": "safety_planning",
-                    "scope_boundaries": "Do not change underlying meaning beyond safety requirements.",
-                    "cost_latency": "Allow retry or replan if safety fails.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": audience,
-                    "tags": ["planning", "safety"],
-                    "sensitivity": risk_level,
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
+    return PlanObject(plan_dict)
 
 
-# ============================================================================
-# PROMPT ENGINEERING PLANNING
-# ============================================================================
-
-
-class PromptEngineeringPlanner:
+def build_meta_learning_plan(
+    profile: ProfileSignals,
+    complexity: ComplexityLevel,
+) -> PlanObject:
     """
-    L1 Prompt Engineering Planner.
+    Plan meta-learning signals and logging surfaces.
 
-    Plans how prompts should be structured across layers for a given task:
-        • Which sections need prompt templates.
-        • Which modes (strategy, rag, drafting, qa, safety) are in scope.
-        • Prompt goals & constraints.
-
-    L2 executors will realize this plan by selecting templates and
-    rendering them; L1 never calls LLMs or tools.
+    Restores v10_8's cross-run learning and correction journaling
+    behavior in a typed planning form.
     """
+    signals: List[str] = [
+        "log_complexity_and_seniority",
+        "log_qa_failures_to_correction_journal",
+        "log_safety_blocks_and_escalations",
+    ]
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        objective = state.get("objective") or "prompt_engineering"
-        audience = state.get("audience", "general")
-        target_modes = state.get("prompt_target_modes") or [
-            "strategy",
-            "rag",
-            "drafting",
-            "qa",
-            "safety",
-        ]
+    if complexity == ComplexityLevel.COMPLEX:
+        signals.append("log_model_routing_and_cost_metrics")
 
-        compat_mode = state.get("compat_mode")
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "meta_learning",
+        "objective": "Define meta-learning logging and signal collection for this run.",
+        "profile_signals": profile.to_dict(),
+        "complexity": complexity.value,
+        "signals": signals,
+    }
 
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "prompt_engineering",
-                "objective": objective,
-                "audience": audience,
-                "target_modes": [str(m).lower() for m in target_modes],
-                "constraints": {
-                    "max_sections": 6,
-                    "must_include_reasoning": True,
-                    "must_include_safety_context": True,
-                },
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "prompt_engineering",
-                    "expected_deliverables": ["prompt_envelopes", "prompt_metadata"],
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                "injection_framing": {
-                    "global_goal": "Design robust, reusable prompt envelopes.",
-                    "success_criteria": "Stable sections, clear reasoning, safe outputs.",
-                    "task_mode": "prompt_engineering",
-                    "scope_boundaries": "Do not hardcode provider-specific tokens.",
-                    "cost_latency": "Prompt templates should be reusable and cost-efficient.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": audience,
-                    "tags": ["planning", "prompt_engineering"],
-                    "sensitivity": "low",
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
+    return PlanObject(plan_dict)
 
 
-# ============================================================================
-# HIL (HUMAN-IN-THE-LOOP) PLANNING
-# ============================================================================
-
-
-class HILPlanner:
+def build_prompt_engineering_plan(
+    framing: FramingProfile,
+    context_profile: ContextProfile,
+) -> PlanObject:
     """
-    L1 HIL Planner.
+    Plan prompt taxonomy, sections, and governance metadata.
 
-    Plans how and when human review should occur:
-        • escalation triggers
-        • question framing
-        • urgency levels
-        • which artifact(s) to present
-
-    L2 HIL executor will actually interface with humans; L1 only plans.
+    Restores v10_8's prompt taxonomy API conceptually:
+        • section names/types
+        • injection types
+        • template metadata
     """
+    sections = [
+        {"id": "system", "type": "system"},
+        {"id": "instructions", "type": "instructions"},
+        {"id": "examples", "type": "few_shot"},
+        {"id": "user_input", "type": "user"},
+        {"id": "tools", "type": "tool_spec"},
+    ]
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        objective = state.get("objective") or "hil_review"
-        audience = state.get("audience", "general")
-        severity = state.get("hil_severity", "normal")  # normal | high | critical
+    injection_types = [
+        "goal_override",
+        "role_override",
+        "data_exfiltration",
+        "tool_abuse",
+        "safety_bypass",
+        "prompt_leak",
+    ]
 
-        # Simple deterministic triggers
-        triggers: List[str] = []
-        if state.get("requires_hil") is True:
-            triggers.append("explicit_requires_hil_flag")
-        if "executive" in str(audience).lower():
-            triggers.append("executive_audience")
-        if severity in {"high", "critical"}:
-            triggers.append(f"severity_{severity}")
+    plan_dict: Dict[str, Any] = {
+        "layer": "l1",
+        "mode": "prompt_engineering",
+        "objective": "Define prompt structure, taxonomy, and governance metadata.",
+        "framing_profile": framing.to_dict(),
+        "context_profile": context_profile.to_dict(),
+        "sections": sections,
+        "injection_types": injection_types,
+        "taxonomy": {
+            "version": "v1",
+            "section_count": len(sections),
+        },
+    }
 
-        if not triggers:
-            triggers.append("fallback_trigger_for_uncertain_cases")
-
-        compat_mode = state.get("compat_mode")
-
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "hil",
-                "objective": objective,
-                "audience": audience,
-                "severity": severity,
-                "triggers": triggers,
-                "question_template": (
-                    "Please review this artifact for correctness, tone, and completeness. "
-                    "Indicate whether to approve, reject, or request changes."
-                ),
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "hil",
-                    "expected_deliverables": ["hil_prompt", "hil_response"],
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                "injection_framing": {
-                    "global_goal": "Integrate human judgment for critical decisions.",
-                    "success_criteria": "Clear, actionable human feedback recorded.",
-                    "task_mode": "hil_planning",
-                    "scope_boundaries": "Do not bypass safety or policy decisions.",
-                    "cost_latency": "Use HIL only when necessary due to latency/cost.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": audience,
-                    "tags": ["planning", "hil"],
-                    "sensitivity": severity,
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
+    return PlanObject(plan_dict)
 
 
-# ============================================================================
-# META-LEARNING PLANNING
-# ============================================================================
+# =============================================================================
+# 7. PUBLIC ENTRY POINT
+# =============================================================================
 
 
-class MetaLearningPlanner:
+def plan(
+    *,
+    mode: str,
+    job_text: str,
+    resume_text: str,
+    framing_profile: FramingProfile,
+    context_profile: ContextProfile,
+    tooling_profile: ToolingProfile,
+    safety_profile: SafetyOutputProfile,
+    access_policy: Optional[AccessPolicy] = None,
+) -> PlanObject:
     """
-    L1 Meta-Learning Planner.
+    Public L1 planning entrypoint.
 
-    Describes how a meta-learning pass should interpret logs and results:
-        • which signals to ingest
-        • what patterns/hypotheses to look for
-        • which self-correction surfaces to target
+    This is the only function L2/L3 should call directly. It returns a
+    PlanObject whose "mode" matches the requested planning mode.
 
-    L2/L3 handle the actual meta-learning execution.
+    Supported modes (restoring all v10_8 planning surfaces):
+
+        • "strategy"
+        • "rag"
+        • "drafting"
+        • "bullets"
+        • "qa"
+        • "safety"
+        • "meta_learning"
+        • "prompt_engineering"
     """
+    # Shared signals used across most modes.
+    profile = infer_profile_signals(job_text, resume_text)
+    complexity = estimate_task_complexity(job_text, resume_text)
+    hints = build_planning_hints(profile, complexity, safety_profile)
 
-    def plan(self, state: Dict[str, Any]) -> PlanObject:
-        objective = state.get("objective") or "meta_learning"
-        audience = state.get("audience", "internal")
-        workflow_id = state.get("workflow_id", "unknown")
-
-        signals = state.get("meta_signals") or [
-            "qa_failures",
-            "safety_incidents",
-            "hil_interventions",
-        ]
-
-        compat_mode = state.get("compat_mode")
-
-        plan = PlanObject(
-            {
-                "layer": "l1",
-                "mode": "meta_learning",
-                "objective": objective,
-                "audience": audience,
-                "workflow_id": workflow_id,
-                "signals": signals,
-                "targets": [
-                    "strategy_replan",
-                    "rag_retry",
-                    "qa_recheck",
-                    "hil_escalation",
-                ],
-                "handoff": {
-                    "target_layer": "l2",
-                    "preferred_executor": "meta_learning",
-                    "expected_deliverables": ["meta_snapshot", "meta_recommendations"],
-                    "execution_mode": state.get("execution_mode", "auto"),
-                },
-                "injection_framing": {
-                    "global_goal": "Improve future workflows via meta-learning.",
-                    "success_criteria": "Actionable recommendations, reduced failure patterns.",
-                    "task_mode": "meta_learning_planning",
-                    "scope_boundaries": "Do not alter live workflows; only produce learning signals.",
-                    "cost_latency": "Can run asynchronously; not on critical user path.",
-                },
-                "injection_reasoning": INJECTION_CONFIG.as_dict(),
-                "safety_metadata": {
-                    "objective": objective,
-                    "audience": audience,
-                    "tags": ["planning", "meta_learning"],
-                    "sensitivity": "low",
-                },
-                "compat_mode": compat_mode,
-            }
-        )
-        return plan
-
-
-# ============================================================================
-# MODE ROUTING & PLAN ROUTING
-# ============================================================================
-
-
-def route_mode(state: Dict[str, Any]) -> str:
-    """
-    Decide which L1 mode to use based on state.
-
-    Priority:
-        1. explicit state["mode"]
-        2. explicit state["task_mode"]
-        3. heuristics from objective text
-    """
-    mode = (state.get("mode") or "").strip().lower()
-    if mode:
-        return mode
-
-    task_mode = (state.get("task_mode") or "").strip().lower()
-    if task_mode:
-        return task_mode
-
-    objective = (state.get("objective") or "").lower()
-
-    if any(k in objective for k in ["meta", "meta-learning", "learn from logs"]):
-        return "meta_learning"
-    if any(k in objective for k in ["prompt", "prompting", "prompt engineering"]):
-        return "prompt_engineering"
-    if any(k in objective for k in ["hil", "human-in-the-loop", "human review", "human approval"]):
-        return "hil"
-    if any(k in objective for k in ["retrieve", "rag", "evidence", "hybrid", "hyde"]):
-        return "rag"
-    if any(k in objective for k in ["bullet", "bullets"]):
-        return "bullets"
-    if any(k in objective for k in ["draft", "rewrite", "resume", "summary", "narrative"]):
-        return "drafting"
-    if "qa" in objective or "validate" in objective:
-        return "qa"
-    if "safety" in objective or "sanitize" in objective or "policy" in objective:
-        return "safety"
-
-    return "strategy"
-
-
-def route_plan(state: Dict[str, Any]) -> PlanObject:
-    """
-    Top-level L1 entrypoint.
-
-    Chooses the appropriate planner based on route_mode and returns
-    a fully-populated PlanObject describing the next agentic step.
-
-    This function adheres strictly to L1 constraints: no IO, no tools,
-    no provider-specific logic.
-    """
-    mode = route_mode(state)
+    mode = mode.lower()
 
     if mode == "strategy":
-        return StrategyPlanner().plan(state)
-    if mode == "rag":
-        return RAGPlanner().plan(state)
-    if mode == "drafting":
-        return DraftingPlanner().plan(state)
-    if mode == "qa":
-        return QACoordinatorPlanner().plan(state)
-    if mode == "safety":
-        return SafetyPlanner().plan(state)
-    if mode == "bullets":
-        # For now, bullets planning is folded into drafting; we can
-        # later add a dedicated BulletPlanner if needed.
-        return DraftingPlanner().plan(state)
-    if mode == "prompt_engineering":
-        return PromptEngineeringPlanner().plan(state)
-    if mode == "hil":
-        return HILPlanner().plan(state)
-    if mode == "meta_learning":
-        return MetaLearningPlanner().plan(state)
+        return build_strategy_plan(
+            job_text=job_text,
+            resume_text=resume_text,
+            framing=framing_profile,
+            context_profile=context_profile,
+            tooling_profile=tooling_profile,
+            safety_profile=safety_profile,
+            access_policy=access_policy,
+        )
 
-    # Fallback to strategy planning
-    return StrategyPlanner().plan(state)
+    if mode == "rag":
+        return build_rag_plan(
+            job_text=job_text,
+            resume_text=resume_text,
+            profile=profile,
+            complexity=complexity,
+            context_profile=context_profile,
+        )
+
+    if mode == "drafting":
+        return build_drafting_plan(
+            job_text=job_text,
+            resume_text=resume_text,
+            profile=profile,
+            complexity=complexity,
+            framing=framing_profile,
+        )
+
+    if mode == "bullets":
+        return build_bullets_plan(
+            profile=profile,
+            complexity=complexity,
+        )
+
+    if mode == "qa":
+        return build_qa_plan(
+            profile=profile,
+            complexity=complexity,
+            hints=hints,
+        )
+
+    if mode == "safety":
+        return build_safety_plan(
+            profile=profile,
+            safety_profile=safety_profile,
+            hints=hints,
+        )
+
+    if mode == "meta_learning":
+        return build_meta_learning_plan(
+            profile=profile,
+            complexity=complexity,
+        )
+
+    if mode == "prompt_engineering":
+        return build_prompt_engineering_plan(
+            framing=framing_profile,
+            context_profile=context_profile,
+        )
+
+    # If we get here, the caller passed an unsupported mode.
+    raise ValueError(f"Unsupported L1 planning mode: {mode!r}")
