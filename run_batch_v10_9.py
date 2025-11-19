@@ -5,32 +5,24 @@ Batch Runner — v10_9 Agentic Workflow (ENTERPRISE REFACTOR)
 This module provides an enterprise-grade, architecture-compliant batch
 runner for the v10_9 agentic workflow.
 
-It extends the original v10_9 batch runner to fully align with the
-10_7 → 10_9 refactoring plan and the OpenAI Agentic Design Pillars:
+It lives strictly ABOVE L1–L5 as a META-UTILITY and therefore:
 
-    • L1–L5 purity is preserved:
-        - No cognition (L1) here.
-        - No L2 execution logic here beyond calling run_workflow_v10_9.
-        - No orchestration logic (L3) beyond per-job invocation.
-        - No direct state mutation (L4).
-        - No safety decisions (L5).
-      This file is a meta-level utility above L1–L5.
+    • DOES NOT perform cognition (no L1 planning).
+    • DOES NOT execute tools/LLMs directly (no L2 logic).
+    • DOES NOT orchestrate phases/DAGs (no L3 internals).
+    • DOES NOT mutate state (no L4 StateAdapter usage).
+    • DOES NOT make safety/policy decisions (no L5 logic).
 
-    • Capability Maturity:
-        - CircuitBreaker for batch-level resilience.
-        - Backpressure via max_concurrency and optional job limit.
+Instead, it:
 
-    • Observability & Cost:
-        - Structured batch summaries.
-        - Per-job outputs preserved.
+    • Invokes run_workflow_v10_9(initial_state) per job.
+    • Applies batch-level resilience via a CircuitBreaker.
+    • Limits concurrency (backpressure).
+    • Aggregates per-job results into a batch summary.
+    • Optionally calls a meta-learning callback after batch completion.
 
-    • Meta-Learning Hook:
-        - Optional callback for running meta-learning after batch.
-
-This module does NOT implement:
-    • Meta-learning logic itself (that lives in a separate module).
-    • Tool calls (those belong to L2 executors).
-    • Checkpointing persistence (that belongs to a dedicated persistence layer).
+This design satisfies the Agentic Ecosystem constraints while providing
+high-level batch orchestration.
 """
 
 from __future__ import annotations
@@ -98,11 +90,12 @@ class BatchFeedbackAggregator:
 
     Fields:
         • results: list of per-job results (full run_workflow_v10_9 outputs)
-        • total_jobs: count of jobs processed (attempted)
-        • successful: count of jobs that completed without raising
-                      (does not inspect safety outcomes; that is per-job)
         • failed: count of jobs that raised exceptions at the batch level
         • breaker_open: whether the CircuitBreaker opened during the batch
+
+    Derived properties:
+        • total_jobs: # results + # failures
+        • successful: # results (jobs that completed, regardless of phase)
     """
 
     results: List[Dict[str, Any]] = field(default_factory=list)
@@ -121,9 +114,9 @@ class BatchFeedbackAggregator:
 
     @property
     def successful(self) -> int:
-        # For now, treat all completed runs as "successful" at the batch level;
+        # All completed runs are counted as "successful" at the batch level;
         # domain-specific success criteria (e.g., phase == COMPLETE, safety
-        # passed) can be layered on top by callers.
+        # passed) are up to the caller.
         return len(self.results)
 
     def summary(self) -> Dict[str, Any]:
@@ -147,6 +140,8 @@ async def run_batch_async(
     failure_threshold: int = 3,
     max_jobs: Optional[int] = None,
     meta_learning_callback: Optional[Callable[[List[Dict[str, Any]]], Any]] = None,
+    compat_mode: Optional[str] = None,
+    debug_mode: bool = False,
 ) -> Dict[str, Any]:
     """
     Execute a batch of v10_9 workflows asynchronously.
@@ -174,6 +169,15 @@ async def run_batch_async(
             breaker opens). It receives the list of per-job results
             (aggregator.results). Typical usage: run a meta-learning
             pass over feedback/preference logs.
+
+        compat_mode:
+            Optional compat flag forwarded to run_workflow_v10_9. It is
+            stored in state["metadata"]["compat_mode"] and may adjust
+            behavior of underlying agents.
+
+        debug_mode:
+            When True, forwarded to run_workflow_v10_9 to enable extra
+            debug metadata in the per-job state.
 
     Returns:
         dict:
@@ -222,9 +226,19 @@ async def run_batch_async(
         try:
             if semaphore:
                 async with semaphore:
-                    result = await run_workflow_v10_9(initial_state)
+                    result = await run_workflow_v10_9(
+                        initial_state,
+                        compat_mode=compat_mode,
+                        debug_mode=debug_mode,
+                        stream_callback=None,
+                    )
             else:
-                result = await run_workflow_v10_9(initial_state)
+                result = await run_workflow_v10_9(
+                    initial_state,
+                    compat_mode=compat_mode,
+                    debug_mode=debug_mode,
+                    stream_callback=None,
+                )
             aggregator.add_result(result)
             breaker.record_success()
         except Exception:
@@ -232,11 +246,9 @@ async def run_batch_async(
             aggregator.add_failure()
             breaker.record_failure()
 
-    # Run jobs sequentially in scheduling, but each may run concurrently
-    # based on the semaphore.
+    # Schedule jobs with circuit-breaker awareness
     tasks: List[asyncio.Task[None]] = []
     for job in job_inputs:
-        # If breaker already open, stop scheduling new tasks
         if breaker.is_open:
             aggregator.breaker_open = True
             break
@@ -266,10 +278,15 @@ def run_batch_sync(
     failure_threshold: int = 3,
     max_jobs: Optional[int] = None,
     meta_learning_callback: Optional[Callable[[List[Dict[str, Any]]], Any]] = None,
+    compat_mode: Optional[str] = None,
+    debug_mode: bool = False,
 ) -> Dict[str, Any]:
     """
     Synchronous wrapper around run_batch_async for convenient use in
     CLI scripts or non-async contexts.
+
+    This function is META-only and must not be called from inside the
+    core L1–L5 runtime loops (it is for outer service/CLI boundaries).
     """
     return asyncio.run(
         run_batch_async(
@@ -278,6 +295,8 @@ def run_batch_sync(
             failure_threshold=failure_threshold,
             max_jobs=max_jobs,
             meta_learning_callback=meta_learning_callback,
+            compat_mode=compat_mode,
+            debug_mode=debug_mode,
         )
     )
 
@@ -287,7 +306,7 @@ def run_batch_sync(
 # ============================================================================
 
 if __name__ == "__main__":
-    # Example: simple inline batch for demonstration.
+    # Example: simple inline batch for demonstration / smoke tests.
     example_jobs = [
         {
             "objective": "draft a concise professional summary",
@@ -304,8 +323,6 @@ if __name__ == "__main__":
 
     def _example_meta_learning_callback(results: List[Dict[str, Any]]) -> None:
         # Minimal stub: in a real system this would trigger a meta-learning pass.
-        # It is intentionally no-op here to keep the batch runner free of
-        # cognition and heavy logic.
         print(f"[meta-learning] Received {len(results)} completed results.")
 
     result = run_batch_sync(
@@ -313,6 +330,8 @@ if __name__ == "__main__":
         max_concurrency=2,
         failure_threshold=2,
         meta_learning_callback=_example_meta_learning_callback,
+        compat_mode=None,
+        debug_mode=True,
     )
     print("=== v10_9 Batch Runner Output ===")
     print("Batch Summary:", result["batch_summary"])
