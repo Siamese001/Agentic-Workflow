@@ -1,11 +1,11 @@
 # FILE: l3.py
 """
-Unified L3 Orchestration Layer (v10_9) — FULL AGENTIC IMPLEMENTATION (REFINED)
+Unified L3 Orchestration Layer (v10_9) — ENTERPRISE REFACTOR
 
-This file provides the complete orchestration logic for the v10_9 agentic
-architecture. It fully restores orchestration capabilities (DAGs,
-multi-agent QA council, safety arbitration) while preserving the strict
-L1–L5 separation:
+This file provides the complete orchestration logic for the v10_9
+agentic architecture. It fully restores orchestration capabilities
+(DAGs, multi-agent QA council, safety arbitration) while preserving
+strict L1–L5 separation:
 
     • L1: planning only (PlanObject).
     • L2: execution only (ExecutionResult).
@@ -30,6 +30,7 @@ Non-responsibilities:
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Callable, Optional, Set
 
@@ -41,7 +42,6 @@ from models import (
     StatePatch,
 )
 from runtime_utils import (
-    Constants,
     ValidationError,
     ToolExecutionError,
     WorkflowTimeoutError,
@@ -180,8 +180,7 @@ class DAG:
         for targets in self.edges.values():
             for target in targets:
                 in_degree[target] += 1
-        # Note: conditional edges are *potential*, so they don't affect
-        # baseline in-degree here.
+        # Conditional edges are potential; they don't affect baseline in-degree here.
 
         ready = sorted([name for name, deg in in_degree.items() if deg == 0])
         order: List[str] = []
@@ -319,6 +318,89 @@ class Orchestrator:
     policy_engine: PolicyEngine = field(default_factory=PolicyEngine)
     arbitration_engine: ArbitrationEngine = field(default_factory=ArbitrationEngine)
 
+    # -------------------------------------------------------------------------
+    # Internal helpers
+    # -------------------------------------------------------------------------
+
+    def _apply_execution_to_state(self, mode: str, result: ExecutionResult[Any]) -> None:
+        """
+        Map an L2 ExecutionResult payload into L4 state via StatePatch.
+
+        The shape is intentionally aligned with the simulation harness
+        and downstream tooling (e.g., "draft_result", "qa_result").
+        """
+        payload = result.payload
+        mode = mode.lower()
+
+        if mode == "strategy":
+            # Store selected strategy + decision metadata
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            patch_value = {
+                "branches": p.get("branches", []),
+                "selected_strategy": p.get("selected_branch"),
+                "decision": {
+                    "aggregated_decision": p.get("aggregated_decision"),
+                    "aggregated_confidence": p.get("aggregated_confidence"),
+                    "aggregated_rationale": p.get("aggregated_rationale"),
+                    "complexity": p.get("complexity"),
+                },
+            }
+            self.state_adapter.apply_patch(StatePatch(key="strategy_result", value=patch_value))
+
+        elif mode == "rag":
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            self.state_adapter.apply_patch(StatePatch(key="rag_result", value=p))
+
+        elif mode == "drafting":
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            self.state_adapter.apply_patch(StatePatch(key="draft_result", value=p))
+
+        elif mode == "bullets":
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            self.state_adapter.apply_patch(StatePatch(key="bullet_result", value=p))
+
+        elif mode == "qa":
+            # For QA, ensure "report" key exists
+            if hasattr(payload, "qa_report"):
+                report_dict = payload.qa_report.to_dict()  # type: ignore[attr-defined]
+                patch_value = {"report": report_dict}
+            else:
+                patch_value = {"report": payload}
+            self.state_adapter.apply_patch(StatePatch(key="qa_result", value=patch_value))
+
+        elif mode == "safety":
+            # For Safety, align with state["safety_result"]["report"]
+            if hasattr(payload, "safety_report"):
+                report_dict = payload.safety_report.to_dict()  # type: ignore[attr-defined]
+                patch_value = {
+                    "report": report_dict,
+                    "sanitized": getattr(payload, "sanitized_content", ""),
+                }
+            else:
+                patch_value = {"report": payload}
+            self.state_adapter.apply_patch(StatePatch(key="safety_result", value=patch_value))
+
+        elif mode == "prompt_engineering":
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            self.state_adapter.apply_patch(StatePatch(key="prompt_engineering_result", value=p))
+
+        elif mode == "hil":
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            self.state_adapter.apply_patch(StatePatch(key="hil_result", value=p))
+
+        elif mode == "meta_learning":
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            self.state_adapter.apply_patch(StatePatch(key="meta_learning_result", value=p))
+
+        else:
+            # Unknown modes are stored verbatim under "last_execution"
+            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
+            self.state_adapter.apply_patch(StatePatch(key="last_execution", value={"mode": mode, "payload": p}))
+
+    # -------------------------------------------------------------------------
+    # Public API
+    # -------------------------------------------------------------------------
+
     def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
         """
         Execute full L3 orchestration for a single L1 PlanObject.
@@ -331,6 +413,7 @@ class Orchestrator:
         cost_tracker = CostTracker()
 
         # 2. Seed adapter with initial state via patches
+        workflow_id = str(initial_state.get("workflow_id") or "workflow_v10_9")
         for key, value in (initial_state or {}).items():
             self.state_adapter.apply_patch(StatePatch(key=key, value=value))
 
@@ -346,6 +429,7 @@ class Orchestrator:
             # No planning here; plan already exists. We just attach it to context.
             context["plan"] = plan
             context["state"] = self.state_adapter.state
+            context["workflow_phase"] = machine.current()
             return context
 
         async def _execute_async(p: PlanObject, s: Dict[str, Any]) -> ExecutionResult[Any]:
@@ -357,8 +441,6 @@ class Orchestrator:
             current_state = self.state_adapter.state
 
             # L2 execution
-            # NOTE: We run an async executor in a blocking context using asyncio.run.
-            # This keeps L3 pure and synchronous from the outer caller's perspective.
             exec_result: ExecutionResult[Any] = asyncio.run(_execute_async(plan, current_state))
             cost_tracker.end_span("execution")
 
@@ -366,6 +448,10 @@ class Orchestrator:
             # Patch state using L4 adapter, domain-specific keys
             self._apply_execution_to_state(mode, exec_result)
             context["state"] = self.state_adapter.state
+
+            # Phase: PLANNING → EXECUTING
+            machine.transition(WorkflowPhase.EXECUTING.value)
+            context["workflow_phase"] = machine.current()
             return context
 
         def safety_node(context: Dict[str, Any]) -> Dict[str, Any]:
@@ -386,16 +472,21 @@ class Orchestrator:
             context["policy_decision"] = policy_decision
             context["arbitration_action"] = arbitration_action
 
-            # Attach safety-related blocks into state via adapter
-            self.state_adapter.apply_patch(StatePatch(key="safety_result", value=safety_report))
+            # Attach safety-related blocks into state via adapter, merging with
+            # any executor-provided safety_result.
+            self.state_adapter.apply_patch(StatePatch(key="safety_result", value={"report_l5": safety_report}))
             self.state_adapter.apply_patch(StatePatch(key="arbitration", value=arbitration_action))
             context["state"] = self.state_adapter.state
+
+            # Phase: EXECUTING → REVIEWING
+            machine.transition(WorkflowPhase.REVIEWING.value)
+            context["workflow_phase"] = machine.current()
             return context
 
         def safety_condition(context: Dict[str, Any]) -> str:
             """
             Decide next edge key based on arbitration action:
-                - "halt"  → no further nodes
+                - "halt"    → stop further nodes
                 - "proceed" → continue
             """
             action = (context.get("arbitration_action") or {}).get("action", "proceed")
@@ -413,9 +504,8 @@ class Orchestrator:
 
             state = context.get("state", self.state_adapter.state)
             ma_orch = MultiAgentOrchestrator(graph=COUNCIL_OF_QA, state_adapter=self.state_adapter)
-            # Single synthetic message describing objective for QA council
             council_state = ma_orch.dispatch_for_qa(state, plan)
-            # The orchestrator returns an updated state; reconcile through L4
+            # The orchestrator returns a dict of fields; reconcile through L4
             for key, value in council_state.items():
                 self.state_adapter.apply_patch(StatePatch(key=key, value=value))
             context["state"] = self.state_adapter.state
@@ -441,10 +531,15 @@ class Orchestrator:
                 "orchestrator_cycle",
                 {
                     "plan_mode": mode,
+                    "workflow_id": workflow_id,
                     "spans": spans,
                     "optimization": optimization,
                 },
             )
+
+            # Phase: REVIEWING → COMPLETE
+            machine.transition(WorkflowPhase.COMPLETE.value)
+            context["workflow_phase"] = machine.current()
             return context
 
         # Wrap node callables into DAGNodes
@@ -476,83 +571,35 @@ class Orchestrator:
         dag = DAG(nodes=nodes, edges=edges)
         executor = DAGExecutor()
 
-        # 5. Phase: PLANNING → EXECUTING
-        machine.transition(WorkflowPhase.EXECUTING.value)
-
-        # 6. Run DAG
+        # Run DAG
         initial_context = {
             "plan": plan,
             "state": self.state_adapter.state,
             "workflow_phase": machine.current(),
         }
-        final_context = executor.run(dag, initial_context)
 
-        # 7. Phase: EXECUTING → REVIEWING → COMPLETE
-        machine.transition(WorkflowPhase.REVIEWING.value)
-        machine.transition(WorkflowPhase.COMPLETE.value)
+        try:
+            final_context = executor.run(dag, initial_context)
+        except ToolExecutionError as exc:
+            # If orchestration fails at DAG level, mark workflow as FAILED.
+            machine.transition(WorkflowPhase.FAILED.value)
+            final_state = self.state_adapter.state
+            phase_metadata = {"history": list(machine.history)}
+            return WorkflowState(
+                workflow_id=workflow_id,
+                phase=machine.current(),
+                nodes={},
+                state=final_state,
+                phase_metadata=phase_metadata,
+            )
 
         final_state = self.state_adapter.state
-        workflow_id = str(final_state.get("workflow_id", "workflow_v10_9"))
-        phase_metadata = {
-            "phase": machine.current(),
-            "history": list(machine.history),
-            "note": f"L3 orchestrator completed in mode={mode}",
-        }
+        phase_metadata = {"history": list(machine.history)}
 
         return WorkflowState(
             workflow_id=workflow_id,
             phase=machine.current(),
-            nodes={},  # reserved for future graph exports
+            nodes={},
             state=final_state,
             phase_metadata=phase_metadata,
         )
-
-    # -------------------------------------------------------------------------
-    # Internal helpers
-    # -------------------------------------------------------------------------
-
-    def _apply_execution_to_state(self, mode: str, exec_result: ExecutionResult[Any]) -> None:
-        """
-        Apply an ExecutionResult payload into L4 state via StateAdapter.
-
-        This method is purely about mapping L2 domain payloads to
-        well-defined top-level state keys and *does not* implement
-        state mutation logic directly (delegated to StateAdapter).
-        """
-        payload = exec_result.payload
-        if hasattr(payload, "to_dict"):
-            payload_dict = payload.to_dict()  # type: ignore[assignment]
-        else:
-            payload_dict = dict(payload)
-
-        if mode == "strategy":
-            self.state_adapter.apply_patch(StatePatch(key="strategy_result", value=payload_dict))
-
-        elif mode == "rag":
-            self.state_adapter.apply_patch(StatePatch(key="rag_result", value=payload_dict))
-            # Optionally maintain a rag_history: append documents only
-            existing = self.state_adapter.state.get("rag_history") or []
-            docs = payload_dict.get("documents", [])
-            new_history = list(existing) + docs
-            self.state_adapter.apply_patch(StatePatch(key="rag_history", value=new_history))
-
-        elif mode == "bullets":
-            self.state_adapter.apply_patch(StatePatch(key="bullet_result", value=payload_dict))
-
-        elif mode == "drafting":
-            self.state_adapter.apply_patch(StatePatch(key="draft_result", value=payload_dict))
-
-        elif mode == "qa":
-            self.state_adapter.apply_patch(StatePatch(key="qa_result", value=payload_dict))
-
-        elif mode == "safety":
-            # SafetyExecutor is usually called by the orchestrator only for
-            # a dedicated safety pass; in this pipeline, safety is handled
-            # via L5. However, if plan.mode == "safety", we still respect it.
-            self.state_adapter.apply_patch(StatePatch(key="safety_result", value=payload_dict))
-
-        else:
-            # For unknown modes, we store under a generic bucket
-            generic_key = f"{mode}_result"
-            self.state_adapter.apply_patch(StatePatch(key=generic_key, value=payload_dict))
-
