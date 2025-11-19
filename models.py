@@ -1,43 +1,38 @@
 # FILE: models.py
 """
-Unified Runtime Models (v10_9) — FULL AGENTIC IMPLEMENTATION (ENTERPRISE REFINE)
+Unified Runtime Models (v10_9) — FULL AGENTIC IMPLEMENTATION (ENTERPRISE REFINEMENT)
 
 This module defines all canonical data structures used across the
-v10_9 agentic architecture, extended to fully support the
-Enterprise / Production feature set outlined in the 10_7 → 10_9
-refactoring plan:
+v10_9 agentic architecture. It is intentionally *data-only* and
+contains:
 
-    • Typed PlanObjects for L1 planning outputs
-    • Typed Execution payloads for each L2 domain:
-        - Strategy
-        - RAG (core + external/vector RAG)
-        - Bullets
-        - Drafting
-        - QA (core + tool-suite/guild)
-        - Safety
-        - HIL (human-in-the-loop)
-        - Meta-learning
-        - Checkpointing / Recovery metadata
-    • WorkflowState as the single L3 → external API contract
-    • StatePatch as the L4 patch container (for all state writes)
-    • Phase metadata, trace IDs, and meta-learning snapshots
-    • Arbitration outcomes and self-correction surfaces
+    • PlanObject               — L1 → L2/L3 planning contract
+    • Typed payloads           — per-domain L2 execution outputs
+    • ExecutionResult          — L2 → L3 contract
+    • WorkflowState            — L3 → external API contract
+    • StatePatch               — L4 patch container
+    • Enums                    — NodeStatus, WorkflowPhase, SelfCorrectionSurface
+    • ArbitrationDecision      — L5 arbitration outcome
+    • CheckpointInfo           — checkpoint metadata
+    • TraceSpan / PhaseMetadata — observability metadata
+    • MultiAgentCouncilResult  — meta-layer multi-agent outcomes
 
-Design goals:
-    • NO cognition (L1) here — only data structures.
-    • NO execution (L2) — only models used BY executors.
-    • NO orchestration (L3) — only WorkflowState representation.
-    • NO state mutation (L4) — only patch container types.
-    • NO safety/policy logic (L5) — only data formats.
+Design constraints (structural guardrails):
 
-This file is intentionally import-light and depends only on Python
-standard library types.
+    • NO cognition (L1) here — no planning logic.
+    • NO execution (L2) — no tool/LLM calls.
+    • NO orchestration (L3) — no control-flow or DAG logic.
+    • NO state mutation (L4) — no state adapters or patch application.
+    • NO safety/policy (L5) — no safety decisions.
+
+Everything here is immutable-ish data (dataclasses / enums / dict
+wrappers) used BY the other layers.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, Optional, List, Iterable, TypeVar, Generic, Union
+from typing import Any, Dict, Optional, List, Generic, TypeVar
 import copy
 import enum
 
@@ -70,8 +65,8 @@ class SelfCorrectionSurface(str, enum.Enum):
     """
     Surfaces for self-correction / recovery decisions.
 
-    These surfaces are used by L3 orchestrators and meta-learning
-    to decide how to adapt behavior over time.
+    These surfaces are used by L3 orchestrators, self_correction, and
+    meta-learning to decide how to adapt behavior over time.
     """
 
     RAG_RETRY = "rag_retry"
@@ -113,6 +108,7 @@ class DictBacked:
         raise AttributeError(f"{key!r} not found in {type(self).__name__}")
 
     def __setattr__(self, key: str, value: Any) -> None:
+        # DictBacked instances are meant to be mutable containers.
         self._data[key] = value
 
     # --- mapping style --------------------------------------------------------
@@ -150,16 +146,26 @@ class DictBacked:
 
 class PlanObject(DictBacked):
     """
-    Describes the full L1 cognitive plan for L2 execution.
+    Describes the full L1 cognitive plan for L2 execution and L3
+    orchestration.
 
     Examples of required / common fields (depending on mode):
-        • mode: "strategy" | "rag" | "drafting" | "bullets" |
-                 "qa" | "safety" | "hil" | "meta_learning"
+
+        • layer: "l1"
+        • mode:  "strategy" | "rag" | "drafting" | "bullets" |
+                 "qa" | "safety" | "hil" | "meta_learning" |
+                 "prompt_engineering"
+
         • objective: str
         • branches / steps / checks / rules / surfaces
-        • handoff: {target_layer: "l2", preferred_executor: "..."}
+        • handoff: {
+              "target_layer": "l2",
+              "preferred_executor": "...",
+              "expected_deliverables": [...]
+          }
         • injection_framing / injection_reasoning
         • safety_metadata
+        • compatibility hints (e.g., "compat_mode": "10_7")
 
     PlanObject remains dict-backed for flexibility, but L2/L3 should
     convert into typed payloads when needed.
@@ -188,6 +194,8 @@ class PlanObject(DictBacked):
 
 @dataclass
 class StrategyBranch:
+    """Single strategy branch produced by L1 planning and realized by L2."""
+
     branch_id: str
     strategy_name: str
     focus_areas: List[str] = field(default_factory=list)
@@ -224,6 +232,8 @@ class StrategyExecutionPayload:
 
 @dataclass
 class RAGDocument:
+    """Single document/evidence item surfaced by a RAG executor."""
+
     query: str
     evidence: str
     rank: int
@@ -304,6 +314,8 @@ class BulletExecutionPayload:
 
 @dataclass
 class DraftSection:
+    """Single draft section, for more structured drafting pipelines."""
+
     title: str
     content: str
     tone: str = "Professional"
@@ -335,6 +347,8 @@ class DraftExecutionPayload:
 
 @dataclass
 class QAFinding:
+    """Single QA check result."""
+
     check: str
     status: str  # "pass" | "fail" | "pending"
     details: str = ""
@@ -342,6 +356,12 @@ class QAFinding:
 
 @dataclass
 class QAReport:
+    """
+    Aggregated QA report.
+
+    This is the canonical QA structure for L3 and higher layers.
+    """
+
     issues: List[str] = field(default_factory=list)
     passed: bool = False
     confidence: float = 0.0
@@ -375,12 +395,20 @@ class QAExecutionPayload:
 
 @dataclass
 class SafetyIssue:
+    """Single safety issue detected by safety evaluators."""
+
     code: str
     description: str
 
 
 @dataclass
 class SafetyReport:
+    """
+    Aggregated safety report.
+
+    Used both by L2 SafetyExecutor and L5 SafetyEngine.
+    """
+
     passed: bool
     issues: List[SafetyIssue] = field(default_factory=list)
     toxicity_score: float = 0.0
@@ -468,7 +496,7 @@ class HILExecutionPayload:
 
 @dataclass
 class MetaLearningFinding:
-    """Single pattern / hypothesis extracted from logs."""
+    """Single pattern / hypothesis extracted from logs or prior runs."""
 
     kind: str  # "pattern" | "hypothesis" | "recommendation"
     description: str
@@ -517,12 +545,14 @@ class MetaLearningExecutionPayload:
 
 
 # -----------------------------------------------------------------------------
-# 4.9 Arbitration / Multi-Agent Payloads
+# 4.9 Multi-Agent / Arbitration / Council Metadata
 # -----------------------------------------------------------------------------
 
 
 @dataclass
 class MultiAgentVote:
+    """Single vote from a council member."""
+
     candidate_id: Any
     score: float
     rationale: str = ""
@@ -532,6 +562,8 @@ class MultiAgentVote:
 class MultiAgentCouncilResult:
     """
     Captures council-of-QA or other multi-agent consensus outcomes.
+
+    Stored under e.g. state["multi_agent"] for introspection.
     """
 
     selected_id: Any
@@ -599,8 +631,8 @@ class ExecutionResult(Generic[PayloadT]):
     Fields:
         • status: "success" | "failure"
         • payload: domain-specific object (dict OR typed dataclass)
-        • model: str
-        • usage: dict (e.g., token counts, cost estimates)
+        • model: str           — the logical executor/model label
+        • usage: dict          — e.g., token counts, cost estimates
 
     For typed usage, ExecutionResult[StrategyExecutionPayload] (etc.)
     can be used by type checkers, while still allowing dict payloads.
@@ -673,6 +705,10 @@ class StatePatch:
         • When both existing state[key] and value are dicts, a shallow
           merge is performed.
         • Otherwise, value replaces state[key] entirely.
+
+    NOTE:
+        This is a pure data container; all application logic lives in
+        the L4 StateAdapter implementation.
     """
 
     key: str
@@ -680,7 +716,7 @@ class StatePatch:
 
 
 # =============================================================================
-# 8. META / UTILITY TYPES
+# 8. META / OBSERVABILITY TYPES
 # =============================================================================
 
 
