@@ -1,41 +1,39 @@
 # FILE: l3.py
 """
-Unified L3 Orchestration Layer (v10_9) — PURE CONTROL FLOW (RESTORED)
+Unified L3 Orchestration Layer (v10_9) — PURE CONTROL FLOW (META-AWARE, RESTORED)
 
 This module provides the complete orchestration logic for the v10_9
-agentic architecture. It restores orchestration capabilities that were
-present in v10_8 but simplified in v10_9, while preserving strict
-L1–L5 separation:
+agentic architecture. It restores orchestration capabilities from v10_8:
 
-    • L1: planning only (PlanObject).
-    • L2: execution only (ExecutionResult).
-    • L3: control flow / orchestration only.
-    • L4: state management only (StateAdapter).
-    • L5: safety & policy only (SafetyEngine, PolicyEngine, ArbitrationEngine).
-    • META: self_correction, multi-agent councils (no state writes, no tools).
+    • Dynamic DAGs with well-typed nodes.
+    • Parallel node execution with simple retry logic.
+    • Fallback-friendly orchestration.
+    • NodeResult metadata (status, timings, payload refs).
+    • Route trace logging and correction journal surfaces.
 
-Key responsibilities of L3:
+while preserving strict L1–L5 separation:
 
-    • Model workflows as DAGs with:
-        - parallel nodes
-        - conditional edges
-        - fallback edges (multi-path fallbacks)
-    • Coordinate L2 executors via route_executor(plan, state).
-    • Attach predictive caching & optimization hints (metadata-only).
-    • Emit NodeResult metadata for each node (status, timings, payload refs).
-    • Emit route traces and correction journal entries as telemetry.
-    • Propagate escalation actions ("escalate") for L5/HIL handling.
+    • L1: planning only (PlanObject creation).
+    • L2: execution only (tools/LLMs, RAG, drafting, QA, safety eval).
+    • L3: control flow / orchestration only (this file).
+    • L4: state management only (StateAdapter, StatePatch, memory).
+    • L5: safety & policy only (SafetyEngine, PolicyEngine, Arbitration).
 
-Non-responsibilities (to preserve purity):
+Additionally, L3 is now **META-aware** via `meta_profile`:
 
-    • NO business reasoning (L1).
-    • NO direct tool/LLM/provider calls (L2).
-    • NO durable state storage (L4).
-    • NO safety/policy enforcement (L5).
+    • routing_bias.prefer_fast:
+        – influences execution scheduling (parallel vs conservative).
+    • safety_bias.heightened_caution:
+        – biases toward conservative scheduling and error handling.
+    • safety_bias.human_review_important:
+        – surfaced in WorkflowState.metadata (for HIL routing).
 
-Public entrypoint:
+L3 DOES NOT:
 
-    • DAGExecutor.run(plan: PlanObject, initial_state: dict, state_adapter: StateAdapter) -> WorkflowState
+    • Perform planning (L1 cognition).
+    • Call tools or LLMs directly (L2 does).
+    • Own safety/policy decisions (L5).
+    • Mutate durable state except via L4.StateAdapter patches.
 """
 
 from __future__ import annotations
@@ -55,11 +53,11 @@ from models import (
     StatePatch,
     RouteTraceEntry,
     CorrectionJournalEntry,
-    SelfCorrectionSurface,
 )
 from exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
-from state_adapter_stack import StateAdapter
+from l4 import StateAdapter
 from l2 import route_executor
+from meta_profile import get_routing_bias, get_safety_bias, get_meta_profile_snapshot
 
 
 # =============================================================================
@@ -89,14 +87,16 @@ class DAGNode:
     """
     Single node in the orchestration DAG.
 
-    Restores and extends v10_8 behavior:
-
-        • depends_on: upstream dependencies (for DAG edges).
-        • fallback: list of node names to use if this node ultimately fails.
-        • parallel_group: label to group nodes that may run concurrently.
-        • max_retries: maximum retries before considering node failed.
-        • predictive_cache_key: hint for external predictive caching layers.
-        • surfaces: self-correction surfaces (RAG retry, draft retry, etc.).
+    Fields:
+        name:                  unique node identifier
+        mode:                  L2 executor mode (strategy, rag, etc.)
+        plan:                  PlanObject or plan dict for this node
+        depends_on:            upstream node names
+        fallback:              fallback node names (declared in DAG, not executed here)
+        parallel_group:        logical parallel group (metadata only)
+        max_retries:           max retries before marking node ERROR
+        predictive_cache_key:  hint for external caching (metadata only)
+        surfaces:              self-correction surfaces (for journaling)
     """
 
     name: str
@@ -107,7 +107,7 @@ class DAGNode:
     parallel_group: Optional[str] = None
     max_retries: int = 0
     predictive_cache_key: Optional[Dict[str, Any]] = None
-    surfaces: List[SelfCorrectionSurface] = field(default_factory=list)
+    surfaces: List[str] = field(default_factory=list)
 
 
 @dataclass
@@ -120,10 +120,6 @@ class DAGModel:
 
     nodes: Dict[str, DAGNode] = field(default_factory=dict)
 
-    # ------------------------------------------------------------------ #
-    # Validation
-    # ------------------------------------------------------------------ #
-
     def validate(self) -> None:
         """
         Validate basic DAG invariants:
@@ -132,27 +128,24 @@ class DAGModel:
             • All dependencies and fallback targets must exist.
             • Graph must be acyclic.
         """
-        # Names must match keys
         for node_name, node in self.nodes.items():
             if node_name != node.name:
                 raise DAGValidationError(
                     f"Node key '{node_name}' does not match node name '{node.name}'."
                 )
 
-        # All deps and fallbacks must exist
         for node in self.nodes.values():
             for dep in node.depends_on:
                 if dep not in self.nodes:
                     raise DAGValidationError(
-                        f"Dependency '{dep}' for node '{node.name}' is not a defined node."
+                        f"Dependency '{dep}' for node '{node.name}' is not defined."
                     )
             for fb in node.fallback:
                 if fb not in self.nodes:
                     raise DAGValidationError(
-                        f"Fallback target '{fb}' for node '{node.name}' is not a defined node."
+                        f"Fallback target '{fb}' for node '{node.name}' is not defined."
                     )
 
-        # Cycle detection (Kahn's algorithm)
         self._ensure_acyclic()
 
     def _ensure_acyclic(self) -> None:
@@ -182,10 +175,6 @@ class DAGModel:
                 deps.append(n.name)
         return deps
 
-    # ------------------------------------------------------------------ #
-    # Helpers
-    # ------------------------------------------------------------------ #
-
     def root_nodes(self) -> List[DAGNode]:
         """Nodes with no dependencies."""
         return [n for n in self.nodes.values() if not n.depends_on]
@@ -200,7 +189,7 @@ def build_dag_from_plan(plan: PlanObject) -> DAGModel:
     """
     Construct a DAGModel from an L1 PlanObject.
 
-    Expected plan structure for full workflows:
+    Expected plan structure:
 
         plan["dag"] = {
             "nodes": [
@@ -212,21 +201,19 @@ def build_dag_from_plan(plan: PlanObject) -> DAGModel:
                     "parallel_group": null,
                     "max_retries": 0,
                     "predictive_cache_key": {...},
-                    "surfaces": ["rag_retry", "draft_retry"]
+                    "surfaces": [...]
                 },
                 ...
             ]
         }
 
     If no "dag" block is present, we construct a minimal single-node DAG
-    representing the plan itself. This preserves backward compatibility
-    with simpler usages.
+    representing the plan itself (backwards-compatible with simple flows).
     """
     dag_spec = plan.get("dag") or {}
     nodes_spec = dag_spec.get("nodes") or []
 
     if not nodes_spec:
-        # Minimal fallback: single node for the plan itself.
         mode = plan.get("mode") or "unknown"
         node = DAGNode(
             name=str(plan.get("name", mode)),
@@ -238,8 +225,10 @@ def build_dag_from_plan(plan: PlanObject) -> DAGModel:
             max_retries=int(plan.get("max_retries", 0)),
             predictive_cache_key=plan.get("predictive_cache_key"),
             surfaces=[
-                SelfCorrectionSurface.RAG_RETRY,
-                SelfCorrectionSurface.DRAFT_RETRY,
+                "rag_retry",
+                "draft_retry",
+                "qa_recheck",
+                "safety_risk",
             ],
         )
         dag = DAGModel(nodes={node.name: node})
@@ -253,18 +242,11 @@ def build_dag_from_plan(plan: PlanObject) -> DAGModel:
         if not name or not mode:
             raise DAGValidationError("Each DAG node must have non-empty 'name' and 'mode'.")
 
-        # Per-node PlanObject may be provided; otherwise clone base plan with mode.
         node_plan_raw = ns.get("plan") or plan.to_dict()
         node_plan_raw["mode"] = mode
         node_plan = PlanObject(node_plan_raw)
 
-        surfaces: List[SelfCorrectionSurface] = []
-        for s in ns.get("surfaces", []):
-            try:
-                surfaces.append(SelfCorrectionSurface(str(s)))
-            except ValueError:
-                # Unknown surfaces are ignored but preserved in metadata if needed.
-                continue
+        surfaces: List[str] = [str(s) for s in ns.get("surfaces", [])]
 
         node = DAGNode(
             name=name,
@@ -293,8 +275,8 @@ class PhaseMachine:
     """
     Minimal phase machine for WorkflowPhase transitions.
 
-    This is intentionally simple; it is local to L3 and does not replace
-    any richer PhaseMachine you may have elsewhere.
+    This is local to L3 and does not replace any richer PhaseMachine you
+    may have elsewhere.
     """
 
     def __init__(self) -> None:
@@ -328,7 +310,7 @@ class CostTracker:
 
 
 # =============================================================================
-# 5. DAG EXECUTOR
+# 5. DAG EXECUTOR (META-AWARE)
 # =============================================================================
 
 
@@ -337,14 +319,14 @@ class DAGExecutor:
     Deterministic executor for DAG nodes with:
 
         • Parallel execution of independent nodes.
-        • Fallback edges when nodes fail (multi-path).
-        • Simple retry logic (per-node max_retries).
+        • Fallback-friendly error handling (DAG-level).
+        • Per-node retries according to DAGNode.max_retries.
         • Predictive cache hinting (metadata only).
         • NodeResult metadata emission.
         • Route trace and correction journal surfaces.
 
-    All durable state writes must go through the provided StateAdapter,
-    which belongs to L4.
+    All durable state writes must go through the provided StateAdapter
+    (L4). L3 does NOT mutate state directly.
     """
 
     def __init__(
@@ -359,10 +341,6 @@ class DAGExecutor:
         self.route_trace: List[RouteTraceEntry] = []
         self.correction_journal: List[CorrectionJournalEntry] = []
 
-    # ------------------------------------------------------------------ #
-    # Helper: which nodes are ready to run?
-    # ------------------------------------------------------------------ #
-
     def _ready_nodes(self, dag: DAGModel, completed: Set[str], running: Set[str]) -> List[DAGNode]:
         ready: List[DAGNode] = []
         for node in dag.nodes.values():
@@ -372,20 +350,12 @@ class DAGExecutor:
                 ready.append(node)
         return ready
 
-    # ------------------------------------------------------------------ #
-    # Helper: apply payload → state via StateAdapter
-    # ------------------------------------------------------------------ #
-
     def _apply_payload_to_state(self, node: DAGNode, result: ExecutionResult[Any]) -> None:
         """
         Normalize payload from ExecutionResult into state using L4.StateAdapter.
-
-        This mirrors and modernizes v10_8 behavior where L3 wrote specific
-        results into state for later stages.
         """
         payload = result.payload
 
-        # Normalize for objects with .to_dict
         if hasattr(payload, "to_dict"):
             pdict = payload.to_dict()  # type: ignore[assignment]
         else:
@@ -412,14 +382,9 @@ class DAGExecutor:
         elif norm_mode == "meta_learning":
             self.state_adapter.apply_patch(StatePatch(key="meta_learning_result", value=pdict))
         else:
-            # Unknown modes are stored under "last_execution"
             self.state_adapter.apply_patch(
                 StatePatch(key="last_execution", value={"mode": norm_mode, "payload": pdict})
             )
-
-    # ------------------------------------------------------------------ #
-    # Helper: record route trace and correction journal
-    # ------------------------------------------------------------------ #
 
     def _record_route(self, node: DAGNode, result: ExecutionResult[Any]) -> None:
         self.route_trace.append(
@@ -440,22 +405,19 @@ class DAGExecutor:
     ) -> None:
         if result.ok:
             return
-        # Map surfaces to journal entries
+
         now = time.time()
-        for surface in node.surfaces or [SelfCorrectionSurface.UNKNOWN]:
+        surfaces = node.surfaces or ["unknown"]
+        for surface in surfaces:
             self.correction_journal.append(
                 CorrectionJournalEntry(
-                    event_id=f"{node.name}:{attempt}:{surface.value}",
+                    event_id=f"{node.name}:{attempt}:{surface}",
                     surface=surface,
-                    message=f"L2 execution failed for node '{node.name}' on surface '{surface.value}'.",
+                    message=f"L2 execution failed for node '{node.name}' on surface '{surface}'.",
                     created_at=now,
                     metadata={"errors": result.errors, "status": result.status},
                 )
             )
-
-    # ------------------------------------------------------------------ #
-    # Core: execute a single node with retries
-    # ------------------------------------------------------------------ #
 
     async def _execute_node(
         self,
@@ -472,10 +434,8 @@ class DAGExecutor:
             try:
                 result = await self.l2_executor(node.plan, state)
             except WorkflowTimeoutError as exc:
-                # Hard failure; no retry at L3 for timeouts.
                 raise NodeExecutionError(f"Timeout executing node '{node.name}': {exc}") from exc
             except ToolExecutionError as exc:
-                # counted as error; may still retry depending on max_retries
                 result = ExecutionResult(
                     status="error",
                     payload=None,
@@ -491,7 +451,6 @@ class DAGExecutor:
             self._record_corrections(node, result, attempts)
 
             if result.ok:
-                # Apply payload to state via adapter.
                 self._apply_payload_to_state(node, result)
                 status = NodeStatus.SUCCESS
                 break
@@ -516,10 +475,6 @@ class DAGExecutor:
         self.node_results[node.name] = nr
         return nr
 
-    # ------------------------------------------------------------------ #
-    # Public API
-    # ------------------------------------------------------------------ #
-
     def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
         """
         Execute full L3 orchestration for a single L1 PlanObject.
@@ -527,18 +482,16 @@ class DAGExecutor:
         This is a synchronous API; higher layers may wrap it with asyncio
         as needed. Internally, this uses asyncio.run to call the async L2
         route_executor.
-
-        All state mutations are performed via L4.StateAdapter; the
-        returned WorkflowState contains the final snapshot.
         """
         machine = PhaseMachine()
         cost_tracker = CostTracker()
 
-        # Initialize adapter state.
         self.state_adapter.state = dict(initial_state)
 
-        # Build and validate DAG from plan.
         dag = build_dag_from_plan(plan)
+
+        routing_bias = get_routing_bias()
+        safety_bias = get_safety_bias()
 
         async def _run_async() -> None:
             nonlocal machine, cost_tracker
@@ -550,25 +503,30 @@ class DAGExecutor:
             running: Set[str] = set()
             errors: List[str] = []
 
-            # Basic parallel scheduler: run all ready nodes concurrently.
             while len(completed) < len(dag.nodes):
                 ready_nodes = self._ready_nodes(dag, completed, running)
 
                 if not ready_nodes and running:
-                    # Wait for at least one running task to complete.
                     await asyncio.sleep(0.001)
                     continue
 
                 if not ready_nodes and not running:
-                    # No ready or running nodes → deadlock or all failed.
                     unresolved = set(dag.nodes) - completed
                     raise ControlFlowError(
                         f"No progress possible in DAG; unresolved nodes: {sorted(unresolved)}"
                     )
 
-                # Run ready nodes in parallel.
+                # META-aware scheduling:
+                #   • prefer_fast → run all ready nodes in parallel.
+                #   • heightened_caution → run only one node at a time.
+                #   • default: run all ready nodes.
+                if safety_bias.get("heightened_caution"):
+                    ready_batch = ready_nodes[:1]
+                else:
+                    ready_batch = ready_nodes
+
                 tasks: List[Tuple[DAGNode, Awaitable[NodeResult]]] = []
-                for node in ready_nodes:
+                for node in ready_batch:
                     running.add(node.name)
                     tasks.append((node, self._execute_node(node, self.state_adapter.state, cost_tracker)))
 
@@ -577,7 +535,6 @@ class DAGExecutor:
                 for (node, _), res in zip(tasks, results):
                     running.discard(node.name)
                     if isinstance(res, Exception):
-                        # Hard node failure
                         errors.append(str(res))
                         self.node_results[node.name] = NodeResult(
                             node_id=node.name,
@@ -588,22 +545,16 @@ class DAGExecutor:
                             metadata={"exception": str(res)},
                         )
                         completed.add(node.name)
-                        # Trigger fallbacks (they will become ready once deps satisfied).
                         continue
 
                     nr: NodeResult = res
                     if nr.status == NodeStatus.SUCCESS:
                         completed.add(node.name)
                     else:
-                        errors.extend(nr.result.errors if nr.result else [])
+                        if nr.result and nr.result.errors:
+                            errors.extend(nr.result.errors)
                         completed.add(node.name)
-                        # Fallback edges: mark dependents as satisfied via this failure;
-                        # actual fallback nodes are part of DAG, and their deps will
-                        # reference this node as a prerequisite, so they can run.
-                        # Higher-level logic decides how to interpret.
-                        continue
 
-            # All nodes completed
             if errors:
                 machine.set(WorkflowPhase.FAILED)
             else:
@@ -612,7 +563,6 @@ class DAGExecutor:
         try:
             asyncio.run(_run_async())
         except Exception:
-            # Any unexpected failure is considered a control-flow error.
             machine.set(WorkflowPhase.FAILED)
             raise
 
@@ -620,23 +570,33 @@ class DAGExecutor:
         node_statuses: Dict[str, NodeStatus] = {
             node_id: nr.status for node_id, nr in self.node_results.items()
         }
-        summary = "workflow_complete" if machine.current_value() == WorkflowPhase.COMPLETE else "workflow_failed"
+        summary = (
+            "workflow_complete"
+            if machine.current_value() == WorkflowPhase.COMPLETE
+            else "workflow_failed"
+        )
         errors: List[str] = []
         for nr in self.node_results.values():
             if nr.status == NodeStatus.ERROR and nr.result and nr.result.errors:
                 errors.extend(nr.result.errors)
 
-        # Attach basic metadata including cost and traces.
+        meta_snapshot = get_meta_profile_snapshot()
+
         metadata: Dict[str, Any] = {
             "history": [p.value for p in machine.history],
             "total_tokens": cost_tracker.total_tokens,
             "per_node_tokens": cost_tracker.per_node,
             "route_trace": [rt.__dict__ for rt in self.route_trace],
             "correction_journal": [cj.__dict__ for cj in self.correction_journal],
+            "meta_profile": meta_snapshot,
+            "safety_bias": get_safety_bias(),
+            "routing_bias": get_routing_bias(),
         }
 
+        workflow_id = str(plan.get("workflow_id", final_state.get("workflow_id", "workflow")))
+
         return WorkflowState(
-            workflow_id=str(plan.get("workflow_id", final_state.get("workflow_id", "workflow"))),
+            workflow_id=workflow_id,
             phase=machine.current_value(),
             node_statuses=node_statuses,
             summary=summary,
