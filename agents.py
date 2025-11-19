@@ -1,12 +1,12 @@
 # FILE: agents.py
 """
-Unified Multi-Agent Coordination Module (v10_9) — FULL AGENTIC IMPLEMENTATION
+Unified Multi-Agent Coordination Module (v10_9) — ENTERPRISE REFACTOR
 
 This module provides meta-level multi-agent coordination for v10_9.
-It sits conceptually *above* the L1–L5 layers and owns only:
+It sits conceptually *above* the L1–L5 layers and owns ONLY:
 
-    • Agent graph definitions (roles, nodes, edges).
-    • Multi-agent QA council orchestration.
+    • Agent role & graph definitions (roles, nodes, edges).
+    • Multi-agent QA council orchestration (for meta-level QA).
     • Deterministic voting and metadata construction.
 
 Non-responsibilities (to preserve L1–L5 purity):
@@ -21,7 +21,11 @@ L3 orchestrators may call:
     - MultiAgentOrchestrator(graph=COUNCIL_OF_QA, state_adapter=...)
         .dispatch_for_qa(state, plan) -> Dict[str, Any]
 
-and then delegate the returned dict to L4.StateAdapter via StatePatch.
+The returned dict is intended to be applied into L4 via StatePatch
+by L3 orchestrators, e.g.:
+
+    for key, value in council_state.items():
+        state_adapter.apply_patch(StatePatch(key=key, value=value))
 """
 
 from __future__ import annotations
@@ -39,7 +43,7 @@ from typing import Any, Dict, List, Tuple
 class AgentRole(str, Enum):
     PLANNER = "planner"
     RETRIEVER = "retriever"
-    DRAFTER = "draf ter"
+    DRAFTER = "drafter"
     BULLET = "bullet"
     QA = "qa"
     SAFETY = "safety"
@@ -104,7 +108,7 @@ def _qa_candidate_scores(
     Higher score → more likely to be selected.
     """
     severity = str(plan.get("severity", "normal")).lower()
-    issues = (state.get("qa_result") or {}).get("issues", [])
+    issues = (state.get("qa_result") or {}).get("report", {}).get("issues", [])
     issue_count = len(issues)
 
     base = 0.5
@@ -159,6 +163,9 @@ class MultiAgentOrchestrator:
     L3 orchestrators pass:
         - graph: AgentGraph (e.g., COUNCIL_OF_QA)
         - state_adapter: StateAdapter (L4), used only via its public API.
+
+    The orchestrator returns a dict representing patches to be applied
+    via L4.StateAdapter (e.g., "multi_agent" or "qa_council" blocks).
     """
 
     graph: AgentGraph
@@ -181,13 +188,19 @@ class MultiAgentOrchestrator:
         remains responsible for applying patches via StatePatch.
         """
         # Build synthetic message for the council
-        objective = str(getattr(plan, "get", lambda *_: None)("objective", "") if isinstance(plan, dict) else getattr(plan, "objective", "") or "")
-        if not objective and isinstance(plan, dict):
+        if isinstance(plan, dict):
             objective = str(plan.get("objective", ""))
+            severity = str(plan.get("severity", "normal"))
+        else:
+            objective = str(getattr(plan, "objective", "") or "")
+            severity = str(getattr(plan, "severity", "normal") or "")
 
         synthetic_message = {
             "role": "system",
-            "content": f"QA council evaluation for objective: {objective or 'unspecified-objective'}",
+            "content": (
+                f"QA council evaluation for objective: {objective or 'unspecified-objective'}; "
+                f"severity: {severity or 'normal'}"
+            ),
         }
 
         # Build candidates
@@ -206,11 +219,11 @@ class MultiAgentOrchestrator:
             "sender": "orchestrator",
             "recipient": "qa_council",
             "graph_summary": summarize_graph(self.graph),
-            "qa_council_candidates": candidates,
-            "qa_council_vote": vote,
+            "candidates": candidates,
+            "winner": vote,
         }
 
-        # The caller (L3) will feed this back into StateAdapter via StatePatch
+        # Return fields to be patched into L4 state
         return {
-            "multi_agent": multi_agent_block
+            "multi_agent": multi_agent_block,
         }
