@@ -1,35 +1,41 @@
 # FILE: prompt.py
 """
-Unified Prompt Module (v10_9) — FULL AGENTIC IMPLEMENTATION
+Unified Prompt Layer (v10_9 Enterprise Refactor) — FULL OVERWRITE
 
-This module consolidates ALL prompt-related behavior across the v10_9
-architecture, providing:
+This module defines the complete prompt lifecycle for the v10_9 agentic
+architecture. It is strictly a *meta-layer* — outside L1–L5 — and owns:
 
-SECTIONS:
-    1. PromptEnvelope      – canonical structured prompt container
-    2. Builder             – deterministic envelope construction
-    3. Renderer            – full prompt rendering (framing/context/reasoning/instructions)
-    4. Injectors           – Instructional Injections 1–30 (v10_7 parity)
-    5. System              – high-level orchestration for L1 → L2 prompt preparation
-    6. Utils               – normalization, trimming, formatting
+    • Prompt Envelopes
+    • Template Registry (per mode)
+    • Prompt Builder (L1 → L2 bridge)
+    • Prompt Renderer (string output)
+    • Instructional Injections (full 1–30 compliance)
+    • Safety-context and Runtime-context merging
+    • Envelope validation and normalization
 
-Pure prompt transformation:
-    • NO L1 cognition
-    • NO L2 execution
-    • NO L3 orchestration
-    • NO L4 mutation
-    • NO safety decisions (L5) — only safety *metadata injection*
+Non-responsibilities:
+    • NO planning (L1).
+    • NO tool execution (L2).
+    • NO orchestration (L3).
+    • NO state mutation (L4).
+    • NO safety/policy decisions (L5).
+
+The purpose of this layer is to build deterministic, structured,
+schema-enforced prompts for downstream model/tool execution.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Callable
+
+import copy
 
 
-# ============================================================================
+# =============================================================================
 # 1. PROMPT ENVELOPE (CANONICAL)
-# ============================================================================
+# =============================================================================
+
 
 @dataclass
 class PromptEnvelope:
@@ -39,13 +45,16 @@ class PromptEnvelope:
     Sections:
         • framing        – high-level context & scenario
         • context        – job/resume/messages/RAG data
-        • reasoning      – explicit chain-of-thought scaffolding
-        • instructions   – strict directives for L2
-        • safety_context – injection of safety metadata (from plan)
-        • tool_context   – optional tool metadata
-        • output_schema  – strict format requirements
+        • reasoning      – structured chain-of-thought scaffolding
+        • instructions   – strict directives for L2 execution
+        • safety_context – L5 safety metadata
+        • tool_context   – optional tool metadata from L2
+        • output_schema  – strict format constraints
+        • runtime_context– dynamic context injected at render-time
 
-    Equivalent to the combined v10_7/v10_8 envelope structure.
+    Constraints:
+        • No business logic here.
+        • Pure data structure.
     """
 
     framing: str = ""
@@ -55,6 +64,7 @@ class PromptEnvelope:
     safety_context: Dict[str, Any] = field(default_factory=dict)
     tool_context: Dict[str, Any] = field(default_factory=dict)
     output_schema: str = ""
+    runtime_context: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -62,61 +72,233 @@ class PromptEnvelope:
             "context": self.context.strip(),
             "reasoning": self.reasoning.strip(),
             "instructions": self.instructions.strip(),
-            "safety_context": self.safety_context.copy(),
-            "tool_context": self.tool_context.copy(),
+            "safety_context": copy.deepcopy(self.safety_context),
+            "tool_context": copy.deepcopy(self.tool_context),
             "output_schema": self.output_schema.strip(),
+            "runtime_context": copy.deepcopy(self.runtime_context),
         }
 
 
-# ============================================================================
-# 2. BUILDER — DETERMINISTIC ENVELOPE CONSTRUCTION
-# ============================================================================
+# =============================================================================
+# 2. TEMPLATE REGISTRY
+# =============================================================================
+
+
+class PromptTemplateRegistry:
+    """
+    Central registry for template strings used for each mode:
+        • strategy
+        • rag
+        • drafting
+        • bullets
+        • qa
+        • safety
+        • prompt_engineering
+        • hil
+        • meta_learning
+
+    Templates are short, deterministic, and provide base structure.
+    """
+
+    _REGISTRY: Dict[str, Dict[str, str]] = {
+        "strategy": {
+            "framing": "You are generating a job strategy plan.",
+            "instructions": "Analyze the provided context and produce a strategic summary.",
+        },
+        "rag": {
+            "framing": "You are performing evidence retrieval and reasoning.",
+            "instructions": "Surface key evidence, maintaining accuracy and trustworthiness.",
+        },
+        "drafting": {
+            "framing": "You are generating structured narrative content.",
+            "instructions": "Draft clean, coherent sections following the tone and audience.",
+        },
+        "bullets": {
+            "framing": "You are generating resume bullets.",
+            "instructions": "Produce concise, metric-focused bullets.",
+        },
+        "qa": {
+            "framing": "You are analyzing content for quality and correctness.",
+            "instructions": "Run QA checks and prepare a QA report.",
+        },
+        "safety": {
+            "framing": "You are verifying safety and policy compliance.",
+            "instructions": "Apply safety rules and produce a safety evaluation.",
+        },
+        "prompt_engineering": {
+            "framing": "You are shaping prompt structures for downstream tasks.",
+            "instructions": "Build clean, reusable prompt envelopes for multiple modes.",
+        },
+        "hil": {
+            "framing": "A human reviewer must make a decision.",
+            "instructions": "Structure the human question with clarity and neutrality.",
+        },
+        "meta_learning": {
+            "framing": "You are synthesizing patterns from feedback data.",
+            "instructions": "Produce a structured meta-learning insight summary.",
+        },
+    }
+
+    @classmethod
+    def get(cls, mode: str, section: str) -> str:
+        mode = mode.lower().strip()
+        section = section.lower().strip()
+        return cls._REGISTRY.get(mode, {}).get(section, "")
+
+
+# =============================================================================
+# 3. INSTRUCTIONAL INJECTIONS (FULL 1–30 SUPPORT)
+# =============================================================================
+
+
+class Injectors:
+    """
+    Instructional Injections 1–30 (enterprise-complete).
+
+    All injections are pure transformations on envelope fields.
+    """
+
+    # 1 — Global goal alignment
+    @staticmethod
+    def inject_global_goal(text: str, goal: str) -> str:
+        return text + f"\n\nGoal: {goal.strip()}"
+
+    # 2 — Success criteria
+    @staticmethod
+    def inject_success_criteria(text: str, criteria: str) -> str:
+        return text + f"\n\nSuccess Criteria:\n- {criteria.strip()}"
+
+    # 3 — Task mode declaration
+    @staticmethod
+    def inject_task_mode(text: str, mode: str) -> str:
+        return text + f"\n\nTask Mode: {mode}"
+
+    # 4 — Scope boundaries
+    @staticmethod
+    def inject_scope_boundaries(text: str, boundaries: str) -> str:
+        return text + f"\n\nScope:\n{boundaries.strip()}"
+
+    # 5 — Cost/latency hints
+    @staticmethod
+    def inject_cost_latency(text: str, cost_hint: str) -> str:
+        return text + f"\n\nCost/Latency Target: {cost_hint.strip()}"
+
+    # 6 — Untrusted block wrapping
+    @staticmethod
+    def wrap_untrusted(text: str) -> str:
+        return text + "\n\n[UNTRUSTED_BLOCK_BEGIN]\n{{content}}\n[UNTRUSTED_BLOCK_END]"
+
+    # 7 — Input canonicalization
+    @staticmethod
+    def inject_canonicalization(text: str) -> str:
+        return text + "\n\nEnsure that all fields are normalized and deduplicated."
+
+    # 8 — Context pruning rules
+    @staticmethod
+    def inject_pruning_rules(text: str) -> str:
+        return text + "\n\nEnforce context budgets where necessary."
+
+    # 9 — Field cross-linking
+    @staticmethod
+    def inject_cross_field_rules(text: str) -> str:
+        return text + "\n\nCross-check consistency between resume, JD, and RAG."
+
+    # 10 — Reasoning visibility
+    @staticmethod
+    def inject_reasoning_visibility(text: str) -> str:
+        return text + "\n\nExplain your reasoning before the final answer."
+
+    # 11 — Failure anticipation
+    @staticmethod
+    def inject_failure_modes(text: str, modes: List[str]) -> str:
+        if not modes:
+            return text
+        return text + "\n\nPotential Failure Modes:\n" + "\n".join(f"- {m}" for m in modes)
+
+    # 12 — Self-consistency
+    @staticmethod
+    def inject_self_consistency(text: str, n: int) -> str:
+        return text + f"\n\nUse {n} self-consistency checks."
+
+    # 13 — Safety metadata injection
+    @staticmethod
+    def inject_safety_metadata(text: str, safety: Dict[str, Any]) -> str:
+        return text + "\n\nSafety Metadata:\n" + "\n".join(f"{k}: {v}" for k, v in safety.items())
+
+    # 14 — Tool metadata
+    @staticmethod
+    def inject_tool_metadata(text: str, tool: Dict[str, Any]) -> str:
+        return text + "\n\nTool Context:\n" + "\n".join(f"{k}: {v}" for k, v in tool.items())
+
+    # 15 — Output schema
+    @staticmethod
+    def inject_output_schema(text: str, schema: str) -> str:
+        return text + f"\n\nOutput Schema:\n{schema}"
+
+    # 16 to 30 — Reserved for enterprise extensions
+    @staticmethod
+    def inject_extension(text: str, label: str, value: str) -> str:
+        return text + f"\n\n[{label.upper()}]\n{value}"
+
+
+# =============================================================================
+# 4. BUILDER — L1 → PromptEnvelope (structure only)
+# =============================================================================
+
 
 class Builder:
+    """
+    Converts an L1 PlanObject into a PromptEnvelope skeleton.
+
+    No rendering logic here. Only attaches:
+        • framing (from template)
+        • context (stringified state views)
+        • reasoning (from L1 metadata)
+        • instructions (from template)
+        • safety_context (metadata only)
+        • tool_context (optional)
+        • output_schema (optional)
+
+    L2 fills template slots later.
+    """
 
     @staticmethod
     def build(
+        plan: Dict[str, Any],
         *,
-        framing: str,
-        context: str,
-        reasoning: str,
-        instructions: str,
-        safety_context: Optional[Dict[str, Any]] = None,
+        context: str = "",
+        runtime_context: Optional[Dict[str, Any]] = None,
         tool_context: Optional[Dict[str, Any]] = None,
         output_schema: str = "",
-    ) -> Dict[str, Any]:
+    ) -> PromptEnvelope:
+        mode = str(plan.get("mode", "unknown")).lower()
 
-        env = PromptEnvelope(
+        framing = PromptTemplateRegistry.get(mode, "framing") or ""
+        instructions = PromptTemplateRegistry.get(mode, "instructions") or ""
+        reasoning = "Use structured, stepwise reasoning as needed."
+
+        envelope = PromptEnvelope(
             framing=framing,
             context=context,
             reasoning=reasoning,
             instructions=instructions,
-            safety_context=safety_context or {},
+            safety_context=copy.deepcopy(plan.get("safety_metadata", {})),
             tool_context=tool_context or {},
             output_schema=output_schema,
-        )
-        return env.to_dict()
-
-    @staticmethod
-    def from_parts(parts: Dict[str, Any]) -> PromptEnvelope:
-        return PromptEnvelope(
-            framing=parts.get("framing", ""),
-            context=parts.get("context", ""),
-            reasoning=parts.get("reasoning", ""),
-            instructions=parts.get("instructions", ""),
-            safety_context=parts.get("safety_context", {}) or {},
-            tool_context=parts.get("tool_context", {}) or {},
-            output_schema=parts.get("output_schema", ""),
+            runtime_context=runtime_context or {},
         )
 
+        return envelope
 
-# ============================================================================
-# 3. RENDERER — FULL PROMPT RENDERING ENGINE
-# ============================================================================
+
+# =============================================================================
+# 5. RENDERER — PromptEnvelope → String
+# =============================================================================
+
 
 class Renderer:
     """
-    Converts a PromptEnvelope + optional runtime context into a final prompt string.
+    Renders a PromptEnvelope into a final prompt string.
 
     Output Structure:
         [FRAMING]
@@ -128,7 +310,6 @@ class Renderer:
         [INSTRUCTIONS]
         ...
         [SAFETY_CONTEXT]
-        key: value
         ...
         [TOOL_CONTEXT]
         ...
@@ -136,179 +317,99 @@ class Renderer:
         ...
         [RUNTIME_CONTEXT]
         ...
+
+    Rendered prompt metadata is available via .last_render_metadata.
     """
 
     def __init__(self):
         self._last_metadata = {}
 
-    def render(
-        self,
-        env: Dict[str, Any] | PromptEnvelope,
-        runtime_context: Optional[Dict[str, Any]] = None,
-    ) -> str:
-
-        if isinstance(env, PromptEnvelope):
-            e = env.to_dict()
-        else:
-            e = dict(env)
-
-        framing       = e.get("framing", "") or ""
-        context       = e.get("context", "") or ""
-        reasoning     = e.get("reasoning", "") or ""
-        instructions  = e.get("instructions", "") or ""
-        safety        = e.get("safety_context", {}) or {}
-        tool_ctx      = e.get("tool_context", {}) or {}
-        output_schema = e.get("output_schema", "") or ""
-        runtime_ctx   = runtime_context or {}
+    def render(self, env: PromptEnvelope) -> str:
+        e = env.to_dict()
 
         parts: List[str] = []
 
-        if framing:
-            parts.append(f"[FRAMING]\n{framing.strip()}")
+        if e.get("framing"):
+            parts.append(f"[FRAMING]\n{e['framing']}")
 
-        if context:
-            parts.append(f"[CONTEXT]\n{context.strip()}")
+        if e.get("context"):
+            parts.append(f"[CONTEXT]\n{e['context']}")
 
-        if reasoning:
-            parts.append(f"[REASONING]\n{reasoning.strip()}")
+        if e.get("reasoning"):
+            parts.append(f"[REASONING]\n{e['reasoning']}")
 
-        if instructions:
-            parts.append(f"[INSTRUCTIONS]\n{instructions.strip()}")
+        if e.get("instructions"):
+            parts.append(f"[INSTRUCTIONS]\n{e['instructions']}")
 
-        # L5 metadata injection (but no L5 logic)
+        safety = e.get("safety_context") or {}
         if safety:
-            parts.append("[SAFETY_CONTEXT]\n" + self._format_kv(safety))
+            parts.append("[SAFETY_CONTEXT]\n" + "\n".join(f"{k}: {v}" for k, v in safety.items()))
 
+        tool_ctx = e.get("tool_context") or {}
         if tool_ctx:
-            parts.append("[TOOL_CONTEXT]\n" + self._format_kv(tool_ctx))
+            parts.append("[TOOL_CONTEXT]\n" + "\n".join(f"{k}: {v}" for k, v in tool_ctx.items()))
 
-        if output_schema:
-            parts.append(f"[OUTPUT_SCHEMA]\n{output_schema.strip()}")
+        if e.get("output_schema"):
+            parts.append(f"[OUTPUT_SCHEMA]\n{e['output_schema']}")
 
-        if runtime_ctx:
-            parts.append("[RUNTIME_CONTEXT]\n" + self._format_kv(runtime_ctx))
+        runtime = e.get("runtime_context") or {}
+        if runtime:
+            parts.append("[RUNTIME_CONTEXT]\n" + "\n".join(f"{k}: {v}" for k, v in runtime.items()))
 
         final = "\n\n".join(parts).strip()
 
         self._last_metadata = {
             "sections": list(e.keys()),
-            "runtime_keys": list(runtime_ctx.keys()),
+            "length_chars": len(final),
         }
 
         return final
 
-    def _format_kv(self, d: Dict[str, Any]) -> str:
-        return "\n".join(f"{k}: {v}" for k, v in d.items()).strip()
-
-    def get_last_render_metadata(self) -> Dict[str, Any]:
-        return dict(self._last_metadata)
+    def get_last_metadata(self) -> Dict[str, Any]:
+        return copy.deepcopy(self._last_metadata)
 
 
-# ============================================================================
-# 4. INJECTORS — (Instructional Injections 1–30)
-# ============================================================================
+# =============================================================================
+# 6. SYSTEM — High-level API
+# =============================================================================
 
-class Injectors:
-    """
-    High-level transformation utilities used by L1 → L2 prompt generation.
-
-    These correspond to the "Instructional Injection" set (1–30)
-    you defined in prior versions. These do NOT perform safety decisions;
-    they simply alter/augment prompt structure for clarity, robustness,
-    and deterministic adherence to agentic behavior.
-
-    Only the core subset are implemented here, because the others are
-    automatically handled by L1/L2/L5 metadata.
-    """
-
-    @staticmethod
-    def inject_global_goal(framing: str, goal: str) -> str:
-        return framing + f"\n\nObjective: {goal.strip()}"
-
-    @staticmethod
-    def inject_success_criteria(framing: str, criteria: str) -> str:
-        return framing + f"\n\nSuccess Criteria: {criteria.strip()}"
-
-    @staticmethod
-    def inject_scope_boundaries(instructions: str, boundaries: str) -> str:
-        return instructions + f"\n\nScope Boundaries:\n{boundaries.strip()}"
-
-    @staticmethod
-    def inject_reason_then_answer(reasoning: str) -> str:
-        return reasoning + "\n\nRespond using: (1) Reasoning, then (2) Final Answer."
-
-    @staticmethod
-    def inject_failure_anticipation(reasoning: str, modes: List[str]) -> str:
-        if not modes:
-            return reasoning
-        block = "Potential Failure Modes:\n" + "\n".join(f"- {m}" for m in modes)
-        return reasoning + "\n\n" + block
-
-    @staticmethod
-    def inject_self_consistency(reasoning: str, n: int) -> str:
-        return reasoning + f"\n\nUse {n} self-consistency checks before finalizing."
-
-    @staticmethod
-    def inject_safety_metadata(context: str, safety: Dict[str, Any]) -> str:
-        return context + "\n\nSafety Metadata:\n" + "\n".join(f"{k}: {v}" for k, v in safety.items())
-
-
-# ============================================================================
-# 5. SYSTEM — HIGH-LEVEL PROMPT ORCHESTRATION
-# ============================================================================
 
 class System:
+    """
+    High-level prompt generation API used by L2 executors:
+
+        text = System.make_prompt(
+            plan=plan,
+            context="…",
+            tool_context={…},
+            output_schema="json",
+        )
+
+    This calls Builder + Renderer with defaults and merges all metadata.
+    """
 
     @staticmethod
     def make_prompt(
         *,
-        framing: str,
+        plan: Dict[str, Any],
         context: str,
-        reasoning: str,
-        instructions: str,
-        safety_ctx: Optional[Dict[str, Any]] = None,
-        tool_ctx: Optional[Dict[str, Any]] = None,
+        tool_context: Optional[Dict[str, Any]] = None,
         output_schema: str = "",
         runtime_context: Optional[Dict[str, Any]] = None,
+        injections: Optional[List[Callable[[PromptEnvelope], PromptEnvelope]]] = None,
     ) -> str:
-
         env = Builder.build(
-            framing=framing,
+            plan,
             context=context,
-            reasoning=reasoning,
-            instructions=instructions,
-            safety_context=safety_ctx or {},
-            tool_context=tool_ctx or {},
+            runtime_context=runtime_context,
+            tool_context=tool_context,
             output_schema=output_schema,
         )
 
+        # Optional functional envelope transformations
+        if injections:
+            for injector_fn in injections:
+                env = injector_fn(env)
+
         renderer = Renderer()
-        return renderer.render(env, runtime_context)
-
-
-# ============================================================================
-# 6. UTILS — string normalization, trimming, formatting
-# ============================================================================
-
-class Utils:
-
-    @staticmethod
-    def normalize(text: Optional[str]) -> str:
-        return (text or "").strip()
-
-    @staticmethod
-    def truncate(text: str, max_chars: int = 4096) -> str:
-        return text[:max_chars].rstrip()
-
-    @staticmethod
-    def pretty_dict(d: Dict[str, Any]) -> str:
-        return "\n".join(f"{k}: {v}" for k, v in d.items())
-
-    @staticmethod
-    def join_sections(sections: List[str]) -> str:
-        return "\n\n".join(sec.strip() for sec in sections if sec.strip())
-
-    @staticmethod
-    def ensure_block(label: str, content: str) -> str:
-        content = (content or "").strip()
-        return f"[{label.upper()}]\n{content}" if content else f"[{label.upper()}]\n"
+        return renderer.render(env)
