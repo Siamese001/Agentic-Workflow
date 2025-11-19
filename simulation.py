@@ -1,42 +1,46 @@
 # FILE: simulation.py
 """
-Unified Simulation System (v10_9) — ENTERPRISE / CI HARNESS (FULL OVERWRITE)
+Unified Simulation System (v10_9) — PURE META LAYER / CI HARNESS
 
 This module provides a deterministic simulation harness for the v10_9
-agentic workflow. It is NOT part of the production runtime and is
-intended for:
+agentic workflow.
 
-    • Developer smoke tests
-    • CI/automation sanity checks
-    • Scenario-based regression testing
-    • Golden-state validation across L1–L5 and meta layers
+All logic here is META-ONLY and therefore:
 
-It exercises the full stack via main_v10_9.run_workflow_v10_9.
+    • NO planning (L1)
+    • NO execution (L2)
+    • NO orchestration (L3)
+    • NO state mutation (L4)
+    • NO safety decisions (L5)
+    • NO provider calls (Anthropic/Gemini/OpenAI/etc.)
 
-Scenarios included:
+It ONLY calls:
+    • main_v10_9.run_workflow_v10_9()
+    • constructs synthetic initial states
+    • returns structured results for CI/regression testing.
 
-    • strategy      – high-level job strategy planning
-    • rag           – retrieval (RAG) pipeline
-    • bullets       – bullet generation from resume
-    • drafting      – summary drafting
-    • qa            – QA validation of a draft
-    • safety        – safety/PII/forbidden content review
-    • hil           – human-in-the-loop review flow
-    • meta_learning – offline meta-learning over synthetic prior results
+Scenarios:
+    • strategy
+    • rag
+    • bullets
+    • drafting
+    • qa
+    • safety
+    • hil
+    • meta_learning
 
-Each scenario returns a structured result:
+Each scenario returns:
 
     {
-      "scenario": "<name>",
-      "workflow_id": "...",
-      "phase": "complete|failed|...",
+      "scenario": <name>,
+      "workflow_id": ...,
+      "phase": ...,
       "phase_history": [...],
       "run_summary": {...},
-      "state_snapshot": {...},   # trimmed, stable subset of state
+      "state_snapshot": {...},
     }
 
-All scenarios are fully deterministic (no external IO, no randomness)
-to enable reliable regression testing.
+All scenarios are deterministic and safe for CI.
 """
 
 from __future__ import annotations
@@ -48,17 +52,27 @@ from main_v10_9 import run_workflow_v10_9
 
 
 # ============================================================================
-# STATE SNAPSHOT HELPERS
+# 1. STATE SNAPSHOT HELPERS
 # ============================================================================
-
 
 def _state_snapshot(state: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Trim the full state down to the core parts that are relevant for
-    simulation output and stable enough to be compared in CI.
+    Trim the full state to a stable subset suitable for deterministic testing.
 
-    We avoid returning the entire state to prevent noisy diffs. Only
-    include high-level result summaries and a small subset of metadata.
+    Includes:
+        • strategy_result
+        • rag_result
+        • bullet_result
+        • draft_result
+        • qa_result
+        • safety_result
+        • hil_result
+        • meta_learning_result
+        • summary
+        • phase
+        • phase_history
+
+    Excludes volatile fields (telemetry, multi_agent, etc.)
     """
     return {
         "strategy_result": state.get("strategy_result"),
@@ -69,35 +83,31 @@ def _state_snapshot(state: Dict[str, Any]) -> Dict[str, Any]:
         "safety_result": state.get("safety_result"),
         "hil_result": state.get("hil_result"),
         "meta_learning_result": state.get("meta_learning_result"),
+        "summary": state.get("summary"),
         "phase": state.get("phase"),
         "phase_history": (state.get("phase_metadata") or {}).get("history"),
-        "summary": state.get("summary"),
     }
 
 
 # ============================================================================
-# SCENARIO DEFINITIONS
+# 2. SCENARIO DEFINITIONS
 # ============================================================================
-
 
 class Scenarios:
     """
-    Houses all simulation scenarios used for deterministic testing.
+    Houses all simulation scenarios used for deterministic CI testing.
 
-    Each scenario constructs an initial_state dict and calls
-    run_workflow_v10_9(initial_state). Scenarios are designed to:
-        • Force a specific L1 task mode (via task_mode and objective).
-        • Seed the minimal context required to exercise the pipeline.
+    Each scenario:
+        • Builds an initial state dict
+        • Calls run_workflow_v10_9(initial_state)
+        • Extracts a stable snapshot via _state_snapshot()
     """
 
+    # ----------------------------------------------------------------------
+    # STRATEGY
+    # ----------------------------------------------------------------------
     @staticmethod
     async def strategy() -> Dict[str, Any]:
-        """
-        Strategy simulation:
-        - task_mode: strategy
-        - Objective: plan how to improve a resume for a leadership role
-        - Exercises: L1 StrategyReasoner, L2 StrategyExecutor, L3 Orchestrator
-        """
         state = {
             "task_mode": "strategy",
             "objective": "create high-level plan for improving resume for a VP role",
@@ -105,91 +115,86 @@ class Scenarios:
                 {"role": "user", "content": "Help me plan my resume rewrite for a VP-level job."}
             ],
             "job": {
-                "job_title": "Vice President, Growth & Strategic Partnerships",
-                "company": "Neo4j",
-                "summary": "Executive role driving growth and partnerships.",
+                "job_title": "Vice President, Product",
+                "company": "AcmeCorp",
+                "summary": "Executive leadership role driving product strategy.",
                 "top_requirements": [
-                    "strategic partnerships",
-                    "M&A experience",
+                    "leadership",
                     "enterprise SaaS",
+                    "strategic partnerships",
                 ],
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "strategy",
-            "workflow_id": result["name"] if "name" in result else result["workflow_id"],
+            "workflow_id": result["workflow_id"],
             "phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
-            "state_snapshot": _ironed_out_state_snapshot(wf_state),
+            "state_snapshot": _state_snapshot(wf_state),
         }
 
+    # ----------------------------------------------------------------------
+    # RAG
+    # ----------------------------------------------------------------------
     @staticmethod
     async def rag() -> Dict[str, Any]:
-        """
-        RAG simulation:
-        - task_mode: rag
-        - Objective: retrieve evidence for leadership experience
-        - Exercises: L1 RAGReasoner, L2 RAGExecutor, L3 Orchestrator
-        """
         state = {
             "task_mode": "rag",
-            "objective": "retrieve evidence for leadership experience at scale",
+            "objective": "retrieve evidence for leadership experience",
             "messages": [
-                {"role": "user", "content": "What evidence from my resume supports my leadership roles?"}
+                {"role": "user", "content": "What evidence supports my leadership background?"}
             ],
             "job": {
                 "job_title": "Engineering Manager",
                 "company": "TechCorp",
-                "skills": ["leadership", "team management", "cloud architecture"],
+                "skills": ["leadership", "team scaling", "cloud"],
             },
             "resume": {
                 "master_resume": {
-                    "summary": "Led multiple engineering teams delivering cloud products.",
+                    "summary": "Led teams building cloud-native systems.",
                     "professional_experience": [
                         {
                             "title": "Engineering Manager",
                             "company": "TechCorp",
-                            "impact_summary": "Led a team of 10 engineers to deliver a SaaS platform.",
+                            "impact_summary": "Led team of 10 delivering multi-region SaaS.",
                         },
                         {
                             "title": "Tech Lead",
                             "company": "DataWorks",
-                            "impact_summary": "Architected a data pipeline serving 50M events per day.",
+                            "impact_summary": "Architected real-time data platform.",
                         },
                     ],
                 }
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "rag",
             "workflow_id": result["workflow_id"],
             "phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
-            "state_snapshot": _ironed_out_state_snapshot(wf_state),
+            "state_snapshot": _state_snapshot(wf_state),
         }
 
+    # ----------------------------------------------------------------------
+    # BULLETS
+    # ----------------------------------------------------------------------
     @staticmethod
     async def bullets() -> Dict[str, Any]:
-        """
-        Bullets simulation:
-        - task_mode: strategy (to generate a strategy plan)
-        - Uses existing resume; we mark objective to emphasize bullets
-        - Exercises: L1 StrategyReasoner (with bullet focus), L2 BulletExecutor via
-                     L3 orchestration path configured for bullets.
-        Note: In this simple harness we still use the generic orchestrator,
-        so the primary exercise is L1/L2 planning + execution.
-        """
         state = {
-            "task_mode": "strategy",  # Strategy -> BulletExecutor path via L3
-            "objective": "generate high-impact resume bullets for my last two roles",
+            "task_mode": "strategy",  # Bullet planning is folded into drafting strategy
+            "objective": "generate high-impact bullets for my last two roles",
             "messages": [
-                {"role": "user", "content": "Generate bullets for my last two roles."}
+                {"role": "user", "content": "Create resume bullets for my past leadership roles."}
             ],
             "resume": {
                 "master_resume": {
@@ -197,44 +202,43 @@ class Scenarios:
                         {
                             "title": "Chief AI Officer",
                             "company": "Unify Consulting",
-                            "impact_summary": "Led AI practice and strategic partnerships.",
+                            "impact_summary": "Led AI practice & GTM partnerships.",
                             "bullet_pool": [
-                                "Built LLM-based automation that reduced manual workflow by 40%.",
-                                "Scaled AI consulting team from 5 to 18 engineers.",
+                                "Built AI automation reducing costs 40%.",
+                                "Scaled AI team from 5 to 20 engineers.",
                             ],
                         },
                         {
                             "title": "Lead Client Partner",
                             "company": "IBM",
-                            "impact_summary": "Drove cloud and AI transformations for Fortune 500 clients.",
+                            "impact_summary": "Drove cloud/AI transformations.",
                             "bullet_pool": [
-                                "Delivered $34M transformation via cloud risk analytics.",
-                                "Standardized AI workflows for global banking clients.",
+                                "Delivered $30M analytics transformation.",
+                                "Standardized global AI workflows.",
                             ],
                         },
                     ]
                 }
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "bullets",
             "workflow_id": result["workflow_id"],
             "phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
-            "state_snapshot": _ironed_out_state_snapshot(wf_state),
+            "state_snapshot": _state_snapshot(wf_state),
         }
 
+    # ----------------------------------------------------------------------
+    # DRAFTING
+    # ----------------------------------------------------------------------
     @staticmethod
     async def drafting() -> Dict[str, Any]:
-        """
-        Drafting simulation:
-        - task_mode: drafting
-        - Objective: draft a professional summary
-        - Exercises: L1 DraftingReasoner, L2 DraftingExecutor, L3 Orchestrator.
-        """
         state = {
             "task_mode": "drafting",
             "objective": "draft a professional summary",
@@ -246,153 +250,139 @@ class Scenarios:
             "job": {
                 "job_title": "VP, Growth & Strategic Partnerships",
                 "company": "Neo4j",
-                "top_requirements": [
-                    "strategic partnerships",
-                    "M&A experience",
-                    "graph database ecosystem",
-                ],
+                "top_requirements": ["strategic partnerships", "M&A experience"],
             },
             "resume": {
                 "master_resume": {
-                    "summary": "AI and partnerships leader driving enterprise value at scale.",
+                    "summary": "Enterprise leader driving AI and growth strategy.",
                     "professional_experience": [],
                 }
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "drafting",
             "workflow_id": result["workflow_id"],
             "phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
-            "state_snapshot": _ironed_out_state_snapshot(wf_state),
+            "state_snapshot": _state_snapshot(wf_state),
         }
 
+    # ----------------------------------------------------------------------
+    # QA
+    # ----------------------------------------------------------------------
     @staticmethod
     async def qa() -> Dict[str, Any]:
-        """
-        QA simulation:
-        - task_mode: qa
-        - Objective: run QA over an existing draft_result
-        - Exercises: L1 QACoordinatorPlanner, L2 QAExecutor, L3 Orchestrator
-        """
         state = {
             "task_mode": "qa",
             "objective": "qa validate content",
             "audience": "general",
             "messages": [
-                {"role": "user", "content": "Validate the quality and structure of this draft."}
+                {"role": "user", "content": "Validate quality of this content."}
             ],
             "draft_result": {
                 "draft": [
-                    "This is a professionally written summary that is clear, concise, and aligned with the job requirements."
+                    "This is a polished summary aligned with job requirements."
                 ]
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "qa",
             "workflow_id": result["workflow_id"],
             "phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
-            "state_snapshot": _ironed_out_state_snapshot(wf_state),
+            "state_snapshot": _state_snapshot(wf_state),
         }
 
+    # ----------------------------------------------------------------------
+    # SAFETY
+    # ----------------------------------------------------------------------
     @staticmethod
     async def safety() -> Dict[str, Any]:
-        """
-        Safety simulation:
-        - task_mode: safety
-        - Objective: run safety review over content with PII and forbidden terms
-        - Exercises: L1 SafetyPlanner, L2 SafetyExecutor, L3 Orchestrator, L5 SafetyEngine/Policy/Arbitration
-        """
         state = {
             "task_mode": "safety",
             "objective": "safety check",
             "audience": "general",
             "messages": [
-                {"role": "user", "content": "Review this content for safety and PII issues."}
+                {"role": "user", "content": "Review this content for safety issues."}
             ],
             "draft_result": {
                 "draft": [
-                    "Contact me at person@example.com for more explicit details!!!"
+                    "Contact me at person@example.com for more details!"
                 ]
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "safety",
             "workflow_id": result["workflow_id"],
             "phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
-            "state_snapshot": _ironed_out_state_snapshot(wf_state),
+            "state_snapshot": _state_snapshot(wf_state),
         }
 
+    # ----------------------------------------------------------------------
+    # HIL
+    # ----------------------------------------------------------------------
     @staticmethod
     async def hil() -> Dict[str, Any]:
-        """
-        HIL (Human-in-the-loop) simulation:
-        - task_mode: hil
-        - Objective: perform a human review of a critical draft
-        - Exercises: L1 HILPlanner, L2 HILExecutionPayload, L3 Orchestrator
-        - Validates that the system can construct a HIL prompt and
-          record a (placeholder) HIL response region.
-        """
         state = {
             "task_mode": "hil",
-            "objective": "perform hil review of high-impact executive summary",
+            "objective": "perform hil review",
             "messages": [
-                {"role": "user", "content": "Please have a human review this final summary before sending."}
+                {"role": "user", "content": "Please have a human review this before sending."}
             ],
             "draft_result": {
                 "draft": [
                     "This is a critical executive summary that will be sent to the board."
                 ]
             },
-            # Simulate a pre-existing QA result to give HIL some context.
             "qa_result": {
                 "report": {
                     "issues": ["tone_mismatch", "missing_metric"]
                 }
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "hil",
             "workflow_id": result["workflow_id"],
             "phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
             "state_snapshot": _state_snapshot(wf_state),
         }
 
+    # ----------------------------------------------------------------------
+    # META-LEARNING
+    # ----------------------------------------------------------------------
     @staticmethod
     async def meta_learning() -> Dict[str, Any]:
-        """
-        Meta-learning simulation:
-        - task_mode: meta_learning
-        - Objective: run offline meta-learning over pre-populated QA & Safety results.
-        - Exercises: L1 MetaProfile/MetaPlanner, L2 meta-learning executor, L3 Orchestrator.
-        - Seeds synthetic prior results into the initial state to simulate
-          a post-hoc meta-learning pass.
-        """
         state = {
             "task_mode": "meta_learning",
-            "objective": "run meta learning over prior QA and Safety outcomes",
+            "objective": "run meta learning over prior QA & Safety results",
             "messages": [
-                {"role": "system", "content": "Trigger a meta-learning pass over historical runs."}
+                {"role": "system", "content": "Trigger a meta-learning pass."}
             ],
-            # Seed synthetic prior QA/Safety results to be consumed by the meta-learning planner.
             "qa_result": {
                 "report": {
-                    "issues": ["inconsistent_narrative", "missing_metric"],
+                    "issues": ["inconsistent_narrative"],
                     "passed": False,
                 }
             },
@@ -403,22 +393,23 @@ class Scenarios:
                 }
             },
         }
+
         result = await run_workflow_v10_9(state)
         wf_state = result["state"]
+
         return {
             "scenario": "meta_learning",
             "workflow_id": result["workflow_id"],
-            "Phase": result["phase"],
-            "phase_history": result["phase_metadata"].get("history", [result["phase"]]),
+            "phase": result["phase"],
+            "phase_history": result["phase_metadata"].get("history"),
             "run_summary": result["run_summary"],
             "state_snapshot": _state_snapshot(wf_state),
         }
 
 
 # ============================================================================
-#  SIMULATION ENGINE
+# 3. SIMULATION ENGINE
 # ============================================================================
-
 
 SCENARIOS: Dict[str, Callable[[], Awaitable[Dict[str, Any]]]] = {
     "strategy": Scenarios.strategy,
@@ -443,17 +434,16 @@ class Engine:
         - list()
         - sync wrappers
 
-    The Engine is purely a testing/diagnostics tool and does not
-    participate in production orchestration.
+    The Engine is purely a meta-level toolkit for CI or smoke testing.
     """
 
     @staticmethod
     async def run(name: str, overrides: Dict[str, Any] | None = None) -> Dict[str, Any]:
         if name not in SCENARIOS:
             raise ValueError(f"Unknown simulation scenario: {name}")
+
         base = await SCENARIOS[name]()
         if overrides:
-            # Shallow merge: override top-level keys in the result dict
             result = dict(base)
             result.update(overrides)
             return result
@@ -468,7 +458,7 @@ class Engine:
 
     @staticmethod
     def list() -> Dict[str, str]:
-        """Return a mapping of scenario_name -> short description (docstring)."""
+        """Mapping of scenario → docstring (1-line description)."""
         return {name: (fn.__doc__ or "").strip() for name, fn in SCENARIOS.items()}
 
     @staticmethod
@@ -481,11 +471,11 @@ class Engine:
 
 
 # ============================================================================
-#  CLI SUPPORT
+# 4. CLI SUPPORT
 # ============================================================================
 
 if __name__ == "__main__":
-    print("=== v10_9 Simulation Harness (Enterprise) ===\n")
+    print("=== v10_9 Simulation Harness ===")
     print("Available Scenarios:")
     for name, desc in Engine.list().items():
         print(f"  - {name}: {desc or '(no description)'}")
@@ -494,7 +484,7 @@ if __name__ == "__main__":
     results = Engine.run_all_sync()
 
     for name, result in results.items():
-        print(f"\n[{name.upper()} RESULT]")
+        print(f"\n[{name.upper()}]")
         print(f"Workflow ID: {result.get('workflow_id')}")
         print(f"Phase      : {result.get('phase')}")
         print(f"Issues     : {result.get('run_summary', {}).get('issues', {})}")
