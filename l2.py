@@ -29,12 +29,11 @@ Executors are **dual-mode** in design:
     • Deterministic mode (current implementation): fully local, no I/O.
     • LLM/Tool mode (future extension): will call provider-layer
       clients (Anthropic/Gemini/OpenAI) via providers/*, while still
-      returning the same typed payloads. This file only exposes the
-      extension points; it does not contain provider-specific code.
+      returning the same typed payloads.
 
 The single entrypoint used by L3 orchestrators is:
 
-    - route_executor(plan: PlanObject, state: dict) -> ExecutionResult
+    - route_executor(plan, state) -> ExecutionResult
 """
 
 from __future__ import annotations
@@ -67,6 +66,7 @@ from models import (
     MetaLearningSnapshot,
     MetaLearningExecutionPayload,
 )
+
 from runtime_utils import (
     Retrieval,
     Ranking,
@@ -76,63 +76,20 @@ from runtime_utils import (
     WorkflowTimeoutError,
 )
 
-
-# =============================================================================
+# ============================================================================
 # 1. BASE EXECUTION AGENT
-# =============================================================================
-
+# ============================================================================
 
 class ExecutionAgent(ABC):
     """
-    Abstract base class for all L2 executors.
-
-    Each executor is responsible for exactly ONE domain:
-
-        • StrategyExecutor           → "strategy"
-        • RAGExecutor                → "rag"
-        • BulletExecutor             → "bullets"
-        • DraftingExecutor           → "drafting"
-        • QAExecutor                 → "qa" (core deterministic QA)
-        • SafetyExecutor             → "safety"
-        • PromptEngineeringExecutor  → "prompt_engineering"
-        • HILExecutor                → "hil"
-        • MetaLearningExecutor       → "meta_learning"
-
-    This satisfies the Agentic constraint that each agent owns at most
-    one–two capabilities and keeps domains well-separated.
+    Abstract base class for L2 executors.
     """
 
     @abstractmethod
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[Any]:
-        """
-        Execute a plan against the current state and return an ExecutionResult
-        with a typed payload.
-
-        Implementations MUST NOT:
-            • modify state
-            • call orchestrators
-            • make safety/policy decisions
-
-        They MAY:
-            • optionally call provider-layer tools (future extension)
-            • perform deterministic local computations
-        """
         raise NotImplementedError
 
-    # -------------------------------------------------------------------------
-    # OPTIONAL EXTENSION HOOKS (LLM/Tool mode)
-    # -------------------------------------------------------------------------
-
     def _execution_mode(self, plan: PlanObject, state: Dict[str, Any]) -> str:
-        """
-        Determine desired execution mode based on PlanObject and state.
-
-        Priority:
-            1. plan["handoff"]["execution_mode"]
-            2. plan["execution_mode"]
-            3. state["execution_mode"]
-            4. "auto" (default)
-        """
         handoff = plan.get("handoff") or {}
         mode = (
             handoff.get("execution_mode")
@@ -140,42 +97,16 @@ class ExecutionAgent(ABC):
             or state.get("execution_mode")
             or "auto"
         )
-        # normalized string
         return str(mode).strip().lower()
 
 
-# Helper: run async executor from sync context inside L3 Orchestrator
 AsyncExecutorFn = Callable[[PlanObject, Dict[str, Any]], Awaitable[ExecutionResult[Any]]]
 
-
-# =============================================================================
+# ============================================================================
 # 2. STRATEGY EXECUTOR
-# =============================================================================
-
+# ============================================================================
 
 class StrategyExecutor(ExecutionAgent):
-    """
-    Execute a strategy plan by selecting a branch and returning a
-    StrategyExecutionPayload.
-
-    L1 supplies:
-        plan["branches"]            (list of strategy branches)
-        plan["aggregated_decision"]
-        plan["aggregated_confidence"]
-        plan["aggregated_rationale"]
-        plan["complexity"] (optional)
-
-    L2 adds:
-        • a normalized typed payload
-        • a deterministic selection rule:
-              - prefer first branch
-              - can be extended later for more advanced selection
-        • optional future LLM-based branch realization (via providers/*)
-
-    Current implementation is deterministic-only; extension points
-    are provided but do not call external services yet.
-    """
-
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[StrategyExecutionPayload]:
         branches_data = plan.get("branches") or []
         branches: List[StrategyBranch] = []
@@ -191,8 +122,7 @@ class StrategyExecutor(ExecutionAgent):
                 )
             )
 
-        # Deterministic selection rule (can be extended in future)
-        selected_branch: Optional[StrategyBranch] = branches[0] if branches else None
+        selected_branch = branches[0] if branches else None
 
         payload = StrategyExecutionPayload(
             branches=branches,
@@ -211,64 +141,35 @@ class StrategyExecutor(ExecutionAgent):
             usage={"tokens": 0},
         )
 
-
-# =============================================================================
-# 3. RAG EXECUTOR (HYDE, HYBRID, EXTERNAL-READY)
-# =============================================================================
-
+# ============================================================================
+# 3. RAG EXECUTOR
+# ============================================================================
 
 class RAGExecutor(ExecutionAgent):
-    """
-    Execute a RAG plan:
-
-        • Interpret plan["retrieval"] (queries, filters, ranking, metadata).
-        • Simulate HYDE-like synthetic evidence and base evidence.
-        • Normalize documents.
-        • Run BM25/dense/hybrid ranking.
-        • Apply retrieval reranking and fusion.
-        • Return a RAGExecutionPayload.
-
-    All operations in this reference implementation are deterministic;
-    no external services are called. In a production implementation,
-    external vector DB and BM25 clients can be wired here via the
-    providers/tool layer without modifying the contract.
-    """
-
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[RAGExecutionPayload]:
         retrieval_cfg = plan.get("retrieval") or {}
-        queries: List[str] = [str(q) for q in retrieval_cfg.get("queries", [])]
+        queries = [str(q) for q in retrieval_cfg.get("queries", [])]
         ranking_cfg = retrieval_cfg.get("ranking", {}) or {}
         strategy = str(ranking_cfg.get("strategy", "hybrid"))
         enable_hyde = bool(ranking_cfg.get("enable_hyde", True))
 
-        # HYDE-like synthetic docs (for parity with L1 HYDE planning)
-        hyde_docs: List[Dict[str, Any]] = []
+        # Synthetic HYDE docs
+        hyde_docs = []
         if enable_hyde:
             for q in queries:
                 hyde_docs.append(
-                    {
-                        "query": q,
-                        "evidence": f"HYDE synthetic evidence for {q}",
-                        "rank": 0,
-                    }
+                    {"query": q, "evidence": f"HYDE synthetic evidence for {q}", "rank": 0}
                 )
 
-        # Base docs (stubbed deterministic evidence)
-        raw_docs: List[Dict[str, Any]] = []
+        raw_docs = []
         for q in queries:
             raw_docs.append(
-                {
-                    "query": q,
-                    "evidence": f"Evidence for {q}",
-                    "rank": 0,
-                }
+                {"query": q, "evidence": f"Evidence for {q}", "rank": 0}
             )
 
-        # Normalize & dedupe
         norm = Retrieval.normalize_documents(hyde_docs + raw_docs)
         norm = Retrieval.dedupe_results(norm)
 
-        # Ranking strategy
         if strategy == "bm25":
             ranked = Ranking.bm25_rank(norm)
         elif strategy == "dense":
@@ -278,16 +179,15 @@ class RAGExecutor(ExecutionAgent):
 
         reranked = Retrieval.rerank_results(ranked, strategy)
         fused = Retrieval.fuse_results([reranked])
-
-        # Normalize to typed RAGDocument with metadata
         normalized = RAGUtils.normalize_rag_results(fused)
+
         documents: List[RAGDocument] = []
         for d in normalized:
             documents.append(
                 RAGDocument(
                     query=str(d.get("query", "")),
                     evidence=str(d.get("evidence", "")),
-                    rank=int(d.get("rank", 0) or 0),
+                    rank=int(d.get("rank", 0)),
                     metadata=dict(d.get("metadata", {})),
                 )
             )
@@ -308,43 +208,22 @@ class RAGExecutor(ExecutionAgent):
             usage={"tokens": 0},
         )
 
-
-# =============================================================================
-# 4. BULLET EXECUTOR (Guild-ready generation + metric focus)
-# =============================================================================
-
+# ============================================================================
+# 4. BULLET EXECUTOR
+# ============================================================================
 
 class BulletExecutor(ExecutionAgent):
-    """
-    Generate bullets based on plan and state.
-
-    Since v10_9 L1 currently folds bullet planning into drafting, this
-    executor focuses on:
-
-        • Extracting bullet-worthy items from plan sections or deliverables.
-        • Incorporating metric-focused hints from state (if available).
-        • Providing a simple "guild_passes" trace that can be extended.
-
-    Output: BulletExecutionPayload
-
-    NOTE:
-        Deterministic only. Future LLM-based bullet refinement should be
-        added via providers/* and keep the same payload shape.
-    """
-
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[BulletExecutionPayload]:
-        # Prefer explicit "items" or "deliverables" if present
-        items: List[str] = [str(x) for x in plan.get("deliverables", plan.get("items", []))]
+        items = [str(x) for x in plan.get("deliverables", plan.get("items", []))]
 
-        # Fallback: use sections if items are not present
         if not items:
             sections = plan.get("sections", [])
-            items = [str(s) for s in sections] if sections else [str(plan.get("objective", "unspecified-objective"))]
+            items = [str(s) for s in sections] if sections else [str(plan.get("objective", ""))]
 
-        # Metric hints: try to find from state["resume"]["master_resume"]
-        metrics_focus: List[str] = []
+        metrics_focus = []
         resume = (state.get("resume") or {}).get("master_resume") or {}
         experiences = resume.get("professional_experience") or []
+
         for exp in experiences[:3]:
             text = " ".join(
                 str(exp.get(k, "")) for k in ("impact_summary", "summary", "description")
@@ -355,23 +234,17 @@ class BulletExecutor(ExecutionAgent):
         if not metrics_focus:
             metrics_focus.append("Quantify at least one measurable outcome")
 
-        # Guidelines from plan if present
-        if "style_guidelines" in plan:
-            guidelines = [str(g) for g in plan.get("style_guidelines", [])]
-        else:
-            guidelines = [
-                "Use action + metric + outcome.",
-                "Be concise and outcome-focused.",
-            ]
+        guidelines = plan.get("style_guidelines") or [
+            "Use action + metric + outcome.",
+            "Be concise and outcome-focused.",
+        ]
+        guidelines = [str(g) for g in guidelines]
 
-        bullets: List[str] = []
+        bullets = []
         for item in items:
             hint = ", ".join(metrics_focus[:2])
             guideline = guidelines[0] if guidelines else ""
-            bullets.append(
-                f"• Delivered results in {item} "
-                f"(metrics focus: {hint}). {guideline}"
-            )
+            bullets.append(f"• Delivered results in {item} (metrics: {hint}). {guideline}")
 
         payload = BulletExecutionPayload(
             bullets=bullets,
@@ -387,55 +260,36 @@ class BulletExecutor(ExecutionAgent):
             usage={"tokens": 0},
         )
 
-
-# =============================================================================
-# 5. DRAFTING EXECUTOR (structure → narrative, Guild-ready)
-# =============================================================================
-
+# ============================================================================
+# 5. DRAFTING EXECUTOR
+# ============================================================================
 
 class DraftingExecutor(ExecutionAgent):
-    """
-    Convert a drafting plan into multi-section narrative content.
-
-    L1 provides:
-        • sections
-        • tone
-        • audience
-        • key_messages
-        • risks
-        • review_gates
-
-    L2:
-        • Generates a simple but structured multi-section narrative.
-        • Provides "passes" metadata for later Drafting Guild extension.
-    """
-
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[DraftExecutionPayload]:
         tone = str(plan.get("tone", "Professional"))
         audience = str(plan.get("audience", "general"))
-        sections: List[str] = [str(s) for s in plan.get("sections", [])] or [
+        sections = [str(s) for s in plan.get("sections", [])] or [
             "Introduction",
             "Experience",
             "Conclusion",
         ]
-        key_messages: List[str] = [str(m) for m in plan.get("key_messages", [])]
-        risks: List[str] = [str(r) for r in plan.get("risks", [])]
+        key_messages = [str(m) for m in plan.get("key_messages", [])]
+        risks = [str(r) for r in plan.get("risks", [])]
 
-        hints: List[str] = []
+        hints = []
         if key_messages:
             hints.append("Key messages: " + "; ".join(key_messages[:3]))
         if risks:
-            hints.append("Risks to mitigate: " + "; ".join(risks[:3]))
+            hints.append("Risks: " + "; ".join(risks[:3]))
 
-        drafts: List[str] = []
+        drafts = []
         for sec in sections:
-            header = f"[{sec.upper()} — tone={tone}, audience={audience}]"
-            body_lines: List[str] = [header]
+            line = f"[{sec.upper()} — tone={tone}, audience={audience}]"
             if key_messages:
-                body_lines.append("Key message focus: " + key_messages[0])
+                line += " | Key: " + key_messages[0]
             if risks:
-                body_lines.append("Risk to address: " + risks[0])
-            drafts.append(" ".join(body_lines))
+                line += " | Risk: " + risks[0]
+            drafts.append(line)
 
         payload = DraftExecutionPayload(
             sections=sections,
@@ -451,7 +305,6 @@ class DraftingExecutor(ExecutionAgent):
             model="draft-executor",
             usage={"tokens": 0},
         )
-
 
 # =============================================================================
 # 6. QA EXECUTOR (multi-check QA suite, core deterministic)
