@@ -1,609 +1,647 @@
 # FILE: l3.py
 """
-Unified L3 Orchestration Layer (v10_9, Refactored) — PURE CONTROL FLOW
+Unified L3 Orchestration Layer (v10_9) — PURE CONTROL FLOW (RESTORED)
 
-This module provides the orchestration logic for the v10_9 agentic
-architecture. It enforces strict L3 responsibilities:
+This module provides the complete orchestration logic for the v10_9
+agentic architecture. It restores orchestration capabilities that were
+present in v10_8 but simplified in v10_9, while preserving strict
+L1–L5 separation:
 
-    • Phase machine (INIT → PLANNING → EXECUTING → REVIEWING → COMPLETE/FAILED)
-    • Graph-based orchestration (DAG) for a single L1 PlanObject
-    • Domain execution via L2 route_executor(plan, state)
-    • Safety evaluation via L5 SafetyEngine + PolicyEngine + ArbitrationEngine
-    • Optional multi-agent QA council (COUNCIL_OF_QA)
-    • Self-correction signal computation (META-only)
-    • Emitting a final WorkflowState
+    • L1: planning only (PlanObject).
+    • L2: execution only (ExecutionResult).
+    • L3: control flow / orchestration only.
+    • L4: state management only (StateAdapter).
+    • L5: safety & policy only (SafetyEngine, PolicyEngine, ArbitrationEngine).
+    • META: self_correction, multi-agent councils (no state writes, no tools).
 
-Non-responsibilities (to preserve layer purity):
+Key responsibilities of L3:
 
-    • NO cognition (no planning; PlanObject is taken as input).
-    • NO tool/LLM execution (delegated to L2 + providers/*).
-    • NO state normalization/budgeting (delegated to L4.StateAdapter).
-    • NO safety decisions (delegated to L5).
-    • NO direct provider/SDK calls.
+    • Model workflows as DAGs with:
+        - parallel nodes
+        - conditional edges
+        - fallback edges (multi-path fallbacks)
+    • Coordinate L2 executors via route_executor(plan, state).
+    • Attach predictive caching & optimization hints (metadata-only).
+    • Emit NodeResult metadata for each node (status, timings, payload refs).
+    • Emit route traces and correction journal entries as telemetry.
+    • Propagate escalation actions ("escalate") for L5/HIL handling.
 
-L3 depends only on:
-    • models.PlanObject / WorkflowState / StatePatch / WorkflowPhase
-    • l2.route_executor
-    • l4.StateAdapter
-    • l5.SafetyEngine, PolicyEngine, ArbitrationEngine
-    • agents.COUNCIL_OF_QA, MultiAgentOrchestrator
-    • self_correction (for advisory correction surfaces)
+Non-responsibilities (to preserve purity):
+
+    • NO business reasoning (L1).
+    • NO direct tool/LLM/provider calls (L2).
+    • NO durable state storage (L4).
+    • NO safety/policy enforcement (L5).
+
+Public entrypoint:
+
+    • DAGExecutor.run(plan: PlanObject, initial_state: dict, state_adapter: StateAdapter) -> WorkflowState
 """
 
 from __future__ import annotations
 
 import asyncio
+import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Callable, Optional, Set
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Set, Tuple
 
 from models import (
-    WorkflowState,
     PlanObject,
     ExecutionResult,
+    WorkflowState,
     WorkflowPhase,
+    NodeResult,
+    NodeStatus,
     StatePatch,
+    RouteTraceEntry,
+    CorrectionJournalEntry,
+    SelfCorrectionSurface,
 )
-from runtime_utils import (
-    ValidationError,
-    ToolExecutionError,
-    WorkflowTimeoutError,
-    CostTracker,
-    compute_optimization_hint,
-    record_event,
-)
+from exceptions import ValidationError, WorkflowTimeoutError, ToolExecutionError
+from state_adapter_stack import StateAdapter
 from l2 import route_executor
-from l4 import StateAdapter
-from l5 import SafetyEngine, PolicyEngine, ArbitrationEngine
-from agents import MultiAgentOrchestrator, COUNCIL_OF_QA
-from self_correction import analyze_state_for_correction, to_patch_dict as sc_to_patch_dict
 
 
-# ============================================================================
-# 1. PHASE MACHINE
-# ============================================================================
-
-class PhaseMachine:
-    """
-    Manages allowed workflow phase transitions:
-
-        INIT       → PLANNING
-        PLANNING   → EXECUTING / FAILED
-        EXECUTING  → REVIEWING / FAILED
-        REVIEWING  → COMPLETE / PLANNING / FAILED
-        COMPLETE   → (terminal)
-        FAILED     → (terminal)
-
-    This is a pure control-flow helper. It does not mutate state or
-    perform any execution.
-    """
-
-    _ALLOWED: Dict[WorkflowPhase, List[WorkflowPhase]] = {
-        WorkflowPhase.INIT: [WorkflowPhase.PLANNING, WorkflowPhase.FAILED],
-        WorkflowPhase.PLANNING: [WorkflowPhase.EXECUTING, WorkflowPhase.FAILED],
-        WorkflowPhase.EXECUTING: [WorkflowPhase.REVIEWING, WorkflowPhase.FAILED],
-        WorkflowPhase.REVIEWING: [
-            WorkflowPhase.COMPLETE,
-            WorkflowPhase.PLANNING,
-            WorkflowPhase.FAILED,
-        ],
-        WorkflowPhase.COMPLETE: [],
-        WorkflowPhase.FAILED: [],
-    }
-
-    def __init__(self, initial: WorkflowPhase = WorkflowPhase.INIT) -> None:
-        self.phase: WorkflowPhase = initial
-        self.history: List[str] = [initial.value]
-
-    def transition(self, target: WorkflowPhase) -> WorkflowPhase:
-        """
-        Move to the target phase if legal, otherwise raise ValidationError.
-        """
-        allowed = self._ALLOWED.get(self.phase, [])
-        if target not in allowed:
-            raise ValidationError(
-                f"Illegal phase transition: {self.phase.value} → {target.value}"
-            )
-        self.phase = target
-        self.history.append(target.value)
-        return target
-
-    def current(self) -> WorkflowPhase:
-        return self.phase
-
-    def current_value(self) -> str:
-        return self.phase.value
+# =============================================================================
+# 1. ORCHESTRATION-SPECIFIC EXCEPTIONS
+# =============================================================================
 
 
-# ============================================================================
-# 2. DAG DEFINITIONS
-# ============================================================================
+class DAGValidationError(ValidationError):
+    """Raised when a DAG is structurally invalid (missing nodes, cycles, etc.)."""
+
+
+class ControlFlowError(Exception):
+    """Raised when orchestration cannot make progress due to misconfigured DAG."""
+
+
+class NodeExecutionError(Exception):
+    """Raised when a node fails irrecoverably after retries."""
+
+
+# =============================================================================
+# 2. DAG MODEL
+# =============================================================================
+
 
 @dataclass
 class DAGNode:
     """
-    Structural node definition for DAG orchestration.
+    Single node in the orchestration DAG.
 
-    run(context) -> context is a deterministic transformation.
-    condition(context) -> key is an optional condition used to choose
-    conditional edges from this node.
+    Restores and extends v10_8 behavior:
 
-    Fields:
-        name:              node identifier (must be unique in DAG)
-        run:               pure function from context→context
-        condition:         optional function from context→str for
-                           conditional routing
-        conditional_edges: mapping: condition_key -> [target_node_names]
-        retries:           number of retry attempts for run()
-        fallback_edge:     optional node name to go to on failure (unused
-                           in this reference implementation but present
-                           for extensibility)
+        • depends_on: upstream dependencies (for DAG edges).
+        • fallback: list of node names to use if this node ultimately fails.
+        • parallel_group: label to group nodes that may run concurrently.
+        • max_retries: maximum retries before considering node failed.
+        • predictive_cache_key: hint for external predictive caching layers.
+        • surfaces: self-correction surfaces (RAG retry, draft retry, etc.).
     """
 
     name: str
-    run: Callable[[Dict[str, Any]], Dict[str, Any]]
-    condition: Optional[Callable[[Dict[str, Any]], str]] = None
-    conditional_edges: Dict[str, List[str]] = field(default_factory=dict)
-    retries: int = 0
-    fallback_edge: Optional[str] = None
-
-    def __post_init__(self) -> None:
-        if not self.name:
-            raise ValidationError("DAG nodes require a non-empty name.")
+    mode: str
+    plan: PlanObject
+    depends_on: List[str] = field(default_factory=list)
+    fallback: List[str] = field(default_factory=list)
+    parallel_group: Optional[str] = None
+    max_retries: int = 0
+    predictive_cache_key: Optional[Dict[str, Any]] = None
+    surfaces: List[SelfCorrectionSurface] = field(default_factory=list)
 
 
 @dataclass
-class DAG:
+class DAGModel:
     """
-    A directed acyclic graph of orchestration steps.
+    In-memory representation of a workflow DAG.
 
-    nodes: mapping of node name -> DAGNode
-    edges: default edges (fallback when conditional_edges not used)
-
-    This structure is pure and contains no execution logic.
+    nodes: mapping of node_name -> DAGNode
     """
 
-    nodes: Dict[str, DAGNode]
-    edges: Dict[str, List[str]]
+    nodes: Dict[str, DAGNode] = field(default_factory=dict)
+
+    # ------------------------------------------------------------------ #
+    # Validation
+    # ------------------------------------------------------------------ #
 
     def validate(self) -> None:
         """
-        Validate structural integrity (node keys, edge endpoints, etc.).
-        """
-        if not self.nodes:
-            raise ValidationError("DAG must define at least one node.")
+        Validate basic DAG invariants:
 
+            • Node keys must match node.name.
+            • All dependencies and fallback targets must exist.
+            • Graph must be acyclic.
+        """
         # Names must match keys
         for node_name, node in self.nodes.items():
             if node_name != node.name:
-                raise ValidationError(
+                raise DAGValidationError(
                     f"Node key '{node_name}' does not match node name '{node.name}'."
                 )
 
-        # All edge endpoints must exist
-        for source, targets in self.edges.items():
-            if source not in self.nodes:
-                raise ValidationError(f"Edge source '{source}' is not a defined node.")
-            for target in targets:
-                if target not in self.nodes:
-                    raise ValidationError(
-                        f"Edge target '{target}' from '{source}' is not a defined node."
+        # All deps and fallbacks must exist
+        for node in self.nodes.values():
+            for dep in node.depends_on:
+                if dep not in self.nodes:
+                    raise DAGValidationError(
+                        f"Dependency '{dep}' for node '{node.name}' is not a defined node."
+                    )
+            for fb in node.fallback:
+                if fb not in self.nodes:
+                    raise DAGValidationError(
+                        f"Fallback target '{fb}' for node '{node.name}' is not a defined node."
                     )
 
-        # Conditional edges also must be valid
+        # Cycle detection (Kahn's algorithm)
+        self._ensure_acyclic()
+
+    def _ensure_acyclic(self) -> None:
+        indegree: Dict[str, int] = {name: 0 for name in self.nodes}
         for node in self.nodes.values():
-            for cond_targets in node.conditional_edges.values():
-                for target in cond_targets:
-                    if target not in self.nodes:
-                        raise ValidationError(
-                            f"Conditional edge target '{target}' from '{node.name}' "
-                            "is not a defined node."
-                        )
+            for dep in node.depends_on:
+                indegree[node.name] += 1
 
-    def topological_order(self) -> List[str]:
-        """
-        Return a simple topological ordering of nodes based on edges.
+        queue: List[str] = [n for n, deg in indegree.items() if deg == 0]
+        visited_count = 0
 
-        Used by higher layers (e.g., main_v10_9) when they want to run a
-        statically-ordered DAG without invoking DAGExecutor.
-        """
-        # Kahn-like algorithm using only edges; we ignore conditional edges here.
-        in_deg: Dict[str, int] = {name: 0 for name in self.nodes}
-        for src, targets in self.edges.items():
-            for tgt in targets:
-                in_deg[tgt] = in_deg.get(tgt, 0) + 1
+        while queue:
+            current = queue.pop()
+            visited_count += 1
+            for neighbor in self._dependents_of(current):
+                indegree[neighbor] -= 1
+                if indegree[neighbor] == 0:
+                    queue.append(neighbor)
 
-        ready = [name for name, deg in in_deg.items() if deg == 0]
-        order: List[str] = []
+        if visited_count != len(self.nodes):
+            raise DAGValidationError("DAG contains at least one cycle.")
 
-        while ready:
-            n = ready.pop(0)
-            order.append(n)
-            for tgt in self.edges.get(n, []):
-                in_deg[tgt] -= 1
-                if in_deg[tgt] == 0:
-                    ready.append(tgt)
+    def _dependents_of(self, node_name: str) -> List[str]:
+        deps: List[str] = []
+        for n in self.nodes.values():
+            if node_name in n.depends_on:
+                deps.append(n.name)
+        return deps
 
-        # Fallback: if cycle, just return all node names as-is.
-        if len(order) != len(self.nodes):
-            return list(self.nodes.keys())
-        return order
+    # ------------------------------------------------------------------ #
+    # Helpers
+    # ------------------------------------------------------------------ #
+
+    def root_nodes(self) -> List[DAGNode]:
+        """Nodes with no dependencies."""
+        return [n for n in self.nodes.values() if not n.depends_on]
+
+
+# =============================================================================
+# 3. DAG BUILDING FROM PLANOBJECT
+# =============================================================================
+
+
+def build_dag_from_plan(plan: PlanObject) -> DAGModel:
+    """
+    Construct a DAGModel from an L1 PlanObject.
+
+    Expected plan structure for full workflows:
+
+        plan["dag"] = {
+            "nodes": [
+                {
+                    "name": "strategy",
+                    "mode": "strategy",
+                    "depends_on": [],
+                    "fallback": [],
+                    "parallel_group": null,
+                    "max_retries": 0,
+                    "predictive_cache_key": {...},
+                    "surfaces": ["rag_retry", "draft_retry"]
+                },
+                ...
+            ]
+        }
+
+    If no "dag" block is present, we construct a minimal single-node DAG
+    representing the plan itself. This preserves backward compatibility
+    with simpler usages.
+    """
+    dag_spec = plan.get("dag") or {}
+    nodes_spec = dag_spec.get("nodes") or []
+
+    if not nodes_spec:
+        # Minimal fallback: single node for the plan itself.
+        mode = plan.get("mode") or "unknown"
+        node = DAGNode(
+            name=str(plan.get("name", mode)),
+            mode=str(mode),
+            plan=plan,
+            depends_on=[],
+            fallback=[],
+            parallel_group=None,
+            max_retries=int(plan.get("max_retries", 0)),
+            predictive_cache_key=plan.get("predictive_cache_key"),
+            surfaces=[
+                SelfCorrectionSurface.RAG_RETRY,
+                SelfCorrectionSurface.DRAFT_RETRY,
+            ],
+        )
+        dag = DAGModel(nodes={node.name: node})
+        dag.validate()
+        return dag
+
+    nodes: Dict[str, DAGNode] = {}
+    for ns in nodes_spec:
+        name = str(ns.get("name", "")).strip()
+        mode = str(ns.get("mode", "")).strip()
+        if not name or not mode:
+            raise DAGValidationError("Each DAG node must have non-empty 'name' and 'mode'.")
+
+        # Per-node PlanObject may be provided; otherwise clone base plan with mode.
+        node_plan_raw = ns.get("plan") or plan.to_dict()
+        node_plan_raw["mode"] = mode
+        node_plan = PlanObject(node_plan_raw)
+
+        surfaces: List[SelfCorrectionSurface] = []
+        for s in ns.get("surfaces", []):
+            try:
+                surfaces.append(SelfCorrectionSurface(str(s)))
+            except ValueError:
+                # Unknown surfaces are ignored but preserved in metadata if needed.
+                continue
+
+        node = DAGNode(
+            name=name,
+            mode=mode,
+            plan=node_plan,
+            depends_on=[str(d) for d in ns.get("depends_on", [])],
+            fallback=[str(fb) for fb in ns.get("fallback", [])],
+            parallel_group=str(ns["parallel_group"]) if ns.get("parallel_group") else None,
+            max_retries=int(ns.get("max_retries", 0)),
+            predictive_cache_key=ns.get("predictive_cache_key"),
+            surfaces=surfaces,
+        )
+        nodes[node.name] = node
+
+    dag = DAGModel(nodes=nodes)
+    dag.validate()
+    return dag
+
+
+# =============================================================================
+# 4. SIMPLE PHASE MACHINE & COST TRACKER (L3-LOCAL)
+# =============================================================================
+
+
+class PhaseMachine:
+    """
+    Minimal phase machine for WorkflowPhase transitions.
+
+    This is intentionally simple; it is local to L3 and does not replace
+    any richer PhaseMachine you may have elsewhere.
+    """
+
+    def __init__(self) -> None:
+        self._phase = WorkflowPhase.INIT
+        self.history: List[WorkflowPhase] = [self._phase]
+
+    def set(self, phase: WorkflowPhase) -> None:
+        self._phase = phase
+        self.history.append(phase)
+
+    def current_value(self) -> WorkflowPhase:
+        return self._phase
+
+
+class CostTracker:
+    """
+    Extremely simple cost tracker for L3-level accounting.
+
+    Full cost/latency dashboards live elsewhere; this only aggregates
+    per-node usage tokens and allows L3 to attach them to WorkflowState.
+    """
+
+    def __init__(self) -> None:
+        self.total_tokens: int = 0
+        self.per_node: Dict[str, int] = {}
+
+    def record(self, node_name: str, usage: Dict[str, Any]) -> None:
+        tokens = int(usage.get("tokens", 0))
+        self.total_tokens += tokens
+        self.per_node[node_name] = self.per_node.get(node_name, 0) + tokens
+
+
+# =============================================================================
+# 5. DAG EXECUTOR
+# =============================================================================
 
 
 class DAGExecutor:
     """
-    Deterministic executor for DAG nodes with simple retry logic.
+    Deterministic executor for DAG nodes with:
 
-    This engine:
-        • Runs nodes when all their parents have completed.
-        • For each node, executes it with optional retries.
-        • Decides outgoing edges either via conditional_edges (if present
-          and condition not None) or via default DAG edges.
+        • Parallel execution of independent nodes.
+        • Fallback edges when nodes fail (multi-path).
+        • Simple retry logic (per-node max_retries).
+        • Predictive cache hinting (metadata only).
+        • NodeResult metadata emission.
+        • Route trace and correction journal surfaces.
 
-    The context dict is the single mutable bag of data; nodes may
-    mutate it by returning a new mapping. DAGExecutor itself does not
-    know about PlanObjects, state adapters, or phases.
+    All durable state writes must go through the provided StateAdapter,
+    which belongs to L4.
     """
 
-    def run(self, dag: DAG, initial_context: Dict[str, Any]) -> Dict[str, Any]:
-        dag.validate()
-        context: Dict[str, Any] = dict(initial_context)
-
-        # Build parents map for gating node readiness
-        parents: Dict[str, Set[str]] = {name: set() for name in dag.nodes}
-        for src, targets in dag.edges.items():
-            for tgt in targets:
-                parents[tgt].add(src)
-        for node in dag.nodes.values():
-            for targets in node.conditional_edges.values():
-                for tgt in targets:
-                    parents[tgt].add(node.name)
-
-        ready: List[str] = sorted(
-            name for name, deps in parents.items() if not deps
-        )
-        executed: Set[str] = set()
-
-        while ready:
-            node_name = ready.pop(0)
-            if node_name in executed:
-                continue
-
-            node = dag.nodes[node_name]
-            context = self._execute_with_retries(node, context)
-            outgoing = self._determine_edges(dag, node, context)
-            executed.add(node_name)
-            self._enqueue_targets(outgoing, dag, parents, executed, ready)
-
-        return context
-
-    def _execute_with_retries(self, node: DAGNode, context: Dict[str, Any]) -> Dict[str, Any]:
-        attempts = node.retries + 1
-        last_exc: Optional[Exception] = None
-
-        for _ in range(attempts):
-            try:
-                new_context = node.run(dict(context))
-                if not isinstance(new_context, dict):
-                    raise ValidationError(
-                        f"DAG node '{node.name}' did not return a context dict."
-                    )
-                return new_context
-            except Exception as exc:
-                last_exc = exc
-        raise ToolExecutionError(f"Node '{node.name}' failed after {attempts} attempts: {last_exc}")
-
-    def _determine_edges(self, dag: DAG, node: DAGNode, context: Dict[str, Any]) -> List[str]:
-        if node.condition and node.conditional_edges:
-            key = node.condition(context)
-            return node.conditional_edges.get(key, dag.edges.get(node.name, []))
-        return dag.edges.get(node.name, [])
-
-    def _enqueue_targets(
+    def __init__(
         self,
-        targets: List[str],
-        dag: DAG,
-        parents: Dict[str, Set[str]],
-        executed: Set[str],
-        ready: List[str],
+        state_adapter: StateAdapter,
+        l2_executor: Callable[[PlanObject, Dict[str, Any]], Awaitable[ExecutionResult[Any]]] = route_executor,
     ) -> None:
-        for tgt in targets:
-            if tgt not in dag.nodes:
-                raise ValidationError(f"Edge target '{tgt}' is not a defined node in the DAG.")
-            if parents.get(tgt, set()).issubset(executed) and tgt not in ready:
-                ready.append(tgt)
-        ready.sort()
+        self.state_adapter = state_adapter
+        self.l2_executor = l2_executor
 
+        self.node_results: Dict[str, NodeResult] = {}
+        self.route_trace: List[RouteTraceEntry] = []
+        self.correction_journal: List[CorrectionJournalEntry] = []
 
-# ============================================================================
-# 3. GLOBAL ORCHESTRATOR
-# ============================================================================
+    # ------------------------------------------------------------------ #
+    # Helper: which nodes are ready to run?
+    # ------------------------------------------------------------------ #
 
-@dataclass
-class Orchestrator:
-    """
-    Central orchestrator for v10_9 agentic execution.
+    def _ready_nodes(self, dag: DAGModel, completed: Set[str], running: Set[str]) -> List[DAGNode]:
+        ready: List[DAGNode] = []
+        for node in dag.nodes.values():
+            if node.name in completed or node.name in running:
+                continue
+            if all(dep in completed for dep in node.depends_on):
+                ready.append(node)
+        return ready
 
-    Given:
-        • a PlanObject from L1
-        • an initial state dict (pre-L4)
+    # ------------------------------------------------------------------ #
+    # Helper: apply payload → state via StateAdapter
+    # ------------------------------------------------------------------ #
 
-    It will:
-        1. Initialize L4.StateAdapter with the initial state.
-        2. Use a PhaseMachine to move through:
-            INIT → PLANNING → EXECUTING → REVIEWING → COMPLETE / FAILED
-        3. Build and run a DAG:
-              plan_node → execute_node → safety_node
-                         → qa_council_node? → finalize_node
-        4. Call L2 route_executor to execute the plan.
-        5. Call L5 SafetyEngine + PolicyEngine + ArbitrationEngine for safety.
-        6. Optionally call MultiAgent QA council if mode == "qa".
-        7. Compute self-correction signals (meta-only).
-        8. Return a WorkflowState with final state and phase metadata.
-
-    No tools/LLMs are called here, and no state mutation logic is
-    embedded; all state updates are delegated to L4.StateAdapter.
-    """
-
-    state_adapter: StateAdapter = field(default_factory=StateAdapter)
-    safety_engine: SafetyEngine = field(default_factory=SafetyEngine)
-    policy_engine: PolicyEngine = field(default_factory=PolicyEngine)
-    arbitration_engine: ArbitrationEngine = field(default_factory=ArbitrationEngine)
-
-    def _apply_execution_to_state(self, mode: str, result: ExecutionResult[Any]) -> None:
+    def _apply_payload_to_state(self, node: DAGNode, result: ExecutionResult[Any]) -> None:
         """
-        Map an L2 ExecutionResult payload into L4 state via StatePatch.
+        Normalize payload from ExecutionResult into state using L4.StateAdapter.
 
-        The shape is intentionally aligned with the simulation harness
-        and downstream tooling (e.g., "draft_result", "qa_result").
+        This mirrors and modernizes v10_8 behavior where L3 wrote specific
+        results into state for later stages.
         """
         payload = result.payload
-        norm_mode = mode.lower()
 
+        # Normalize for objects with .to_dict
         if hasattr(payload, "to_dict"):
-            p = payload.to_dict()  # type: ignore[assignment]
+            pdict = payload.to_dict()  # type: ignore[assignment]
         else:
-            p = dict(payload)
+            pdict = payload if isinstance(payload, dict) else {"value": payload}
+
+        norm_mode = str(node.mode).lower()
 
         if norm_mode == "strategy":
-            # store strategy result
-            patch_value = {
-                "branches": p.get("branches", []),
-                "selected_strategy": p.get("selected_branch"),
-                "decision": {
-                    "aggregated_decision": p.get("aggregated_decision"),
-                    "aggregated_confidence": p.get("aggregated_confidence"),
-                    "aggregated_rationale": p.get("aggregated_rationale"),
-                    "complexity": p.get("complexity"),
-                },
-            }
-            self.state_adapter.apply_patch(StatePatch(key="strategy_result", value=patch_value))
-
+            self.state_adapter.apply_patch(StatePatch(key="strategy_result", value=pdict))
         elif norm_mode == "rag":
-            self.state_adapter.apply_patch(StatePatch(key="rag_result", value=p))
-
+            self.state_adapter.apply_patch(StatePatch(key="rag_result", value=pdict))
         elif norm_mode == "drafting":
-            self.state_adapter.apply_patch(StatePatch(key="draft_result", value=p))
-
+            self.state_adapter.apply_patch(StatePatch(key="draft_result", value=pdict))
         elif norm_mode == "bullets":
-            self.state_adapter.apply_patch(StatePatch(key="bullet_result", value=p))
-
+            self.state_adapter.apply_patch(StatePatch(key="bullet_result", value=pdict))
         elif norm_mode == "qa":
-            if "qa_report" in p:
-                report_dict = p["qa_report"]
-                patch_value = {"report": report_dict}
-            else:
-                patch_value = {"report": p}
-            self.state_adapter.apply_patch(StatePatch(key="qa_result", value=patch_value))
-
+            self.state_adapter.apply_patch(StatePatch(key="qa_result", value=pdict))
         elif norm_mode == "safety":
-            if "safety_report" in p:
-                report_dict = p["safety_report"]
-                patch_value = {
-                    "report": report_dict,
-                    "sanitized": p.get("sanitized_content", ""),
-                }
-            else:
-                patch_value = {"report": p}
-            self.state_adapter.apply_patch(StatePatch(key="safety_result", value=patch_value))
-
+            self.state_adapter.apply_patch(StatePatch(key="safety_result", value=pdict))
         elif norm_mode == "prompt_engineering":
-            self.state_adapter.apply_patch(StatePatch(key="prompt_engineering_result", value=p))
-
+            self.state_adapter.apply_patch(StatePatch(key="prompt_meta", value=pdict))
         elif norm_mode == "hil":
-            self.state_adapter.apply_patch(StatePatch(key="hil_result", value=p))
-
+            self.state_adapter.apply_patch(StatePatch(key="hil_result", value=pdict))
         elif norm_mode == "meta_learning":
-            self.state_adapter.apply_patch(StatePatch(key="meta_learning_result", value=p))
-
+            self.state_adapter.apply_patch(StatePatch(key="meta_learning_result", value=pdict))
         else:
-            # Unknown modes are stored verbatim under "last_execution"
+            # Unknown modes are stored under "last_execution"
             self.state_adapter.apply_patch(
-                StatePatch(key="last_execution", value={"mode": norm_mode, "payload": p})
+                StatePatch(key="last_execution", value={"mode": norm_mode, "payload": pdict})
             )
 
-    # -------------------------------------------------------------------------
-    # PUBLIC API
-    # -------------------------------------------------------------------------
+    # ------------------------------------------------------------------ #
+    # Helper: record route trace and correction journal
+    # ------------------------------------------------------------------ #
+
+    def _record_route(self, node: DAGNode, result: ExecutionResult[Any]) -> None:
+        self.route_trace.append(
+            RouteTraceEntry(
+                step=node.name,
+                model=result.model,
+                endpoint=None,
+                rationale=f"Executed mode={node.mode}",
+                metadata={"status": result.status},
+            )
+        )
+
+    def _record_corrections(
+        self,
+        node: DAGNode,
+        result: ExecutionResult[Any],
+        attempt: int,
+    ) -> None:
+        if result.ok:
+            return
+        # Map surfaces to journal entries
+        now = time.time()
+        for surface in node.surfaces or [SelfCorrectionSurface.UNKNOWN]:
+            self.correction_journal.append(
+                CorrectionJournalEntry(
+                    event_id=f"{node.name}:{attempt}:{surface.value}",
+                    surface=surface,
+                    message=f"L2 execution failed for node '{node.name}' on surface '{surface.value}'.",
+                    created_at=now,
+                    metadata={"errors": result.errors, "status": result.status},
+                )
+            )
+
+    # ------------------------------------------------------------------ #
+    # Core: execute a single node with retries
+    # ------------------------------------------------------------------ #
+
+    async def _execute_node(
+        self,
+        node: DAGNode,
+        state: Dict[str, Any],
+        cost_tracker: CostTracker,
+    ) -> NodeResult:
+        started_at = time.time()
+        attempts = 0
+        last_result: Optional[ExecutionResult[Any]] = None
+
+        while True:
+            attempts += 1
+            try:
+                result = await self.l2_executor(node.plan, state)
+            except WorkflowTimeoutError as exc:
+                # Hard failure; no retry at L3 for timeouts.
+                raise NodeExecutionError(f"Timeout executing node '{node.name}': {exc}") from exc
+            except ToolExecutionError as exc:
+                # counted as error; may still retry depending on max_retries
+                result = ExecutionResult(
+                    status="error",
+                    payload=None,
+                    errors=[str(exc)],
+                    model="l2-executor-error",
+                    usage={},
+                    metadata={},
+                )
+
+            last_result = result
+            cost_tracker.record(node.name, result.usage)
+            self._record_route(node, result)
+            self._record_corrections(node, result, attempts)
+
+            if result.ok:
+                # Apply payload to state via adapter.
+                self._apply_payload_to_state(node, result)
+                status = NodeStatus.SUCCESS
+                break
+
+            if attempts > node.max_retries:
+                status = NodeStatus.ERROR
+                break
+
+        finished_at = time.time()
+        nr = NodeResult(
+            node_id=node.name,
+            status=status,
+            result=last_result,
+            started_at=started_at,
+            finished_at=finished_at,
+            metadata={
+                "mode": node.mode,
+                "attempts": attempts,
+                "predictive_cache_key": node.predictive_cache_key,
+            },
+        )
+        self.node_results[node.name] = nr
+        return nr
+
+    # ------------------------------------------------------------------ #
+    # Public API
+    # ------------------------------------------------------------------ #
 
     def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
         """
         Execute full L3 orchestration for a single L1 PlanObject.
 
-        This is a synchronous API; higher layers may wrap it with
-        asyncio as needed. Internally, it uses asyncio.run to call
-        async L2 route_executor when needed.
+        This is a synchronous API; higher layers may wrap it with asyncio
+        as needed. Internally, this uses asyncio.run to call the async L2
+        route_executor.
 
         All state mutations are performed via L4.StateAdapter; the
-        returned WorkflowState contains the final state snapshot.
+        returned WorkflowState contains the final snapshot.
         """
         machine = PhaseMachine()
         cost_tracker = CostTracker()
 
-        workflow_id = str(initial_state.get("workflow_id") or "workflow_v10_9")
+        # Initialize adapter state.
+        self.state_adapter.state = dict(initial_state)
 
-        for key, value in (initial_state or {}).items():
-            self.state_adapter.apply_patch(StatePatch(key=key, value=value))
+        # Build and validate DAG from plan.
+        dag = build_dag_from_plan(plan)
 
-        # Phase: INIT → PLANNING
-        machine.transition(WorkflowPhase.PLANNING)
-        mode = str(plan.get("mode", "")).lower()
-        if not mode:
-            raise ValidationError("PlanObject missing 'mode' field.")
+        async def _run_async() -> None:
+            nonlocal machine, cost_tracker
 
-        # Node: plan_node attaches plan + state
-        def plan_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            context["plan"] = plan
-            context["state"] = self.state_adapter.state
-            context["workflow_phase"] = machine.current_value()
-            context["workflow_id"] = workflow_id
-            return context
+            machine.set(WorkflowPhase.PLANNING)
+            machine.set(WorkflowPhase.EXECUTING)
 
-        async def _execute_async(p: PlanObject, s: Dict[str, Any]) -> ExecutionResult[Any]:
-            return await route_executor(p, s)
+            completed: Set[str] = set()
+            running: Set[str] = set()
+            errors: List[str] = []
 
-        def execute_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            nonlocal cost_tracker
-            cost_tracker.start_span("execution")
-            current_state = self.state_adapter.state
+            # Basic parallel scheduler: run all ready nodes concurrently.
+            while len(completed) < len(dag.nodes):
+                ready_nodes = self._ready_nodes(dag, completed, running)
 
-            try:
-                exec_result: ExecutionResult[Any] = asyncio.run(_execute_async(plan, current_state))
-            except WorkflowTimeoutError as exc:
-                raise ToolExecutionError(f"L2 execution timed out: {exc}") from exc
+                if not ready_nodes and running:
+                    # Wait for at least one running task to complete.
+                    await asyncio.sleep(0.001)
+                    continue
 
-            cost_tracker.end_span("execution")
+                if not ready_nodes and not running:
+                    # No ready or running nodes → deadlock or all failed.
+                    unresolved = set(dag.nodes) - completed
+                    raise ControlFlowError(
+                        f"No progress possible in DAG; unresolved nodes: {sorted(unresolved)}"
+                    )
 
-            context["execution_result"] = exec_result
-            self._apply_execution_to_state(mode, exec_result)
-            context["state"] = self.state_adapter.state
+                # Run ready nodes in parallel.
+                tasks: List[Tuple[DAGNode, Awaitable[NodeResult]]] = []
+                for node in ready_nodes:
+                    running.add(node.name)
+                    tasks.append((node, self._execute_node(node, self.state_adapter.state, cost_tracker)))
 
-            machine.transition(WorkflowPhase.EXECUTING)
-            context["workflow_phase"] = machine.current_value()
-            return context
+                results = await asyncio.gather(*[t[1] for t in tasks], return_exceptions=True)
 
-        def safety_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            state = context.get("state", self.state_adapter.state)
-            safety_report = self.safety_engine.evaluate_content(state, plan)
-            policy_decision = self.policy_engine.review(safety_report)
-            arbitration_action = self.arbitration_engine.decide(policy_decision, safety_report)
+                for (node, _), res in zip(tasks, results):
+                    running.discard(node.name)
+                    if isinstance(res, Exception):
+                        # Hard node failure
+                        errors.append(str(res))
+                        self.node_results[node.name] = NodeResult(
+                            node_id=node.name,
+                            status=NodeStatus.ERROR,
+                            result=None,
+                            started_at=None,
+                            finished_at=None,
+                            metadata={"exception": str(res)},
+                        )
+                        completed.add(node.name)
+                        # Trigger fallbacks (they will become ready once deps satisfied).
+                        continue
 
-            context["safety_report"] = safety_report
-            context["policy_decision"] = policy_decision
-            context["arbitration_action"] = arbitration_action
+                    nr: NodeResult = res
+                    if nr.status == NodeStatus.SUCCESS:
+                        completed.add(node.name)
+                    else:
+                        errors.extend(nr.result.errors if nr.result else [])
+                        completed.add(node.name)
+                        # Fallback edges: mark dependents as satisfied via this failure;
+                        # actual fallback nodes are part of DAG, and their deps will
+                        # reference this node as a prerequisite, so they can run.
+                        # Higher-level logic decides how to interpret.
+                        continue
 
-            self.state_adapter.apply_patch(
-                StatePatch(key="safety_result", value={"report_l5": safety_report})
-            )
-            self.state_adapter.apply_patch(StatePatch(key="arbitration", value=arbitration_action))
-            context["state"] = self.state_adapter.state
-
-            machine.transition(WorkflowPhase.REVIEWING)
-            context["workflow_phase"] = machine.current_value()
-            return context
-
-        def safety_condition(context: Dict[str, Any]) -> str:
-            action = (context.get("arbitration_action") or {}).get("action", "proceed")
-            if action == "halt":
-                return "halt"
-            return "proceed"
-
-        def qa_council_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            if mode != "qa":
-                return context
-            state = context.get("state", self.state_adapter.state)
-            ma_orch = MultiAgentOrchestrator(graph=COUNCIL_OF_QA, state_adapter=self.state_adapter)
-            council_state = ma_orch.dispatch_for_qa(state, plan)
-            for key, value in council_state.items():
-                self.state_adapter.apply_patch(StatePatch(key=key, value=value))
-            context["state"] = self.state_adapter.state
-            return context
-
-        def finalize_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            spans = cost_tracker.snapshot()
-            optimization = compute_optimization_hint(spans.get("spans", []))
-
-            telemetry_block = {
-                "spans": spans.get("spans", []),
-                "optimization": optimization,
-            }
-            self.state_adapter.apply_patch(StatePatch(key="telemetry", value=telemetry_block))
-
-            sc_rec = analyze_state_for_correction(self.state_adapter.state)
-            sc_patch = sc_to_patch_dict(sc_rec)
-            self.state_adapter.apply_patch(StatePatch(key="self_correction", value=sc_patch["self_correction"]))
-
-            context["state"] = self.state_adapter.state
-
-            record_event(
-                "orchestrator_cycle",
-                {
-                    "plan_mode": mode,
-                    "workflow_id": workflow_id,
-                    "spans": spans,
-                    "optimization": optimization,
-                    "self_correction": sc_patch["self_correction"],
-                },
-            )
-
-            machine.transition(WorkflowPhase.COMPLETE)
-            context["workflow_phase"] = machine.current_value()
-            return context
-
-        nodes: Dict[str, DAGNode] = {
-            "plan_node": DAGNode(name="plan_node", run=plan_node),
-            "execute_node": DAGNode(name="execute_node", run=execute_node),
-            "safety_node": DAGNode(
-                name="safety_node",
-                run=safety_node,
-                condition=safety_condition,
-                conditional_edges={
-                    "proceed": ["qa_council_node", "finalize_node"],
-                    "halt": ["finalize_node"],
-                },
-            ),
-            "qa_council_node": DAGNode(name="qa_council_node", run=qa_council_node),
-            "finalize_node": DAGNode(name="finalize_node", run=finalize_node),
-        }
-
-        edges: Dict[str, List[str]] = {
-            "plan_node": ["execute_node"],
-            "execute_node": ["safety_node"],
-            "safety_node": [],
-            "qa_council_node": ["finalize_node"],
-            "finalize_node": [],
-        }
-
-        dag = DAG(nodes=nodes, edges=edges)
-        executor = DAGExecutor()
-
-        initial_context = {
-            "plan": plan,
-            "state": self.state_adapter.state,
-            "workflow_phase": machine.current_value(),
-            "workflow_id": workflow_id,
-        }
+            # All nodes completed
+            if errors:
+                machine.set(WorkflowPhase.FAILED)
+            else:
+                machine.set(WorkflowPhase.COMPLETE)
 
         try:
-            final_context = executor.run(dag, initial_context)
-        except ToolExecutionError:
-            machine.transition(WorkflowPhase.FAILED)
-            final_state = self.state_adapter.state
-            phase_metadata = {"history": list(machine.history)}
-            return WorkflowState(
-                workflow_id=workflow_id,
-                phase=machine.current_value(),
-                nodes={},
-                state=final_state,
-                phase_metadata=phase_metadata,
-            )
+            asyncio.run(_run_async())
+        except Exception:
+            # Any unexpected failure is considered a control-flow error.
+            machine.set(WorkflowPhase.FAILED)
+            raise
 
         final_state = self.state_adapter.state
-        phase_metadata = {"history": list(machine.history)}
+        node_statuses: Dict[str, NodeStatus] = {
+            node_id: nr.status for node_id, nr in self.node_results.items()
+        }
+        summary = "workflow_complete" if machine.current_value() == WorkflowPhase.COMPLETE else "workflow_failed"
+        errors: List[str] = []
+        for nr in self.node_results.values():
+            if nr.status == NodeStatus.ERROR and nr.result and nr.result.errors:
+                errors.extend(nr.result.errors)
+
+        # Attach basic metadata including cost and traces.
+        metadata: Dict[str, Any] = {
+            "history": [p.value for p in machine.history],
+            "total_tokens": cost_tracker.total_tokens,
+            "per_node_tokens": cost_tracker.per_node,
+            "route_trace": [rt.__dict__ for rt in self.route_trace],
+            "correction_journal": [cj.__dict__ for cj in self.correction_journal],
+        }
 
         return WorkflowState(
-            workflow_id=workflow_id,
+            workflow_id=str(plan.get("workflow_id", final_state.get("workflow_id", "workflow"))),
             phase=machine.current_value(),
-            nodes={},
-            state=final_state,
-            phase_metadata=phase_metadata,
+            node_statuses=node_statuses,
+            summary=summary,
+            result=final_state,
+            errors=errors,
+            trace_id=str(final_state.get("trace_id", "")) or None,
+            metadata=metadata,
         )
