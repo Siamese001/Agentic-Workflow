@@ -1,9 +1,9 @@
 # FILE: runtime_utils.py
 """
-Unified Runtime Utilities (v10_9) — FULL AGENTIC IMPLEMENTATION (REFINED)
+Unified Runtime Utilities (v10_9) — META / INFRASTRUCTURE ONLY
 
-This module consolidates ALL deterministic utility functions needed by
-the v10_9 agentic runtime:
+This module consolidates all deterministic utility functions needed by
+the v10_9 agentic runtime, sitting **outside** L1–L5:
 
 SECTIONS:
     1. Constants
@@ -14,15 +14,18 @@ SECTIONS:
     6. Ranking utilities
     7. RAGUtils (normalization + fusion)
 
-Design constraints:
-    • NO cognition (L1) — no planning logic.
-    • NO execution (L2) — no tool/LLM calls.
-    • NO orchestration (L3) — no control-flow logic.
-    • NO state mutation (L4) — no state adapters.
-    • NO safety/policy (L5) — no safety decisions.
+Layer Guardrails:
 
-Everything here is safe, deterministic, and side-effect-free except
-for the in-memory telemetry buffer.
+    • NO L1 cognition — no planning logic or PlanObjects.
+    • NO L2 execution — no tool/LLM calls or provider logic.
+    • NO L3 orchestration — no DAGs, phases, or orchestration flows.
+    • NO L4 state mutation — no StateAdapter usage.
+    • NO L5 safety/policy decisions — no SafetyEngine or PolicyEngine here.
+    • NO provider SDK calls (Anthropic, Gemini, OpenAI, etc.).
+
+Everything here is deterministic and side-effect-free, except for the
+in-memory telemetry buffer (_TELEMETRY_EVENTS), which is intentionally
+ephemeral and local to the runtime process.
 """
 
 from __future__ import annotations
@@ -61,7 +64,7 @@ class Constants:
         FAILURE = "failure"
         PENDING = "pending"
 
-    # Default canonical model used if none is specified
+    # Default canonical model used if none is specified (routing-level only)
     CANONICAL_MODEL_DEFAULT: str = "gpt-4.1"
 
 
@@ -79,11 +82,11 @@ class ToolExecutionError(Exception):
 
 
 class ModelClientError(Exception):
-    """Model provider call failed."""
+    """Model provider call failed (provider layer only)."""
 
 
 class SafetyException(Exception):
-    """Safety constraint violation."""
+    """Safety contract violation (L5 error surface)."""
 
 
 class WorkflowTimeoutError(Exception):
@@ -123,7 +126,10 @@ _TELEMETRY_EVENTS: List[Dict[str, Any]] = []
 def record_event(name: str, payload: Dict[str, Any]) -> None:
     """
     Append a telemetry event to the in-memory list.
-    This is intentionally simple; callers are free to ship it elsewhere.
+
+    This is intentionally simple; callers are free to export these
+    events to external observability systems. This function must never
+    raise in normal operation.
     """
     _TELEMETRY_EVENTS.append(
         {
@@ -137,6 +143,8 @@ def record_event(name: str, payload: Dict[str, Any]) -> None:
 def get_events() -> List[Dict[str, Any]]:
     """
     Return a shallow copy of the telemetry events list.
+
+    Primarily used in tests, diagnostics, or meta-learning.
     """
     return list(_TELEMETRY_EVENTS)
 
@@ -157,6 +165,8 @@ class CostTracker:
         ...
         ct.end_span("planning")
         snapshot = ct.snapshot()
+
+    This class is deterministic and does not depend on external tools.
     """
 
     spans: Dict[str, Dict[str, float]] = field(default_factory=dict)
@@ -213,7 +223,7 @@ def compute_optimization_hint(spans: List[Dict[str, Any]]) -> Dict[str, Any]:
 class Optimization:
     """
     Small wrapper class for optimization helpers, to provide a clear
-    namespace when imported elsewhere (e.g., L2).
+    namespace when imported elsewhere (e.g., L2, meta layers).
 
     Example:
         hint = Optimization.compute_hint(cost_tracker.snapshot()["spans"])
@@ -233,6 +243,9 @@ class Retrieval:
     """
     Deterministic, side-effect-free utilities for operating on retrieval
     results. These are used by RAG executors and RAG planners.
+
+    Each method operates on in-memory lists/dicts and does not perform
+    any external calls.
     """
 
     @staticmethod
@@ -257,7 +270,8 @@ class Retrieval:
     @staticmethod
     def dedupe_results(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Remove duplicate (query, evidence) pairs while preserving first occurrence.
+        Remove duplicate (query, evidence) pairs while preserving the
+        first occurrence.
         """
         seen = set()
         out: List[Dict[str, Any]] = []
