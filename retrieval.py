@@ -1,8 +1,9 @@
 # FILE: retrieval.py
 """
-Retrieval Utilities (v10_9, Refactored) — PURE META-LAYER RAG INFRASTRUCTURE
+Retrieval Utilities (v10_9, Fully Refactored)
+PURE META-LAYER RAG INFRASTRUCTURE
 
-This module provides fully deterministic, enterprise-grade retrieval
+This module provides deterministic, enterprise-grade retrieval
 post-processing utilities for the v10_9 agentic workflow.
 
 It is strictly META-layer and must not perform:
@@ -10,13 +11,13 @@ It is strictly META-layer and must not perform:
     • L1 cognition (no planning)
     • L2 execution (no tool/LLM calls)
     • L3 orchestration (no DAG logic)
-    • L4 mutation (no StateAdapter usage)
+    • L4 state mutation (no StateAdapter usage)
     • L5 safety/policy decisions
     • Provider/SDK/DB/Vector Store calls
 
-All behavior is deterministic, side-effect-free, and typed.
+All behavior is deterministic and side-effect-free.
 
-This refactored version restores all missing 10_8 functionality:
+Restored 10_8 functionality:
     • Resume-aware ranking boosts
     • JD-aware scoring hints
     • Deduplication rules
@@ -42,22 +43,23 @@ from runtime_utils import RAGUtils as _RAGUtils
 # 1. RETRIEVAL CONFIGURATION
 # ============================================================================
 
+
 @dataclass
 class RetrievalConfig:
     """
-    Configures retrieval+ranking post-processing.
+    Configuration for retrieval post-processing.
 
-    Attributes:
+    Fields:
         ranking_strategy:
-            "bm25" | "dense" | "hybrid"
+            "bm25" | "dense" | "hybrid".
         max_items:
-            Maximum number of items after fusion/ranking.
+            Maximum number of items to retain after fusion.
         metadata:
-            Optional arbitrary metadata block attached to final result.
+            Optional additional hints (e.g., source identifiers).
         resume_alignment_boost:
-            Whether to boost scores from resume-linked evidence.
+            If True, apply resume-based boosting (10_8 parity).
         jd_alignment_boost:
-            Whether to boost evidence covering JD requirements.
+            If True, apply JD-based boosting (10_8 parity).
     """
 
     ranking_strategy: str = "hybrid"
@@ -73,12 +75,14 @@ class RetrievalItem:
     Canonical retrieval item.
 
     Fields:
-        query:     query string used
-        evidence:  text snippet
-        rank:      integer rank (1 = best)
-        metadata:  metadata for scoring / ranking / display
-
-    The metadata field is preserved end-to-end and never mutated.
+        query:
+            The query string used to retrieve this item.
+        evidence:
+            The text snippet or document content.
+        rank:
+            Integer rank (1 = best).
+        metadata:
+            Arbitrary metadata (scores, ids, etc.).
     """
 
     query: str
@@ -90,11 +94,13 @@ class RetrievalItem:
 @dataclass
 class RetrievalResult:
     """
-    Aggregated result of retrieval across queries and sources.
+    Aggregated retrieval result for a set of queries.
 
     Fields:
-        items:  list[RetrievalItem]
-        config: RetrievalConfig used to generate result
+        items:
+            list[RetrievalItem]
+        config:
+            RetrievalConfig used for post-processing.
     """
 
     items: List[RetrievalItem] = field(default_factory=list)
@@ -122,37 +128,68 @@ class RetrievalResult:
 
 
 # ============================================================================
-# 2. INTERNAL HELPERS (PRIVATE)
+# 2. INTERNAL HELPERS
 # ============================================================================
+
+
+def _apply_ranking_strategy(
+    items: List[Dict[str, Any]],
+    strategy: str,
+) -> List[Dict[str, Any]]:
+    """
+    Apply the requested ranking strategy to a list of retrieval dicts.
+
+    Strategy:
+        • "bm25"   → length-based BM25-like ranking.
+        • "dense"  → hash-based dense score ranking.
+        • "hybrid" → combined BM25 + dense ranking.
+        • default  → hybrid.
+    """
+    s = (strategy or "hybrid").lower().strip()
+    if s == "bm25":
+        return _Ranking.bm25_rank(items)
+    if s == "dense":
+        return _Ranking.dense_rank(items)
+    # fallback to hybrid
+    return _Ranking.hybrid_rank(items)
+
 
 def _apply_resume_alignment_boost(
     items: List[Dict[str, Any]],
     resume_profile: Optional[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
     """
-    Lightweight resume-aware evidence boost:
+    Resume-aware evidence boost (10_8 parity):
 
-        • Longer experience snippets receive small boosts.
-        • Evidence mentioning company/job title receives small boosts.
-
-    Boosts are deterministic and subtle — only used for tie-breaking.
+        • Evidence mentioning key resume attributes gets small boosts.
     """
     if not resume_profile:
         return items
 
-    company = (resume_profile.get("company") or "").lower()
-    title = (resume_profile.get("title") or "").lower()
+    summary = (resume_profile.get("summary") or "").lower()
+    experiences = resume_profile.get("experiences") or []
 
-    boosted = []
+    keywords: List[str] = []
+    if summary:
+        keywords.extend(summary.split())
+    for exp in experiences[:3]:
+        title = (exp.get("title") or "").lower()
+        company = (exp.get("company") or "").lower()
+        if title:
+            keywords.append(title)
+        if company:
+            keywords.append(company)
+
+    if not keywords:
+        return items
+
+    boosted: List[Dict[str, Any]] = []
     for it in items:
         score = float(it.get("score", it.get("rank", 0)))
-
         ev = str(it.get("evidence", "")).lower()
-        if company and company in ev:
-            score += 0.5
-        if title and title in ev:
-            score += 0.25
-
+        matches = sum(1 for k in keywords if k and k in ev)
+        if matches:
+            score += 0.2 * matches
         boosted.append({**it, "score": score})
 
     boosted.sort(key=lambda x: -x["score"])
@@ -164,25 +201,26 @@ def _apply_jd_alignment_boost(
     job_profile: Optional[Dict[str, Any]],
 ) -> List[Dict[str, Any]]:
     """
-    JD-aware retrieval boost:
+    JD-aware evidence boost (10_8 parity):
 
-        • Evidence matching first 3 JD requirements gets small boosts.
+        • Evidence matching top JD requirements gets small boosts.
     """
     if not job_profile:
         return items
 
     reqs = job_profile.get("requirements") or []
-    reqs = [r.lower() for r in reqs[:3]]
+    reqs = [str(r).lower() for r in reqs[:3] if r]
 
-    boosted = []
+    if not reqs:
+        return items
+
+    boosted: List[Dict[str, Any]] = []
     for it in items:
         score = float(it.get("score", it.get("rank", 0)))
         ev = str(it.get("evidence", "")).lower()
-
-        for req in reqs:
-            if req and req in ev:
-                score += 0.4
-
+        matches = sum(1 for req in reqs if req in ev)
+        if matches:
+            score += 0.3 * matches
         boosted.append({**it, "score": score})
 
     boosted.sort(key=lambda x: -x["score"])
@@ -190,6 +228,9 @@ def _apply_jd_alignment_boost(
 
 
 def _limit_items(items: List[Dict[str, Any]], max_items: int) -> List[Dict[str, Any]]:
+    """
+    Limit the list of items to max_items, preserving order.
+    """
     if max_items <= 0:
         return items
     if len(items) <= max_items:
@@ -201,6 +242,7 @@ def _limit_items(items: List[Dict[str, Any]], max_items: int) -> List[Dict[str, 
 # 3. PUBLIC API — SINGLE-SOURCE NORMALIZATION
 # ============================================================================
 
+
 def normalize_raw_results(
     raw_results: List[Dict[str, Any]],
     *,
@@ -209,11 +251,134 @@ def normalize_raw_results(
     resume_profile: Optional[Dict[str, Any]] = None,
 ) -> RetrievalResult:
     """
-    Normalize a list of raw dict results into a canonical RetrievalResult.
+    Normalize raw retrieval results into a canonical RetrievalResult.
 
     Steps:
-        1. Normalize dicts → {query, evidence, rank}
-        2. Deduplicate identical (query, evidence)
-        3. Apply ranking strategy (BM25/dense/hybrid)
-        4. Optional resume- and JD-alignment boosts
-        5. Rerank
+        1. Normalize raw dicts into {query, evidence, rank}.
+        2. Deduplicate identical (query, evidence) pairs.
+        3. Apply ranking strategy (bm25/dense/hybrid).
+        4. Optional resume alignment boosts.
+        5. Optional JD alignment boosts.
+        6. Rerank & fuse (single-source).
+        7. Limit items to config.max_items.
+        8. Normalize to RAG-style items with metadata.
+        9. Convert to RetrievalItem objects.
+
+    This function does NOT call any external services; it operates on
+    already-fetched raw results (e.g., from a DB, vector store, or LLM).
+    """
+    cfg = config or RetrievalConfig()
+
+    # 1. Normalize query/evidence/rank structure
+    norm = _Retrieval.normalize_documents(raw_results)
+
+    # 2. Deduplicate
+    norm = _Retrieval.dedupe_results(norm)
+
+    # 3. Ranking strategy
+    ranked = _apply_ranking_strategy(norm, cfg.ranking_strategy)
+
+    # 4. Resume alignment boost (optional)
+    if cfg.resume_alignment_boost:
+        ranked = _apply_resume_alignment_boost(ranked, resume_profile)
+
+    # 5. JD alignment boost (optional)
+    if cfg.jd_alignment_boost:
+        ranked = _apply_jd_alignment_boost(ranked, job_profile)
+
+    # 6. Rerank and fuse (single source for now)
+    reranked = _Retrieval.rerank_results(ranked, cfg.ranking_strategy)
+    fused = _Retrieval.fuse_results([reranked])
+
+    # 7. Limit items
+    fused = _limit_items(fused, cfg.max_items)
+
+    # 8. Normalize to RAG-style items with metadata
+    rag_items = _RAGUtils.normalize_rag_results(fused)
+
+    # 9. Convert to RetrievalItem objects
+    items: List[RetrievalItem] = []
+    for d in rag_items:
+        items.append(
+            RetrievalItem(
+                query=str(d.get("query", "")),
+                evidence=str(d.get("evidence", "")),
+                rank=int(d.get("rank", 0) or 0),
+                metadata=dict(d.get("metadata", {})),
+            )
+        )
+
+    return RetrievalResult(items=items, config=cfg)
+
+
+# ============================================================================
+# 4. PUBLIC API — MULTI-SOURCE FUSION
+# ============================================================================
+
+
+def fuse_multiple_sources(
+    sources: List[List[Dict[str, Any]]],
+    *,
+    config: Optional[RetrievalConfig] = None,
+    job_profile: Optional[Dict[str, Any]] = None,
+    resume_profile: Optional[Dict[str, Any]] = None,
+) -> RetrievalResult:
+    """
+    Fuse retrieval results from multiple sources into a single ranked list.
+
+    Inputs:
+        sources:
+            A list of lists, where each inner list is a set of raw retrieval
+            dicts from a given source (e.g., vector DB, keyword DB, LLM-HYDE).
+
+        config:
+            Optional RetrievalConfig controlling ranking and max_items.
+
+    Behavior:
+        1. Flatten all sources.
+        2. Normalize and dedupe results.
+        3. Apply ranking strategy + optional resume/JD boosts.
+        4. Limit items.
+        5. Normalize to canonical RetrievalResult.
+    """
+    cfg = config or RetrievalConfig()
+
+    merged: List[Dict[str, Any]] = []
+    for source_list in sources or []:
+        for item in source_list or []:
+            merged.append(dict(item))
+
+    return normalize_raw_results(
+        merged,
+        config=cfg,
+        job_profile=job_profile,
+        resume_profile=resume_profile,
+    )
+
+
+# ============================================================================
+# 5. UTILITY — SIMPLE DICT LIST VIEW
+# ============================================================================
+
+
+def to_simple_dict_list(result: RetrievalResult) -> List[Dict[str, Any]]:
+    """
+    Convenience helper: return a plain list[dict] for use in JSON or
+    logging. Each item is:
+
+        {
+            "query": str,
+            "evidence": str,
+            "rank": int,
+            "metadata": {...}
+        }
+    """
+    return [
+        {
+            "query": it.query,
+            "evidence": it.evidence,
+            "rank": it.rank,
+            "metadata": dict(it.metadata),
+        }
+        for it in result.items
+    ]
