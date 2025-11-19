@@ -1,31 +1,31 @@
 # FILE: run_batch_v10_9.py
 """
-Batch Runner — v10_9 Agentic Workflow (Refactored, Enterprise-Grade)
+Batch Runner — v10_9 Agentic Workflow (ENTERPRISE REFACTOR, META-ONLY)
 
-This module provides the *META-ONLY* batch orchestration layer for v10_9.
-It is NOT part of L1–L5. It lives above them.
+This module is a META-layer utility ABOVE L1–L5. It provides:
 
-STRICT LAYER GUARANTEES:
-    • NO planning      (L1)
-    • NO execution     (L2)
-    • NO orchestration (L3)
-    • NO state writes  (L4)
-    • NO safety/policy (L5)
-    • NO provider calls
+    • High-throughput batch execution of v10_9 agentic workflows.
+    • Concurrency control (basic backpressure).
+    • Batch-level resilience (CircuitBreaker).
+    • Batch-level aggregations (summary, counts, failures).
+    • Optional meta-learning callback.
+    • Fully asynchronous execution path + sync wrapper.
+    • Strict agentic-layer separation and safety constraints.
 
-It ONLY:
-    • Invokes run_workflow_v10_9() for each job
-    • Applies batch-level resilience (CircuitBreaker)
-    • Manages concurrency + backpressure
-    • Aggregates job-level results
-    • Invokes optional meta-learning callback
+Guarantees:
+    ✔ NO L1 logic (planning)
+    ✔ NO L2 logic (tools/LLMs/retrieval/drafting/etc.)
+    ✔ NO L3 orchestration logic (DAG execution is in main_v10_9)
+    ✔ NO L4 state mutation (only passes initial_state)
+    ✔ NO L5 policy/safety decisions (handled inside main_v10_9)
+    ✔ Pure META-level orchestration
 
-This refactoring restores lost 10_8 functionality:
-    • Hardened CircuitBreaker semantics
-    • Deterministic batch summaries
-    • Meta-learning hook at batch-end
-    • Structured error surfaces
-    • Max-score compliance with all 14 Agentic Subdomains
+This file is the correct layer for:
+    • external service orchestration
+    • CLI batch jobs
+    • long-running background jobs
+    • ETL-style batch transformations
+    • offline meta-learning / signal extraction
 """
 
 from __future__ import annotations
@@ -38,7 +38,7 @@ from main_v10_9 import run_workflow_v10_9
 
 
 # ============================================================================
-# 1. CIRCUIT BREAKER (META-RESILIENCE)
+# 1. CIRCUIT BREAKER (Batch-Level Resilience)
 # ============================================================================
 
 @dataclass
@@ -47,11 +47,15 @@ class CircuitBreaker:
     Batch-level circuit breaker.
 
     Behavior:
-        • record_success()  — resets failure counter
-        • record_failure()  — increments failure counter
-        • check()           — raises CircuitBreakerOpenError if threshold hit
+        • record_success(): resets failure count
+        • record_failure(): increments failure count
+        • check(): raises CircuitBreakerOpenError if breaker is "open"
 
-    This is META-only and intentionally NOT part of L1–L5.
+    Trigger:
+        - When failures >= failure_threshold
+
+    This is NOT part of the agentic runtime (L1–L5).
+    It is META-only resilience infrastructure.
     """
 
     failure_threshold: int = 3
@@ -70,12 +74,13 @@ class CircuitBreaker:
     def check(self) -> None:
         if self.is_open:
             raise CircuitBreakerOpenError(
-                f"Circuit breaker OPEN after {self.failure_count} failures"
+                f"Circuit breaker OPEN — {self.failure_count} failures"
             )
 
 
 class CircuitBreakerOpenError(RuntimeError):
-    """Raised when the circuit breaker is open."""
+    """Raised when the batch-level circuit breaker is open."""
+    pass
 
 
 # ============================================================================
@@ -85,16 +90,16 @@ class CircuitBreakerOpenError(RuntimeError):
 @dataclass
 class BatchFeedbackAggregator:
     """
-    Aggregates results across a batch of workflow runs.
+    Aggregates results across a batch.
 
     Fields:
-        results     — list of per-job run_workflow_v10_9 results
-        failed      — number of jobs that raised batch-level errors
-        breaker_open— whether the breaker tripped
+        • results: list of successful workflow outputs
+        • failed:  # of jobs that raised exceptions at batch level
+        • breaker_open: True if breaker opened during processing
 
-    Derived:
-        total_jobs  — results + failures
-        successful  — number of completed jobs (phase-independent)
+    Derived properties:
+        • total_jobs: results + failed
+        • successful: len(results)
     """
 
     results: List[Dict[str, Any]] = field(default_factory=list)
@@ -125,7 +130,7 @@ class BatchFeedbackAggregator:
 
 
 # ============================================================================
-# 3. BATCH RUNNER API — ASYNC
+# 3. ASYNC BATCH EXECUTION API
 # ============================================================================
 
 async def run_batch_async(
@@ -139,21 +144,39 @@ async def run_batch_async(
     debug_mode: bool = False,
 ) -> Dict[str, Any]:
     """
-    Execute a batch of workflows asynchronously.
+    Execute a batch of v10_9 agentic workflows asynchronously.
 
-    Behavior:
-        • Optional concurrency limits
-        • Optional max_jobs for backpressure
-        • CircuitBreaker to stop on cascading failures
-        • Meta-learning hook after completion
+    Args:
+        job_inputs:
+            List of initial_state dicts for run_workflow_v10_9
+
+        max_concurrency:
+            Maximum concurrent jobs (optional). If None → no limit.
+
+        failure_threshold:
+            # of failures allowed before the CircuitBreaker trips.
+
+        max_jobs:
+            Optional cap on how many jobs to process from job_inputs.
+
+        meta_learning_callback:
+            Optional callable that receives aggregator.results after batch is complete.
+            This is strictly META-level; failures must NOT affect the batch.
+
+        compat_mode:
+            Passed through to run_workflow_v10_9
+
+        debug_mode:
+            Enables debug metadata on run_workflow_v10_9
 
     Returns:
         {
-            "jobs": [...],
+            "jobs": <list of per-job workflow outputs>,
             "batch_summary": {...}
         }
     """
 
+    # No jobs → trivial batch
     if not job_inputs:
         return {
             "jobs": [],
@@ -165,22 +188,22 @@ async def run_batch_async(
             },
         }
 
-    # Apply max_jobs backpressure
+    # Apply job cap via max_jobs
     if max_jobs is not None and max_jobs >= 0:
         job_inputs = job_inputs[: max_jobs]
 
     aggregator = BatchFeedbackAggregator()
     breaker = CircuitBreaker(failure_threshold=failure_threshold)
 
-    # Semaphore for concurrency limit
+    # Establish concurrency semaphore
     semaphore = (
         asyncio.Semaphore(max_concurrency)
         if max_concurrency is not None and max_concurrency > 0
         else None
     )
 
-    async def _run_single(initial_state: Dict[str, Any]) -> None:
-        # Breaker pre-check
+    async def _run_single_job(initial_state: Dict[str, Any]) -> None:
+        """Execute one job with circuit-breaker protection + concurrency control."""
         try:
             breaker.check()
         except CircuitBreakerOpenError:
@@ -208,27 +231,27 @@ async def run_batch_async(
             breaker.record_success()
 
         except Exception:
+            # Any job-level exception counts as a batch-level failure
             aggregator.add_failure()
             breaker.record_failure()
 
-    # Dispatch tasks
-    tasks: List[asyncio.Task[None]] = []
-    for job in job_inputs:
+    # Schedule jobs
+    tasks: List[asyncio.Task] = []
+    for job_state in job_inputs:
         if breaker.is_open:
             aggregator.breaker_open = True
             break
-        tasks.append(asyncio.create_task(_run_single(job)))
+        tasks.append(asyncio.create_task(_run_single_job(job_state)))
 
     if tasks:
         await asyncio.gather(*tasks, return_exceptions=False)
 
-    # Meta-learning hook
-    if meta_learning_callback is not None:
+    # Optional meta-learning callback (never allowed to break batch)
+    if meta_learning_callback:
         try:
             meta_learning_callback(aggregator.results)
         except Exception:
-            # Meta-learning failures must never break the batch
-            pass
+            pass  # must not break batch
 
     return {
         "jobs": aggregator.results,
@@ -237,7 +260,7 @@ async def run_batch_async(
 
 
 # ============================================================================
-# 4. BATCH RUNNER API — SYNC
+# 4. SYNC WRAPPER
 # ============================================================================
 
 def run_batch_sync(
@@ -251,7 +274,8 @@ def run_batch_sync(
     debug_mode: bool = False,
 ) -> Dict[str, Any]:
     """
-    Synchronous wrapper around run_batch_async().
+    Synchronous wrapper around run_batch_async — for CLI, scripts,
+    notebooks, or local developer runs.
     """
     return asyncio.run(
         run_batch_async(
@@ -271,12 +295,31 @@ def run_batch_sync(
 # ============================================================================
 
 if __name__ == "__main__":
+    # Example smoke-test batch
     example_jobs = [
-        {"objective": "draft a summary", "messages": [{"role": "user", "content": "Summarize my profile"}]},
-        {"objective": "qa validate", "draft_result": {"draft": ["Sample content to validate."]}},
+        {
+            "objective": "draft a concise professional summary",
+            "messages": [{"role": "user", "content": "Summarize my profile."}],
+        },
+        {
+            "objective": "qa validate this summary",
+            "messages": [{"role": "user", "content": "Check quality of this text."}],
+            "draft_result": {
+                "draft": ["This is a clean, logically structured sentence."]
+            },
+        },
     ]
 
-    print("=== Running v10_9 Batch Runner ===")
-    result = run_batch_sync(example_jobs, max_concurrency=2, failure_threshold=2)
+    def _example_meta_callback(results: List[Dict[str, Any]]) -> None:
+        print(f"[META LEARNING] Completed {len(results)} workflow results.")
+
+    print("=== Running v10_9 Batch (example) ===")
+    result = run_batch_sync(
+        example_jobs,
+        max_concurrency=2,
+        failure_threshold=2,
+        meta_learning_callback=_example_meta_callback,
+        debug_mode=True,
+    )
     print("Batch Summary:", result["batch_summary"])
     print("Jobs:", result["jobs"])
