@@ -1,6 +1,6 @@
 # FILE: l1.py
 """
-Unified L1 Cognition Layer (v10_9) — FULL AGENTIC PLANNING
+Unified L1 Cognition Layer (v10_9) — FULL AGENTIC PLANNING (REFINED)
 
 This module implements ALL L1 responsibilities for the v10_9 agentic
 workflow. It is strictly *cognition-only*:
@@ -23,17 +23,17 @@ L1 DOES NOT:
     • Mutate global state or storage.
     • Make final safety/policy decisions.
 
-Instead, L1 emits typed PlanObjects which are:
+Additionally, L1 now **consumes META profile biases** from `meta_profile`
+to adapt its planning:
 
-    • Consumed by L2 for execution.
-    • Routed by L3 in DAG-style workflows.
-    • Stored and evolved by L4.
-    • Evaluated and constrained by L5.
+    • routing_bias    → complexity and RAG planning preferences.
+    • planning_bias   → conservative/exploratory reasoning choices.
+    • qa_bias         → QA-heavy vs standard planning.
+    • safety_bias     → safety/sensitivity emphasis.
 
-This file is designed to restore the full planning capabilities that
-existed in v10_8 (per the functionality variance table) while
-respecting the v10_9 layered agentic architecture and the 14 OpenAI
-agentic subdomains at the highest maturity level.
+This file is designed to restore full planning capabilities from v10_8,
+while respecting the v10_9 layered agentic architecture and maximizing
+scores on the 14 OpenAI agentic subdomains.
 """
 
 from __future__ import annotations
@@ -48,8 +48,15 @@ from models import (
     ContextProfile,
     ToolingProfile,
     SafetyOutputProfile,
-    SelfCorrectionSurface,
     AccessPolicy,
+    SelfCorrectionSurface,
+)
+
+from meta_profile import (
+    get_routing_bias,
+    get_planning_bias,
+    get_qa_bias,
+    get_safety_bias,
 )
 
 
@@ -99,8 +106,8 @@ class PlanningHints:
     """
     Cross-cutting hints that L2/L3/L5 may consult.
 
-    This restores v10_8's "deep QA/safety hints" behavior in a typed
-    form appropriate for v10_9.
+    This restores the "deep QA/safety hints" behavior v10_8
+    provided to QA and safety stacks, in a typed structure.
     """
 
     qa_hints: List[str] = field(default_factory=list)
@@ -129,7 +136,6 @@ class CrossModeDependencies:
     meta_learning_required: bool = True
     prompt_engineering_required: bool = True
 
-    # Optional notes/hints per mode.
     rag_notes: List[str] = field(default_factory=list)
     drafting_notes: List[str] = field(default_factory=list)
     qa_notes: List[str] = field(default_factory=list)
@@ -168,16 +174,12 @@ def _infer_seniority(job_text: str, resume_text: str) -> str:
         if any(t in combined for t in terms):
             return label
 
-    # Fallback: treat as mid-level.
     return "mid"
 
 
 def _infer_domains(job_text: str, resume_text: str) -> List[str]:
     """
     Heuristic domain tagging from job/resume content.
-
-    This replaces the implicit v10_8 domain tagging with a portable,
-    transparent heuristic that can be upgraded later.
     """
     text = f"{job_text} {resume_text}".lower()
     domains: List[str] = []
@@ -201,9 +203,6 @@ def _infer_domains(job_text: str, resume_text: str) -> List[str]:
 def _infer_skill_clusters(job_text: str, resume_text: str) -> List[str]:
     """
     Rough skill clustering based on keyword families.
-
-    This mirrors v10_8 behavior where planners would cluster skills
-    into thematic groups for bullet/drafting planning.
     """
     text = f"{job_text} {resume_text}".lower()
     clusters: List[str] = []
@@ -225,25 +224,18 @@ def _infer_skill_clusters(job_text: str, resume_text: str) -> List[str]:
 def _infer_risk_flags(job_text: str, resume_text: str) -> List[str]:
     """
     Heuristic risk flags that QA and Safety can later validate.
-
-    Example flags:
-        • jd_alignment_low
-        • heavy_pii_risk
-        • aggressive_timeline
     """
     risk_flags: List[str] = []
     jt = job_text.lower()
     rt = resume_text.lower()
 
-    # Very naive alignment heuristic: overlap of "must have" keywords.
     must_have_keywords = [
         "must have",
         "required",
         "strongly preferred",
     ]
     if any(k in jt for k in must_have_keywords):
-        # If resume is short or missing domain tags, mark as risk.
-        if len(rt.split()) < 300:  # very small resume
+        if len(rt.split()) < 300:
             risk_flags.append("jd_alignment_low")
 
     if any(k in jt for k in ["pci", "phi", "hipaa", "pii"]):
@@ -258,9 +250,6 @@ def _infer_risk_flags(job_text: str, resume_text: str) -> List[str]:
 def infer_profile_signals(job_text: str, resume_text: str) -> ProfileSignals:
     """
     Public entry point for L1 profile inference.
-
-    Downstream layers and tests can call this directly if needed, but
-    typical usage is via plan_*() functions in this module.
     """
     seniority = _infer_seniority(job_text, resume_text)
     domains = _infer_domains(job_text, resume_text)
@@ -280,83 +269,85 @@ def infer_profile_signals(job_text: str, resume_text: str) -> ProfileSignals:
 # =============================================================================
 
 
-# --- L1: UPDATED ---
 def estimate_task_complexity(job_text: str, resume_text: str) -> ComplexityLevel:
     """
-    Updated to incorporate META profile biases:
-        • planning_bias.conservative  → push complexity upward
-        • planning_bias.exploratory   → push complexity downward
-        • routing_bias.prefer_fast    → slightly reduce complexity to favor shallow passes
+    Estimate problem complexity from simple heuristics plus meta-biases.
+
+    Base heuristic: token count of job + resume.
+    Meta-bias adjustments (from meta_profile):
+
+        • planning_bias.conservative  → push complexity upward.
+        • planning_bias.exploratory   → pull complexity downward.
+        • routing_bias.prefer_fast    → lean toward lower complexity.
     """
-    from meta_profile import get_planning_bias, get_routing_bias
+    base_tokens = len(job_text.split()) + len(resume_text.split())
 
-    base = len(job_text.split()) + len(resume_text.split())
-
-    if base < 800:
-        level = ComplexityLevel.SIMPLE
-    elif base < 2500:
+    if base_tokens < 800:
+        level: ComplexityLevel = ComplexityLevel.SIMPLE
+    elif base_tokens < 2500:
         level = ComplexityLevel.MODERATE
     else:
         level = ComplexityLevel.COMPLEX
 
-    planning = get_planning_bias()
-    routing = get_routing_bias()
+    planning_bias = get_planning_bias()
+    routing_bias = get_routing_bias()
 
-    # Conservative bias → treat tasks as harder
-    if planning.get("conservative"):
+    # Conservative bias: treat problems as harder.
+    if planning_bias.get("conservative"):
         if level == ComplexityLevel.SIMPLE:
             level = ComplexityLevel.MODERATE
         elif level == ComplexityLevel.MODERATE:
             level = ComplexityLevel.COMPLEX
 
-    # Exploratory → treat tasks as slightly easier
-    if planning.get("exploratory") and level == ComplexityLevel.COMPLEX:
+    # Exploratory bias: treat hardest problems as moderately complex.
+    if planning_bias.get("exploratory") and level == ComplexityLevel.COMPLEX:
         level = ComplexityLevel.MODERATE
 
-    # prefer_fast → bias away from deep reasoning complexity
-    if routing.get("prefer_fast") and level == ComplexityLevel.MODERATE:
+    # prefer_fast: lean away from deeper complexity when borderline.
+    if routing_bias.get("prefer_fast") and level == ComplexityLevel.MODERATE:
         level = ComplexityLevel.SIMPLE
 
     return level
 
-# --- L1: UPDATED ---
+
 def select_reasoning_strategy(
     complexity: ComplexityLevel,
-    risk_flags: Sequence[str]
+    risk_flags: Sequence[str],
 ) -> ReasoningStrategy:
     """
-    Updated to incorporate META ReasoningBias:
-        • enable_critique → use *_WITH_CRITIQUE variants
-        • conservative_mode → bias away from ToT
-        • use_tot → force ToT
+    Map complexity + risk + meta-biases into a reasoning strategy hint.
+
+    Meta-bias influence:
+
+        • planning_bias.conservative     → prefer COT_WITH_CRITIQUE.
+        • planning_bias.exploratory      → prefer TOT_WITH_CRITIQUE.
+        • planning_bias.deterministic_recovery → prefer TOT_WITH_CRITIQUE.
+        • qa_bias.recent_failures        → prefer critique variants.
     """
-    from meta_profile import get_planning_bias, get_qa_bias
+    planning_bias = get_planning_bias()
+    qa_bias = get_qa_bias()
 
-    bias = get_planning_bias()
-    qa = get_qa_bias()
+    high_risk = bool(risk_flags) or qa_bias.get("recent_failures", False)
 
-    high_risk = bool(risk_flags) or qa.get("recent_failures", False)
-
-    # Explicit forcing of ToT from meta bias
-    if bias.get("exploratory") or bias.get("deterministic_recovery"):
+    # Explicit meta forcing.
+    if planning_bias.get("exploratory"):
+        return ReasoningStrategy.TOT_WITH_CRITIQUE
+    if planning_bias.get("conservative"):
+        return ReasoningStrategy.COT_WITH_CRITIQUE
+    if planning_bias.get("deterministic_recovery"):
         return ReasoningStrategy.TOT_WITH_CRITIQUE
 
-    # Conservative mode shrinks strategy footprint
-    if bias.get("conservative"):
-        return ReasoningStrategy.COT_WITH_CRITIQUE
-
-    # Default model (same logic as before, but overridden by biases)
+    # Base mapping.
     if complexity == ComplexityLevel.SIMPLE and not high_risk:
         return ReasoningStrategy.DIRECT
 
     if complexity == ComplexityLevel.MODERATE and not high_risk:
         return ReasoningStrategy.COT
 
-    if high_risk:
+    if high_risk and complexity != ComplexityLevel.SIMPLE:
         return ReasoningStrategy.COT_WITH_CRITIQUE
 
     return ReasoningStrategy.TOT_WITH_CRITIQUE
-
 
 
 # =============================================================================
@@ -372,40 +363,43 @@ def build_planning_hints(
     """
     Construct QA, safety, context, and optimization hints for downstream layers.
 
-    These hints restore the "deep QA/safety hints" behavior v10_8
-    provided to QA and safety stacks, but in a clean, typed structure.
+    Hint sources:
+        • profile (seniority, domains, risk_flags)
+        • complexity
+        • safety_profile
+        • meta safety/planning biases
     """
+    safety_bias = get_safety_bias()
+
     qa_hints: List[str] = []
     safety_hints: List[str] = []
     context_hints: List[str] = []
     optimization_hints: List[str] = []
 
-    # QA: emphasize alignment and quantification for senior roles.
+    # QA hints.
     if profile.seniority in ("executive", "director"):
-        qa_hints.append("verify_executive_outcomes_are_quantified")
-        qa_hints.append("check_alignment_with_business_outcomes")
+        qa_hints.append("validate_executive_outcomes_are_quantified")
+        qa_hints.append("ensure_alignment_with_business_outcomes")
     else:
-        qa_hints.append("ensure_bullets_use_action_metric_outcome_pattern")
+        qa_hints.append("enforce_action_metric_outcome_pattern")
 
-    # Safety: adjust based on safety mode.
-    if safety_profile.mode == safety_profile.mode.STRICT:
-        safety_hints.append("enforce_strict_pii_redaction")
-        safety_hints.append("enforce_conservative_tool_usage")
-    elif safety_profile.mode == safety_profile.mode.PERMISSIVE:
-        safety_hints.append("allow_non_critical_style_deviations")
-
+    # Safety hints.
     if safety_profile.enable_prompt_injection_detection:
-        safety_hints.append("run_prompt_injection_detector_on_all_external_inputs")
+        safety_hints.append("run_prompt_injection_detector")
+    if safety_profile.enable_pii_detection:
+        safety_hints.append("run_pii_scan_on_all_outputs")
+    if safety_bias.get("heightened_caution"):
+        safety_hints.append("tighten_safety_thresholds")
 
-    # Context: highlight domain-specific context usage.
+    # Context hints.
     if "insurance" in profile.domains:
         context_hints.append("preserve_insurance_regulatory_language")
     if "foundation_models" in profile.domains:
         context_hints.append("preserve_llm_and_rag_architecture_details")
 
-    # Optimization: nudge L2/L3 toward cost-aware strategies.
+    # Optimization hints.
     if complexity == ComplexityLevel.SIMPLE:
-        optimization_hints.append("prefer_cheaper_models_for_initial_pass")
+        optimization_hints.append("prefer_low_cost_models_for_initial_pass")
     elif complexity == ComplexityLevel.COMPLEX:
         optimization_hints.append("prefer_high_capability_models_for_core_reasoning")
 
@@ -429,8 +423,7 @@ def build_cross_mode_dependencies(
     """
     Encode cross-mode dependencies (strategy → RAG → drafting → QA → safety).
 
-    v10_8 implicitly allowed these dependencies; in v10_9, we make
-    them explicit and inspectable.
+    v10_8 implicitly allowed these dependencies; here we make them explicit.
     """
     deps = CrossModeDependencies()
 
@@ -439,14 +432,14 @@ def build_cross_mode_dependencies(
     if "insurance" in profile.domains:
         deps.rag_notes.append("retrieve_insurance_domain_case_studies")
     if complexity != ComplexityLevel.SIMPLE:
-        deps.rag_notes.append("expand_queries_with_synonyms_and_related_terms")
+        deps.rag_notes.append("use_multi_query_fusion_for_complex_tasks")
 
     # Notes for drafting.
     deps.drafting_notes.append("respect_seniority_in_tone_and_scope")
     if profile.seniority in ("executive", "director"):
-        deps.drafting_notes.append("emphasize_org-wide_impact_and_strategy")
+        deps.drafting_notes.append("emphasize_org_wide_impact_and_strategy")
     else:
-        deps.drafting_notes.append("emphasize_hands_on_impact_and_implementation")
+        deps.drafting_notes.append("emphasize_hands_on_delivery_and_impact")
 
     # Notes for QA.
     deps.qa_notes.append("validate_rag_evidence_covers_key_jd_requirements")
@@ -494,7 +487,6 @@ def _linear_strategy_steps() -> List[Dict[str, Any]]:
     ]
 
 
-# --- L1: UPDATED ---
 def build_strategy_plan(
     job_text: str,
     resume_text: str,
@@ -505,23 +497,11 @@ def build_strategy_plan(
     access_policy: Optional[AccessPolicy] = None,
 ) -> PlanObject:
     """
-    Updated to incorporate META profile biases:
-        • planning_bias.conservative/exploratory affects steps + surfaces
-        • routing_bias.prefer_fast adjusts strategy depth
-        • qa_bias.recent_failures adds verification surfaces
-        • safety_bias.heightened_caution adjusts tone and constraints
-        • tone_bias influences narrative tone
+    Build a PLAN for the "strategy" mode with meta-aware adjustments.
     """
-    from meta_profile import (
-        get_planning_bias, get_routing_bias,
-        get_qa_bias, get_safety_bias, get_tone_bias
-    )
-
     planning_bias = get_planning_bias()
-    routing_bias = get_routing_bias()
     qa_bias = get_qa_bias()
     safety_bias = get_safety_bias()
-    tone_bias = get_tone_bias()
 
     profile = infer_profile_signals(job_text, resume_text)
     complexity = estimate_task_complexity(job_text, resume_text)
@@ -531,26 +511,28 @@ def build_strategy_plan(
 
     steps = _linear_strategy_steps()
 
-    # Meta-driven modifications
     if planning_bias.get("conservative"):
-        steps.append({"id": "fallback", "description": "Add conservative fallback reasoning path."})
-
+        steps.append(
+            {"id": "fallback", "description": "Add conservative fallback reasoning path."}
+        )
     if planning_bias.get("deterministic_recovery"):
-        steps.append({"id": "recovery", "description": "Enable deterministic recovery logic."})
-
+        steps.append(
+            {"id": "recovery", "description": "Plan deterministic recovery for failures."}
+        )
     if qa_bias.get("recent_failures"):
-        steps.append({"id": "qa_focus", "description": "Increase QA-coverage emphasis."})
+        steps.append(
+            {"id": "qa_focus", "description": "Increase QA coverage emphasis in strategy."}
+        )
 
-    # Tone + safety affect tone used downstream
-    adjusted_tone = tone_bias.get("tone", "professional")
+    adjusted_tone = framing.tone or "professional"
     if safety_bias.get("heightened_caution"):
         adjusted_tone = "formal"
 
-    plan_dict = {
+    plan_dict: Dict[str, Any] = {
         "layer": "l1",
         "mode": "strategy",
         "objective": framing.goal,
-        "tone_override": adjusted_tone,
+        "tone": adjusted_tone,
         "framing_profile": framing.to_dict(),
         "context_profile": context_profile.to_dict(),
         "tooling_profile": tooling_profile.to_dict(),
@@ -561,16 +543,21 @@ def build_strategy_plan(
         "planning_hints": hints.to_dict(),
         "dependencies": deps.to_dict(),
         "steps": steps,
+        "surfaces": [
+            SelfCorrectionSurface.RAG_RETRY.value,
+            SelfCorrectionSurface.DRAFT_RETRY.value,
+            SelfCorrectionSurface.QA_RECHECK.value,
+            SelfCorrectionSurface.SAFETY_RISK.value,
+        ],
     }
 
-    if access_policy:
+    if access_policy is not None:
         plan_dict["access_policy"] = {
-            "tools": [dict(tp.__dict__) for tp in access_policy.tool_permissions],
-            "routes": [dict(rp.__dict__) for rp in access_policy.routing_permissions],
+            "tools": [asdict(tp) for tp in access_policy.tool_permissions],
+            "routes": [asdict(rp) for rp in access_policy.routing_permissions],
         }
 
     return PlanObject(plan_dict)
-
 
 
 def build_rag_plan(
@@ -583,15 +570,15 @@ def build_rag_plan(
     """
     Plan retrieval queries and evidence targets.
 
-    This restores v10_8 RAG planning behavior in a clean form:
-    multi-query fusion, resume-aware scoring, and explainability hooks.
+    Restores v10_8 RAG planning behavior with meta-aware tweaks.
     """
-    base_queries: List[str] = []
+    routing_bias = get_routing_bias()
 
-    # Core queries.
-    base_queries.append("job_description_core_requirements")
-    base_queries.append("company_strategy_and_recent_news")
-    base_queries.append("role_specific_success_profiles")
+    base_queries: List[str] = [
+        "job_description_core_requirements",
+        "company_strategy_and_recent_news",
+        "role_specific_success_profiles",
+    ]
 
     if "insurance" in profile.domains:
         base_queries.append("insurance_domain_case_studies")
@@ -599,33 +586,37 @@ def build_rag_plan(
     if "foundation_models" in profile.domains:
         base_queries.append("llm_and_rag_architecture_patterns")
 
-    # Additional queries for complex tasks.
     if complexity != ComplexityLevel.SIMPLE:
         base_queries.append("industry_benchmarks_and_best_practices")
 
-    # Explainability: why these queries exist.
     explainability = {
         "resume_aware_scoring": True,
-        "jd_alignment_boosting": True,
+        "jd_requirement_boost": True,
         "multi_query_fusion": complexity != ComplexityLevel.SIMPLE,
-        "rag_explainability_enabled": True,
     }
+
+    retrieval_cfg: Dict[str, Any] = {
+        "queries": base_queries,
+        "ranking": {
+            "strategy": "hybrid",
+            "enable_hyde": True,
+        },
+        "resume_aware_scoring": True,
+        "jd_requirement_boost": True,
+    }
+
+    if routing_bias.get("prefer_robust_retrieval"):
+        retrieval_cfg["ranking"]["strategy"] = "hybrid"
+        retrieval_cfg["ranking"]["enable_hyde"] = True
 
     plan_dict: Dict[str, Any] = {
         "layer": "l1",
         "mode": "rag",
-        "objective": "Retrieve structured evidence that maximally supports strategy and drafting.",
+        "objective": "Retrieve structured evidence to support strategy and drafting.",
         "profile_signals": profile.to_dict(),
         "complexity": complexity.value,
-        "queries": base_queries,
-        "fusion": {
-            "enabled": complexity != ComplexityLevel.SIMPLE,
-            "explainability": explainability,
-        },
-        "scoring": {
-            "resume_aware": True,
-            "jd_requirement_boost": True,
-        },
+        "retrieval": retrieval_cfg,
+        "explainability": explainability,
         "context_profile": context_profile.to_dict(),
     }
 
@@ -640,14 +631,12 @@ def build_drafting_plan(
     framing: FramingProfile,
 ) -> PlanObject:
     """
-    Plan the drafting structure (sections, tone, personalization).
-
-    This restores v10_8's behavior where drafting is explicitly aware
-    of strategy and RAG surfaces.
+    Plan drafting structure (sections, tone, personalization).
     """
+    planning_bias = get_planning_bias()
+
     seniority = profile.seniority
 
-    # Sections depend on seniority.
     sections: List[Dict[str, Any]] = [
         {"id": "header", "required": True},
         {"id": "summary", "required": True},
@@ -661,10 +650,17 @@ def build_drafting_plan(
     else:
         sections.append({"id": "projects", "required": False})
 
+    if planning_bias.get("conservative"):
+        sections.append({"id": "risk_mitigation", "required": False})
+
+    objective = (
+        "Draft a personalized, domain-aware artifact aligned with the strategy plan."
+    )
+
     plan_dict: Dict[str, Any] = {
         "layer": "l1",
         "mode": "drafting",
-        "objective": "Draft a personalized, domain-aware artifact aligned with the strategy plan.",
+        "objective": objective,
         "profile_signals": profile.to_dict(),
         "complexity": complexity.value,
         "framing_profile": framing.to_dict(),
@@ -689,9 +685,10 @@ def build_bullets_plan(
     Restores v10_8's advanced bullet system:
         • action–metric–outcome
         • seniority scaling
-        • guild-level transformations
     """
-    skeleton = {
+    planning_bias = get_planning_bias()
+
+    skeleton: Dict[str, Any] = {
         "pattern": "action_metric_outcome",
         "seniority_scaling": profile.seniority,
         "guild_transform": "default",
@@ -699,6 +696,9 @@ def build_bullets_plan(
 
     if "executive_communication" in profile.skill_clusters:
         skeleton["guild_transform"] = "executive_storytelling"
+
+    if planning_bias.get("conservative"):
+        skeleton["enforce_metric_presence"] = True
 
     plan_dict: Dict[str, Any] = {
         "layer": "l1",
@@ -718,21 +718,21 @@ def build_qa_plan(
     hints: PlanningHints,
 ) -> PlanObject:
     """
-    Plan QA checks and surfaces.
-
-    Restores v10_8's correction validation framework for:
-        • JD mismatch
-        • keyword coverage
-        • resume alignment
+    Plan QA checks and surfaces (v10_8 correction framework).
     """
-    checks: List[Dict[str, Any]] = [
-        {"id": "jd_coverage", "severity": "high"},
-        {"id": "keyword_coverage", "severity": "medium"},
-        {"id": "resume_alignment", "severity": "high"},
+    qa_bias = get_qa_bias()
+
+    checks: List[str] = [
+        "jd_coverage",
+        "keyword_coverage",
+        "resume_alignment",
     ]
 
     if complexity != ComplexityLevel.SIMPLE:
-        checks.append({"id": "rag_evidence_alignment", "severity": "high"})
+        checks.append("rag_evidence_alignment")
+
+    if qa_bias.get("recent_failures"):
+        checks.append("extra_qa_pass")
 
     plan_dict: Dict[str, Any] = {
         "layer": "l1",
@@ -754,12 +754,9 @@ def build_safety_plan(
 ) -> PlanObject:
     """
     Plan safety surfaces and escalation paths.
-
-    Restores v10_8's SafetyConfig layer conceptually:
-        • safety modes
-        • injection detection
-        • deny/allow lists (through SafetyOutputProfile & AccessPolicy)
     """
+    safety_bias = get_safety_bias()
+
     rules: List[Dict[str, Any]] = []
 
     if safety_profile.enable_pii_detection:
@@ -770,6 +767,9 @@ def build_safety_plan(
         rules.append({"id": "bias_detection", "severity": "medium"})
     if safety_profile.enable_prompt_injection_detection:
         rules.append({"id": "prompt_injection_detection", "severity": "high"})
+
+    if safety_bias.get("heightened_caution"):
+        rules.append({"id": "strict_mode", "severity": "high"})
 
     plan_dict: Dict[str, Any] = {
         "layer": "l1",
@@ -790,9 +790,6 @@ def build_meta_learning_plan(
 ) -> PlanObject:
     """
     Plan meta-learning signals and logging surfaces.
-
-    Restores v10_8's cross-run learning and correction journaling
-    behavior in a typed planning form.
     """
     signals: List[str] = [
         "log_complexity_and_seniority",
@@ -821,11 +818,6 @@ def build_prompt_engineering_plan(
 ) -> PlanObject:
     """
     Plan prompt taxonomy, sections, and governance metadata.
-
-    Restores v10_8's prompt taxonomy API conceptually:
-        • section names/types
-        • injection types
-        • template metadata
     """
     sections = [
         {"id": "system", "type": "system"},
@@ -880,10 +872,7 @@ def plan(
     """
     Public L1 planning entrypoint.
 
-    This is the only function L2/L3 should call directly. It returns a
-    PlanObject whose "mode" matches the requested planning mode.
-
-    Supported modes (restoring all v10_8 planning surfaces):
+    Supported modes:
 
         • "strategy"
         • "rag"
@@ -894,7 +883,6 @@ def plan(
         • "meta_learning"
         • "prompt_engineering"
     """
-    # Shared signals used across most modes.
     profile = infer_profile_signals(job_text, resume_text)
     complexity = estimate_task_complexity(job_text, resume_text)
     hints = build_planning_hints(profile, complexity, safety_profile)
@@ -962,5 +950,4 @@ def plan(
             context_profile=context_profile,
         )
 
-    # If we get here, the caller passed an unsupported mode.
     raise ValueError(f"Unsupported L1 planning mode: {mode!r}")
