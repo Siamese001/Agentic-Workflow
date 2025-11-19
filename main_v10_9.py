@@ -3,26 +3,24 @@
 Main Entry Point — v10_9 Agentic Workflow (ENTERPRISE REFACTOR)
 
 This module provides the official entrypoint for the unified v10_9
-agentic workflow.
+agentic workflow. It is the ONLY module outside the L1–L5 layers that
+performs orchestrated end-to-end execution.
 
-It extends the original v10_9 entrypoint to fully support the
-Enterprise / Production feature set from the 10_7 → 10_9
-refactoring plan while preserving strict L1–L5 purity:
+Responsibilities:
+    • Accept initial state dict from caller (API/CLI/service).
+    • Normalize state into L4.StateAdapter.
+    • Call L1 (planning) via l1.route_plan.
+    • Call L3 (orchestration) via Orchestrator.run().
+    • Collect telemetry, return structured WorkflowState.
 
-High-level pipeline:
-    1. L1: route_plan() – produce a PlanObject for the requested task.
-    2. L3: Orchestrator.run() – execute domain-specific pipeline (L2 + L4 + L5).
-    3. Observability: summarize_run() – produce a structured run summary.
-    4. Optional streaming: emit intermediate snapshots via callback.
-    5. Return: updated state + phase + summary.
+Non-responsibilities:
+    • NO planning logic
+    • NO tool/LLM execution
+    • NO state mutation beyond adapter
+    • NO safety/policy decisions
+    • NO provider/SDK logic
 
-Design guarantees:
-    • No direct references to previous versions (10_7, 10_8, LangGraph, etc.)
-    • Single-pass execution (one L1 plan → one L3 run)
-    • Layer purity (no L1–L5 logic in this file, only coordination)
-    • Backward-compatible API:
-        - Existing code can still call run_workflow_v10_9(initial_state)
-        - New keyword-only parameters support compat_mode, debug_mode, streaming
+Layer purity must be preserved fully.
 """
 
 from __future__ import annotations
@@ -48,15 +46,14 @@ def _initialize_state(
     debug_mode: bool = False,
 ) -> Dict[str, Any]:
     """
-    Normalize the incoming state so that the orchestrator has
-    all expected top-level keys and metadata, while remaining
-    backward-compatible with earlier v10_9 usage.
+    Normalize the incoming state so that Orchestrator has the minimal
+    required top-level keys and metadata.
 
     Ensures:
         • workflow_id present in root and metadata
         • messages is a list
         • metadata is a dict
-        • compat_mode and debug_mode flags are stored in metadata
+        • compat/debug flags stored in metadata
     """
     state = dict(initial_state or {})
     metadata = state.setdefault("metadata", {})
@@ -90,17 +87,14 @@ def _emit_stream_event(
     """
     Lightweight event streaming hook.
 
-    This is intentionally simple and lives outside L1–L5. It can be
-    used by UIs or services that need progress updates (e.g., phase
-    transitions, final result). Failures must never affect the main
-    workflow.
+    This lives above L1–L5. Failures must not propagate.
     """
     if stream_callback is None:
         return
     try:
         stream_callback({"event": event_type, "payload": payload})
     except Exception:
-        # Streaming is best-effort only; errors are swallowed.
+        # Streaming is best-effort only.
         pass
 
 
@@ -121,29 +115,19 @@ async def run_workflow_v10_9(
 
     Args:
         initial_state:
-            dict describing the task, context, and any prior state to be
-            used by L1.
+            Raw dictionary describing the task and context.
 
         compat_mode:
-            Optional compatibility mode flag for callers that want to
-            emulate older behavior (e.g., v10_7/v10_8). This function
-            itself does not change behavior based on compat_mode, but
-            the flag is stored in state["metadata"]["compat_mode"] for
-            downstream use by L1/L2/L3 if they choose to inspect it.
+            Optional compatibility flag (e.g., "10_7", "10_8"). The value
+            is attached to metadata and may influence downstream L1/L2
+            components.
 
         debug_mode:
-            Optional boolean to request additional debug metadata in the
-            state["metadata"] block. This function sets the flag; L1–L5
-            layers remain free to decide how to honor it.
+            Attach extended debug metadata into metadata["debug_mode"].
 
         stream_callback:
-            Optional callable that receives streaming events of the form:
+            Optional function receiving streaming events:
                 {"event": <str>, "payload": <dict>}
-            Event types currently emitted:
-                • "planning_started"
-                • "planning_completed"
-                • "execution_completed"
-                • "workflow_completed"
 
     Returns:
         dict:
@@ -156,21 +140,28 @@ async def run_workflow_v10_9(
             }
     """
 
-    # Normalize and prepare state
-    state = _initialize_state(initial_state, compat_mode=compat_mode, debug_mode=debug_mode)
+    # -------- Normalize & prepare state -------------------------------------
+    state = _initialize_state(
+        initial_state,
+        compat_mode=compat_mode,
+        debug_mode=debug_mode,
+    )
     workflow_id = state["workflow_id"]
 
-    # Tracking cost/timing spans
+    # -------- Tracking spans -------------------------------------------------
     cost_tracker = CostTracker()
 
-    # ---- L1: PLANNING ----
+    # -------- L1: PLANNING --------------------------------------------------
     cost_tracker.start_span("planning")
     _emit_stream_event(
         stream_callback,
         event_type="planning_started",
         payload={"workflow_id": workflow_id},
     )
+
+    # Single L1 planning step
     plan = route_plan(state)
+
     cost_tracker.end_span("planning")
     _emit_stream_event(
         stream_callback,
@@ -178,12 +169,14 @@ async def run_workflow_v10_9(
         payload={"workflow_id": workflow_id, "plan_mode": plan.get("mode")},
     )
 
-    # ---- L3: ORCHESTRATION + L2/L4/L5 ----
+    # -------- L3: EXECUTION (L2 + L4 + L5) ----------------------------------
     orchestrator = Orchestrator()
+
     cost_tracker.start_span("execution")
-    # Orchestrator.run is synchronous; we just call it directly.
+    # Orchestrator.run is synchronous by design.
     workflow_state = orchestrator.run(plan, state)
     cost_tracker.end_span("execution")
+
     _emit_stream_event(
         stream_callback,
         event_type="execution_completed",
@@ -199,7 +192,7 @@ async def run_workflow_v10_9(
     final_state = workflow_state.state
     phase_history = workflow_state.phase_metadata.get("history", [workflow_state.phase])
 
-    # ---- Observability Summary ----
+    # -------- Observability Summary -----------------------------------------
     run_summary = summarize_run(
         workflow_id=workflow_id,
         state=final_state,
@@ -241,10 +234,9 @@ def run_workflow_sync(
     stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
 ) -> Dict[str, Any]:
     """
-    Synchronous convenience wrapper around run_workflow_v10_9().
+    Synchronous wrapper around run_workflow_v10_9().
 
-    Backward-compatible: existing callers can still call this with
-    only the initial_state positional argument.
+    This is the primary entrypoint for CLI / local execution systems.
     """
     return asyncio.run(
         run_workflow_v10_9(
