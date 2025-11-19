@@ -1,23 +1,19 @@
 # FILE: l1.py
 """
-Unified L1 Cognition Layer (v10_9, fully agentic — ENTERPRISE REFACTOR)
+Unified L1 Cognition Layer (v10_9) — PURE PLANNING / COGNITION
 
-This module implements ALL L1 responsibilities needed to support a
-v10_9 agentic workflow with feature parity to the legacy 10_7 / 10_8
-design, but WITHOUT any execution, orchestration, state mutation, or
-safety decisions.
+This module implements ALL L1 responsibilities for the v10_9 agentic
+workflow. It is strictly *cognition-only*:
 
-L1 is *pure cognition*:
+    • NO execution (no LLM calls, no tools, no DB/network I/O)
+    • NO orchestration (no DAGs, no retries, no phase changes)
+    • NO state mutation (no writes to workflow state)
+    • NO safety decisions (only planning for safety / QA / HIL)
 
-    • No execution (no LLM calls, no tools)
-    • No orchestration (no DAGs, no retries)
-    • No state mutation (no DB / no I/O)
-    • No safety enforcement (only *planning* for safety / QA)
+L1 emits **PlanObject** instances (from models.py) that describe *what*
+should happen in L2–L5:
 
-It produces *PlanObject* instances that describe *what* should happen
-at L2–L5:
-
-    • StrategyReasoner          – multi-branch strategy / ToT planning
+    • StrategyReasoner          – multi-branch strategy / ToT-style planning
     • RAGReasoner               – retrieval planning (HYDE-aware)
     • DraftingReasoner          – drafting structure, tone, risks
     • QACoordinatorPlanner      – QA validation plan (multi-check)
@@ -25,11 +21,17 @@ at L2–L5:
     • PromptEngineeringPlanner  – prompt engineering / template planning
     • HILPlanner                – human-in-the-loop escalation planning
     • MetaLearningPlanner       – meta-learning orchestration planning
-    • Mode routing              – route_mode / route_plan
-    • Shared utilities          – job/resume extraction, metrics detection
+    • route_mode / route_plan   – top-level L1 dispatch
 
-The actual execution of these plans is the responsibility of L2
-(executors), L3 (orchestrators), L4 (state adapters), and L5 (safety).
+The actual realization of these plans is the responsibility of:
+
+    • L2 (executors, tools, provider clients)
+    • L3 (orchestrators / DAGs)
+    • L4 (state adapter / memory)
+    • L5 (safety / policy / arbitration)
+
+This file must remain free of any provider/SDK/tool imports to satisfy
+the Agentic structural requirements (Layering Model, Agent Boundaries).
 """
 
 from __future__ import annotations
@@ -286,7 +288,7 @@ def classify_complexity(state: Dict[str, Any]) -> str:
 
 
 # ============================================================================
-# STRATEGY PLANNING (ToT, multi-branch, assessments, scenarios)
+# STRATEGY PLANNING (ToT-style multi-branch, assessments, scenarios)
 # ============================================================================
 
 
@@ -336,7 +338,7 @@ def _strategy_branches_from_context(
     Deterministically construct "strategy branches" using job & resume context.
 
     This is a purely cognitive planning step; L2 may later choose to
-    *realize* these branches via LLM calls.
+    realize these branches via LLM calls or deterministic logic.
     """
     title = job_profile["title"] or "Target Role"
     company = job_profile["company"] or "Target Company"
@@ -563,7 +565,7 @@ def _simulate_scenarios(branches: List[StrategyBranchPlan]) -> List[ScenarioSimu
 
 class StrategyReasoner:
     """
-    L1 Strategy Reasoner (ToT + planner ensemble).
+    L1 Strategy Reasoner (ToT-style + planner ensemble).
 
     Produces a PlanObject with:
         • mode: "strategy"
@@ -574,6 +576,9 @@ class StrategyReasoner:
         • aggregated_confidence: float
         • aggregated_rationale: str
         • injection & safety metadata
+
+    NOTE: This class performs *no* LLM calls or external I/O; it only
+    constructs a plan description for downstream executors.
     """
 
     def plan(self, state: Dict[str, Any]) -> PlanObject:
@@ -618,6 +623,8 @@ class StrategyReasoner:
         aggregated_confidence = round(approve_ratio, 3)
         aggregated_rationale = " | ".join(rationales)
 
+        compat_mode = state.get("compat_mode")  # propagated as metadata
+
         plan = PlanObject(
             {
                 "layer": "l1",
@@ -646,6 +653,8 @@ class StrategyReasoner:
                     "target_layer": "l2",
                     "preferred_executor": "strategy",
                     "expected_deliverables": ["strategy_summary", "prompt_blueprint"],
+                    # allow L2 to choose deterministic vs LLM realization
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 # Injection metadata
                 "injection_framing": {
@@ -662,6 +671,7 @@ class StrategyReasoner:
                     "tags": ["planning", "strategy"],
                     "sensitivity": "low",
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -736,6 +746,8 @@ class RAGReasoner:
                 + ", ".join(job_profile["requirements"][:3])
             )
 
+        compat_mode = state.get("compat_mode")
+
         plan = PlanObject(
             {
                 "layer": "l1",
@@ -761,6 +773,7 @@ class RAGReasoner:
                     "target_layer": "l2",
                     "preferred_executor": "rag",
                     "expected_deliverables": ["ranked_documents", "rag_metadata"],
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 "injection_framing": {
                     "global_goal": "Surface trustworthy, resume-aligned evidence.",
@@ -776,6 +789,7 @@ class RAGReasoner:
                     "tags": ["planning", "rag"],
                     "sensitivity": "low",
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -811,6 +825,8 @@ class DraftingReasoner:
         review_gates = self._build_review_gates(job_profile)
         risks = self._build_risks(job_profile, resume_profile)
 
+        compat_mode = state.get("compat_mode")
+
         plan = PlanObject(
             {
                 "layer": "l1",
@@ -826,6 +842,7 @@ class DraftingReasoner:
                     "target_layer": "l2",
                     "preferred_executor": "drafting",
                     "expected_deliverables": ["section_drafts", "draft_metadata"],
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 "injection_framing": {
                     "global_goal": "Assemble a coherent, evidence-backed narrative.",
@@ -841,6 +858,7 @@ class DraftingReasoner:
                     "tags": ["planning", "drafting"],
                     "sensitivity": "low",
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -954,6 +972,8 @@ class QACoordinatorPlanner:
         if severity == "strict":
             checks.append("deep_fact_checking")
 
+        compat_mode = state.get("compat_mode")
+
         plan = PlanObject(
             {
                 "layer": "l1",
@@ -966,6 +986,7 @@ class QACoordinatorPlanner:
                     "target_layer": "l2",
                     "preferred_executor": "qa",
                     "expected_deliverables": ["qa_report", "issue_annotations"],
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 "injection_framing": {
                     "global_goal": "Validate that the artifact is safe, accurate, and high-signal.",
@@ -981,6 +1002,7 @@ class QACoordinatorPlanner:
                     "tags": ["planning", "qa"],
                     "sensitivity": "normal" if severity == "normal" else "high",
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -1020,10 +1042,12 @@ class SafetyPlanner:
 
         checks = _default_safety_checks(audience)
         contracts = {
-            "allowed_audience": ["general", "professional"],
+            "allowed_audience": ["general", "professional", "executive"],
             "forbidden_terms": ["explicit", "violence", "hate", "slur"],
             "max_toxicity": 0.25 if risk_level == "normal" else 0.15,
         }
+
+        compat_mode = state.get("compat_mode")
 
         plan = PlanObject(
             {
@@ -1038,6 +1062,7 @@ class SafetyPlanner:
                     "target_layer": "l2",
                     "preferred_executor": "safety",
                     "expected_deliverables": ["safety_report", "sanitized_content"],
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 "injection_framing": {
                     "global_goal": "Enforce safety, policy, and constitutional constraints.",
@@ -1053,6 +1078,7 @@ class SafetyPlanner:
                     "tags": ["planning", "safety"],
                     "sensitivity": risk_level,
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -1079,7 +1105,15 @@ class PromptEngineeringPlanner:
     def plan(self, state: Dict[str, Any]) -> PlanObject:
         objective = state.get("objective") or "prompt_engineering"
         audience = state.get("audience", "general")
-        target_modes = state.get("prompt_target_modes") or ["strategy", "rag", "drafting", "qa", "safety"]
+        target_modes = state.get("prompt_target_modes") or [
+            "strategy",
+            "rag",
+            "drafting",
+            "qa",
+            "safety",
+        ]
+
+        compat_mode = state.get("compat_mode")
 
         plan = PlanObject(
             {
@@ -1097,6 +1131,7 @@ class PromptEngineeringPlanner:
                     "target_layer": "l2",
                     "preferred_executor": "prompt_engineering",
                     "expected_deliverables": ["prompt_envelopes", "prompt_metadata"],
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 "injection_framing": {
                     "global_goal": "Design robust, reusable prompt envelopes.",
@@ -1112,6 +1147,7 @@ class PromptEngineeringPlanner:
                     "tags": ["planning", "prompt_engineering"],
                     "sensitivity": "low",
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -1152,6 +1188,8 @@ class HILPlanner:
         if not triggers:
             triggers.append("fallback_trigger_for_uncertain_cases")
 
+        compat_mode = state.get("compat_mode")
+
         plan = PlanObject(
             {
                 "layer": "l1",
@@ -1168,6 +1206,7 @@ class HILPlanner:
                     "target_layer": "l2",
                     "preferred_executor": "hil",
                     "expected_deliverables": ["hil_prompt", "hil_response"],
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 "injection_framing": {
                     "global_goal": "Integrate human judgment for critical decisions.",
@@ -1183,6 +1222,7 @@ class HILPlanner:
                     "tags": ["planning", "hil"],
                     "sensitivity": severity,
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -1216,6 +1256,8 @@ class MetaLearningPlanner:
             "hil_interventions",
         ]
 
+        compat_mode = state.get("compat_mode")
+
         plan = PlanObject(
             {
                 "layer": "l1",
@@ -1234,6 +1276,7 @@ class MetaLearningPlanner:
                     "target_layer": "l2",
                     "preferred_executor": "meta_learning",
                     "expected_deliverables": ["meta_snapshot", "meta_recommendations"],
+                    "execution_mode": state.get("execution_mode", "auto"),
                 },
                 "injection_framing": {
                     "global_goal": "Improve future workflows via meta-learning.",
@@ -1249,6 +1292,7 @@ class MetaLearningPlanner:
                     "tags": ["planning", "meta_learning"],
                     "sensitivity": "low",
                 },
+                "compat_mode": compat_mode,
             }
         )
         return plan
@@ -1306,6 +1350,9 @@ def route_plan(state: Dict[str, Any]) -> PlanObject:
 
     Chooses the appropriate reasoner/planner based on route_mode and returns
     a fully-populated PlanObject describing the next agentic step.
+
+    This function adheres strictly to L1 constraints: no IO, no tools,
+    no provider-specific logic.
     """
     mode = route_mode(state)
 
