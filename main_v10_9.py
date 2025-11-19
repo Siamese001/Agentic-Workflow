@@ -1,281 +1,306 @@
 # FILE: main_v10_9.py
 """
-Main Entry Point — v10_9 Agentic Workflow (ENTERPRISE REFACTOR)
+Main Orchestration Entrypoint — v10_9 Agentic Workflow
 
-This module provides the official entrypoint for the unified v10_9
-agentic workflow. It is the ONLY module outside the L1–L5 layers that
-performs orchestrated end-to-end execution.
+This file implements the top-level workflow runner for the enterprise
+agentic architecture using strict OpenAI-style layering:
 
-Responsibilities:
-    • Accept initial state dict from caller (API/CLI/service).
-    • Normalize state into L4.StateAdapter.
-    • Call L1 (planning) via l1.route_plan.
-    • Call L3 (orchestration) via Orchestrator.run().
-    • Collect telemetry, return structured WorkflowState.
+    • L1  = Cognition / Planning
+    • L2  = Execution / Tool Use
+    • L3  = Orchestration / DAG Control Flow
+    • L4  = State Adapter / Memory / Patches
+    • L5  = Safety / Policy / Arbitration
+    • META = Prompting / Routing / Telemetry / Simulation
 
-Non-responsibilities:
-    • NO planning logic
-    • NO tool/LLM execution
-    • NO state mutation beyond adapter
-    • NO safety/policy decisions
-    • NO provider/SDK logic
+This module is the ONLY place where all layers come together in a stable,
+typed, deterministic pipeline. It never:
 
-Layer purity must be preserved fully.
+    • Does cognition (L1)
+    • Does execution (L2)
+    • Mutates raw state directly (L4-only)
+    • Makes safety decisions (L5-only)
+    • Builds prompts (META only)
+    • Performs model calls (routing/providers only)
+
+It ONLY:
+
+    • Initializes the system components
+    • Defines the orchestration DAG template
+    • Executes the DAG using L3.DAGExecutor
+    • Applies patches via L4.StateAdapter
+    • Passes safety decisions through L5
+    • Emits structured WorkflowState output
 """
 
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Dict, Optional, Callable
+from dataclasses import dataclass, field
+from typing import Any, Dict, Optional, List
 
+# Layer imports
+from models import (
+    PlanObject,
+    WorkflowState,
+    StatePatch,
+    WorkflowPhase,
+    ArbitrationDecision,
+)
 from l1 import route_plan
-from l3 import Orchestrator
-from runtime_utils import CostTracker
-from observability import summarize_run
+from l2 import route_executor
+from l3 import DAG, DAGNode, DAGExecutor
+from l4 import StateAdapter
+from l5 import SafetyEngine, PolicyEngine, ArbitrationEngine
+from observability import TELEMETRY, summarize_run
+from runtime_utils import CostTracker, record_event
 
 
-# ---------------------------------------------------------------------------
-# INTERNAL HELPERS
-# ---------------------------------------------------------------------------
+# ============================================================================
+# ORCHESTRATION HELPERS
+# ============================================================================
 
-
-def _initialize_state(
-    initial_state: Dict[str, Any],
-    *,
-    compat_mode: Optional[str] = None,
-    debug_mode: bool = False,
-) -> Dict[str, Any]:
+def _get_content_for_safety(state: Dict[str, Any]) -> str:
     """
-    Normalize the incoming state so that Orchestrator has the minimal
-    required top-level keys and metadata.
-
-    Ensures:
-        • workflow_id present in root and metadata
-        • messages is a list
-        • metadata is a dict
-        • compat/debug flags stored in metadata
+    Extract the deterministic content candidate for L5 Safety evaluation.
+    Priority:
+        1. state["draft_result"]["draft"]
+        2. last user message
+        3. state["summary"]
     """
-    state = dict(initial_state or {})
-    metadata = state.setdefault("metadata", {})
+    draft = state.get("draft_result") or {}
+    draft_list = draft.get("draft") or []
+    if isinstance(draft_list, list) and draft_list:
+        return "\n".join(str(x) for x in draft_list)
 
-    workflow_id = (
-        state.get("workflow_id")
-        or metadata.get("workflow_id")
-        or "workflow_v10_9"
+    msgs = state.get("messages") or []
+    for m in reversed(msgs):
+        if isinstance(m, dict) and m.get("role") == "user":
+            return str(m.get("content", "")) or ""
+
+    return str(state.get("summary", "")) or ""
+
+
+# ============================================================================
+# STEP RUNNERS: These wrap L1/L2/L5 calls cleanly for DAG nodes
+# ============================================================================
+
+async def _run_l1_planning(context: Dict[str, Any]) -> Dict[str, Any]:
+    state = context["state"]
+    plan: PlanObject = route_plan(state)
+    return {
+        **context,
+        "plan": plan,
+        "phase": WorkflowPhase.PLANNING.value,
+    }
+
+
+async def _run_l2_execution(context: Dict[str, Any]) -> Dict[str, Any]:
+    plan: PlanObject = context.get("plan")
+    state = context["state"]
+
+    result = await route_executor(plan, state)
+
+    return {
+        **context,
+        "execution_result": result,
+        "phase": WorkflowPhase.EXECUTING.value,
+    }
+
+
+async def _run_l4_patch(context: Dict[str, Any]) -> Dict[str, Any]:
+    adapter: StateAdapter = context["state_adapter"]
+    result = context["execution_result"]
+    payload = result.payload
+
+    # Patch the state under the correct domain key
+    key = f"{result.model}_result"
+    new_state = adapter.apply_patch(StatePatch(key=key, value=payload.to_dict() if hasattr(payload, "to_dict") else payload))
+
+    return {
+        **context,
+        "state": new_state,
+        "phase": WorkflowPhase.REVIEWING.value,
+    }
+
+
+async def _run_l5_safety(context: Dict[str, Any]) -> Dict[str, Any]:
+    state = context["state"]
+    plan = context["plan"]
+
+    engine = context["safety_engine"]
+    policy_engine = context["policy_engine"]
+    arbiter = context["arbiter"]
+
+    content = _get_content_for_safety(state)
+    safety_report = engine.validate(content, audience=str(plan.get("audience", "general")))
+    policy = policy_engine.review(safety_report)
+    decision = arbiter.decide(policy, safety_report)
+
+    return {
+        **context,
+        "safety_report": safety_report,
+        "policy_decision": policy,
+        "arbitration": decision,
+    }
+
+
+async def _run_phase_complete(context: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        **context,
+        "phase": WorkflowPhase.COMPLETE.value,
+    }
+
+
+# ============================================================================
+# DAG TEMPLATE — The canonical v10_9 orchestrator graph
+# ============================================================================
+
+def _build_dag() -> DAG:
+    return DAG(
+        nodes={
+            "plan": DAGNode(
+                name="plan",
+                run=_run_l1_planning,
+            ),
+            "execute": DAGNode(
+                name="execute",
+                run=_run_l2_execution,
+            ),
+            "patch": DAGNode(
+                name="patch",
+                run=_run_l4_patch,
+            ),
+            "safety": DAGNode(
+                name="safety",
+                run=_run_l5_safety,
+            ),
+            "complete": DAGNode(
+                name="complete",
+                run=_run_phase_complete,
+            ),
+        },
+        edges={
+            "plan": ["execute"],
+            "execute": ["patch"],
+            "patch": ["safety"],
+            "safety": ["complete"],
+            "complete": [],
+        },
     )
-    state["workflow_id"] = workflow_id
-    metadata["workflow_id"] = workflow_id
-
-    # Ensure messages array exists
-    if not isinstance(state.get("messages"), list):
-        state["messages"] = []
-
-    # Attach compat/debug flags in a non-breaking way
-    if compat_mode is not None:
-        metadata["compat_mode"] = str(compat_mode)
-    metadata["debug_mode"] = bool(debug_mode)
-
-    return state
 
 
-def _emit_stream_event(
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]],
-    *,
-    event_type: str,
-    payload: Dict[str, Any],
-) -> None:
-    """
-    Lightweight event streaming hook.
-
-    This lives above L1–L5. Failures must not propagate.
-    """
-    if stream_callback is None:
-        return
-    try:
-        stream_callback({"event": event_type, "payload": payload})
-    except Exception:
-        # Streaming is best-effort only.
-        pass
-
-
-# ---------------------------------------------------------------------------
-# ASYNC ENTRYPOINT
-# ---------------------------------------------------------------------------
-
+# ============================================================================
+# MAIN WORKFLOW RUNNER
+# ============================================================================
 
 async def run_workflow_v10_9(
     initial_state: Dict[str, Any],
     *,
     compat_mode: Optional[str] = None,
     debug_mode: bool = False,
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
+    stream_callback: Optional[Any] = None,
 ) -> Dict[str, Any]:
     """
-    Execute a single v10_9 agentic workflow pass.
+    Primary runtime workflow entrypoint for v10_9.
 
-    Args:
-        initial_state:
-            Raw dictionary describing the task and context.
-
-        compat_mode:
-            Optional compatibility flag (e.g., "10_7", "10_8"). The value
-            is attached to metadata and may influence downstream L1/L2
-            components.
-
-        debug_mode:
-            Attach extended debug metadata into metadata["debug_mode"].
-
-        stream_callback:
-            Optional function receiving streaming events:
-                {"event": <str>, "payload": <dict>}
+    Inputs:
+        initial_state — raw dict-like state before L4 adaptation
+        compat_mode   — optional compatibility flag
+        debug_mode    — attaches extra metadata for observability
+        stream_callback — optional streaming hook
 
     Returns:
-        dict:
-            {
-                "workflow_id": str,
-                "phase": str,
-                "state": <final state dict>,
-                "phase_metadata": {...},
-                "run_summary": {...},
-            }
+        {
+            "workflow_id": str,
+            "phase": str,
+            "state": dict,
+            "phase_metadata": dict,
+            "run_summary": dict,
+        }
     """
 
-    # -------- Normalize & prepare state -------------------------------------
-    state = _initialize_state(
-        initial_state,
-        compat_mode=compat_mode,
-        debug_mode=debug_mode,
-    )
-    workflow_id = state["workflow_id"]
+    # Initialize L4
+    adapter = StateAdapter(initial_state)
+    state = adapter.state
 
-    # -------- Tracking spans -------------------------------------------------
+    # Add workflow_id if missing
+    if "workflow_id" not in state:
+        import uuid
+        state["workflow_id"] = f"wf_{uuid.uuid4().hex}"
+
+    wf_id = state["workflow_id"]
+
+    # Safety engines
+    safety_engine = SafetyEngine()
+    policy_engine = PolicyEngine()
+    arbiter = ArbitrationEngine()
+
+    # Initialize DAG
+    dag = _build_dag()
+    executor = DAGExecutor()
+
+    # Create orchestration context
+    context: Dict[str, Any] = {
+        "state": state,
+        "state_adapter": adapter,
+        "safety_engine": safety_engine,
+        "policy_engine": policy_engine,
+        "arbiter": arbiter,
+        "phase": WorkflowPhase.INIT.value,
+    }
+
     cost_tracker = CostTracker()
+    phase_history: List[str] = []
 
-    # -------- L1: PLANNING --------------------------------------------------
-    cost_tracker.start_span("planning")
-    _emit_stream_event(
-        stream_callback,
-        event_type="planning_started",
-        payload={"workflow_id": workflow_id},
+    # Run DAG
+    current_context = context
+    for node_name in dag.topological_order():
+        cost_tracker.start_span(node_name)
+        current_context = await dag.nodes[node_name].run(current_context)
+        cost_tracker.end_span(node_name)
+
+        phase = current_context.get("phase", "")
+        if phase:
+            phase_history.append(phase)
+
+        # Stream callback (if provided)
+        if stream_callback:
+            await stream_callback({"node": node_name, "context": current_context})
+
+        # Arbitration may halt the DAG
+        arb = current_context.get("arbitration", {})
+        if isinstance(arb, dict) and arb.get("action") == "halt":
+            break
+
+    # Build WorkflowState
+    workflow_state = WorkflowState(
+        workflow_id=wf_id,
+        phase=current_context.get("phase", WorkflowPhase.COMPLETE.value),
+        nodes={},
+        state=current_context.get("state", {}),
+        phase_metadata={"history": phase_history},
     )
 
-    # Single L1 planning step
-    plan = route_plan(state)
-
-    cost_tracker.end_span("planning")
-    _emit_stream_event(
-        stream_callback,
-        event_type="planning_completed",
-        payload={"workflow_id": workflow_id, "plan_mode": plan.get("mode")},
-    )
-
-    # -------- L3: EXECUTION (L2 + L4 + L5) ----------------------------------
-    orchestrator = Orchestrator()
-
-    cost_tracker.start_span("execution")
-    # Orchestrator.run is synchronous by design.
-    workflow_state = orchestrator.run(plan, state)
-    cost_tracker.end_span("execution")
-
-    _emit_stream_event(
-        stream_callback,
-        event_type="execution_completed",
-        payload={
-            "workflow_id": workflow_id,
-            "phase": workflow_state.phase,
-            "phase_history": workflow_state.phase_metadata.get(
-                "history", [workflow_state.phase]
-            ),
-        },
-    )
-
-    final_state = workflow_state.state
-    phase_history = workflow_state.phase_metadata.get("history", [workflow_state.phase])
-
-    # -------- Observability Summary -----------------------------------------
+    # Observability summary
     run_summary = summarize_run(
-        workflow_id=workflow_id,
-        state=final_state,
+        workflow_id=wf_id,
+        state=workflow_state.state,
         phase_history=phase_history,
         cost_tracker=cost_tracker,
     )
 
-    result = {
-        "workflow_id": workflow_id,
+    return {
+        "workflow_id": workflow_state.workflow_id,
         "phase": workflow_state.phase,
-        "state": final_state,
+        "state": workflow_state.state,
         "phase_metadata": workflow_state.phase_metadata,
         "run_summary": run_summary,
     }
 
-    _emit_stream_event(
-        stream_callback,
-        event_type="workflow_completed",
-        payload={
-            "workflow_id": workflow_id,
-            "phase": workflow_state.phase,
-            "summary": run_summary,
-        },
-    )
 
-    return result
-
-
-# ---------------------------------------------------------------------------
+# ============================================================================
 # SYNC WRAPPER
-# ---------------------------------------------------------------------------
+# ============================================================================
 
-
-def run_workflow_sync(
-    initial_state: Dict[str, Any],
-    *,
-    compat_mode: Optional[str] = None,
-    debug_mode: bool = False,
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
-) -> Dict[str, Any]:
-    """
-    Synchronous wrapper around run_workflow_v10_9().
-
-    This is the primary entrypoint for CLI / local execution systems.
-    """
-    return asyncio.run(
-        run_workflow_v10_9(
-            initial_state,
-            compat_mode=compat_mode,
-            debug_mode=debug_mode,
-            stream_callback=stream_callback,
-        )
-    )
-
-
-# ---------------------------------------------------------------------------
-# OPTIONAL CLI TEST
-# ---------------------------------------------------------------------------
-
-if __name__ == "__main__":
-    example_state = {
-        "objective": "draft a concise professional summary",
-        "messages": [
-            {"role": "user", "content": "Summarize my profile for an executive recruiter."}
-        ],
-        "resume": {
-            "master_resume": {
-                "summary": "Senior leader with 15+ years of experience in AI, data, and product.",
-                "professional_experience": [],
-            }
-        },
-    }
-
-    def _print_stream_event(event: Dict[str, Any]) -> None:
-        print(f"[STREAM] {event['event']}: {event['payload']}")
-
-    result = run_workflow_sync(
-        example_state,
-        compat_mode=None,
-        debug_mode=True,
-        stream_callback=_print_stream_event,
-    )
-    print("=== v10_9 Agentic Workflow Output ===")
-    print("Workflow ID:", result["workflow_id"])
-    print("Final Phase:", result["phase"])
-    print("Run Summary:", result["run_summary"])
+def run_workflow_v10_9_sync(initial_state: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+    return asyncio.run(run_workflow_v10_9(initial_state, **kwargs))
