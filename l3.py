@@ -1,42 +1,33 @@
 # FILE: l3.py
 """
-Unified L3 Orchestration Layer (v10_9) — PURE CONTROL FLOW
+Unified L3 Orchestration Layer (v10_9, Refactored) — PURE CONTROL FLOW
 
-This module provides the complete orchestration logic for the v10_9
-agentic architecture. It fully restores orchestration capabilities
-(DAGs, multi-agent QA council, safety arbitration, self-correction
-signaling) while preserving strict L1–L5 separation:
-
-    • L1: planning only (PlanObject).
-    • L2: execution only (ExecutionResult).
-    • L3: control flow / orchestration only.
-    • L4: state management only (StateAdapter).
-    • L5: safety & policy only (SafetyEngine, PolicyEngine, ArbitrationEngine).
-    • META: self_correction, multi-agent councils (no state writes, no tools).
-
-Responsibilities (L3):
+This module provides the orchestration logic for the v10_9 agentic
+architecture. It enforces strict L3 responsibilities:
 
     • Phase machine (INIT → PLANNING → EXECUTING → REVIEWING → COMPLETE/FAILED)
     • Graph-based orchestration (DAG) for a single L1 PlanObject
     • Domain execution via L2 route_executor(plan, state)
     • Safety evaluation via L5 SafetyEngine + PolicyEngine + ArbitrationEngine
-    • Optional multi-agent QA council when plan.mode == "qa"
-    • Optional self-correction signal computation (no retries here)
+    • Optional multi-agent QA council (COUNCIL_OF_QA)
+    • Self-correction signal computation (META-only)
     • Emitting a final WorkflowState
 
 Non-responsibilities (to preserve layer purity):
 
     • NO cognition (no planning; PlanObject is taken as input).
-    • NO tool/LLM execution (delegated to L2 and providers/*).
+    • NO tool/LLM execution (delegated to L2 + providers/*).
     • NO state normalization/budgeting (delegated to L4.StateAdapter).
     • NO safety decisions (delegated to L5).
-    • NO direct provider/SDK calls (Anthropic/Gemini/OpenAI/etc.).
+    • NO direct provider/SDK calls.
 
-This design satisfies the Agentic Ecosystem constraints for:
-    • Layering Model (ID 1)
-    • Agent Boundaries (ID 2)
-    • Typed Contracts (ID 3)
-    • Workflow DAGs (ID 4)
+L3 depends only on:
+    • models.PlanObject / WorkflowState / StatePatch / WorkflowPhase
+    • l2.route_executor
+    • l4.StateAdapter
+    • l5.SafetyEngine, PolicyEngine, ArbitrationEngine
+    • agents.COUNCIL_OF_QA, MultiAgentOrchestrator
+    • self_correction (for advisory correction surfaces)
 """
 
 from __future__ import annotations
@@ -67,10 +58,9 @@ from agents import MultiAgentOrchestrator, COUNCIL_OF_QA
 from self_correction import analyze_state_for_correction, to_patch_dict as sc_to_patch_dict
 
 
-# =============================================================================
+# ============================================================================
 # 1. PHASE MACHINE
-# =============================================================================
-
+# ============================================================================
 
 class PhaseMachine:
     """
@@ -124,10 +114,9 @@ class PhaseMachine:
         return self.phase.value
 
 
-# =============================================================================
+# ============================================================================
 # 2. DAG DEFINITIONS
-# =============================================================================
-
+# ============================================================================
 
 @dataclass
 class DAGNode:
@@ -209,6 +198,35 @@ class DAG:
                             f"Conditional edge target '{target}' from '{node.name}' "
                             "is not a defined node."
                         )
+
+    def topological_order(self) -> List[str]:
+        """
+        Return a simple topological ordering of nodes based on edges.
+
+        Used by higher layers (e.g., main_v10_9) when they want to run a
+        statically-ordered DAG without invoking DAGExecutor.
+        """
+        # Kahn-like algorithm using only edges; we ignore conditional edges here.
+        in_deg: Dict[str, int] = {name: 0 for name in self.nodes}
+        for src, targets in self.edges.items():
+            for tgt in targets:
+                in_deg[tgt] = in_deg.get(tgt, 0) + 1
+
+        ready = [name for name, deg in in_deg.items() if deg == 0]
+        order: List[str] = []
+
+        while ready:
+            n = ready.pop(0)
+            order.append(n)
+            for tgt in self.edges.get(n, []):
+                in_deg[tgt] -= 1
+                if in_deg[tgt] == 0:
+                    ready.append(tgt)
+
+        # Fallback: if cycle, just return all node names as-is.
+        if len(order) != len(self.nodes):
+            return list(self.nodes.keys())
+        return order
 
 
 class DAGExecutor:
@@ -296,10 +314,9 @@ class DAGExecutor:
         ready.sort()
 
 
-# =============================================================================
+# ============================================================================
 # 3. GLOBAL ORCHESTRATOR
-# =============================================================================
-
+# ============================================================================
 
 @dataclass
 class Orchestrator:
@@ -332,10 +349,6 @@ class Orchestrator:
     policy_engine: PolicyEngine = field(default_factory=PolicyEngine)
     arbitration_engine: ArbitrationEngine = field(default_factory=ArbitrationEngine)
 
-    # -------------------------------------------------------------------------
-    # Internal helpers
-    # -------------------------------------------------------------------------
-
     def _apply_execution_to_state(self, mode: str, result: ExecutionResult[Any]) -> None:
         """
         Map an L2 ExecutionResult payload into L4 state via StatePatch.
@@ -346,12 +359,13 @@ class Orchestrator:
         payload = result.payload
         norm_mode = mode.lower()
 
+        if hasattr(payload, "to_dict"):
+            p = payload.to_dict()  # type: ignore[assignment]
+        else:
+            p = dict(payload)
+
         if norm_mode == "strategy":
-            # Store selected strategy + decision metadata
-            if hasattr(payload, "to_dict"):
-                p = payload.to_dict()  # type: ignore[assignment]
-            else:
-                p = dict(payload)
+            # store strategy result
             patch_value = {
                 "branches": p.get("branches", []),
                 "selected_strategy": p.get("selected_branch"),
@@ -365,93 +379,79 @@ class Orchestrator:
             self.state_adapter.apply_patch(StatePatch(key="strategy_result", value=patch_value))
 
         elif norm_mode == "rag":
-            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
             self.state_adapter.apply_patch(StatePatch(key="rag_result", value=p))
 
         elif norm_mode == "drafting":
-            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
             self.state_adapter.apply_patch(StatePatch(key="draft_result", value=p))
 
         elif norm_mode == "bullets":
-            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
             self.state_adapter.apply_patch(StatePatch(key="bullet_result", value=p))
 
         elif norm_mode == "qa":
-            # For QA, ensure "report" key exists
-            if hasattr(payload, "qa_report"):
-                report_dict = payload.qa_report.to_dict()  # type: ignore[attr-defined]
+            if "qa_report" in p:
+                report_dict = p["qa_report"]
                 patch_value = {"report": report_dict}
             else:
-                patch_value = {"report": payload}
+                patch_value = {"report": p}
             self.state_adapter.apply_patch(StatePatch(key="qa_result", value=patch_value))
 
         elif norm_mode == "safety":
-            # For Safety, align with state["safety_result"]["report"]
-            if hasattr(payload, "safety_report"):
-                report_dict = payload.safety_report.to_dict()  # type: ignore[attr-defined]
+            if "safety_report" in p:
+                report_dict = p["safety_report"]
                 patch_value = {
                     "report": report_dict,
-                    "sanitized": getattr(payload, "sanitized_content", ""),
+                    "sanitized": p.get("sanitized_content", ""),
                 }
             else:
-                patch_value = {"report": payload}
+                patch_value = {"report": p}
             self.state_adapter.apply_patch(StatePatch(key="safety_result", value=patch_value))
 
         elif norm_mode == "prompt_engineering":
-            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
             self.state_adapter.apply_patch(StatePatch(key="prompt_engineering_result", value=p))
 
         elif norm_mode == "hil":
-            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
             self.state_adapter.apply_patch(StatePatch(key="hil_result", value=p))
 
         elif norm_mode == "meta_learning":
-            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
             self.state_adapter.apply_patch(StatePatch(key="meta_learning_result", value=p))
 
         else:
             # Unknown modes are stored verbatim under "last_execution"
-            p = payload.to_dict() if hasattr(payload, "to_dict") else dict(payload)
             self.state_adapter.apply_patch(
                 StatePatch(key="last_execution", value={"mode": norm_mode, "payload": p})
             )
 
     # -------------------------------------------------------------------------
-    # Public API
+    # PUBLIC API
     # -------------------------------------------------------------------------
 
     def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
         """
         Execute full L3 orchestration for a single L1 PlanObject.
 
-        This is a synchronous API; higher layers (main/CLI/batch) may wrap
-        it with asyncio as needed. Internally, this uses asyncio.run to
-        call the async L2 route_executor.
+        This is a synchronous API; higher layers may wrap it with
+        asyncio as needed. Internally, it uses asyncio.run to call
+        async L2 route_executor when needed.
 
         All state mutations are performed via L4.StateAdapter; the
         returned WorkflowState contains the final state snapshot.
         """
-        # 1. Initialize phase machine and cost tracker
         machine = PhaseMachine()
         cost_tracker = CostTracker()
 
-        # 2. Seed adapter with initial state via patches
         workflow_id = str(initial_state.get("workflow_id") or "workflow_v10_9")
+
         for key, value in (initial_state or {}).items():
             self.state_adapter.apply_patch(StatePatch(key=key, value=value))
 
-        # 3. Phase: INIT → PLANNING
+        # Phase: INIT → PLANNING
         machine.transition(WorkflowPhase.PLANNING)
         mode = str(plan.get("mode", "")).lower()
         if not mode:
             raise ValidationError("PlanObject missing 'mode' field.")
 
-        # 4. DAG nodes
+        # Node: plan_node attaches plan + state
         def plan_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            """
-            Attach plan and current state to the context. No planning logic
-            occurs here; PlanObject is assumed to be fully formed by L1.
-            """
             context["plan"] = plan
             context["state"] = self.state_adapter.state
             context["workflow_phase"] = machine.current_value()
@@ -462,10 +462,6 @@ class Orchestrator:
             return await route_executor(p, s)
 
         def execute_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            """
-            Execute the given PlanObject via L2 route_executor and patch
-            the results into L4 via StateAdapter.
-            """
             nonlocal cost_tracker
             cost_tracker.start_span("execution")
             current_state = self.state_adapter.state
@@ -473,34 +469,20 @@ class Orchestrator:
             try:
                 exec_result: ExecutionResult[Any] = asyncio.run(_execute_async(plan, current_state))
             except WorkflowTimeoutError as exc:
-                # If L2 times out, mark workflow as failed; state remains as-is.
                 raise ToolExecutionError(f"L2 execution timed out: {exc}") from exc
 
             cost_tracker.end_span("execution")
 
             context["execution_result"] = exec_result
-            # Patch state using L4 adapter, domain-specific keys
             self._apply_execution_to_state(mode, exec_result)
             context["state"] = self.state_adapter.state
 
-            # Phase: PLANNING → EXECUTING
             machine.transition(WorkflowPhase.EXECUTING)
             context["workflow_phase"] = machine.current_value()
             return context
 
         def safety_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            """
-            Run L5 safety evaluation based on current state and plan intent.
-            Produces:
-                context["safety_report"]
-                context["policy_decision"]
-                context["arbitration_action"]
-
-            This node does not mutate state directly except via L4
-            patches for safety/arbitration metadata.
-            """
             state = context.get("state", self.state_adapter.state)
-            # SafetyEngine consumes content; details are implemented in l5.py
             safety_report = self.safety_engine.evaluate_content(state, plan)
             policy_decision = self.policy_engine.review(safety_report)
             arbitration_action = self.arbitration_engine.decide(policy_decision, safety_report)
@@ -509,75 +491,49 @@ class Orchestrator:
             context["policy_decision"] = policy_decision
             context["arbitration_action"] = arbitration_action
 
-            # Attach safety-related blocks into state via adapter, merging with
-            # any executor-provided safety_result.
             self.state_adapter.apply_patch(
                 StatePatch(key="safety_result", value={"report_l5": safety_report})
             )
             self.state_adapter.apply_patch(StatePatch(key="arbitration", value=arbitration_action))
             context["state"] = self.state_adapter.state
 
-            # Phase: EXECUTING → REVIEWING
             machine.transition(WorkflowPhase.REVIEWING)
             context["workflow_phase"] = machine.current_value()
             return context
 
         def safety_condition(context: Dict[str, Any]) -> str:
-            """
-            Decide next edge key based on arbitration action:
-                - "halt"    → stop further nodes
-                - "proceed" → continue QA council / finalize
-            """
             action = (context.get("arbitration_action") or {}).get("action", "proceed")
             if action == "halt":
                 return "halt"
             return "proceed"
 
         def qa_council_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            """
-            If mode == "qa", run multi-agent QA council using COUNCIL_OF_QA.
-            If not QA mode, this node is a no-op (still present in the DAG).
-            """
             if mode != "qa":
                 return context
-
             state = context.get("state", self.state_adapter.state)
             ma_orch = MultiAgentOrchestrator(graph=COUNCIL_OF_QA, state_adapter=self.state_adapter)
             council_state = ma_orch.dispatch_for_qa(state, plan)
-            # The orchestrator returns a dict of fields; reconcile through L4
             for key, value in council_state.items():
                 self.state_adapter.apply_patch(StatePatch(key=key, value=value))
             context["state"] = self.state_adapter.state
             return context
 
         def finalize_node(context: Dict[str, Any]) -> Dict[str, Any]:
-            """
-            Finalize context: attach telemetry, optimization hints, and
-            optional self-correction signals.
-
-            This node is pure meta/orchestration; it does not perform any
-            planning, execution, or safety decisions.
-            """
-            # Cost spans & optimization hint
             spans = cost_tracker.snapshot()
             optimization = compute_optimization_hint(spans.get("spans", []))
 
-            # Attach telemetry into state
             telemetry_block = {
                 "spans": spans.get("spans", []),
                 "optimization": optimization,
             }
             self.state_adapter.apply_patch(StatePatch(key="telemetry", value=telemetry_block))
 
-            # Self-correction recommendation (meta-layer only)
             sc_rec = analyze_state_for_correction(self.state_adapter.state)
             sc_patch = sc_to_patch_dict(sc_rec)
-            # sc_to_patch_dict returns {"self_correction": {...}}
             self.state_adapter.apply_patch(StatePatch(key="self_correction", value=sc_patch["self_correction"]))
 
             context["state"] = self.state_adapter.state
 
-            # Emit a global event
             record_event(
                 "orchestrator_cycle",
                 {
@@ -589,12 +545,10 @@ class Orchestrator:
                 },
             )
 
-            # Phase: REVIEWING → COMPLETE
             machine.transition(WorkflowPhase.COMPLETE)
             context["workflow_phase"] = machine.current_value()
             return context
 
-        # Wrap node callables into DAGNodes
         nodes: Dict[str, DAGNode] = {
             "plan_node": DAGNode(name="plan_node", run=plan_node),
             "execute_node": DAGNode(name="execute_node", run=execute_node),
@@ -611,11 +565,10 @@ class Orchestrator:
             "finalize_node": DAGNode(name="finalize_node", run=finalize_node),
         }
 
-        # Default edges (when conditional edges don't override)
         edges: Dict[str, List[str]] = {
             "plan_node": ["execute_node"],
             "execute_node": ["safety_node"],
-            "safety_node": [],        # actual edges decided by safety_condition
+            "safety_node": [],
             "qa_council_node": ["finalize_node"],
             "finalize_node": [],
         }
@@ -623,7 +576,6 @@ class Orchestrator:
         dag = DAG(nodes=nodes, edges=edges)
         executor = DAGExecutor()
 
-        # Run DAG
         initial_context = {
             "plan": plan,
             "state": self.state_adapter.state,
@@ -633,8 +585,7 @@ class Orchestrator:
 
         try:
             final_context = executor.run(dag, initial_context)
-        except ToolExecutionError as exc:
-            # If orchestration fails at DAG level, mark workflow as FAILED.
+        except ToolExecutionError:
             machine.transition(WorkflowPhase.FAILED)
             final_state = self.state_adapter.state
             phase_metadata = {"history": list(machine.history)}
