@@ -33,7 +33,7 @@ without violating layer purity.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 # ============================================================================
@@ -47,9 +47,9 @@ class RoutingBias:
     Routing-level preferences for L2/L5.
 
     Fields:
-        prefer_fast:            prefer cheaper/faster models
+        prefer_fast:             prefer cheaper/faster models
         prefer_robust_retrieval: bias toward more robust RAG settings
-        prefer_long_context:    bias toward long-context models
+        prefer_long_context:     bias toward long-context models
     """
     prefer_fast: bool = False
     prefer_robust_retrieval: bool = False
@@ -62,8 +62,8 @@ class PlanningBias:
     Planning (L1 reasoning) preferences.
 
     Fields:
-        conservative:          reduce branching / depth
-        exploratory:           allow more branches / alternatives
+        conservative:           reduce branching / depth
+        exploratory:            allow more branches / alternatives
         deterministic_recovery: bias toward structured recovery plans
     """
     conservative: bool = False
@@ -77,8 +77,8 @@ class QaBias:
     QA-related preferences and signals.
 
     Fields:
-        recent_failures:       QA has recently failed often
-        require_extra_pass:    bias toward extra QA passes
+        recent_failures:    QA has recently failed often
+        require_extra_pass: bias toward extra QA passes
     """
     recent_failures: bool = False
     require_extra_pass: bool = False
@@ -205,7 +205,6 @@ def update_from_spans(spans: List[Dict[str, Any]]) -> None:
 
     prefer_fast_before = META_PROFILE.routing_bias.prefer_fast
 
-    # If planning is significantly more expensive, we bias toward "fast" models.
     if p_ms > e_ms * 1.1 and p_ms > 0.0:
         META_PROFILE.routing_bias.prefer_fast = True
     else:
@@ -332,7 +331,7 @@ def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
 
     Heuristics (restored from v10_8 + extended):
 
-        • Many QA issues → planning_bias.conservative = True; qa_bias.recent_failures = True.
+        • Many QA issues → conservative planning, qa.recent_failures = True.
         • Many safety issues → safety_bias.heightened_caution = True.
         • Many HIL issues → safety_bias.human_review_important = True.
     """
