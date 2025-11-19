@@ -1,22 +1,28 @@
 # FILE: l2.py
 """
-Unified L2 Execution Layer (v10_9) — FULL AGENTIC IMPLEMENTATION (SINGLE MODE)
+Unified L2 Execution Layer (v10_9) — ENTERPRISE REFACTOR
 
-This module fully restores execution capabilities in a way that is:
+This module fully restores and extends execution capabilities in a way
+that is:
 
-    • Compatible with the v10_9 L1–L5 architecture
-    • Single-mode: always "full agentic" (no toy/deterministic-only mode)
-    • Structured around typed payloads from models.py
-    • Deterministic and side-effect free with respect to external services
-      (no actual network calls; model clients can be added later)
+    • Compatible with the v10_9 L1–L5 architecture.
+    • Strictly L2-only: EXECUTION and LOCAL domain logic.
+    • Single-mode: always "full agentic" (no toy mode).
+    • Structured around typed payloads from models.py.
+    • Deterministic and side-effect free with respect to external
+      services in this reference implementation (tool/LLM clients can
+      be injected via wrappers or higher-level orchestration).
 
 Responsibilities of L2:
     • Execute PlanObjects from L1 (one domain per executor).
     • Perform retrieval, ranking, and evidence fusion (RAG).
-    • Generate bullets from strategy/drafting plans.
-    • Produce drafting outputs (multi-section drafts).
-    • Run QA checks according to L1 QA plans.
+    • Generate bullets from strategy/drafting plans (BulletGuild-ready).
+    • Produce drafting outputs (multi-section drafts, Guild-ready).
+    • Run QA checks according to L1 QA plans (core + tool-suite-ready).
     • Perform safety evaluation (PII, forbidden content, toxicity).
+    • Prepare HIL prompts and consume HIL responses.
+    • Prepare prompt envelopes / prompt metadata for prompts layer.
+    • Produce meta-learning snapshots from logs/state.
     • Return ExecutionResult[TypedPayload], never raw dicts.
 
 Non-responsibilities:
@@ -25,7 +31,8 @@ Non-responsibilities:
     • NO state mutation (L4).
     • NO final safety/policy decisions (L5).
 
-L3 orchestrators should call:
+A single entrypoint is provided:
+
     - route_executor(plan: PlanObject, state: dict) -> ExecutionResult
 """
 
@@ -43,6 +50,7 @@ from models import (
     StrategyBranch,
     RAGExecutionPayload,
     RAGDocument,
+    RAGExternalStats,
     BulletExecutionPayload,
     DraftExecutionPayload,
     QAFinding,
@@ -51,6 +59,12 @@ from models import (
     SafetyIssue,
     SafetyReport,
     SafetyExecutionPayload,
+    HILPrompt,
+    HILResponse,
+    HILExecutionPayload,
+    MetaLearningFinding,
+    MetaLearningSnapshot,
+    MetaLearningExecutionPayload,
 )
 from runtime_utils import (
     Retrieval,
@@ -73,12 +87,15 @@ class ExecutionAgent(ABC):
 
     Each executor is responsible for exactly ONE domain:
 
-        • StrategyExecutor  → strategy
-        • RAGExecutor       → rag
-        • BulletExecutor    → bullets
-        • DraftingExecutor  → drafting
-        • QAExecutor        → qa
-        • SafetyExecutor    → safety
+        • StrategyExecutor         → "strategy"
+        • RAGExecutor              → "rag"
+        • BulletExecutor           → "bullets"
+        • DraftingExecutor         → "drafting"
+        • QAExecutor               → "qa" (core deterministic QA)
+        • SafetyExecutor           → "safety"
+        • PromptEngineeringExecutor→ "prompt_engineering"
+        • HILExecutor              → "hil"
+        • MetaLearningExecutor     → "meta_learning"
 
     This respects the "max 1–2 capabilities per agent" constraint.
     """
@@ -92,6 +109,10 @@ class ExecutionAgent(ABC):
         raise NotImplementedError
 
 
+# Helper: run async executor from sync context inside L3 Orchestrator
+AsyncExecutorFn = Callable[[PlanObject, Dict[str, Any]], Awaitable[ExecutionResult[Any]]]
+
+
 # =============================================================================
 # 2. STRATEGY EXECUTOR
 # =============================================================================
@@ -103,15 +124,17 @@ class StrategyExecutor(ExecutionAgent):
     StrategyExecutionPayload.
 
     L1 supplies:
-        plan["branches"]  (list of strategy branches with focus_areas, etc.)
+        plan["branches"]            (list of strategy branches)
         plan["aggregated_decision"]
         plan["aggregated_confidence"]
         plan["aggregated_rationale"]
+        plan["complexity"] (optional)
 
     L2 adds:
         • a normalized typed payload
-        • a deterministic selection rule (e.g., first branch or
-          the branch with best ranking if added later)
+        • a deterministic selection rule:
+              - prefer first branch
+              - can be extended later for more advanced selection
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[StrategyExecutionPayload]:
@@ -137,6 +160,8 @@ class StrategyExecutor(ExecutionAgent):
             aggregated_decision=str(plan.get("aggregated_decision", "")),
             aggregated_confidence=float(plan.get("aggregated_confidence", 0.0)),
             aggregated_rationale=str(plan.get("aggregated_rationale", "")),
+            complexity=str(plan.get("complexity", "")) or None,
+            surfaces=[str(s) for s in plan.get("surfaces", [])],
         )
 
         return ExecutionResult(
@@ -148,7 +173,7 @@ class StrategyExecutor(ExecutionAgent):
 
 
 # =============================================================================
-# 3. RAG EXECUTOR (HYDE, hybrid ranking, fusion)
+# 3. RAG EXECUTOR (HYDE, HYBRID, "EXTERNAL" READY)
 # =============================================================================
 
 
@@ -163,7 +188,9 @@ class RAGExecutor(ExecutionAgent):
         • Apply retrieval reranking and fusion
         • Return a RAGExecutionPayload
 
-    All operations are deterministic; no external services are called.
+    All operations in this reference implementation are deterministic;
+    no external services are called. In a production implementation,
+    external vector DB and BM25 clients can be wired here.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[RAGExecutionPayload]:
@@ -173,7 +200,7 @@ class RAGExecutor(ExecutionAgent):
         strategy = str(ranking_cfg.get("strategy", "hybrid"))
         enable_hyde = bool(ranking_cfg.get("enable_hyde", True))
 
-        # HYDE-like synthetic docs (for parity with 10_8 behavior)
+        # HYDE-like synthetic docs (for parity with 10_7 behavior)
         hyde_docs: List[Dict[str, Any]] = []
         if enable_hyde:
             for q in queries:
@@ -185,7 +212,7 @@ class RAGExecutor(ExecutionAgent):
                     }
                 )
 
-        # Base docs
+        # Base docs (stubbed deterministic evidence)
         raw_docs: List[Dict[str, Any]] = []
         for q in queries:
             raw_docs.append(
@@ -196,6 +223,7 @@ class RAGExecutor(ExecutionAgent):
                 }
             )
 
+        # Normalize & dedupe
         norm = Retrieval.normalize_documents(hyde_docs + raw_docs)
         norm = Retrieval.dedupe_results(norm)
 
@@ -228,6 +256,8 @@ class RAGExecutor(ExecutionAgent):
             documents=documents,
             ranking_strategy=strategy,
             hyde_used=enable_hyde,
+            vector_source=None,
+            bm25_used=(strategy == "bm25"),
         )
 
         return ExecutionResult(
@@ -239,7 +269,7 @@ class RAGExecutor(ExecutionAgent):
 
 
 # =============================================================================
-# 4. BULLET EXECUTOR (generation + metric focus)
+# 4. BULLET EXECUTOR (Guild-ready generation + metric focus)
 # =============================================================================
 
 
@@ -252,6 +282,7 @@ class BulletExecutor(ExecutionAgent):
 
         • Extracting bullet-worthy items from plan sections or deliverables.
         • Incorporating metric-focused hints from state (if available).
+        • Providing a simple "guild_passes" trace that can be extended.
 
     Output: BulletExecutionPayload
     """
@@ -265,7 +296,7 @@ class BulletExecutor(ExecutionAgent):
             sections = plan.get("sections", [])
             items = [str(s) for s in sections] if sections else [str(plan.get("objective", "unspecified-objective"))]
 
-        # Metric hints: try to find from state["strategy"] or resume/profile
+        # Metric hints: try to find from state["resume"]["master_resume"]
         metrics_focus: List[str] = []
         resume = (state.get("resume") or {}).get("master_resume") or {}
         experiences = resume.get("professional_experience") or []
@@ -302,6 +333,7 @@ class BulletExecutor(ExecutionAgent):
             bullets=bullets,
             guidelines=guidelines,
             metrics_focus=metrics_focus,
+            guild_passes=["metrics_enrichment"],
         )
 
         return ExecutionResult(
@@ -313,7 +345,7 @@ class BulletExecutor(ExecutionAgent):
 
 
 # =============================================================================
-# 5. DRAFTING EXECUTOR (structure → narrative)
+# 5. DRAFTING EXECUTOR (structure → narrative, Guild-ready)
 # =============================================================================
 
 
@@ -331,6 +363,7 @@ class DraftingExecutor(ExecutionAgent):
 
     L2:
         • Generates a simple but structured multi-section narrative.
+        • Provides "passes" metadata for later Drafting Guild extension.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[DraftExecutionPayload]:
@@ -365,6 +398,7 @@ class DraftingExecutor(ExecutionAgent):
             tone=tone,
             draft=drafts,
             hints=hints,
+            passes=["structure_pass"],
         )
 
         return ExecutionResult(
@@ -376,7 +410,7 @@ class DraftingExecutor(ExecutionAgent):
 
 
 # =============================================================================
-# 6. QA EXECUTOR (multi-check QA suite)
+# 6. QA EXECUTOR (multi-check QA suite, core deterministic)
 # =============================================================================
 
 
@@ -384,8 +418,8 @@ def _run_qa_checks(checks: List[str], content: str) -> Dict[str, bool]:
     """
     Deterministic QA checks based on plan["checks"].
 
-    This is a heuristic suite meant to mirror the 10_8 multi-tool QA,
-    but without any external LLM calls.
+    This is a heuristic suite meant to mirror the 10_7 multi-tool QA,
+    but without any external LLM calls in this reference implementation.
     """
     results: Dict[str, bool] = {}
     lower_content = content.lower()
@@ -434,6 +468,10 @@ class QAExecutor(ExecutionAgent):
         • Use plan["checks"] to decide which QA checks to run.
         • Inspect the content from state["draft_result"] or similar.
         • Produce a QAReport and wrap it in QAExecutionPayload.
+
+    This reference implementation does not call external QA tools; those
+    can be added as a separate QAToolSuiteExecutor wired alongside this
+    executor in production.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[QAExecutionPayload]:
@@ -469,6 +507,8 @@ class QAExecutor(ExecutionAgent):
             passed=passed,
             confidence=confidence,
             findings=findings,
+            tool_suite_used=False,
+            tools_invoked=[],
         )
 
         payload = QAExecutionPayload(qa_report=report)
@@ -538,45 +578,43 @@ class SafetyExecutor(ExecutionAgent):
         content = ""
         draft_result = state.get("draft_result") or {}
         draft_list = draft_result.get("draft") or []
-        if isinstance(draft_list, list):
+        if isinstance(draft_list, list) and draft_list:
             content = "\n".join(str(x) for x in draft_list)
         else:
-            content = str(draft_list)
-
-        if not content:
-            # Fallback to messages
-            msgs = state.get("messages") or []
-            if msgs:
-                last = msgs[-1]
+            messages = state.get("messages") or []
+            if messages:
+                last = messages[-1]
                 if isinstance(last, dict):
                     content = str(last.get("content", ""))
+        if not content:
+            content = str(state.get("summary", ""))
 
-        # Apply checks
-        sanitized = _sanitize_pii(content)
-        forbidden_hits = _scan_forbidden_terms(content)
-        tox = _toxicity_score(content)
-        tox_flag = tox > float(plan.get("contracts", {}).get("max_toxicity", 0.25))
+        checks: List[str] = [str(c) for c in plan.get("checks", [])]
+        risk_level = str(plan.get("risk_level", "normal"))
+
+        # PII & forbidden terms
+        sanitized = _sanitize_pii(content) if "pii_redaction" in checks else content
+        forbidden_hits = _scan_forbidden_terms(content) if "forbidden_content_scan" in checks else []
+        tox = _toxicity_score(content) if "toxicity_scan" in checks else 0.0
 
         issues: List[SafetyIssue] = []
         if sanitized != content:
-            issues.append(SafetyIssue(code="pii_redacted", description="PII was redacted"))
+            issues.append(SafetyIssue(code="pii_redacted", description="PII was redacted from content."))
         for term in forbidden_hits:
-            issues.append(SafetyIssue(code=f"forbidden:{term}", description=f"Forbidden term found: {term}"))
-        if tox_flag:
-            issues.append(SafetyIssue(code="toxicity", description="Toxicity threshold exceeded"))
+            issues.append(SafetyIssue(code=f"forbidden:{term}", description=f"Forbidden term '{term}' found."))
+        if tox > (0.25 if risk_level == "normal" else 0.15):
+            issues.append(SafetyIssue(code="toxicity", description="Toxicity score above threshold."))
 
-        # Placeholder for prompt_injection and constitutional checks:
-        # these are handled more fully at L5, but we include empty shells here.
-        prompt_injection = {"detected": False, "reason": "", "confidence": 0.0}
-        constitutional = {"passed": True, "violations": [], "confidence": 1.0}
+        # Simple bias/child checks are left to L5; here we just flag structural issues.
+        passed = len(issues) == 0
 
         report = SafetyReport(
-            passed=len(issues) == 0,
+            passed=passed,
             issues=issues,
             toxicity_score=tox,
-            audience=str(plan.get("audience", "general")),
-            prompt_injection=prompt_injection,
-            constitutional=constitutional,
+            audience=str(plan.get("audience", state.get("audience", "general"))),
+            prompt_injection={},
+            constitutional={},
         )
 
         payload = SafetyExecutionPayload(
@@ -593,32 +631,260 @@ class SafetyExecutor(ExecutionAgent):
 
 
 # =============================================================================
-# 8. EXECUTION ROUTER (plan.mode → executor)
+# 8. PROMPT ENGINEERING EXECUTOR
 # =============================================================================
 
 
-_EXECUTOR_MAP: Dict[str, ExecutionAgent] = {
-    "strategy": StrategyExecutor(),
-    "rag": RAGExecutor(),
-    "bullets": BulletExecutor(),
-    "drafting": DraftingExecutor(),
-    "qa": QAExecutor(),
-    "safety": SafetyExecutor(),
-}
+class PromptEngineeringExecutor(ExecutionAgent):
+    """
+    Convert a PromptEngineeringPlanner plan into prompt envelopes metadata.
+
+    NOTE:
+        This executor does NOT render actual prompts; that is done by
+        the dedicated prompt module and higher-level orchestration.
+        Here we simply normalize the plan into a metadata payload.
+    """
+
+    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[Dict[str, Any]]:
+        target_modes: List[str] = [str(m) for m in plan.get("target_modes", [])]
+        constraints: Dict[str, Any] = dict(plan.get("constraints", {}))
+
+        # Minimal deterministic metadata; in a full system this would
+        # map to actual prompt templates.
+        envelopes_meta = {
+            mode: {
+                "needs_framing": True,
+                "needs_context": True,
+                "needs_reasoning": constraints.get("must_include_reasoning", True),
+                "needs_safety_context": constraints.get("must_include_safety_context", True),
+            }
+            for mode in target_modes
+        }
+
+        payload = {
+            "prompt_envelopes": envelopes_meta,
+            "constraints": constraints,
+        }
+
+        return ExecutionResult(
+            status=ExecutionResult.SUCCESS,
+            payload=payload,
+            model="prompt-engineering-executor",
+            usage={"tokens": 0},
+        )
+
+
+# =============================================================================
+# 9. HIL EXECUTOR
+# =============================================================================
+
+
+class HILExecutor(ExecutionAgent):
+    """
+    Execute a HIL plan:
+
+        • Create an HILPrompt using the plan's question_template and
+          contextual state.
+        • Optionally attach an existing HILResponse if present in state.
+
+    This executor does NOT interface with a real human; in a production
+    system, an external UI/service would handle that and write back
+    the HILResponse into state.
+    """
+
+    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[HILExecutionPayload]:
+        question_template = str(plan.get("question_template", "")).strip() or (
+            "Please review this artifact for correctness, tone, and completeness."
+        )
+
+        # Build a simple context summary from state
+        summary = str(state.get("summary", "")) or "No summary available."
+        messages = state.get("messages") or []
+        last_user = ""
+        for msg in reversed(messages):
+            if isinstance(msg, dict) and msg.get("role") == "user":
+                last_user = str(msg.get("content", ""))
+                break
+
+        context_text = "Summary: " + summary
+        if last_user:
+            context_text += "\n\nLast user message: " + last_user
+
+        severity = str(plan.get("severity", "normal"))
+        prompt = HILPrompt(
+            question=question_template,
+            context=context_text,
+            recommended_action="approve_or_request_changes",
+            urgency=severity,
+        )
+
+        # If a prior HIL response exists in state, attach it
+        hil_state = state.get("hil_result") or {}
+        response_data = hil_state.get("response")
+        response: Optional[HILResponse] = None
+        if isinstance(response_data, dict):
+            response = HILResponse(
+                approved=bool(response_data.get("approved", False)),
+                comments=str(response_data.get("comments", "")),
+                requested_changes=[str(c) for c in response_data.get("requested_changes", [])],
+            )
+
+        payload = HILExecutionPayload(
+            prompt=prompt,
+            response=response,
+            surface=str(plan.get("surface", "hil_escalation")),
+        )
+
+        return ExecutionResult(
+            status=ExecutionResult.SUCCESS,
+            payload=payload,
+            model="hil-executor",
+            usage={"tokens": 0},
+        )
+
+
+# =============================================================================
+# 10. META-LEARNING EXECUTOR
+# =============================================================================
+
+
+class MetaLearningExecutor(ExecutionAgent):
+    """
+    Execute a meta-learning plan:
+
+        • Scan state for basic signals (qa_result, safety_result,
+          hil_result, etc.).
+        • Build a MetaLearningSnapshot summarizing key patterns.
+        • Return a MetaLearningExecutionPayload.
+
+    In a full implementation, this executor would consume external
+    logs and feedback stores; here we provide a deterministic stub.
+    """
+
+    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[MetaLearningExecutionPayload]:
+        workflow_id = str(plan.get("workflow_id", state.get("workflow_id", "unknown")))
+        signals: List[str] = [str(s) for s in plan.get("signals", [])]
+
+        findings: List[MetaLearningFinding] = []
+
+        # QA failures
+        if "qa_failures" in signals:
+            qa = (state.get("qa_result") or {}).get("report") or {}
+            issues = qa.get("issues", [])
+            if issues:
+                findings.append(
+                    MetaLearningFinding(
+                        kind="pattern",
+                        description=f"{len(issues)} QA issues detected in last run.",
+                        weight=0.7,
+                        metadata={"issues": issues},
+                    )
+                )
+
+        # Safety incidents
+        if "safety_incidents" in signals:
+            safety = (state.get("safety_result") or {}).get("report") or {}
+            s_issues = safety.get("issues", [])
+            if s_issues:
+                findings.append(
+                    MetaLearningFinding(
+                        kind="pattern",
+                        description=f"{len(s_issues)} safety issues detected in last run.",
+                        weight=0.9,
+                        metadata={"issues": s_issues},
+                    )
+                )
+
+        # HIL interventions
+        if "hil_interventions" in signals:
+            hil = state.get("hil_result") or {}
+            if hil.get("response"):
+                findings.append(
+                    MetaLearningFinding(
+                        kind="pattern",
+                        description="HIL response present in last run.",
+                        weight=0.6,
+                        metadata={"hil_result": hil},
+                    )
+                )
+
+        snapshot = MetaLearningSnapshot(
+            workflow_id=workflow_id,
+            raw_feedback_entries=0,
+            raw_preference_entries=0,
+            findings=findings,
+            proposal={"note": "Stub meta-learning proposal; extend with real analysis."},
+            critique={},
+        )
+
+        payload = MetaLearningExecutionPayload(snapshot=snapshot)
+
+        return ExecutionResult(
+            status=ExecutionResult.SUCCESS,
+            payload=payload,
+            model="meta-learning-executor",
+            usage={"tokens": 0},
+        )
+
+
+# =============================================================================
+# 11. ROUTER
+# =============================================================================
 
 
 async def route_executor(plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[Any]:
     """
-    Route a PlanObject to the appropriate L2 executor based on plan["mode"].
+    Unified L2 routing function.
 
-    This is the single entrypoint L3 uses to perform domain execution.
+    Dispatches a PlanObject to the appropriate executor based on
+    plan["mode"]. This is the ONE entrypoint L3 orchestrators use to
+    invoke L2 execution.
 
-    Raises:
-        ToolExecutionError if no executor is registered for the mode.
+    Supported modes:
+        • "strategy"
+        • "rag"
+        • "bullets"
+        • "drafting"
+        • "qa"
+        • "safety"
+        • "prompt_engineering"
+        • "hil"
+        • "meta_learning"
     """
-    mode = str(plan.get("mode", "")).lower()
-    if mode not in _EXECUTOR_MAP:
-        raise ToolExecutionError(f"No L2 executor registered for mode '{mode}'")
+    if not isinstance(plan, PlanObject):
+        raise ValidationError("route_executor expects a PlanObject instance.")
 
-    executor = _EXECUTOR_MAP[mode]
-    return await executor.execute(plan, state)
+    mode = str(plan.get("mode", "")).lower().strip()
+    if not mode:
+        raise ValidationError("PlanObject missing 'mode' field for L2 routing.")
+
+    agent: ExecutionAgent
+
+    if mode == "strategy":
+        agent = StrategyExecutor()
+    elif mode == "rag":
+        agent = RAGExecutor()
+    elif mode == "bullets":
+        agent = BulletExecutor()
+    elif mode == "drafting":
+        agent = DraftingExecutor()
+    elif mode == "qa":
+        agent = QAExecutor()
+    elif mode == "safety":
+        agent = SafetyExecutor()
+    elif mode == "prompt_engineering":
+        agent = PromptEngineeringExecutor()
+    elif mode == "hil":
+        agent = HILExecutor()
+    elif mode == "meta_learning":
+        agent = MetaLearningExecutor()
+    else:
+        raise ValidationError(f"Unsupported plan mode for L2 execution: {mode!r}")
+
+    try:
+        return await agent.execute(plan, state)
+    except asyncio.TimeoutError as exc:
+        raise WorkflowTimeoutError(f"L2 execution timed out for mode={mode}") from exc
+    except Exception as exc:
+        # Wrap arbitrary exceptions in ToolExecutionError to keep contracts tight.
+        raise ToolExecutionError(f"L2 executor for mode={mode} failed: {exc}") from exc
