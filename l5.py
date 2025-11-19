@@ -1,106 +1,146 @@
 # FILE: l5.py
 """
-Unified L5 Safety & Policy Layer (v10_9) — PURE SAFETY / POLICY (RESTORED)
+Unified L5 Safety & Policy Layer (v10_9) — PURE SAFETY / POLICY (META-AWARE, RESTORED)
 
 This module implements ALL high-level safety, policy, arbitration, and
 model-routing responsibilities for the v10_9 agentic workflow.
 
 Responsibilities (L5 only):
-    • Safety configuration surfaces (modes, output profiles, rules).
-    • Prompt injection detection (taxonomy + patterns).
-    • Bias / PII / toxicity scanning orchestration (on top of L2).
-    • Constitutional review (rule-based, deterministic).
-    • SafetyEngine      (aggregate safety report, normalized issues).
-    • PolicyEngine      (allow / retry / replan / block / escalate).
-    • ArbitrationEngine (normalize L5 decision → ArbitrationDecision).
-    • ModelRouter       (model selection hints, respecting AccessPolicy).
+    • SafetyEngine           (aggregated safety report from content).
+    • PolicyEngine           (allow / retry / replan / block, mode-aware).
+    • ArbitrationEngine      (normalize L5 action → L3 orchestrator hint).
+    • Lightweight model-routing hints (delegated to routing.py for execution).
 
-L5 DOES NOT:
-    • Call tools or LLMs directly.
-    • Mutate global state (writes must go via L4.StateAdapter helpers).
-    • Orchestrate DAGs (L3).
-    • Perform business reasoning (L1).
-    • Execute RAG/drafting/QA logic (L2).
+L5 consumes, but does NOT own:
+    • L2 safety outputs (SafetyExecutionPayload).
+    • L4 state (read-only views).
+    • meta_profile biases (SafetyBias, PlanningBias, RoutingBias, etc.).
+    • L1 plan metadata (audience, risk level, surfaces).
 
-This file restores missing v10_8 safety and policy capabilities:
-    • SafetyOutputProfile + safety modes (STRICT/BALANCED/PERMISSIVE).
-    • SafetyRule / PolicyRule system.
-    • InjectionPattern taxonomy and defaults.
-    • Delegation guardrails and routing permissions.
-    • Stability / minimality-style contracts (at config level).
-    • Error normalization and structured decisions.
+Layer constraints (Agentic Guardrails):
+    • NO L1 planning (no PlanObject creation).
+    • NO L2 execution (no tool/LLM calls).
+    • NO L3 DAG/orchestration.
+    • NO L4 state mutation (no StateAdapter usage).
+    • NO provider/SDK imports (Anthropic/Gemini/OpenAI, etc.).
+
+Integration points:
+    • main_v10_9:
+        - calls SafetyEngine.evaluate_content(state, plan) → safety_report: dict
+        - calls PolicyEngine.review(safety_report) → policy_decision: dict
+        - calls ArbitrationEngine.arbitrate(policy_decision, safety_report)
+          → ArbitrationDecision (from models) used to hint L3/HIL behavior.
 """
 
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
-from models import (
-    SafetyOutputProfile,
-    InjectionPattern,
-    InjectionPatternType,
-    SafetyRule,
-    PolicyRule,
-    AccessPolicy,
-    ArbitrationDecision,
-)
-from runtime_utils import SafetyException
+from models import ArbitrationDecision
+from meta_profile import get_safety_bias, get_planning_bias
 
 
 # ============================================================================
-# 1. BASIC REDACTION & SCANNING UTILITIES
+# 1. SAFETY MODES
 # ============================================================================
 
-EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
-PHONE_RE = re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b")
+
+class SafetyMode(str, Enum):
+    """
+    Safety operating mode:
+
+        STRICT     – block on any serious issue (injection, policy, constitutional).
+        BALANCED   – block on injection or strong policy violations.
+        PERMISSIVE – block primarily on injection; allow more borderline cases.
+    """
+
+    STRICT = "strict"
+    BALANCED = "balanced"
+    PERMISSIVE = "permissive"
+
+
+def _derive_mode_from_meta(base_mode: SafetyMode) -> SafetyMode:
+    """
+    Combine base SafetyMode with meta_profile biases:
+
+        • safety_bias.heightened_caution  → STRICT
+        • planning_bias.conservative      → tilt to STRICT
+        • safety_bias.human_review_important alone → BALANCED is ok
+    """
+    safety_bias = get_safety_bias()
+    planning_bias = get_planning_bias()
+
+    if safety_bias.get("heightened_caution") or planning_bias.get("conservative"):
+        return SafetyMode.STRICT
+
+    # If the only signal is "human_review_important", balanced is fine.
+    if base_mode == SafetyMode.PERMISSIVE and safety_bias.get("human_review_important"):
+        return SafetyMode.BALANCED
+
+    return base_mode
+
+
+# ============================================================================
+# 2. REDACTION & SCANNING UTILITIES
+# ============================================================================
+
+_EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
+_PHONE_RE = re.compile(r"\b(?:\+?1[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}\b")
+_SSN_RE = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 
 
 def redact_pii(text: str) -> str:
-    """Deterministic PII redaction (email + phone).
-
-    This is intentionally simple and fully deterministic. L2 performs
-    basic redaction; L5 can re-run redaction defensively.
-    """
+    """Remove common PII markers deterministically."""
     if not text:
         return text
-    text = EMAIL_RE.sub("[EMAIL]", text)
-    text = PHONE_RE.sub("[PHONE]", text)
+    text = _EMAIL_RE.sub("[EMAIL_REDACTED]", text)
+    text = _PHONE_RE.sub("[PHONE_REDACTED]", text)
+    text = _SSN_RE.sub("[SSN_REDACTED]", text)
     return text
 
 
 def scan_forbidden(text: str, forbidden_terms: List[str]) -> List[str]:
-    """Return a list of forbidden terms found in `text` (case-insensitive)."""
-    lower = text.lower()
+    """Return list of forbidden terms found in content."""
     hits: List[str] = []
+    lower = text.lower()
     for term in forbidden_terms:
-        t = term.lower()
-        if t and t in lower:
+        if term.lower() in lower:
             hits.append(term)
     return hits
 
 
 def toxicity_score(text: str) -> float:
-    """Very small heuristic toxicity score (0.0–1.0)."""
-    if not text or not text.strip():
+    """
+    Heuristic toxicity metric:
+        - Looks for coarse toxic markers.
+        - Normalized to [0.0, 1.0].
+    """
+    if not text:
         return 0.0
     lower = text.lower()
-    toxic_markers = ["idiot", "stupid", "hate", "kill", "trash"]
-    matches = sum(1 for m in toxic_markers if m in lower)
-    if matches == 0:
-        return 0.0
-    return min(1.0, 0.2 * matches)
+    markers = ["idiot", "stupid", "hate", "kill", "trash"]
+    count = sum(lower.count(m) for m in markers)
+    toks = len(text.split()) or 1
+    return min(1.0, count / toks)
 
 
 def scan_bias(text: str) -> List[str]:
-    """Deterministic bias scan for age/gender/stereotype patterns."""
+    """
+    Deterministic bias scan for:
+        • age-related terms
+        • gendered terms
+        • stereotype patterns
+    """
     lower = text.lower()
     patterns = {
-        "age_bias": ["old", "young", "elderly", "senior citizen"],
+        "age_bias": ["old", "young", "elderly", "junior", "senior citizen"],
         "gendered_terms": ["he/she", "him/her", "manpower", "chairman"],
         "stereotypes": ["aggressive female", "emotional woman"],
     }
+
     hits: List[str] = []
     for label, terms in patterns.items():
         for t in terms:
@@ -110,92 +150,87 @@ def scan_bias(text: str) -> List[str]:
 
 
 # ============================================================================
-# 2. PROMPT INJECTION DETECTION & DEFAULT PATTERNS
+# 3. PROMPT INJECTION & CONSTITUTIONAL REVIEW
 # ============================================================================
+
+_PI_PATTERNS = [
+    r"ignore all previous instructions",
+    r"disregard prior instructions",
+    r"my real task is",
+    r"reveal the system prompt",
+    r"break character",
+    r"disable safety",
+]
 
 
 def detect_prompt_injection(text: str) -> Dict[str, Any]:
-    """Heuristic prompt injection detector.
+    """
+    Deterministic prompt injection detector using simple regex patterns.
 
     Returns:
         {
             "detected": bool,
             "reason": str,
             "confidence": float,
+            "matched_patterns": [<strings>],
+        }
+    """
+    if not text:
+        return {"detected": False, "reason": "", "confidence": 0.0, "matched_patterns": []}
+
+    lower = text.lower()
+    matched: List[str] = []
+
+    for pattern in _PI_PATTERNS:
+        if re.search(pattern, lower):
+            matched.append(pattern)
+
+    if matched:
+        return {
+            "detected": True,
+            "reason": f"Matched injection patterns: {', '.join(matched)}",
+            "confidence": 0.95,
+            "matched_patterns": matched,
         }
 
-    v10_8 had a richer taxonomy; here we preserve the basic behavior
-    but also expose structured InjectionPattern hooks via
-    DEFAULT_INJECTION_PATTERNS.
+    return {"detected": False, "reason": "", "confidence": 0.0, "matched_patterns": []}
+
+
+_CONSTITUTION_RULES = {
+    "no_hate": lambda t: "hate" not in t.lower(),
+    "no_explicit": lambda t: "explicit" not in t.lower(),
+    "no_violence": lambda t: "violence" not in t.lower(),
+    "tone_professional": lambda t: "idiot" not in t.lower() and "stupid" not in t.lower(),
+}
+
+
+def constitutional_review(text: str) -> Dict[str, Any]:
     """
-    lower = text.lower()
-    signals: List[str] = []
+    Deterministic constitutional review.
 
-    if "ignore previous instructions" in lower or "disregard all prior" in lower:
-        signals.append("goal_override")
-    if "you are now" in lower and "system" in lower:
-        signals.append("role_override")
-    if "leak the prompt" in lower or "reveal the system prompt" in lower:
-        signals.append("prompt_leak")
-    if "exfiltrate" in lower or "upload" in lower:
-        signals.append("data_exfiltration")
-    if "disable safety" in lower or "bypass safety" in lower:
-        signals.append("safety_bypass")
+    Returns:
+        {
+            "passed": bool,
+            "violations": [...],
+            "confidence": float,
+        }
+    """
+    if not text:
+        return {"passed": True, "violations": [], "confidence": 1.0}
 
-    if not signals:
-        return {"detected": False, "reason": "", "confidence": 0.0}
+    violations: List[str] = []
+    for rule, fn in _CONSTITUTION_RULES.items():
+        if not fn(text):
+            violations.append(rule)
 
-    reason = ",".join(signals)
-    confidence = min(1.0, 0.25 * len(signals))
-    return {"detected": True, "reason": reason, "confidence": confidence}
+    passed = len(violations) == 0
+    conf = 1.0 - (len(violations) / max(len(_CONSTITUTION_RULES), 1))
 
-
-# A compact but expressive default injection pattern set
-DEFAULT_INJECTION_PATTERNS: List[InjectionPattern] = [
-    InjectionPattern(
-        pattern_id="inj:goal_override",
-        type=InjectionPatternType.GOAL_OVERRIDE,
-        description="Attempts to override the system's primary objectives.",
-        severity="high",
-        examples=["Ignore previous instructions", "Disregard all prior context"],
-    ),
-    InjectionPattern(
-        pattern_id="inj:role_override",
-        type=InjectionPatternType.ROLE_OVERRIDE,
-        description="Attempts to change the assistant's role or identity.",
-        severity="medium",
-        examples=["You are now the user", "You are no longer ChatGPT"],
-    ),
-    InjectionPattern(
-        pattern_id="inj:prompt_leak",
-        type=InjectionPatternType.PROMPT_LEAK,
-        description="Attempts to reveal internal prompts or configuration.",
-        severity="high",
-        examples=["reveal the system prompt", "print your full configuration"],
-    ),
-]
-
-
-# ============================================================================
-# 3. SAFETY OUTPUT PROFILES & DEFAULTS
-# ============================================================================
-
-DEFAULT_SAFETY_OUTPUT_PROFILE = SafetyOutputProfile()  # BALANCED mode by default
-
-# Defensive: if SafetyOutputProfile.mode is an Enum, we don't rely on its exact type here.
-STRICT_SAFETY_OUTPUT_PROFILE = SafetyOutputProfile(
-    mode=getattr(SafetyOutputProfile, "mode", None),
-    enable_pii_detection=True,
-    enable_toxicity_detection=True,
-    enable_bias_detection=True,
-    enable_self_harm_detection=True,
-    enable_prompt_injection_detection=True,
-    enable_policy_deny_lists=True,
-    enable_policy_allow_lists=False,
-    redact_on_block=True,
-    allow_partial_redaction=False,
-    stability_required=True,
-)
+    return {
+        "passed": passed,
+        "violations": violations,
+        "confidence": round(conf, 3),
+    }
 
 
 # ============================================================================
@@ -205,230 +240,264 @@ STRICT_SAFETY_OUTPUT_PROFILE = SafetyOutputProfile(
 
 @dataclass
 class SafetyEngine:
-    """Aggregates safety signals and produces a normalized safety report.
+    """
+    Full safety engine that aggregates:
 
-    This is a *policy-agnostic* evaluator: it gathers evidence only.
-    PolicyEngine interprets the report.
+        • PII redaction
+        • forbidden content scan
+        • toxicity analysis
+        • prompt injection detection
+        • bias scan
+        • constitutional review
+
+    Primary API used by main_v10_9:
+
+        evaluate_content(state: dict, plan: PlanObject) -> safety_report: dict
+
+    This class is deterministic and does not call external LLMs/tools.
     """
 
-    profile: SafetyOutputProfile = field(default_factory=lambda: DEFAULT_SAFETY_OUTPUT_PROFILE)
-    injection_patterns: List[InjectionPattern] = field(default_factory=lambda: list(DEFAULT_INJECTION_PATTERNS))
-    safety_rules: List[SafetyRule] = field(default_factory=list)
+    forbidden_terms: List[str] = field(
+        default_factory=lambda: ["explicit", "violence", "hate", "slur", "password", "api key"]
+    )
 
-    def evaluate(self, content: str, audience: str = "general") -> Dict[str, Any]:
-        if audience not in ("general", "internal", "expert", "restricted"):
-            raise SafetyException(f"Audience '{audience}' not permitted.")
+    def _extract_content_and_audience(self, state: Dict[str, Any], plan: Any) -> (str, str):
+        # Audience.
+        audience = str(getattr(plan, "get", lambda *_: None)("audience", None) or state.get("audience", "general"))
 
-        redacted = redact_pii(content) if self.profile.enable_pii_detection else content
-        forbidden_terms = ["password", "ssn", "social security", "api key"]
-        forbidden_hits = scan_forbidden(content, forbidden_terms)
-        tox = toxicity_score(content) if self.profile.enable_toxicity_detection else 0.0
-        tox_flag = tox > 0.25
+        # Content priority:
+        #   1. draft_result["draft"] or draft_result["full_text"]
+        #   2. messages[-1]["content"]
+        #   3. summary
+        content = ""
 
-        bias_hits = scan_bias(content) if self.profile.enable_bias_detection else []
-        inj = (
-            detect_prompt_injection(content)
-            if self.profile.enable_prompt_injection_detection
-            else {"detected": False, "reason": "", "confidence": 0.0}
-        )
+        draft_result = state.get("draft_result") or {}
+        draft_payload = draft_result.get("payload") or draft_result
+        if isinstance(draft_payload, dict):
+            full_text = draft_payload.get("full_text") or ""
+            draft_list = draft_payload.get("draft") or []
+            if full_text:
+                content = full_text
+            elif isinstance(draft_list, list) and draft_list:
+                content = "\n".join(str(x) for x in draft_list)
 
-        # Map heuristic signals to rule-style issues
+        if not content:
+            messages = state.get("messages") or []
+            if messages:
+                last = messages[-1]
+                if isinstance(last, dict):
+                    content = str(last.get("content", ""))
+
+        if not content:
+            content = str(state.get("summary", ""))
+
+        return content, audience
+
+    def validate(self, content: str, audience: str = "general") -> Dict[str, Any]:
+        """
+        Validate a single content string and return a structured safety report.
+
+        The returned dict is intentionally compatible with SafetyReport-like
+        structures but remains plain-JSON.
+        """
+        redacted = redact_pii(content)
+        forbidden = scan_forbidden(content, self.forbidden_terms)
+        tox = toxicity_score(content)
+        bias_hits = scan_bias(content)
+        inj = detect_prompt_injection(content)
+        const = constitutional_review(content)
+
         issues: List[str] = []
-        if redacted != content and self.profile.enable_pii_detection:
+        if redacted != content:
             issues.append("pii_redacted")
-        if forbidden_hits and self.profile.enable_policy_deny_lists:
-            issues.append("forbidden_content")
-
-        if tox_flag:
+        issues.extend(f"forbidden:{t}" for t in forbidden)
+        if tox > 0.0:
             issues.append("toxicity")
-
+        issues.extend(bias_hits)
         if inj["detected"]:
             issues.append("prompt_injection")
-
-        if bias_hits:
-            issues.append("bias")
-
-        # Apply any SafetyRule overrides (purely additive here).
-        for rule in self.safety_rules:
-            if not rule.enabled:
-                continue
-            # This is intentionally simple; a real system would match on categories/metadata.
-            if rule.severity.lower() == "high" and rule.rule_id not in issues:
-                # no-op hook for now
-                pass
+        if not const["passed"]:
+            issues.extend(f"constitutional:{v}" for v in const["violations"])
 
         return {
-            "redacted_text": redacted,
-            "forbidden_hits": forbidden_hits,
-            "toxicity_score": tox,
-            "bias_hits": bias_hits,
-            "prompt_injection": inj,
+            "passed": len(issues) == 0,
             "issues": issues,
+            "toxicity_score": tox,
+            "audience": audience,
+            "prompt_injection": inj,
+            "constitutional": const,
+            "sanitized": redacted,
         }
+
+    def evaluate_content(self, state: Dict[str, Any], plan: Any) -> Dict[str, Any]:
+        """
+        Main entrypoint used by main_v10_9.
+
+        Extracts the relevant content from the orchestration state and
+        evaluates it under the safety engine.
+        """
+        content, audience = self._extract_content_and_audience(state, plan)
+        return self.validate(content, audience=audience)
 
 
 # ============================================================================
-# 5. POLICY ENGINE
+# 5. POLICY ENGINE (META-AWARE, MODE-AWARE)
 # ============================================================================
 
 
 @dataclass
 class PolicyEngine:
-    """Interprets safety reports into high-level decisions.
+    """
+    High-level policy enforcement engine.
 
-    Possible decisions (string form):
-        • "allow"
-        • "retry"      (re-run L2 with adjustments)
-        • "replan"     (ask L1 to replan)
-        • "block"
-        • "escalate"   (to HIL / manual review)
+    Maps a safety_report to a policy decision:
+        • allow       → proceed
+        • retry       → re-run L2 stage
+        • replan      → re-run L1 → L2
+        • block       → halt workflow (or escalate)
 
-    PolicyRules, SafetyRules, and AccessPolicy are used as *hints*
-    in this implementation; a full rules engine is out of scope.
+    PolicyEngine is aware of:
+        • SafetyMode    (STRICT/BALANCED/PERMISSIVE)
+        • Meta biases   (SafetyBias, PlanningBias)
     """
 
-    policy_rules: List[PolicyRule] = field(default_factory=list)
-    access_policy: Optional[AccessPolicy] = None
+    base_mode: SafetyMode = SafetyMode.BALANCED
 
-    def decide(self, safety_report: Dict[str, Any]) -> Dict[str, str]:
-        issues: List[str] = list(safety_report.get("issues") or [])
+    def review(self, safety_report: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Return a structured policy decision from a safety_report.
+
+        Shape:
+            {
+              "decision": "allow|retry|replan|block",
+              "reason":   "<short string>",
+              "mode":     "<effective mode>",
+            }
+        """
+        issues = safety_report.get("issues", []) or []
+        passed = safety_report.get("passed", False)
         inj = safety_report.get("prompt_injection", {}) or {}
         tox = float(safety_report.get("toxicity_score", 0.0))
 
-        # Baseline heuristic mapping
-        if "prompt_injection" in issues or inj.get("detected"):
-            decision = {"decision": "block", "reason": "prompt_injection_detected"}
-        elif "toxicity" in issues or tox > 0.5:
-            decision = {"decision": "retry", "reason": "toxicity_exceeded"}
-        elif "forbidden_content" in issues:
-            decision = {"decision": "replan", "reason": "forbidden_content"}
-        elif "pii_redacted" in issues:
-            decision = {"decision": "allow", "reason": "pii_redacted"}
-        elif issues:
-            decision = {"decision": "escalate", "reason": "unclassified_safety_issue"}
-        else:
-            decision = {"decision": "allow", "reason": "no_issues"}
+        # Combine base mode with meta-profile adjustments.
+        mode = _derive_mode_from_meta(self.base_mode)
 
-        # Apply PolicyRule overrides (very light-touch example).
-        for rule in self.policy_rules:
-            if not rule.enabled:
-                continue
-            if rule.action == "deny" and "forbidden" in rule.target:
-                if "forbidden_content" in issues:
-                    decision = {"decision": "block", "reason": f"policy:{rule.rule_id}"}
-            if rule.action == "escalate" and "toxicity" in rule.target:
-                if tox > 0.3:
-                    decision = {"decision": "escalate", "reason": f"policy:{rule.rule_id}"}
+        if passed and not issues:
+            return {"decision": "allow", "reason": "no_issues_detected", "mode": mode.value}
 
-        return decision
+        has_prompt_injection = inj.get("detected", False) or any(
+            "prompt_injection" in str(x) for x in issues
+        )
+        has_const_violation = any("constitutional" in str(x) for x in issues)
+        has_toxicity = any("toxicity" in str(x) for x in issues)
+        has_forbidden = any(str(x).startswith("forbidden:") for x in issues)
+        has_pii_redacted = any("pii_redacted" in str(x) for x in issues)
+
+        # STRICT: block on any serious signal.
+        if mode == SafetyMode.STRICT:
+            if has_prompt_injection or has_const_violation or has_forbidden or has_toxicity:
+                return {"decision": "block", "reason": "strict_block_on_issue", "mode": mode.value}
+
+        # BALANCED: focus on injection + policy as blockers.
+        if mode == SafetyMode.BALANCED:
+            if has_prompt_injection:
+                return {"decision": "block", "reason": "prompt_injection_detected", "mode": mode.value}
+            if has_forbidden:
+                return {"decision": "replan", "reason": "forbidden_content", "mode": mode.value}
+
+        # PERMISSIVE: primarily react to injection; policy types cause replan.
+        if mode == SafetyMode.PERMISSIVE:
+            if has_prompt_injection:
+                return {"decision": "block", "reason": "prompt_injection_detected", "mode": mode.value}
+            if has_forbidden:
+                return {"decision": "replan", "reason": "policy_violation", "mode": mode.value}
+
+        # Constitutional violations (any mode): prefer replan.
+        if has_const_violation:
+            return {"decision": "replan", "reason": "constitutional_violations", "mode": mode.value}
+
+        # Toxicity: suggest retry (e.g., regenerate safer variant).
+        if has_toxicity or tox > 0.25:
+            return {"decision": "retry", "reason": "toxicity_exceeded", "mode": mode.value}
+
+        # PII redaction alone is not a blocker: allow but record.
+        if has_pii_redacted:
+            return {"decision": "allow", "reason": "pii_was_redacted", "mode": mode.value}
+
+        # Fallback: there are issues, but none clearly mapped.
+        if issues:
+            if mode == SafetyMode.STRICT:
+                return {"decision": "block", "reason": "unclassified_safety_issue_strict", "mode": mode.value}
+            if mode == SafetyMode.BALANCED:
+                return {"decision": "replan", "reason": "unclassified_safety_issue", "mode": mode.value}
+            return {"decision": "allow", "reason": "issues_non_blocking_permissive", "mode": mode.value}
+
+        return {"decision": "allow", "reason": "default_allow", "mode": mode.value}
 
 
 # ============================================================================
-# 6. ARBITRATION ENGINE
+# 6. ARBITRATION ENGINE (policy → orchestrator hint)
 # ============================================================================
 
 
 @dataclass
 class ArbitrationEngine:
-    """Normalize PolicyEngine decisions into ArbitrationDecision objects."""
+    """
+    Normalize PolicyEngine decisions into ArbitrationDecision objects.
 
-    def arbitrate(self, policy_decision: Dict[str, str], safety_report: Dict[str, Any]) -> ArbitrationDecision:
-        action = policy_decision.get("decision", "block")
-        reason = policy_decision.get("reason", "unspecified")
-        metadata = {"safety_report": safety_report}
-        return ArbitrationDecision(action=action, reason=reason, metadata=metadata)
+    Actions (normalized):
 
-
-# ============================================================================
-# 7. MODEL ROUTER (HINT-ONLY)
-# ============================================================================
-
-
-@dataclass
-class RoutingCriteria:
-    """Criteria for model selection hints.
-
-    This is a *hint-only* router; it does not invoke any model.
+        • proceed   — workflow may continue
+        • retry_l2  — re-run L2 stage (same plan)
+        • rerun_l1  — re-plan at L1 then re-run L2
+        • halt      — stop the workflow
+        • escalate  — escalate to external HIL/safety review
     """
 
-    complexity: str = "medium"           # "low" | "medium" | "high"
-    latency_target_ms: int = 2000
-    cost_sensitivity: str = "balanced"   # "low" | "balanced" | "high"
-    risk_level: str = "normal"           # "normal" | "strict" | "high_safety"
-    model_available: bool = True
+    def arbitrate(self, policy_decision: Dict[str, Any], safety_report: Dict[str, Any]) -> ArbitrationDecision:
+        decision = policy_decision.get("decision", "allow")
+        mode = policy_decision.get("mode", SafetyMode.BALANCED.value)
 
-
-@dataclass
-class RoutingDecision:
-    model: str
-    endpoint: str
-    rationale: str
-
-
-@dataclass
-class ModelRouter:
-    """Very small, deterministic model-selection helper.
-
-    In v10_8, routing considered:
-
-        • complexity
-        • latency
-        • cost
-        • risk
-        • availability
-
-    We reproduce that behavior and also respect AccessPolicy if
-    configured, to restore routing-permissions semantics.
-    """
-
-    access_policy: Optional[AccessPolicy] = None
-
-    def select(self, criteria: RoutingCriteria) -> RoutingDecision:
-        # High complexity or strict-risk tasks
-        if criteria.complexity == "high" or criteria.risk_level in ("strict", "high_safety"):
-            candidate = RoutingDecision(
-                model="gpt-4.1",
-                endpoint="standard",
-                rationale="high_complexity_or_risk",
-            )
-        # Fast-latency tasks
-        elif criteria.latency_target_ms < 1000:
-            candidate = RoutingDecision(
-                model="gpt-4.1-mini",
-                endpoint="fast",
-                rationale="latency_optimized",
-            )
-        # Cost-sensitive tasks
-        elif criteria.cost_sensitivity == "high":
-            candidate = RoutingDecision(
-                model="gpt-4.1-mini",
-                endpoint="standard",
-                rationale="cost_optimized",
-            )
-        # Default
-        else:
-            candidate = RoutingDecision(
-                model="gpt-4.1-mini",
-                endpoint="standard",
-                rationale="default_route",
+        if decision == "allow":
+            return ArbitrationDecision(
+                action="proceed",
+                reason=policy_decision.get("reason", "no_issues"),
+                metadata={"mode": mode, "safety_report": safety_report},
             )
 
-        # If model unavailable, fallback.
-        if not criteria.model_available:
-            candidate = RoutingDecision(
-                model="gpt-4.1-mini",
-                endpoint="backup-fast",
-                rationale="primary_model_unavailable",
+        if decision == "retry":
+            return ArbitrationDecision(
+                action="retry_l2",
+                reason=policy_decision.get("reason", "retry_requested"),
+                metadata={"mode": mode, "safety_report": safety_report},
             )
 
-        # Respect AccessPolicy if configured.
-        if self.access_policy is not None:
-            if not self.access_policy.is_route_allowed(candidate.model, candidate.endpoint):
-                # Fallback to a permissive mini model if primary not allowed.
-                candidate = RoutingDecision(
-                    model="gpt-4.1-mini",
-                    endpoint="standard",
-                    rationale="access_policy_fallback",
+        if decision == "replan":
+            return ArbitrationDecision(
+                action="rerun_l1",
+                reason=policy_decision.get("reason", "replan_requested"),
+                metadata={"mode": mode, "safety_report": safety_report},
+            )
+
+        if decision == "block":
+            issues = safety_report.get("issues", []) or []
+            has_prompt_injection = any("prompt_injection" in str(x) for x in issues)
+            has_const = any("constitutional" in str(x) for x in issues)
+
+            if has_prompt_injection or has_const:
+                return ArbitrationDecision(
+                    action="escalate",
+                    reason=policy_decision.get("reason", "blocked_escalation"),
+                    metadata={"mode": mode, "safety_report": safety_report},
                 )
+            return ArbitrationDecision(
+                action="halt",
+                reason=policy_decision.get("reason", "blocked_by_policy"),
+                metadata={"mode": mode, "safety_report": safety_report},
+            )
 
-        return candidate
+        return ArbitrationDecision(
+            action="proceed",
+            reason="default_allow",
+            metadata={"mode": mode, "safety_report": safety_report},
+        )
