@@ -1,37 +1,38 @@
 # FILE: l2.py
 """
-Unified L2 Execution Layer (v10_9) — ENTERPRISE REFACTOR
+Unified L2 Execution Layer (v10_9) — ENTERPRISE REFINEMENT
 
-This module fully restores and extends execution capabilities in a way
-that is:
+This module implements ALL L2 responsibilities for the v10_9 agentic
+workflow. It is strictly *execution-only*:
 
-    • Compatible with the v10_9 L1–L5 architecture.
-    • Strictly L2-only: EXECUTION and LOCAL domain logic.
-    • Single-mode: always "full agentic" (no toy mode).
-    • Structured around typed payloads from models.py.
-    • Deterministic and side-effect free with respect to external
-      services in this reference implementation (tool/LLM clients can
-      be injected via wrappers or higher-level orchestration).
+    • Executes PlanObjects produced by L1 (one domain per executor).
+    • Performs retrieval, ranking, and evidence fusion (RAG).
+    • Generates bullets based on planning hints.
+    • Produces drafting outputs (multi-section drafts, guild-ready).
+    • Runs QA checks according to L1 QA plans.
+    • Performs safety evaluation (PII, forbidden content, toxicity).
+    • Prepares HIL prompts and consumes HIL responses.
+    • Prepares prompt envelopes metadata for the prompt layer.
+    • Produces meta-learning snapshots from logs/state.
+    • Returns ExecutionResult[TypedPayload], never raw untyped blobs.
 
-Responsibilities of L2:
-    • Execute PlanObjects from L1 (one domain per executor).
-    • Perform retrieval, ranking, and evidence fusion (RAG).
-    • Generate bullets from strategy/drafting plans (BulletGuild-ready).
-    • Produce drafting outputs (multi-section drafts, Guild-ready).
-    • Run QA checks according to L1 QA plans (core + tool-suite-ready).
-    • Perform safety evaluation (PII, forbidden content, toxicity).
-    • Prepare HIL prompts and consume HIL responses.
-    • Prepare prompt envelopes / prompt metadata for prompts layer.
-    • Produce meta-learning snapshots from logs/state.
-    • Return ExecutionResult[TypedPayload], never raw dicts.
+Non-responsibilities (to preserve L1–L5 purity):
 
-Non-responsibilities:
-    • NO planning (L1).
+    • NO planning (L1 cognition).
     • NO graph orchestration or control flow (L3).
     • NO state mutation (L4).
     • NO final safety/policy decisions (L5).
+    • NO direct SDK/provider logic (those live in providers/*).
 
-A single entrypoint is provided:
+Executors are **dual-mode** in design:
+
+    • Deterministic mode (current implementation): fully local, no I/O.
+    • LLM/Tool mode (future extension): will call provider-layer
+      clients (Anthropic/Gemini/OpenAI) via providers/*, while still
+      returning the same typed payloads. This file only exposes the
+      extension points; it does not contain provider-specific code.
+
+The single entrypoint used by L3 orchestrators is:
 
     - route_executor(plan: PlanObject, state: dict) -> ExecutionResult
 """
@@ -87,17 +88,18 @@ class ExecutionAgent(ABC):
 
     Each executor is responsible for exactly ONE domain:
 
-        • StrategyExecutor         → "strategy"
-        • RAGExecutor              → "rag"
-        • BulletExecutor           → "bullets"
-        • DraftingExecutor         → "drafting"
-        • QAExecutor               → "qa" (core deterministic QA)
-        • SafetyExecutor           → "safety"
-        • PromptEngineeringExecutor→ "prompt_engineering"
-        • HILExecutor              → "hil"
-        • MetaLearningExecutor     → "meta_learning"
+        • StrategyExecutor           → "strategy"
+        • RAGExecutor                → "rag"
+        • BulletExecutor             → "bullets"
+        • DraftingExecutor           → "drafting"
+        • QAExecutor                 → "qa" (core deterministic QA)
+        • SafetyExecutor             → "safety"
+        • PromptEngineeringExecutor  → "prompt_engineering"
+        • HILExecutor                → "hil"
+        • MetaLearningExecutor       → "meta_learning"
 
-    This respects the "max 1–2 capabilities per agent" constraint.
+    This satisfies the Agentic constraint that each agent owns at most
+    one–two capabilities and keeps domains well-separated.
     """
 
     @abstractmethod
@@ -105,8 +107,41 @@ class ExecutionAgent(ABC):
         """
         Execute a plan against the current state and return an ExecutionResult
         with a typed payload.
+
+        Implementations MUST NOT:
+            • modify state
+            • call orchestrators
+            • make safety/policy decisions
+
+        They MAY:
+            • optionally call provider-layer tools (future extension)
+            • perform deterministic local computations
         """
         raise NotImplementedError
+
+    # -------------------------------------------------------------------------
+    # OPTIONAL EXTENSION HOOKS (LLM/Tool mode)
+    # -------------------------------------------------------------------------
+
+    def _execution_mode(self, plan: PlanObject, state: Dict[str, Any]) -> str:
+        """
+        Determine desired execution mode based on PlanObject and state.
+
+        Priority:
+            1. plan["handoff"]["execution_mode"]
+            2. plan["execution_mode"]
+            3. state["execution_mode"]
+            4. "auto" (default)
+        """
+        handoff = plan.get("handoff") or {}
+        mode = (
+            handoff.get("execution_mode")
+            or plan.get("execution_mode")
+            or state.get("execution_mode")
+            or "auto"
+        )
+        # normalized string
+        return str(mode).strip().lower()
 
 
 # Helper: run async executor from sync context inside L3 Orchestrator
@@ -135,6 +170,10 @@ class StrategyExecutor(ExecutionAgent):
         • a deterministic selection rule:
               - prefer first branch
               - can be extended later for more advanced selection
+        • optional future LLM-based branch realization (via providers/*)
+
+    Current implementation is deterministic-only; extension points
+    are provided but do not call external services yet.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[StrategyExecutionPayload]:
@@ -152,6 +191,7 @@ class StrategyExecutor(ExecutionAgent):
                 )
             )
 
+        # Deterministic selection rule (can be extended in future)
         selected_branch: Optional[StrategyBranch] = branches[0] if branches else None
 
         payload = StrategyExecutionPayload(
@@ -173,7 +213,7 @@ class StrategyExecutor(ExecutionAgent):
 
 
 # =============================================================================
-# 3. RAG EXECUTOR (HYDE, HYBRID, "EXTERNAL" READY)
+# 3. RAG EXECUTOR (HYDE, HYBRID, EXTERNAL-READY)
 # =============================================================================
 
 
@@ -181,16 +221,17 @@ class RAGExecutor(ExecutionAgent):
     """
     Execute a RAG plan:
 
-        • Interpret plan["retrieval"] (queries, filters, ranking, metadata)
-        • Simulate HYDE-like synthetic evidence and base evidence
-        • Normalize documents
-        • Run BM25/dense/hybrid ranking
-        • Apply retrieval reranking and fusion
-        • Return a RAGExecutionPayload
+        • Interpret plan["retrieval"] (queries, filters, ranking, metadata).
+        • Simulate HYDE-like synthetic evidence and base evidence.
+        • Normalize documents.
+        • Run BM25/dense/hybrid ranking.
+        • Apply retrieval reranking and fusion.
+        • Return a RAGExecutionPayload.
 
     All operations in this reference implementation are deterministic;
     no external services are called. In a production implementation,
-    external vector DB and BM25 clients can be wired here.
+    external vector DB and BM25 clients can be wired here via the
+    providers/tool layer without modifying the contract.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[RAGExecutionPayload]:
@@ -200,7 +241,7 @@ class RAGExecutor(ExecutionAgent):
         strategy = str(ranking_cfg.get("strategy", "hybrid"))
         enable_hyde = bool(ranking_cfg.get("enable_hyde", True))
 
-        # HYDE-like synthetic docs (for parity with 10_7 behavior)
+        # HYDE-like synthetic docs (for parity with L1 HYDE planning)
         hyde_docs: List[Dict[str, Any]] = []
         if enable_hyde:
             for q in queries:
@@ -277,7 +318,7 @@ class BulletExecutor(ExecutionAgent):
     """
     Generate bullets based on plan and state.
 
-    Since 10_9 L1 currently folds bullet planning into drafting, this
+    Since v10_9 L1 currently folds bullet planning into drafting, this
     executor focuses on:
 
         • Extracting bullet-worthy items from plan sections or deliverables.
@@ -285,6 +326,10 @@ class BulletExecutor(ExecutionAgent):
         • Providing a simple "guild_passes" trace that can be extended.
 
     Output: BulletExecutionPayload
+
+    NOTE:
+        Deterministic only. Future LLM-based bullet refinement should be
+        added via providers/* and keep the same payload shape.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[BulletExecutionPayload]:
@@ -311,7 +356,6 @@ class BulletExecutor(ExecutionAgent):
             metrics_focus.append("Quantify at least one measurable outcome")
 
         # Guidelines from plan if present
-        guidelines: List[str] = []
         if "style_guidelines" in plan:
             guidelines = [str(g) for g in plan.get("style_guidelines", [])]
         else:
@@ -418,7 +462,7 @@ def _run_qa_checks(checks: List[str], content: str) -> Dict[str, bool]:
     """
     Deterministic QA checks based on plan["checks"].
 
-    This is a heuristic suite meant to mirror the 10_7 multi-tool QA,
+    This is a heuristic suite meant to mirror a multi-tool QA pipeline,
     but without any external LLM calls in this reference implementation.
     """
     results: Dict[str, bool] = {}
@@ -470,8 +514,11 @@ class QAExecutor(ExecutionAgent):
         • Produce a QAReport and wrap it in QAExecutionPayload.
 
     This reference implementation does not call external QA tools; those
-    can be added as a separate QAToolSuiteExecutor wired alongside this
+    can be added as a separate QAToolSuite layer wired alongside this
     executor in production.
+
+    L5 remains responsible for interpreting QA results in the context of
+    safety/policy decisions.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[QAExecutionPayload]:
@@ -570,7 +617,8 @@ class SafetyExecutor(ExecutionAgent):
         • Evaluate content (usually draft_result) for PII, forbidden terms, toxicity.
         • Return a SafetyExecutionPayload (safety_report + sanitized_content).
 
-    Final safety/policy decisions remain at L5.
+    Final safety/policy decisions remain at L5 (SafetyEngine + PolicyEngine +
+    ArbitrationEngine). This executor is a pure evaluator.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[SafetyExecutionPayload]:
@@ -637,12 +685,13 @@ class SafetyExecutor(ExecutionAgent):
 
 class PromptEngineeringExecutor(ExecutionAgent):
     """
-    Convert a PromptEngineeringPlanner plan into prompt envelopes metadata.
+    Convert a PromptEngineeringPlanner plan into prompt envelope metadata.
 
     NOTE:
-        This executor does NOT render actual prompts; that is done by
-        the dedicated prompt module and higher-level orchestration.
-        Here we simply normalize the plan into a metadata payload.
+        This executor does NOT render actual prompts; that is done by the
+        dedicated prompt module and higher-level orchestration. Here we
+        simply normalize the plan into a metadata payload suitable for
+        consumption by the prompt layer.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[Dict[str, Any]]:
@@ -650,7 +699,7 @@ class PromptEngineeringExecutor(ExecutionAgent):
         constraints: Dict[str, Any] = dict(plan.get("constraints", {}))
 
         # Minimal deterministic metadata; in a full system this would
-        # map to actual prompt templates.
+        # map to actual prompt templates in prompt.PromptTemplateRegistry.
         envelopes_meta = {
             mode: {
                 "needs_framing": True,
@@ -758,7 +807,8 @@ class MetaLearningExecutor(ExecutionAgent):
         • Return a MetaLearningExecutionPayload.
 
     In a full implementation, this executor would consume external
-    logs and feedback stores; here we provide a deterministic stub.
+    logs and feedback stores; here we provide a deterministic stub
+    that operates on in-memory state only.
     """
 
     async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[MetaLearningExecutionPayload]:
@@ -850,6 +900,9 @@ async def route_executor(plan: PlanObject, state: Dict[str, Any]) -> ExecutionRe
         • "prompt_engineering"
         • "hil"
         • "meta_learning"
+
+    This function enforces typed domain boundaries and does not perform
+    any planning, orchestration, state mutation, or safety decisions.
     """
     if not isinstance(plan, PlanObject):
         raise ValidationError("route_executor expects a PlanObject instance.")
