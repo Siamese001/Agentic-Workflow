@@ -1,32 +1,37 @@
 # FILE: retrieval.py
 """
-Retrieval Utilities (v10_9, Fully Refactored)
-PURE META-LAYER RAG INFRASTRUCTURE
+Retrieval Utilities (v10_9) — PURE META-LAYER RAG INFRA (META-AWARE, REFINED)
 
-This module provides deterministic, enterprise-grade retrieval
-post-processing utilities for the v10_9 agentic workflow.
+This module provides higher-level retrieval utilities for the v10_9
+agentic architecture. It is a *pure infrastructure* layer, sitting
+below L2 executors and above low-level primitives in runtime_utils.
 
-It is strictly META-layer and must not perform:
+Responsibilities:
+    • Normalize raw retrieval hits into canonical structures.
+    • Apply ranking strategies (bm25, dense, hybrid) over retrieval results.
+    • Fuse multiple retrieval sources into a single ranked list.
+    • Enforce simple item limits (max_items).
+    • Provide small, typed helpers that L2 executors (e.g., RAGExecutor)
+      and external RAG clients can use.
+    • Adapt behavior based on meta_profile biases (routing/planning/QA/safety)
+      without violating L1–L5 boundaries.
 
-    • L1 cognition (no planning)
-    • L2 execution (no tool/LLM calls)
-    • L3 orchestration (no DAG logic)
-    • L4 state mutation (no StateAdapter usage)
-    • L5 safety/policy decisions
-    • Provider/SDK/DB/Vector Store calls
+Non-responsibilities (Agentic Guardrails):
+    • NO L1 cognition (no planning).
+    • NO L2 tool/LLM execution.
+    • NO L3 orchestration.
+    • NO L4 state management (no StateAdapter usage).
+    • NO L5 safety decisions.
+    • NO provider/DB/SDK calls.
 
-All behavior is deterministic and side-effect-free.
+META-awareness (from meta_profile):
+    • routing_bias.prefer_fast             → fewer items, lighter ranking.
+    • routing_bias.prefer_robust_retrieval → hybrid ranking, more items.
+    • planning_bias.conservative           → increase coverage (more items).
+    • qa_bias.recent_failures              → increase coverage (more items).
+    • safety_bias.heightened_caution       → filter out obviously risky items.
 
-Restored 10_8 functionality:
-    • Resume-aware ranking boosts
-    • JD-aware scoring hints
-    • Deduplication rules
-    • Fusion across multiple retrieval streams
-    • Evidence normalization
-    • Configurable ranking strategy
-    • Canonical RetrievalItem & RetrievalResult models
-    • Metadata-rich RAG item schema
-    • Multi-source fusion utilities
+All behavior here is deterministic and side-effect-free.
 """
 
 from __future__ import annotations
@@ -38,10 +43,17 @@ from runtime_utils import Retrieval as _Retrieval
 from runtime_utils import Ranking as _Ranking
 from runtime_utils import RAGUtils as _RAGUtils
 
+from meta_profile import (
+    get_routing_bias,
+    get_planning_bias,
+    get_qa_bias,
+    get_safety_bias,
+)
 
-# ============================================================================
-# 1. RETRIEVAL CONFIGURATION
-# ============================================================================
+
+# =============================================================================
+# 1. DATA CLASSES
+# =============================================================================
 
 
 @dataclass
@@ -50,23 +62,14 @@ class RetrievalConfig:
     Configuration for retrieval post-processing.
 
     Fields:
-        ranking_strategy:
-            "bm25" | "dense" | "hybrid".
-        max_items:
-            Maximum number of items to retain after fusion.
-        metadata:
-            Optional additional hints (e.g., source identifiers).
-        resume_alignment_boost:
-            If True, apply resume-based boosting (10_8 parity).
-        jd_alignment_boost:
-            If True, apply JD-based boosting (10_8 parity).
+        • ranking_strategy: "bm25" | "dense" | "hybrid".
+        • max_items: maximum number of items to retain after fusion.
+        • metadata: optional additional hints (e.g., source identifiers).
     """
 
     ranking_strategy: str = "hybrid"
     max_items: int = 50
     metadata: Dict[str, Any] = field(default_factory=dict)
-    resume_alignment_boost: bool = True
-    jd_alignment_boost: bool = True
 
 
 @dataclass
@@ -75,14 +78,10 @@ class RetrievalItem:
     Canonical retrieval item.
 
     Fields:
-        query:
-            The query string used to retrieve this item.
-        evidence:
-            The text snippet or document content.
-        rank:
-            Integer rank (1 = best).
-        metadata:
-            Arbitrary metadata (scores, ids, etc.).
+        • query: the query string used to retrieve this item.
+        • evidence: the text snippet or document content.
+        • rank: integer rank (1 = best).
+        • metadata: arbitrary metadata (scores, ids, etc.).
     """
 
     query: str
@@ -97,10 +96,8 @@ class RetrievalResult:
     Aggregated retrieval result for a set of queries.
 
     Fields:
-        items:
-            list[RetrievalItem]
-        config:
-            RetrievalConfig used for post-processing.
+        • items: list of RetrievalItem objects.
+        • config: RetrievalConfig used for post-processing.
     """
 
     items: List[RetrievalItem] = field(default_factory=list)
@@ -121,15 +118,13 @@ class RetrievalResult:
                 "ranking_strategy": self.config.ranking_strategy,
                 "max_items": self.config.max_items,
                 "metadata": dict(self.config.metadata),
-                "resume_alignment_boost": self.config.resume_alignment_boost,
-                "jd_alignment_boost": self.config.jd_alignment_boost,
             },
         }
 
 
-# ============================================================================
+# =============================================================================
 # 2. INTERNAL HELPERS
-# ============================================================================
+# =============================================================================
 
 
 def _apply_ranking_strategy(
@@ -145,86 +140,13 @@ def _apply_ranking_strategy(
         • "hybrid" → combined BM25 + dense ranking.
         • default  → hybrid.
     """
-    s = (strategy or "hybrid").lower().strip()
+    s = (strategy or "hybrid").lower()
     if s == "bm25":
         return _Ranking.bm25_rank(items)
     if s == "dense":
         return _Ranking.dense_rank(items)
     # fallback to hybrid
     return _Ranking.hybrid_rank(items)
-
-
-def _apply_resume_alignment_boost(
-    items: List[Dict[str, Any]],
-    resume_profile: Optional[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
-    """
-    Resume-aware evidence boost (10_8 parity):
-
-        • Evidence mentioning key resume attributes gets small boosts.
-    """
-    if not resume_profile:
-        return items
-
-    summary = (resume_profile.get("summary") or "").lower()
-    experiences = resume_profile.get("experiences") or []
-
-    keywords: List[str] = []
-    if summary:
-        keywords.extend(summary.split())
-    for exp in experiences[:3]:
-        title = (exp.get("title") or "").lower()
-        company = (exp.get("company") or "").lower()
-        if title:
-            keywords.append(title)
-        if company:
-            keywords.append(company)
-
-    if not keywords:
-        return items
-
-    boosted: List[Dict[str, Any]] = []
-    for it in items:
-        score = float(it.get("score", it.get("rank", 0)))
-        ev = str(it.get("evidence", "")).lower()
-        matches = sum(1 for k in keywords if k and k in ev)
-        if matches:
-            score += 0.2 * matches
-        boosted.append({**it, "score": score})
-
-    boosted.sort(key=lambda x: -x["score"])
-    return boosted
-
-
-def _apply_jd_alignment_boost(
-    items: List[Dict[str, Any]],
-    job_profile: Optional[Dict[str, Any]],
-) -> List[Dict[str, Any]]:
-    """
-    JD-aware evidence boost (10_8 parity):
-
-        • Evidence matching top JD requirements gets small boosts.
-    """
-    if not job_profile:
-        return items
-
-    reqs = job_profile.get("requirements") or []
-    reqs = [str(r).lower() for r in reqs[:3] if r]
-
-    if not reqs:
-        return items
-
-    boosted: List[Dict[str, Any]] = []
-    for it in items:
-        score = float(it.get("score", it.get("rank", 0)))
-        ev = str(it.get("evidence", "")).lower()
-        matches = sum(1 for req in reqs if req in ev)
-        if matches:
-            score += 0.3 * matches
-        boosted.append({**it, "score": score})
-
-    boosted.sort(key=lambda x: -x["score"])
-    return boosted
 
 
 def _limit_items(items: List[Dict[str, Any]], max_items: int) -> List[Dict[str, Any]]:
@@ -238,36 +160,110 @@ def _limit_items(items: List[Dict[str, Any]], max_items: int) -> List[Dict[str, 
     return items[:max_items]
 
 
-# ============================================================================
+def _apply_meta_biases_to_config(cfg: RetrievalConfig) -> RetrievalConfig:
+    """
+    Return a new RetrievalConfig adjusted by meta_profile biases.
+
+    Meta influences:
+
+        • routing_bias.prefer_fast:
+            - reduce max_items (e.g., by half)
+        • routing_bias.prefer_robust_retrieval:
+            - enforce hybrid ranking, slightly more items
+        • planning_bias.conservative:
+            - increase max_items (more coverage)
+        • qa_bias.recent_failures:
+            - increase max_items (more evidence)
+        • safety_bias.heightened_caution:
+            - add flag in metadata for optional downstream filtering
+
+    All behavior is deterministic and side-effect-free; original cfg is
+    not mutated.
+    """
+    routing = get_routing_bias()
+    planning = get_planning_bias()
+    qa = get_qa_bias()
+    safety = get_safety_bias()
+
+    new_cfg = RetrievalConfig(
+        ranking_strategy=cfg.ranking_strategy,
+        max_items=cfg.max_items,
+        metadata=dict(cfg.metadata),
+    )
+
+    # Routing biases
+    if routing.get("prefer_fast"):
+        # Aggressively reduce the number of items to consider downstream.
+        new_cfg.max_items = max(10, cfg.max_items // 2)
+        new_cfg.metadata["meta_prefer_fast"] = True
+
+    if routing.get("prefer_robust_retrieval"):
+        new_cfg.ranking_strategy = "hybrid"
+        new_cfg.max_items = max(cfg.max_items, 60)
+        new_cfg.metadata["meta_prefer_robust_retrieval"] = True
+
+    # Planning / QA biases: increase coverage
+    if planning.get("conservative") or qa.get("recent_failures"):
+        new_cfg.max_items = max(new_cfg.max_items, cfg.max_items + 20)
+        new_cfg.metadata["meta_conservative_or_qa_failures"] = True
+
+    # Safety bias: mark runs as high-safety for downstream filters
+    if safety.get("heightened_caution"):
+        new_cfg.metadata["meta_high_safety"] = True
+
+    return new_cfg
+
+
+def _filter_for_safety(items: List[Dict[str, Any]], safety_bias: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """
+    Apply very light deterministic filtering for obviously risky items.
+
+    For now, this is deliberately simple and hard-coded. It is meant to
+    support heightened_caution flows by removing items that contain
+    highly suspicious markers in 'evidence'.
+    """
+    if not safety_bias.get("heightened_caution"):
+        return items
+
+    filtered: List[Dict[str, Any]] = []
+    risky_markers = ["password", "ssn", "social security number"]
+    for it in items:
+        ev = str(it.get("evidence", "")).lower()
+        if any(m in ev for m in risky_markers):
+            continue
+        filtered.append(it)
+    return filtered
+
+
+# =============================================================================
 # 3. PUBLIC API — SINGLE-SOURCE NORMALIZATION
-# ============================================================================
+# =============================================================================
 
 
 def normalize_raw_results(
     raw_results: List[Dict[str, Any]],
     *,
     config: Optional[RetrievalConfig] = None,
-    job_profile: Optional[Dict[str, Any]] = None,
-    resume_profile: Optional[Dict[str, Any]] = None,
 ) -> RetrievalResult:
     """
     Normalize raw retrieval results into a canonical RetrievalResult.
 
     Steps:
+        0. Apply meta_profile biases to RetrievalConfig.
         1. Normalize raw dicts into {query, evidence, rank}.
         2. Deduplicate identical (query, evidence) pairs.
         3. Apply ranking strategy (bm25/dense/hybrid).
-        4. Optional resume alignment boosts.
-        5. Optional JD alignment boosts.
-        6. Rerank & fuse (single-source).
-        7. Limit items to config.max_items.
-        8. Normalize to RAG-style items with metadata.
-        9. Convert to RetrievalItem objects.
+        4. Rerank & fuse results (single-source).
+        5. Limit items to config.max_items.
+        6. Optionally filter for basic safety when heightened_caution.
+        7. Normalize to RAG-style items with metadata.
+        8. Return RetrievalResult with RetrievalItem objects.
 
     This function does NOT call any external services; it operates on
     already-fetched raw results (e.g., from a DB, vector store, or LLM).
     """
-    cfg = config or RetrievalConfig()
+    base_cfg = config or RetrievalConfig()
+    cfg = _apply_meta_biases_to_config(base_cfg)
 
     # 1. Normalize query/evidence/rank structure
     norm = _Retrieval.normalize_documents(raw_results)
@@ -278,25 +274,21 @@ def normalize_raw_results(
     # 3. Ranking strategy
     ranked = _apply_ranking_strategy(norm, cfg.ranking_strategy)
 
-    # 4. Resume alignment boost (optional)
-    if cfg.resume_alignment_boost:
-        ranked = _apply_resume_alignment_boost(ranked, resume_profile)
-
-    # 5. JD alignment boost (optional)
-    if cfg.jd_alignment_boost:
-        ranked = _apply_jd_alignment_boost(ranked, job_profile)
-
-    # 6. Rerank and fuse (single source for now)
+    # 4. Rerank and fuse (single source)
     reranked = _Retrieval.rerank_results(ranked, cfg.ranking_strategy)
     fused = _Retrieval.fuse_results([reranked])
 
-    # 7. Limit items
+    # 5. Limit items
     fused = _limit_items(fused, cfg.max_items)
 
-    # 8. Normalize to RAG-style items with metadata
+    # 6. Optional safety filtering
+    safety_bias = get_safety_bias()
+    fused = _filter_for_safety(fused, safety_bias)
+
+    # 7. Normalize to RAG-style items with metadata
     rag_items = _RAGUtils.normalize_rag_results(fused)
 
-    # 9. Convert to RetrievalItem objects
+    # 8. Convert to RetrievalItem objects
     items: List[RetrievalItem] = []
     for d in rag_items:
         items.append(
@@ -311,54 +303,53 @@ def normalize_raw_results(
     return RetrievalResult(items=items, config=cfg)
 
 
-# ============================================================================
+# =============================================================================
 # 4. PUBLIC API — MULTI-SOURCE FUSION
-# ============================================================================
+# =============================================================================
 
 
 def fuse_multiple_sources(
     sources: List[List[Dict[str, Any]]],
     *,
     config: Optional[RetrievalConfig] = None,
-    job_profile: Optional[Dict[str, Any]] = None,
-    resume_profile: Optional[Dict[str, Any]] = None,
 ) -> RetrievalResult:
     """
     Fuse retrieval results from multiple sources into a single ranked list.
 
     Inputs:
-        sources:
+        • sources:
             A list of lists, where each inner list is a set of raw retrieval
             dicts from a given source (e.g., vector DB, keyword DB, LLM-HYDE).
 
-        config:
+        • config:
             Optional RetrievalConfig controlling ranking and max_items.
 
     Behavior:
-        1. Flatten all sources.
+        0. Apply meta_profile biases to RetrievalConfig.
+        1. Flatten all sources into one list.
         2. Normalize and dedupe results.
-        3. Apply ranking strategy + optional resume/JD boosts.
-        4. Limit items.
-        5. Normalize to canonical RetrievalResult.
+        3. Apply ranking strategy (bm25/dense/hybrid).
+        4. Limit items to config.max_items.
+        5. Optional meta-aware safety filtering.
+        6. Normalize to canonical RetrievalResult.
     """
-    cfg = config or RetrievalConfig()
+    base_cfg = config or RetrievalConfig()
+    cfg = _apply_meta_biases_to_config(base_cfg)
 
     merged: List[Dict[str, Any]] = []
     for source_list in sources or []:
         for item in source_list or []:
             merged.append(dict(item))
 
-    return normalize_raw_results(
-        merged,
-        config=cfg,
-        job_profile=job_profile,
-        resume_profile=resume_profile,
-    )
+    # Reuse normalize_raw_results for the merged list — but it will apply
+    # meta-aware config logic and ranking again internally.
+    # NOTE: pass cfg so that we preserve effective meta-aware configuration.
+    return normalize_raw_results(merged, config=cfg)
 
 
-# ============================================================================
+# =============================================================================
 # 5. UTILITY — SIMPLE DICT LIST VIEW
-# ============================================================================
+# =============================================================================
 
 
 def to_simple_dict_list(result: RetrievalResult) -> List[Dict[str, Any]]:
