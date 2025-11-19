@@ -13,15 +13,15 @@ workflow. It is strictly *cognition-only*:
 L1 emits **PlanObject** instances (from models.py) that describe *what*
 should happen in L2–L5:
 
-    • StrategyReasoner          – multi-branch strategy / ToT-style planning
-    • RAGReasoner               – retrieval planning (HYDE-aware)
-    • DraftingReasoner          – drafting structure, tone, risks
-    • QACoordinatorPlanner      – QA validation plan (multi-check)
-    • SafetyPlanner             – safety / constitutional plan
-    • PromptEngineeringPlanner  – prompt engineering / template planning
-    • HILPlanner                – human-in-the-loop escalation planning
-    • MetaLearningPlanner       – meta-learning orchestration planning
-    • route_mode / route_plan   – top-level L1 dispatch
+    • StrategyPlanner          – linear + ToT-style planning
+    • RAGPlanner               – retrieval planning (HYDE-aware)
+    • DraftingPlanner          – drafting structure, tone, risks
+    • QACoordinatorPlanner     – QA validation plan (multi-check)
+    • SafetyPlanner            – safety / constitutional plan
+    • PromptEngineeringPlanner – prompt envelope / taxonomy planning
+    • HILPlanner               – human-in-the-loop escalation planning
+    • MetaLearningPlanner      – meta-learning orchestration planning
+    • route_mode / route_plan  – top-level L1 dispatch
 
 The actual realization of these plans is the responsibility of:
 
@@ -288,8 +288,17 @@ def classify_complexity(state: Dict[str, Any]) -> str:
 
 
 # ============================================================================
-# STRATEGY PLANNING (ToT-style multi-branch, assessments, scenarios)
+# STRATEGY PLANNING (Linear steps + ToT-style branches)
 # ============================================================================
+
+
+@dataclass
+class StrategyStep:
+    """Linear strategy step (v10_8 parity)."""
+
+    step_id: str
+    name: str
+    description: str
 
 
 @dataclass
@@ -326,6 +335,30 @@ def _objective_from_state(state: Dict[str, Any]) -> str:
         if value:
             return str(value)
     return "unspecified-objective"
+
+
+def _linear_strategy_steps() -> List[StrategyStep]:
+    """
+    v10_8 parity: simple linear "clarify → context → structure" steps
+    preserved as explicit planning metadata.
+    """
+    return [
+        StrategyStep(
+            step_id="clarify",
+            name="Clarify Objective",
+            description="Clarify target role, level, and outcome.",
+        ),
+        StrategyStep(
+            step_id="context",
+            name="Gather Context",
+            description="Align job description and resume context.",
+        ),
+        StrategyStep(
+            step_id="structure",
+            name="Plan Structure",
+            description="Choose narrative structure and key sections.",
+        ),
+    ]
 
 
 def _strategy_branches_from_context(
@@ -563,19 +596,18 @@ def _simulate_scenarios(branches: List[StrategyBranchPlan]) -> List[ScenarioSimu
     return scenarios
 
 
-class StrategyReasoner:
+class StrategyPlanner:
     """
-    L1 Strategy Reasoner (ToT-style + planner ensemble).
+    L1 Strategy Planner (Linear + ToT-style).
 
     Produces a PlanObject with:
         • mode: "strategy"
+        • linear_steps: canonical "clarify/context/structure" planning steps
         • branches: list of candidate strategies
         • planner_assessments: domain/risk/feasibility signals
         • scenario_simulations: predicted outcomes
-        • aggregated_decision: "approve" / "revise"
-        • aggregated_confidence: float
-        • aggregated_rationale: str
-        • injection & safety metadata
+        • aggregated_decision / confidence / rationale
+        • complexity, meta-profile hints, injection & safety metadata
 
     NOTE: This class performs *no* LLM calls or external I/O; it only
     constructs a plan description for downstream executors.
@@ -609,6 +641,7 @@ class StrategyReasoner:
         )
         assessments = _assess_branches(branches, job_profile)
         scenarios = _simulate_scenarios(branches)
+        linear_steps = _linear_strategy_steps()
 
         # Aggregate votes across planners
         vote_weight: Dict[str, float] = {"approve": 0.0, "revise": 0.0}
@@ -635,6 +668,7 @@ class StrategyReasoner:
                     "has_summary": bool(resume_profile["summary"]),
                     "experience_count": len(resume_profile["experiences"]),
                 },
+                "linear_steps": [asdict(s) for s in linear_steps],
                 "branches": [asdict(b) for b in branches],
                 "planner_assessments": [asdict(a) for a in assessments],
                 "scenario_simulations": [asdict(s) for s in scenarios],
@@ -711,9 +745,9 @@ def _build_rag_queries(state: Dict[str, Any]) -> List[str]:
     return queries or ["general background for candidate suitability"]
 
 
-class RAGReasoner:
+class RAGPlanner:
     """
-    L1 RAG Reasoner.
+    L1 RAG Planner.
 
     Produces a PlanObject with:
         • mode: "rag"
@@ -737,12 +771,12 @@ class RAGReasoner:
 
         risk_checks: List[str] = [
             "tie_each_top_result_to_resume_source",
-            "avoid conflicting evidence across experiences",
-            "ensure at least one leadership and one technical example if relevant",
+            "avoid_conflicting_evidence_across_experiences",
+            "ensure_leadership_and_technical_examples_if_relevant",
         ]
         if job_profile["requirements"]:
             risk_checks.append(
-                "map RAG results to top JD requirements: "
+                "map_results_to_top_jd_requirements: "
                 + ", ".join(job_profile["requirements"][:3])
             )
 
@@ -800,9 +834,9 @@ class RAGReasoner:
 # ============================================================================
 
 
-class DraftingReasoner:
+class DraftingPlanner:
     """
-    L1 Drafting Reasoner.
+    L1 Drafting Planner.
 
     Produces a PlanObject with:
         • mode: "drafting"
@@ -1331,8 +1365,6 @@ def route_mode(state: Dict[str, Any]) -> str:
     if any(k in objective for k in ["retrieve", "rag", "evidence", "hybrid", "hyde"]):
         return "rag"
     if any(k in objective for k in ["bullet", "bullets"]):
-        # For now, bullets planning is folded into drafting; we can
-        # later add a dedicated BulletReasoner if needed.
         return "bullets"
     if any(k in objective for k in ["draft", "rewrite", "resume", "summary", "narrative"]):
         return "drafting"
@@ -1348,7 +1380,7 @@ def route_plan(state: Dict[str, Any]) -> PlanObject:
     """
     Top-level L1 entrypoint.
 
-    Chooses the appropriate reasoner/planner based on route_mode and returns
+    Chooses the appropriate planner based on route_mode and returns
     a fully-populated PlanObject describing the next agentic step.
 
     This function adheres strictly to L1 constraints: no IO, no tools,
@@ -1357,19 +1389,19 @@ def route_plan(state: Dict[str, Any]) -> PlanObject:
     mode = route_mode(state)
 
     if mode == "strategy":
-        return StrategyReasoner().plan(state)
+        return StrategyPlanner().plan(state)
     if mode == "rag":
-        return RAGReasoner().plan(state)
+        return RAGPlanner().plan(state)
     if mode == "drafting":
-        return DraftingReasoner().plan(state)
+        return DraftingPlanner().plan(state)
     if mode == "qa":
         return QACoordinatorPlanner().plan(state)
     if mode == "safety":
         return SafetyPlanner().plan(state)
     if mode == "bullets":
         # For now, bullets planning is folded into drafting; we can
-        # later add a dedicated BulletReasoner if needed.
-        return DraftingReasoner().plan(state)
+        # later add a dedicated BulletPlanner if needed.
+        return DraftingPlanner().plan(state)
     if mode == "prompt_engineering":
         return PromptEngineeringPlanner().plan(state)
     if mode == "hil":
@@ -1378,4 +1410,4 @@ def route_plan(state: Dict[str, Any]) -> PlanObject:
         return MetaLearningPlanner().plan(state)
 
     # Fallback to strategy planning
-    return StrategyReasoner().plan(state)
+    return StrategyPlanner().plan(state)
