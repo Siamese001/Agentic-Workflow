@@ -280,46 +280,83 @@ def infer_profile_signals(job_text: str, resume_text: str) -> ProfileSignals:
 # =============================================================================
 
 
+# --- L1: UPDATED ---
 def estimate_task_complexity(job_text: str, resume_text: str) -> ComplexityLevel:
     """
-    Estimate problem complexity from very simple heuristics.
-
-    This is designed to be deterministic and explainable; more advanced
-    classifiers can be slotted in later behind the same interface.
+    Updated to incorporate META profile biases:
+        • planning_bias.conservative  → push complexity upward
+        • planning_bias.exploratory   → push complexity downward
+        • routing_bias.prefer_fast    → slightly reduce complexity to favor shallow passes
     """
-    jt_tokens = len(job_text.split())
-    rt_tokens = len(resume_text.split())
+    from meta_profile import get_planning_bias, get_routing_bias
 
-    total = jt_tokens + rt_tokens
+    base = len(job_text.split()) + len(resume_text.split())
 
-    if total < 800:
-        return ComplexityLevel.SIMPLE
-    if total < 2500:
-        return ComplexityLevel.MODERATE
-    return ComplexityLevel.COMPLEX
+    if base < 800:
+        level = ComplexityLevel.SIMPLE
+    elif base < 2500:
+        level = ComplexityLevel.MODERATE
+    else:
+        level = ComplexityLevel.COMPLEX
 
+    planning = get_planning_bias()
+    routing = get_routing_bias()
 
-def select_reasoning_strategy(complexity: ComplexityLevel, risk_flags: Sequence[str]) -> ReasoningStrategy:
+    # Conservative bias → treat tasks as harder
+    if planning.get("conservative"):
+        if level == ComplexityLevel.SIMPLE:
+            level = ComplexityLevel.MODERATE
+        elif level == ComplexityLevel.MODERATE:
+            level = ComplexityLevel.COMPLEX
+
+    # Exploratory → treat tasks as slightly easier
+    if planning.get("exploratory") and level == ComplexityLevel.COMPLEX:
+        level = ComplexityLevel.MODERATE
+
+    # prefer_fast → bias away from deep reasoning complexity
+    if routing.get("prefer_fast") and level == ComplexityLevel.MODERATE:
+        level = ComplexityLevel.SIMPLE
+
+    return level
+
+# --- L1: UPDATED ---
+def select_reasoning_strategy(
+    complexity: ComplexityLevel,
+    risk_flags: Sequence[str]
+) -> ReasoningStrategy:
     """
-    Map complexity + risk into a reasoning strategy hint.
-
-    This restores v10_8 behavior where planners would choose between
-    CoT vs ToT vs direct reasoning, including adversarial / critique
-    modes for high-risk problems.
+    Updated to incorporate META ReasoningBias:
+        • enable_critique → use *_WITH_CRITIQUE variants
+        • conservative_mode → bias away from ToT
+        • use_tot → force ToT
     """
-    high_risk = bool(risk_flags)
+    from meta_profile import get_planning_bias, get_qa_bias
 
+    bias = get_planning_bias()
+    qa = get_qa_bias()
+
+    high_risk = bool(risk_flags) or qa.get("recent_failures", False)
+
+    # Explicit forcing of ToT from meta bias
+    if bias.get("exploratory") or bias.get("deterministic_recovery"):
+        return ReasoningStrategy.TOT_WITH_CRITIQUE
+
+    # Conservative mode shrinks strategy footprint
+    if bias.get("conservative"):
+        return ReasoningStrategy.COT_WITH_CRITIQUE
+
+    # Default model (same logic as before, but overridden by biases)
     if complexity == ComplexityLevel.SIMPLE and not high_risk:
         return ReasoningStrategy.DIRECT
 
     if complexity == ComplexityLevel.MODERATE and not high_risk:
         return ReasoningStrategy.COT
 
-    # Complex or high-risk flows get more robust reasoning patterns.
-    if high_risk and complexity == ComplexityLevel.MODERATE:
+    if high_risk:
         return ReasoningStrategy.COT_WITH_CRITIQUE
 
     return ReasoningStrategy.TOT_WITH_CRITIQUE
+
 
 
 # =============================================================================
@@ -457,6 +494,7 @@ def _linear_strategy_steps() -> List[Dict[str, Any]]:
     ]
 
 
+# --- L1: UPDATED ---
 def build_strategy_plan(
     job_text: str,
     resume_text: str,
@@ -467,11 +505,24 @@ def build_strategy_plan(
     access_policy: Optional[AccessPolicy] = None,
 ) -> PlanObject:
     """
-    Build a PLAN for the "strategy" mode.
-
-    This plan focuses on strategic positioning, seniority calibration,
-    and multi-mode dependencies.
+    Updated to incorporate META profile biases:
+        • planning_bias.conservative/exploratory affects steps + surfaces
+        • routing_bias.prefer_fast adjusts strategy depth
+        • qa_bias.recent_failures adds verification surfaces
+        • safety_bias.heightened_caution adjusts tone and constraints
+        • tone_bias influences narrative tone
     """
+    from meta_profile import (
+        get_planning_bias, get_routing_bias,
+        get_qa_bias, get_safety_bias, get_tone_bias
+    )
+
+    planning_bias = get_planning_bias()
+    routing_bias = get_routing_bias()
+    qa_bias = get_qa_bias()
+    safety_bias = get_safety_bias()
+    tone_bias = get_tone_bias()
+
     profile = infer_profile_signals(job_text, resume_text)
     complexity = estimate_task_complexity(job_text, resume_text)
     reasoning = select_reasoning_strategy(complexity, profile.risk_flags)
@@ -480,10 +531,26 @@ def build_strategy_plan(
 
     steps = _linear_strategy_steps()
 
-    plan_dict: Dict[str, Any] = {
+    # Meta-driven modifications
+    if planning_bias.get("conservative"):
+        steps.append({"id": "fallback", "description": "Add conservative fallback reasoning path."})
+
+    if planning_bias.get("deterministic_recovery"):
+        steps.append({"id": "recovery", "description": "Enable deterministic recovery logic."})
+
+    if qa_bias.get("recent_failures"):
+        steps.append({"id": "qa_focus", "description": "Increase QA-coverage emphasis."})
+
+    # Tone + safety affect tone used downstream
+    adjusted_tone = tone_bias.get("tone", "professional")
+    if safety_bias.get("heightened_caution"):
+        adjusted_tone = "formal"
+
+    plan_dict = {
         "layer": "l1",
         "mode": "strategy",
         "objective": framing.goal,
+        "tone_override": adjusted_tone,
         "framing_profile": framing.to_dict(),
         "context_profile": context_profile.to_dict(),
         "tooling_profile": tooling_profile.to_dict(),
@@ -494,21 +561,16 @@ def build_strategy_plan(
         "planning_hints": hints.to_dict(),
         "dependencies": deps.to_dict(),
         "steps": steps,
-        "surfaces": [
-            SelfCorrectionSurface.RAG_RETRY.value,
-            SelfCorrectionSurface.DRAFT_RETRY.value,
-            SelfCorrectionSurface.QA_RECHECK.value,
-            SelfCorrectionSurface.SAFETY_ESCALATION.value,
-        ],
     }
 
-    if access_policy is not None:
+    if access_policy:
         plan_dict["access_policy"] = {
-            "tools": [asdict(tp) for tp in access_policy.tool_permissions],
-            "routes": [asdict(rp) for rp in access_policy.routing_permissions],
+            "tools": [dict(tp.__dict__) for tp in access_policy.tool_permissions],
+            "routes": [dict(rp.__dict__) for rp in access_policy.routing_permissions],
         }
 
     return PlanObject(plan_dict)
+
 
 
 def build_rag_plan(
