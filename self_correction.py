@@ -1,26 +1,27 @@
 # FILE: self_correction.py
 """
-Unified Self-Correction Surfaces (v10_9) — ENTERPRISE MODULE
+Unified Self-Correction Surfaces (v10_9) — META LAYER ONLY
 
 This module defines the unified self-correction framework for the v10_9
 agentic architecture. It implements:
 
     • Canonical self-correction surfaces (RAG_RETRY, QA_RECHECK, etc.)
-    • Deterministic error detection rules
-    • Surface selection heuristics
-    • Structured correction directives (used by L3 ArbitrationEngine)
-    • Optional multi-step escalation (HIL, Replan, Halt)
-    • Outcome reporting for telemetry & meta-learning
+    • Deterministic error detection rules over state snapshots
+    • Surface selection heuristics (which surface should fire)
+    • Structured correction directives (for L3 / meta-learning)
+    • Multi-surface analysis for diagnostics
+    • Formatting helpers for state patches & telemetry
 
-This sits ENTIRELY ABOVE L1–L5:
+Layer Guardrails:
 
-    • L1 produces plan.reasoning & injection metadata.
-    • L2 produces execution_result payloads.
-    • L3 ArbitrationEngine & DAG decide actions.
-    • L4 applies only the state patches L3 chooses.
-    • L5 makes policy decisions (risk, retry, block).
+    • NO L1 cognition (no planning or PlanObject creation).
+    • NO L2 execution (no tool/LLM calls).
+    • NO L3 orchestration (no DAG/phase control).
+    • NO L4 state mutation (no StateAdapter usage).
+    • NO L5 safety/policy decisions.
 
-self_correction.py is a META-LAYER “advisor” — it **never** mutates state.
+Everything here is pure META logic that reads finalized state snapshots
+and produces *recommendations* for other layers to act on.
 """
 
 from __future__ import annotations
@@ -48,15 +49,18 @@ SELF_CORRECTION_SURFACES = {
 # 2. SELF-CORRECTION RESULT OBJECTS
 # ============================================================================
 
+
 @dataclass
 class CorrectionSignal:
     """
-    A signal that a correction is needed.
+    A low-level signal that a correction may be needed.
 
     Fields:
         • surface: which correction surface is applicable
         • reason: short human-readable explanation
         • metadata: optional structured info (e.g., failing checks, missing evidence)
+
+    This is used internally and can also be logged as-is for diagnostics.
     """
 
     surface: str
@@ -74,13 +78,17 @@ class CorrectionSignal:
 @dataclass
 class CorrectionRecommendation:
     """
-    A normalized self-correction recommendation for L3 arbitrators.
+    A normalized self-correction recommendation for L3 arbitrators
+    and meta-learning.
 
     Fields:
         • needed: bool
         • surface: one of SELF_CORRECTION_SURFACES
         • rationale: why correction is needed
-        • metadata: structured breakdown
+        • metadata: structured breakdown (issues, counts, etc.)
+
+    This object is PURELY advisory. It does NOT execute retries/replans;
+    L3/L5 and meta layers decide how/when to react.
     """
 
     needed: bool
@@ -98,10 +106,13 @@ class CorrectionRecommendation:
 
 
 # ============================================================================
-# 3. ERROR SIGNAL DETECTORS
+# 3. ERROR SIGNAL DETECTORS (STATE-BASED, PURE)
 # ============================================================================
 
 def _detect_rag_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+    """
+    Detect RAG-related issues that might warrant a RAG_RETRY surface.
+    """
     rag = state.get("rag_result") or {}
     docs = rag.get("documents") or []
     if len(docs) == 0:
@@ -120,6 +131,9 @@ def _detect_rag_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
 
 
 def _detect_qa_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+    """
+    Detect QA-related issues that might warrant a QA_RECHECK surface.
+    """
     qa = (state.get("qa_result") or {}).get("report") or {}
     issues = qa.get("issues", [])
     if issues:
@@ -132,42 +146,65 @@ def _detect_qa_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
 
 
 def _detect_strategy_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+    """
+    Detect strategy-related issues that might warrant a STRATEGY_REPLAN.
+    """
     strat = state.get("strategy_result") or {}
     decision_block = strat.get("decision") or {}
-    rationale = str(decision_block.get("aggregated_decision") or "")
-    if rationale.lower() == "revise":
+    aggregated_decision = str(decision_block.get("aggregated_decision") or "").lower()
+    if aggregated_decision == "revise":
         return CorrectionSignal(
             surface=SelfCorrectionSurface.STRATEGY_REPLAN.value,
             reason="Strategy planner signaled revision.",
             metadata={
-                "aggregated_rationale": decision_block.get("aggregated_rationale", "")
+                "aggregated_rationale": decision_block.get("aggregated_rationale", ""),
+                "aggregated_confidence": decision_block.get("aggregated_confidence", 0.0),
             },
         )
     return None
 
 
 def _detect_safety_halt(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+    """
+    Detect safety-related issues that might require HIL_ESCALATION.
+
+    Heuristic:
+        • If ANY issue code contains "pii", escalate to HIL.
+    """
     safety = (state.get("safety_result") or {}).get("report") or {}
     issues = safety.get("issues", [])
-    if any("pii" in (iss.get("code", "") or "") for iss in issues):
-        return CorrectionSignal(
-            surface=SelfCorrectionSurface.HIL_ESCALATION.value,
-            reason="Safety flagged sensitive content requiring human review.",
-            metadata={"safety_issues": issues},
-        )
+    # issues here are typically list[SafetyIssue dict-like]
+    for iss in issues:
+        code = ""
+        if isinstance(iss, dict):
+            code = str(iss.get("code", ""))
+        else:
+            code = str(iss)
+        if "pii" in code.lower():
+            return CorrectionSignal(
+                surface=SelfCorrectionSurface.HIL_ESCALATION.value,
+                reason="Safety flagged sensitive content requiring human review.",
+                metadata={"safety_issues": issues},
+            )
     return None
 
 
 def _detect_checkpoint_recovery(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
+    """
+    Detect if the last checkpoint was created during an error/failed phase,
+    suggesting CHECKPOINT_RECOVERY.
+    """
     checks = state.get("checkpoints") or []
-    if len(checks) > 0:
-        last = checks[-1]
-        if last.get("phase") in ("failed", "error"):
-            return CorrectionSignal(
-                surface=SelfCorrectionSurface.CHECKPOINT_RECOVERY.value,
-                reason="Last checkpoint created during error state.",
-                metadata={"last_checkpoint": last},
-            )
+    if not checks:
+        return None
+    last = checks[-1]
+    phase = str(last.get("phase", "")).lower()
+    if phase in ("failed", "error"):
+        return CorrectionSignal(
+            surface=SelfCorrectionSurface.CHECKPOINT_RECOVERY.value,
+            reason="Last checkpoint created during error/failed state.",
+            metadata={"last_checkpoint": last},
+        )
     return None
 
 
@@ -180,7 +217,7 @@ def analyze_state_for_correction(state: Dict[str, Any]) -> CorrectionRecommendat
     Evaluate state for ANY known correction surfaces.
     Returns the first applicable correction recommendation.
 
-    Priority order (matches enterprise recovery preference):
+    Priority order (enterprise preference):
 
         1. Safety → HIL escalation
         2. QA recheck
@@ -188,10 +225,9 @@ def analyze_state_for_correction(state: Dict[str, Any]) -> CorrectionRecommendat
         4. Strategy replan
         5. Checkpoint recovery
 
-    If no signals found:
-        return CorrectionRecommendation(needed=False)
+    If no signals are found:
+        return CorrectionRecommendation(needed=False).
     """
-
     detectors = [
         _detect_safety_halt,
         _detect_qa_errors,
@@ -214,7 +250,7 @@ def analyze_state_for_correction(state: Dict[str, Any]) -> CorrectionRecommendat
 
 
 # ============================================================================
-# 5. MULTI-SURFACE ANALYSIS (for meta-learning)
+# 5. MULTI-SURFACE ANALYSIS (FOR DIAGNOSTICS / META-LEARNING)
 # ============================================================================
 
 def analyze_all_surfaces(state: Dict[str, Any]) -> List[CorrectionSignal]:
@@ -222,9 +258,9 @@ def analyze_all_surfaces(state: Dict[str, Any]) -> List[CorrectionSignal]:
     Return ALL detected correction signals, not just the first one.
 
     Useful for:
-        • Meta-learning  
-        • Telemetry  
-        • Offline analysis
+        • Meta-learning / analytics
+        • Telemetry
+        • Offline diagnostics
     """
     signals: List[CorrectionSignal] = []
 
@@ -243,20 +279,36 @@ def analyze_all_surfaces(state: Dict[str, Any]) -> List[CorrectionSignal]:
 
 
 # ============================================================================
-# 6. FORMATTERS FOR L3/L5 CONSUMPTION
+# 6. FORMATTERS FOR L3/L4/L5 / TELEMETRY
 # ============================================================================
 
 def to_patch_dict(rec: CorrectionRecommendation) -> Dict[str, Any]:
     """
     Convert a CorrectionRecommendation to a dict suitable for inclusion
     in state via StatePatch under key "self_correction".
+
+    Example usage (from L3 Orchestrator):
+
+        sc_rec = analyze_state_for_correction(state_adapter.state)
+        sc_patch = to_patch_dict(sc_rec)
+        state_adapter.apply_patch(StatePatch(key="self_correction",
+                                             value=sc_patch["self_correction"]))
     """
     return {"self_correction": rec.to_dict()}
 
 
 def to_metadata_block(rec: CorrectionRecommendation) -> Dict[str, Any]:
     """
-    Convert a CorrectionRecommendation into a metadata block for telemetry.
+    Convert a CorrectionRecommendation into a standardized metadata block
+    for telemetry, logs, or meta-learning.
+
+    Shape:
+        {
+          "surface":  <surface or None>,
+          "needed":   bool,
+          "rationale": str,
+          "metadata":  { ... },
+        }
     """
     return {
         "surface": rec.surface,
