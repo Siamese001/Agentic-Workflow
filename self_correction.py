@@ -1,34 +1,34 @@
 # FILE: self_correction.py
 """
-Unified Self-Correction Layer (v10_9, Refactored — META ONLY)
+Unified Self-Correction Surfaces (v10_9 REFACTORED) — META LAYER ONLY
 
-This module implements a fully deterministic, enterprise-grade
-self-correction framework **strictly at the META layer**.
+This module defines the unified self-correction framework for the v10_9
+agentic architecture. It implements:
 
-It restores ALL missing 10_8 functionality:
-    • Multi-surface detection (RAG_RETRY, QA_RECHECK, STRATEGY_REPLAN,
-      HIL_ESCALATION, CHECKPOINT_RECOVERY)
-    • Structured CorrectionSignal + CorrectionRecommendation models
-    • Resume-aware + JD-aware QA/RAG error detectors
-    • Surface-priority ordering (safety → qa → rag → strategy → recovery)
+    • Canonical self-correction surfaces (RAG_RETRY, QA_RECHECK, etc.)
+    • Deterministic error detection rules over state snapshots
+    • Enterprise-ordered surface selection (safety > QA > RAG > strategy > checkpoint)
+    • Structured correction directives (for L3 / meta-learning)
     • Multi-surface analysis for diagnostics
-    • Patch serialization helpers
-    • Telemetry-friendly metadata blocks
+    • Utilities for telemetry and state patches (read-only)
 
-Strict L1–L5 purity:
-    • NO planning (L1)
-    • NO execution (L2)
-    • NO orchestration (L3)
-    • NO state mutation (L4)
-    • NO safety/policy (L5)
-    • META-only deterministic analysis of state snapshots
+❗ STRICT GUARDRAILS (META-ONLY):
+    • NO L1 (planning)
+    • NO L2 (execution / LLM / retrieval)
+    • NO L3 (orchestration)
+    • NO L4 (state mutation)
+    • NO L5 (policy/safety decisions)
+
+All functions operate ONLY on finalized state snapshots and produce
+recommendations — they NEVER perform workflow actions.
 """
 
 from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
-from models import SelfCorrectionSurface
+from models import SelfCorrectionSurface, SafetyIssue
 
 
 # ============================================================================
@@ -51,7 +51,7 @@ SELF_CORRECTION_SURFACES = {
 @dataclass
 class CorrectionSignal:
     """
-    Low-level signal indicating a correction opportunity.
+    Low-level signal that a correction may be needed.
     """
 
     surface: str
@@ -69,7 +69,13 @@ class CorrectionSignal:
 @dataclass
 class CorrectionRecommendation:
     """
-    High-level, normalized recommendation for L3 arbitration/meta-learning.
+    Normalized recommendation for downstream layers.
+
+    Fields:
+        • needed:   whether a correction should be triggered
+        • surface:  one of SELF_CORRECTION_SURFACES
+        • rationale: human-readable explanation
+        • metadata: structured supporting info
     """
 
     needed: bool
@@ -87,101 +93,152 @@ class CorrectionRecommendation:
 
 
 # ============================================================================
-# 3. ERROR SIGNAL DETECTORS (pure, deterministic)
+# 3. ERROR SIGNAL DETECTORS (STATE-BASED, PURE)
 # ============================================================================
 
 def _detect_rag_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
-    rag = state.get("rag_result") or {}
-    docs = rag.get("documents") or []
+    """
+    Detect whether retrieval was insufficient.
+    """
+    rag_block = state.get("rag_result") or {}
+    docs = rag_block.get("documents") or []
+
+    # v10_9 RAGExecutor returns RAGExecutionPayload.to_dict() under .documents
+    if not isinstance(docs, list):
+        return None
+
+    # No evidence retrieved → retry
     if len(docs) == 0:
         return CorrectionSignal(
             surface=SelfCorrectionSurface.RAG_RETRY.value,
-            reason="No evidence retrieved.",
+            reason="No RAG evidence retrieved.",
             metadata={"retrieved_count": 0},
         )
+
+    # Insufficient depth
     if len(docs) < 2:
         return CorrectionSignal(
             surface=SelfCorrectionSurface.RAG_RETRY.value,
-            reason="Insufficient evidence depth.",
+            reason="Insufficient RAG evidence depth.",
             metadata={"retrieved_count": len(docs)},
         )
+
     return None
 
 
 def _detect_qa_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
-    qa = (state.get("qa_result") or {}).get("report") or {}
-    issues = qa.get("issues", [])
+    """
+    Detect failed QA checks.
+    """
+    qa_block = state.get("qa_result") or {}
+    report = qa_block.get("report") or qa_block
+    issues = report.get("issues", [])
+
+    # issues = list[dict] from QAReport.to_dict()
     if issues:
         return CorrectionSignal(
             surface=SelfCorrectionSurface.QA_RECHECK.value,
-            reason="QA checks failed.",
+            reason="One or more QA checks failed.",
             metadata={"issues": issues},
         )
     return None
 
 
 def _detect_strategy_errors(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
-    strat = state.get("strategy_result") or {}
-    decision_block = strat.get("decision") or {}
-    aggregated_decision = str(decision_block.get("aggregated_decision") or "").lower()
-    if aggregated_decision == "revise":
+    """
+    Detect that L1 strategy recommended revision.
+
+    NOTE:
+        In the refactored system, L2 StrategyExecutor emits:
+             payload.aggregated_decision
+             payload.aggregated_confidence
+             payload.aggregated_rationale
+        (Wrapped under state["strategy_result"]["payload"])
+    """
+    strat_state = state.get("strategy_result") or {}
+    payload = strat_state.get("payload") or strat_state
+
+    decision = str(payload.get("aggregated_decision", "")).lower()
+    if decision == "revise":
         return CorrectionSignal(
             surface=SelfCorrectionSurface.STRATEGY_REPLAN.value,
-            reason="Strategy planner signaled revision.",
+            reason="Strategy evaluation signaled a revision.",
             metadata={
-                "aggregated_rationale": decision_block.get("aggregated_rationale", ""),
-                "aggregated_confidence": decision_block.get("aggregated_confidence", 0.0),
+                "aggregated_confidence": payload.get("aggregated_confidence"),
+                "aggregated_rationale": payload.get("aggregated_rationale"),
             },
         )
     return None
 
 
 def _detect_safety_halt(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
-    safety = (state.get("safety_result") or {}).get("report") or {}
-    issues = safety.get("issues", [])
-    for iss in issues:
-        code = ""
-        if isinstance(iss, dict):
-            code = str(iss.get("code", ""))
+    """
+    Detect safety failures requiring human escalation.
+
+    New v10_9 safety format:
+        state["safety_result"] = SafetyExecutionPayload.to_dict()
+        → {"report": {"issues": [SafetyIssue dicts], ...}}
+    """
+    safety = state.get("safety_result") or {}
+    report = safety.get("report") or safety
+    issues = report.get("issues", [])
+
+    for issue in issues:
+        # SafetyIssue is a dict after to_dict()
+        if isinstance(issue, dict):
+            cat = str(issue.get("category", "")).lower()
+            msg = str(issue.get("message", "")).lower()
         else:
-            code = str(iss)
-        if "pii" in code.lower() or "forbidden" in code.lower() or "prompt_injection" in code.lower():
+            # raw string fallback (rare)
+            cat = str(issue).lower()
+            msg = str(issue).lower()
+
+        # PII → immediate HIL escalation
+        if "pii" in cat or "pii" in msg:
             return CorrectionSignal(
                 surface=SelfCorrectionSurface.HIL_ESCALATION.value,
-                reason="Safety flagged sensitive content requiring human review.",
-                metadata={"safety_issues": issues},
+                reason="Safety detected PII — escalate to human review.",
+                metadata={"issues": issues},
             )
+
     return None
 
 
 def _detect_checkpoint_recovery(state: Dict[str, Any]) -> Optional[CorrectionSignal]:
-    checks = state.get("checkpoints") or []
-    if not checks:
+    """
+    Detect if the last checkpoint indicates workflow failure.
+    """
+    checkpoints = state.get("checkpoints") or []
+    if not checkpoints:
         return None
-    last = checks[-1]
+
+    last = checkpoints[-1]
     phase = str(last.get("phase", "")).lower()
+
     if phase in ("failed", "error"):
         return CorrectionSignal(
             surface=SelfCorrectionSurface.CHECKPOINT_RECOVERY.value,
-            reason="Last checkpoint created during failed/error state.",
+            reason="Last checkpoint was recorded during failed/error state.",
             metadata={"last_checkpoint": last},
         )
     return None
 
 
 # ============================================================================
-# 4. SURFACE SELECTION LOGIC (priority ordered)
+# 4. SURFACE SELECTION LOGIC (ENTERPRISE PRIORITY ORDER)
 # ============================================================================
 
 def analyze_state_for_correction(state: Dict[str, Any]) -> CorrectionRecommendation:
     """
-    Priority order (enterprise standard):
+    Priority-ordered correction analysis:
 
         1. Safety → HIL escalation
-        2. QA → recheck
-        3. RAG → retry
-        4. Strategy → replan
-        5. Recovery → checkpoint restore
+        2. QA recheck
+        3. RAG retry
+        4. Strategy replan
+        5. Checkpoint recovery
+
+    If no issues → needed=False
     """
 
     detectors = [
@@ -192,34 +249,44 @@ def analyze_state_for_correction(state: Dict[str, Any]) -> CorrectionRecommendat
         _detect_checkpoint_recovery,
     ]
 
-    for detector in detectors:
-        signal = detector(state)
-        if signal:
+    for detect in detectors:
+        sig = detect(state)
+        if sig:
             return CorrectionRecommendation(
                 needed=True,
-                surface=signal.surface,
-                rationale=signal.reason,
-                metadata=signal.metadata,
+                surface=sig.surface,
+                rationale=sig.reason,
+                metadata=sig.metadata,
             )
 
     return CorrectionRecommendation(needed=False)
 
 
 # ============================================================================
-# 5. MULTI-SURFACE ANALYSIS (diagnostics & meta-learning)
+# 5. MULTI-SURFACE ANALYSIS (ALL SIGNALS)
 # ============================================================================
 
 def analyze_all_surfaces(state: Dict[str, Any]) -> List[CorrectionSignal]:
-    signals: List[CorrectionSignal] = []
+    """
+    Return ALL applicable correction signals, sorted by enterprise priority.
 
-    for detector in [
-        _detect_rag_errors,
-        _detect_qa_errors,
-        _detect_strategy_errors,
+    Useful for:
+        • Meta-learning
+        • Telemetry
+        • Debugging
+        • State inspection
+    """
+    detectors = [
         _detect_safety_halt,
+        _detect_qa_errors,
+        _detect_rag_errors,
+        _detect_strategy_errors,
         _detect_checkpoint_recovery,
-    ]:
-        sig = detector(state)
+    ]
+
+    signals: List[CorrectionSignal] = []
+    for detect in detectors:
+        sig = detect(state)
         if sig:
             signals.append(sig)
 
@@ -227,24 +294,25 @@ def analyze_all_surfaces(state: Dict[str, Any]) -> List[CorrectionSignal]:
 
 
 # ============================================================================
-# 6. FORMATTERS (L3/L4 & Telemetry)
+# 6. FORMATTERS (PATCH + METADATA)
 # ============================================================================
 
 def to_patch_dict(rec: CorrectionRecommendation) -> Dict[str, Any]:
     """
-    Convert a CorrectionRecommendation into a structure suitable for
-    L4.StatePatch under key "self_correction".
+    Convert CorrectionRecommendation to a dict suitable for
+    state insertion under key "self_correction" by L4.StateAdapter.
     """
     return {"self_correction": rec.to_dict()}
 
 
 def to_metadata_block(rec: CorrectionRecommendation) -> Dict[str, Any]:
     """
-    Telemetry/log-friendly metadata block.
+    Convert CorrectionRecommendation into simplified metadata for
+    telemetry/meta-learning.
     """
     return {
         "surface": rec.surface,
         "needed": rec.needed,
         "rationale": rec.rationale,
-        "metadata": rec.metadata,
+        "metadata": dict(rec.metadata),
     }
