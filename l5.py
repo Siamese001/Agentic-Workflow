@@ -1,33 +1,44 @@
 # FILE: l5.py
 """
-Unified L5 Safety & Policy Layer (v10_9) — FULL AGENTIC IMPLEMENTATION (REFINED)
+Unified L5 Safety & Policy Layer (v10_9) — PURE SAFETY / POLICY
 
 This module implements ALL high-level safety, policy, arbitration, and
 model-routing responsibilities for the v10_9 agentic workflow.
 
-Responsibilities:
+Responsibilities (L5 only):
     • SafetyContracts        (allowed audiences, forbidden terms, toxicity thresholds)
     • Redaction utilities    (PII removal)
     • Bias scanning          (age-related, gendered, stereotyped patterns)
     • Prompt injection detection (deterministic heuristic detector)
     • Constitutional review  (rule-based)
-    • SafetyEngine           (full safety report)
+    • SafetyEngine           (aggregated safety report)
     • PolicyEngine           (allow / retry / replan / block)
-    • ArbitrationEngine      (normalize L5 action → L3 orchestrator)
-    • ModelRouter            (model selection heuristic; not used by L3 directly)
+    • ArbitrationEngine      (normalize L5 action → L3 orchestrator hint)
+    • ModelRouter            (model selection heuristic; used by routing/meta layers)
 
-Layer constraints:
-    • NO L1 cognition
-    • NO L2 execution
-    • NO L3 orchestration
-    • NO L4 state mutation
+Layer constraints (Agentic Guardrails):
+    • NO L1 cognition (no planning).
+    • NO L2 execution (no tool/LLM calls).
+    • NO L3 orchestration (no DAGs, no phases).
+    • NO L4 state mutation (no StateAdapter usage).
+    • NO provider/SDK imports (Anthropic/Gemini/OpenAI/etc.).
+    • All logic is deterministic and side-effect free.
+
+Integration points:
+    • L3 Orchestrator calls SafetyEngine.evaluate_content(...) to get
+      a safety_report (plain dict).
+    • L3 then calls PolicyEngine.review(safety_report) for policy decision.
+    • L3 then calls ArbitrationEngine.decide(...) to convert policy →
+      normalized action ("proceed", "retry_l2", "rerun_l1", "halt").
+    • Higher meta-layers may use ModelRouter for routing hints, but
+      model invocation happens in routing/providers, not here.
 """
 
 from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from models import PlanObject
 from runtime_utils import SafetyException
@@ -46,7 +57,11 @@ class SafetyContracts:
         • forbidden content
         • toxicity thresholds
         • bias patterns
-        • PI patterns
+        • PII patterns
+        • feature toggles for detection subsystems
+
+    This dataclass is pure configuration; it does not implement any
+    logic itself.
     """
 
     allowed_audience: List[str] = field(
@@ -76,7 +91,12 @@ _SSN_RE = re.compile(r"\b\d{3}-\d{2}-\d{4}\b")
 
 
 def redact_pii(text: str) -> str:
-    """Remove common PII markers deterministically."""
+    """
+    Remove common PII markers deterministically.
+
+    This function is side-effect free and does not depend on any
+    providers or external tools.
+    """
     if not text:
         return text
     text = _EMAIL_RE.sub("[EMAIL_REDACTED]", text)
@@ -106,6 +126,8 @@ def toxicity_score(text: str) -> float:
         - Too many exclamation marks
         - Aggressive words
         - Negative sentiment indicators (simple heuristic)
+
+    This is deterministic and does not call any external APIs.
     """
     if not text:
         return 0.0
@@ -122,6 +144,10 @@ def scan_bias(text: str) -> List[str]:
         • age-related terms
         • gendered terms
         • stereotype patterns
+
+    This is not a complete fairness system; it is a heuristics-based
+    first-pass that can be extended or replaced by more advanced
+    pipelines in providers/tooling.
     """
     lower = text.lower()
     patterns = {
@@ -154,6 +180,13 @@ _PI_PATTERNS = [
 def detect_prompt_injection(text: str) -> Dict[str, Any]:
     """
     Deterministic prompt injection detector using substring + regex patterns.
+
+    Returns:
+        {
+            "detected": bool,
+            "reason": str,
+            "confidence": float,
+        }
     """
     if not text:
         return {"detected": False, "reason": "", "confidence": 0.0}
@@ -171,7 +204,7 @@ def detect_prompt_injection(text: str) -> Dict[str, Any]:
 
 
 # ============================================================================
-# 5. CONSTITUTIONAL REVIEW (Deterministic)
+# 5. CONSTITUTIONAL REVIEW (Deterministic Rule Set)
 # ============================================================================
 
 _CONSTITUTION_RULES = {
@@ -233,6 +266,8 @@ class SafetyEngine:
     It may still expose a lower-level validate(content, audience) helper
     for unit testing and tooling, but orchestration goes through
     evaluate_content.
+
+    This class is deterministic and does not call external LLMs/tools.
     """
 
     def __init__(self, contracts: SafetyContracts = DEFAULT_SAFETY_CONTRACTS):
@@ -242,6 +277,9 @@ class SafetyEngine:
         """
         Validate a single content string against contracts and return a
         structured safety report.
+
+        The returned dict is intentionally compatible with SafetyReport
+        structures used in models.py and L2 SafetyExecutor.
         """
         if audience not in self.contracts.allowed_audience:
             raise SafetyException(f"Audience '{audience}' not permitted.")
@@ -326,11 +364,20 @@ class PolicyEngine:
         • retry       → re-run L2 stage
         • replan      → re-run L1 → L2
         • block       → halt workflow
+
+    This engine is deterministic and does not call external services.
     """
 
     def review(self, safety_report: Dict[str, Any]) -> Dict[str, Any]:
         """
         Return a structured policy decision from a safety_report.
+
+        The shape is:
+
+            {
+              "decision": "allow|retry|replan|block",
+              "reason":   "<short string>",
+            }
         """
         issues = safety_report.get("issues", [])
         passed = safety_report.get("passed", False)
@@ -367,10 +414,13 @@ class ArbitrationEngine:
     Determines final normalized L5 action from a policy decision and
     the underlying safety_report:
 
-        • proceed
-        • retry_l2
-        • rerun_l1
-        • halt
+        • proceed   — workflow may continue
+        • retry_l2  — re-run L2 stage (same plan)
+        • rerun_l1  — re-plan at L1 then re-run L2
+        • halt      — stop the workflow
+
+    The returned dict is intentionally simple so L3 can route based on
+    action and record the hint for self-correction/meta-learning.
     """
 
     def decide(self, policy: Dict[str, Any], safety_report: Dict[str, Any]) -> Dict[str, Any]:
@@ -399,6 +449,18 @@ class ArbitrationEngine:
 
 @dataclass
 class RoutingCriteria:
+    """
+    Model routing criteria used by ModelRouter.
+
+    Fields:
+        task_type: str  — e.g., "strategy", "rag", "drafting", "qa", "safety"
+        complexity: str — "low", "medium", "high"
+        latency_target_ms: int
+        cost_ceiling_usd: float
+        risk_level: str — "normal", "strict", "high_safety"
+        model_available: bool
+    """
+
     task_type: str
     complexity: str = "low"         # "low", "medium", "high"
     latency_target_ms: int = 2000
@@ -409,6 +471,15 @@ class RoutingCriteria:
 
 @dataclass
 class RoutingDecision:
+    """
+    Routing decision produced by ModelRouter.
+
+    Fields:
+        model: str      — logical model name (e.g., "gpt-4.1")
+        endpoint: str   — endpoint flavor (e.g., "standard", "fast")
+        rationale: str  — short explanation
+    """
+
     model: str
     endpoint: str
     rationale: str
@@ -417,6 +488,7 @@ class RoutingDecision:
 class ModelRouter:
     """
     Determines which model + endpoint to use based on:
+
         • complexity
         • latency
         • cost
@@ -424,8 +496,9 @@ class ModelRouter:
         • availability
 
     NOTE:
-        This router is NOT currently wired into L3, but can be used by
-        future L2 or meta orchestration layers.
+        This router is NOT currently wired into L3; it is designed to
+        be used by routing/meta layers or provider/tool clients. It does
+        not execute any model calls itself.
     """
 
     def select(self, criteria: RoutingCriteria) -> RoutingDecision:
