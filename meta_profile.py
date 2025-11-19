@@ -1,34 +1,27 @@
 # FILE: meta_profile.py
 """
-Meta Profile & Adaptive Biases (v10_9) — ENTERPRISE MODULE
+Meta Profile & Adaptive Biases (v10_9) — META LAYER ONLY
 
 This module defines the global meta-profile for the v10_9 agentic
 architecture. It captures *soft preferences* and *learned biases* that
 are NOT part of the core L1–L5 logic, but are used by:
 
     • Model routing (e.g., "prefer_fast" when planning dominates cost).
-    • Planning (e.g., "conservative" when QA repeatedly fails).
+    • L1 planners (e.g., "conservative" when QA repeatedly fails).
     • Self-correction (e.g., bias toward replan vs retry).
     • Meta-learning (e.g., patterns inferred from prior runs).
 
-Responsibilities:
-    • Maintain an in-memory MetaProfile object.
-    • Provide deterministic update rules from:
-        - spans (timings from CostTracker / observability),
-        - self-correction recommendations (self_correction.py),
-        - run-level outcomes (optional).
-    • Provide read-only accessors for L1/L2/L3.
+Layer constraints (Agentic Guardrails):
 
-Non-responsibilities:
-    • NO L1 planning.
-    • NO L2 execution.
-    • NO L3 DAG orchestration.
-    • NO L4 state mutation.
+    • NO L1 planning (no PlanObject creation).
+    • NO L2 execution (no tool/LLM calls).
+    • NO L3 DAG/orchestration.
+    • NO L4 state mutation (no StateAdapter usage).
     • NO L5 safety decisions.
 
-Think of this as a lightweight "tuning brain" that keeps track of
-heuristics such as "we're too slow, route fast" or "QA failures are
-frequent, plan more conservatively" without violating layer purity.
+This module is a META layer “tuning brain” that keeps track of heuristics
+such as "we're too slow, route fast" or "QA failures are frequent, plan
+more conservatively" without violating layer purity.
 """
 
 from __future__ import annotations
@@ -55,6 +48,7 @@ class MetaProfile:
         • history:         recent meta-updates (for inspection and tests).
 
     All fields are *soft hints* only. L1–L3 are free to ignore them.
+    This object is pure data; update_* helpers below mutate it.
     """
 
     routing_bias: Dict[str, Any] = field(default_factory=dict)
@@ -66,6 +60,7 @@ class MetaProfile:
     def snapshot(self) -> Dict[str, Any]:
         """
         Return a deep copy-like snapshot safe for logging or inspection.
+        Only the last N history entries are preserved to bound size.
         """
         return {
             "routing_bias": dict(self.routing_bias),
@@ -94,6 +89,8 @@ def update_from_spans(spans: List[Dict[str, Any]]) -> None:
     Heuristics:
         • If planning consistently slower than execution → prefer_fast routing.
         • If execution is consistently dominant → neutral routing.
+
+    This is a META-only adjustment; it does not mutate L1–L5 directly.
     """
     if not spans:
         return
@@ -148,6 +145,9 @@ def update_from_self_correction(self_correction_block: Dict[str, Any]) -> None:
     Heuristics:
         • QA_RECHECK frequently → planning_bias["conservative"] = True.
         • STRATEGY_REPLAN frequently → planning_bias["exploratory"] = True.
+        • HIL_ESCALATION frequently → safety_bias["human_review_important"] = True.
+        • RAG_RETRY frequently → routing_bias["prefer_robust_retrieval"] = True.
+        • CHECKPOINT_RECOVERY → planning_bias["deterministic_recovery"] = True.
     """
     if not self_correction_block:
         return
@@ -164,7 +164,7 @@ def update_from_self_correction(self_correction_block: Dict[str, Any]) -> None:
         "rationale": self_correction_block.get("rationale", ""),
     }
 
-    # Simple frequency-free heuristic: set toggles based on surface type.
+    # Simple surface-based adjustment
     if surface == "qa_recheck":
         META_PROFILE.planning_bias["conservative"] = True
         META_PROFILE.qa_bias["recent_failures"] = True
@@ -221,6 +221,7 @@ def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
     Heuristics:
         • Many QA issues → conservative planning.
         • Many safety issues → stronger safety biases.
+        • HIL issues → more emphasis on human review.
     """
     if not run_summary:
         return
@@ -228,11 +229,13 @@ def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
     issues = run_summary.get("issues") or {}
     qa_issues = issues.get("qa") or []
     safety_issues = issues.get("safety") or []
+    hil_issues = issues.get("hil") or []
 
     update_record: Dict[str, Any] = {
         "source": "run_summary",
         "qa_issue_count": len(qa_issues),
         "safety_issue_count": len(safety_issues),
+        "hil_issue_count": len(hil_issues),
     }
 
     if qa_issues:
@@ -241,6 +244,9 @@ def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
 
     if safety_issues:
         META_PROFILE.safety_bias["heightened_caution"] = True
+
+    if hil_issues:
+        META_PROFILE.safety_bias["human_review_important"] = True
 
     META_PROFILE.history.append(
         {
@@ -259,6 +265,11 @@ def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
 def get_routing_bias() -> Dict[str, Any]:
     """
     Return a copy of the current routing bias block.
+
+    Typical usage:
+        criteria = RoutingCriteria(...)
+        if get_routing_bias().get("prefer_fast"):
+            criteria.latency_target_ms = min(criteria.latency_target_ms, 1000)
     """
     return dict(META_PROFILE.routing_bias)
 
@@ -266,6 +277,12 @@ def get_routing_bias() -> Dict[str, Any]:
 def get_planning_bias() -> Dict[str, Any]:
     """
     Return a copy of the current planning bias block.
+
+    Typical usage:
+        bias = get_planning_bias()
+        if bias.get("conservative"):
+            # L1 planners may reduce branching_factor.
+            ...
     """
     return dict(META_PROFILE.planning_bias)
 
@@ -273,6 +290,12 @@ def get_planning_bias() -> Dict[str, Any]:
 def get_qa_bias() -> Dict[str, Any]:
     """
     Return a copy of the current QA bias block.
+
+    Typical usage:
+        bias = get_qa_bias()
+        if bias.get("recent_failures"):
+            # L1/L2 or meta layers may run additional QA passes.
+            ...
     """
     return dict(META_PROFILE.qa_bias)
 
@@ -280,6 +303,12 @@ def get_qa_bias() -> Dict[str, Any]:
 def get_safety_bias() -> Dict[str, Any]:
     """
     Return a copy of the current safety bias block.
+
+    Typical usage:
+        bias = get_safety_bias()
+        if bias.get("heightened_caution"):
+            # L5 or routing may use stricter models or thresholds.
+            ...
     """
     return dict(META_PROFILE.safety_bias)
 
