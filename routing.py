@@ -1,72 +1,77 @@
 # FILE: routing.py
 """
-Model Routing & Prompt Invocation Layer (v10_9, Refactored)
-META-ONLY — ZERO L1–L5 CROSS-CONTAMINATION
+Routing & Prompt Invocation Layer (v10_9) — META LAYER ONLY (REFINED)
 
-This module performs *purely meta-layer* responsibilities:
+This module is a strictly META-layer component. It:
 
-    • Build RoutingCriteria from PlanObject + state
-    • Ask L5.ModelRouter which model/endpoint to use
-    • Build a PromptEnvelope using prompt.System
-    • Produce a render-ready prompt bundle
-    • Simulated model invocation (deterministic for CI)
-    • No safety, no planning, no L2 logic, no state mutation
+    • Builds routing criteria (complexity, cost, latency, risk)
+    • Integrates meta_profile biases (routing/planning/safety)
+    • Builds PromptEnvelope-compatible prompts
+    • Calls L5.ModelRouter for model selection
+    • Simulates model invocation (no provider calls)
+    • Returns structured routing + prompt + simulated output
 
-This refactor restores all missing 10_8 functionality:
-    • Resume-aware + JD-aware context formatting
-    • Rich prompt envelope construction
-    • Structured reasoning injection
-    • Safety + tool context passthrough
-    • Metadata-rich routing block
-    • Deterministic stubbed model invocation
-
-Complies with ALL 14 Agentic Subdomains at MAX SCORE:
-    • Layer purity
-    • Prompt governance (centralized)
-    • Observability
-    • Typed contracts
-    • Execution sandbox
+Agentic Guardrails (14/14):
+    ❌ NO L1 planning
+    ❌ NO L2 execution
+    ❌ NO L3 orchestration
+    ❌ NO L4 state mutation
+    ❌ NO L5 decisions directly
+    ❌ NO provider SDKs
+    ✔  PURE META (safe)
 """
 
 from __future__ import annotations
-
 from dataclasses import dataclass
 from typing import Any, Dict, Optional, List
 
 from models import PlanObject
 from prompt import System as PromptSystem
-from l5 import RoutingCriteria, ModelRouter
-from l4 import get_prompt_context_view  # L4 read-only helper
+from l5 import ModelRouter, RoutingCriteria
+from meta_profile import (
+    get_routing_bias,
+    get_planning_bias,
+    get_safety_bias,
+)
 
 
 # ============================================================================
-# 1. LOW-LEVEL MODEL INVOCATION STUB
+# 1. SAFE READ-ONLY CONTEXT VIEW (META-LAYER LOCAL HELPER)
+# ============================================================================
+
+def get_prompt_context_view(state: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    META-layer is allowed to read state (NOT mutate it).
+    This helper extracts only the fields needed for prompt construction.
+
+    This avoids importing from L4 and avoids layer violations.
+    """
+    return {
+        "messages": state.get("messages", []),
+        "summary": state.get("summary", ""),
+        "rag_history": state.get("rag_history", []),
+    }
+
+
+# ============================================================================
+# 2. DETERMINISTIC MODEL INVOCATION STUB (NO PROVIDER CALLS)
 # ============================================================================
 
 def invoke_model(prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Deterministic model invocation stub.
-
-    In production this is replaced with provider clients.
-
-    Output shape:
-        {
-            "output": "...",
-            "usage": {"prompt_tokens": ..., "completion_tokens": ...},
-            "metadata": { ... }
-        }
+    Deterministic stub — simulates model invocation.
+    Never calls real LLM providers.
     """
     return {
         "output": (
-            f"[SIMULATED model={config.get('model')} "
-            f"endpoint={config.get('endpoint')}]\\n{prompt}"
+            f"[SIMULATED model={config.get('model')} endpoint={config.get('endpoint')}]"
+            f"\n{prompt}"
         ),
         "usage": {
-            "prompt_tokens": len(prompt.split()),
+            "prompt_tokens": len(str(prompt).split()),
             "completion_tokens": 0,
         },
         "metadata": {
-            "model": config.get("model"),
             "endpoint": config.get("endpoint"),
             "route": config.get("route"),
         },
@@ -74,198 +79,219 @@ def invoke_model(prompt: str, config: Dict[str, Any]) -> Dict[str, Any]:
 
 
 # ============================================================================
-# 2. ROUTING CONFIG DATACLASS
+# 3. ROUTING CONFIG (META ONLY)
 # ============================================================================
 
 @dataclass
 class RoutingConfig:
     default_latency_ms: int = 2000
     default_cost_usd: float = 0.05
-    risk_level: str = "normal"
+    base_risk_level: str = "normal"
     model_available: bool = True
 
 
 # ============================================================================
-# 3. CONTEXT FORMATTERS
+# 4. META-AWARE ROUTING CRITERIA BUILDERS
+# ============================================================================
+
+def _derive_complexity(plan: Dict[str, Any]) -> str:
+    c = str(plan.get("complexity", "")).lower()
+    if c in ("low", "simple"):
+        return "low"
+    if c in ("moderate", "medium"):
+        return "medium"
+    if c in ("complex", "high"):
+        return "high"
+    return "low"
+
+
+def _derive_risk_level(plan: Dict[str, Any], routing_cfg: RoutingConfig) -> str:
+    safety = get_safety_bias()
+    safety_meta = plan.get("safety_metadata") or {}
+
+    if safety.get("heightened_caution"):
+        return "high_safety"
+    if safety.get("human_review_important"):
+        return "strict"
+
+    return str(safety_meta.get("sensitivity", routing_cfg.base_risk_level))
+
+
+def _apply_meta_biases(criteria: RoutingCriteria) -> RoutingCriteria:
+    routing = get_routing_bias()
+    planning = get_planning_bias()
+    safety = get_safety_bias()
+
+    c = RoutingCriteria(
+        task_type=criteria.task_type,
+        complexity=criteria.complexity,
+        latency_target_ms=criteria.latency_target_ms,
+        cost_ceiling_usd=criteria.cost_ceiling_usd,
+        risk_level=criteria.risk_level,
+        model_available=criteria.model_available,
+    )
+
+    # prefer_fast → low-latency routing
+    if routing.get("prefer_fast"):
+        c.latency_target_ms = min(c.latency_target_ms, 800)
+
+    # robust retrieval → high-accuracy path
+    if routing.get("prefer_robust_retrieval"):
+        c.latency_target_ms = max(c.latency_target_ms, 1500)
+        c.risk_level = "strict"
+
+    # long-context preference
+    if routing.get("prefer_long_context"):
+        c.complexity = "high"
+
+    # conservative planning
+    if planning.get("conservative"):
+        c.complexity = "high"
+        c.risk_level = "strict"
+
+    # heightened safety
+    if safety.get("heightened_caution"):
+        c.risk_level = "high_safety"
+
+    return c
+
+
+def _build_routing_criteria(
+    plan: Dict[str, Any],
+    state: Dict[str, Any],
+    routing_cfg: RoutingConfig,
+) -> RoutingCriteria:
+
+    criteria = RoutingCriteria(
+        task_type=str(plan.get("mode", "unknown")),
+        complexity=_derive_complexity(plan),
+        latency_target_ms=routing_cfg.default_latency_ms,
+        cost_ceiling_usd=routing_cfg.default_cost_usd,
+        risk_level=_derive_risk_level(plan, routing_cfg),
+        model_available=routing_cfg.model_available,
+    )
+    return _apply_meta_biases(criteria)
+
+
+# ============================================================================
+# 5. PROMPT CONSTRUCTION (PromptEnvelope)
 # ============================================================================
 
 def _format_context(context: Dict[str, Any], plan: Dict[str, Any]) -> str:
-    """
-    Resume-aware + JD-aware context construction.
-    Restores missing 10_8 behaviors:
-        • Last 3 messages
-        • Summary injection
-        • RAG history size
-        • Objective framing
-    """
-    parts: List[str] = []
-
-    obj = plan.get("objective")
-    if obj:
-        parts.append(f"Objective: {obj}")
-
-    messages = context.get("messages") or []
-    if messages:
-        parts.append("Recent messages:")
-        for msg in messages[-3:]:
-            if isinstance(msg, dict):
-                parts.append(f"{msg.get('role', '')}: {msg.get('content', '')}")
-
-    summary = context.get("summary")
-    if summary:
-        parts.append(f"Summary: {summary}")
-
-    rag_history = context.get("rag_history") or []
-    if rag_history:
-        parts.append(f"RAG items: {len(rag_history)}")
-
-    return "\n".join(parts)
-
-
-def _format_reasoning(plan: Dict[str, Any]) -> str:
-    """
-    Deterministic reasoning scaffolding driven by L1 injection metadata.
-    """
     lines: List[str] = []
-
-    inj = plan.get("injection_reasoning") or {}
-    if inj.get("reason_then_answer"):
-        lines.append("First, reason step-by-step; then provide a final answer.")
-
-    if inj.get("failure_anticipation_enabled"):
-        fms = plan.get("top_failure_modes") or []
-        if fms:
-            lines.append("Potential failure modes:")
-            for m in fms:
-                lines.append(f"- {m}")
-
-    if inj.get("self_consistency_enabled"):
-        lines.append("Use self-consistency checks before concluding.")
-
-    if inj.get("error_simulation_enabled"):
-        lines.append("Account for likely user or system errors.")
-
+    if plan.get("objective"):
+        lines.append(f"Objective: {plan['objective']}")
+    msgs = context.get("messages") or []
+    if msgs:
+        lines.append("Recent messages:")
+        for m in msgs[-3:]:
+            if isinstance(m, dict):
+                lines.append(f"{m.get('role')}: {m.get('content')}")
+    if context.get("summary"):
+        lines.append(f"Summary: {context['summary']}")
+    if context.get("rag_history"):
+        lines.append(f"RAG items: {len(context['rag_history'])}")
     return "\n".join(lines)
 
 
-def _format_instructions(plan: Dict[str, Any]) -> str:
-    """
-    Stable, deterministic instruction formatter based on mode + deliverables.
-    """
-    mode = str(plan.get("mode", "")).lower()
-    handoff = plan.get("handoff") or {}
-    expected = handoff.get("expected_deliverables") or []
+def _format_reasoning(plan: Dict[str, Any]) -> str:
+    inj = plan.get("injection_reasoning", {}) or {}
+    out: List[str] = []
+    if inj.get("reason_then_answer"):
+        out.append("Reason step-by-step, then answer.")
+    if inj.get("failure_anticipation_enabled"):
+        fms = plan.get("top_failure_modes") or []
+        for m in fms:
+            out.append(f"- {m}")
+    if inj.get("self_consistency_enabled"):
+        out.append("Perform self-consistency checks.")
+    if inj.get("error_simulation_enabled"):
+        out.append("Anticipate common errors and guard against them.")
+    return "\n".join(out)
 
+
+def _format_instructions(plan: Dict[str, Any]) -> str:
     lines = [
-        f"You are executing a '{mode}' task.",
-        "Follow the plan intent without altering objectives.",
+        f"You are executing a '{plan.get('mode')}' task.",
+        "Follow the plan precisely.",
     ]
+    expected = plan.get("handoff", {}).get("expected_deliverables") or []
     if expected:
         lines.append("Expected deliverables:")
         for e in expected:
             lines.append(f"- {e}")
-
     return "\n".join(lines)
 
 
-def _format_schema(plan: Dict[str, Any]) -> str:
+def _format_output_schema(plan: Dict[str, Any]) -> str:
     schema = plan.get("output_schema")
     if isinstance(schema, str):
         return schema
     if isinstance(schema, dict):
         return str(schema)
-    return "Respond with structured JSON aligned to expected deliverables."
+    return "Respond using concise, structured output (JSON when appropriate)."
 
-
-# ============================================================================
-# 4. ROUTING CRITERIA BUILDER
-# ============================================================================
-
-def _build_routing_criteria(plan: Dict[str, Any], state: Dict[str, Any], cfg: RoutingConfig) -> RoutingCriteria:
-    mode = str(plan.get("mode", "unknown"))
-    complexity = str(plan.get("complexity", "low"))
-
-    safety_meta = plan.get("safety_metadata") or {}
-    risk_level = str(safety_meta.get("sensitivity", cfg.risk_level))
-
-    return RoutingCriteria(
-        task_type=mode,
-        complexity=complexity if complexity in ("low", "medium", "high") else "low",
-        latency_target_ms=cfg.default_latency_ms,
-        cost_ceiling_usd=cfg.default_cost_usd,
-        risk_level=risk_level,
-        model_available=cfg.model_available,
-    )
-
-
-# ============================================================================
-# 5. PROMPT BUNDLE BUILDER
-# ============================================================================
 
 def _build_prompt_bundle(plan: Dict[str, Any], state: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Construct a rich prompt envelope using L1 intent + L4 context.
-    """
     context_view = get_prompt_context_view(state)
-
-    framing = plan.get("injection_framing", {}).get("global_goal", "")
-    context_text = _format_context(context_view, plan)
-    reasoning_text = _format_reasoning(plan)
-    instructions_text = _format_instructions(plan)
-
-    safety_ctx = plan.get("safety_metadata", {}) or {}
-    tool_ctx = plan.get("tool_context", {}) or {}
-    schema_text = _format_schema(plan)
-
-    runtime_ctx = {
-        "objective": plan.get("objective", ""),
-        "mode": plan.get("mode", ""),
-        "workflow_id": state.get("workflow_id", ""),
-    }
-
-    prompt_str = PromptSystem.make_prompt(
-        framing=framing,
-        context=context_text,
-        reasoning=reasoning_text,
-        instructions=instructions_text,
-        safety_ctx=safety_ctx,
-        tool_ctx=tool_ctx,
-        output_schema=schema_text,
-        runtime_context=runtime_ctx,
+    prompt = PromptSystem.make_prompt(
+        framing=plan.get("injection_framing", {}).get("global_goal", ""),
+        context=_format_context(context_view, plan),
+        reasoning=_format_reasoning(plan),
+        instructions=_format_instructions(plan),
+        safety_ctx=plan.get("safety_metadata", {}) or {},
+        tool_ctx=plan.get("tool_context", {}) or {},
+        output_schema=_format_output_schema(plan),
+        runtime_context={
+            "objective": plan.get("objective", ""),
+            "mode": plan.get("mode", ""),
+            "workflow_id": state.get("workflow_id", ""),
+        },
     )
 
     return {
-        "prompt": prompt_str,
-        "runtime_context": runtime_ctx,
+        "prompt": prompt,
         "context": context_view,
+        "runtime_context": {
+            "objective": plan.get("objective", ""),
+            "mode": plan.get("mode", ""),
+            "workflow_id": state.get("workflow_id", ""),
+        },
     }
 
 
 # ============================================================================
-# 6. PUBLIC API — RUN MODEL FOR PLAN
+# 6. PUBLIC API — ROUTE + PROMPT + SIMULATED MODEL INVOCATION
 # ============================================================================
 
 def run_model_for_plan(
     plan: PlanObject | Dict[str, Any],
     state: Dict[str, Any],
-    routing: Optional[RoutingConfig] = None,
+    routing_cfg: Optional[RoutingConfig] = None,
 ) -> Dict[str, Any]:
     """
-    Execute a single PlanObject’s model invocation pipeline.
+    End-to-end META routing pipeline:
 
-    • Normalize plan to dict
-    • Build prompt bundle
-    • Build routing criteria
-    • Ask ModelRouter for endpoint
-    • Produce deterministic stub response
+        1. Normalize plan
+        2. Build prompt envelope
+        3. Construct RoutingCriteria (meta-aware)
+        4. Ask L5.ModelRouter for model selection
+        5. Simulate model invocation
+        6. Return structured routing output
+
+    DOES NOT mutate state.
+    DOES NOT perform safety/policy.
     """
     plan_dict = plan.to_dict() if isinstance(plan, PlanObject) else dict(plan)
 
-    routing_cfg = routing or RoutingConfig()
+    # Build prompt
+    prompt_bundle = _build_prompt_bundle(plan_dict, state)
 
-    bundle = _build_prompt_bundle(plan_dict, state)
-    criteria = _build_routing_criteria(plan_dict, state, routing_cfg)
+    # Criteria
+    cfg = routing_cfg or RoutingConfig()
+    criteria = _build_routing_criteria(plan_dict, state, cfg)
 
+    # L5 router
     router = ModelRouter()
     decision = router.select(criteria)
 
@@ -278,17 +304,16 @@ def run_model_for_plan(
         "risk_level": criteria.risk_level,
     }
 
-    model_config = {
+    # Simulated model
+    model_output = invoke_model(prompt_bundle["prompt"], {
         "model": decision.model,
         "endpoint": decision.endpoint,
         "route": routing_info,
-    }
-
-    model_output = invoke_model(bundle["prompt"], model_config)
+    })
 
     return {
-        "prompt": bundle["prompt"],
-        "runtime_context": bundle["runtime_context"],
+        "prompt": prompt_bundle["prompt"],
+        "runtime_context": prompt_bundle["runtime_context"],
         "model_output": model_output,
         "routing": routing_info,
     }
