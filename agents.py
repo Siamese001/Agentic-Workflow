@@ -162,7 +162,8 @@ def _qa_candidate_scores(
     """
     severity = str(plan.get("severity", "normal")).lower()
     qa_state = state.get("qa_result") or {}
-    issues = (qa_state.get("report") or {}).get("issues", [])
+    report = qa_state.get("report") or {}
+    issues = report.get("issues", []) if isinstance(report, dict) else []
     issue_count = len(issues)
 
     base = 0.5
@@ -197,7 +198,7 @@ def deterministic_vote(candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
 
     sorted_candidates = sorted(
         candidates,
-        key=lambda c: (-float(c.get("score", 0.0)), int(c.get("id", 999999))),
+        key=lambda c: (-float(c.get("score", 0.0)), int(c.get("id", 999_999))),
     )
     return sorted_candidates[0]
 
@@ -231,7 +232,7 @@ def build_council_result(
 
 
 # =============================================================================
-# 3. MULTI-AGENT ORCHESTRATOR (META-LEVEL)
+# 3. MULTI-AGENT ORCHESTRATOR (QA COUNCIL, META-LEVEL)
 # =============================================================================
 
 
@@ -264,7 +265,7 @@ class MultiAgentOrchestrator:
     state_adapter: Any  # Typed as Any to avoid import cycles; must expose .state
 
     # -------------------------------------------------------------------------
-    # QA COUNCIL ENTRYPOINT
+    # INTERNAL HELPERS
     # -------------------------------------------------------------------------
 
     def _build_synthetic_message(self, plan: Any) -> Dict[str, Any]:
@@ -303,6 +304,10 @@ class MultiAgentOrchestrator:
             return dict(vars(plan))
         except TypeError:
             return {"repr": repr(plan)}
+
+    # -------------------------------------------------------------------------
+    # QA COUNCIL ENTRYPOINT
+    # -------------------------------------------------------------------------
 
     def dispatch_for_qa(self, state: Dict[str, Any], plan: Any) -> Dict[str, Any]:
         """
