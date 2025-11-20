@@ -1,149 +1,274 @@
-# FILE: self_correction.py
+# FILE: 10_10/self_correction.py
 """
-Unified Correction Surface Registry (v10_10) — AUTONOMOUS RECOVERY
+Self-Correction Surfaces (v10_10)
+=================================
 
-This module implements Pillar 5 (Capability Maturity).
-It acts as the "Immune System" of the agent, defining explicit rules for
-detecting failures and prescribing remediation strategies.
+v10_10 refactor of the v10_9 self_correction module.
 
-It is PURE DECISION LOGIC. It does not execute the retry (L3 does that).
+This version:
+
+    • NO longer operates on raw state dicts.
+    • NO longer uses SelfCorrectionSurface enums or SafetyIssue types.
+    • Operates directly on typed L2 results:
+        - StrategyResult
+        - RAGResult
+        - DraftingResult
+        - QAResult
+        - SafetyResult
+    • Produces simple, typed CorrectionSignal objects.
+    • Provides:
+        - evaluate_all_surfaces(...) → list[CorrectionSignal]
+        - aggregate_correction_signals(...) → best CorrectionSignal | None
 
 Responsibilities:
-    1. Surface Registration: Define known failure modes (RAG empty, QA fail).
-    2. Strategy Mapping: Map failures to actions (Retry, Replan, Escalate).
-    3. Parameter Tuning: Modify next-hop config (e.g., "increase temp on retry").
+    • Detect when a retry/replan is advisable.
+    • Provide severity + recommended_action hints to L3.
+    • Remain PURE decision logic (no I/O, no LLM, no state mutation).
+
+Non-Responsibilities:
+    • No orchestration (L3 handles retries).
+    • No LLM/tool execution (L2).
+    • No safety decisions (L5).
+    • No state patching (L4).
 """
 
 from __future__ import annotations
 
-from typing import Dict, Any, Optional, Callable
-from pydantic import BaseModel, Field
+from dataclasses import dataclass
+from typing import List, Optional
 
 from models import (
-    CorrectionSignal, 
-    CorrectionProposal, 
-    SelfCorrectionSurface,
-    NodeStatus
+    StrategyResult,
+    RAGResult,
+    DraftingResult,
+    QAResult,
+    SafetyResult,
 )
+from observability import record_event
+
 
 # =============================================================================
-# CONFIGURATION MODELS
+# Correction Signal
 # =============================================================================
 
-class RemediationPolicy(BaseModel):
-    """Declarative rule for handling a specific failure surface."""
-    surface_id: str
-    action: str             # retry_node, replan_workflow, escalate
-    max_retries: int = 1
-    backoff_factor: float = 1.0
-    param_modifiers: Dict[str, Any] = Field(default_factory=dict)
-    
-    # For advanced logic (e.g. "only retry if score > 0.5")
-    condition: Optional[str] = None 
-
-# =============================================================================
-# CORRECTION REGISTRY
-# =============================================================================
-
-class CorrectionSurfaceRegistry:
+@dataclass
+class CorrectionSignal:
     """
-    Central store for recovery policies.
+    Correction signal emitted by a surface evaluator.
+
+    Fields:
+        surface           – logical domain ("strategy", "rag", "drafting", "qa", "safety").
+        severity          – 0..3 (0 = none; 1 = mild; 2 = moderate; 3 = severe).
+        reason            – short human-readable explanation.
+        recommended_action – coarse-grained hint for L3 or meta-layer:
+                             "retry_strategy", "retry_rag", "retry_drafting",
+                             "retry_qa", "retry_safety", "none".
     """
-    
-    def __init__(self):
-        self._policies: Dict[str, RemediationPolicy] = {}
-        self._initialize_golden_surfaces()
 
-    def register(self, policy: RemediationPolicy) -> None:
-        self._policies[policy.surface_id] = policy
+    surface: str
+    severity: int
+    reason: str
+    recommended_action: str = "none"
 
-    def resolve(self, signal: CorrectionSignal, attempt_count: int) -> CorrectionProposal:
-        """
-        Converts a raw Error Signal into an Actionable Proposal.
-        """
-        policy = self._policies.get(signal.surface)
-        
-        # 1. Unknown Surface -> Escalate (Safety First)
-        if not policy:
-            return CorrectionProposal(
-                action="escalate",
-                target_node="human_supervisor",
-                parameters={"reason": f"Unknown failure surface: {signal.surface}"},
-                rationale="No remediation policy defined."
-            )
+    @property
+    def needs_correction(self) -> bool:
+        return self.severity >= 1
 
-        # 2. Retry Limit Exceeded -> Escalate
-        if attempt_count >= policy.max_retries:
-            return CorrectionProposal(
-                action="escalate",
-                target_node="human_supervisor",
-                parameters={"reason": "Max retries exceeded"},
-                rationale=f"Failed after {attempt_count} attempts."
-            )
 
-        # 3. Generate Proposal (The Fix)
-        # We inject the context from the signal (e.g. the specific QA error)
-        # into the parameters for the next attempt.
-        
-        params = policy.param_modifiers.copy()
-        params["feedback_context"] = signal.context
-        
-        return CorrectionProposal(
-            action=policy.action,
-            target_node="current_phase", # Default to retrying same phase
-            parameters=params,
-            rationale=f"Policy {policy.surface_id} triggered retry."
+# =============================================================================
+# Strategy Surface
+# =============================================================================
+
+def _evaluate_strategy_surface(strategy: StrategyResult) -> CorrectionSignal:
+    """
+    Strategy surface: check if chosen branch is valid and substantive.
+    """
+    if not strategy.branches:
+        return CorrectionSignal(
+            surface="strategy",
+            severity=3,
+            reason="No strategy branches generated.",
+            recommended_action="retry_strategy",
         )
 
-    def _initialize_golden_surfaces(self) -> None:
-        """
-        Seeding the registry with v10_10 Standard Recovery Paths.
-        """
-        
-        # SURFACE 1: QA Failure (Accuracy issue)
-        # Strategy: Retry L2 execution, but force "Reflexion" reasoning.
-        self.register(RemediationPolicy(
-            surface_id=SelfCorrectionSurface.QA_RECHECK.value,
-            action="retry_node",
-            max_retries=2,
-            param_modifiers={
-                "reasoning_strategy": "reflexion", # Force self-critique
-                "temperature": 0.3 # Lower temp for precision
-            }
-        ))
+    if strategy.chosen_branch_id not in [b.id for b in strategy.branches]:
+        return CorrectionSignal(
+            surface="strategy",
+            severity=3,
+            reason="Chosen strategy branch ID is invalid.",
+            recommended_action="retry_strategy",
+        )
 
-        # SURFACE 2: RAG Zero Results (Context issue)
-        # Strategy: Retry L2, but expand query generation.
-        self.register(RemediationPolicy(
-            surface_id=SelfCorrectionSurface.RAG_RETRY.value,
-            action="retry_node",
-            max_retries=1,
-            param_modifiers={
-                "query_expansion_factor": 2, # Generate more queries
-                "hybrid_search": True # Force hybrid if not already
-            }
-        ))
+    chosen_text = strategy.get_chosen_branch_text().strip()
+    if len(chosen_text) < 40:
+        return CorrectionSignal(
+            surface="strategy",
+            severity=2,
+            reason="Chosen strategy branch is too short or uninformative.",
+            recommended_action="retry_strategy",
+        )
 
-        # SURFACE 3: Safety Block (Policy issue)
-        # Strategy: Replan (Go back to L1) or Escalate.
-        # We chose Escalate for high-severity blocks, Replan for minor.
-        # This basic policy handles the generic case.
-        self.register(RemediationPolicy(
-            surface_id=SelfCorrectionSurface.SAFETY_RISK.value,
-            action="escalate", # Safety is usually hard block
-            max_retries=0
-        ))
+    return CorrectionSignal(surface="strategy", severity=0, reason="OK")
 
-        # SURFACE 4: Strategy Logic Error (Cognitive issue)
-        # Strategy: Replan (Go back to L1 to generate new branches).
-        self.register(RemediationPolicy(
-            surface_id=SelfCorrectionSurface.STRATEGY_REPLAN.value,
-            action="replan_workflow",
-            max_retries=1,
-            param_modifiers={
-                "complexity": "high" # Up the complexity
-            }
-        ))
 
-# Global Singleton
-CORRECTION_ENGINE = CorrectionSurfaceRegistry()
+# =============================================================================
+# RAG Surface
+# =============================================================================
+
+def _evaluate_rag_surface(rag: RAGResult) -> CorrectionSignal:
+    """
+    RAG surface: check if retrieval was insufficient.
+    """
+    if not rag.evidence:
+        return CorrectionSignal(
+            surface="rag",
+            severity=2,
+            reason="No RAG evidence retrieved.",
+            recommended_action="retry_rag",
+        )
+
+    low_scores = [ev for ev in rag.evidence if ev.score < 0.01]
+    if len(low_scores) == len(rag.evidence):
+        return CorrectionSignal(
+            surface="rag",
+            severity=2,
+            reason="All RAG evidence scores are extremely low.",
+            recommended_action="retry_rag",
+        )
+
+    return CorrectionSignal(surface="rag", severity=0, reason="OK")
+
+
+# =============================================================================
+# Drafting Surface
+# =============================================================================
+
+def _evaluate_drafting_surface(drafting: DraftingResult) -> CorrectionSignal:
+    """
+    Drafting surface: check if draft has sections and content.
+    """
+    if not drafting.sections:
+        return CorrectionSignal(
+            surface="drafting",
+            severity=3,
+            reason="Drafting produced zero sections.",
+            recommended_action="retry_drafting",
+        )
+
+    blank = [s for s in drafting.sections if not s.text.strip()]
+    if blank:
+        return CorrectionSignal(
+            surface="drafting",
+            severity=2,
+            reason=f"{len(blank)} drafting sections are blank.",
+            recommended_action="retry_drafting",
+        )
+
+    return CorrectionSignal(surface="drafting", severity=0, reason="OK")
+
+
+# =============================================================================
+# QA Surface
+# =============================================================================
+
+def _evaluate_qa_surface(qa: QAResult) -> CorrectionSignal:
+    """
+    QA surface: check for failed QA checks.
+    """
+    failed = [chk for chk in qa.checks if not chk.passed]
+
+    if len(failed) >= 3:
+        return CorrectionSignal(
+            surface="qa",
+            severity=3,
+            reason=f"{len(failed)} QA checks failed.",
+            recommended_action="retry_qa",
+        )
+
+    if 1 <= len(failed) <= 2:
+        return CorrectionSignal(
+            surface="qa",
+            severity=2,
+            reason=f"{len(failed)} QA checks failed.",
+            recommended_action="retry_drafting",
+        )
+
+    return CorrectionSignal(surface="qa", severity=0, reason="OK")
+
+
+# =============================================================================
+# Safety Surface
+# =============================================================================
+
+def _evaluate_safety_surface(safety: SafetyResult) -> CorrectionSignal:
+    """
+    Safety surface: detect blocking safety findings.
+    """
+    blocking = [f for f in safety.findings if f.blocking]
+
+    if blocking:
+        return CorrectionSignal(
+            surface="safety",
+            severity=3,
+            reason="Blocking safety findings present.",
+            recommended_action="retry_safety",
+        )
+
+    return CorrectionSignal(surface="safety", severity=0, reason="OK")
+
+
+# =============================================================================
+# Public API: Evaluate All Surfaces
+# =============================================================================
+
+def evaluate_all_surfaces(
+    strategy: StrategyResult,
+    rag: RAGResult,
+    drafting: DraftingResult,
+    qa: QAResult,
+    safety: SafetyResult,
+) -> List[CorrectionSignal]:
+    """
+    Evaluate all correction surfaces and return a list of CorrectionSignal objects.
+    """
+    signals = [
+        _evaluate_strategy_surface(strategy),
+        _evaluate_rag_surface(rag),
+        _evaluate_drafting_surface(drafting),
+        _evaluate_qa_surface(qa),
+        _evaluate_safety_surface(safety),
+    ]
+
+    for sig in signals:
+        record_event(
+            "self_correction_surface_evaluated",
+            {
+                "surface": sig.surface,
+                "severity": sig.severity,
+                "recommended_action": sig.recommended_action,
+            },
+        )
+
+    return signals
+
+
+def aggregate_correction_signals(signals: List[CorrectionSignal]) -> Optional[CorrectionSignal]:
+    """
+    Aggregate signals into a single "best" CorrectionSignal.
+
+    Strategy:
+        • Select highest severity.
+        • If multiple share the highest severity, pick the first
+          in canonical order (strategy → rag → drafting → qa → safety).
+    """
+    if not signals:
+        return None
+
+    # Filter to those that need correction
+    needing = [s for s in signals if s.needs_correction]
+    if not needing:
+        return None
+
+    # Severity priority
+    best = max(needing, key=lambda s: s.severity)
+    return best
