@@ -1,190 +1,258 @@
 # FILE: 10_10/l4.py
 """
-L4 State Adapter — Deterministic Mutation Layer (v10_10)
-=======================================================
+Unified L4 State Adapter (v10_10 · Phase 1)
+==========================================
 
 Responsibilities:
-    • Translate L2/L3/L5 outputs into a deterministic, serializable state patch.
-    • Capture:
-        - Strategy text
-        - RAG evidence
-        - Drafted sections
-        - QA findings
-        - Safety findings
-        - Correction signals
-        - Safety pass/fail flag
-    • Remain PURE (no side effects other than observability events).
+    • L4 is the ONLY layer allowed to mutate persisted workflow state.
+    • Apply typed StateTransitionEvent objects to build final state patches.
+    • Generate checkpoint and rollback snapshots for L3 correction loops.
+    • Record all mutations to observability telemetry streams.
+    • No LLM, no retrieval, no planning, no safety logic.
 
 Non-Responsibilities:
-    • No LLM calls.
-    • No execution or orchestration.
-    • No policy decisions.
-    • No persistence (caller decides where/how to store patches).
+    • No generation of transitions (L2/L3 create transitions).
+    • No DAG orchestration (L3).
+    • No safety enforcement (L5).
+    • No business logic (L1/L2).
+
+This module restores the full v10_8 / v10_9 state-engine capability:
+    • Typed patches
+    • Deterministic state merge
+    • Checkpoint/rollback
+    • Correction-aware application
+    • Telemetry via StateTransitionEvent and patch-level spans
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
 
-from models import L2ResultBundle, ExecutionContext
-from self_correction import CorrectionSignal
-from observability import record_event, record_exception
+from models import (
+    WorkflowState,
+    StateTransitionEvent,
+    StatePatch,
+    CorrectionSignal,
+    ExecutionContext,
+)
+from observability import (
+    start_span,
+    end_span,
+    emit_state_transition,
+    emit_telemetry_event,
+    log_exception,
+)
 
 
 # =============================================================================
-# State Patch Model (local to L4)
+# Helpers
+# =============================================================================
+
+def _apply_transition(
+    base: Dict[str, Any],
+    event: StateTransitionEvent,
+) -> Dict[str, Any]:
+    """
+    Deterministically merge a typed transition event into state.
+    Never mutates input dict in place.
+    """
+    new_state = dict(base)
+
+    # Each event is a typed mutation request
+    if event.operation == "update_field":
+        new_state[event.field] = event.value
+
+    elif event.operation == "remove_field":
+        if event.field in new_state:
+            del new_state[event.field]
+
+    elif event.operation == "merge_dict":
+        existing = new_state.get(event.field, {})
+        if not isinstance(existing, dict):
+            existing = {}
+        merged = {**existing, **event.value}
+        new_state[event.field] = merged
+
+    elif event.operation == "append_list":
+        existing = new_state.get(event.field, [])
+        if not isinstance(existing, list):
+            existing = []
+        new_state[event.field] = existing + list(event.value)
+
+    else:
+        raise ValueError(f"Unknown transition op: {event.operation}")
+
+    return new_state
+
+
+def _apply_patch_series(
+    state: WorkflowState,
+    transitions: List[StateTransitionEvent],
+) -> WorkflowState:
+    """
+    Apply a series of StateTransitionEvents to the WorkflowState.
+    """
+    result = state.to_dict()
+
+    for evt in transitions:
+        result = _apply_transition(result, evt)
+
+    return WorkflowState.from_dict(result)
+
+
+# =============================================================================
+# Checkpoint / Rollback System
 # =============================================================================
 
 @dataclass
-class StatePatch:
+class CheckpointSnapshot:
     """
-    A minimal, deterministic representation of workflow output and signals.
-
-    This structure is intentionally simple and does NOT perform any I/O;
-    it is just a typed container for downstream persistence or inspection.
+    A copy of the WorkflowState before entering a retry/replan branch.
     """
+    state_dict: Dict[str, Any]
 
-    strategy_text: str | None = None
-    rag_evidence: List[Dict[str, Any]] = field(default_factory=list)
-    drafted_sections: List[Dict[str, Any]] = field(default_factory=list)
-    qa_findings: List[Dict[str, Any]] = field(default_factory=list)
-    safety_findings: List[Dict[str, Any]] = field(default_factory=list)
-    correction_signals: List[Dict[str, Any]] = field(default_factory=list)
-    safety_passed: bool | None = None
+
+def create_checkpoint(state: WorkflowState) -> CheckpointSnapshot:
+    return CheckpointSnapshot(state_dict=state.to_dict())
+
+
+def rollback_to(checkpoint: CheckpointSnapshot) -> WorkflowState:
+    return WorkflowState.from_dict(dict(checkpoint.state_dict))
 
 
 # =============================================================================
-# State Adapter API
+# Correction-Aware Patch Construction
+# =============================================================================
+
+def _build_correction_transitions(
+    corrections: List[CorrectionSignal],
+) -> List[StateTransitionEvent]:
+    """
+    Convert CorrectionSignal objects into StateTransitionEvents.
+    Phase 1 version: minimal signals.
+    """
+    transitions: List[StateTransitionEvent] = []
+
+    for c in corrections:
+        transitions.append(
+            StateTransitionEvent(
+                operation="append_list",
+                field="correction_log",
+                value=[{
+                    "surface": c.surface,
+                    "severity": c.severity,
+                    "reason": c.reason,
+                    "action": c.recommended_action,
+                }],
+            )
+        )
+
+    return transitions
+
+
+def _build_safety_transitions(safety_passed: bool) -> List[StateTransitionEvent]:
+    """
+    Encode safety gating into state.
+    """
+    return [
+        StateTransitionEvent(
+            operation="update_field",
+            field="safety_passed",
+            value=bool(safety_passed),
+        )
+    ]
+
+
+def _build_l2_output_transition(l2_results: Any) -> List[StateTransitionEvent]:
+    """
+    Persist relevant L2 artifacts into state.
+    """
+    return [
+        StateTransitionEvent(
+            operation="update_field",
+            field="draft_output",
+            value=l2_results.drafting.output,
+        ),
+        StateTransitionEvent(
+            operation="update_field",
+            field="qa_findings",
+            value=[f for f in getattr(l2_results.qa, "findings", [])],
+        ),
+        StateTransitionEvent(
+            operation="update_field",
+            field="safety_findings",
+            value=[f for f in getattr(l2_results.safety, "findings", [])],
+        ),
+    ]
+
+
+# =============================================================================
+# Public Entrypoint
 # =============================================================================
 
 def apply_state_patch(
-    l2_results: L2ResultBundle,
+    l2_results: Any,
     corrections: List[CorrectionSignal],
     ctx: ExecutionContext,
     safety_passed: bool,
 ) -> Dict[str, Any]:
     """
-    Construct a deterministic state patch from a single DAG run.
+    Primary L4 entrypoint called by L3.
 
     Inputs:
-        l2_results     — outputs from L2 (strategy, rag, drafting, qa, safety)
-        corrections    — correction signals emitted by self_correction surfaces
-        ctx            — execution context (used only for observability metadata)
-        safety_passed  — final safety gate decision from L5
+        • l2_results: L2ResultBundle
+        • corrections: correction signals from L3
+        • safety_passed: safety gate result
+        • ctx: execution context (provides previous WorkflowState)
 
-    Output:
-        A plain dict representing the patch to be applied to persistent state.
+    Outputs:
+        • final state patch dict
+
+    Behavior:
+        • Collect transitions: L2 outputs + corrections + safety gating
+        • Apply transitions to existing state
+        • Emit telemetry events
+        • Return final diff as a patch
     """
-    span_ctx = ctx.span_context()
-
+    span = start_span("l4.apply_state_patch", ctx=ctx.span_context())
     try:
-        record_event(
-            "l4.apply_state_patch_start",
-            {"job_title": span_ctx.get("job_title", ""), "role_type": span_ctx.get("role_type", "")},
-        )
+        prev_state = ctx.state
+        transitions: List[StateTransitionEvent] = []
 
-        # ---------------------------------------------------------------------
-        # STRATEGY
-        # ---------------------------------------------------------------------
-        strategy_text = l2_results.strategy.get_chosen_branch_text()
+        # L2 output transitions
+        transitions.extend(_build_l2_output_transition(l2_results))
 
-        # ---------------------------------------------------------------------
-        # RAG EVIDENCE
-        # ---------------------------------------------------------------------
-        rag_evidence: List[Dict[str, Any]] = [
-            {
-                "text": ev.text,
-                "score": ev.score,
-                "source": ev.source,
-            }
-            for ev in (l2_results.rag.evidence or [])
-        ]
+        # Correction transitions
+        transitions.extend(_build_correction_transitions(corrections))
 
-        # ---------------------------------------------------------------------
-        # DRAFTED SECTIONS
-        # ---------------------------------------------------------------------
-        drafted_sections: List[Dict[str, Any]] = [
-            {
-                "title": sec.title,
-                "outline": sec.outline,
-                "text": sec.text,
-                "compliance_notes": sec.compliance_notes,
-            }
-            for sec in (l2_results.drafting.sections or [])
-        ]
+        # Safety pass/fail
+        transitions.extend(_build_safety_transitions(safety_passed))
 
-        # ---------------------------------------------------------------------
-        # QA FINDINGS
-        # ---------------------------------------------------------------------
-        qa_findings: List[Dict[str, Any]] = [
-            {
-                "id": chk.id,
-                "passed": chk.passed,
-                "reason": chk.reason,
-                "severity": chk.severity,
-            }
-            for chk in (l2_results.qa.checks or [])
-        ]
+        # Emit transition telemetry
+        for evt in transitions:
+            emit_state_transition(evt)
 
-        # ---------------------------------------------------------------------
-        # SAFETY FINDINGS
-        # ---------------------------------------------------------------------
-        safety_findings: List[Dict[str, Any]] = [
-            {
-                "id": f.id,
-                "category": f.category,
-                "blocking": f.blocking,
-                "reason": f.reason,
-            }
-            for f in (l2_results.safety.findings or [])
-        ]
+        # Compute new state
+        new_state = _apply_patch_series(prev_state, transitions)
 
-        # ---------------------------------------------------------------------
-        # CORRECTION SIGNALS
-        # ---------------------------------------------------------------------
-        correction_signals: List[Dict[str, Any]] = [
-            {
-                "surface": sig.surface,
-                "severity": sig.severity,
-                "reason": sig.reason,
-                "recommended_action": sig.recommended_action,
-            }
-            for sig in (corrections or [])
-        ]
-
-        patch = StatePatch(
-            strategy_text=strategy_text,
-            rag_evidence=rag_evidence,
-            drafted_sections=drafted_sections,
-            qa_findings=qa_findings,
-            safety_findings=safety_findings,
-            correction_signals=correction_signals,
-            safety_passed=safety_passed,
-        )
-
-        record_event(
-            "l4.apply_state_patch_complete",
-            {
+        # Emit "final patch" event
+        emit_telemetry_event(
+            "l4.state_patch_complete",
+            attributes={
+                "num_transitions": len(transitions),
                 "safety_passed": safety_passed,
-                "num_sections": len(drafted_sections),
-                "num_rag_evidence": len(rag_evidence),
-                "num_corrections": len(corrections),
             },
         )
 
-        # Return as plain dict for easy serialization/persistence
-        return {
-            "strategy_text": patch.strategy_text,
-            "rag_evidence": patch.rag_evidence,
-            "drafted_sections": patch.drafted_sections,
-            "qa_findings": patch.qa_findings,
-            "safety_findings": patch.safety_findings,
-            "correction_signals": patch.correction_signals,
-            "safety_passed": patch.safety_passed,
-        }
+        # Compute diff patch dict
+        patch = StatePatch.from_states(prev_state, new_state)
+        ctx.state = new_state  # L4 is the ONLY layer allowed to mutate
+
+        return patch.to_dict()
 
     except Exception as exc:
-        record_exception("l4_state_patch_error", exc)
-        # Bubble the error up to L3; L4 must not swallow failures silently.
+        log_exception("l4.state_patch_error", exc)
         raise
+    finally:
+        end_span(span)
