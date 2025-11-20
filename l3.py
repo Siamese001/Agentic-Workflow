@@ -1,156 +1,171 @@
-# FILE: l3.py
+# FILE: 10_10/l3.py
 """
-Unified L3 Orchestration Layer (v10_10) — RESILIENT WORKFLOW ENGINE
-
-This module implements Pillar 4 (Workflow) and Pillar 5 (Capability Maturity).
-It orchestrates the execution of the L1 Plan, managing the lifecycle of
-Execution -> Validation -> Correction.
+Unified L3 Orchestration Layer (v10_10)
+=======================================
 
 Responsibilities:
-    1. Execution Loop: Run L2 Executors based on Plan Steps.
-    2. Self-Correction: Consult `CorrectionSurfaceRegistry` on failure.
-    3. State Management: Apply atomic `StatePatch` updates via L4.
-    4. Traceability: Record strict `RouteTraceEntry` telemetry.
+    • Execute the workflow DAG in the correct order.
+    • Coordinate L2 (execution/cognition) without doing execution itself.
+    • Integrate self-correction (retry logic) based on CorrectionSignals.
+    • Gate outputs via L5 safety.
+    • Produce a deterministic StatePatch via L4 (no mutation here).
+    • Emit spans + events for Observability (Pillar 10).
 
-Refactor Highlights (v10_10):
-    • Integrated `CorrectionEngine` for autonomous retries.
-    • Strict `WorkflowState` output.
-    • No hardcoded retry logic; purely policy-driven.
+Non-Responsibilities:
+    • No LLM calls (L2 only).
+    • No planning (L1 only).
+    • No state mutation (L4 only).
+    • No safety policy decisions (L5 only).
 """
 
 from __future__ import annotations
 
-import uuid
-import time
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import List, Dict, Any, Optional
 
-from models import (
-    PlanObject,
-    WorkflowState,
-    WorkflowPhase,
-    NodeStatus,
-    ExecutionResult,
-    StatePatch,
-    RouteTraceEntry,
-    CorrectionSignal,
-    CorrectionProposal
-)
-from l2 import route_executor
-from l4 import StateAdapter
-from self_correction import CORRECTION_ENGINE
-from runtime_utils import CostTracker, record_event
+from models import WorkflowPlanBundle, L2ResultBundle, ExecutionContext
+from l2 import execute_workflow_plans
+from self_correction import evaluate_all_surfaces, aggregate_correction_signals, CorrectionSignal
+from l4 import apply_state_patch
+from l5 import safety_gate
+from observability import start_span, end_span, record_event, record_exception
 
-class DAGExecutor:
+
+# ============================================================================
+# DAG Definition (Declarative)
+# ============================================================================
+
+# NOTE:
+# In 10_10 the DAG is ALWAYS:
+#   Strategy → RAG → Drafting → QA → Safety
+#
+# L3 orchestrates this with retries if correction surfaces fire.
+#
+DAG_NODES = ["strategy", "rag", "drafting", "qa", "safety"]
+
+
+@dataclass
+class DAGResult:
     """
-    The runtime engine that executes a PlanObject.
-    Handles the "Do -> Check -> Fix" loop.
+    A typed bundle returned by L3 after DAG execution.
+    """
+    l2_results: L2ResultBundle
+    corrections: List[CorrectionSignal]
+    corrected: bool
+    safety_passed: bool
+    final_state_patch: Dict[str, Any]
+
+
+# ============================================================================
+# L3 Orchestration Entrypoint
+# ============================================================================
+
+def run_dag(
+    ctx: ExecutionContext,
+    plans: WorkflowPlanBundle,
+    max_retries: int = 2,
+) -> DAGResult:
+    """
+    L3 DAG Execution Loop (Deterministic)
+
+    Workflow:
+        For up to max_retries:
+            1. Execute L2 (strategy → rag → drafting → qa → safety)
+            2. Evaluate correction surfaces
+            3. If severe issues → retry
+            4. Else break loop
+
+        After loop:
+            5. Run L5 safety gate
+            6. Build final state patch via L4
+            7. Return DAGResult
+
+    Notes:
+        • No LLM calls here.
+        • No tool calls here.
+        • No state mutation here.
     """
 
-    def __init__(self, state_adapter: StateAdapter):
-        self.state_adapter = state_adapter
-        self.cost_tracker = CostTracker()
+    span = start_span("l3.run_dag", ctx=ctx.span_context())
 
-    async def run(self, plan: PlanObject, initial_state: Dict[str, Any]) -> WorkflowState:
-        """
-        Executes the plan with built-in resilience.
-        """
-        workflow_id = plan.workflow_id or str(uuid.uuid4())
-        
-        # 1. Initialize State Scope
-        # We don't reset the whole adapter here (Main does that), 
-        # but we ensure we are in the right phase.
-        self.state_adapter.set_phase(WorkflowPhase.EXECUTING)
-        
-        node_id = plan.mode
-        attempt = 0
-        max_attempts = 1 # Default, overriden by Correction Policy
-        
-        # TRACKING
-        trace_entries: List[RouteTraceEntry] = []
-        errors: List[str] = []
-        status = NodeStatus.PENDING
-        
-        # 2. Execution Loop (The "Retry" Cycle)
+    retries = 0
+    corrected = False
+    last_l2: Optional[L2ResultBundle] = None
+    last_corrections: List[CorrectionSignal] = []
+
+    try:
         while True:
-            attempt += 1
-            self.cost_tracker.start_span(f"{node_id}_attempt_{attempt}")
-            
-            # --- A. EXECUTE ---
-            # Propagate any correction params (e.g. higher temp) into the plan
-            # In a real impl, we'd merge `correction_params` into `plan.meta`
-            result = await route_executor(plan, self.state_adapter.state)
-            
-            self.cost_tracker.end_span(f"{node_id}_attempt_{attempt}")
-            
-            # --- B. EVALUATE ---
-            if result.status == NodeStatus.SUCCESS:
-                status = NodeStatus.SUCCESS
-                self._apply_success(plan.mode, result)
-                break # Exit Loop
-            
-            # --- C. CORRECT (Pillar 5) ---
-            # If we failed, ask the Correction Engine what to do.
-            error_signal = CorrectionSignal(
-                signal_id=str(uuid.uuid4()),
-                surface=f"{plan.mode}_failure", # e.g. "rag_failure"
-                severity=0.8,
-                context={"error": result.error, "attempt": attempt}
+            record_event("l3.dag_iteration", {"retries": retries})
+
+            # --------------------------------------------------------------
+            # 1. Execute full L2 pipeline
+            # --------------------------------------------------------------
+            last_l2 = execute_workflow_plans(plans, ctx)
+
+            # --------------------------------------------------------------
+            # 2. Evaluate Correction Surfaces
+            # --------------------------------------------------------------
+            corrections = evaluate_all_surfaces(
+                strategy=last_l2.strategy,
+                rag=last_l2.rag,
+                drafting=last_l2.drafting,
+                qa=last_l2.qa,
+                safety=last_l2.safety,
             )
-            
-            proposal = CORRECTION_ENGINE.resolve(error_signal, attempt)
-            
-            # Record the intervention
-            self.state_adapter.record_correction(error_signal)
-            
-            if proposal.action == "retry_node":
-                record_event("self_correction_retry", {"node": node_id, "attempt": attempt})
-                # Continue loop
-                # In a full implementation, we would apply `proposal.parameters` to `plan` here.
-                continue
-                
-            elif proposal.action == "escalate" or proposal.action == "halt":
-                status = NodeStatus.FAILURE
-                errors.append(f"Correction Failed: {proposal.rationale}")
+            last_corrections = corrections
+
+            signal = aggregate_correction_signals(corrections)
+
+            # --------------------------------------------------------------
+            # 3. Break / Retry Logic
+            # --------------------------------------------------------------
+            if signal is None or signal.severity == 0:
+                record_event("l3.no_correction_needed", {})
+                break  # done
+
+            corrected = True
+
+            record_event(
+                "l3.correction_triggered",
+                {
+                    "severity": signal.severity,
+                    "reason": signal.reason,
+                    "recommended": signal.recommended_action,
+                },
+            )
+
+            retries += 1
+            if retries > max_retries:
+                record_event("l3.max_retries_exceeded", {"max_retries": max_retries})
                 break
 
-        # 3. Finalize State
-        final_phase = WorkflowPhase.COMPLETE if status == NodeStatus.SUCCESS else WorkflowPhase.FAILED
-        self.state_adapter.set_phase(final_phase)
-        
-        # 4. Construct Output
-        return WorkflowState(
-            workflow_id=workflow_id,
-            phase=final_phase,
-            node_statuses={node_id: status},
-            summary=f"Execution finished with status: {status}",
-            result=self.state_adapter.state,
-            errors=errors,
-            trace_id=workflow_id,
-            objective=plan.objective,
-            messages=self.state_adapter.state.get("messages", []),
-            rag_docs=self.state_adapter.state.get("rag_history", [])
-            # Metadata / Trace info would be attached here
+            # otherwise → loop again with same plans & ctx
+
+        # --------------------------------------------------------------
+        # 4. Apply L5 Safety Gate
+        # --------------------------------------------------------------
+        safety_passed = safety_gate(last_l2.safety)
+
+        # --------------------------------------------------------------
+        # 5. Generate L4 State Patch
+        # --------------------------------------------------------------
+        final_state_patch = apply_state_patch(
+            l2_results=last_l2,
+            corrections=last_corrections,
+            ctx=ctx,
+            safety_passed=safety_passed,
         )
 
-    def _apply_success(self, mode: str, result: ExecutionResult) -> None:
-        """
-        Persist the successful result to L4.
-        """
-        # Map mode -> state key
-        key_map = {
-            "strategy": "strategy_result",
-            "rag": "rag_result",
-            "drafting": "draft_result",
-            "qa": "qa_result",
-            "safety": "safety_result"
-        }
-        target_key = key_map.get(mode, f"{mode}_result")
-        
-        # Create Atomic Patch (Pillar 4)
-        patch = StatePatch(
-            op="replace",
-            path=target_key,
-            value=result.payload
+        return DAGResult(
+            l2_results=last_l2,
+            corrections=last_corrections,
+            corrected=corrected,
+            safety_passed=safety_passed,
+            final_state_patch=final_state_patch,
         )
-        
-        self.state_adapter.apply_patch(patch)
+
+    except Exception as exc:
+        record_exception("l3.dag_failure", exc)
+        raise
+    finally:
+        end_span(span)
