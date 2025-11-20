@@ -1,179 +1,140 @@
-# FILE: observability.py
+# FILE: 10_10/observability.py
 """
-Unified Observability Module (v10_10) — TELEMETRY & META-LEARNING
+Observability Utilities (v10_10)
+================================
 
-This module implements Pillar 10 (Observability).
-It aggregates traces, metrics, and logs to produce the `RunSummary`.
-Crucially, it feeds this data back into the `MetaProfile` to enable learning.
+This module provides a minimal, safe, structured event logging system for
+the v10_10 agentic workflow.
 
-Responsibilities:
-    1. Distributed Tracing: Track spans across L1-L5.
-    2. Metric Aggregation: Count tokens, latency, and errors.
-    3. Run Summarization: Convert raw telemetry into a Golden Record.
-    4. Meta-Feedback: Trigger bias updates in `MetaProfile`.
+Goals:
+    • Emit structured events for all L1–L5 layers.
+    • Work safely in the Windsurf sandbox (stdout-based trace emission).
+    • Avoid any external dependencies or network calls.
+    • Never crash the workflow (observability must be failure-safe).
+    • Provide spans for profiling and golden-state debugging.
+    • Emit JSON records usable by:
+         - CI/CD pipelines
+         - Golden evaluation harness
+         - Local debugging
+         - Multi-run batch logs
 
-Refactor Highlights (v10_10):
-    • Strictly Typed: Consumes Pydantic payloads.
-    • Meta-Integrated: Closes the feedback loop automatically.
+Non-Responsibilities:
+    • No persistent storage.
+    • No distributed tracing.
+    • No telemetry exports.
+    • No state mutation.
 """
 
 from __future__ import annotations
 
+import json
+import sys
 import time
-import functools
-from typing import Any, Dict, List, Optional, Callable, Awaitable
+import traceback
+from typing import Dict, Any, Optional
 
-from models import (
-    RunSummary, 
-    TraceSpan, 
-    WorkflowState,
-    AgenticBaseModel
-)
-from meta_profile import META_PROFILE
-from runtime_utils import record_event
 
 # =============================================================================
-# TELEMETRY BUFFER (In-Memory)
+# Internal Helper
 # =============================================================================
 
-class TelemetryBuffer:
+def _safe_print(obj: Dict[str, Any]) -> None:
     """
-    Central store for run-level telemetry.
-    Stores transient data before summarization.
+    Safely emit a JSON event to stdout.
+    No exceptions should propagate from here.
     """
-
-    def __init__(self):
-        self._spans: List[TraceSpan] = []
-        self._metrics: Dict[str, float] = {}
-        self._summary_cache: Dict[str, RunSummary] = {}
-
-    # --- SPANS ---
-    def start_span(self, name: str, tags: Optional[Dict[str, Any]] = None) -> TraceSpan:
-        now = time.time() * 1000.0
-        span = TraceSpan(name=name, start_time_ms=now, end_time_ms=now, tags=tags or {})
-        self._spans.append(span)
-        return span
-
-    def end_span(self, span: TraceSpan, extra_tags: Optional[Dict[str, Any]] = None) -> None:
-        span.end_time_ms = time.time() * 1000.0
-        if extra_tags:
-            span.tags.update(extra_tags)
-        
-        # Emit low-level event (Pillar 10)
-        record_event("span_complete", {
-            "name": span.name, 
-            "duration": span.duration_ms(),
-            "tags": span.tags
-        })
-
-    def get_spans(self) -> List[TraceSpan]:
-        return list(self._spans)
-
-    # --- METRICS ---
-    def record_metric(self, name: str, value: float, tags: Optional[Dict[str, Any]] = None) -> None:
-        # Simple counter/gauge simulation
-        self._metrics[name] = value
-        record_event("metric", {"name": name, "value": value, "tags": tags or {}})
-
-    # --- SUMMARY CACHE ---
-    def get_or_create_summary(self, workflow_id: str) -> RunSummary:
-        if workflow_id not in self._summary_cache:
-            self._summary_cache[workflow_id] = RunSummary(workflow_id=workflow_id)
-        return self._summary_cache[workflow_id]
-
-# Global Singleton
-TELEMETRY = TelemetryBuffer()
+    try:
+        sys.stdout.write(json.dumps(obj) + "\n")
+        sys.stdout.flush()
+    except Exception:
+        # Absolute fail-safe: swallow all errors
+        pass
 
 
 # =============================================================================
-# DECORATORS
+# Span Utilities
 # =============================================================================
 
-def trace_span_async(span_name: str):
-    """Async decorator to auto-trace execution blocks."""
-    def decorator(fn: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
-        @functools.wraps(fn)
-        async def wrapper(*args, **kwargs):
-            span = TELEMETRY.start_span(span_name, tags={"function": fn.__name__})
-            try:
-                result = await fn(*args, **kwargs)
-                TELEMETRY.end_span(span)
-                return result
-            except Exception as exc:
-                TELEMETRY.end_span(span, extra_tags={"error": str(exc)})
-                raise
-        return wrapper
-    return decorator
-
-
-# =============================================================================
-# SUMMARIZER ENGINE
-# =============================================================================
-
-def summarize_run(
-    workflow_id: str,
-    final_state: Dict[str, Any], # Serialized State from L4
-    phase_history: List[str]
-) -> RunSummary:
+def start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
-    Constructs the final Golden Record of the execution.
-    Extracts domain-specific outcomes and updates the MetaProfile.
+    Start a structured span.
+
+    Returns a span context object with:
+        {
+            "span_id": <int>,
+            "span_name": <str>,
+            "start_ts": <float>,
+            "ctx": {...}
+        }
     """
-    summary = TELEMETRY.get_or_create_summary(workflow_id)
-    summary.phases = phase_history
+    span = {
+        "span_id": int(time.time() * 1_000_000),
+        "span_name": name,
+        "start_ts": time.time(),
+        "ctx": ctx or {},
+    }
 
-    # 1. Extract Domain Metrics (From Serialized Pydantic Models)
-    
-    # Strategy
-    if strat := final_state.get("strategy_result"):
-        # strat is a dict here
-        decision = strat.get("selected_branch_id", "unknown")
-        TELEMETRY.record_metric("strategy.branch_selected", 1, {"branch": decision})
-        
-    # RAG
-    if rag := final_state.get("rag_result"):
-        docs = rag.get("documents", [])
-        summary.counts["rag_docs"] = len(docs)
+    _safe_print(
+        {
+            "type": "span_start",
+            "span_id": span["span_id"],
+            "span_name": name,
+            "ctx": span["ctx"],
+            "ts": span["start_ts"],
+        }
+    )
 
-    # QA
-    if qa := final_state.get("qa_result"):
-        # QAPayload: { passed: bool, findings: List[QAFinding] }
-        passed = qa.get("passed", False)
-        findings = qa.get("findings", [])
-        if not passed:
-            # Format: "[severity] ID: Message"
-            summary.issues["qa"] = [
-                f"[{f.get('severity')}] {f.get('finding_id')}: {f.get('message')}" 
-                for f in findings
-            ]
-    
-    # Safety
-    if safety := final_state.get("safety_result"):
-        # SafetyPayload: { blocked: bool, findings: List[SafetyFinding] }
-        blocked = safety.get("blocked", False)
-        findings = safety.get("findings", [])
-        if blocked or findings:
-            summary.issues["safety"] = [
-                f"{f.get('rule_id')} (Violated: {f.get('violated')})" 
-                for f in findings if f.get('violated')
-            ]
+    return span
 
-    # 2. Aggregate Timings
-    spans = TELEMETRY.get_spans()
-    for s in spans:
-        summary.timings[s.name] = s.duration_ms()
 
-    # 3. META-FEEDBACK LOOP (Pillar 5)
-    # "The Agent learns from its own execution."
-    
-    # A. Update Routing Bias based on Latency
-    META_PROFILE.update_from_spans(spans)
-    
-    # B. Update Planning/Safety Bias based on Failures
-    META_PROFILE.update_from_issues(summary.issues)
+def end_span(span: Dict[str, Any]) -> None:
+    """
+    End a span previously created by start_span().
+    """
+    try:
+        duration = time.time() - span["start_ts"]
+    except Exception:
+        duration = None
 
-    # 4. Snapshot the Brain
-    # Capture the exact biases active at the end of the run for audit
-    summary.meta_profile = META_PROFILE.profile.model_dump()
+    _safe_print(
+        {
+            "type": "span_end",
+            "span_id": span.get("span_id"),
+            "span_name": span.get("span_name"),
+            "duration_s": duration,
+            "ts": time.time(),
+        }
+    )
 
-    return summary
+
+# =============================================================================
+# Event Logging
+# =============================================================================
+
+def record_event(event_name: str, data: Dict[str, Any]) -> None:
+    """
+    Emit a structured event.
+    """
+    _safe_print(
+        {
+            "type": "event",
+            "event": event_name,
+            "data": data,
+            "ts": time.time(),
+        }
+    )
+
+
+def record_exception(event_name: str, exc: Exception) -> None:
+    """
+    Emit a structured exception event with traceback.
+    """
+    _safe_print(
+        {
+            "type": "exception",
+            "event": event_name,
+            "error": str(exc),
+            "traceback": traceback.format_exc(),
+            "ts": time.time(),
+        }
+    )
