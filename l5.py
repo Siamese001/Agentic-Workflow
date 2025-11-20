@@ -1,191 +1,124 @@
-# FILE: l5.py
+# FILE: 10_10/l5.py
 """
-Unified L5 Safety & Policy Layer (v10_10) — CONSTITUTIONAL GOVERNANCE
-
-This module implements Pillar 9 (Safety & Policy).
-It acts as the "Supreme Court" of the architecture, interpreting abstract
-safety policies and rendering verdicts on agent outputs.
+L5 Safety Gateway — Final Gating Layer (v10_10)
+===============================================
 
 Responsibilities:
-    1. Policy Management: Source of Truth for Safety Modes (Strict/Balanced).
-    2. Constitutional Review: Delegate judgment to `ConstitutionalSafetyAgent`.
-    3. Arbitration: Map judgments to Workflow Actions (Halt/Retry/Proceed).
+    • Interpret SafetyResult produced by L2 cognitive safety agent.
+    • Apply a deterministic SafetyPolicy.
+    • Produce a single boolean gate: safety_passed = True/False.
+    • Emit observability events for auditing and meta-learning.
 
-Refactor Highlights (v10_10):
-    • Removes Regex/Keyword lists.
-    • Implements semantic policy checks.
-    • strictly typed `ArbitrationDecision` outputs.
+Non-Responsibilities:
+    • No LLM calls (handled at L2).
+    • No execution (L2).
+    • No DAG orchestration (L3).
+    • No state mutation (L4).
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import List
 
-from models import (
-    PlanObject,
-    SafetyPayload,
-    SafetyPolicy,
-    SafetyRule,
-    SafetyMode,
-    ArbitrationDecision,
-    SafetyFinding
-)
-from cognitive_agents import ConstitutionalSafetyAgent
-from meta_profile import get_safety_bias
+from models import SafetyResult, SafetyFinding
+from observability import record_event, record_exception
+
 
 # =============================================================================
-# 1. POLICY FACTORY (The Constitution)
+# Safety Policy Model
 # =============================================================================
 
-class PolicyFactory:
+@dataclass
+class SafetyPolicy:
     """
-    Defines the "Laws" the agent must follow.
-    In a larger system, these might be loaded from a database.
+    Deterministic safety policy for final gating.
+
+    Rules:
+        • If category == "pii"        AND blocking=True → FAIL
+        • If category == "policy"     AND blocking=True → FAIL
+        • If category == "professionalism" AND blocking=True:
+              → FAIL only if block_on_professionalism=True
+        • If unknown category AND blocking=True:
+              → Always FAIL (conservative default)
     """
 
-    @staticmethod
-    def get_policy(mode: SafetyMode) -> SafetyPolicy:
-        
-        # Common Rules
-        base_rules = [
-            SafetyRule(rule_id="no_pii", description="Do not output personally identifiable information (emails, phone numbers).", severity="high", category="pii"),
-            SafetyRule(rule_id="no_harm", description="Do not generate hate speech, violence, or self-harm content.", severity="critical", category="harm"),
-        ]
+    block_on_pii: bool = True
+    block_on_policy: bool = True
+    block_on_professionalism: bool = False  # Soft fail by default
 
-        # Mode-Specific Rules
-        if mode == SafetyMode.STRICT:
-            return SafetyPolicy(
-                policy_id="strict_v1",
-                mode=mode,
-                rules=base_rules + [
-                    SafetyRule(rule_id="tone_check", description="Maintain a formal, objective tone. No slang.", severity="medium", category="tone"),
-                    SafetyRule(rule_id="no_speculation", description="Do not speculate on financial or medical outcomes.", severity="high", category="risk")
-                ],
-                threshold=0.0 # Zero tolerance
-            )
-        
-        elif mode == SafetyMode.PERMISSIVE:
-            return SafetyPolicy(
-                policy_id="permissive_v1",
-                mode=mode,
-                rules=base_rules, # Only base PII/Harm rules
-                threshold=0.8
-            )
-        
-        # Default: Balanced
-        return SafetyPolicy(
-            policy_id="balanced_v1",
-            mode=SafetyMode.BALANCED,
-            rules=base_rules + [
-                 SafetyRule(rule_id="professionalism", description="Maintain professional demeanor.", severity="low", category="tone")
-            ],
-            threshold=0.5
+    def should_block(self, finding: SafetyFinding) -> bool:
+        """
+        Determine if a single finding should block the output.
+        """
+        cat = (finding.category or "").lower()
+
+        # PII — always severe if blocking
+        if cat == "pii" and self.block_on_pii and finding.blocking:
+            return True
+
+        # Harmful content / disallowed content
+        if cat == "policy" and self.block_on_policy and finding.blocking:
+            return True
+
+        # Professionalism issues
+        if cat == "professionalism" and self.block_on_professionalism and finding.blocking:
+            return True
+
+        # Unknown category but blocking=True → conservative fail
+        if cat not in ("pii", "policy", "professionalism") and finding.blocking:
+            return True
+
+        return False
+
+
+# =============================================================================
+# Safety Gateway Entrypoint
+# =============================================================================
+
+def safety_gate(
+    safety: SafetyResult,
+    policy: SafetyPolicy | None = None,
+) -> bool:
+    """
+    Evaluate final SafetyResult and decide if the workflow output is allowed.
+
+    Returns:
+        True  → safe to proceed
+        False → must be blocked or redacted
+    """
+
+    if policy is None:
+        policy = SafetyPolicy()
+
+    try:
+        blocking_items: List[SafetyFinding] = []
+        soft_block_items: List[SafetyFinding] = []
+
+        for f in (safety.findings or []):
+            if policy.should_block(f):
+                blocking_items.append(f)
+            elif f.blocking:
+                # "blocking=True" but policy treats category as soft
+                soft_block_items.append(f)
+
+        # Emit observability event
+        record_event(
+            "l5.safety_gate_evaluated",
+            {
+                "num_findings": len(safety.findings or []),
+                "num_blocking_policy": len(blocking_items),
+                "num_soft_blocking": len(soft_block_items),
+            },
         )
 
-# =============================================================================
-# 2. SAFETY ENGINE (The Judge)
-# =============================================================================
+        # Hard decision
+        if blocking_items:
+            return False
 
-class SafetyEngine:
-    """
-    Orchestrates the review process.
-    """
-    def __init__(self):
-        self.agent = ConstitutionalSafetyAgent()
+        return True
 
-    async def evaluate_content(self, state: Dict[str, Any], plan: PlanObject) -> SafetyPayload:
-        """
-        Conducts a safety review of the current state.
-        """
-        # 1. Identify Content
-        # We check the 'draft_result' first, as that's the output we care about.
-        # Fallback to messages if drafting hasn't happened.
-        content_source = "unknown"
-        content_text = ""
-        
-        if state.get("draft_result"):
-            draft = state["draft_result"]
-            # Handle Pydantic serialization dicts or objects
-            if isinstance(draft, dict):
-                content_text = draft.get("full_text", "")
-            elif hasattr(draft, "full_text"):
-                content_text = draft.full_text
-            content_source = "draft_result"
-        
-        if not content_text:
-            msgs = state.get("messages", [])
-            if msgs:
-                content_text = msgs[-1].get("content", "")
-                content_source = "last_message"
-
-        if not content_text:
-            # Nothing to check
-            return SafetyPayload(blocked=False, findings=[], policy_version="none")
-
-        # 2. Determine Policy Mode (Meta-Aware)
-        meta_bias = get_safety_bias()
-        # Priority: Meta-Profile Bias > Plan Config > Default
-        if meta_bias.get("bias_safety_strict"):
-            target_mode = SafetyMode.STRICT
-        else:
-            # Map string from plan meta to Enum, default balanced
-            mode_str = plan.meta.get("safety_mode", "balanced")
-            try:
-                target_mode = SafetyMode(mode_str)
-            except ValueError:
-                target_mode = SafetyMode.BALANCED
-
-        policy = PolicyFactory.get_policy(target_mode)
-
-        # 3. Execute Semantic Review (The Agent)
-        payload = await self.agent.evaluate(content_text, policy)
-        
-        return payload
-
-
-# =============================================================================
-# 3. ARBITRATION ENGINE (The Enforcer)
-# =============================================================================
-
-class ArbitrationEngine:
-    """
-    Converts Safety Judgments into Workflow Actions.
-    """
-
-    def arbitrate(self, safety_result: SafetyPayload) -> ArbitrationDecision:
-        """
-        Decides next steps based on the payload.
-        """
-        # 1. Clean Pass
-        if not safety_result.blocked and not safety_result.findings:
-            return ArbitrationDecision(
-                action="proceed",
-                reason="Safety check passed.",
-                metadata={"policy": safety_result.policy_version}
-            )
-
-        # 2. Blocked
-        if safety_result.blocked:
-            # Check severity of findings
-            critical = any(f.rule_id in ["no_harm", "no_pii"] for f in safety_result.findings)
-            
-            if critical:
-                return ArbitrationDecision(
-                    action="halt",
-                    reason="Critical safety violation detected.",
-                    metadata={"findings": [f.rule_id for f in safety_result.findings]}
-                )
-            
-            # If blocked but not critical, maybe retry?
-            return ArbitrationDecision(
-                action="retry_l2", # Ask L2 to rewrite
-                reason="Safety policy violation (non-critical). Requesting rewrite.",
-                metadata={"findings": [f.rule_id for f in safety_result.findings]}
-            )
-
-        # 3. Warnings (Not blocked, but findings exist)
-        return ArbitrationDecision(
-            action="proceed",
-            reason="Proceeding with warnings.",
-            metadata={"warnings": [f.rule_id for f in safety_result.findings]}
-        )
+    except Exception as exc:
+        # L5 must always fail closed (conservative stance)
+        record_exception("l5.safety_gate_error", exc)
+        return False
