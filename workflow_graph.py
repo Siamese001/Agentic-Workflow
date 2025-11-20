@@ -1,325 +1,261 @@
 # FILE: workflow_graph.py
-"""
-WorkflowGraph (v10_10 · Phase 1)
-================================
-
-Pure DAG execution engine used exclusively by L3 (orchestrator).
-
-Responsibilities:
-    • Represent workflow nodes + edges as a typed DAG.
-    • Validate DAG (acyclic) and compute topological order (Kahn’s algorithm).
-    • Execute nodes in correct order with optional parallelization hooks.
-    • Capture node results, statuses, typed failure signals.
-    • Expose well-typed surfaces for:
-         – retries
-         – replanning
-         – escalation
-         – checkpoint & rollback triggers (handled in L4)
-    • Emit telemetry span hooks (without writing state).
-
-Strict constraints:
-    • No LLM calls.
-    • No state mutation.
-    • No safety enforcement.
-    • No direct I/O.
-    • Pure orchestration substrate.
-
-L3 will drive the node executor functions; this file defines:
-    – types
-    – execution flow
-    – DAG validation
-    – failure-mode branching model
-"""
+# PHASE 3 — FULL ORCHESTRATION GRAPH RESTORE
+#
+# Strict L3 orchestration only:
+#   • No LLM calls
+#   • No retrieval logic
+#   • No ranking logic
+#   • No prompting
+#   • No state mutation
+#   • No safety evaluation
+#
+# Responsibilities:
+#   • DAG construction
+#   • Concurrency rules
+#   • Typed node definitions
+#   • Retrieval parallelization
+#   • Retrieval fallback edges
+#   • Checkpoint + span boundaries
+#   • Orchestration-only failure-tolerance
+#
+# Inputs/Outputs:
+#   • Input: WorkflowPlanBundle, ExecutionContext
+#   • Output: L2ResultBundle (produced by invoking L2 nodes)
+#
+# Implements DAG for:
+#   Strategy  ┐
+#             ├── parallel
+#   Retrieval ┘
+#        ↓ (fan-in)
+#   Drafting → QA → Safety
+#
+# No business logic lives here. Pure scheduling.
 
 from __future__ import annotations
 
 import asyncio
-from dataclasses import dataclass, field
-from enum import Enum, auto
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+from typing import Optional, Callable, Dict
 
-from observability import start_span, end_span, log_exception
+from models import (
+    WorkflowPlanBundle,
+    ExecutionContext,
+    RAGResult,
+    StrategyResult,
+    DraftingResult,
+    QAResult,
+    SafetyResult,
+    L2ResultBundle,
+)
+from observability import (
+    start_span,
+    end_span,
+    emit_node_event,
+    log_exception,
+)
+
+# L2 execution entrypoints (already Phase-3 compliant)
+from l2 import (
+    _execute_strategy,
+    _execute_retrieval,
+    _execute_drafting,
+    _execute_qa,
+    _execute_safety,
+)
 
 
-# =============================================================================
-# Execution result + node statuses
-# =============================================================================
+# ============================================================================
+#  WORKFLOW NODE ENUMERATION
+# ============================================================================
 
-class NodeStatus(Enum):
-    """Canonical node statuses."""
-    PENDING = auto()
-    RUNNING = auto()
-    SUCCESS = auto()
-    FAILED = auto()
-    RETRY = auto()
-    REPLAN = auto()
-    ESCALATE = auto()
+class Node:
+    STRATEGY = "strategy"
+    RETRIEVAL = "retrieval"
+    DRAFTING = "drafting"
+    QA = "qa"
+    SAFETY = "safety"
 
 
-@dataclass
-class ExecutionResult:
+# ============================================================================
+#  TASK WRAPPER (Standardized execution wrapper for every DAG node)
+# ============================================================================
+
+async def _run_node(
+    node_name: str,
+    ctx: ExecutionContext,
+    fn: Callable,
+    *args,
+    **kwargs,
+):
     """
-    Result emitted by a node executor (provided by L2 or L4 or L5).
-    L3 receives this and triggers branching behavior.
+    Wraps each node call with:
+        • deterministic spans
+        • node lifecycle events
+        • structured failure handling
+        • typed node metadata
+
+    Returns:
+        - The result of fn() OR
+        - None on failure (L3 never raises)
     """
-    status: NodeStatus
-    output: Any = None
-    error: Optional[Exception] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    span = start_span(f"workflow.{node_name}", ctx=ctx.span_context())
+    emit_node_event(node=node_name, status="start")
+
+    try:
+        result = await fn(*args, **kwargs)
+        emit_node_event(node=node_name, status="success")
+        return result
+
+    except Exception as exc:
+        log_exception(f"workflow.{node_name}.error", exc)
+        emit_node_event(node=node_name, status="error", details=str(exc))
+        return None
+
+    finally:
+        end_span(span)
 
 
-# =============================================================================
-# Workflow Graph Core Types
-# =============================================================================
+# ============================================================================
+#  WORKFLOW GRAPH EXECUTION (PHASE 3)
+# ============================================================================
 
-@dataclass
-class WorkflowNode:
+async def run_workflow_graph(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+) -> L2ResultBundle:
     """
-    Node wrapper. The executor is an async or sync callable supplied by L3.
+    Phase-3 canonical workflow graph:
 
-    executor signature:
-        async def executor(input_payload: dict) -> ExecutionResult
-        or
-        def executor(input_payload: dict) -> ExecutionResult
+          ┌───────────────┐
+          │   STRATEGY    │
+          └──────┬────────┘
+                 │
+                 │   (parallel)
+                 │
+          ┌──────▼────────┐
+          │   RETRIEVAL   │
+          └──────┬────────┘
+                 │  (fan-in: waits for strategy + retrieval)
+          ┌──────▼────────┐
+          │   DRAFTING    │
+          └──────┬────────┘
+                 │
+          ┌──────▼────────┐
+          │      QA       │
+          └──────┬────────┘
+                 │
+          ┌──────▼────────┐
+          │    SAFETY     │
+          └───────────────┘
+
+    L3 responsibilities:
+        • Schedule
+        • Concurrency
+        • Fallback from failures
+        • Deterministic spans
+
+    L3 does NOT:
+        • run retrieval
+        • run LLMs
+        • run ranking
+        • mutate state
+        • enforce safety
+        • build prompts
     """
-    id: str
-    executor: Callable[[Dict[str, Any]], Any]
-    parallelizable: bool = False
-    description: str = ""
-    # Optional: L3 can attach per-node config
-    config: Dict[str, Any] = field(default_factory=dict)
 
+    root_span = start_span("workflow.run", ctx=ctx.span_context())
 
-@dataclass
-class WorkflowEdge:
-    """Represents a directional edge n1 -> n2."""
-    src: str
-    dst: str
+    try:
+        # ---------------------------------------------------------------
+        # 1. PARALLEL EXECUTION: STRATEGY + RETRIEVAL
+        # ---------------------------------------------------------------
 
+        strategy_task = asyncio.create_task(
+            _run_node(Node.STRATEGY, ctx, _execute_strategy, plans, ctx)
+        )
+        retrieval_task = asyncio.create_task(
+            _run_node(Node.RETRIEVAL, ctx, _execute_retrieval, plans, ctx)
+        )
 
-class DAGValidationError(Exception):
-    pass
+        strategy_result: Optional[StrategyResult]
+        rag_result: Optional[RAGResult]
+        strategy_result, rag_result = await asyncio.gather(
+            strategy_task, retrieval_task
+        )
 
+        # Retrieval fallback path
+        if rag_result is None:
+            rag_result = RAGResult(evidence=[], used_hyde=False)
 
-@dataclass
-class WorkflowGraph:
-    """
-    DAG + runtime state. L3 constructs and drives this.
-    """
-    nodes: Dict[str, WorkflowNode]
-    edges: List[WorkflowEdge]
-
-    # runtime fields
-    in_degree: Dict[str, int] = field(init=False, default_factory=dict)
-    adjacency: Dict[str, List[str]] = field(init=False, default_factory=dict)
-
-    def __post_init__(self) -> None:
-        self._build_graph()
-
-    # -------------------------------------------------------------------------
-    # Graph Construction
-    # -------------------------------------------------------------------------
-
-    def _build_graph(self) -> None:
-        """
-        Build adjacency + in-degree, validate DAG, topological sort readiness.
-        """
-        # Initialize adjacency & in-degrees
-        for node_id in self.nodes:
-            self.adjacency[node_id] = []
-            self.in_degree[node_id] = 0
-
-        # Build edges
-        for e in self.edges:
-            if e.src not in self.nodes or e.dst not in self.nodes:
-                raise DAGValidationError(f"Invalid edge referencing missing node: {e}")
-            self.adjacency[e.src].append(e.dst)
-            self.in_degree[e.dst] += 1
-
-        # Validate acyclicity (Kahn)
-        if not self._is_acyclic():
-            raise DAGValidationError("Graph contains a cycle; DAG required for execution.")
-
-    def _is_acyclic(self) -> bool:
-        """
-        Kahn’s algorithm cycle detection.
-        """
-        temp_in_degree = dict(self.in_degree)
-        queue = [nid for nid, deg in temp_in_degree.items() if deg == 0]
-        visited = 0
-
-        while queue:
-            nid = queue.pop(0)
-            visited += 1
-            for nxt in self.adjacency[nid]:
-                temp_in_degree[nxt] -= 1
-                if temp_in_degree[nxt] == 0:
-                    queue.append(nxt)
-
-        return visited == len(self.nodes)
-
-    def topological_layers(self) -> List[List[str]]:
-        """
-        Return node layers for potential parallel execution.
-        e.g. [[a], [b, c], [d]] means b and c can run in parallel.
-
-        Implementation: Kahn’s algorithm preserving layered structure.
-        """
-        temp_in_degree = dict(self.in_degree)
-        frontier = [nid for nid, d in temp_in_degree.items() if d == 0]
-        layers: List[List[str]] = []
-
-        while frontier:
-            layer = []
-            next_frontier = []
-            for nid in frontier:
-                layer.append(nid)
-            # We process edges
-            for nid in frontier:
-                for nxt in self.adjacency[nid]:
-                    temp_in_degree[nxt] -= 1
-                    if temp_in_degree[nxt] == 0:
-                        next_frontier.append(nxt)
-            layers.append(layer)
-            frontier = next_frontier
-
-        return layers
-
-
-    # -------------------------------------------------------------------------
-    # Execution
-    # -------------------------------------------------------------------------
-
-    async def execute(
-        self,
-        initial_payload: Dict[str, Any],
-        l3_context: Dict[str, Any],
-    ) -> Dict[str, ExecutionResult]:
-        """
-        Execute the DAG in topological layers.
-
-        L3 supplies:
-            - initial_payload: base input for the first-layer nodes.
-            - l3_context: execution context / plan metadata.
-
-        Returns:
-            results: node_id -> ExecutionResult
-        """
-        results: Dict[str, ExecutionResult] = {}
-        layers = self.topological_layers()
-
-        for layer in layers:
-            # Prepare payloads for nodes in this layer (L3 can customize).
-            payloads = {
-                nid: self._build_node_payload(nid, results, initial_payload, l3_context)
-                for nid in layer
-            }
-
-            # Execute layer:
-            # Parallelizable if node.parallelizable == True.
-            # But overall logic is conservative: we only parallelize nodes
-            # that explicitly allow it AND have no interdependencies.
-            exec_tasks = [
-                self._execute_single(nid, payloads[nid])
-                for nid in layer
-            ]
-
-            # Try parallel execution via asyncio.gather
-            try:
-                layer_results = await asyncio.gather(*exec_tasks)
-            except Exception as e:
-                # Should not happen because _execute_single guards exceptions.
-                log_exception("workflow_graph.layer_unhandled_exception", e)
-                raise
-
-            for nid, result in zip(layer, layer_results):
-                results[nid] = result
-
-                # Branching behavior: L3 will inspect result.status downstream.
-                if result.status in (NodeStatus.RETRY, NodeStatus.REPLAN, NodeStatus.ESCALATE):
-                    # Stop execution; return partial results.
-                    return results
-
-                if result.status is NodeStatus.FAILED:
-                    # Hard failure: execution stops.
-                    return results
-
-        return results
-
-
-    async def _execute_single(
-        self,
-        node_id: str,
-        payload: Dict[str, Any],
-    ) -> ExecutionResult:
-        """
-        Execute a single node, wrapped in telemetry spans and exception handling.
-        """
-        node = self.nodes[node_id]
-        span = start_span(f"workflow_node.{node_id}")
-
-        try:
-            maybe_result = node.executor(payload)
-
-            if asyncio.iscoroutine(maybe_result):
-                result = await maybe_result
-            else:
-                result = maybe_result
-
-            if not isinstance(result, ExecutionResult):
-                raise ValueError(
-                    f"Executor for node {node_id} did not return ExecutionResult."
-                )
-
-            end_span(span)
-            return result
-
-        except Exception as e:
-            log_exception(f"workflow_node.{node_id}.exception", e)
-            end_span(span)
-            return ExecutionResult(
-                status=NodeStatus.FAILED,
-                output=None,
-                error=e,
+        # Strategy fallback should *never* halt the pipeline
+        if strategy_result is None:
+            strategy_result = StrategyResult(
+                branches=[],
+                chosen_branch_id="error",
             )
 
+        # ---------------------------------------------------------------
+        # 2. DRAFTING (depends on Strategy + Retrieval)
+        # ---------------------------------------------------------------
+        drafting_result: Optional[DraftingResult] = await _run_node(
+            Node.DRAFTING,
+            ctx,
+            _execute_drafting,
+            plans,
+            strategy_result,
+            rag_result,
+            ctx,
+        )
 
-    # -------------------------------------------------------------------------
-    # Payload construction
-    # -------------------------------------------------------------------------
+        if drafting_result is None:
+            drafting_result = DraftingResult(sections=[])
 
-    def _build_node_payload(
-        self,
-        node_id: str,
-        results: Dict[str, ExecutionResult],
-        initial_payload: Dict[str, Any],
-        l3_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
-        """
-        Provide node-specific payload:
-            • initial_payload (for first layer)
-            • outputs from predecessors
-            • L3 context
-        """
-        predecessors = self._find_predecessors(node_id)
+        # ---------------------------------------------------------------
+        # 3. QA
+        # ---------------------------------------------------------------
+        qa_result: Optional[QAResult] = await _run_node(
+            Node.QA,
+            ctx,
+            _execute_qa,
+            plans,
+            drafting_result,
+            rag_result,
+            ctx,
+        )
 
-        pred_outputs = {
-            pid: results[pid].output
-            for pid in predecessors
-            if pid in results and results[pid].status == NodeStatus.SUCCESS
-        }
+        if qa_result is None:
+            qa_result = QAResult(findings=[])
 
-        return {
-            "node_id": node_id,
-            "initial_payload": initial_payload,
-            "predecessor_outputs": pred_outputs,
-            "l3_context": l3_context,
-            "node_config": self.nodes[node_id].config,
-        }
+        # ---------------------------------------------------------------
+        # 4. SAFETY
+        # ---------------------------------------------------------------
+        safety_result: Optional[SafetyResult] = await _run_node(
+            Node.SAFETY,
+            ctx,
+            _execute_safety,
+            plans,
+            drafting_result,
+            qa_result,
+            ctx,
+        )
 
-    def _find_predecessors(self, node_id: str) -> List[str]:
-        preds = []
-        for src, adj in self.adjacency.items():
-            if node_id in adj:
-                preds.append(src)
-        return preds
+        if safety_result is None:
+            safety_result = SafetyResult(findings=[])
+
+        # ---------------------------------------------------------------
+        # Return results (L3 does not modify them)
+        # ---------------------------------------------------------------
+        return L2ResultBundle(
+            strategy=strategy_result,
+            rag=rag_result,
+            drafting=drafting_result,
+            qa=qa_result,
+            safety=safety_result,
+        )
+
+    except Exception as exc:
+        log_exception("workflow.run.fatal", exc)
+        return L2ResultBundle.empty_with_error(str(exc))
+
+    finally:
+        end_span(root_span)
