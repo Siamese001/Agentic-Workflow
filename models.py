@@ -3,16 +3,23 @@
 Typed Data Models for Agentic Workflow v10_10
 =============================================
 
-This module defines ALL strict, versioned schemas that flow across layers L1–L5.
+This module defines all STRONGLY TYPED contracts used across L1–L5.
 
-Design Goals:
-    - Zero ambiguity between layers.
-    - Zero free-form dicts.
-    - Every interlayer handoff is typed and validated.
-    - All model interactions (Strategy, RAG, Drafting, QA, Safety) use explicit contracts.
-    - Meets OpenAI Agentic Pillar #3: Typed Contracts.
+Design Principles:
+    • No free-form dicts across layers.
+    • All L1→L2→L3→L4→L5 handoffs are Pydantic models.
+    • Fully compatible with correction surfaces, routing policies, 
+      cognitive agents, golden-eval, and deterministic serialization.
 
-Everything in this file is PURE MODELING — no business logic, no execution.
+Covers:
+    • Job + Resume Inputs
+    • WorkflowConfig
+    • RoutingHint
+    • StrategyPlan / RAGPlan / DraftingPlan / QAPlan / SafetyPlan
+    • StrategyResult / RAGResult / DraftingResult / QAResult / SafetyResult
+    • WorkflowPlanBundle (L1 Output)
+    • L2ResultBundle (L2 Output)
+    • ExecutionContext (runtime DI container)
 """
 
 from __future__ import annotations
@@ -22,9 +29,9 @@ from enum import Enum
 from pydantic import BaseModel, Field
 
 
-# ============================================================================
+# ======================================================================
 # ENUMS
-# ============================================================================
+# ======================================================================
 
 class ComplexityLevel(str, Enum):
     LOW = "low"
@@ -39,9 +46,9 @@ class DraftingMode(str, Enum):
     BALANCED = "balanced"
 
 
-# ============================================================================
-# CORE INPUT MODELS
-# ============================================================================
+# ======================================================================
+# INPUT MODELS
+# ======================================================================
 
 class JobInput(BaseModel):
     title: str
@@ -62,18 +69,18 @@ class ResumeInput(BaseModel):
     projects: List[Dict[str, Any]] = Field(default_factory=list)
 
 
-# ============================================================================
+# ======================================================================
 # WORKFLOW CONFIG
-# ============================================================================
+# ======================================================================
 
 class WorkflowConfig(BaseModel):
-    # Cost / latency budgets
+    # Cost / latency
     cost_budget: float = 0.10
     latency_slo_ms: int = 3000
     safety_sensitivity: int = 3
     drafting_depth: int = 3
 
-    # Tone / length
+    # Tone + total length
     target_tone: str = "professional"
     target_total_tokens: int = 1800
 
@@ -96,9 +103,9 @@ class WorkflowConfig(BaseModel):
     )
 
 
-# ============================================================================
-# ROUTING HINT
-# ============================================================================
+# ======================================================================
+# ROUTING HINT (L1 → routing policy)
+# ======================================================================
 
 class RoutingHint(BaseModel):
     complexity: ComplexityLevel
@@ -108,9 +115,9 @@ class RoutingHint(BaseModel):
     drafting_depth: int
 
 
-# ============================================================================
+# ======================================================================
 # STRATEGY PLAN + RESULT
-# ============================================================================
+# ======================================================================
 
 class StrategyStep(BaseModel):
     id: str
@@ -142,9 +149,9 @@ class StrategyResult(BaseModel):
         return ""
 
 
-# ============================================================================
+# ======================================================================
 # RAG PLAN + RESULT
-# ============================================================================
+# ======================================================================
 
 class RAGQueryHint(BaseModel):
     id: str
@@ -171,9 +178,9 @@ class RAGResult(BaseModel):
     used_hyde: bool = False
 
 
-# ============================================================================
+# ======================================================================
 # DRAFTING PLAN + RESULT
-# ============================================================================
+# ======================================================================
 
 class DraftSectionPlan(BaseModel):
     id: str
@@ -202,9 +209,9 @@ class DraftingResult(BaseModel):
     mode: DraftingMode
 
 
-# ============================================================================
+# ======================================================================
 # QA PLAN + RESULT
-# ============================================================================
+# ======================================================================
 
 class QACheck(BaseModel):
     id: str
@@ -228,9 +235,9 @@ class QAResult(BaseModel):
     checks: List[QACheckResult]
 
 
-# ============================================================================
+# ======================================================================
 # SAFETY PLAN + RESULT
-# ============================================================================
+# ======================================================================
 
 class SafetyCheck(BaseModel):
     id: str
@@ -250,9 +257,9 @@ class SafetyResult(BaseModel):
     findings: List[SafetyFinding]
 
 
-# ============================================================================
-# WORKFLOW PLAN BUNDLE (L1 OUTPUT)
-# ============================================================================
+# ======================================================================
+# WORKFLOW PLAN BUNDLE (L1 → L2)
+# ======================================================================
 
 class WorkflowPlanBundle(BaseModel):
     strategy: StrategyPlan
@@ -263,9 +270,9 @@ class WorkflowPlanBundle(BaseModel):
     routing_hint: RoutingHint
 
 
-# ============================================================================
-# L2 EXECUTION RESULT BUNDLE
-# ============================================================================
+# ======================================================================
+# L2 EXECUTION RESULT BUNDLE (L2 → L3)
+# ======================================================================
 
 class L2ResultBundle(BaseModel):
     strategy: StrategyResult
@@ -275,15 +282,16 @@ class L2ResultBundle(BaseModel):
     safety: SafetyResult
 
 
-# ============================================================================
-# EXECUTION CONTEXT (passed to L2 + L3)
-# ============================================================================
+# ======================================================================
+# EXECUTION CONTEXT (runtime DI container)
+# ======================================================================
 
 class ExecutionContext(BaseModel):
     job: JobInput
     resume: ResumeInput
     config: WorkflowConfig
 
+    # Dependency Injection
     routing_policy: Any
     sandbox_config: Any
     prompt_registry: Any
