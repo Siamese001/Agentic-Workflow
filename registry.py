@@ -1,329 +1,309 @@
 # FILE: 10_10/registry.py
 """
-Prompt Registry (v10_10) — GOVERNANCE & CONFIGURATION
+Registry / Control Plane (v10_10 · Phase 0)
+==========================================
 
-This module implements centralized prompt governance for v10_10.
+This module provides the **central control plane** for the v10_10 refactor.
+It fixes G22, G29–G33, G37 by defining:
 
-Responsibilities:
-    • Define PromptBundle (ID, version, description, template, params).
-    • Provide PromptRegistry for lookup by ID (+ optional version).
-    • Host the default v10_10 prompt set used by cognitive agents.
+    • Agent registry
+    • Tool registry
+    • Model routing registry
+    • Safety bundle registry
+    • Profile registry (bridge to config_profiles_v10_10)
+    • Prompt registry linkage
+    • Skill/domain classifier registry
+    • RAG strategy registry (Phase 0 scaffolding)
+    • Versioning / metadata registry (lightweight)
 
-Non-Responsibilities:
-    • No tool definitions (sandbox/runtime_utils handle that).
-    • No safety policies (L5 handles that).
-    • No model routing logic (routing.RoutingPolicy handles that).
+The Registry exists to:
+    1. Maintain deterministic lookup for all pluggable components.
+    2. Provide a single authority for orchestration & agent identity.
+    3. Facilitate dynamic discovery in later phases (multi-agent routing).
+    4. Avoid ghost code and “invisible behaviors” seen in v10_10.
+    5. Provide clean hooks for meta-learning (Phase 4).
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Any
-import json
+from typing import Any, Dict, Callable, Optional, List
+from dataclasses import dataclass, field
+
+from .models import (
+    ExecutionProfile,
+    PromptDefinition,
+    RetrievalConfig,
+    PolicyDecisionEvent,
+    ContextBudget,
+)
+
+from .config_profiles_v10_10 import EXECUTION_PROFILES
+from .prompt_system_v10_10 import PROMPT_REGISTRY, PROMPT_ACLS
 
 
-# =============================================================================
-# Prompt Bundle
-# =============================================================================
-
+# ======================================================================
+# AGENT REGISTRY
+# ======================================================================
 
 @dataclass
-class PromptBundle:
+class AgentCard:
     """
-    A single prompt definition with governance metadata.
+    Unique agent identity card.
 
     Fields:
-        id:          logical ID (e.g., "strategy_generate_branch").
-        version:     semantic version string (e.g., "v1").
-        description: human-readable description of the use case.
-        template:    text template with Python .format-style placeholders.
-        temperature: default sampling temperature for this task.
-        max_tokens:  default max_tokens for this task.
+        • id: unique agent string
+        • role: descriptive role (planner, drafter, qa, safety, rag, router)
+        • capabilities: set of capabilities for least-privilege micro-agents
+        • version: optional version of the agent implementation
+        • metadata: free-form metadata
     """
 
     id: str
-    version: str
+    role: str
+    capabilities: List[str]
+    version: str = "1.0"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+AGENT_REGISTRY: Dict[str, AgentCard] = {}
+
+
+def register_agent(agent_card: AgentCard) -> None:
+    AGENT_REGISTRY[agent_card.id] = agent_card
+
+
+def get_agent(agent_id: str) -> AgentCard:
+    if agent_id not in AGENT_REGISTRY:
+        raise KeyError(f"Unknown agent id: {agent_id}")
+    return AGENT_REGISTRY[agent_id]
+
+
+def list_agents() -> List[AgentCard]:
+    return list(AGENT_REGISTRY.values())
+
+
+# ======================================================================
+# TOOL REGISTRY
+# ======================================================================
+
+@dataclass
+class ToolCard:
+    """
+    Metadata descriptor for tools (RAG retrievers, model clients, formatters).
+
+    Fields:
+        • id
+        • description
+        • config
+        • metadata
+    """
+
+    id: str
     description: str
-    template: str
-    temperature: float = 0.2
-    max_tokens: int = 1024
-
-    def render(self, variables: Dict[str, Any]) -> str:
-        """
-        Render the template to a final prompt string using variables.
-
-        Complex objects (dict, list) are converted to JSON strings and exposed
-        as both 'key' and 'key_json' where appropriate.
-        """
-        ctx: Dict[str, Any] = {}
-
-        for key, value in variables.items():
-            if isinstance(value, (dict, list)):
-                ctx[key] = value
-                ctx[f"{key}_json"] = json.dumps(value, indent=2, ensure_ascii=False)
-            else:
-                ctx[key] = value
-
-        class SafeDict(dict):
-            def __missing__(self, k: str) -> str:
-                # Preserve unknown placeholders; safer than crashing
-                return "{" + k + "}"
-
-        try:
-            return self.template.format_map(SafeDict(ctx))
-        except Exception:
-            # Fallback if formatting fails
-            return self.template
+    config: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-# =============================================================================
-# Prompt Registry
-# =============================================================================
+TOOL_REGISTRY: Dict[str, ToolCard] = {}
 
 
-class PromptRegistry:
+def register_tool(tool: ToolCard) -> None:
+    TOOL_REGISTRY[tool.id] = tool
+
+
+def get_tool(tool_id: str) -> ToolCard:
+    if tool_id not in TOOL_REGISTRY:
+        raise KeyError(f"Unknown tool id: {tool_id}")
+    return TOOL_REGISTRY[tool_id]
+
+
+def list_tools() -> List[ToolCard]:
+    return list(TOOL_REGISTRY.values())
+
+
+# ======================================================================
+# MODEL ROUTING REGISTRY (STATIC FOR NOW; DYNAMIC IN PHASE 3)
+# ======================================================================
+
+@dataclass
+class ModelRoute:
     """
-    Central registry for prompts used by the 10_10 cognitive agents.
-
-    Features:
-        • Multi-version support per prompt ID.
-        • Lookup by (id, optional version).
-        • Clean extension path for adding new prompts or A/B versions.
+    Defines a model route (model name, endpoint, usage metadata).
     """
 
-    def __init__(self, bundles: Optional[List[PromptBundle]] = None):
-        self._registry: Dict[str, List[PromptBundle]] = {}
-        if bundles:
-            for b in bundles:
-                self.register(b)
-
-    def register(self, bundle: PromptBundle) -> None:
-        """
-        Register a new PromptBundle (or a new version of an existing prompt).
-        """
-        versions = self._registry.setdefault(bundle.id, [])
-        versions.append(bundle)
-        versions.sort(key=lambda x: x.version)
-
-    def get_prompt(self, prompt_id: str, version: Optional[str] = None) -> PromptBundle:
-        """
-        Retrieve a prompt bundle by ID and optional version.
-
-        If version is None, returns the latest version.
-        """
-        if prompt_id not in self._registry:
-            raise KeyError(f"Unknown prompt id: {prompt_id}")
-
-        versions = self._registry[prompt_id]
-        if not versions:
-            raise KeyError(f"No versions registered for prompt id: {prompt_id}")
-
-        if version is None:
-            return versions[-1]
-
-        for b in versions:
-            if b.version == version:
-                return b
-
-        raise KeyError(f"No prompt '{prompt_id}' with version '{version}'")
-
-    def __getitem__(self, prompt_id: str) -> PromptBundle:
-        return self.get_prompt(prompt_id)
+    id: str
+    model_name: str
+    endpoint: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
-# =============================================================================
-# Default Prompt Definitions (v10_10)
-# =============================================================================
-
-def _strategy_generate_branch() -> PromptBundle:
-    return PromptBundle(
-        id="strategy_generate_branch",
-        version="v1",
-        description="Generate a single candidate strategy branch for tailoring the resume.",
-        temperature=0.4,
-        max_tokens=1024,
-        template=(
-            "You are a senior career strategist helping a candidate tailor their resume.\n\n"
-            "Job (JSON):\n{job_json}\n\n"
-            "Candidate resume (JSON):\n{resume_json}\n\n"
-            "Current high-level strategy plan (JSON):\n{plan_json}\n\n"
-            "Branch index: {branch_index}\n"
-            "Complexity: {complexity}\n\n"
-            "Propose ONE coherent strategy branch that answers:\n"
-            "  - How should the candidate position themselves?\n"
-            "  - Which strengths should be highlighted?\n"
-            "  - Which job requirements can be addressed strongly?\n"
-            "  - Any trade-offs or risks?\n\n"
-            "Output a single paragraph describing this strategy branch.\n"
-        ),
-    )
+MODEL_ROUTES: Dict[str, ModelRoute] = {}
 
 
-def _strategy_select_branch() -> PromptBundle:
-    return PromptBundle(
-        id="strategy_select_branch",
-        version="v1",
-        description="Select the best strategy branch index given multiple candidates.",
-        temperature=0.1,
-        max_tokens=64,
-        template=(
-            "You are evaluating multiple candidate strategies for tailoring a resume.\n\n"
-            "Job (JSON):\n{job_json}\n\n"
-            "Candidate resume (JSON):\n{resume_json}\n\n"
-            "Strategies (branches_json):\n{branches_json}\n\n"
-            "Each element is a string describing a candidate strategy.\n\n"
-            "Choose the SINGLE best branch index (0-based) based on:\n"
-            "  - Fit with the role and seniority\n"
-            "  - Ability to highlight true strengths\n"
-            "  - Coverage of key job requirements\n\n"
-            "Respond with ONLY an integer (0, 1, 2, ...). No extra text.\n"
-        ),
-    )
+def register_model_route(route: ModelRoute) -> None:
+    MODEL_ROUTES[route.id] = route
 
 
-def _drafting_structure() -> PromptBundle:
-    return PromptBundle(
-        id="drafting_structure",
-        version="v1",
-        description="Structure specialist: propose resume sections and outlines.",
-        temperature=0.4,
-        max_tokens=768,
-        template=(
-            "You are the STRUCTURE specialist of a drafting guild.\n"
-            "Your job is to design the section structure and outline for a tailored resume.\n\n"
-            "Job (JSON):\n{job_json}\n\n"
-            "Candidate resume (JSON):\n{resume_json}\n\n"
-            "Drafting plan (JSON):\n{drafting_plan_json}\n\n"
-            "Chosen strategy branch:\n{strategy_branch}\n\n"
-            "RAG evidence snippets (array):\n{rag_evidence_json}\n\n"
-            "OUTPUT FORMAT (JSON array):\n"
-            "[\n"
-            '  {"title": "Executive Summary", "outline": "High-level positioning"},\n'
-            '  {"title": "Experience", "outline": "Role, company, 2–4 bullet achievements per role"},\n'
-            '  ...\n'
-            "]\n"
-            "Only output valid JSON. No commentary.\n"
-        ),
-    )
+def get_model_route(route_id: str) -> ModelRoute:
+    if route_id not in MODEL_ROUTES:
+        raise KeyError(f"Unknown model route id: {route_id}")
+    return MODEL_ROUTES[route_id]
 
 
-def _drafting_narrative() -> PromptBundle:
-    return PromptBundle(
-        id="drafting_narrative",
-        version="v1",
-        description="Narrative specialist: write text for a single resume section.",
-        temperature=0.6,
-        max_tokens=1024,
-        template=(
-            "You are the NARRATIVE specialist of a drafting guild.\n"
-            "Your job is to write the content for a specific resume section.\n\n"
-            "Section title: {section}\n"
-            "Section outline: {outline}\n\n"
-            "Job (JSON):\n{job_json}\n\n"
-            "Candidate resume (JSON):\n{resume_json}\n\n"
-            "Drafting plan (JSON):\n{drafting_plan_json}\n\n"
-            "Guidelines:\n"
-            "  - Use concise, impact-focused language.\n"
-            "  - Prefer strong verbs and measurable outcomes.\n"
-            "  - Do not fabricate details that contradict the resume.\n\n"
-            "Output ONLY the section text.\n"
-        ),
-    )
+def list_model_routes() -> List[ModelRoute]:
+    return list(MODEL_ROUTES.values())
 
 
-def _drafting_compliance() -> PromptBundle:
-    return PromptBundle(
-        id="drafting_compliance",
-        version="v1",
-        description="Compliance specialist: critique a drafted section.",
-        temperature=0.3,
-        max_tokens=512,
-        template=(
-            "You are the COMPLIANCE specialist of a drafting guild.\n"
-            "Your job is to review a drafted resume section for:\n"
-            "  - Tone alignment (target tone: {target_tone})\n"
-            "  - Clarity and concision\n"
-            "  - Structural issues (missing or duplicate content)\n\n"
-            "Section title: {section_title}\n"
-            "Section text:\n{section_text}\n\n"
-            "Drafting plan (JSON):\n{drafting_plan_json}\n\n"
-            "Provide 2–5 bullet points of critique.\n"
-            "If the section is strong, say so explicitly.\n"
-        ),
-    )
+# ======================================================================
+# SAFETY BUNDLE REGISTRY
+# ======================================================================
 
-
-def _qa_semantic_check() -> PromptBundle:
-    return PromptBundle(
-        id="qa_semantic_check",
-        version="v1",
-        description="Semantic QA: evaluate one QA check on the draft.",
-        temperature=0.2,
-        max_tokens=512,
-        template=(
-            "You are a semantic QA agent validating a single QA check.\n\n"
-            "QA check (JSON):\n{check_json}\n\n"
-            "Draft (JSON):\n{draft_json}\n\n"
-            "RAG evidence (array):\n{rag_evidence_json}\n\n"
-            "Job (JSON):\n{job_json}\n\n"
-            "Resume (JSON):\n{resume_json}\n\n"
-            "Determine whether this check passes.\n\n"
-            "OUTPUT FORMAT (JSON ONLY):\n"
-            "{\n"
-            '  "passed": true or false,\n'
-            '  "reason": "short explanation",\n'
-            '  "severity": 1 | 2 | 3\n'
-            "}\n"
-            "No extra commentary.\n"
-        ),
-    )
-
-
-def _safety_check() -> PromptBundle:
-    return PromptBundle(
-        id="safety_check",
-        version="v1",
-        description="Constitutional safety review for PII / policy / professionalism.",
-        temperature=0.2,
-        max_tokens=640,
-        template=(
-            "You are a SAFETY and POLICY reviewer.\n"
-            "You will evaluate a drafted resume section for safety risks.\n\n"
-            "Safety check (JSON):\n{check_json}\n\n"
-            "Draft (JSON):\n{draft_json}\n\n"
-            "QA results (JSON):\n{qa_json}\n\n"
-            "Job (JSON):\n{job_json}\n\n"
-            "Resume (JSON):\n{resume_json}\n\n"
-            "Consider:\n"
-            "  - PII leakage (if category == 'pii')\n"
-            "  - Harmful/disallowed content (if category == 'policy')\n"
-            "  - Professionalism (if category == 'professionalism')\n\n"
-            "OUTPUT FORMAT (JSON ONLY):\n"
-            "{\n"
-            '  "category": "<repeat the category string from check>",\n'
-            '  "blocking": true or false,\n'
-            '  "reason": "short explanation"\n'
-            "}\n"
-            "No extra commentary.\n"
-        ),
-    )
-
-
-# =============================================================================
-# Default Registry Builder
-# =============================================================================
-
-def build_default_prompt_registry() -> PromptRegistry:
+@dataclass
+class SafetyBundle:
     """
-    Build a PromptRegistry pre-populated with the v10_10 prompt set.
+    Safety bundle representing a collection of safety checks / policies.
+
+    • tier: "strict", "standard", "relaxed", "debug"
+    • checks: list of safety check identifiers
+    • metadata: optional info
     """
-    bundles = [
-        _strategy_generate_branch(),
-        _strategy_select_branch(),
-        _drafting_structure(),
-        _drafting_narrative(),
-        _drafting_compliance(),
-        _qa_semantic_check(),
-        _safety_check(),
-    ]
-    return PromptRegistry(bundles=bundles)
+
+    tier: str
+    checks: List[str]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+SAFETY_BUNDLES: Dict[str, SafetyBundle] = {}
+
+
+def register_safety_bundle(bundle: SafetyBundle) -> None:
+    SAFETY_BUNDLES[bundle.tier] = bundle
+
+
+def get_safety_bundle(tier: str) -> SafetyBundle:
+    if tier not in SAFETY_BUNDLES:
+        raise KeyError(f"Unknown safety tier: {tier}")
+    return SAFETY_BUNDLES[tier]
+
+
+# ======================================================================
+# EXECUTION PROFILES REGISTRY (BRIDGE TO config_profiles_v10_10)
+# ======================================================================
+
+def get_execution_profile(profile_id: str) -> ExecutionProfile:
+    """
+    Pull a hard execution profile from Phase 0 profile catalog.
+    """
+    return EXECUTION_PROFILES[profile_id]
+
+
+def list_execution_profiles() -> List[str]:
+    return list(EXECUTION_PROFILES.keys())
+
+
+# ======================================================================
+# PROMPT REGISTRY BRIDGE
+# ======================================================================
+
+def get_prompt(prompt_id: str) -> PromptDefinition:
+    if prompt_id not in PROMPT_REGISTRY:
+        raise KeyError(f"Unknown prompt id: {prompt_id}")
+    return PROMPT_REGISTRY[prompt_id]
+
+
+def list_prompts() -> List[str]:
+    return list(PROMPT_REGISTRY.keys())
+
+
+def get_prompt_acl(prompt_id: str):
+    return PROMPT_ACLS.get(prompt_id)
+
+
+# ======================================================================
+# RETRIEVAL / RAG STRATEGY REGISTRY (Phase 0 placeholder)
+# ======================================================================
+
+@dataclass
+class RAGStrategyCard:
+    """
+    Defines a retrieval strategy (bm25, dense, hybrid, hyde, weighted).
+    """
+
+    id: str
+    description: str
+    retrieval_config: RetrievalConfig
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+RAG_STRATEGIES: Dict[str, RAGStrategyCard] = {}
+
+
+def register_rag_strategy(card: RAGStrategyCard) -> None:
+    RAG_STRATEGIES[card.id] = card
+
+
+def get_rag_strategy(strategy_id: str) -> RAGStrategyCard:
+    if strategy_id not in RAG_STRATEGIES:
+        raise KeyError(f"Unknown RAG strategy id: {strategy_id}")
+    return RAG_STRATEGIES[strategy_id]
+
+
+def list_rag_strategies() -> List[str]:
+    return list(RAG_STRATEGIES.keys())
+
+
+# ======================================================================
+# SKILL / DOMAIN CLASSIFIER REGISTRY (placeholder for G32–G33)
+# ======================================================================
+
+@dataclass
+class ClassificationModelCard:
+    """
+    Lightweight descriptor for skill/domain classifiers.
+    """
+
+    id: str
+    description: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    classifier_fn: Optional[Callable[[str], Dict[str, Any]]] = None
+
+
+CLASSIFIER_REGISTRY: Dict[str, ClassificationModelCard] = {}
+
+
+def register_classifier(card: ClassificationModelCard) -> None:
+    CLASSIFIER_REGISTRY[card.id] = card
+
+
+def get_classifier(card_id: str) -> ClassificationModelCard:
+    if card_id not in CLASSIFIER_REGISTRY:
+        raise KeyError(f"Unknown classifier id: {card_id}")
+    return CLASSIFIER_REGISTRY[card_id]
+
+
+def list_classifiers() -> List[str]:
+    return list(CLASSIFIER_REGISTRY.keys())
+
+
+# ======================================================================
+# VERSION METADATA (lightweight Phase 0 hook)
+# ======================================================================
+
+VERSION_METADATA: Dict[str, Any] = {
+    "registry_version": "phase0.1",
+    "profiles_version": "phase0.1",
+    "prompt_registry_version": "phase0.1",
+}
+
+
+# ======================================================================
+# RESET (useful for unit tests)
+# ======================================================================
+
+def reset_registry() -> None:
+    AGENT_REGISTRY.clear()
+    TOOL_REGISTRY.clear()
+    MODEL_ROUTES.clear()
+    SAFETY_BUNDLES.clear()
+    CLASSIFIER_REGISTRY.clear()
+    RAG_STRATEGIES.clear()
