@@ -4,319 +4,350 @@ Unified L2 Execution Layer (v10_10 · Phase 1)
 =============================================
 
 Responsibilities:
-    • Execute all L1-produced plans (Strategy, RAG, Drafting, QA, Safety).
-    • Call LLMs/tools (via registry) — the ONLY layer allowed to do so.
-    • Perform retrieval, ranking, evidence fusion.
-    • Generate initial draft sections.
-    • Run QA checks (but do NOT enforce safety).
-    • Produce a typed L2ResultBundle consumed by L3.
+    • Execute StrategyPlan, RAGPlan, DraftingPlan, QAPlan, SafetyPlan.
+    • Perform all LLM calls, tool calls, retrieval, ranking, evidence fusion.
+    • Produce structured outputs:
+          – StrategyResult
+          – RAGResult
+          – DraftingResult
+          – QAResult
+          – SafetyResult
+    • Wrap all computation in deterministic observability spans.
+    • NO state mutation (L4 only).
+    • NO planning (L1).
+    • NO DAG or retries (L3).
+    • NO safety policy enforcement (L5).
 
-Strict Layering:
-    • No planning (L1 only).
-    • No DAG orchestration (L3).
-    • No state mutation (L4).
-    • No safety enforcement or policy decisions (L5).
-
-Restored from v10_8 & v10_9:
-    • Hybrid retrieval (BM25 + dense).
-    • RRF reciprocal-rank fusion hooks.
-    • Weighted evidence fusion pipeline.
-    • Draft section generation structure.
-    • QA scoring surface.
+Restores the full v10_8 / v10_9 functionality:
+    • Async execution model
+    • Hybrid dense + BM25 retrieval
+    • RRF reciprocal rank fusion
+    • Evidence fusion pipeline
+    • Cognitive agent calls through cognitive_agents.py
+    • Typed LLM/tool abstraction via registry.py
 """
 
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
+
+import asyncio
+from typing import Any, Dict, List, Optional, Tuple
 
 from models import (
     ExecutionContext,
-    StrategyPlan,
-    RAGPlan,
-    DraftingPlan,
-    QAPlan,
-    SafetyPlan,
-    L2ResultBundle,
+    WorkflowPlanBundle,
+    StrategyResult,
+    RAGResult,
+    DraftingResult,
     QAResult,
     SafetyResult,
-    DraftSectionOutput,
+    L2ResultBundle,
 )
-from observability import start_span, end_span, log_exception
+from observability import start_span, end_span, log_exception, emit_cost_snapshot
 from registry import (
-    get_retrieval_client,
-    get_ranking_client,
     get_llm_client,
-    get_prompt_registry,
+    get_retriever,
+    get_ranker,
+    get_prompt,
+    get_tool,
+)
+from cognitive_agents import (
+    run_strategy_agent,
+    run_drafting_agent,
+    run_qa_agent,
+    run_safety_agent,
+)
+from retrieval import (
+    perform_dense_retrieval,
+    perform_bm25_retrieval,
+)
+from ranking import (
+    reciprocal_rank_fusion,
+    hybrid_weighted_ranking,
+    fuse_evidence,
 )
 
 
 # =============================================================================
-# Retrieval + Ranking
+# Strategy Execution
 # =============================================================================
 
-
-def _execute_rag(ctx: ExecutionContext, plan: RAGPlan) -> Dict[str, Any]:
+async def _execute_strategy(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+) -> StrategyResult:
     """
-    Run retrieval + ranking + fusion.
-
-    Phase 1 behavior:
-        - Executes retrieval via retrieval.py (dense/BM25/hybrid).
-        - Executes ranking via ranking.py.
-        - Calls RRF and hybrid fusion if available.
-        - Returns structured evidence.
+    Run the strategy agent with the StrategyPlan.
     """
-    span = start_span("l2.rag")
-
+    span = start_span("l2.strategy", ctx=ctx.span_context())
     try:
-        retrieval_client = get_retrieval_client()
-        ranking_client = get_ranking_client()
-
-        all_results: Dict[str, Any] = {}
-
-        # -------------------------------------------
-        # Retrieval (per RAGQueryHint)
-        # -------------------------------------------
-        for hint in plan.hints:
-            hits = retrieval_client.retrieve(
-                focus=hint.focus,
-                max_chunks=hint.max_chunks,
-                importance=hint.importance,
-                hyde=plan.allow_hyde,
-                hybrid=plan.require_hybrid,
-            )
-            all_results[hint.id] = hits
-
-        # -------------------------------------------
-        # Fusion / ranking
-        # -------------------------------------------
-        fused = ranking_client.fuse(all_results)
-
-        return {
-            "retrieval_raw": all_results,
-            "retrieval_fused": fused,
-        }
-
-    except Exception as e:
-        log_exception("l2.rag.error", e)
-        return {
-            "retrieval_raw": {},
-            "retrieval_fused": {},
-            "error": str(e),
-        }
+        strategy_output = await run_strategy_agent(
+            steps=plans.strategy.steps,
+            complexity=plans.strategy.complexity,
+            ctx=ctx,
+        )
+        return StrategyResult(
+            steps=plans.strategy.steps,
+            output=strategy_output,
+        )
+    except Exception as exc:
+        log_exception("l2.strategy_error", exc)
+        return StrategyResult(
+            steps=plans.strategy.steps,
+            output={"error": str(exc)},
+        )
     finally:
         end_span(span)
 
 
 # =============================================================================
-# Draft Generation
+# Retrieval Execution
 # =============================================================================
 
-
-def _draft_sections(
+async def _execute_retrieval(
+    plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
-    plan: DraftingPlan,
-    rag_output: Dict[str, Any],
-) -> List[DraftSectionOutput]:
+) -> RAGResult:
     """
-    Generate draft sections using the LLM route from the registry.
-
-    Phase 1 behavior:
-        • For each section:
-            - Combine job/resume content (via ctx)
-            - Retrieve fused evidence
-            - Generate draft text via selected LLM
-        • No multi-agent routing yet (Phase 3).
-        • No multi-pass drafting yet.
-
-    Output:
-        List[DraftSectionOutput]
+    Implements hybrid dense + BM25 retrieval, RRF fusion, and evidence merging.
     """
-    span = start_span("l2.drafting")
-    llm = get_llm_client()
-
-    fused = rag_output.get("retrieval_fused", {})
-
-    outputs: List[DraftSectionOutput] = []
+    span = start_span("l2.retrieval", ctx=ctx.span_context())
 
     try:
-        for section in plan.sections:
-            prompt = {
-                "section_id": section.id,
-                "section_title": section.title,
-                "job_title": ctx.job.title,
-                "role_type": ctx.job.role_type,
-                "seniority": ctx.job.seniority,
-                "resume_summary": getattr(ctx.resume, "summary", ""),
-                "evidence": fused.get(section.id) or fused,
-                "tone": plan.target_tone,
-                "mode": plan.mode.value,
-            }
+        rag_plan = plans.rag
+        dense_results = []
+        bm25_results = []
 
-            text = llm.generate_resume_section(prompt, max_tokens=section.max_tokens)
-
-            outputs.append(
-                DraftSectionOutput(
-                    section_id=section.id,
-                    title=section.title,
-                    text=text or "",
+        # Run retrieval for each hint
+        for hint in rag_plan.hints:
+            if hint.focus in ("job", "resume", "hybrid"):
+                # Dense retrieval
+                dr = await perform_dense_retrieval(
+                    focus=hint.focus,
+                    max_chunks=hint.max_chunks,
+                    ctx=ctx,
                 )
-            )
+                dense_results.append((hint, dr))
 
-        return outputs
+                # BM25 retrieval
+                br = await perform_bm25_retrieval(
+                    focus=hint.focus,
+                    max_chunks=hint.max_chunks,
+                    ctx=ctx,
+                )
+                bm25_results.append((hint, br))
 
-    except Exception as e:
-        log_exception("l2.drafting.error", e)
-        return []
+        # RRF fusion
+        rrf_fused = reciprocal_rank_fusion(
+            dense_results=[dr for (_, dr) in dense_results],
+            bm25_results=[br for (_, br) in bm25_results],
+        )
+
+        # Hybrid weighting
+        hybrid_ranked = hybrid_weighted_ranking(
+            fused_results=rrf_fused,
+            hints=rag_plan.hints,
+        )
+
+        # Evidence fusion
+        fused_evidence = fuse_evidence(hybrid_ranked)
+
+        return RAGResult(
+            raw_results={
+                "dense": dense_results,
+                "bm25": bm25_results,
+            },
+            ranked_results=hybrid_ranked,
+            fused_evidence=fused_evidence,
+        )
+
+    except Exception as exc:
+        log_exception("l2.retrieval_error", exc)
+        return RAGResult(
+            raw_results={},
+            ranked_results=[],
+            fused_evidence=[],
+        )
     finally:
         end_span(span)
 
 
 # =============================================================================
-# QA Evaluation
+# Drafting Execution
 # =============================================================================
 
-
-def _run_qa(
+async def _execute_drafting(
+    plans: WorkflowPlanBundle,
+    rag_result: RAGResult,
     ctx: ExecutionContext,
-    plan: QAPlan,
-    draft_sections: List[DraftSectionOutput],
-    rag_output: Dict[str, Any],
+) -> DraftingResult:
+    """
+    Run the drafting agent with:
+        - DraftingPlan
+        - RAG fused evidence
+    """
+    span = start_span("l2.drafting", ctx=ctx.span_context())
+    try:
+        drafting_plan = plans.drafting
+
+        drafting_output = await run_drafting_agent(
+            sections=drafting_plan.sections,
+            mode=drafting_plan.mode,
+            fused_evidence=rag_result.fused_evidence,
+            ctx=ctx,
+            target_tone=drafting_plan.target_tone,
+        )
+
+        return DraftingResult(
+            sections=drafting_plan.sections,
+            mode=drafting_plan.mode,
+            output=drafting_output,
+        )
+
+    except Exception as exc:
+        log_exception("l2.drafting_error", exc)
+        return DraftingResult(
+            sections=plans.drafting.sections,
+            mode=plans.drafting.mode,
+            output={"error": str(exc)},
+        )
+    finally:
+        end_span(span)
+
+
+# =============================================================================
+# QA Execution
+# =============================================================================
+
+async def _execute_qa(
+    plans: WorkflowPlanBundle,
+    drafting_result: DraftingResult,
+    rag_result: RAGResult,
+    ctx: ExecutionContext,
 ) -> QAResult:
     """
-    Evaluate QA checks on the draft.
-
-    Phase 1:
-        - Simple QA evaluation surface.
-        - Later phases expand to multi-agent council.
+    QAAgent performs:
+        - keyword coverage
+        - job/resume alignment
+        - hallucination checks
+        - tone consistency
     """
-    span = start_span("l2.qa")
-
-    findings = []
-
+    span = start_span("l2.qa", ctx=ctx.span_context())
     try:
-        for check in plan.checks:
-            if not check.enabled:
-                continue
+        qa_output = await run_qa_agent(
+            checks=plans.qa.checks,
+            drafting_output=drafting_result.output,
+            fused_evidence=rag_result.fused_evidence,
+            ctx=ctx,
+        )
 
-            # Each check runs through a QA evaluator in registry
-            evaluator = get_ranking_client().qa_evaluator(check.id)
-
-            finding = evaluator.evaluate(
-                draft_sections=draft_sections,
-                rag_output=rag_output,
-                severity=check.severity,
-                description=check.description,
-            )
-            findings.append(finding)
-
-        return QAResult(findings=findings)
-
-    except Exception as e:
-        log_exception("l2.qa.error", e)
-        return QAResult(findings=[])
+        return QAResult(
+            checks=plans.qa.checks,
+            findings=qa_output,
+        )
+    except Exception as exc:
+        log_exception("l2.qa_error", exc)
+        return QAResult(
+            checks=plans.qa.checks,
+            findings=[{"error": str(exc)}],
+        )
     finally:
         end_span(span)
 
 
 # =============================================================================
-# Safety (preliminary)
+# Safety Execution (L2 pre-pass only)
 # =============================================================================
 
-
-def _run_safety(
+async def _execute_safety(
+    plans: WorkflowPlanBundle,
+    drafting_result: DraftingResult,
     ctx: ExecutionContext,
-    plan: SafetyPlan,
-    draft_sections: List[DraftSectionOutput],
 ) -> SafetyResult:
     """
-    L2's role in safety:
-        - Run preliminary safety scrubs.
-        - Collect SafetyFindings.
-        - Enforcement / allow/block occurs in L5 only.
+    L2 performs a *pre-safety* analysis only.
+    Full enforcement is performed in L5.
+
+    The safety agent computes:
+        - PII signal list
+        - toxicity detection
+        - high-risk phrasing
     """
-    span = start_span("l2.safety")
-
-    findings = []
-
+    span = start_span("l2.safety", ctx=ctx.span_context())
     try:
-        safety_client = get_ranking_client().safety_evaluator()
+        safety_output = await run_safety_agent(
+            checks=plans.safety.checks,
+            content=drafting_result.output,
+            ctx=ctx,
+        )
 
-        for check in plan.checks:
-            if not check.enabled:
-                continue
+        return SafetyResult(
+            checks=plans.safety.checks,
+            findings=safety_output,
+        )
 
-            f = safety_client.evaluate(
-                draft_sections=draft_sections,
-                category=check.category,
-                description=check.description,
-            )
-            findings.append(f)
-
-        return SafetyResult(findings=findings)
-
-    except Exception as e:
-        log_exception("l2.safety.error", e)
-        return SafetyResult(findings=[])
+    except Exception as exc:
+        log_exception("l2.safety_error", exc)
+        return SafetyResult(
+            checks=plans.safety.checks,
+            findings=[{"error": str(exc)}],
+        )
     finally:
         end_span(span)
 
 
 # =============================================================================
-# Main L2 entrypoint
+# Main L2 Execution
 # =============================================================================
 
+async def _run_l2_async(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+) -> L2ResultBundle:
+    """
+    Full async L2 execution pipeline.
+    """
+
+    # Strategy → RAG can be independent
+    strategy_task = asyncio.create_task(_execute_strategy(plans, ctx))
+    rag_task = asyncio.create_task(_execute_retrieval(plans, ctx))
+
+    # Wait for RAG to complete before drafting
+    strategy_result, rag_result = await asyncio.gather(strategy_task, rag_task)
+
+    drafting_result = await _execute_drafting(plans, rag_result, ctx)
+    qa_result = await _execute_qa(plans, drafting_result, rag_result, ctx)
+    safety_result = await _execute_safety(plans, drafting_result, ctx)
+
+    return L2ResultBundle(
+        strategy=strategy_result,
+        rag=rag_result,
+        drafting=drafting_result,
+        qa=qa_result,
+        safety=safety_result,
+    )
+
+
+# =============================================================================
+# Public Entrypoint for L3
+# =============================================================================
 
 def execute_workflow_plans(
     plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
 ) -> L2ResultBundle:
     """
-    Main L2 execution entrypoint.
-
-    Executes:
-        • RAG
-        • Drafting
-        • QA
-        • Preliminary safety
-
-    Returns:
-        L2ResultBundle containing:
-            - rag
-            - drafting
-            - qa
-            - safety
+    Synchronous wrapper for L3.
+    L3 is allowed to call *only this* L2 entrypoint.
     """
-
-    root = start_span("l2.execute_workflow_plans", ctx=ctx.span_context())
-
+    span = start_span("l2.execute_workflow_plans", ctx=ctx.span_context())
     try:
-        # --------- RAG ---------
-        rag_output = _execute_rag(ctx, plans.rag)
-
-        # --------- Drafting ---------
-        draft_sections = _draft_sections(ctx, plans.drafting, rag_output)
-
-        # --------- QA ---------
-        qa_result = _run_qa(ctx, plans.qa, draft_sections, rag_output)
-
-        # --------- Safety ---------
-        safety_result = _run_safety(ctx, plans.safety, draft_sections)
-
-        # --------- Bundle results ---------
-        return L2ResultBundle(
-            rag=rag_output,
-            drafting=draft_sections,
-            qa=qa_result,
-            safety=safety_result,
-        )
-
-    except Exception as e:
-        log_exception("l2.execution.error", e)
-        return L2ResultBundle(
-            rag={},
-            drafting=[],
-            qa=QAResult(findings=[]),
-            safety=SafetyResult(findings=[]),
-        )
-
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        result = loop.run_until_complete(_run_l2_async(plans, ctx))
+        emit_cost_snapshot(ctx.model_usage_snapshot())
+        return result
+    except Exception as exc:
+        log_exception("l2.execute_error", exc)
+        raise
     finally:
-        end_span(root)
+        end_span(span)
