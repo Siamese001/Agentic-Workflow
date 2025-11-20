@@ -1,375 +1,207 @@
-# FILE: retrieval.py
+# FILE: 10_10/retrieval.py
 """
-Retrieval Utilities (v10_9) — PURE META-LAYER RAG INFRA (META-AWARE, REFINED)
+Deterministic Retrieval Utilities (v10_10)
+==========================================
 
-This module provides higher-level retrieval utilities for the v10_9
-agentic architecture. It is a *pure infrastructure* layer, sitting
-below L2 executors and above low-level primitives in runtime_utils.
+This module provides the retrieval post-processing logic used by the
+v10_10 L2.execute_rag() function.
 
-Responsibilities:
-    • Normalize raw retrieval hits into canonical structures.
-    • Apply ranking strategies (bm25, dense, hybrid) over retrieval results.
-    • Fuse multiple retrieval sources into a single ranked list.
-    • Enforce simple item limits (max_items).
-    • Provide small, typed helpers that L2 executors (e.g., RAGExecutor)
-      and external RAG clients can use.
-    • Adapt behavior based on meta_profile biases (routing/planning/QA/safety)
-      without violating L1–L5 boundaries.
+It replaces the v10_9 retrieval layer (which used:
+    • _Retrieval
+    • _Ranking
+    • _RAGUtils
+    • meta_profile biases
+    • multi-source fusion
+    • councils / arbitration
+    • safety-meta mutations
+) with a minimal, deterministic, L2-safe implementation.
 
-Non-responsibilities (Agentic Guardrails):
-    • NO L1 cognition (no planning).
-    • NO L2 tool/LLM execution.
-    • NO L3 orchestration.
-    • NO L4 state management (no StateAdapter usage).
-    • NO L5 safety decisions.
-    • NO provider/DB/SDK calls.
+Responsibilities (allowed at L2 boundary):
+    ✓ Take raw retrieval hits from a tool/vector DB/LLM-HYDE.
+    ✓ Normalize them.
+    ✓ Rank deterministically using ranking.rank_evidence().
+    ✓ Apply minimal deterministic safety filtering.
+    ✓ Convert into typed `Evidence` objects.
 
-META-awareness (from meta_profile):
-    • routing_bias.prefer_fast             → fewer items, lighter ranking.
-    • routing_bias.prefer_robust_retrieval → hybrid ranking, more items.
-    • planning_bias.conservative           → increase coverage (more items).
-    • qa_bias.recent_failures              → increase coverage (more items).
-    • safety_bias.heightened_caution       → filter out obviously risky items.
+Non-Responsibilities (forbidden by v10_10 layering):
+    ✗ No LLM calls.
+    ✗ No meta-profile updates.
+    ✗ No meta-aware routing.
+    ✗ No retrieval strategy planning (L1).
+    ✗ No state mutation (L4).
+    ✗ No orchestration (L3).
+    ✗ No multi-agent councils or arbitration.
 
-All behavior here is deterministic and side-effect-free.
+This module is PURE and side-effect-free.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import List, Dict, Any, Optional
 
-from runtime_utils import Retrieval as _Retrieval
-from runtime_utils import Ranking as _Ranking
-from runtime_utils import RAGUtils as _RAGUtils
-
-from meta_profile import (
-    get_routing_bias,
-    get_planning_bias,
-    get_qa_bias,
-    get_safety_bias,
-)
+from models import Evidence, RAGPlan
+from ranking import rank_evidence
 
 
-# =============================================================================
-# 1. DATA CLASSES
-# =============================================================================
+# ============================================================================
+# Internal Safety Filtering
+# ============================================================================
 
-
-@dataclass
-class RetrievalConfig:
+def _safety_filter(raw_hits: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Configuration for retrieval post-processing.
+    Deterministic minimal safety filtering.
 
-    Fields:
-        • ranking_strategy: "bm25" | "dense" | "hybrid".
-        • max_items: maximum number of items to retain after fusion.
-        • metadata: optional additional hints (e.g., source identifiers).
+    Removes raw hits whose text contains extremely risky markers.
+
+    Notes:
+        • This is *not* L5 safety gating — it is a L2-level hygiene filter.
+        • Does NO inference and NO LLM usage.
+        • Hard-coded deterministic string checks only.
     """
+    risky_markers = [
+        "password",
+        "ssn",
+        "social security number",
+        "bank account",
+    ]
 
-    ranking_strategy: str = "hybrid"
-    max_items: int = 50
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-
-@dataclass
-class RetrievalItem:
-    """
-    Canonical retrieval item.
-
-    Fields:
-        • query: the query string used to retrieve this item.
-        • evidence: the text snippet or document content.
-        • rank: integer rank (1 = best).
-        • metadata: arbitrary metadata (scores, ids, etc.).
-    """
-
-    query: str
-    evidence: str
-    rank: int
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    out: List[Dict[str, Any]] = []
+    for hit in raw_hits:
+        text = str(hit.get("evidence", "")).lower()
+        if any(marker in text for marker in risky_markers):
+            continue
+        out.append(hit)
+    return out
 
 
-@dataclass
-class RetrievalResult:
-    """
-    Aggregated retrieval result for a set of queries.
+# ============================================================================
+# Normalization
+# ============================================================================
 
-    Fields:
-        • items: list of RetrievalItem objects.
-        • config: RetrievalConfig used for post-processing.
-    """
-
-    items: List[RetrievalItem] = field(default_factory=list)
-    config: RetrievalConfig = field(default_factory=RetrievalConfig)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "items": [
-                {
-                    "query": it.query,
-                    "evidence": it.evidence,
-                    "rank": it.rank,
-                    "metadata": dict(it.metadata),
-                }
-                for it in self.items
-            ],
-            "config": {
-                "ranking_strategy": self.config.ranking_strategy,
-                "max_items": self.config.max_items,
-                "metadata": dict(self.config.metadata),
-            },
-        }
-
-
-# =============================================================================
-# 2. INTERNAL HELPERS
-# =============================================================================
-
-
-def _apply_ranking_strategy(
-    items: List[Dict[str, Any]],
-    strategy: str,
+def _normalize_raw_hits(
+    raw_hits: List[Dict[str, Any]]
 ) -> List[Dict[str, Any]]:
     """
-    Apply the requested ranking strategy to a list of retrieval dicts.
+    Normalize raw DB/vector/LLM retrieval hits into a uniform dict format:
 
-    Strategy:
-        • "bm25"   → length-based BM25-like ranking.
-        • "dense"  → hash-based dense score ranking.
-        • "hybrid" → combined BM25 + dense ranking.
-        • default  → hybrid.
+        {
+            "evidence": <text>,
+            "score": <float>,
+            "source": <string>,
+            ...
+        }
+
+    L2.execute_rag() relies on this normalized shape before ranking.
     """
-    s = (strategy or "hybrid").lower()
-    if s == "bm25":
-        return _Ranking.bm25_rank(items)
-    if s == "dense":
-        return _Ranking.dense_rank(items)
-    # fallback to hybrid
-    return _Ranking.hybrid_rank(items)
+    normalized: List[Dict[str, Any]] = []
 
+    for item in raw_hits:
+        text = str(item.get("evidence") or item.get("text") or "")
+        score = float(item.get("score", 0.0))
+        src = str(item.get("source", "unknown"))
 
-def _limit_items(items: List[Dict[str, Any]], max_items: int) -> List[Dict[str, Any]]:
-    """
-    Limit the list of items to max_items, preserving order.
-    """
-    if max_items <= 0:
-        return items
-    if len(items) <= max_items:
-        return items
-    return items[:max_items]
-
-
-def _apply_meta_biases_to_config(cfg: RetrievalConfig) -> RetrievalConfig:
-    """
-    Return a new RetrievalConfig adjusted by meta_profile biases.
-
-    Meta influences:
-
-        • routing_bias.prefer_fast:
-            - reduce max_items (e.g., by half)
-        • routing_bias.prefer_robust_retrieval:
-            - enforce hybrid ranking, slightly more items
-        • planning_bias.conservative:
-            - increase max_items (more coverage)
-        • qa_bias.recent_failures:
-            - increase max_items (more evidence)
-        • safety_bias.heightened_caution:
-            - add flag in metadata for optional downstream filtering
-
-    All behavior is deterministic and side-effect-free; original cfg is
-    not mutated.
-    """
-    routing = get_routing_bias()
-    planning = get_planning_bias()
-    qa = get_qa_bias()
-    safety = get_safety_bias()
-
-    new_cfg = RetrievalConfig(
-        ranking_strategy=cfg.ranking_strategy,
-        max_items=cfg.max_items,
-        metadata=dict(cfg.metadata),
-    )
-
-    # Routing biases
-    if routing.get("prefer_fast"):
-        # Aggressively reduce the number of items to consider downstream.
-        new_cfg.max_items = max(10, cfg.max_items // 2)
-        new_cfg.metadata["meta_prefer_fast"] = True
-
-    if routing.get("prefer_robust_retrieval"):
-        new_cfg.ranking_strategy = "hybrid"
-        new_cfg.max_items = max(cfg.max_items, 60)
-        new_cfg.metadata["meta_prefer_robust_retrieval"] = True
-
-    # Planning / QA biases: increase coverage
-    if planning.get("conservative") or qa.get("recent_failures"):
-        new_cfg.max_items = max(new_cfg.max_items, cfg.max_items + 20)
-        new_cfg.metadata["meta_conservative_or_qa_failures"] = True
-
-    # Safety bias: mark runs as high-safety for downstream filters
-    if safety.get("heightened_caution"):
-        new_cfg.metadata["meta_high_safety"] = True
-
-    return new_cfg
-
-
-def _filter_for_safety(items: List[Dict[str, Any]], safety_bias: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """
-    Apply very light deterministic filtering for obviously risky items.
-
-    For now, this is deliberately simple and hard-coded. It is meant to
-    support heightened_caution flows by removing items that contain
-    highly suspicious markers in 'evidence'.
-    """
-    if not safety_bias.get("heightened_caution"):
-        return items
-
-    filtered: List[Dict[str, Any]] = []
-    risky_markers = ["password", "ssn", "social security number"]
-    for it in items:
-        ev = str(it.get("evidence", "")).lower()
-        if any(m in ev for m in risky_markers):
-            continue
-        filtered.append(it)
-    return filtered
-
-
-# =============================================================================
-# 3. PUBLIC API — SINGLE-SOURCE NORMALIZATION
-# =============================================================================
-
-
-def normalize_raw_results(
-    raw_results: List[Dict[str, Any]],
-    *,
-    config: Optional[RetrievalConfig] = None,
-) -> RetrievalResult:
-    """
-    Normalize raw retrieval results into a canonical RetrievalResult.
-
-    Steps:
-        0. Apply meta_profile biases to RetrievalConfig.
-        1. Normalize raw dicts into {query, evidence, rank}.
-        2. Deduplicate identical (query, evidence) pairs.
-        3. Apply ranking strategy (bm25/dense/hybrid).
-        4. Rerank & fuse results (single-source).
-        5. Limit items to config.max_items.
-        6. Optionally filter for basic safety when heightened_caution.
-        7. Normalize to RAG-style items with metadata.
-        8. Return RetrievalResult with RetrievalItem objects.
-
-    This function does NOT call any external services; it operates on
-    already-fetched raw results (e.g., from a DB, vector store, or LLM).
-    """
-    base_cfg = config or RetrievalConfig()
-    cfg = _apply_meta_biases_to_config(base_cfg)
-
-    # 1. Normalize query/evidence/rank structure
-    norm = _Retrieval.normalize_documents(raw_results)
-
-    # 2. Deduplicate
-    norm = _Retrieval.dedupe_results(norm)
-
-    # 3. Ranking strategy
-    ranked = _apply_ranking_strategy(norm, cfg.ranking_strategy)
-
-    # 4. Rerank and fuse (single source)
-    reranked = _Retrieval.rerank_results(ranked, cfg.ranking_strategy)
-    fused = _Retrieval.fuse_results([reranked])
-
-    # 5. Limit items
-    fused = _limit_items(fused, cfg.max_items)
-
-    # 6. Optional safety filtering
-    safety_bias = get_safety_bias()
-    fused = _filter_for_safety(fused, safety_bias)
-
-    # 7. Normalize to RAG-style items with metadata
-    rag_items = _RAGUtils.normalize_rag_results(fused)
-
-    # 8. Convert to RetrievalItem objects
-    items: List[RetrievalItem] = []
-    for d in rag_items:
-        items.append(
-            RetrievalItem(
-                query=str(d.get("query", "")),
-                evidence=str(d.get("evidence", "")),
-                rank=int(d.get("rank", 0) or 0),
-                metadata=dict(d.get("metadata", {})),
-            )
+        normalized.append(
+            {
+                "evidence": text,
+                "score": score,
+                "source": src,
+                "_raw": dict(item),  # passthrough for debugging; never used in core layers
+            }
         )
 
-    return RetrievalResult(items=items, config=cfg)
+    return normalized
 
 
-# =============================================================================
-# 4. PUBLIC API — MULTI-SOURCE FUSION
-# =============================================================================
+# ============================================================================
+# Deduplication
+# ============================================================================
 
-
-def fuse_multiple_sources(
-    sources: List[List[Dict[str, Any]]],
-    *,
-    config: Optional[RetrievalConfig] = None,
-) -> RetrievalResult:
+def _dedupe(normalized_hits: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Fuse retrieval results from multiple sources into a single ranked list.
+    Deduplicate by (evidence, source).
+    Deterministic, stable order.
+    """
+    seen = set()
+    out: List[Dict[str, Any]] = []
 
-    Inputs:
-        • sources:
-            A list of lists, where each inner list is a set of raw retrieval
-            dicts from a given source (e.g., vector DB, keyword DB, LLM-HYDE).
+    for it in normalized_hits:
+        key = (it["evidence"], it["source"])
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(it)
 
-        • config:
-            Optional RetrievalConfig controlling ranking and max_items.
+    return out
+
+
+# ============================================================================
+# Public API — run_rag_retrieval()
+# ============================================================================
+
+def run_rag_retrieval(
+    *,
+    rag_plan: RAGPlan,
+    job: Any,
+    resume: Any,
+    config: Any,
+    strategy_hint: Any,
+    sandbox: Any,
+    raw_hits: Optional[List[Dict[str, Any]]] = None,
+) -> List[Evidence]:
+    """
+    v10_10 retrieval pipeline used by L2.execute_rag().
+
+    Parameters:
+        rag_plan:      RAGPlan generated by L1.
+        job:           JobInput (unused here, future extension hook).
+        resume:        ResumeInput (unused here).
+        config:        WorkflowConfig (unused here).
+        strategy_hint: StrategyResult (unused here).
+        sandbox:       SandboxConfig (unused here).
+        raw_hits:      Optional override for DI testing.
+                       If None: caller must supply raw hits already fetched.
 
     Behavior:
-        0. Apply meta_profile biases to RetrievalConfig.
-        1. Flatten all sources into one list.
-        2. Normalize and dedupe results.
-        3. Apply ranking strategy (bm25/dense/hybrid).
-        4. Limit items to config.max_items.
-        5. Optional meta-aware safety filtering.
-        6. Normalize to canonical RetrievalResult.
+        1. Normalize raw hits.
+        2. Deduplicate.
+        3. Safety-filter.
+        4. Rank deterministically (via ranking.rank_evidence).
+        5. Convert to typed Evidence list.
+
+    This function is PURE — no side effects, no tool calls, no LLM calls.
     """
-    base_cfg = config or RetrievalConfig()
-    cfg = _apply_meta_biases_to_config(base_cfg)
+    if raw_hits is None:
+        # v10_10 requires raw hits to come *from the tool layer*
+        # L2 does NOT fetch from external systems here.
+        raise ValueError(
+            "run_rag_retrieval requires raw_hits to be supplied explicitly in v10_10."
+        )
 
-    merged: List[Dict[str, Any]] = []
-    for source_list in sources or []:
-        for item in source_list or []:
-            merged.append(dict(item))
+    # 1. Normalize
+    norm = _normalize_raw_hits(raw_hits)
 
-    # Reuse normalize_raw_results for the merged list — but it will apply
-    # meta-aware config logic and ranking again internally.
-    # NOTE: pass cfg so that we preserve effective meta-aware configuration.
-    return normalize_raw_results(merged, config=cfg)
+    # 2. Deduplicate
+    deduped = _dedupe(norm)
 
+    # 3. Minimal deterministic safety filter
+    safe_hits = _safety_filter(deduped)
 
-# =============================================================================
-# 5. UTILITY — SIMPLE DICT LIST VIEW
-# =============================================================================
-
-
-def to_simple_dict_list(result: RetrievalResult) -> List[Dict[str, Any]]:
-    """
-    Convenience helper: return a plain list[dict] for use in JSON or
-    logging. Each item is:
-
-        {
-            "query": str,
-            "evidence": str,
-            "rank": int,
-            "metadata": {...}
-        }
-    """
-    return [
-        {
-            "query": it.query,
-            "evidence": it.evidence,
-            "rank": it.rank,
-            "metadata": dict(it.metadata),
-        }
-        for it in result.items
+    # 4. Convert to Evidence objects for ranking
+    evidence_objs = [
+        Evidence(
+            text=item["evidence"],
+            score=float(item["score"]),
+            source=item["source"],
+        )
+        for item in safe_hits
     ]
+
+    # 5. Deterministic ranking (score descending)
+    ranked = rank_evidence(
+        raw_hits=evidence_objs,
+        rag_plan=rag_plan,
+        ctx=None,
+        top_k=None,
+    )
+
+    return ranked
