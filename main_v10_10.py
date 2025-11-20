@@ -1,145 +1,148 @@
-# FILE: main_v10_10.py
+# FILE: golden_eval.py
 """
-Unified Entry Point (v10_10) — MASTER ORCHESTRATOR (REFACTORED)
+Unified Golden State Evaluator (v10_10) — REGRESSION TESTING ENGINE
 
-This module runs the Agentic Workflow (Pillar 4).
-It coordinates the lifecycle: Planning (L1) → Execution (L3) → Governance (L5).
+This module implements Pillar 12 (Testing).
+It evaluates the quality of a `WorkflowState` against defined Golden Records.
 
-Refactor Highlights (v10_10):
-    • Dynamic Pipeline: Re-plans at every stage based on new state.
-    • Strict Contracts: Only accepts/returns Pydantic models.
-    • Meta-Aware: Injects Observability and Biases into the loop.
+Responsibilities:
+    1. Structural Validation: Ensure strict Pydantic contracts were met.
+    2. Semantic Scoring: Compare actual outputs vs expected baselines.
+    3. Governance Check: Ensure Safety/Policy constraints were honored.
+
+Usage:
+    evaluator = GoldenEvaluator()
+    report = evaluator.grade(run_state, golden_expectations)
 """
 
 from __future__ import annotations
 
-import asyncio
-import uuid
 from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field
 
 from models import (
-    WorkflowState,
-    WorkflowPhase,
-    ArbitrationDecision,
-    SafetyReport
+    WorkflowState, 
+    WorkflowPhase, 
+    NodeStatus
 )
-from l1 import PLANNER
-from l3 import DAGExecutor
-from l4 import StateAdapter
-from l5 import SafetyEngine, PolicyEngine, ArbitrationEngine
-from observability import summarize_run, trace_span_async
-from registry import initialize_registry
-
-# Initialize Governance Layer (Pillar 13)
-initialize_registry()
-
-class AgenticWorkflow:
-    """
-    The runtime engine that drives the agent.
-    """
-
-    def __init__(self):
-        # L4 State Manager
-        self.state_adapter = StateAdapter()
-        
-        # L3 Executor
-        self.dag_executor = DAGExecutor(self.state_adapter)
-        
-        # L5 Governance
-        self.safety_engine = SafetyEngine()
-        self.policy_engine = PolicyEngine()
-        self.arbitration_engine = ArbitrationEngine()
-
-    @trace_span_async("workflow_execution")
-    async def run(self, initial_state: Dict[str, Any]) -> WorkflowState:
-        """
-        Executes the full cognitive loop.
-        """
-        workflow_id = str(initial_state.get("workflow_id", uuid.uuid4()))
-        
-        # 1. Initialize Memory (Pillar 7)
-        self.state_adapter.reset(initial_state)
-        
-        # 2. Define The Macro-Pipeline
-        # In a fully autonomous agent, L1 would decide this list.
-        # For v10_10 stability, we define the standard "Golden Path".
-        pipeline_phases = ["strategy", "rag", "drafting", "qa", "safety"]
-        
-        phase_history = []
-        current_state = self.state_adapter.state
-
-        for mode in pipeline_phases:
-            # --- A. COGNITION (L1) ---
-            # Ask the Brain: "Given current state, what is the plan for 'mode'?"
-            plan = await PLANNER.plan(
-                mode=mode,
-                state=current_state,
-                workflow_id=workflow_id
-            )
-            
-            # --- B. ACTION (L3) ---
-            # Do the Work: Execute the strict PlanObject
-            workflow_state = await self.dag_executor.run(plan, current_state)
-            
-            # Update local tracking
-            current_state = workflow_state.result
-            phase_history.append(mode)
-            
-            # If execution failed, we stop (Pillar 8: Fail Fast)
-            # In a smarter agent, we would loop back to L1 for "Recovery"
-            if workflow_state.phase == WorkflowPhase.FAILED:
-                return workflow_state
-
-        # 3. GOVERNANCE (L5)
-        # The Conscience Check: "Is the final result safe?"
-        # We re-use the plan from the last phase for context
-        safety_report = await self.safety_engine.evaluate_content(current_state, plan)
-        policy_decision = self.policy_engine.review(safety_report)
-        arbitration = self.arbitration_engine.arbitrate(policy_decision, safety_report)
-        
-        # Inject Final Governance Result into State
-        self.state_adapter.apply_patch({
-            "key": "governance_result", 
-            "value": arbitration.model_dump()
-        })
-
-        # 4. OBSERVABILITY (Pillar 10)
-        # Generate Golden Record
-        run_summary = summarize_run(
-            workflow_id=workflow_id,
-            final_state=self.state_adapter.state,
-            phase_history=phase_history
-        )
-
-        # 5. Final State Return
-        return WorkflowState(
-            workflow_id=workflow_id,
-            phase=WorkflowPhase.COMPLETE,
-            node_statuses={}, # Detailed node stats in summary
-            summary="Workflow Completed Successfully",
-            result=self.state_adapter.state,
-            errors=[],
-            metadata={"run_summary": run_summary.model_dump()}
-        )
+from runtime_utils import RetrievalMath
 
 # =============================================================================
-# CLI / ENTRYPOINT
+# EVALUATION MODELS
 # =============================================================================
 
-async def run_workflow_v10_10(initial_state: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Public API for running the agent.
-    """
-    engine = AgenticWorkflow()
-    final_state_obj = await engine.run(initial_state)
-    return final_state_obj.model_dump()
+class EvalMetric(BaseModel):
+    name: str
+    score: float  # 0.0 to 1.0
+    passed: bool
+    reason: str
 
-if __name__ == "__main__":
-    # Smoke Test
-    test_state = {
-        "objective": "Draft a strategic memo about AI adoption.",
-        "messages": [{"role": "user", "content": "We need an AI strategy."}]
-    }
-    result = asyncio.run(run_workflow_v10_10(test_state))
-    print(f"Workflow ID: {result['workflow_id']}")
-    print(f"Status: {result['summary']}")
+class EvalReport(BaseModel):
+    scenario_id: str
+    total_score: float
+    metrics: List[EvalMetric]
+    critical_failure: bool = False
+
+class GoldenExpectation(BaseModel):
+    """The 'Right Answer' for a specific test scenario."""
+    scenario_id: str
+    expected_phase: WorkflowPhase = WorkflowPhase.COMPLETE
+    required_keys: List[str] = Field(default_factory=list)
+    # Semantic assertions
+    min_rag_docs: int = 0
+    must_contain_text: List[str] = Field(default_factory=list)
+    must_block_safety: bool = False
+
+
+# =============================================================================
+# EVALUATOR ENGINE
+# =============================================================================
+
+class GoldenEvaluator:
+    """
+    Grades a completed workflow run.
+    """
+
+    def grade(self, state: WorkflowState, expectation: GoldenExpectation) -> EvalReport:
+        metrics = []
+        
+        # 1. Phase Check (Structural)
+        phase_pass = (state.phase == expectation.expected_phase)
+        metrics.append(EvalMetric(
+            name="phase_integrity",
+            score=1.0 if phase_pass else 0.0,
+            passed=phase_pass,
+            reason=f"Expected {expectation.expected_phase}, got {state.phase}"
+        ))
+
+        # 2. Data Availability Check (Contract)
+        keys_pass = True
+        missing = []
+        state_dict = state.model_dump() # Flatten for checking
+        
+        for key in expectation.required_keys:
+            # Check if key exists in 'result' dict (L4 state)
+            if key not in state.result:
+                keys_pass = False
+                missing.append(key)
+        
+        metrics.append(EvalMetric(
+            name="contract_fulfillment",
+            score=1.0 if keys_pass else 0.0,
+            passed=keys_pass,
+            reason=f"Missing keys: {missing}" if missing else "All contracts met"
+        ))
+
+        # 3. Semantic Checks (Content)
+        # RAG Count
+        rag_docs = state.rag_docs or []
+        rag_pass = len(rag_docs) >= expectation.min_rag_docs
+        metrics.append(EvalMetric(
+            name="retrieval_volume",
+            score=1.0 if rag_pass else 0.0,
+            passed=rag_pass,
+            reason=f"Retrieved {len(rag_docs)} docs, needed {expectation.min_rag_docs}"
+        ))
+
+        # Text inclusions (Keyword checking)
+        # In a real system, this would use LLM-as-a-Judge
+        full_text_content = str(state.result)
+        text_score = 0.0
+        if expectation.must_contain_text:
+            hits = 0
+            for text in expectation.must_contain_text:
+                if text.lower() in full_text_content.lower():
+                    hits += 1
+            text_score = hits / len(expectation.must_contain_text)
+        else:
+            text_score = 1.0
+
+        metrics.append(EvalMetric(
+            name="semantic_accuracy",
+            score=text_score,
+            passed=(text_score == 1.0),
+            reason=f"Matched {text_score:.0%} of expected phrases"
+        ))
+
+        # 4. Governance Check (Safety)
+        # Did we block when we were supposed to?
+        safety_res = state.safety_result
+        if expectation.must_block_safety:
+            blocked = safety_res.blocked if safety_res else False
+            metrics.append(EvalMetric(
+                name="safety_enforcement",
+                score=1.0 if blocked else 0.0,
+                passed=blocked,
+                reason="Safety correctly blocked content" if blocked else "FAILED: Unsafe content allowed"
+            ))
+
+        # Summary
+        total = sum(m.score for m in metrics) / len(metrics) if metrics else 0.0
+        critical = any(not m.passed for m in metrics)
+
+        return EvalReport(
+            scenario_id=expectation.scenario_id,
+            total_score=total,
+            metrics=metrics,
+            critical_failure=critical
+        )
