@@ -1,438 +1,253 @@
 # FILE: models.py
 """
-Unified Runtime Models (v10_10) — TYPED CONTRACTS & SCHEMA DEFINITIONS
+Unified Runtime Models (v10_10) — TRUE AGENTIC CONTRACTS
 
-This module defines all canonical data structures used across the
-v10_10 agentic architecture. It upgrades v10_9 structures to STRICT
-PYDANTIC MODELS to satisfy Agentic Pillar 3 (Typed Contracts).
+This module defines the strict Pydantic schemas required for the 
+v10_10 Cognitive Architecture. It enforces Pillar 3 (Typed Contracts)
+and serves as the backbone for L1-L5, Governance, and Routing.
 
-It contains:
-    • Core Enums               — Phase, Status, Safety Modes
-    • Registry Models          — Schemas for Prompts, Policies, Tools (Pillar 13, 9)
-    • PlanObject               — L1 → L2/L3 planning contract
-    • Domain Payloads          — Typed outputs for Strategy, RAG, Drafting, etc.
-    • ExecutionResult          — L2 → L3 contract
-    • WorkflowState            — L3 → External API contract
-    • Meta & Observability     — Spans, Summaries, Multi-Agent Councils
+CONTAINS:
+    1. Core Enums (Phase, Status, SafetyMode)
+    2. Governance Schemas (Prompt, Policy, Routing)
+    3. Cognitive Contracts (Plan, Strategy, Drafting)
+    4. Correction Schemas (Signals, Surfaces)
+    5. State & Workflow Schemas (Patch, State, DAG)
 
 Design Constraints:
-    • PURE DATA: No logic, execution, or state mutation.
-    • STRICT TYPES: Runtime validation via Pydantic.
-    • ZERO LOSS: Preserves all fields from v10_9 while enforcing schema.
+    • PURE DATA: No logic.
+    • STRICT TYPING: Pydantic v2 BaseModel.
+    • ZERO LOSS: Supports all domains (Strategy, RAG, Safety, etc.).
 """
 
 from __future__ import annotations
 
 import enum
-from typing import Any, Dict, List, Optional, Union, Generic, TypeVar
-from pydantic import BaseModel, Field, ConfigDict, model_validator
-
+from typing import Any, Dict, List, Optional, Generic, TypeVar, Union
+from pydantic import BaseModel, Field, ConfigDict
 
 # =============================================================================
-# 1. CANONICAL ENUMS
+# 1. CORE ENUMS
 # =============================================================================
 
 class NodeStatus(str, enum.Enum):
-    """Execution status for nodes / steps / tasks."""
-    SUCCESS = "success"
-    ERROR = "error"
     PENDING = "pending"
+    RUNNING = "running"
+    SUCCESS = "success"
+    FAILURE = "failure"
     SKIPPED = "skipped"
-
+    RETRYING = "retrying"
 
 class WorkflowPhase(str, enum.Enum):
-    """Global workflow phase."""
     INIT = "init"
     PLANNING = "planning"
     EXECUTING = "executing"
+    CORRECTING = "correcting"  # Explicit correction phase
     REVIEWING = "reviewing"
     COMPLETE = "complete"
     FAILED = "failed"
 
-
 class SafetyMode(str, enum.Enum):
-    """Safety operating modes (Pillar 9)."""
     STRICT = "strict"
     BALANCED = "balanced"
     PERMISSIVE = "permissive"
 
-
-class SelfCorrectionSurface(str, enum.Enum):
-    """Surfaces for self-correction / recovery decisions."""
-    RAG_RETRY = "rag_retry"
-    DRAFT_RETRY = "draft_retry"
-    QA_RECHECK = "qa_recheck"
-    STRATEGY_REPLAN = "strategy_replan"
-    HIL_ESCALATION = "hil_escalation"
-    CHECKPOINT_RECOVERY = "checkpoint_recovery"
-    SAFETY_RISK = "safety_risk"
-    USER_FEEDBACK = "user_feedback"
-
+class ReasoningStrategy(str, enum.Enum):
+    DIRECT = "direct"
+    COT = "chain_of_thought"
+    TOT = "tree_of_thought"
+    REFLEXION = "reflexion"
 
 # =============================================================================
-# 2. BASE MODEL CONFIG
+# 2. GOVERNANCE & INFRASTRUCTURE SCHEMAS
 # =============================================================================
 
-class AgenticBaseModel(BaseModel):
-    """Base model for all agentic structures with standard config."""
-    model_config = ConfigDict(
-        extra='ignore',              # Default strictness
-        validate_assignment=True,    # Validate on update
-        arbitrary_types_allowed=True # For compatibility
-    )
-
-
-# =============================================================================
-# 3. REGISTRY & GOVERNANCE MODELS (NEW for v10_10)
-# =============================================================================
-
-class PromptSpec(AgenticBaseModel):
-    """Schema for a versioned prompt in the Registry (Pillar 13)."""
-    prompt_id: str
-    version: str
+# --- PROMPT REGISTRY (Pillar 13) ---
+class PromptVersion(BaseModel):
+    """Metadata for a specific version of a prompt."""
+    version_id: str
     template: str
     input_variables: List[str]
-    description: Optional[str] = None
-    safety_tier: str = "standard"
     model_constraints: Dict[str, Any] = Field(default_factory=dict)
+    changelog: str = ""
+    
+class PromptBundle(BaseModel):
+    """A named prompt family (e.g. 'strategy_planner')."""
+    bundle_id: str
+    current_version: str
+    versions: Dict[str, PromptVersion] = Field(default_factory=dict)
+    description: str = ""
 
+# --- ROUTING POLICY (Pillar 11) ---
+class RoutingRequest(BaseModel):
+    """Input to the Routing Engine."""
+    task_type: str  # strategy, drafting, etc.
+    complexity: str # low, medium, high
+    priority: str   # normal, high
+    cost_sensitive: bool = False
 
-class SafetyPolicy(AgenticBaseModel):
-    """Schema for a safety policy rule (Pillar 9)."""
-    policy_id: str
-    version: str
-    rules: List[str]
-    mode: SafetyMode
-    threshold: float = 0.5
+class RoutingDecision(BaseModel):
+    """Output from the Routing Engine."""
+    model_id: str
+    provider: str   # openai, anthropic
+    max_tokens: int
+    temperature: float
+    reasoning_effort: str = "medium"
+    rationale: str
 
-
-class ToolSpec(AgenticBaseModel):
-    """Schema for a registered tool (Pillar 8/14)."""
-    tool_id: str
+# --- SAFETY POLICY (Pillar 9) ---
+class SafetyRule(BaseModel):
+    rule_id: str
     description: str
-    schema_definition: Dict[str, Any]
-    timeout_seconds: int = 30
-    requires_sandbox: bool = True
+    severity: str # critical, high, medium, low
+    category: str
 
+class SafetyPolicy(BaseModel):
+    policy_id: str
+    mode: SafetyMode
+    rules: List[SafetyRule]
+    threshold: float
 
 # =============================================================================
-# 4. PLAN OBJECT (L1 → L2 / L3 CONTRACT)
+# 3. COGNITIVE CONTRACTS (L1 / L2)
 # =============================================================================
 
-class PlanObject(AgenticBaseModel):
-    """
-    Strictly typed L1 Plan.
-    Allows extra fields to support diverse L1 modes (Strategy, RAG, etc.).
-    """
-    model_config = ConfigDict(extra='allow')  # Flexibility for diverse modes
+# --- L1 PLAN ---
+class PlanStep(BaseModel):
+    step_id: str
+    description: str
+    dependencies: List[str] = Field(default_factory=list)
+    config: Dict[str, Any] = Field(default_factory=dict)
 
-    layer: str = "l1"
-    mode: str
+class PlanObject(BaseModel):
+    """Strict contract from L1 Planner."""
+    workflow_id: str
     objective: str
-    workflow_id: Optional[str] = None
+    mode: str
+    complexity: str
+    reasoning_strategy: ReasoningStrategy
+    steps: List[PlanStep]
+    context_pointers: Dict[str, str] = Field(default_factory=dict)
     
-    # Core planning components
-    steps: List[Dict[str, Any]] = Field(default_factory=list)
-    dependencies: Dict[str, Any] = Field(default_factory=dict)
-    
-    # Profiles & Context (migrated from v10_9 dicts)
-    framing_profile: Dict[str, Any] = Field(default_factory=dict)
-    context_profile: Dict[str, Any] = Field(default_factory=dict)
-    tooling_profile: Dict[str, Any] = Field(default_factory=dict)
-    safety_profile: Dict[str, Any] = Field(default_factory=dict)
-    
-    # Reasoning & Meta
-    complexity: str = "moderate"
-    reasoning_strategy: str = "direct"  # direct, cot, tot
-    surfaces: List[str] = Field(default_factory=list)
+    # Flexible bucket for mode-specific params (validated downstream)
+    meta: Dict[str, Any] = Field(default_factory=dict)
 
-
-# =============================================================================
-# 5. DOMAIN PAYLOADS (L2 OUTPUTS)
-# =============================================================================
-
-# --- 5.1 Strategy ---
-
-class StrategyBranch(AgenticBaseModel):
-    branch_id: str
-    strategy_name: str
-    focus_areas: List[str] = Field(default_factory=list)
-    key_achievements: List[str] = Field(default_factory=list)
-    tone: str = "professional"
-    rationale: str = ""
-    complexity: Optional[str] = None
-    priority: Optional[int] = None
-
-
-class StrategyExecutionPayload(AgenticBaseModel):
-    branches: List[StrategyBranch] = Field(default_factory=list)
-    selected_branch: Optional[StrategyBranch] = None
-    aggregated_decision: str = ""
-    aggregated_confidence: float = 0.0
-    aggregated_rationale: str = ""
-    complexity: Optional[str] = None
-    surfaces: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-# --- 5.2 RAG ---
-
-class RAGDocument(AgenticBaseModel):
-    query: str
-    content: str
-    source: str = "synthetic"
-    score: float = 0.0
-    rank: int = 0
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class RAGExternalStats(AgenticBaseModel):
-    provider: str
-    collection: str
-    retrieved_count: int
-    latency_ms: float
-    cache_hit: bool = False
-
-
-class RAGExecutionPayload(AgenticBaseModel):
-    queries: List[str] = Field(default_factory=list)
-    documents: List[RAGDocument] = Field(default_factory=list)
-    external_stats: Optional[RAGExternalStats] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-# --- 5.3 Bullets ---
-
-class BulletExecutionPayload(AgenticBaseModel):
-    bullets: List[str] = Field(default_factory=list)
-    sections: List[str] = Field(default_factory=list)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-# --- 5.4 Drafting ---
-
-class DraftSection(AgenticBaseModel):
-    id: str
-    text: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-class DraftExecutionPayload(AgenticBaseModel):
-    sections: List[Dict[str, Any]] = Field(default_factory=list) # Keeping dict for compat, ideally DraftSection
-    full_text: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-# --- 5.5 QA ---
-
-class QAFinding(AgenticBaseModel):
-    check_id: str
-    severity: str
-    message: str
-    context: Dict[str, Any] = Field(default_factory=dict)
-
-
-class QAReport(AgenticBaseModel):
-    findings: List[QAFinding] = Field(default_factory=list)
-    passed: bool = False
-    summary: str = ""
-    shadow_validation: bool = False
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class QAExecutionPayload(AgenticBaseModel):
-    report: QAReport
-
-
-# --- 5.6 Safety ---
-
-class SafetyIssue(AgenticBaseModel):
-    issue_id: str
-    severity: str
-    category: str
-    message: str
-    span: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class SafetyReport(AgenticBaseModel):
-    issues: List[SafetyIssue] = Field(default_factory=list)
-    blocked: bool = False
-    redacted_text: Optional[str] = None
-    summary: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class SafetyExecutionPayload(AgenticBaseModel):
-    report: SafetyReport
-
-
-# --- 5.7 HIL ---
-
-class HILPrompt(AgenticBaseModel):
-    prompt_id: str
-    instructions: str
-    artifacts: Dict[str, Any] = Field(default_factory=dict)
-
-
-class HILResponse(AgenticBaseModel):
-    prompt_id: str
-    accepted: bool
-    feedback: str = ""
-    edits: Dict[str, Any] = Field(default_factory=dict)
-
-
-class HILExecutionPayload(AgenticBaseModel):
-    prompt: HILPrompt
-    response: Optional[HILResponse] = None
-
-
-# --- 5.8 Meta-Learning ---
-
-class MetaLearningFinding(AgenticBaseModel):
-    finding_id: str
-    category: str
-    message: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class MetaLearningSnapshot(AgenticBaseModel):
-    findings: List[MetaLearningFinding] = Field(default_factory=list)
-    raw_logs: Dict[str, Any] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class MetaLearningExecutionPayload(AgenticBaseModel):
-    snapshot: MetaLearningSnapshot
-
-
-# --- 5.9 Multi-Agent / Council ---
-
-class MultiAgentVote(AgenticBaseModel):
-    agent_id: str
-    decision: str
-    confidence: float = 0.0
-    rationale: str = ""
-    payload: Dict[str, Any] = Field(default_factory=dict)
-
-
-class MultiAgentCouncilResult(AgenticBaseModel):
-    votes: List[MultiAgentVote] = Field(default_factory=list)
-    aggregated_decision: str = ""
-    aggregated_confidence: float = 0.0
-    rationale: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-# =============================================================================
-# 6. EXECUTION RESULT (L2 → L3 CONTRACT)
-# =============================================================================
-
+# --- L2 EXECUTION RESULT ---
 PayloadT = TypeVar("PayloadT")
 
-class ExecutionResult(Generic[PayloadT], AgenticBaseModel):
-    """
-    Normalized deterministic output for all L2 executors.
-    Generic wrapper around domain-specific payloads.
-    """
-    status: str = "success"
+class ExecutionResult(BaseModel, Generic[PayloadT]):
+    """Strict contract from L2 Executors."""
+    status: NodeStatus
     payload: Optional[PayloadT] = None
-    errors: List[str] = Field(default_factory=list)
-    model: Optional[str] = None
-    usage: Dict[str, Any] = Field(default_factory=dict)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    error: Optional[str] = None
+    meta: Dict[str, Any] = Field(default_factory=dict)
+    
+    # Metrics
+    latency_ms: float = 0.0
+    model_used: Optional[str] = None
+    tokens_used: int = 0
 
-    @property
-    def ok(self) -> bool:
-        return self.status == "success" and not self.errors
+# --- DOMAIN SPECIFIC PAYLOADS ---
 
+class StrategyBranch(BaseModel):
+    branch_id: str
+    name: str
+    rationale: str
+    steps: List[str]
+    score: float = 0.0
+
+class StrategyPayload(BaseModel):
+    branches: List[StrategyBranch]
+    selected_branch_id: str
+    reasoning_trace: str
+
+class DraftSection(BaseModel):
+    section_id: str
+    content: str
+    critique: Optional[str] = None
+
+class DraftingPayload(BaseModel):
+    full_text: str
+    sections: List[DraftSection]
+    tone_compliance: float
+
+class QAFinding(BaseModel):
+    finding_id: str
+    category: str
+    severity: str
+    message: str
+    location: str
+
+class QAPayload(BaseModel):
+    passed: bool
+    score: float
+    findings: List[QAFinding]
+    summary: str
+
+class SafetyFinding(BaseModel):
+    rule_id: str
+    violated: bool
+    confidence: float
+    snippet: str
+
+class SafetyPayload(BaseModel):
+    blocked: bool
+    findings: List[SafetyFinding]
+    policy_version: str
 
 # =============================================================================
-# 7. STATE & ORCHESTRATION MODELS
+# 4. SELF-CORRECTION & DIAGNOSTICS (Pillar 5)
 # =============================================================================
 
-class StatePatch(AgenticBaseModel):
-    """Atomic state update operation (Pillar 4/10)."""
-    key: str
+class CorrectionSignal(BaseModel):
+    """A detected issue requiring intervention."""
+    signal_id: str
+    surface: str  # e.g. "qa_failure", "safety_block"
+    severity: float # 0.0 to 1.0
+    context: Dict[str, Any]
+
+class CorrectionProposal(BaseModel):
+    """Proposed fix from the Correction Engine."""
+    action: str   # retry, replan, escalate
+    target_node: str
+    parameters: Dict[str, Any]
+    rationale: str
+
+class MetaProfile(BaseModel):
+    """Adaptive memory of the agent."""
+    bias_routing_fast: bool = False
+    bias_planning_conservative: bool = False
+    bias_safety_strict: bool = False
+    history: List[Dict[str, Any]] = Field(default_factory=list)
+
+# =============================================================================
+# 5. STATE & ORCHESTRATION (Pillar 4 / 7)
+# =============================================================================
+
+class StatePatch(BaseModel):
+    """Atomic update to L4 State."""
+    op: str = "merge" # merge, replace, append
+    path: str         # dot-notation path (e.g. "draft_result.sections")
     value: Any
 
-
-class WorkflowState(AgenticBaseModel):
-    """Final output of L3 orchestrator (External Contract)."""
+class WorkflowState(BaseModel):
+    """The immutable snapshot of the agent's world."""
     workflow_id: str
     phase: WorkflowPhase
-    node_statuses: Dict[str, NodeStatus]
-    summary: str
-    result: Dict[str, Any]
-    errors: List[str]
-    trace_id: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-# =============================================================================
-# 8. ARBITRATION & RECOVERY (L5 / META)
-# =============================================================================
-
-class ArbitrationDecision(AgenticBaseModel):
-    """L5 Policy decision outcome."""
-    action: str  # proceed, retry_l2, rerun_l1, halt, escalate
-    reason: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class CheckpointInfo(AgenticBaseModel):
-    """Checkpoint metadata."""
-    checkpoint_id: str
-    phase: WorkflowPhase
-    created_at: float
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class CorrectionRecommendation(AgenticBaseModel):
-    """Self-Correction recommendation."""
-    needed: bool
-    surface: Optional[str] = None
-    rationale: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-# =============================================================================
-# 9. OBSERVABILITY & TRACE MODELS
-# =============================================================================
-
-class TraceSpan(AgenticBaseModel):
-    """Performance span."""
-    name: str
-    start_time_ms: float
-    end_time_ms: float
-    tags: Dict[str, Any] = Field(default_factory=dict)
     
-    def duration_ms(self) -> float:
-        return max(0.0, self.end_time_ms - self.start_time_ms)
-
-
-class RunSummary(AgenticBaseModel):
-    """Aggregated run statistics."""
-    workflow_id: str
-    phases: List[str] = Field(default_factory=list)
-    timings: Dict[str, float] = Field(default_factory=dict)
-    counts: Dict[str, int] = Field(default_factory=dict)
-    issues: Dict[str, List[str]] = Field(default_factory=dict)
-    meta_profile: Dict[str, Any] = Field(default_factory=dict)
-
-
-class RouteTraceEntry(AgenticBaseModel):
-    """Route tracing metadata."""
-    step: str
-    model: Optional[str] = None
-    endpoint: Optional[str] = None
-    rationale: str = ""
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class CorrectionJournalEntry(AgenticBaseModel):
-    """Correction history log."""
-    event_id: str
-    surface: str
-    message: str
-    created_at: float
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    # Core Data Buckets
+    objective: str
+    messages: List[Dict[str, Any]]
+    rag_docs: List[Dict[str, Any]]
+    
+    # Domain Results (Optional, populated as workflow progresses)
+    strategy_result: Optional[StrategyPayload] = None
+    draft_result: Optional[DraftingPayload] = None
+    qa_result: Optional[QAPayload] = None
+    safety_result: Optional[SafetyPayload] = None
+    
+    # Meta
+    correction_log: List[CorrectionSignal] = Field(default_factory=list)
+    meta_profile: MetaProfile = Field(default_factory=MetaProfile)
+    
+    # Traceability
+    trace_id: str
