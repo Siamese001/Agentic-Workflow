@@ -1,126 +1,215 @@
-# FILE: routing.py
+# FILE: 10_10/routing.py
 """
-Unified Routing Policy (v10_10) — MODEL SELECTION ENGINE
+Routing Policy for Agentic Workflow v10_10
+==========================================
 
-This module implements Pillar 11 (Cost & Optimization).
-It acts as the "Traffic Controller" for the agent, deciding WHICH model
-to use based on Task Complexity, Cost Sensitivity, and Meta-Biases.
-
-It is PURE DECISION LOGIC. It does not execute network calls.
+This module handles *all* model selection decisions.
 
 Responsibilities:
-    1. Model Selection: Map (Task + Complexity) -> (Model ID).
-    2. Provider Routing: Select OpenAI vs Anthropic based on availability.
-    3. Parameter Tuning: Adjust temperature/tokens based on reasoning mode.
-    4. Meta-Adaptation: React to 'bias_routing_fast' signals.
+    • Choose the correct LLM model family for each task.
+    • Use ComplexityLevel, RoutingHint, and MetaProfileSnapshot.
+    • Balance cost, latency, safety sensitivity, and reasoning needs.
+    • Provide number-of-branches for Strategy ToT.
+    • Remain pure (no I/O, no LLM calls).
+
+Non-Responsibilities:
+    • No prompt logic (PromptRegistry handles that).
+    • No network calls (runtime_utils.invoke_model handles that).
 """
 
 from __future__ import annotations
 
-from typing import Dict, Any
-from models import (
-    RoutingRequest, 
-    RoutingDecision, 
-    MetaProfile, 
-    ReasoningStrategy
-)
+from dataclasses import dataclass
+from typing import Optional, Dict, Any
 
-# =============================================================================
-# ROUTING CONSTANTS
-# =============================================================================
+from models import ComplexityLevel, RoutingHint
+from meta_profile import MetaProfileSnapshot
 
-# Tier definitions for clear separation of concerns
-MODEL_TIERS = {
-    "reasoning_heavy": {
-        "primary": "gpt-4-turbo",
-        "fallback": "claude-3-opus",
-        "cost": "high"
-    },
-    "balanced": {
-        "primary": "gpt-4o",
-        "fallback": "claude-3-sonnet",
-        "cost": "medium"
-    },
-    "fast": {
-        "primary": "gpt-3.5-turbo",
-        "fallback": "claude-3-haiku",
-        "cost": "low"
-    }
+
+# ==============================================================================
+# Model Families
+# ==============================================================================
+
+# Light, cheap, fast — shallow reasoning
+LIGHT_MODELS = {
+    "openai": "gpt-4.1-mini",
+    "anthropic": "claude-3-haiku",
 }
 
-# =============================================================================
-# ROUTING ENGINE
-# =============================================================================
+# Balanced — solid reasoning, moderate price
+MEDIUM_MODELS = {
+    "openai": "gpt-5.1",
+    "anthropic": "claude-3.5-sonnet",
+}
 
-class RoutingEngine:
+# Heavy — deep reasoning, best for complex planning & strategy
+HEAVY_MODELS = {
+    "openai": "gpt-5.1-codex",
+    "anthropic": "claude-3.5-opus",
+}
+
+# Specialized for multi-step narrative generation
+DRAFTING_MODELS = {
+    "openai": "gpt-5.1-codex",
+    "anthropic": "claude-3.5-opus",
+}
+
+# Specialized for QA & Safety JSON output requirements
+QA_SAFETY_MODELS = {
+    "openai": "gpt-4.1",
+    "anthropic": "claude-3.5-sonnet",
+}
+
+
+# ==============================================================================
+# Routing Policy
+# ==============================================================================
+
+@dataclass
+class RoutingPolicy:
     """
-    Determines the optimal model configuration for a given task.
+    RoutingPolicy encapsulates provider & model preferences.
+
+    Fields:
+        prefer_anthropic: bias toward Anthropic models (semantic/long outputs)
+        prefer_openai:    bias toward OpenAI models (structured/code reasoning)
+        allow_heavy:      whether heavy models are allowed under current budgets
+        enforce_low_cost: if True, light-tier is preferred unless complexity=high
     """
 
-    def decide(
-        self, 
-        request: RoutingRequest, 
-        meta_profile: MetaProfile
-    ) -> RoutingDecision:
+    prefer_anthropic: bool = False
+    prefer_openai: bool = True
+    allow_heavy: bool = True
+    enforce_low_cost: bool = False
+
+    def _choose_provider(
+        self, meta_profile: Optional[MetaProfileSnapshot]
+    ) -> str:
         """
-        The core routing logic.
+        Decide between OpenAI and Anthropic.
         """
-        
-        # 1. Determine Tier based on Complexity & Task
-        tier = self._resolve_tier(request, meta_profile)
-        
-        # 2. Select Provider/Model
-        # (In a real system, we'd check health status here)
-        selection = MODEL_TIERS[tier]
-        model_id = selection["primary"]
-        
-        # 3. Tune Parameters (Temperature / Tokens)
-        # Strategy tasks need higher temp for creativity? 
-        # Actually, Strategy needs reasoning (lower temp usually better for coherence).
-        temperature = 0.7
-        if request.task_type == "strategy":
-            temperature = 0.2 # Deterministic reasoning
-        elif request.task_type == "drafting":
-            temperature = 0.7 # Creative flow
-        elif request.task_type == "safety":
-            temperature = 0.0 # Strict adherence
+        provider = "openai"
 
-        # 4. Construct Decision
-        return RoutingDecision(
-            model_id=model_id,
-            provider="openai" if "gpt" in model_id else "anthropic",
-            max_tokens=4096,
-            temperature=temperature,
-            reasoning_effort=tier,
-            rationale=f"Selected {tier} tier for {request.complexity} {request.task_type} task."
-        )
+        if self.prefer_anthropic:
+            provider = "anthropic"
+        if self.prefer_openai:
+            provider = "openai"
 
-    def _resolve_tier(self, request: RoutingRequest, meta: MetaProfile) -> str:
+        # Meta-learning overrides user bias
+        if meta_profile:
+            if meta_profile.prefers_anthropic:
+                provider = "anthropic"
+            if meta_profile.prefers_openai:
+                provider = "openai"
+
+        return provider
+
+    # ----------------------------------------------------------------------
+    # Strategy ToT branch depth
+    # ----------------------------------------------------------------------
+    def strategy_branches_for(self, complexity: ComplexityLevel) -> int:
+        if complexity == ComplexityLevel.LOW:
+            return 1
+        if complexity == ComplexityLevel.MEDIUM:
+            return 3
+        return 4  # HIGH -> deeper ToT exploration
+
+    # ----------------------------------------------------------------------
+    # Main routing logic
+    # ----------------------------------------------------------------------
+    def select_model(
+        self,
+        task: str,
+        complexity: Optional[ComplexityLevel],
+        meta_profile: Optional[MetaProfileSnapshot],
+    ) -> str:
         """
-        Applies Heuristics + Meta-Biases to choose the tier.
+        Top-level router used by ALL cognitive agents.
+
+        Inputs:
+            task         — prompt ID (e.g. "drafting_narrative", "qa_semantic_check")
+            complexity   — ComplexityLevel
+            meta_profile — historical signals
+
+        Output:
+            model string (e.g. "gpt-5.1-codex")
         """
-        # RULE 1: Meta-Bias Override (Self-Correction)
-        # If the agent realizes it's too slow, FORCE fast mode.
-        if meta.bias_routing_fast:
-            return "fast"
+        provider = self._choose_provider(meta_profile)
 
-        # RULE 2: Safety is always Reasoning-Heavy or Balanced
-        # Never trust a 'fast' model with safety.
-        if request.task_type == "safety":
-            return "balanced"
+        # 1. Task-specific overrides first
+        if task.startswith("drafting_"):
+            return DRAFTING_MODELS[provider]
 
-        # RULE 3: High Complexity Strategy = Reasoning Heavy
-        if request.task_type == "strategy" and request.complexity == "high":
-            return "reasoning_heavy"
+        if task.startswith("qa_") or task.startswith("safety_"):
+            return QA_SAFETY_MODELS[provider]
 
-        # RULE 4: Drafting is usually Balanced (unless low complexity)
-        if request.task_type == "drafting":
-            if request.complexity == "low":
-                return "fast"
-            return "balanced"
+        if task in ("strategy_generate_branch", "strategy_select_branch"):
+            if self.allow_heavy:
+                return HEAVY_MODELS[provider]
+            return MEDIUM_MODELS[provider]
 
-        # Default
-        return "balanced"
+        # 2. Complexity-based general routing
+        if complexity == ComplexityLevel.LOW:
+            return LIGHT_MODELS[provider]
 
-# Global Singleton
-ROUTER = RoutingEngine()
+        if complexity == ComplexityLevel.MEDIUM:
+            # Enforce low-cost mode if enabled
+            if self.enforce_low_cost:
+                return LIGHT_MODELS[provider]
+            return MEDIUM_MODELS[provider]
+
+        if complexity == ComplexityLevel.HIGH:
+            if self.allow_heavy:
+                return HEAVY_MODELS[provider]
+            return MEDIUM_MODELS[provider]
+
+        # 3. Fallback (unlikely)
+        return MEDIUM_MODELS[provider]
+
+
+# ==============================================================================
+# Complexity Classifier (used in L1)
+# ==============================================================================
+
+def classify_complexity(
+    job: Any,
+    resume: Any,
+    config: Any,
+    meta_profile: Optional[MetaProfileSnapshot],
+) -> ComplexityLevel:
+    """
+    Lightweight heuristic classifier used by L1.
+
+    Factors:
+        • Job seniority
+        • Resume length / density
+        • Requirement count
+        • Meta-profile failure history
+    """
+    score = 1.0  # start baseline at medium-ish
+
+    # Senior jobs → more complexity
+    if job.seniority in ("Director", "VP", "SVP", "C-level"):
+        score += 0.5
+
+    # Long resumes -> more reasoning complexity
+    if len(resume.experience_sections) > 6:
+        score += 0.4
+
+    # Many job requirements → more alignment work
+    if len(job.requirements) > 8:
+        score += 0.3
+
+    # Meta-learning feedback
+    if meta_profile:
+        if meta_profile.qa_failure_rate_last_10 > 0.4:
+            score += 0.3
+        if meta_profile.correction_rate_last_10 > 0.3:
+            score += 0.2
+
+    if score < 1.2:
+        return ComplexityLevel.LOW
+    elif score < 1.8:
+        return ComplexityLevel.MEDIUM
+    else:
+        return ComplexityLevel.HIGH
