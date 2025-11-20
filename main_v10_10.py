@@ -1,148 +1,166 @@
-# FILE: golden_eval.py
+# FILE: 10_10/main_v10_10.py
 """
-Unified Golden State Evaluator (v10_10) — REGRESSION TESTING ENGINE
+Main Runtime Entrypoint for Agentic Workflow v10_10
+===================================================
 
-This module implements Pillar 12 (Testing).
-It evaluates the quality of a `WorkflowState` against defined Golden Records.
+This script wires together:
 
-Responsibilities:
-    1. Structural Validation: Ensure strict Pydantic contracts were met.
-    2. Semantic Scoring: Compare actual outputs vs expected baselines.
-    3. Governance Check: Ensure Safety/Policy constraints were honored.
+    L1 — Planning
+    L2 — Execution + Cognition
+    L3 — DAG + Self-Correction
+    L4 — State Adapter
+    L5 — Safety Gateway
+
+It loads job/resume inputs, builds plans, runs the DAG, and prints
+the final state patch or saves it to a file.
+
+This file:
+    • Contains NO LLM logic (only L2 does).
+    • Contains NO orchestration logic (L3).
+    • Contains NO state mutation (L4).
+    • Contains NO safety decisions (L5).
+
+It is a pure runtime coordinator + CLI wrapper.
 
 Usage:
-    evaluator = GoldenEvaluator()
-    report = evaluator.grade(run_state, golden_expectations)
+    python 10_10/main_v10_10.py \
+        --job job_input.json \
+        --resume master_resume.json
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+import argparse
+import json
+import sys
+from pathlib import Path
 
 from models import (
-    WorkflowState, 
-    WorkflowPhase, 
-    NodeStatus
+    JobInput,
+    ResumeInput,
+    WorkflowConfig,
+    ExecutionContext,
 )
-from runtime_utils import RetrievalMath
-
-# =============================================================================
-# EVALUATION MODELS
-# =============================================================================
-
-class EvalMetric(BaseModel):
-    name: str
-    score: float  # 0.0 to 1.0
-    passed: bool
-    reason: str
-
-class EvalReport(BaseModel):
-    scenario_id: str
-    total_score: float
-    metrics: List[EvalMetric]
-    critical_failure: bool = False
-
-class GoldenExpectation(BaseModel):
-    """The 'Right Answer' for a specific test scenario."""
-    scenario_id: str
-    expected_phase: WorkflowPhase = WorkflowPhase.COMPLETE
-    required_keys: List[str] = Field(default_factory=list)
-    # Semantic assertions
-    min_rag_docs: int = 0
-    must_contain_text: List[str] = Field(default_factory=list)
-    must_block_safety: bool = False
+from routing import RoutingPolicy
+from registry import build_default_prompt_registry
+from runtime_utils import PredictiveCacheManager, SandboxConfig
+from l1 import build_workflow_plan_bundle
+from l3 import run_dag
+from observability import start_span, end_span, record_event
 
 
 # =============================================================================
-# EVALUATOR ENGINE
+# Helper: load JSON input
 # =============================================================================
 
-class GoldenEvaluator:
+def _load_json(path: str | Path) -> dict:
+    path = Path(path)
+    if not path.exists():
+        raise FileNotFoundError(f"Input file not found: {path}")
+    with path.open("r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+# =============================================================================
+# Main Workflow Runner
+# =============================================================================
+
+def run_workflow(
+    job_path: str,
+    resume_path: str,
+    config: WorkflowConfig | None = None,
+    dump_patch_to: str | None = None,
+) -> dict:
     """
-    Grades a completed workflow run.
+    High-level function:
+        1. Load inputs
+        2. Build L1 plans
+        3. Execute DAG (L3)
+        4. Return L4 patch
     """
 
-    def grade(self, state: WorkflowState, expectation: GoldenExpectation) -> EvalReport:
-        metrics = []
-        
-        # 1. Phase Check (Structural)
-        phase_pass = (state.phase == expectation.expected_phase)
-        metrics.append(EvalMetric(
-            name="phase_integrity",
-            score=1.0 if phase_pass else 0.0,
-            passed=phase_pass,
-            reason=f"Expected {expectation.expected_phase}, got {state.phase}"
-        ))
+    span = start_span("main_v10_10.run_workflow", ctx={"job_path": job_path})
 
-        # 2. Data Availability Check (Contract)
-        keys_pass = True
-        missing = []
-        state_dict = state.model_dump() # Flatten for checking
-        
-        for key in expectation.required_keys:
-            # Check if key exists in 'result' dict (L4 state)
-            if key not in state.result:
-                keys_pass = False
-                missing.append(key)
-        
-        metrics.append(EvalMetric(
-            name="contract_fulfillment",
-            score=1.0 if keys_pass else 0.0,
-            passed=keys_pass,
-            reason=f"Missing keys: {missing}" if missing else "All contracts met"
-        ))
+    try:
+        job_data = _load_json(job_path)
+        resume_data = _load_json(resume_path)
 
-        # 3. Semantic Checks (Content)
-        # RAG Count
-        rag_docs = state.rag_docs or []
-        rag_pass = len(rag_docs) >= expectation.min_rag_docs
-        metrics.append(EvalMetric(
-            name="retrieval_volume",
-            score=1.0 if rag_pass else 0.0,
-            passed=rag_pass,
-            reason=f"Retrieved {len(rag_docs)} docs, needed {expectation.min_rag_docs}"
-        ))
+        job = JobInput.model_validate(job_data)
+        resume = ResumeInput.model_validate(resume_data)
+        config = config or WorkflowConfig()
 
-        # Text inclusions (Keyword checking)
-        # In a real system, this would use LLM-as-a-Judge
-        full_text_content = str(state.result)
-        text_score = 0.0
-        if expectation.must_contain_text:
-            hits = 0
-            for text in expectation.must_contain_text:
-                if text.lower() in full_text_content.lower():
-                    hits += 1
-            text_score = hits / len(expectation.must_contain_text)
-        else:
-            text_score = 1.0
+        # Build dependency components
+        routing_policy = RoutingPolicy()
+        prompt_registry = build_default_prompt_registry()
+        sandbox = SandboxConfig()
 
-        metrics.append(EvalMetric(
-            name="semantic_accuracy",
-            score=text_score,
-            passed=(text_score == 1.0),
-            reason=f"Matched {text_score:.0%} of expected phrases"
-        ))
+        # Optional predictive cache
+        cache_manager = PredictiveCacheManager(max_entries=1024)
 
-        # 4. Governance Check (Safety)
-        # Did we block when we were supposed to?
-        safety_res = state.safety_result
-        if expectation.must_block_safety:
-            blocked = safety_res.blocked if safety_res else False
-            metrics.append(EvalMetric(
-                name="safety_enforcement",
-                score=1.0 if blocked else 0.0,
-                passed=blocked,
-                reason="Safety correctly blocked content" if blocked else "FAILED: Unsafe content allowed"
-            ))
-
-        # Summary
-        total = sum(m.score for m in metrics) / len(metrics) if metrics else 0.0
-        critical = any(not m.passed for m in metrics)
-
-        return EvalReport(
-            scenario_id=expectation.scenario_id,
-            total_score=total,
-            metrics=metrics,
-            critical_failure=critical
+        # Execution context
+        ctx = ExecutionContext(
+            job=job,
+            resume=resume,
+            config=config,
+            routing_policy=routing_policy,
+            sandbox_config=sandbox,
+            prompt_registry=prompt_registry,
+            cache_manager=cache_manager,
+            meta_profile_snapshot=None,  # future: persistent meta-learning
         )
+
+        # L1 — Build Plans
+        plans = build_workflow_plan_bundle(
+            job=job,
+            resume=resume,
+            config=config,
+            meta_profile=None,
+            routing_policy=routing_policy,
+            prompt_registry=prompt_registry,
+        )
+
+        # L3 — Run the DAG with correction loop
+        dag_result = run_dag(ctx, plans, max_retries=2)
+
+        patch = dag_result.final_state_patch
+
+        if dump_patch_to:
+            outfile = Path(dump_patch_to)
+            outfile.parent.mkdir(parents=True, exist_ok=True)
+            outfile.write_text(json.dumps(patch, indent=2), encoding="utf-8")
+            record_event("main.patch_written", {"path": str(outfile)})
+
+        return patch
+
+    finally:
+        end_span(span)
+
+
+# =============================================================================
+# CLI Entrypoint
+# =============================================================================
+
+def _cli():
+    parser = argparse.ArgumentParser(description="Run Agentic Workflow v10_10")
+    parser.add_argument("--job", required=True, help="Path to job_input.json")
+    parser.add_argument("--resume", required=True, help="Path to resume_input.json")
+    parser.add_argument("--dump", required=False, help="Where to write final state patch (JSON)")
+
+    args = parser.parse_args()
+
+    patch = run_workflow(
+        job_path=args.job,
+        resume_path=args.resume,
+        config=WorkflowConfig(),
+        dump_patch_to=args.dump,
+    )
+
+    print(json.dumps(patch, indent=2))
+
+
+if __name__ == "__main__":
+    try:
+        _cli()
+    except Exception as e:
+        print(f"Workflow failed: {e}", file=sys.stderr)
+        sys.exit(1)
