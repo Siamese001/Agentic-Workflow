@@ -1,22 +1,25 @@
 # FILE: 10_10/runtime_utils.py
 """
-Runtime Utilities for v10_10
-============================
+Runtime Utilities for Agentic Workflow v10_10
+=============================================
 
-This module provides the infrastructure utilities required by the L2 cognitive
-agents and the rest of the workflow:
+Responsibilities:
+    • invoke_model():  unified LLM invocation for all cognitive agents.
+    • SandboxConfig:   execution sandbox abstraction.
+    • get_sandbox():   sandbox loader.
+    • PredictiveCacheManager: in-memory predictive/semantic cache.
 
-    • invoke_model()          — unified LLM invocation wrapper
-    • PredictiveCacheManager  — semantic/predictive cache
-    • SandboxConfig           — execution sandbox abstraction
-    • get_sandbox()           — normalized sandbox allocator
+Non-Responsibilities:
+    • No agent logic.
+    • No planning or orchestration.
+    • No global state.
+    • No prompt logic.
 
-Design Goals:
-    • Zero business logic.
-    • Zero coupling to L1–L5 semantics.
-    • All external calls routed through invoke_model().
-    • DI-friendly: no global registries, no global state.
-    • Observability integrated into every invocation.
+This module aligns with:
+    - Pillar 7 (Context Budgeting)
+    - Pillar 8 (Tool Ecosystem / Resilience)
+    - Pillar 11 (Cost & Optimization)
+    - Pillar 14 (Execution Sandbox)
 """
 
 from __future__ import annotations
@@ -26,38 +29,25 @@ import json
 import hashlib
 import time
 from dataclasses import dataclass, field
-from typing import Optional, Any, Dict, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from observability import record_event, record_exception
 
 
-# ==============================================================================
-# Optional Provider SDKs
-# ==============================================================================
-
-try:  # pragma: no cover
-    import openai
-except ImportError:  # pragma: no cover
-    openai = None
-
-try:  # pragma: no cover
-    import anthropic
-except ImportError:  # pragma: no cover
-    anthropic = None
-
-
-# ==============================================================================
-# Sandbox
-# ==============================================================================
+# =============================================================================
+# Sandbox Configuration
+# =============================================================================
 
 @dataclass
 class SandboxConfig:
     """
-    Sandbox descriptor for runtime execution.
+    Sandbox abstraction for tool/LLM execution.
 
-    NOTE:
-        Windsurf provides the actual isolation. This structure just
-        enforces logical constraints for policy, token limits, and timeouts.
+    Note: Windsurf / remote container provides actual isolation.
+    This config supplies logical constraints for:
+        • timeouts
+        • max tokens
+        • network usage
     """
 
     name: str = "default"
@@ -68,24 +58,30 @@ class SandboxConfig:
 
 def get_sandbox(config: Optional[SandboxConfig]) -> SandboxConfig:
     """
-    Normalize sandbox configuration (never return None).
+    Ensure sandbox config is never None.
     """
-    return config if config is not None else SandboxConfig()
+    if config is None:
+        return SandboxConfig()
+    return config
 
 
-# ==============================================================================
-# Predictive Cache Manager
-# ==============================================================================
+# =============================================================================
+# Predictive Cache (Optional)
+# =============================================================================
 
 @dataclass
 class PredictiveCacheManager:
     """
-    Simple in-memory cache for deterministic speed-ups and cost savings.
+    Lightweight predictive cache for expensive operations (RAG + LLM).
 
-    Keys are derived from domain ("rag", "drafting", etc.), plan, and context.
+    Implementation:
+        • In-memory dict keyed by stable SHA256 of (domain, plan, context).
+        • Values = (timestamp, payload)
+        • Evicts oldest entry when over capacity.
 
-    You may replace this with Redis or any other backing store as long as:
-        .make_key(), .get(), .set() remain stable.
+    Compatible with:
+        • L2.execute_rag
+        • L2 cognitive agents (future extensions)
     """
 
     max_entries: int = 1024
@@ -93,92 +89,79 @@ class PredictiveCacheManager:
 
     def make_key(self, domain: str, plan: Any, ctx: Any) -> str:
         """
-        Create a stable hash key from (domain, plan, context signature).
+        Create a stable hash key from:
+            - domain string (e.g., "rag", "strategy")
+            - plan object (must support model_dump)
+            - job + config signature
         """
         try:
-            plan_data = (
-                plan.model_dump()
-                if hasattr(plan, "model_dump")
-                else plan.__dict__
-            )
+            p = plan.model_dump()
         except Exception:
-            plan_data = str(plan)
+            p = str(plan)
 
-        ctx_data = {
-            "job_title": getattr(getattr(ctx, "job", None), "title", ""),
-            "role_type": getattr(getattr(ctx, "job", None), "role_type", ""),
-            "seniority": getattr(getattr(ctx, "job", None), "seniority", ""),
-            "config_hash": hashlib.sha256(
-                json.dumps(
-                    getattr(ctx.config, "model_dump", lambda: {})(),
-                    sort_keys=True,
-                    default=str,
-                ).encode("utf-8")
-            ).hexdigest(),
+        ctx_sig = {
+            "job_title": getattr(ctx.job, "title", ""),
+            "seniority": getattr(ctx.job, "seniority", ""),
+            "role_type": getattr(ctx.job, "role_type", ""),
+            "config": getattr(ctx.config, "model_dump", lambda: {})(),
         }
 
         raw = json.dumps(
-            {"domain": domain, "plan": plan_data, "ctx": ctx_data},
+            {"domain": domain, "plan": p, "ctx": ctx_sig},
             sort_keys=True,
             default=str,
         )
-        digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
-        return f"{domain}:{digest}"
+        key = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        return f"{domain}:{key}"
 
     def get(self, key: str) -> Optional[Any]:
         """
-        Retrieve a cached value.
+        Retrieve a cached value, if present.
         """
         entry = self._store.get(key)
         if not entry:
             return None
 
-        ts, value = entry
-        record_event("predictive_cache_hit", {"key": key, "age_s": time.time() - ts})
+        timestamp, value = entry
+        record_event(
+            "predictive_cache_hit",
+            {"key": key, "age_s": time.time() - timestamp},
+        )
         return value
 
     def set(self, key: str, value: Any) -> None:
         """
-        Store a cached value (evicting oldest if needed).
+        Insert or replace a cached entry.
+        Evict oldest entry if capacity exceeded.
         """
         if len(self._store) >= self.max_entries:
-            oldest_key = min(self._store.items(), key=lambda kv: kv[1][0])[0]
+            oldest_key = min(self._store, key=lambda k: self._store[k][0])
             self._store.pop(oldest_key, None)
-            record_event("predictive_cache_eviction", {"evicted_key": oldest_key})
+            record_event("predictive_cache_evict", {"evicted_key": oldest_key})
 
         self._store[key] = (time.time(), value)
         record_event("predictive_cache_set", {"key": key})
 
 
-# ==============================================================================
-# Provider Inference
-# ==============================================================================
-
-def _infer_provider(model: str) -> str:
-    """
-    Infer provider (OpenAI/Anthropic) from model name.
-
-    This is deliberately simple, but can be extended to use explicit routing.
-    """
-    m = model.lower()
-
-    if m.startswith("gpt") or m.startswith("o") or m.startswith("gpt-5"):
-        return "openai"
-
-    if m.startswith("claude"):
-        return "anthropic"
-
-    # Future support (Gemini, Cohere, etc.)
-    return "openai"
-
-
-# ==============================================================================
-# invoke_model(): Single entrypoint for all LLM calls
-# ==============================================================================
+# =============================================================================
+# Unified LLM Invocation
+# =============================================================================
 
 class LLMInvocationError(RuntimeError):
-    pass
+    """Raised when an LLM request fails."""
+
+
+def _detect_provider(model: str) -> str:
+    """
+    Infer provider from model identifier.
+    """
+    m = model.lower()
+    if m.startswith("gpt") or m.startswith("o"):
+        return "openai"
+    if m.startswith("claude"):
+        return "anthropic"
+    return "openai"
 
 
 def invoke_model(
@@ -189,81 +172,68 @@ def invoke_model(
     max_tokens: int = 1024,
 ) -> str:
     """
-    Unified LLM invocation API for v10_10.
+    Unified LLM invocation for v10_10.
 
-    Ensures:
-        - provider detection
-        - sandbox max_tokens enforcement
-        - observability
-        - consistent exception handling
+    Parameters:
+        model:       model name from RoutingPolicy (e.g., "gpt-5.1-codex")
+        prompt:      rendered prompt
+        sandbox:     SandboxConfig
+        temperature: sampling temperature
+        max_tokens:  max generation tokens (capped by sandbox)
 
-    Called by:
-        - StrategyLLMAgent
-        - DraftingGuild
-        - SemanticQAAgent
-        - ConstitutionalSafetyAgent
+    Returns:
+        text response from the LLM.
+
+    Raises:
+        LLMInvocationError on failure.
     """
 
-    provider = _infer_provider(model)
+    provider = _detect_provider(model)
     max_tokens = min(max_tokens, sandbox.max_tokens_per_call)
 
     record_event(
-        "llm_invoke_start",
+        "invoke_model_start",
         {"model": model, "provider": provider, "temperature": temperature, "max_tokens": max_tokens},
     )
 
     try:
-        # ----------------------------------------------------------------------
-        # OpenAI Provider
-        # ----------------------------------------------------------------------
         if provider == "openai":
-            if openai is None:
-                raise LLMInvocationError("openai package is not installed.")
+            import openai
 
             client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-            response = client.chat.completions.create(
+            resp = client.chat.completions.create(
                 model=model,
+                messages=[{"role": "user", "content": prompt}],
                 temperature=temperature,
                 max_tokens=max_tokens,
                 timeout=sandbox.request_timeout_s,
-                messages=[{"role": "user", "content": prompt}],
             )
+            text = resp.choices[0].message.content or ""
 
-            text = response.choices[0].message.content or ""
-            record_event("llm_invoke_success", {"provider": provider, "len": len(text)})
-            return text
-
-        # ----------------------------------------------------------------------
-        # Anthropic Provider
-        # ----------------------------------------------------------------------
         elif provider == "anthropic":
-            if anthropic is None:
-                raise LLMInvocationError("anthropic package is not installed.")
+            import anthropic
 
             client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-            response = client.messages.create(
+            resp = client.messages.create(
                 model=model,
-                temperature=temperature,
                 max_tokens=max_tokens,
+                temperature=temperature,
                 timeout=sandbox.request_timeout_s,
                 messages=[{"role": "user", "content": prompt}],
             )
 
-            parts = []
-            for block in response.content:
+            chunks = []
+            for block in resp.content:
                 if getattr(block, "type", None) == "text":
-                    parts.append(getattr(block, "text", ""))
-            text = "\n".join(parts)
+                    chunks.append(block.text)
+            text = "\n".join(chunks)
 
-            record_event("llm_invoke_success", {"provider": provider, "len": len(text)})
-            return text
-
-        # ----------------------------------------------------------------------
-        # Unsupported provider
-        # ----------------------------------------------------------------------
         else:
             raise LLMInvocationError(f"Unsupported provider inferred for model: {model}")
 
+        record_event("invoke_model_success", {"model": model, "length": len(text)})
+        return text
+
     except Exception as exc:
-        record_exception("llm_invoke_failure", exc)
-        raise LLMInvocationError(f"Failed to invoke model {model}: {exc}") from exc
+        record_exception("invoke_model_failure", exc)
+        raise LLMInvocationError(f"LLM invocation failed for model {model}: {exc}") from exc
