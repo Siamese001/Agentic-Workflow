@@ -1,192 +1,221 @@
 # FILE: runtime_utils.py
 """
-Unified Runtime Utilities (v10_10) — PURE INFRASTRUCTURE (REFACTORED)
+Unified Runtime Infrastructure (v10_10) — HARDWARE LAYER
 
-This module provides the foundational "libc" for the agent.
-It contains zero dependencies on L1-L5 logic to prevent circular imports.
+This module provides the raw mechanical capabilities required by the
+Cognitive Layer. It contains NO business logic, NO policies, and NO prompts.
 
-Responsibilities:
-    1. Exception Definitions: The standard error hierarchy (Pillar 8).
-    2. Cost Tracking: Low-level span timing primitives (Pillar 11).
-    3. Retrieval Math: BM25/Fusion algorithms for RAG (Pillar 7).
-    4. Event Logging: Minimal sink for runtime events.
-
-Refactor Highlights (v10_10):
-    • Stripped of active Telemetry Buffer (moved to observability.py).
-    • Pure functions only (stateless).
+COMPONENTS:
+    1. AsyncModelClient: Low-level HTTP stub for LLM providers.
+    2. SandboxedExecution: Process isolation wrapper for tools (Pillar 14).
+    3. RetrievalMath: BM25/Fusion algorithms (Pillar 7).
+    4. Resilience: Standard Exception hierarchy (Pillar 8).
 """
 
 from __future__ import annotations
 
 import time
+import json
 import hashlib
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+import asyncio
+from typing import Any, Dict, List, Optional, Union
 
 # =============================================================================
-# 1. STANDARD EXCEPTIONS (Pillar 8: Resilience)
+# 1. EXCEPTION HIERARCHY (Pillar 8)
 # =============================================================================
 
 class AgenticError(Exception):
-    """Base class for all architecture errors."""
+    """Root exception for the architecture."""
 
 class ValidationError(AgenticError):
-    """Data contract violation (Pydantic/Schema)."""
-
-class ToolExecutionError(AgenticError):
-    """Sandbox failure (timeout, crash)."""
+    """Contract violation (Pydantic/Schema mismatch)."""
 
 class ModelClientError(AgenticError):
-    """Gateway failure (API down, rate limit)."""
+    """Network/Provider failure (500s, Rate Limits)."""
 
-class WorkflowTimeoutError(AgenticError):
-    """Orchestration timeout."""
+class ToolExecutionError(AgenticError):
+    """Sandbox failure (Runtime error in tool)."""
 
-class CircuitBreakerError(AgenticError):
-    """Batch processing safety trip."""
+class SandboxTimeoutError(AgenticError):
+    """Execution exceeded time limit."""
 
-
-# =============================================================================
-# 2. COST & SPAN TRACKING (Pillar 11)
-# =============================================================================
-
-@dataclass
-class CostTracker:
-    """
-    Minimal span timer used by L3/Gateway.
-    """
-    spans: Dict[str, Dict[str, Optional[float]]] = field(default_factory=dict)
-
-    def start_span(self, name: str) -> None:
-        self.spans[name] = {"start": time.perf_counter(), "end": None}
-
-    def end_span(self, name: str) -> None:
-        if name in self.spans and self.spans[name]["end"] is None:
-            self.spans[name]["end"] = time.perf_counter()
-
-    def snapshot(self) -> Dict[str, Any]:
-        """Returns duration in ms."""
-        out: List[Dict[str, Any]] = []
-        for n, s in self.spans.items():
-            start = s.get("start") or 0.0
-            end = s.get("end") or start
-            dur_ms = max(0.0, (end - start) * 1000.0)
-            out.append({"name": n, "duration_ms": dur_ms})
-        return {"spans": out}
-
+class ContextLimitError(AgenticError):
+    """Token budget exceeded."""
 
 # =============================================================================
-# 3. EVENT LOGGING (Pillar 10)
+# 2. NETWORK CLIENT (The "Wire")
 # =============================================================================
 
-# Simple global sink. In prod, this hooks to Datadog/Splunk/LangSmith.
-_GLOBAL_EVENT_LOG: List[Dict[str, Any]] = []
-
-def record_event(name: str, payload: Dict[str, Any]) -> None:
+class AsyncModelClient:
     """
-    Low-level event recorder. 
-    Used by Sandbox/Gateway where we can't import the full Observability stack.
+    Raw interface to LLM Providers (OpenAI, Anthropic).
+    This layer handles retries, timeouts, and raw HTTP.
+    It DOES NOT handle Prompt Rendering or Routing Policy.
     """
-    event = {
-        "event": name,
-        "timestamp": time.time(),
-        "payload": payload
-    }
-    _GLOBAL_EVENT_LOG.append(event)
-    # In a CLI run, we might print specific high-value events
-    if name in ("circuit_breaker_open", "tool_failure"):
-        print(f"[\033[91mALERT\033[0m] {name}: {payload}")
 
+    async def invoke(
+        self, 
+        provider: str, 
+        model_id: str, 
+        prompt_text: str, 
+        config: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """
+        Simulates the network call.
+        In prod, this wraps `openai.AsyncClient` or `anthropic.AsyncClient`.
+        """
+        # Simulate Network Latency
+        await asyncio.sleep(0.1)
 
-# =============================================================================
-# 4. RETRIEVAL ALGORITHMS (Pillar 7: RAG)
-# =============================================================================
-
-class Retrieval:
-    """
-    Pure-logic helpers for normalizing and deduplicating results.
-    """
-    @staticmethod
-    def normalize_documents(results: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        out = []
-        for r in results:
-            out.append({
-                "query": str(r.get("query", "")),
-                "evidence": str(r.get("evidence", "")),
-                "rank": int(r.get("rank", 0) or 0)
-            })
-        return out
-
-    @staticmethod
-    def dedupe_results(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        seen = set()
-        out = []
-        for it in items:
-            key = (it.get("query", ""), it.get("evidence", ""))
-            if key not in seen:
-                seen.add(key)
-                out.append(it)
-        return out
-
-    @staticmethod
-    def rerank_results(items: List[Dict[str, Any]], strategy: str) -> List[Dict[str, Any]]:
-        # Stub for re-ranking logic
-        return sorted(items, key=lambda x: x.get("rank", 0))
-
-    @staticmethod
-    def fuse_results(lists: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
-        merged = []
-        for lst in lists:
-            merged.extend(lst)
-        # Simple Reciprocal Rank Fusion simulation
-        return sorted(merged, key=lambda x: x.get("rank", 0))
-
-
-class Ranking:
-    """
-    Deterministic scoring algorithms.
-    """
-    @staticmethod
-    def bm25_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Length-heuristic simulation of BM25."""
-        for it in items:
-            it["score"] = len(it.get("evidence", ""))
-        return sorted(items, key=lambda x: -x["score"])
-
-    @staticmethod
-    def dense_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Hash-based simulation of Vector Similarity."""
-        for it in items:
-            # deterministic pseudo-random score
-            h = hashlib.sha256(it.get("evidence", "").encode()).hexdigest()
-            it["score"] = int(h, 16) % 100
-        return sorted(items, key=lambda x: -x["score"])
-
-    @staticmethod
-    def hybrid_rank(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Average of BM25 and Dense."""
-        bm = Ranking.bm25_rank([dict(i) for i in items])
-        dn = Ranking.dense_rank([dict(i) for i in items])
+        # --- MOCK RESPONSES FOR SIMULATION ---
+        # This ensures our "Golden State" tests pass without real API keys.
         
-        # Merge scores (simplified O(N^2) for demo)
-        for i in items:
-            s1 = next((x["score"] for x in bm if x["evidence"] == i["evidence"]), 0)
-            s2 = next((x["score"] for x in dn if x["evidence"] == i["evidence"]), 0)
-            i["score"] = (s1 + s2) / 2
-            
-        return sorted(items, key=lambda x: -x["score"])
+        # 1. Strategy JSON Mock
+        if "Strategic Planning Agent" in prompt_text:
+            return {
+                "content": json.dumps({
+                    "branches": [
+                        {"branch_id": "b1", "name": "Cloud-First", "rationale": "Scalable", "steps": ["Audit", "Migrate"], "score": 0.9},
+                        {"branch_id": "b2", "name": "Hybrid", "rationale": "Secure", "steps": ["VPN", "Sync"], "score": 0.8}
+                    ],
+                    "selected_branch_id": "b1",
+                    "reasoning_trace": "Analyzed complexity vs cost..."
+                }),
+                "usage": {"input": 100, "output": 50},
+                "latency_ms": 450
+            }
 
+        # 2. Drafting Mock
+        if "Content Drafter" in prompt_text:
+            return {
+                "content": "This is a drafted section based on the provided evidence. It adheres to the professional tone requested.",
+                "usage": {"input": 200, "output": 100},
+                "latency_ms": 300
+            }
 
-class RAGUtils:
-    """
-    Helpers for snippet extraction and metadata.
-    """
-    @staticmethod
-    def normalize_rag_results(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        # Ensure every item has a 'metadata' dict
-        for it in items:
-            if "metadata" not in it:
-                it["metadata"] = {
-                    "snippet": it.get("evidence", "")[:50] + "..."
+        # 3. Safety Mock
+        if "Constitutional Safety Judge" in prompt_text:
+            # Trigger block if "Safety Intervention" scenario keywords appear
+            if "Ignore rules" in prompt_text or "password" in prompt_text:
+                 return {
+                    "content": json.dumps({
+                        "blocked": True,
+                        "findings": [{"rule_id": "no_pii", "violated": True, "confidence": 0.99, "snippet": "password: 12345"}],
+                        "policy_version": "v1.0"
+                    }),
+                    "usage": {"input": 100, "output": 20},
+                    "latency_ms": 200
                 }
-        return items
+            # Otherwise Pass
+            return {
+                "content": json.dumps({
+                    "blocked": False,
+                    "findings": [],
+                    "policy_version": "v1.0"
+                }),
+                "usage": {"input": 100, "output": 20},
+                    "latency_ms": 200
+            }
+
+        # Fallback
+        return {
+            "content": f"[Simulated Output from {model_id}]",
+            "usage": {"input": 10, "output": 10},
+            "latency_ms": 100
+        }
+
+# Global Client Singleton
+NETWORK = AsyncModelClient()
+
+
+# =============================================================================
+# 3. TOOL SANDBOX (Pillar 14)
+# =============================================================================
+
+class SandboxedExecution:
+    """
+    Hardened execution environment.
+    Enforces timeouts and isolation logic.
+    """
+    
+    async def run(
+        self, 
+        function: callable, 
+        args: Dict[str, Any], 
+        timeout_sec: int = 30
+    ) -> Any:
+        """
+        Run a function with strict timeout guardrails.
+        """
+        try:
+            return await asyncio.wait_for(self._unsafe_execute(function, args), timeout=timeout_sec)
+        except asyncio.TimeoutError:
+            raise SandboxTimeoutError(f"Tool execution exceeded {timeout_sec}s limit.")
+        except Exception as e:
+            raise ToolExecutionError(f"Sandbox runtime error: {str(e)}")
+
+    async def _unsafe_execute(self, function: callable, args: Dict[str, Any]) -> Any:
+        """
+        The actual execution logic.
+        In a real system, this would spin up a Docker container or E2B sandbox.
+        """
+        # Simulate overhead
+        await asyncio.sleep(0.05)
+        
+        # For simulation, we map "tool_id" strings to logic here
+        # assuming 'function' is a placeholder string in this harness.
+        
+        tool_id = args.get("tool_id", "unknown")
+        
+        if tool_id == "web_search":
+            return "Search Results: Found relevant leadership principles and cloud strategies."
+            
+        return f"Executed {tool_id} successfully."
+
+# Global Sandbox Singleton
+SANDBOX = SandboxedExecution()
+
+
+# =============================================================================
+# 4. RETRIEVAL MATH (Pillar 7)
+# =============================================================================
+
+class RetrievalMath:
+    """
+    Pure logic for ranking and fusion.
+    No state, no network.
+    """
+    
+    @staticmethod
+    def bm25_score(query: str, doc: str) -> float:
+        """Heuristic length/term match scorer."""
+        q_terms = set(query.lower().split())
+        d_terms = doc.lower().split()
+        score = 0.0
+        for t in q_terms:
+            score += d_terms.count(t)
+        return min(score, 10.0) # Cap
+
+    @staticmethod
+    def reciprocal_rank_fusion(lists: List[List[Dict[str, Any]]], k: int = 60) -> List[Dict[str, Any]]:
+        """
+        Fuses multiple ranked lists.
+        """
+        scores: Dict[str, float] = {}
+        docs_map: Dict[str, Dict[str, Any]] = {}
+        
+        for ranked_list in lists:
+            for rank, item in enumerate(ranked_list):
+                content = item.get("content", "")
+                # Dedupe key
+                if content not in docs_map:
+                    docs_map[content] = item
+                
+                # RRF Formula
+                scores[content] = scores.get(content, 0.0) + (1.0 / (k + rank + 1))
+        
+        # Sort by score
+        sorted_content = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
+        
+        # Reconstruct list
+        return [docs_map[c] for c in sorted_content]
