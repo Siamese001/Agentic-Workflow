@@ -15,13 +15,11 @@ Responsibilities:
     • Wrap all computation in deterministic observability spans.
     • NO state mutation (L4 only).
 
-Layering rules:
-    • L2 is the ONLY layer allowed to:
-          – call LLMs (through cognitive_agents)
-          – perform retrieval / ranking (once wired)
-    • L1 performs only planning.
-    • L3 orchestrates control flow and retries.
-    • L4 performs state mutation.
+Layering Rules:
+    • L1 performs planning only (no LLM, no retrieval).
+    • L2 performs execution: retrieval + ranking + LLM calls.
+    • L3 orchestrates DAG and concurrency, no LLM calls.
+    • L4 is the only legal state mutation surface.
     • L5 performs safety enforcement and policy decisions.
 """
 
@@ -44,6 +42,7 @@ from models import (
     L2ResultBundle,
 )
 from observability import start_span, end_span, log_exception, emit_cost_snapshot
+from retrieval import run_rag_retrieval
 from cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
@@ -87,8 +86,100 @@ async def _execute_strategy(
 
 
 # =============================================================================
-# Retrieval Execution (stub for Phase 2)
+# Retrieval Execution (Phase 3 · RAG pipeline)
 # =============================================================================
+
+
+def _build_rag_raw_hits(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> list[dict]:
+    """
+    Construct a deterministic set of raw retrieval hits from the in-memory
+    job and resume inputs.
+
+    This is intentionally simple and side-effect free:
+
+        • No external DB/vector calls (kept in-process and testable).
+        • Chunks are derived from:
+              – job.posting_text
+              – job.requirements[]
+              – resume.summary
+              – resume.experience_sections[]
+        • Context budgeting is applied using WorkflowConfig.rag_* knobs.
+    """
+    job = ctx.job
+    resume = ctx.resume
+    cfg = ctx.config
+
+    raw_hits: list[dict] = []
+
+    # Job posting as a single chunk.
+    if getattr(job, "posting_text", None):
+        raw_hits.append(
+            {
+                "evidence": job.posting_text,
+                "score": 1.0,
+                "source": "job_posting",
+            }
+        )
+
+    # Individual job requirements (truncated by rag_max_job_chunks).
+    max_job_chunks = getattr(cfg, "rag_max_job_chunks", 8)
+    for idx, req in enumerate(getattr(job, "requirements", [])[:max_job_chunks]):
+        if not req:
+            continue
+        raw_hits.append(
+            {
+                "evidence": str(req),
+                "score": 1.0,
+                "source": "job_requirement",
+            }
+        )
+
+    # Resume summary as a single chunk.
+    if getattr(resume, "summary", None):
+        raw_hits.append(
+            {
+                "evidence": resume.summary,
+                "score": 1.0,
+                "source": "resume_summary",
+            }
+        )
+
+    # Resume experience sections (truncated by rag_max_resume_chunks).
+    max_resume_chunks = getattr(cfg, "rag_max_resume_chunks", 8)
+    for section in getattr(resume, "experience_sections", [])[:max_resume_chunks]:
+        text = (
+            section.get("text")
+            or section.get("description")
+            or section.get("summary")
+            or ""
+        )
+        if not text:
+            continue
+        raw_hits.append(
+            {
+                "evidence": str(text),
+                "score": 1.0,
+                "source": "resume_experience",
+            }
+        )
+
+    # Hybrid padding: if there is room, include combined job+resume text.
+    max_hybrid_chunks = getattr(cfg, "rag_max_hybrid_chunks", 12)
+    if (
+        len(raw_hits) < max_hybrid_chunks
+        and getattr(job, "posting_text", None)
+        and getattr(resume, "summary", None)
+    ):
+        combined_text = f"JOB: {job.posting_text}\n\nRESUME: {resume.summary}"
+        raw_hits.append(
+            {
+                "evidence": combined_text,
+                "score": 1.0,
+                "source": "job_resume_hybrid",
+            }
+        )
+
+    return raw_hits
 
 
 async def _execute_retrieval(
@@ -96,20 +187,46 @@ async def _execute_retrieval(
     ctx: ExecutionContext,
 ) -> RAGResult:
     """
-    Phase-2 RAG execution stub.
+    Phase-3 RAG execution.
 
-    The full hybrid dense/BM25 retrieval + ranking stack lives in
-    retrieval.py / ranking.py and will be fully re-wired in a later
-    phase. For now, we return an empty RAGResult so that the rest of
-    the pipeline (drafting, QA, safety) can execute deterministically
-    with job/resume-only context.
+    This wires L2 into the deterministic retrieval pipeline:
+
+        1. Build raw hits from job + resume (no external side effects).
+        2. Call retrieval.run_rag_retrieval() to:
+              – normalize
+              – deduplicate
+              – safety-filter
+              – rank (via ranking.rank_evidence)
+        3. Wrap the Evidence list in a typed RAGResult.
+
+    All heavy lifting (normalization, ranking, safety) lives in
+    retrieval.py / ranking.py. L2 only orchestrates and applies the
+    WorkflowConfig context budgets.
     """
     span = start_span("l2.retrieval", ctx=ctx.span_context())
     try:
-        # Placeholder: no evidence available yet.
-        return RAGResult(evidence=[], used_hyde=False)
+        rag_plan = plans.rag
+
+        raw_hits = _build_rag_raw_hits(plans, ctx)
+        if not raw_hits:
+            # Deterministic empty result if there is literally nothing
+            # to retrieve from job/resume inputs.
+            return RAGResult(evidence=[], used_hyde=False)
+
+        evidence_list = run_rag_retrieval(
+            rag_plan=rag_plan,
+            job=ctx.job,
+            resume=ctx.resume,
+            config=ctx.config,
+            strategy_hint=None,
+            sandbox=ctx.sandbox_config,
+            raw_hits=raw_hits,
+        )
+
+        return RAGResult(evidence=evidence_list, used_hyde=False)
     except Exception as exc:
         log_exception("l2.retrieval_error", exc)
+        # On any failure, downstream layers must still be able to run.
         return RAGResult(evidence=[], used_hyde=False)
     finally:
         end_span(span)
@@ -152,7 +269,7 @@ async def _execute_drafting(
     except Exception as exc:
         log_exception("l2.drafting_error", exc)
         # Fallback: empty DraftingResult in the configured mode.
-        return DraftingResult(sections=[], mode=plans.drafting.mode)
+        return DraftingResult(sections=[])
     finally:
         end_span(span)
 
@@ -169,11 +286,7 @@ async def _execute_qa(
     ctx: ExecutionContext,
 ) -> QAResult:
     """
-    QAAgent performs:
-        - keyword coverage
-        - job/resume alignment
-        - hallucination checks
-        - tone consistency
+    Run the QA agent on the drafted document + retrieval evidence.
     """
     span = start_span("l2.qa", ctx=ctx.span_context())
     try:
@@ -199,19 +312,19 @@ async def _execute_qa(
             findings=[
                 QACheckResult(
                     check_id="qa_internal_error",
+                    category="internal",
                     status="error",
                     message=str(exc),
                     details={},
                 )
-            ],
-            summary="QA agent failed with an internal error.",
+            ]
         )
     finally:
         end_span(span)
 
 
 # =============================================================================
-# Safety Execution (L2 pre-pass only)
+# Safety Execution
 # =============================================================================
 
 
@@ -222,13 +335,7 @@ async def _execute_safety(
     ctx: ExecutionContext,
 ) -> SafetyResult:
     """
-    L2 performs a *pre-safety* analysis only.
-    Full enforcement is performed in L5.
-
-    The safety agent computes:
-        - PII signal list
-        - toxicity detection
-        - high-risk phrasing
+    Run the safety agent on drafted content + QA findings.
     """
     span = start_span("l2.safety", ctx=ctx.span_context())
     try:
@@ -259,71 +366,101 @@ async def _execute_safety(
                     message=str(exc),
                     details={},
                 )
-            ],
-            overall_status="blocked",
+            ]
         )
     finally:
         end_span(span)
 
 
 # =============================================================================
-# Main L2 Execution
+# L2 Orchestration (called by L3)
 # =============================================================================
 
 
-async def _run_l2_async(
+async def run_l2(
     plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
 ) -> L2ResultBundle:
     """
-    Full async L2 execution pipeline.
+    Main L2 entrypoint called by the L3 orchestrator.
 
-    Strategy and RAG are launched together; drafting, QA and safety
-    then run sequentially using their results.
+    It runs:
+        • Strategy
+        • Retrieval
+        • Drafting
+        • QA
+        • Safety
+
+    With concurrency:
+        • Strategy + Retrieval in parallel.
+        • Drafting → QA → Safety sequentially.
     """
-    # Strategy → RAG can be independent
-    strategy_task = asyncio.create_task(_execute_strategy(plans, ctx))
-    rag_task = asyncio.create_task(_execute_retrieval(plans, ctx))
-
-    # Wait for Strategy + RAG to complete before drafting
-    strategy_result, rag_result = await asyncio.gather(strategy_task, rag_task)
-
-    drafting_result = await _execute_drafting(plans, strategy_result, rag_result, ctx)
-    qa_result = await _execute_qa(plans, drafting_result, rag_result, ctx)
-    safety_result = await _execute_safety(plans, drafting_result, qa_result, ctx)
-
-    return L2ResultBundle(
-        strategy=strategy_result,
-        rag=rag_result,
-        drafting=drafting_result,
-        qa=qa_result,
-        safety=safety_result,
-    )
-
-
-# =============================================================================
-# Public Entrypoint for L3
-# =============================================================================
-
-
-def execute_workflow_plans(
-    plans: WorkflowPlanBundle,
-    ctx: ExecutionContext,
-) -> L2ResultBundle:
-    """
-    Synchronous wrapper for L3.
-
-    L3 is allowed to call *only this* L2 entrypoint.
-    """
-    span = start_span("l2.execute_workflow_plans", ctx=ctx.span_context())
+    span = start_span("l2.run", ctx=ctx.span_context())
     try:
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        result = loop.run_until_complete(_run_l2_async(plans, ctx))
-        emit_cost_snapshot(ctx.model_usage_snapshot())
-        return result
+        # Strategy and RAG can be independent
+        strategy_task = asyncio.create_task(_execute_strategy(plans, ctx))
+        rag_task = asyncio.create_task(_execute_retrieval(plans, ctx))
+
+        # Wait for Strategy + RAG to complete before drafting
+        strategy_result, rag_result = await asyncio.gather(strategy_task, rag_task)
+
+        drafting_result = await _execute_drafting(plans, strategy_result, rag_result, ctx)
+        qa_result = await _execute_qa(plans, drafting_result, rag_result, ctx)
+        safety_result = await _execute_safety(plans, drafting_result, qa_result, ctx)
+
+        # Emit a coarse-grained cost snapshot from the context, if available.
+        if ctx.cost_snapshot is not None:
+            emit_cost_snapshot(ctx.cost_snapshot)
+
+        return L2ResultBundle(
+            strategy=strategy_result,
+            rag=rag_result,
+            drafting=drafting_result,
+            qa=qa_result,
+            safety=safety_result,
+        )
     except Exception as exc:
-        log_exception("l2.execute_error", exc)
-        raise
+        log_exception("l2.run_error", exc)
+        # On catastrophic failure, synthesize an empty result bundle.
+        empty_strategy = StrategyResult(
+            branches=[StrategyBranch(id="error", text=str(exc))],
+            chosen_branch_id="error",
+        )
+        empty_rag = RAGResult(evidence=[], used_hyde=False)
+        empty_drafting = DraftingResult(sections=[])
+        empty_qa = QAResult(
+            findings=[
+                QACheckResult(
+                    check_id="qa_internal_error",
+                    category="internal",
+                    status="error",
+                    message=str(exc),
+                    details={},
+                )
+            ]
+        )
+        empty_safety = SafetyResult(
+            findings=[
+                SafetyFinding(
+                    check_id="safety_internal_error",
+                    category="internal",
+                    status="blocked",
+                    message=str(exc),
+                    details={},
+                )
+            ]
+        )
+
+        # Emit a best-effort cost snapshot if present.
+        if ctx.cost_snapshot is not None:
+            emit_cost_snapshot(ctx.cost_snapshot)
+
+        return L2ResultBundle(
+            strategy=empty_strategy,
+            rag=empty_rag,
+            drafting=empty_drafting,
+            qa=empty_qa,
+            safety=empty_safety,
+        )
     finally:
         end_span(span)
