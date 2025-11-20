@@ -1,522 +1,333 @@
 # FILE: 10_10/meta_profile.py
 """
-Meta Profile & Adaptive Biases (v10_10) — META LAYER ONLY
-=========================================================
+Meta Profile & Adaptive Biases (v10_10 · Phase 0) — META LAYER ONLY
+===================================================================
 
-Refactored from v10_9 meta_profile.py to align with the v10_10 architecture.
+This module defines the *meta-layer* profile for the agentic system.
 
-This module defines the *meta-layer* profile for the agentic system. It is
-NOT part of L1–L5, but provides SOFT BIASES and historical signals that
-L1, L2, routing, and self-correction may consult:
+It is **NOT** part of L1–L5. It provides SOFT BIASES and historical
+signals that L1, L2, routing, and self-correction may consult:
 
-    • Model routing preferences (e.g., prefer fast vs robust).
-    • Planning preferences (e.g., conservative vs exploratory).
-    • QA-related hints (recent failures, extra passes).
+    • Model routing preferences (prefer fast vs robust).
+    • Planning preferences (conservative vs exploratory).
+    • QA-related hints (recent failure rates, extra passes).
     • Safety-related hints (heightened caution, HIL bias).
-    • Rolling failure rates for QA and corrections.
-    • Provider preference hints (prefer OpenAI vs Anthropic).
+    • Rolling statistics (QA failures, correction usage).
 
-Strict layer constraints (Agentic Guardrails):
-    • NO L1 planning (no PlanObject creation).
-    • NO L2 execution (no tool/LLM calls).
-    • NO L3 DAG/orchestration logic.
-    • NO L4 state mutation (no StateAdapter usage).
-    • NO L5 safety/policy decisions.
+Phase 0 objectives:
+    • Provide a **deterministic**, in-memory MetaProfile that:
+        – can be snapshotted and passed into ExecutionContext
+        – influences routing (e.g., prefers_anthropic / prefers_openai)
+        – exposes QA / correction failure rates
+    • Keep it META-LAYER ONLY:
+        – no L1–L5 imports
+        – no network calls
+        – no side-effects beyond local in-memory state
 
-It is safe to consider this a v10_10 “L6 META” component.
+Compatibility requirements:
+    • Preserve `MetaProfileSnapshot` type for existing v10_10 modules:
+        – l1.py
+        – cognitive_agents.py
+        – routing.py
+    • Keep helper accessors:
+        – get_routing_bias()
+        – get_planning_bias()
+        – get_qa_bias()
+        – get_safety_bias()
+
+Later phases (3–4) may:
+    • Wire meta_profile feedback into:
+        – routing decisions,
+        – reasoning selector,
+        – safety bundle choice,
+        – execution profile selection.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass, asdict
+from typing import Dict, Any
 
-from models import QAResult, SafetyResult
-from self_correction import CorrectionSignal
+from .models import ReasoningMode
 
 
-# ============================================================================
-# 1. META PROFILE DATA CLASSES (BIAS STRUCTURES)
-# ============================================================================
+# ======================================================================
+# CORE BIAS STRUCTS
+# ======================================================================
 
 
 @dataclass
 class RoutingBias:
     """
-    Routing-level preferences for L2/L5.
+    Routing preferences and signals.
 
-    Fields:
-        prefer_fast:             prefer cheaper/faster models
-        prefer_robust_retrieval: bias toward more robust RAG settings
-        prefer_long_context:     bias toward long-context models
+    • prefers_anthropic / prefers_openai:
+        – Soft hint to routing provider selection.
+    • prefers_fast_models:
+        – Soft hint for latency vs robustness.
     """
-    prefer_fast: bool = False
-    prefer_robust_retrieval: bool = False
-    prefer_long_context: bool = False
+
+    prefers_anthropic: bool = False
+    prefers_openai: bool = True
+    prefers_fast_models: bool = False
 
 
 @dataclass
 class PlanningBias:
     """
-    Planning (L1 reasoning) preferences.
+    Planning preferences at the meta level.
 
-    Fields:
-        conservative:           reduce branching / depth
-        exploratory:            allow more branches / alternatives
-        deterministic_recovery: bias toward structured recovery plans
+    • reasoning_mode_hint:
+        – A soft suggestion for ReasoningSelector.
+    • conservative_planning:
+        – Fewer steps, shallower exploration.
+    • exploratory_planning:
+        – More steps, deeper exploration.
     """
-    conservative: bool = False
-    exploratory: bool = False
-    deterministic_recovery: bool = False
+
+    reasoning_mode_hint: ReasoningMode = ReasoningMode.COT
+    conservative_planning: bool = False
+    exploratory_planning: bool = False
 
 
 @dataclass
-class QaBias:
+class QABias:
     """
-    QA-related preferences and signals.
+    Biases related to QA behavior.
 
-    Fields:
-        recent_failures:    QA has recently failed often
-        require_extra_pass: bias toward extra QA passes
+    • extra_qa_passes:
+        – Encourages more QA passes when true.
+    • reinforce_strictness:
+        – Encourages stricter QA interpretation.
     """
-    recent_failures: bool = False
-    require_extra_pass: bool = False
+
+    extra_qa_passes: bool = False
+    reinforce_strictness: bool = False
 
 
 @dataclass
 class SafetyBias:
     """
-    Safety-related preferences.
+    Biases related to safety behavior.
 
-    Fields:
-        heightened_caution:     bias toward stricter safety paths
-        human_review_important: HIL review is frequently beneficial
+    • elevated_caution:
+        – Ask safety to be more conservative.
+    • hil_preferred:
+        – Prefer HIL escalation for borderline cases.
     """
-    heightened_caution: bool = False
-    human_review_important: bool = False
+
+    elevated_caution: bool = False
+    hil_preferred: bool = False
 
 
-@dataclass
-class MetaUpdate:
-    """
-    Single meta-update record used in history.
+# ======================================================================
+# META PROFILE & SNAPSHOT
+# ======================================================================
 
-    Fields:
-        source:    "spans" | "self_correction" | "run_summary" | ...
-        payload:   arbitrary context information
-        deltas:    snapshot of bias fields that changed
-    """
-    source: str
-    payload: Dict[str, Any] = field(default_factory=dict)
-    deltas: Dict[str, Any] = field(default_factory=dict)
-
-
-# ============================================================================
-# 2. META PROFILE (INTERNAL STATE) + SNAPSHOT (L1/L2 VIEW)
-# ============================================================================
 
 @dataclass
 class MetaProfile:
     """
-    Global meta-configuration for adaptive behavior (INTERNAL STATE).
+    Full meta-profile state for the system (in-memory, mutable).
 
-    Fields:
-        • routing_bias       – knobs influencing model routing.
-        • planning_bias      – knobs influencing L1 planners.
-        • qa_bias            – knobs based on QA outcomes.
-        • safety_bias        – knobs based on safety outcomes.
-        • history            – recent meta-updates (for inspection/tests).
-        • last_10_qa_flags   – rolling QA failures (0/1).
-        • last_10_corr_flags – rolling correction fires (0/1).
-        • total_runs         – number of DAG runs observed.
-        • total_corrections  – total runs with corrections.
-        • total_qa_failures  – total runs with QA failures.
-        • total_safety_failures – total runs with blocking safety findings.
-
-    This object is mutable and should not be exposed to L1/L2 directly.
+    This is a long-lived object that accumulates rolling statistics
+    across workflows; snapshots are created per workflow.
     """
 
-    routing_bias: RoutingBias = field(default_factory=RoutingBias)
-    planning_bias: PlanningBias = field(default_factory=PlanningBias)
-    qa_bias: QaBias = field(default_factory=QaBias)
-    safety_bias: SafetyBias = field(default_factory=SafetyBias)
-    history: List[MetaUpdate] = field(default_factory=list)
+    # Current "active" profile id (e.g., RESUME_HIGH_QUALITY, OUTREACH_QUICK)
+    active_profile_id: str = "RESUME_HIGH_QUALITY"
 
-    last_10_qa_flags: List[int] = field(default_factory=list)
-    last_10_corr_flags: List[int] = field(default_factory=list)
-    total_runs: int = 0
-    total_corrections: int = 0
-    total_qa_failures: int = 0
-    total_safety_failures: int = 0
+    routing_bias: RoutingBias = RoutingBias()
+    planning_bias: PlanningBias = PlanningBias()
+    qa_bias: QABias = QABias()
+    safety_bias: SafetyBias = SafetyBias()
 
-    def snapshot_dict(self) -> Dict[str, Any]:
-        """
-        Full snapshot as a dict (used for logging, debugging).
-        """
-        return {
-            "routing_bias": asdict(self.routing_bias),
-            "planning_bias": asdict(self.planning_bias),
-            "qa_bias": asdict(self.qa_bias),
-            "safety_bias": asdict(self.safety_bias),
-            "history": [
-                {
-                    "source": h.source,
-                    "payload": dict(h.payload),
-                    "deltas": dict(h.deltas),
-                }
-                for h in self.history[-10:]
-            ],
-            "last_10_qa_flags": list(self.last_10_qa_flags),
-            "last_10_corr_flags": list(self.last_10_corr_flags),
-            "total_runs": self.total_runs,
-            "total_corrections": self.total_corrections,
-            "total_qa_failures": self.total_qa_failures,
-            "total_safety_failures": self.total_safety_failures,
-        }
+    # Rolling counters for QA / correction behavior
+    qa_total_last_10: int = 0
+    qa_failures_last_10: int = 0
+    corrections_total_last_10: int = 0
+    corrections_applied_last_10: int = 0
 
-    def _record_update(self, source: str, payload: Dict[str, Any], deltas: Dict[str, Any]) -> None:
-        """
-        Internal helper to append a MetaUpdate to history.
-        """
-        if not deltas:
-            return
-        self.history.append(
-            MetaUpdate(
-                source=source,
-                payload=dict(payload),
-                deltas=dict(deltas),
-            )
-        )
+    def qa_failure_rate(self) -> float:
+        if self.qa_total_last_10 == 0:
+            return 0.0
+        return self.qa_failures_last_10 / float(self.qa_total_last_10)
+
+    def correction_apply_rate(self) -> float:
+        if self.corrections_total_last_10 == 0:
+            return 0.0
+        return self.corrections_applied_last_10 / float(self.corrections_total_last_10)
 
 
 @dataclass(frozen=True)
 class MetaProfileSnapshot:
     """
-    Immutable, read-only snapshot consumed by L1/L2/L2 routing.
+    Read-only snapshot of the MetaProfile, passed into ExecutionContext
+    and used by routing, L1, cognitive agents, etc.
 
-    This is the ONLY shape that core layers should depend on.
-
-    Fields:
-        qa_failure_rate_last_10
-        correction_rate_last_10
-        prefers_anthropic
-        prefers_openai
-        total_runs
-        total_corrections
-        total_qa_failures
-        total_safety_failures
+    Existing v10_10 callsites expect:
+        • prefers_anthropic
+        • prefers_openai
+        • qa_failure_rate_last_10
+        • correction_rate_last_10
     """
 
-    qa_failure_rate_last_10: float = 0.0
-    correction_rate_last_10: float = 0.0
-    prefers_anthropic: bool = False
-    prefers_openai: bool = True
-    total_runs: int = 0
-    total_corrections: int = 0
-    total_qa_failures: int = 0
-    total_safety_failures: int = 0
+    active_profile_id: str
+
+    prefers_anthropic: bool
+    prefers_openai: bool
+    prefers_fast_models: bool
+
+    reasoning_mode_hint: str
+
+    qa_failure_rate_last_10: float
+    correction_rate_last_10: float
+
+    extra_qa_passes: bool
+    reinforce_strictness: bool
+
+    elevated_caution: bool
+    hil_preferred: bool
 
 
-# ============================================================================
-# 3. META PROFILE UPDATER
-# ============================================================================
+# ======================================================================
+# META PROFILE UPDATER (SINGLETON)
+# ======================================================================
 
-@dataclass
+
 class MetaProfileUpdater:
     """
-    Updater responsible for mutating MetaProfile and producing snapshots.
+    Simple, deterministic meta-profile updater.
 
-    It encapsulates the v10_9 heuristics:
-        • update_from_spans
-        • update_from_self_correction
-        • update_from_run_summary
-
-    But returns a MetaProfileSnapshot for consumption by 10_10 components.
+    Phase 0:
+        • Keeps counters for QA outcomes and corrections.
+        • Updates soft routing/planning/QA/safety biases.
     """
 
-    profile: MetaProfile = field(default_factory=MetaProfile)
+    def __init__(self) -> None:
+        self.profile = MetaProfile()
 
-    # ------------------------- SPAN-BASED UPDATE -----------------------------
-
-    def update_from_spans(self, spans: List[Dict[str, Any]]) -> None:
-        """
-        Update routing_bias from a list of span dicts:
-
-            {"name": "planning"|"execution", "duration_ms": float}
-
-        Heuristics (restored v10_9 semantics):
-            • If planning consistently slower than execution → prefer_fast = True.
-            • Else → prefer_fast = False.
-        """
-        if not spans:
-            return
-
-        planning = next((s for s in spans if s.get("name") == "planning"), None)
-        execution = next((s for s in spans if s.get("name") == "execution"), None)
-
-        p_ms = float(planning.get("duration_ms", 0.0)) if planning else 0.0
-        e_ms = float(execution.get("duration_ms", 0.0)) if execution else 0.0
-
-        payload = {"planning_ms": p_ms, "execution_ms": e_ms}
-        deltas: Dict[str, Any] = {}
-
-        prefer_fast_before = self.profile.routing_bias.prefer_fast
-
-        if p_ms > e_ms * 1.1 and p_ms > 0.0:
-            self.profile.routing_bias.prefer_fast = True
-        else:
-            self.profile.routing_bias.prefer_fast = False
-
-        if self.profile.routing_bias.prefer_fast != prefer_fast_before:
-            deltas["routing_bias.prefer_fast"] = self.profile.routing_bias.prefer_fast
-
-        self.profile._record_update(source="spans", payload=payload, deltas=deltas)
-
-    # -------------------- SELF-CORRECTION-BASED UPDATE ----------------------
-
-    def update_from_self_correction(self, block: Dict[str, Any]) -> None:
-        """
-        Update biases from a self_correction block.
-
-        Heuristics:
-            • surface == "qa_recheck":
-                  planning_bias.conservative = True
-                  qa_bias.recent_failures = True
-            • surface == "strategy_replan":
-                  planning_bias.exploratory = True
-            • surface == "hil_escalation":
-                  safety_bias.human_review_important = True
-            • surface == "rag_retry":
-                  routing_bias.prefer_robust_retrieval = True
-            • surface == "checkpoint_recovery":
-                  planning_bias.deterministic_recovery = True
-        """
-        if not block:
-            return
-
-        needed = bool(block.get("needed", False))
-        surface = str(block.get("surface") or "")
-
-        if not needed or not surface:
-            return
-
-        payload = {
-            "surface": surface,
-            "rationale": block.get("rationale", ""),
-            "metadata": block.get("metadata", {}),
-        }
-        deltas: Dict[str, Any] = {}
-
-        if surface == "qa_recheck":
-            if not self.profile.planning_bias.conservative:
-                self.profile.planning_bias.conservative = True
-                deltas["planning_bias.conservative"] = True
-            if not self.profile.qa_bias.recent_failures:
-                self.profile.qa_bias.recent_failures = True
-                deltas["qa_bias.recent_failures"] = True
-
-        elif surface == "strategy_replan":
-            if not self.profile.planning_bias.exploratory:
-                self.profile.planning_bias.exploratory = True
-                deltas["planning_bias.exploratory"] = True
-
-        elif surface == "hil_escalation":
-            if not self.profile.safety_bias.human_review_important:
-                self.profile.safety_bias.human_review_important = True
-                deltas["safety_bias.human_review_important"] = True
-
-        elif surface == "rag_retry":
-            if not self.profile.routing_bias.prefer_robust_retrieval:
-                self.profile.routing_bias.prefer_robust_retrieval = True
-                deltas["routing_bias.prefer_robust_retrieval"] = True
-
-        elif surface == "checkpoint_recovery":
-            if not self.profile.planning_bias.deterministic_recovery:
-                self.profile.planning_bias.deterministic_recovery = True
-                deltas["planning_bias.deterministic_recovery"] = True
-
-        self.profile._record_update(source="self_correction", payload=payload, deltas=deltas)
-
-    # ---------------------- RUN-SUMMARY-BASED UPDATE -----------------------
-
-    def update_from_run_summary(self, run_summary: Dict[str, Any]) -> None:
-        """
-        Update biases from a run_summary with shape:
-
-            {
-              "workflow_id": str,
-              "phases": [...],
-              "timings": {...},
-              "counts": {...},
-              "issues": {
-                "qa": [...],
-                "safety": [...],
-                "hil": [...],
-                ...
-              },
-            }
-
-        Heuristics:
-            • QA issues       → conservative planning, qa.recent_failures = True.
-            • Safety issues   → safety.heightened_caution = True.
-            • HIL issues      → safety.human_review_important = True.
-        """
-        if not run_summary:
-            return
-
-        issues = run_summary.get("issues") or {}
-        qa_issues = issues.get("qa") or []
-        safety_issues = issues.get("safety") or []
-        hil_issues = issues.get("hil") or []
-
-        payload = {
-            "qa_issue_count": len(qa_issues),
-            "safety_issue_count": len(safety_issues),
-            "hil_issue_count": len(hil_issues),
-        }
-        deltas: Dict[str, Any] = {}
-
-        if qa_issues:
-            if not self.profile.planning_bias.conservative:
-                self.profile.planning_bias.conservative = True
-                deltas["planning_bias.conservative"] = True
-            if not self.profile.qa_bias.recent_failures:
-                self.profile.qa_bias.recent_failures = True
-                deltas["qa_bias.recent_failures"] = True
-
-        if safety_issues:
-            if not self.profile.safety_bias.heightened_caution:
-                self.profile.safety_bias.heightened_caution = True
-                deltas["safety_bias.heightened_caution"] = True
-
-        if hil_issues:
-            if not self.profile.safety_bias.human_review_important:
-                self.profile.safety_bias.human_review_important = True
-                deltas["safety_bias.human_review_important"] = True
-
-        self.profile._record_update(source="run_summary", payload=payload, deltas=deltas)
-
-    # ------------------ DIRECT UPDATE FROM DAG RESULTS ----------------------
-
-    def update_from_dag_outputs(
-        self,
-        qa: QAResult,
-        safety: SafetyResult,
-        corrections: List[CorrectionSignal],
-    ) -> None:
-        """
-        v10_10-native meta update after a DAG run, fed with L2/L3 outputs.
-
-        This keeps rolling QA/correction/safety stats up to date.
-        """
-
-        self.profile.total_runs += 1
-
-        # QA failures
-        qa_failed = any(not chk.passed for chk in (qa.checks or []))
-        if qa_failed:
-            self.profile.total_qa_failures += 1
-            self.profile.last_10_qa_flags.append(1)
-        else:
-            self.profile.last_10_qa_flags.append(0)
-
-        self.profile.last_10_qa_flags = self.profile.last_10_qa_flags[-10:]
-
-        # Correction signals
-        correction_fired = any(sig.severity >= 1 for sig in (corrections or []))
-        if correction_fired:
-            self.profile.total_corrections += 1
-            self.profile.last_10_corr_flags.append(1)
-        else:
-            self.profile.last_10_corr_flags.append(0)
-
-        self.profile.last_10_corr_flags = self.profile.last_10_corr_flags[-10:]
-
-        # Safety failures
-        safety_violation = any(f.blocking for f in (safety.findings or []))
-        if safety_violation:
-            self.profile.total_safety_failures += 1
-
-    # --------------------------- SNAPSHOT -----------------------------------
+    # ---------- snapshot API ----------
 
     def snapshot(self) -> MetaProfileSnapshot:
-        """
-        Construct an immutable MetaProfileSnapshot for L1/L2/L2 routing.
-        """
-        qa_fail_rate = (
-            sum(self.profile.last_10_qa_flags) / len(self.profile.last_10_qa_flags)
-            if self.profile.last_10_qa_flags else 0.0
-        )
-        corr_rate = (
-            sum(self.profile.last_10_corr_flags) / len(self.profile.last_10_corr_flags)
-            if self.profile.last_10_corr_flags else 0.0
-        )
-
-        # Provider preference heuristics:
-        prefers_anthropic = False
-        prefers_openai = True
-
-        if qa_fail_rate > 0.4:
-            prefers_anthropic = True
-            prefers_openai = False
-        elif corr_rate < 0.1 and self.profile.total_runs > 3:
-            prefers_openai = True
-            prefers_anthropic = False
-
+        p = self.profile
         return MetaProfileSnapshot(
-            qa_failure_rate_last_10=qa_fail_rate,
-            correction_rate_last_10=corr_rate,
-            prefers_anthropic=prefers_anthropic,
-            prefers_openai=prefers_openai,
-            total_runs=self.profile.total_runs,
-            total_corrections=self.profile.total_corrections,
-            total_qa_failures=self.profile.total_qa_failures,
-            total_safety_failures=self.profile.total_safety_failures,
+            active_profile_id=p.active_profile_id,
+            prefers_anthropic=p.routing_bias.prefers_anthropic,
+            prefers_openai=p.routing_bias.prefers_openai,
+            prefers_fast_models=p.routing_bias.prefers_fast_models,
+            reasoning_mode_hint=p.planning_bias.reasoning_mode_hint.value,
+            qa_failure_rate_last_10=p.qa_failure_rate(),
+            correction_rate_last_10=p.correction_apply_rate(),
+            extra_qa_passes=p.qa_bias.extra_qa_passes,
+            reinforce_strictness=p.qa_bias.reinforce_strictness,
+            elevated_caution=p.safety_bias.elevated_caution,
+            hil_preferred=p.safety_bias.hil_preferred,
         )
 
+    # ---------- update API ----------
 
-# ============================================================================
-# 4. GLOBAL META-PROFILE STORE (META-LAYER ONLY)
-# ============================================================================
+    def set_active_profile(self, profile_id: str) -> None:
+        self.profile.active_profile_id = profile_id
 
-# A single global meta-profile store, as in v10_9, but its shape is now
-# strictly controlled and only exposed to L1/L2 via MetaProfileSnapshot.
+    def register_qa_outcome(self, success: bool) -> None:
+        """
+        Update QA rolling stats and QA/Safety bias hints.
+        """
+        p = self.profile
+        p.qa_total_last_10 = min(10, p.qa_total_last_10 + 1)
+        if not success:
+            p.qa_failures_last_10 = min(10, p.qa_failures_last_10 + 1)
+
+        # Soft rule: if QA failure rate > 0.4, encourage extra QA passes.
+        if p.qa_failure_rate() > 0.4:
+            p.qa_bias.extra_qa_passes = True
+            p.qa_bias.reinforce_strictness = True
+            p.safety_bias.elevated_caution = True
+        else:
+            p.qa_bias.extra_qa_passes = False
+            p.qa_bias.reinforce_strictness = False
+            p.safety_bias.elevated_caution = False
+
+    def register_correction(self, applied: bool) -> None:
+        """
+        Update correction stats and bias toward more conservative planning.
+        """
+        p = self.profile
+        p.corrections_total_last_10 = min(10, p.corrections_total_last_10 + 1)
+        if applied:
+            p.corrections_applied_last_10 = min(10, p.corrections_applied_last_10 + 1)
+
+        # Soft rule: if we keep correcting, nudge planning toward conservative.
+        if p.correction_apply_rate() > 0.3:
+            p.planning_bias.conservative_planning = True
+            p.planning_bias.exploratory_planning = False
+        else:
+            p.planning_bias.conservative_planning = False
+
+    def register_provider_choice(self, provider: str) -> None:
+        """
+        Update routing bias based on provider choices.
+        """
+        p = self.profile
+        if provider.lower().startswith("anthropic"):
+            p.routing_bias.prefers_anthropic = True
+            p.routing_bias.prefers_openai = False
+        elif provider.lower().startswith("openai"):
+            p.routing_bias.prefers_openai = True
+            p.routing_bias.prefers_anthropic = False
+
+    def set_reasoning_hint(self, mode: ReasoningMode) -> None:
+        self.profile.planning_bias.reasoning_mode_hint = mode
+
+    def reset(self) -> None:
+        self.profile = MetaProfile()
+
+
+# Singleton updater instance.
 _META_UPDATER = MetaProfileUpdater()
 
 
-# ---------------------------- WRITE PATHS -----------------------------------
-
-def update_from_spans(spans: List[Dict[str, Any]]) -> None:
-    _META_UPDATER.update_from_spans(spans)
-
-
-def update_from_self_correction(block: Dict[str, Any]) -> None:
-    _META_UPDATER.update_from_self_correction(block)
-
-
-def update_from_run_summary(run_summary: Dict[str, Any]) -> None:
-    _META_UPDATER.update_from_run_summary(run_summary)
-
-
-def update_from_dag_outputs(
-    qa: QAResult,
-    safety: SafetyResult,
-    corrections: List[CorrectionSignal],
-) -> None:
-    _META_UPDATER.update_from_dag_outputs(qa, safety, corrections)
-
-
-# ---------------------------- READ PATHS ------------------------------------
+# ======================================================================
+# PUBLIC API
+# ======================================================================
 
 def get_meta_profile_snapshot() -> MetaProfileSnapshot:
     """
-    Primary accessor used by L1/L2/L2 routing (v10_10-native).
+    Return a read-only MetaProfileSnapshot for injection into ExecutionContext.
     """
     return _META_UPDATER.snapshot()
 
 
-# The following accessors preserve v10_9 semantics for any remaining calls.
-# They can be deprecated over time once all callers move to the snapshot.
+def register_qa_outcome(success: bool) -> None:
+    _META_UPDATER.register_qa_outcome(success)
+
+
+def register_correction(applied: bool) -> None:
+    _META_UPDATER.register_correction(applied)
+
+
+def register_provider_choice(provider: str) -> None:
+    _META_UPDATER.register_provider_choice(provider)
+
+
+def set_active_profile(profile_id: str) -> None:
+    _META_UPDATER.set_active_profile(profile_id)
+
+
+def set_reasoning_hint(mode: ReasoningMode) -> None:
+    _META_UPDATER.set_reasoning_hint(mode)
+
+
+def reset_meta_profile() -> None:
+    _META_UPDATER.reset()
+
+
+# ----------------------------------------------------------------------
+# Legacy-style bias accessors (used in comments / possible callsites).
+# These return dicts, matching earlier "asdict(profile.*_bias)" patterns.
+# ----------------------------------------------------------------------
+
 
 def get_routing_bias() -> Dict[str, Any]:
     return asdict(_META_UPDATER.profile.routing_bias)
