@@ -4,22 +4,15 @@ Runtime Utilities for Agentic Workflow v10_10
 =============================================
 
 Responsibilities:
-    • invoke_model():  unified LLM invocation for all cognitive agents.
-    • SandboxConfig:   execution sandbox abstraction.
-    • get_sandbox():   sandbox loader.
-    • PredictiveCacheManager: in-memory predictive/semantic cache.
+    • invoke_model(): unified LLM invocation for OpenAI & Anthropic.
+    • PredictiveCacheManager: semantic/predictive caching.
+    • SandboxConfig: execution constraints.
+    • get_sandbox(): normalized sandbox loader.
 
 Non-Responsibilities:
     • No agent logic.
-    • No planning or orchestration.
-    • No global state.
-    • No prompt logic.
-
-This module aligns with:
-    - Pillar 7 (Context Budgeting)
-    - Pillar 8 (Tool Ecosystem / Resilience)
-    - Pillar 11 (Cost & Optimization)
-    - Pillar 14 (Execution Sandbox)
+    • No planning/orchestration/state.
+    • No tool policies.
 """
 
 from __future__ import annotations
@@ -35,21 +28,15 @@ from observability import record_event, record_exception
 
 
 # =============================================================================
-# Sandbox Configuration
+# Sandbox
 # =============================================================================
 
 @dataclass
 class SandboxConfig:
     """
-    Sandbox abstraction for tool/LLM execution.
-
-    Note: Windsurf / remote container provides actual isolation.
-    This config supplies logical constraints for:
-        • timeouts
-        • max tokens
-        • network usage
+    Logical sandbox constraints.
+    Actual isolation is provided by container/runtime.
     """
-
     name: str = "default"
     allow_network: bool = True
     request_timeout_s: int = 60
@@ -58,42 +45,30 @@ class SandboxConfig:
 
 def get_sandbox(config: Optional[SandboxConfig]) -> SandboxConfig:
     """
-    Ensure sandbox config is never None.
+    Ensure sandbox is never None.
     """
-    if config is None:
-        return SandboxConfig()
-    return config
+    return config or SandboxConfig()
 
 
 # =============================================================================
-# Predictive Cache (Optional)
+# Predictive Cache
 # =============================================================================
 
 @dataclass
 class PredictiveCacheManager:
     """
-    Lightweight predictive cache for expensive operations (RAG + LLM).
+    Lightweight in-memory predictive cache.
 
-    Implementation:
-        • In-memory dict keyed by stable SHA256 of (domain, plan, context).
-        • Values = (timestamp, payload)
-        • Evicts oldest entry when over capacity.
+    Stores:
+        domain:plan:context → cached LLM or RAG results
 
-    Compatible with:
-        • L2.execute_rag
-        • L2 cognitive agents (future extensions)
+    Evicts oldest entries when full.
     """
 
     max_entries: int = 1024
     _store: Dict[str, Tuple[float, Any]] = field(default_factory=dict)
 
     def make_key(self, domain: str, plan: Any, ctx: Any) -> str:
-        """
-        Create a stable hash key from:
-            - domain string (e.g., "rag", "strategy")
-            - plan object (must support model_dump)
-            - job + config signature
-        """
         try:
             p = plan.model_dump()
         except Exception:
@@ -111,51 +86,37 @@ class PredictiveCacheManager:
             sort_keys=True,
             default=str,
         )
-
-        key = hashlib.sha256(raw.encode("utf-8")).hexdigest()
-        return f"{domain}:{key}"
+        digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+        return f"{domain}:{digest}"
 
     def get(self, key: str) -> Optional[Any]:
-        """
-        Retrieve a cached value, if present.
-        """
         entry = self._store.get(key)
         if not entry:
             return None
 
         timestamp, value = entry
-        record_event(
-            "predictive_cache_hit",
-            {"key": key, "age_s": time.time() - timestamp},
-        )
+        record_event("predictive_cache_hit", {"key": key, "age_s": time.time() - timestamp})
         return value
 
     def set(self, key: str, value: Any) -> None:
-        """
-        Insert or replace a cached entry.
-        Evict oldest entry if capacity exceeded.
-        """
         if len(self._store) >= self.max_entries:
-            oldest_key = min(self._store, key=lambda k: self._store[k][0])
-            self._store.pop(oldest_key, None)
-            record_event("predictive_cache_evict", {"evicted_key": oldest_key})
+            oldest = min(self._store, key=lambda k: self._store[k][0])
+            self._store.pop(oldest, None)
+            record_event("predictive_cache_evict", {"evicted_key": oldest})
 
         self._store[key] = (time.time(), value)
         record_event("predictive_cache_set", {"key": key})
 
 
 # =============================================================================
-# Unified LLM Invocation
+# LLM Invocation
 # =============================================================================
 
 class LLMInvocationError(RuntimeError):
-    """Raised when an LLM request fails."""
+    pass
 
 
 def _detect_provider(model: str) -> str:
-    """
-    Infer provider from model identifier.
-    """
     m = model.lower()
     if m.startswith("gpt") or m.startswith("o"):
         return "openai"
@@ -172,22 +133,8 @@ def invoke_model(
     max_tokens: int = 1024,
 ) -> str:
     """
-    Unified LLM invocation for v10_10.
-
-    Parameters:
-        model:       model name from RoutingPolicy (e.g., "gpt-5.1-codex")
-        prompt:      rendered prompt
-        sandbox:     SandboxConfig
-        temperature: sampling temperature
-        max_tokens:  max generation tokens (capped by sandbox)
-
-    Returns:
-        text response from the LLM.
-
-    Raises:
-        LLMInvocationError on failure.
+    Unified LLM invocation for OpenAI + Anthropic.
     """
-
     provider = _detect_provider(model)
     max_tokens = min(max_tokens, sandbox.max_tokens_per_call)
 
@@ -199,7 +146,6 @@ def invoke_model(
     try:
         if provider == "openai":
             import openai
-
             client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
             resp = client.chat.completions.create(
                 model=model,
@@ -212,20 +158,19 @@ def invoke_model(
 
         elif provider == "anthropic":
             import anthropic
-
             client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
             resp = client.messages.create(
                 model=model,
+                messages=[{"role": "user", "content": prompt}],
                 max_tokens=max_tokens,
                 temperature=temperature,
                 timeout=sandbox.request_timeout_s,
-                messages=[{"role": "user", "content": prompt}],
             )
-
-            chunks = []
-            for block in resp.content:
-                if getattr(block, "type", None) == "text":
-                    chunks.append(block.text)
+            chunks = [
+                block.text
+                for block in resp.content
+                if getattr(block, "type", None) == "text"
+            ]
             text = "\n".join(chunks)
 
         else:
