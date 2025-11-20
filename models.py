@@ -1,253 +1,298 @@
-# FILE: models.py
+# FILE: 10_10/models.py
 """
-Unified Runtime Models (v10_10) — TRUE AGENTIC CONTRACTS
+Typed Data Models for Agentic Workflow v10_10
+=============================================
 
-This module defines the strict Pydantic schemas required for the 
-v10_10 Cognitive Architecture. It enforces Pillar 3 (Typed Contracts)
-and serves as the backbone for L1-L5, Governance, and Routing.
+This module defines ALL strict, versioned schemas that flow across layers L1–L5.
 
-CONTAINS:
-    1. Core Enums (Phase, Status, SafetyMode)
-    2. Governance Schemas (Prompt, Policy, Routing)
-    3. Cognitive Contracts (Plan, Strategy, Drafting)
-    4. Correction Schemas (Signals, Surfaces)
-    5. State & Workflow Schemas (Patch, State, DAG)
+Design Goals:
+    - Zero ambiguity between layers.
+    - Zero free-form dicts.
+    - Every interlayer handoff is typed and validated.
+    - All model interactions (Strategy, RAG, Drafting, QA, Safety) use explicit contracts.
+    - Meets OpenAI Agentic Pillar #3: Typed Contracts.
 
-Design Constraints:
-    • PURE DATA: No logic.
-    • STRICT TYPING: Pydantic v2 BaseModel.
-    • ZERO LOSS: Supports all domains (Strategy, RAG, Safety, etc.).
+Everything in this file is PURE MODELING — no business logic, no execution.
 """
 
 from __future__ import annotations
 
-import enum
-from typing import Any, Dict, List, Optional, Generic, TypeVar, Union
-from pydantic import BaseModel, Field, ConfigDict
+from typing import List, Optional, Dict, Any
+from enum import Enum
+from pydantic import BaseModel, Field
 
-# =============================================================================
-# 1. CORE ENUMS
-# =============================================================================
 
-class NodeStatus(str, enum.Enum):
-    PENDING = "pending"
-    RUNNING = "running"
-    SUCCESS = "success"
-    FAILURE = "failure"
-    SKIPPED = "skipped"
-    RETRYING = "retrying"
+# ============================================================================
+# ENUMS
+# ============================================================================
 
-class WorkflowPhase(str, enum.Enum):
-    INIT = "init"
-    PLANNING = "planning"
-    EXECUTING = "executing"
-    CORRECTING = "correcting"  # Explicit correction phase
-    REVIEWING = "reviewing"
-    COMPLETE = "complete"
-    FAILED = "failed"
+class ComplexityLevel(str, Enum):
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
 
-class SafetyMode(str, enum.Enum):
-    STRICT = "strict"
+
+class DraftingMode(str, Enum):
+    BULLET_HEAVY = "bullet_heavy"
+    MIXED_NARRATIVE = "mixed_narrative"
+    HYBRID_EXEC_SUMMARY = "hybrid_exec_summary"
     BALANCED = "balanced"
-    PERMISSIVE = "permissive"
 
-class ReasoningStrategy(str, enum.Enum):
-    DIRECT = "direct"
-    COT = "chain_of_thought"
-    TOT = "tree_of_thought"
-    REFLEXION = "reflexion"
 
-# =============================================================================
-# 2. GOVERNANCE & INFRASTRUCTURE SCHEMAS
-# =============================================================================
+# ============================================================================
+# CORE INPUT MODELS
+# ============================================================================
 
-# --- PROMPT REGISTRY (Pillar 13) ---
-class PromptVersion(BaseModel):
-    """Metadata for a specific version of a prompt."""
-    version_id: str
-    template: str
-    input_variables: List[str]
-    model_constraints: Dict[str, Any] = Field(default_factory=dict)
-    changelog: str = ""
-    
-class PromptBundle(BaseModel):
-    """A named prompt family (e.g. 'strategy_planner')."""
-    bundle_id: str
-    current_version: str
-    versions: Dict[str, PromptVersion] = Field(default_factory=dict)
-    description: str = ""
+class JobInput(BaseModel):
+    title: str
+    role_type: str
+    seniority: str
+    posting_text: str
+    requirements: List[str] = Field(default_factory=list)
 
-# --- ROUTING POLICY (Pillar 11) ---
-class RoutingRequest(BaseModel):
-    """Input to the Routing Engine."""
-    task_type: str  # strategy, drafting, etc.
-    complexity: str # low, medium, high
-    priority: str   # normal, high
-    cost_sensitive: bool = False
 
-class RoutingDecision(BaseModel):
-    """Output from the Routing Engine."""
-    model_id: str
-    provider: str   # openai, anthropic
-    max_tokens: int
-    temperature: float
-    reasoning_effort: str = "medium"
-    rationale: str
+class ResumeInput(BaseModel):
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    linkedin: Optional[str] = None
+    summary: Optional[str] = None
+    experience_sections: List[Dict[str, Any]] = Field(default_factory=list)
+    skills: List[str] = Field(default_factory=list)
+    projects: List[Dict[str, Any]] = Field(default_factory=list)
 
-# --- SAFETY POLICY (Pillar 9) ---
-class SafetyRule(BaseModel):
-    rule_id: str
+
+# ============================================================================
+# WORKFLOW CONFIG
+# ============================================================================
+
+class WorkflowConfig(BaseModel):
+    # Cost / latency budgets
+    cost_budget: float = 0.10
+    latency_slo_ms: int = 3000
+    safety_sensitivity: int = 3
+    drafting_depth: int = 3
+
+    # Tone / length
+    target_tone: str = "professional"
+    target_total_tokens: int = 1800
+
+    # RAG parameters
+    rag_max_job_chunks: int = 8
+    rag_max_resume_chunks: int = 10
+    rag_max_hybrid_chunks: int = 4
+    rag_allow_hyde: bool = True
+    rag_require_hybrid: bool = False
+
+    # Drafting token budgets
+    section_max_tokens: Dict[str, int] = Field(
+        default_factory=lambda: {
+            "header": 256,
+            "summary": 512,
+            "experience": 1024,
+            "skills": 512,
+            "projects": 768,
+        }
+    )
+
+
+# ============================================================================
+# ROUTING HINT
+# ============================================================================
+
+class RoutingHint(BaseModel):
+    complexity: ComplexityLevel
+    cost_budget: float
+    latency_slo_ms: int
+    safety_sensitivity: int
+    drafting_depth: int
+
+
+# ============================================================================
+# STRATEGY PLAN + RESULT
+# ============================================================================
+
+class StrategyStep(BaseModel):
+    id: str
+    order: int
     description: str
-    severity: str # critical, high, medium, low
-    category: str
+    must_complete: bool = True
+    can_parallelize: bool = False
 
-class SafetyPolicy(BaseModel):
-    policy_id: str
-    mode: SafetyMode
-    rules: List[SafetyRule]
-    threshold: float
 
-# =============================================================================
-# 3. COGNITIVE CONTRACTS (L1 / L2)
-# =============================================================================
+class StrategyPlan(BaseModel):
+    complexity: ComplexityLevel
+    routing_hint: RoutingHint
+    steps: List[StrategyStep]
 
-# --- L1 PLAN ---
-class PlanStep(BaseModel):
-    step_id: str
-    description: str
-    dependencies: List[str] = Field(default_factory=list)
-    config: Dict[str, Any] = Field(default_factory=dict)
-
-class PlanObject(BaseModel):
-    """Strict contract from L1 Planner."""
-    workflow_id: str
-    objective: str
-    mode: str
-    complexity: str
-    reasoning_strategy: ReasoningStrategy
-    steps: List[PlanStep]
-    context_pointers: Dict[str, str] = Field(default_factory=dict)
-    
-    # Flexible bucket for mode-specific params (validated downstream)
-    meta: Dict[str, Any] = Field(default_factory=dict)
-
-# --- L2 EXECUTION RESULT ---
-PayloadT = TypeVar("PayloadT")
-
-class ExecutionResult(BaseModel, Generic[PayloadT]):
-    """Strict contract from L2 Executors."""
-    status: NodeStatus
-    payload: Optional[PayloadT] = None
-    error: Optional[str] = None
-    meta: Dict[str, Any] = Field(default_factory=dict)
-    
-    # Metrics
-    latency_ms: float = 0.0
-    model_used: Optional[str] = None
-    tokens_used: int = 0
-
-# --- DOMAIN SPECIFIC PAYLOADS ---
 
 class StrategyBranch(BaseModel):
-    branch_id: str
-    name: str
-    rationale: str
-    steps: List[str]
-    score: float = 0.0
+    id: str
+    text: str
 
-class StrategyPayload(BaseModel):
+
+class StrategyResult(BaseModel):
     branches: List[StrategyBranch]
-    selected_branch_id: str
-    reasoning_trace: str
+    chosen_branch_id: str
 
-class DraftSection(BaseModel):
-    section_id: str
-    content: str
-    critique: Optional[str] = None
+    def get_chosen_branch_text(self) -> str:
+        for b in self.branches:
+            if b.id == self.chosen_branch_id:
+                return b.text
+        return ""
 
-class DraftingPayload(BaseModel):
-    full_text: str
-    sections: List[DraftSection]
-    tone_compliance: float
 
-class QAFinding(BaseModel):
-    finding_id: str
-    category: str
-    severity: str
-    message: str
-    location: str
+# ============================================================================
+# RAG PLAN + RESULT
+# ============================================================================
 
-class QAPayload(BaseModel):
-    passed: bool
+class RAGQueryHint(BaseModel):
+    id: str
+    description: str
+    focus: str      # job / resume / hybrid
+    max_chunks: int
+    importance: float
+
+
+class RAGPlan(BaseModel):
+    hints: List[RAGQueryHint]
+    allow_hyde: bool = True
+    require_hybrid: bool = False
+
+
+class Evidence(BaseModel):
+    text: str
     score: float
-    findings: List[QAFinding]
-    summary: str
+    source: str
+
+
+class RAGResult(BaseModel):
+    evidence: List[Evidence] = Field(default_factory=list)
+    used_hyde: bool = False
+
+
+# ============================================================================
+# DRAFTING PLAN + RESULT
+# ============================================================================
+
+class DraftSectionPlan(BaseModel):
+    id: str
+    title: str
+    required: bool
+    max_tokens: int
+    priority: float
+
+
+class DraftingPlan(BaseModel):
+    mode: DraftingMode
+    sections: List[DraftSectionPlan]
+    target_tone: str
+    target_length_tokens: int
+
+
+class DraftSectionResult(BaseModel):
+    title: str
+    outline: str
+    text: str
+    compliance_notes: str
+
+
+class DraftingResult(BaseModel):
+    sections: List[DraftSectionResult]
+    mode: DraftingMode
+
+
+# ============================================================================
+# QA PLAN + RESULT
+# ============================================================================
+
+class QACheck(BaseModel):
+    id: str
+    description: str
+    category: str
+    severity: int = 1
+
+
+class QACheckResult(BaseModel):
+    id: str
+    passed: bool
+    reason: str
+    severity: int
+
+
+class QAPlan(BaseModel):
+    checks: List[QACheck]
+
+
+class QAResult(BaseModel):
+    checks: List[QACheckResult]
+
+
+# ============================================================================
+# SAFETY PLAN + RESULT
+# ============================================================================
+
+class SafetyCheck(BaseModel):
+    id: str
+    description: str
+    category: str
+    severity: int = 1
+
 
 class SafetyFinding(BaseModel):
-    rule_id: str
-    violated: bool
-    confidence: float
-    snippet: str
+    id: str
+    category: str
+    blocking: bool
+    reason: str
 
-class SafetyPayload(BaseModel):
-    blocked: bool
+
+class SafetyResult(BaseModel):
     findings: List[SafetyFinding]
-    policy_version: str
 
-# =============================================================================
-# 4. SELF-CORRECTION & DIAGNOSTICS (Pillar 5)
-# =============================================================================
 
-class CorrectionSignal(BaseModel):
-    """A detected issue requiring intervention."""
-    signal_id: str
-    surface: str  # e.g. "qa_failure", "safety_block"
-    severity: float # 0.0 to 1.0
-    context: Dict[str, Any]
+# ============================================================================
+# WORKFLOW PLAN BUNDLE (L1 OUTPUT)
+# ============================================================================
 
-class CorrectionProposal(BaseModel):
-    """Proposed fix from the Correction Engine."""
-    action: str   # retry, replan, escalate
-    target_node: str
-    parameters: Dict[str, Any]
-    rationale: str
+class WorkflowPlanBundle(BaseModel):
+    strategy: StrategyPlan
+    rag: RAGPlan
+    drafting: DraftingPlan
+    qa: QAPlan
+    safety: SafetyPlan
+    routing_hint: RoutingHint
 
-class MetaProfile(BaseModel):
-    """Adaptive memory of the agent."""
-    bias_routing_fast: bool = False
-    bias_planning_conservative: bool = False
-    bias_safety_strict: bool = False
-    history: List[Dict[str, Any]] = Field(default_factory=list)
 
-# =============================================================================
-# 5. STATE & ORCHESTRATION (Pillar 4 / 7)
-# =============================================================================
+# ============================================================================
+# L2 EXECUTION RESULT BUNDLE
+# ============================================================================
 
-class StatePatch(BaseModel):
-    """Atomic update to L4 State."""
-    op: str = "merge" # merge, replace, append
-    path: str         # dot-notation path (e.g. "draft_result.sections")
-    value: Any
+class L2ResultBundle(BaseModel):
+    strategy: StrategyResult
+    rag: RAGResult
+    drafting: DraftingResult
+    qa: QAResult
+    safety: SafetyResult
 
-class WorkflowState(BaseModel):
-    """The immutable snapshot of the agent's world."""
-    workflow_id: str
-    phase: WorkflowPhase
-    
-    # Core Data Buckets
-    objective: str
-    messages: List[Dict[str, Any]]
-    rag_docs: List[Dict[str, Any]]
-    
-    # Domain Results (Optional, populated as workflow progresses)
-    strategy_result: Optional[StrategyPayload] = None
-    draft_result: Optional[DraftingPayload] = None
-    qa_result: Optional[QAPayload] = None
-    safety_result: Optional[SafetyPayload] = None
-    
-    # Meta
-    correction_log: List[CorrectionSignal] = Field(default_factory=list)
-    meta_profile: MetaProfile = Field(default_factory=MetaProfile)
-    
-    # Traceability
-    trace_id: str
+
+# ============================================================================
+# EXECUTION CONTEXT (passed to L2 + L3)
+# ============================================================================
+
+class ExecutionContext(BaseModel):
+    job: JobInput
+    resume: ResumeInput
+    config: WorkflowConfig
+
+    routing_policy: Any
+    sandbox_config: Any
+    prompt_registry: Any
+    cache_manager: Optional[Any] = None
+    meta_profile_snapshot: Optional[Any] = None
+
+    def span_context(self) -> Dict[str, Any]:
+        return {
+            "job_title": self.job.title,
+            "role_type": self.job.role_type,
+            "seniority": self.job.seniority,
+        }
