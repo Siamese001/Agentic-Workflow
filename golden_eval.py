@@ -1,148 +1,369 @@
-# FILE: golden_eval.py
+# FILE: 10_10/golden_eval.py
 """
-Unified Golden State Evaluator (v10_10) — REGRESSION TESTING ENGINE
+Golden State Evaluator (v10_10)
+===============================
 
-This module implements Pillar 12 (Testing).
-It evaluates the quality of a `WorkflowState` against defined Golden Records.
+This module provides a deterministic evaluation harness for the v10_10
+agentic workflow. It operates on the final L4 state patch (a plain dict)
+and compares it against golden expectations defined in JSON.
 
-Responsibilities:
-    1. Structural Validation: Ensure strict Pydantic contracts were met.
-    2. Semantic Scoring: Compare actual outputs vs expected baselines.
-    3. Governance Check: Ensure Safety/Policy constraints were honored.
+Goals:
+    • No LLM calls.
+    • No orchestration, execution, or planning.
+    • Purely deterministic scoring.
+    • CI/CD-friendly: non-zero exit on regression when wired via CLI.
 
-Usage:
-    evaluator = GoldenEvaluator()
-    report = evaluator.grade(run_state, golden_expectations)
+Core Concepts:
+    • GoldenExpectation: what "good" looks like for a scenario.
+    • EvalMetric: a single metric with score + pass/fail + reason.
+    • EvalReport: aggregate of metrics and a total score.
+
+Typical usage in CI:
+    1. Run the workflow to produce a state patch.
+    2. Load a GoldenExpectation from disk.
+    3. Call evaluate_patch(patch, expectation).
+    4. Fail CI if total_score < threshold or any critical metric fails.
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
+from dataclasses import dataclass
+from typing import List, Dict, Any, Optional
+import json
+from pathlib import Path
+
 from pydantic import BaseModel, Field
 
-from models import (
-    WorkflowState, 
-    WorkflowPhase, 
-    NodeStatus
-)
-from runtime_utils import RetrievalMath
 
 # =============================================================================
-# EVALUATION MODELS
+# Evaluation Models
 # =============================================================================
+
+class GoldenExpectation(BaseModel):
+    """
+    Defines what "good" looks like for a single scenario.
+
+    Fields:
+        scenario_id:          Unique identifier for the scenario.
+        required_sections:    Section titles that MUST be present.
+        min_evidence:         Minimum number of RAG evidence items required.
+        allow_blocking_safety:false if ANY blocking safety finding is unacceptable.
+        max_failed_qa:        Maximum number of failed QA checks allowed.
+        min_total_score:      Minimum total score (0.0 - 1.0) to consider scenario passing.
+    """
+    scenario_id: str
+    required_sections: List[str] = Field(default_factory=list)
+    min_evidence: int = 1
+    allow_blocking_safety: bool = False
+    max_failed_qa: int = 0
+    min_total_score: float = 0.8
+
 
 class EvalMetric(BaseModel):
+    """
+    Single evaluation metric.
+    """
     name: str
     score: float  # 0.0 to 1.0
     passed: bool
     reason: str
 
+
 class EvalReport(BaseModel):
+    """
+    Aggregate evaluation report for a scenario.
+    """
     scenario_id: str
     total_score: float
     metrics: List[EvalMetric]
-    critical_failure: bool = False
-
-class GoldenExpectation(BaseModel):
-    """The 'Right Answer' for a specific test scenario."""
-    scenario_id: str
-    expected_phase: WorkflowPhase = WorkflowPhase.COMPLETE
-    required_keys: List[str] = Field(default_factory=list)
-    # Semantic assertions
-    min_rag_docs: int = 0
-    must_contain_text: List[str] = Field(default_factory=list)
-    must_block_safety: bool = False
+    passed: bool
+    threshold: float
 
 
 # =============================================================================
-# EVALUATOR ENGINE
+# Core Evaluation Logic
 # =============================================================================
 
-class GoldenEvaluator:
+def evaluate_patch(
+    state_patch: Dict[str, Any],
+    expectation: GoldenExpectation,
+) -> EvalReport:
     """
-    Grades a completed workflow run.
+    Evaluate a single state patch (final_state_patch from L3/L4) against a
+    GoldenExpectation.
+
+    The `state_patch` is expected to be shaped like:
+
+        {
+            "strategy_text": str | None,
+            "rag_evidence": [ { "text": ..., "score": ..., "source": ... }, ... ],
+            "drafted_sections": [ { "title": ..., "text": ..., ... }, ... ],
+            "qa_findings": [ { "id": ..., "passed": bool, ... }, ... ],
+            "safety_findings": [ { "id": ..., "category": ..., "blocking": bool, ... }, ... ],
+            "correction_signals": [ { "surface": ..., "severity": ..., ... }, ... ],
+            "safety_passed": bool
+        }
+
+    This function performs a set of deterministic checks and returns
+    an EvalReport with granular metrics + total score.
     """
 
-    def grade(self, state: WorkflowState, expectation: GoldenExpectation) -> EvalReport:
-        metrics = []
-        
-        # 1. Phase Check (Structural)
-        phase_pass = (state.phase == expectation.expected_phase)
-        metrics.append(EvalMetric(
-            name="phase_integrity",
-            score=1.0 if phase_pass else 0.0,
-            passed=phase_pass,
-            reason=f"Expected {expectation.expected_phase}, got {state.phase}"
-        ))
+    metrics: List[EvalMetric] = []
 
-        # 2. Data Availability Check (Contract)
-        keys_pass = True
-        missing = []
-        state_dict = state.model_dump() # Flatten for checking
-        
-        for key in expectation.required_keys:
-            # Check if key exists in 'result' dict (L4 state)
-            if key not in state.result:
-                keys_pass = False
-                missing.append(key)
-        
-        metrics.append(EvalMetric(
-            name="contract_fulfillment",
-            score=1.0 if keys_pass else 0.0,
-            passed=keys_pass,
-            reason=f"Missing keys: {missing}" if missing else "All contracts met"
-        ))
+    # -------------------------------------------------------------------------
+    # 1. Sections: coverage of required sections
+    # -------------------------------------------------------------------------
+    drafted_sections = state_patch.get("drafted_sections", []) or []
+    titles = {str(sec.get("title", "")).strip().lower() for sec in drafted_sections}
 
-        # 3. Semantic Checks (Content)
-        # RAG Count
-        rag_docs = state.rag_docs or []
-        rag_pass = len(rag_docs) >= expectation.min_rag_docs
-        metrics.append(EvalMetric(
-            name="retrieval_volume",
-            score=1.0 if rag_pass else 0.0,
-            passed=rag_pass,
-            reason=f"Retrieved {len(rag_docs)} docs, needed {expectation.min_rag_docs}"
-        ))
-
-        # Text inclusions (Keyword checking)
-        # In a real system, this would use LLM-as-a-Judge
-        full_text_content = str(state.result)
-        text_score = 0.0
-        if expectation.must_contain_text:
-            hits = 0
-            for text in expectation.must_contain_text:
-                if text.lower() in full_text_content.lower():
-                    hits += 1
-            text_score = hits / len(expectation.must_contain_text)
+    missing_sections = [
+        sec for sec in expectation.required_sections
+        if sec.strip().lower() not in titles
+    ]
+    if expectation.required_sections:
+        if missing_sections:
+            score_sections = max(0.0, 1.0 - len(missing_sections) / max(1, len(expectation.required_sections)))
+            metrics.append(
+                EvalMetric(
+                    name="sections_coverage",
+                    score=score_sections,
+                    passed=False,
+                    reason=f"Missing sections: {missing_sections}",
+                )
+            )
         else:
-            text_score = 1.0
+            metrics.append(
+                EvalMetric(
+                    name="sections_coverage",
+                    score=1.0,
+                    passed=True,
+                    reason="All required sections present.",
+                )
+            )
 
-        metrics.append(EvalMetric(
-            name="semantic_accuracy",
-            score=text_score,
-            passed=(text_score == 1.0),
-            reason=f"Matched {text_score:.0%} of expected phrases"
-        ))
-
-        # 4. Governance Check (Safety)
-        # Did we block when we were supposed to?
-        safety_res = state.safety_result
-        if expectation.must_block_safety:
-            blocked = safety_res.blocked if safety_res else False
-            metrics.append(EvalMetric(
-                name="safety_enforcement",
-                score=1.0 if blocked else 0.0,
-                passed=blocked,
-                reason="Safety correctly blocked content" if blocked else "FAILED: Unsafe content allowed"
-            ))
-
-        # Summary
-        total = sum(m.score for m in metrics) / len(metrics) if metrics else 0.0
-        critical = any(not m.passed for m in metrics)
-
-        return EvalReport(
-            scenario_id=expectation.scenario_id,
-            total_score=total,
-            metrics=metrics,
-            critical_failure=critical
+    # -------------------------------------------------------------------------
+    # 2. Evidence: RAG evidence sufficiency
+    # -------------------------------------------------------------------------
+    rag_evidence = state_patch.get("rag_evidence", []) or []
+    num_evidence = len(rag_evidence)
+    if num_evidence < expectation.min_evidence:
+        score_evidence = num_evidence / max(1, expectation.min_evidence)
+        metrics.append(
+            EvalMetric(
+                name="rag_evidence_sufficiency",
+                score=score_evidence,
+                passed=False,
+                reason=f"Expected at least {expectation.min_evidence} evidence items; found {num_evidence}.",
+            )
         )
+    else:
+        metrics.append(
+            EvalMetric(
+                name="rag_evidence_sufficiency",
+                score=1.0,
+                passed=True,
+                reason=f"Sufficient evidence items ({num_evidence}).",
+            )
+        )
+
+    # -------------------------------------------------------------------------
+    # 3. QA: number of failed QA checks
+    # -------------------------------------------------------------------------
+    qa_findings = state_patch.get("qa_findings", []) or []
+    failed_qa = [q for q in qa_findings if not q.get("passed", False)]
+    num_failed_qa = len(failed_qa)
+
+    if num_failed_qa > expectation.max_failed_qa:
+        score_qa = max(0.0, 1.0 - (num_failed_qa - expectation.max_failed_qa) / max(1, len(qa_findings) or 1))
+        metrics.append(
+            EvalMetric(
+                name="qa_failures",
+                score=score_qa,
+                passed=False,
+                reason=f"{num_failed_qa} QA checks failed; allowed max {expectation.max_failed_qa}.",
+            )
+        )
+    else:
+        metrics.append(
+            EvalMetric(
+                name="qa_failures",
+                score=1.0,
+                passed=True,
+                reason=f"{num_failed_qa} QA failures within allowed threshold.",
+            )
+        )
+
+    # -------------------------------------------------------------------------
+    # 4. Safety: blocking findings
+    # -------------------------------------------------------------------------
+    safety_findings = state_patch.get("safety_findings", []) or []
+    blocking = [f for f in safety_findings if f.get("blocking", False)]
+
+    if blocking and not expectation.allow_blocking_safety:
+        metrics.append(
+            EvalMetric(
+                name="safety_blocking",
+                score=0.0,
+                passed=False,
+                reason=f"Blocking safety findings present: {len(blocking)}.",
+            )
+        )
+    else:
+        metrics.append(
+            EvalMetric(
+                name="safety_blocking",
+                score=1.0,
+                passed=True,
+                reason="No disallowed blocking safety findings.",
+            )
+        )
+
+    # -------------------------------------------------------------------------
+    # 5. Strategy presence
+    # -------------------------------------------------------------------------
+    strategy_text = state_patch.get("strategy_text") or ""
+    if len(strategy_text.strip()) < 40:
+        score_strategy = max(0.0, len(strategy_text.strip()) / 40.0)
+        metrics.append(
+            EvalMetric(
+                name="strategy_quality",
+                score=score_strategy,
+                passed=False,
+                reason="Strategy text is too short or missing.",
+            )
+        )
+    else:
+        metrics.append(
+            EvalMetric(
+                name="strategy_quality",
+                score=1.0,
+                passed=True,
+                reason="Strategy text appears present and substantive.",
+            )
+        )
+
+    # -------------------------------------------------------------------------
+    # 6. Safety gate pass/fail consistency
+    # -------------------------------------------------------------------------
+    safety_passed = bool(state_patch.get("safety_passed", False))
+    if blocking and safety_passed and not expectation.allow_blocking_safety:
+        metrics.append(
+            EvalMetric(
+                name="safety_gate_consistency",
+                score=0.0,
+                passed=False,
+                reason="Safety gate passed even though blocking findings exist.",
+            )
+        )
+    else:
+        metrics.append(
+            EvalMetric(
+                name="safety_gate_consistency",
+                score=1.0,
+                passed=True,
+                reason="Safety gate consistent with safety findings.",
+            )
+        )
+
+    # -------------------------------------------------------------------------
+    # Aggregate overall score
+    # -------------------------------------------------------------------------
+    if metrics:
+        total_score = sum(m.score for m in metrics) / len(metrics)
+    else:
+        total_score = 1.0
+
+    passed = total_score >= expectation.min_total_score
+    return EvalReport(
+        scenario_id=expectation.scenario_id,
+        total_score=total_score,
+        metrics=metrics,
+        passed=passed,
+        threshold=expectation.min_total_score,
+    )
+
+
+# =============================================================================
+# JSON I/O Helpers
+# =============================================================================
+
+def load_expectations(path: str | Path) -> List[GoldenExpectation]:
+    """
+    Load a list of GoldenExpectation objects from a JSON file.
+
+    Expecting a JSON array of objects like:
+        [
+          {
+            "scenario_id": "scenario_1",
+            "required_sections": ["Header", "Experience"],
+            "min_evidence": 2,
+            "allow_blocking_safety": false,
+            "max_failed_qa": 0,
+            "min_total_score": 0.9
+          },
+          ...
+        ]
+    """
+    path = Path(path)
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(data, dict):
+        data = [data]
+    return [GoldenExpectation.model_validate(d) for d in data]
+
+
+def save_report(report: EvalReport, path: str | Path) -> None:
+    """
+    Save an EvalReport to a JSON file.
+    """
+    path = Path(path)
+    path.write_text(report.model_dump_json(indent=2, by_alias=True), encoding="utf-8")
+
+
+# =============================================================================
+# Optional CLI Entrypoint
+# =============================================================================
+
+def _cli():
+    """
+    Simple CLI:
+
+        python 10_10/golden_eval.py \
+            --patch state_patch.json \
+            --expectation golden_expectation.json \
+            --out eval_report.json
+    """
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(description="Golden State Evaluator (v10_10)")
+    parser.add_argument("--patch", required=True, help="Path to state_patch JSON")
+    parser.add_argument("--expectation", required=True, help="Path to GoldenExpectation JSON")
+    parser.add_argument("--out", required=False, help="Path to write EvalReport JSON")
+
+    args = parser.parse_args()
+
+    try:
+        patch_data = json.loads(Path(args.patch).read_text(encoding="utf-8"))
+        expectations = load_expectations(args.expectation)
+
+        if len(expectations) != 1:
+            print("Expected exactly one expectation in file.", file=sys.stderr)
+            sys.exit(1)
+
+        report = evaluate_patch(patch_data, expectations[0])
+
+        if args.out:
+            save_report(report, args.out)
+        else:
+            print(report.model_dump_json(indent=2))
+
+        # Exit non-zero if failed
+        sys.exit(0 if report.passed else 2)
+
+    except Exception as e:
+        print(f"Golden eval failed: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    _cli()
