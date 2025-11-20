@@ -1,205 +1,215 @@
-# FILE: main_v10_10.py
+# FILE: 10_10/main_v10_10.py
 """
-Main Orchestration Entrypoint (v10_10 · Phase 2)
-================================================
+Main Pipeline Entrypoint (v10_10 · Phase 2)
+===========================================
 
-This is the top-level runtime entrypoint for the v10_10 workflow.
+This file defines the *top-level* runtime API for executing the full
+agentic workflow.
 
-Phase-2 guarantees:
-    • Pure orchestration only — NO LLM calls here.
-    • All LLM calls route through L2 → cognitive_agents → prompt_builder.
-    • All prompts routed through prompt_system_v10_10 with ACL enforcement.
-    • All state mutation (future L4) strictly excluded here.
-    • All model routing governed via RoutingPolicy.
-    • Observability spans for the entire workflow.
-    • Deterministic execution: L1 → L2 → L3/L5 orchestration pattern.
+Responsibilities:
+    • Construct the ExecutionContext (routing, sandbox, profiles, metadata)
+    • Run L1 planning (pure, no LLMs)
+    • Run L2 execution (LLMs + retrieval)
+    • Run L3 orchestration (clean sequencing + retries if configured)
+    • Run L4 mutation (state adapter; context writing)
+    • Run L5 safety enforcement (policy outputs)
+    • Return fully structured WorkflowOutput
 
-Valid high-level data flow:
-    1. L1:   planning only (no tools, no LLM).
-    2. L2:   LLM execution (strategy, drafting, QA, safety pre-check).
-    3. L3:   control flow, retries, fallback behaviors.
-    4. L4:   state updates (disabled until Phase 4).
-    5. L5:   safety enforcement (policy finalization).
+NOT responsible for:
+    • Prompt construction (Phase 2 → prompt_builder)
+    • Prompt registry / ACLs (prompt_system_v10_10)
+    • Agent-level LLM logic (cognitive_agents)
+    • Detailed Retrieval/RAG logic (retrieval.py / ranking.py)
 
-This file constructs:
-    • ExecutionContext
-    • Performs L1 planning
-    • Calls L2 workflow executor
-    • Applies L3/L5 enforcement logic
-    • Returns a final structured result bundle
+This file is the "public API" of the runtime. Everything outside should
+import and call run_workflow() only.
 """
 
 from __future__ import annotations
 
-import traceback
-from typing import Optional
+from dataclasses import dataclass
+from typing import Optional, Dict, Any
 
 from models import (
     JobInput,
     ResumeInput,
     WorkflowConfig,
     WorkflowPlanBundle,
+    WorkflowOutput,
     ExecutionContext,
-    FinalWorkflowResult,
 )
 
-from observability import start_span, end_span, log_exception, record_event
-from l1 import generate_workflow_plans
+from l1 import plan_workflow
 from l2 import execute_workflow_plans
-from l3 import orchestrate_l3_fallbacks
-from l5 import enforce_final_safety_policy
+from l3 import orchestrate_execution
+from l4 import write_state
+from l5 import enforce_safety
 
 from routing import RoutingPolicy
 from runtime_utils import SandboxConfig
-from meta_profile import load_meta_profile_snapshot
+from meta_profile import MetaProfileSnapshot
+from observability import start_span, end_span, record_exception, emit_cost_snapshot
+from config_profiles_v10_10 import EXECUTION_PROFILES
 
 
 # =============================================================================
-# Initialization Helpers
+# High-level Orchestration
 # =============================================================================
 
 
-def _build_execution_context(
+def _build_context(
     *,
     job: JobInput,
     resume: ResumeInput,
     config: WorkflowConfig,
-    routing_policy: Optional[RoutingPolicy] = None,
-    sandbox: Optional[SandboxConfig] = None,
+    profile_id: Optional[str] = None,
+    meta: Optional[Dict[str, Any]] = None,
 ) -> ExecutionContext:
     """
-    Build the typed ExecutionContext consumed by all layers.
-    """
-    rp = routing_policy or RoutingPolicy.from_config(config)
-    sb = sandbox or SandboxConfig()
+    Construct the ExecutionContext, the unified "environment"
+    container passed across layers.
 
-    meta = load_meta_profile_snapshot(
-        job=job,
-        resume=resume,
-        config=config,
+    Context contains:
+        • job, resume, config
+        • routing policy (model selection)
+        • sandbox config
+        • execution profile (model tier, safety tier)
+        • meta-profile (behavioral nudge signals)
+    """
+
+    profile = (
+        EXECUTION_PROFILES[profile_id]
+        if profile_id and profile_id in EXECUTION_PROFILES
+        else EXECUTION_PROFILES["default"]
     )
+
+    routing_policy = RoutingPolicy(model_tier=profile.model_tier)
+    sandbox = SandboxConfig(enable_network=False, strict_sandbox=True)
+    meta_snapshot = MetaProfileSnapshot.from_dict(meta or {})
 
     return ExecutionContext(
         job=job,
         resume=resume,
         config=config,
-        routing_policy=rp,
-        sandbox_config=sb,
-        cache_manager=None,
+        routing_policy=routing_policy,
+        sandbox_config=sandbox,
         prompt_registry=None,
-        meta_profile_snapshot=meta,
+        cache_manager=None,
+        meta_profile_snapshot=meta_snapshot,
     )
 
 
 # =============================================================================
-# Main Orchestration Entry Point
+# Full Workflow Entrypoint
 # =============================================================================
 
 
 def run_workflow(
+    *,
     job: JobInput,
     resume: ResumeInput,
     config: WorkflowConfig,
-) -> FinalWorkflowResult:
+    profile_id: Optional[str] = None,
+    meta: Optional[Dict[str, Any]] = None,
+) -> WorkflowOutput:
     """
-    Single public API for executing the full v10_10 workflow.
+    Execute the full multi-layer workflow.
 
-    Validated processing order:
-        1. Build ExecutionContext
-        2. L1: planning (pure reasoning)
-        3. L2: execution (LLM calls)
-        4. L3: fallback & recovery routing
-        5. L5: enforce safety policy
-        6. Return FinalWorkflowResult
+    This is the ONLY public API entrypoint for the runtime.
+    External callers (API server, batch runner, notebook) must use this.
+
+    Pipeline:
+        L1 → L2 → L3 → L4 → L5
     """
 
-    top_span = start_span("workflow.run", {"job": job.title, "resume": resume.name})
+    span = start_span("workflow.run", {"profile_id": profile_id})
 
     try:
         # ------------------------------------------------------------------
-        # Build unified context
+        # Build execution context
         # ------------------------------------------------------------------
-        ctx = _build_execution_context(job=job, resume=resume, config=config)
-        record_event("workflow.context_ready")
-
-        # ------------------------------------------------------------------
-        # L1 – Planning (NO LLM calls, no retrieval)
-        # ------------------------------------------------------------------
-        l1_span = start_span("workflow.l1_planning")
-        try:
-            plans: WorkflowPlanBundle = generate_workflow_plans(job, resume, config)
-            record_event("workflow.l1_completed")
-        except Exception as exc:
-            log_exception("workflow.l1_error", exc)
-            end_span(l1_span)
-            raise
-        end_span(l1_span)
-
-        # ------------------------------------------------------------------
-        # L2 – Execution (all LLM calls routed through cognitive agents)
-        # ------------------------------------------------------------------
-        l2_span = start_span("workflow.l2_execute")
-        try:
-            l2_results = execute_workflow_plans(plans, ctx)
-            record_event("workflow.l2_completed")
-        except Exception as exc:
-            log_exception("workflow.l2_error", exc)
-            end_span(l2_span)
-            raise
-        end_span(l2_span)
-
-        # ------------------------------------------------------------------
-        # L3 – Orchestration / fallback logic
-        # ------------------------------------------------------------------
-        l3_span = start_span("workflow.l3_orchestration")
-        try:
-            l3_results = orchestrate_l3_fallbacks(
-                l2_results=l2_results,
-                plans=plans,
-                ctx=ctx,
-            )
-            record_event("workflow.l3_completed")
-        except Exception as exc:
-            log_exception("workflow.l3_error", exc)
-            end_span(l3_span)
-            raise
-        end_span(l3_span)
-
-        # ------------------------------------------------------------------
-        # L5 – Final safety enforcement (policy layer)
-        # ------------------------------------------------------------------
-        l5_span = start_span("workflow.l5_safety")
-        try:
-            safe_result = enforce_final_safety_policy(
-                l3_results=l3_results,
-                safety_plan=plans.safety,
-                ctx=ctx,
-            )
-            record_event("workflow.l5_completed")
-        except Exception as exc:
-            log_exception("workflow.l5_error", exc)
-            end_span(l5_span)
-            raise
-        end_span(l5_span)
-
-        # ------------------------------------------------------------------
-        # Final output
-        # ------------------------------------------------------------------
-        return FinalWorkflowResult(
+        ctx = _build_context(
             job=job,
             resume=resume,
             config=config,
-            strategy=l2_results.strategy,
-            rag=l2_results.rag,
-            drafting=l2_results.drafting,
-            qa=l3_results.qa,
-            safety=safe_result,
+            profile_id=profile_id,
+            meta=meta,
         )
 
+        # ------------------------------------------------------------------
+        # L1: Planning (pure, no LLM)
+        # ------------------------------------------------------------------
+        plan_span = start_span("workflow.l1.plan", {})
+        try:
+            plan_bundle: WorkflowPlanBundle = plan_workflow(job, resume, config, ctx)
+        finally:
+            end_span(plan_span)
+
+        # ------------------------------------------------------------------
+        # L2: Execution (LLMs + retrievers)
+        # ------------------------------------------------------------------
+        l2_span = start_span("workflow.l2.execute", {})
+        try:
+            l2_results = execute_workflow_plans(plan_bundle, ctx)
+        finally:
+            end_span(l2_span)
+
+        # ------------------------------------------------------------------
+        # L3: Orchestration (flow-level consistency)
+        #      - May apply retries, repair logic, cross-agent arbitration
+        # ------------------------------------------------------------------
+        l3_span = start_span("workflow.l3.orchestrate", {})
+        try:
+            l3_results = orchestrate_execution(l2_results, plan_bundle, ctx)
+        finally:
+            end_span(l3_span)
+
+        # ------------------------------------------------------------------
+        # L4: State mutation (allowed surface only)
+        #      - Saves intermediate artifacts into context state adapter
+        # ------------------------------------------------------------------
+        l4_span = start_span("workflow.l4.write_state", {})
+        try:
+            write_state(l3_results, plan_bundle, ctx)
+        finally:
+            end_span(l4_span)
+
+        # ------------------------------------------------------------------
+        # L5: Safety enforcement (final policy pass)
+        # ------------------------------------------------------------------
+        l5_span = start_span("workflow.l5.enforce_safety", {})
+        try:
+            final_output: WorkflowOutput = enforce_safety(l3_results, plan_bundle, ctx)
+        finally:
+            end_span(l5_span)
+
+        emit_cost_snapshot(ctx.model_usage_snapshot())
+
+        return final_output
+
     except Exception as exc:
-        log_exception("workflow.fatal", exc)
-        traceback.print_exc()
+        record_exception("workflow.run.error", exc)
         raise
 
     finally:
-        end_span(top_span)
+        end_span(span)
+
+
+# =============================================================================
+# CLI / Script Utility Entrypoint
+# =============================================================================
+
+
+def main():
+    """
+    Simple CLI stub for running the workflow via Python.
+
+    This is intentionally minimal; the real ingestion (JSON, API, CLI)
+    would wrap `run_workflow`.
+    """
+    print("This module is not intended to be executed directly.")
+    print("Use run_workflow() as the public API.")
+
+
+if __name__ == "__main__":
+    main()
