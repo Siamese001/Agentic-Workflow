@@ -1,48 +1,47 @@
 # FILE: l1.py
 """
-Unified L1 Cognition Layer (v10_10) — COGNITIVE PLANNING (RESTORED)
+Unified L1 Cognition Layer (v10_10) — COGNITIVE DIRECTOR
 
-This module implements the "Brain" of the agent. It is strictly
-COGNITION-ONLY (Pillar 1).
+This module implements Pillar 1 (Layering Model).
+It is responsible for determining "What to do" (Planning) but not "How to do it" (Execution).
 
 Responsibilities:
-    1. Analyze Context: Synthesize Job, Resume, and User Intent.
-    2. Infer Strategy: Use LLM Gateway to determine seniority, tone, and focus.
-    3. Generate Plans: Produce strict `PlanObject` contracts for L2/L3.
-    4. Injection: Embed Framing, Safety, and Tooling profiles into plans.
+    1. Context Synthesis: Aggregates Job, Resume, and User Messages.
+    2. Agent Delegation: Tasks `StrategyLLMAgent` with complex reasoning.
+    3. Contract Generation: Outputs strict `PlanObject` models for L3.
 
-Key Refactor (v10_10):
-    • Removed heuristic/regex logic (hardcoded dictionaries).
-    • Added `LLMGateway` integration for semantic planning.
-    • strictly typed `PlanObject` outputs via Pydantic.
+Refactor Highlights (v10_10):
+    • Uses `cognitive_agents.py` instead of raw Gateway calls.
+    • Removes heuristic logic; relies on Semantic Planning.
 """
 
 from __future__ import annotations
 
-import json
-from typing import Any, Dict, List, Optional
+import uuid
+from typing import Any, Dict, List
 
 from models import (
-    PlanObject,
-    StrategyExecutionPayload,
-    SelfCorrectionSurface,
-    SafetyMode
+    PlanObject, 
+    PlanStep, 
+    ReasoningStrategy,
+    SelfCorrectionSurface
 )
-from llm_gateway import GATEWAY
-from meta_profile import (
-    get_planning_bias,
-    get_safety_bias,
-    get_routing_bias
-)
+from cognitive_agents import StrategyLLMAgent
+from meta_profile import get_planning_bias, get_routing_bias
 
 # =============================================================================
-# 1. PLANNER ENGINE
+# PLANNER ENGINE
 # =============================================================================
 
 class L1Planner:
     """
-    The cognitive engine that converts intent into structured plans.
+    The architect of the workflow.
+    Converts Intent -> Plan.
     """
+
+    def __init__(self):
+        # The Specialist Agent for Planning
+        self.strategy_agent = StrategyLLMAgent()
 
     async def plan(
         self,
@@ -51,145 +50,133 @@ class L1Planner:
         workflow_id: str
     ) -> PlanObject:
         """
-        Main entry point for all planning modes.
+        Main entry point. Routes to specific planning logic based on mode.
         """
         mode = mode.lower()
-        
-        # 1. Extract Context (Read-Only View)
         context = self._extract_context(state)
         
-        # 2. Determine Meta-Biased Settings
-        reasoning_strategy = self._determine_reasoning_strategy()
-        complexity = self._estimate_complexity(context)
+        # Apply Meta-Biases (Pillar 5)
+        complexity = self._determine_complexity(context)
+        reasoning_strat = self._determine_reasoning(complexity)
 
-        # 3. Route to specific planner logic
         if mode == "strategy":
-            return await self._plan_strategy(context, workflow_id, reasoning_strategy, complexity)
-        elif mode == "rag":
-            return await self._plan_rag(context, workflow_id, complexity)
-        elif mode == "drafting":
-            return await self._plan_drafting(context, workflow_id)
-        elif mode == "qa":
-            return await self._plan_qa(context, workflow_id)
-        elif mode == "safety":
-            return await self._plan_safety(context, workflow_id)
+            return await self._plan_strategy(context, workflow_id, complexity, reasoning_strat)
         
-        # Fallback for simple modes
-        return self._build_default_plan(mode, context)
+        elif mode == "rag":
+            return self._plan_rag(context, workflow_id, complexity)
+        
+        elif mode == "drafting":
+            return self._plan_drafting(context, workflow_id)
+        
+        elif mode == "qa":
+            return self._plan_qa(context, workflow_id)
+        
+        elif mode == "safety":
+            return self._plan_safety(context, workflow_id)
+
+        # Fallback
+        return self._build_default_plan(mode, context["objective"], workflow_id)
 
     # =========================================================================
-    # MODE-SPECIFIC PLANNERS
+    # MODE-SPECIFIC LOGIC
     # =========================================================================
 
     async def _plan_strategy(
         self, 
         context: Dict[str, Any], 
         workflow_id: str,
-        strategy: str,
-        complexity: str
+        complexity: str,
+        strategy: ReasoningStrategy
     ) -> PlanObject:
         """
-        Uses LLM to generate a multi-branch strategy.
+        Uses the StrategyLLMAgent to generate a semantic plan.
         """
-        # Pillar 6: Use LLM Gateway for reasoning
-        response = await GATEWAY.call_model(
-            prompt_id="l1_strategy_planner",
-            inputs={
-                "objective": context["objective"],
-                "context_summary": context["summary_text"],
-                "branch_count": 3 if complexity == "high" else 1
-            },
-            workflow_id=workflow_id,
-            reasoning_strategy=strategy
+        # Delegate Cognition to the Agent (Pillar 2)
+        # The Agent handles the ToT prompt, Gateway routing, and Parsing.
+        payload = await self.strategy_agent.generate_plan(
+            objective=context["objective"],
+            context=context["summary_text"],
+            complexity=complexity
         )
 
-        # Parse JSON output (Simplified for v10_10 demo)
-        # In prod, use Pydantic parser on response.content
-        try:
-            # We expect the LLM to return a JSON structure matching StrategyExecutionPayload
-            # For resilience, we wrap this.
-            plan_data = json.loads(response.content) if "{" in response.content else {}
-        except:
-            plan_data = {"branches": []}
-
-        # Pillar 3: Typed Contract
+        # Convert the Agent's payload into a Workflow Plan
+        # The PlanObject instructs L3/L2 on what to execute next.
         return PlanObject(
-            mode="strategy",
-            objective=context["objective"],
             workflow_id=workflow_id,
-            steps=[
-                {"id": "branch_generation", "desc": "Generate strategic options"},
-                {"id": "branch_selection", "desc": "Select optimal path"}
-            ],
+            objective=context["objective"],
+            mode="strategy",
             complexity=complexity,
             reasoning_strategy=strategy,
-            # Pass explicit guidance to L2
-            context_profile={"raw_plan": plan_data},
-            surfaces=[SelfCorrectionSurface.STRATEGY_REPLAN]
+            steps=[
+                PlanStep(
+                    step_id="execute_strategy", 
+                    description="Execute the selected strategic branch",
+                    config={"selected_branch": payload.selected_branch_id}
+                )
+            ],
+            # Pass the agent's reasoning trace to the context for downstream L2s
+            context_pointers={"strategy_rationale": payload.reasoning_trace}
         )
 
-    async def _plan_rag(
-        self, 
-        context: Dict[str, Any], 
-        workflow_id: str,
-        complexity: str
-    ) -> PlanObject:
+    def _plan_rag(self, context: Dict[str, Any], wid: str, complexity: str) -> PlanObject:
         """
-        Plans retrieval queries based on complexity.
+        Deterministic RAG planning based on routing bias.
         """
         routing = get_routing_bias()
         
-        # Meta-aware query planning
-        query_count = 5 if routing.get("prefer_robust_retrieval") else 3
-        if complexity == "high":
-            query_count += 2
-
+        # If "Robust Retrieval" is biased on, we double the query count
+        count = 5 if routing.get("prefer_robust_retrieval") else 3
+        
         return PlanObject(
+            workflow_id=wid,
+            objective=context["objective"],
             mode="rag",
-            objective=f"Retrieve {query_count} evidence items.",
-            workflow_id=workflow_id,
-            steps=[
-                {"id": "query_generation", "count": query_count},
-                {"id": "fusion", "method": "reciprocal_rank_fusion"}
-            ],
             complexity=complexity,
-            surfaces=[SelfCorrectionSurface.RAG_RETRY]
+            reasoning_strategy=ReasoningStrategy.DIRECT,
+            steps=[
+                PlanStep(step_id="query_gen", description=f"Generate {count} queries", config={"count": count}),
+                PlanStep(step_id="retrieval", description="Execute search and fusion")
+            ]
         )
 
-    async def _plan_drafting(self, context: Dict[str, Any], workflow_id: str) -> PlanObject:
+    def _plan_drafting(self, context: Dict[str, Any], wid: str) -> PlanObject:
         return PlanObject(
+            workflow_id=wid,
+            objective=context["objective"],
             mode="drafting",
-            objective="Draft content based on strategy and evidence.",
-            workflow_id=workflow_id,
-            steps=[{"id": "section_drafting"}],
-            surfaces=[SelfCorrectionSurface.DRAFT_RETRY]
+            complexity="medium",
+            reasoning_strategy=ReasoningStrategy.COT, # Drafting benefits from CoT
+            steps=[
+                PlanStep(step_id="draft_section", description="Draft content based on strategy")
+            ]
         )
 
-    async def _plan_qa(self, context: Dict[str, Any], workflow_id: str) -> PlanObject:
+    def _plan_qa(self, context: Dict[str, Any], wid: str) -> PlanObject:
         planning_bias = get_planning_bias()
-        checks = ["completeness", "relevance"]
+        
+        # If conservative, we might add a "Cross-Check" step
+        steps = [PlanStep(step_id="semantic_review", description="Check accuracy against evidence")]
         
         if planning_bias.get("conservative"):
-            checks.extend(["tone_consistency", "evidence_citation"])
+            steps.append(PlanStep(step_id="tone_check", description="Verify professional tone"))
 
         return PlanObject(
+            workflow_id=wid,
+            objective="Validate content quality",
             mode="qa",
-            objective="Validate artifacts against requirements.",
-            workflow_id=workflow_id,
-            context_profile={"required_checks": checks},
-            surfaces=[SelfCorrectionSurface.QA_RECHECK]
+            complexity="high",
+            reasoning_strategy=ReasoningStrategy.REFLEXION, # QA is self-reflective
+            steps=steps
         )
 
-    async def _plan_safety(self, context: Dict[str, Any], workflow_id: str) -> PlanObject:
-        safety_bias = get_safety_bias()
-        mode = SafetyMode.STRICT if safety_bias.get("heightened_caution") else SafetyMode.BALANCED
-        
+    def _plan_safety(self, context: Dict[str, Any], wid: str) -> PlanObject:
         return PlanObject(
+            workflow_id=wid,
+            objective="Ensure policy compliance",
             mode="safety",
-            objective="Review content for policy violations.",
-            workflow_id=workflow_id,
-            safety_profile={"mode": mode},
-            surfaces=[SelfCorrectionSurface.SAFETY_RISK]
+            complexity="high",
+            reasoning_strategy=ReasoningStrategy.DIRECT,
+            steps=[PlanStep(step_id="constitutional_check", description="Evaluate against safety policy")]
         )
 
     # =========================================================================
@@ -197,49 +184,43 @@ class L1Planner:
     # =========================================================================
 
     def _extract_context(self, state: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Normalize state inputs for the planner.
-        """
-        # Flatten job/resume/messages into a prompt-ready summary
+        """Synthesize state into a prompt-ready summary."""
         objective = state.get("objective", "Unknown Objective")
-        messages = state.get("messages", [])
-        last_msg = messages[-1].get("content") if messages else ""
+        
+        # Simple flattening of history
+        msgs = state.get("messages", [])
+        last_user_msg = next((m["content"] for m in reversed(msgs) if m.get("role") == "user"), "")
         
         return {
             "objective": objective,
-            "summary_text": f"User Request: {last_msg}\nObjective: {objective}",
-            "job": state.get("job", {}),
-            "resume": state.get("resume", {})
+            "summary_text": f"User Request: {last_user_msg}\nGlobal Objective: {objective}",
         }
 
-    def _determine_reasoning_strategy(self) -> str:
-        """
-        Select CoT vs ToT based on Meta-Profile.
-        """
-        bias = get_planning_bias()
-        if bias.get("conservative"):
-            return "tot" # Tree of Thought for high stakes
-        if bias.get("exploratory"):
-            return "cot" # Chain of Thought for exploration
-        return "direct"
-
-    def _estimate_complexity(self, context: Dict[str, Any]) -> str:
-        """
-        Simple heuristic for complexity (can be upgraded to LLM classifier).
-        """
-        text_len = len(context.get("summary_text", ""))
-        if text_len > 1000:
+    def _determine_complexity(self, context: Dict[str, Any]) -> str:
+        """Heuristic complexity estimator."""
+        if len(context["summary_text"]) > 500:
             return "high"
-        if text_len > 200:
-            return "moderate"
-        return "low"
+        return "medium"
 
-    def _build_default_plan(self, mode: str, context: Dict[str, Any]) -> PlanObject:
+    def _determine_reasoning(self, complexity: str) -> ReasoningStrategy:
+        """Selects strategy based on complexity and bias."""
+        bias = get_planning_bias()
+        
+        if bias.get("conservative") or complexity == "high":
+            return ReasoningStrategy.TOT
+        if bias.get("exploratory"):
+            return ReasoningStrategy.COT
+        return ReasoningStrategy.DIRECT
+
+    def _build_default_plan(self, mode: str, obj: str, wid: str) -> PlanObject:
         return PlanObject(
+            workflow_id=wid,
+            objective=obj,
             mode=mode,
-            objective=context["objective"],
-            steps=[{"id": "execute"}]
+            complexity="low",
+            reasoning_strategy=ReasoningStrategy.DIRECT,
+            steps=[PlanStep(step_id="default_execute", description="Execute standard logic")]
         )
 
-# Singleton instance
+# Singleton
 PLANNER = L1Planner()
