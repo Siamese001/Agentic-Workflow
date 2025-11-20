@@ -2,261 +2,431 @@
 """
 Unified Cognitive Agents (v10_10) — INTELLIGENT PERSONAS
 
-This module implements Pillar 2 (Agent Boundaries) and Pillar 6 (Reasoning).
-It replaces the "Executors" of v10_9 with typed, specialized Cognitive Agents.
+This module hosts ALL LLM-based cognition for v10_10:
 
-AGENTS:
-    1. StrategyLLMAgent: Uses Tree-of-Thought to plan.
-    2. DraftingGuild: Multi-role swarm (Structure -> Narrative -> Compliance).
-    3. SemanticQAAgent: Critic that validates outputs against truth/tone.
-    4. ConstitutionalSafetyAgent: Guardian that enforces SafetyPolicy.
+    1. StrategyLLMAgent
+       - Tree-of-Thought strategy generation
+       - Branch selection
 
-Dependencies:
-    • Prompts from `prompt.py` (Governance).
-    • Models via `runtime_utils.py` (Infrastructure).
-    • Decisions via `routing.py` (Policy).
+    2. DraftingGuild
+       - Structure specialist (outline)
+       - Narrative specialist (content)
+       - Compliance specialist (critique)
+
+    3. SemanticQAAgent
+       - Semantic QA over draft + evidence
+
+    4. ConstitutionalSafetyAgent
+       - Constitutional safety checks (PII, policy, professionalism)
+
+Design constraints:
+    - No high-level orchestration (L3).
+    - No state mutation (L4).
+    - No policy decisions (L5).
+    - All model calls via runtime_utils.invoke_model().
+    - All prompts fetched from registry.PromptRegistry.
+
+This file is imported by L2; L1 must NEVER call these agents directly.
 """
 
 from __future__ import annotations
 
-import json
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
+import json
+
 from models import (
-    StrategyPayload,
+    JobInput,
+    ResumeInput,
+    WorkflowConfig,
+    ComplexityLevel,
+    StrategyPlan,
     StrategyBranch,
-    DraftingPayload,
-    DraftSection,
-    QAPayload,
-    QAFinding,
-    SafetyPayload,
+    StrategyResult,
+    RAGResult,
+    DraftingPlan,
+    DraftSectionResult,
+    DraftingResult,
+    QAPlan,
+    QACheckResult,
+    QAResult,
+    SafetyPlan,
     SafetyFinding,
-    RoutingRequest,
-    WorkflowPhase,
-    ReasoningStrategy,
-    SafetyPolicy,
-    SafetyMode
+    SafetyResult,
 )
-from prompt import PROMPT_REGISTRY
-from routing import ROUTER
-from meta_profile import META_PROFILE
-from runtime_utils import NETWORK, ValidationError
+from registry import PromptRegistry
+from routing import RoutingPolicy
+from runtime_utils import invoke_model, SandboxConfig
+from observability import record_event, record_exception
+
 
 # =============================================================================
-# BASE COGNITIVE AGENT
+# Base LLM Agent
 # =============================================================================
 
-class CognitiveAgent:
-    """Base class handling the Cognition -> Infrastructure handshake."""
-    
-    def __init__(self, agent_id: str):
-        self.agent_id = agent_id
 
-    async def _think(
-        self, 
-        prompt_bundle: str, 
-        inputs: Dict[str, Any], 
-        task_type: str,
-        complexity: str = "medium"
-    ) -> Dict[str, Any]:
+@dataclass
+class LLMBaseAgent:
+    """
+    Base class for all cognitive LLM agents.
+
+    Dependencies (DI):
+        - routing_policy: model selection logic
+        - meta_profile:   historical signals (may be None)
+        - prompt_registry:central prompt governance
+        - sandbox:        execution sandbox config
+    """
+
+    routing_policy: RoutingPolicy
+    meta_profile: Optional[Any]
+    prompt_registry: PromptRegistry
+    sandbox: SandboxConfig
+
+    def _call_llm(self, prompt_id: str, variables: Dict[str, Any]) -> str:
         """
-        The Unified Cognitive Loop:
-        1. Render Prompt (Governance)
-        2. Route Model (Policy)
-        3. Execute Network Call (Infrastructure)
+        Render a prompt and call the routed LLM.
+
+        Expects PromptRegistry.get_prompt(prompt_id) to return a bundle with:
+            - .render(variables) -> str
+            - .temperature
+            - .max_tokens
         """
-        # 1. Render Prompt
-        # We use the 'latest' version by default
-        prompt_text = PROMPT_REGISTRY.render(prompt_bundle, inputs)
-        
-        # 2. Routing Decision (Pillar 11)
-        # We ask the Routing Engine which model to use.
-        route = ROUTER.decide(
-            request=RoutingRequest(
-                task_type=task_type, 
-                complexity=complexity, 
-                priority="normal"
-            ),
-            meta_profile=META_PROFILE
+        bundle = self.prompt_registry.get_prompt(prompt_id)
+        rendered = bundle.render(variables)
+
+        model = self.routing_policy.select_model(
+            task=prompt_id,
+            complexity=variables.get("complexity"),
+            meta_profile=self.meta_profile,
         )
-        
-        # 3. Execution (Pillar 14/8)
-        # Network client handles retries/timeouts.
-        response = await NETWORK.invoke(
-            provider=route.provider,
-            model_id=route.model_id,
-            prompt_text=prompt_text,
-            config={
-                "max_tokens": route.max_tokens, 
-                "temperature": route.temperature
-            }
-        )
-        
-        # 4. Parse (Basic JSON extraction)
-        # In production, we'd use Pydantic parsers or Instructor
+
         try:
-            return json.loads(response["content"])
-        except json.JSONDecodeError:
-            # Fallback for simulation text
-            return {"raw_content": response["content"]}
+            text = invoke_model(
+                model=model,
+                prompt=rendered,
+                sandbox=self.sandbox,
+                temperature=bundle.temperature,
+                max_tokens=bundle.max_tokens,
+            )
+            return text
+        except Exception as exc:
+            record_exception("llm_call_failure", exc)
+            raise
 
 
 # =============================================================================
-# 1. STRATEGY AGENT (Reasoning: Tree of Thought)
+# 1. StrategyLLMAgent (ToT)
 # =============================================================================
 
-class StrategyLLMAgent(CognitiveAgent):
-    """
-    Specialist in breaking down complex objectives into actionable plans.
-    """
-    def __init__(self):
-        super().__init__("strategy_llm")
 
-    async def generate_plan(self, objective: str, context: str, complexity: str) -> StrategyPayload:
-        
-        # We use the specific governed prompt bundle for strategy
-        raw_result = await self._think(
-            prompt_bundle="l1_strategy_planner",
-            inputs={
-                "objective": objective,
-                "context": context,
-                "format_instructions": "Return JSON with 'branches' and 'selected_branch_id'."
+class StrategyLLMAgent(LLMBaseAgent):
+    """
+    Strategy agent performing Tree-of-Thought exploration and branch selection.
+    """
+
+    def run_strategy(self, plan: StrategyPlan, ctx) -> StrategyResult:
+        """
+        Generate multiple strategy branches and select a winner.
+        """
+        branches: List[StrategyBranch] = []
+
+        num_branches = self.routing_policy.strategy_branches_for(plan.complexity)
+        for i in range(num_branches):
+            text = self._call_llm(
+                "strategy_generate_branch",
+                {
+                    "job": ctx.job.model_dump(),
+                    "resume": ctx.resume.model_dump(),
+                    "plan": plan.model_dump(),
+                    "complexity": plan.complexity.value,
+                    "branch_index": i,
+                },
+            )
+            branches.append(StrategyBranch(id=f"branch_{i}", text=text))
+
+        judge = self._call_llm(
+            "strategy_select_branch",
+            {
+                "job": ctx.job.model_dump(),
+                "resume": ctx.resume.model_dump(),
+                "branches": [b.text for b in branches],
+                "complexity": plan.complexity.value,
             },
-            task_type="strategy",
-            complexity=complexity
         )
-        
-        # Convert to Typed Contract (Pillar 3)
-        branches = []
-        for b in raw_result.get("branches", []):
-            branches.append(StrategyBranch(
-                branch_id=b.get("branch_id", "b1"),
-                name=b.get("name", "Default Strategy"),
-                rationale=b.get("rationale", ""),
-                steps=b.get("steps", []),
-                score=b.get("score", 0.0)
-            ))
 
-        return StrategyPayload(
+        chosen_idx = 0
+        try:
+            chosen_idx = int(judge.strip())
+        except Exception:
+            chosen_idx = 0
+
+        chosen_idx = max(0, min(chosen_idx, len(branches) - 1))
+
+        record_event(
+            "strategy_branch_selected",
+            {"chosen_index": chosen_idx, "total_branches": len(branches)},
+        )
+
+        return StrategyResult(
             branches=branches,
-            selected_branch_id=raw_result.get("selected_branch_id", "b1"),
-            reasoning_trace=raw_result.get("reasoning_trace", "Simulated reasoning.")
+            chosen_branch_id=branches[chosen_idx].id,
         )
 
 
 # =============================================================================
-# 2. DRAFTING GUILD (Reasoning: Iterative Refinement)
+# 2. DraftingGuild (Structure → Narrative → Compliance)
 # =============================================================================
 
-class DraftingGuild(CognitiveAgent):
-    """
-    A micro-swarm of personas: Structure -> Draft -> Review.
-    Aggregated into one Agent Interface for simplicity in L2.
-    """
-    def __init__(self):
-        super().__init__("drafting_guild")
 
-    async def produce_artifact(
-        self, 
-        section_name: str, 
-        evidence: str, 
-        tone: str = "professional"
-    ) -> DraftingPayload:
-        
-        # Step 1: The Drafter (Narrative)
-        raw_draft = await self._think(
-            prompt_bundle="l2_drafter",
-            inputs={
-                "section_name": section_name,
-                "tone": tone,
-                "evidence": evidence
+class DraftingGuild(LLMBaseAgent):
+    """
+    Multi-specialist drafting pipeline:
+
+        • Structure specialist: defines outline & section structure.
+        • Narrative specialist: writes section text.
+        • Compliance specialist: reviews and annotates sections.
+
+    All are implemented via prompts; this class orchestrates them *within L2*.
+    """
+
+    def run_drafting(
+        self,
+        drafting_plan: DraftingPlan,
+        job: JobInput,
+        resume: ResumeInput,
+        strategy_result: StrategyResult,
+        rag_result: RAGResult,
+        config: WorkflowConfig,
+    ) -> DraftingResult:
+        # 1. Structure Specialist: propose JSON structure for sections
+        chosen_strategy_text = strategy_result.get_chosen_branch_text()
+        struct_raw = self._call_llm(
+            "drafting_structure",
+            {
+                "job": job.model_dump(),
+                "resume": resume.model_dump(),
+                "drafting_plan": drafting_plan.model_dump(),
+                "strategy_branch": chosen_strategy_text,
+                "rag_evidence": [e.text for e in rag_result.evidence],
             },
-            task_type="drafting",
-            complexity="medium"
         )
-        
-        text_content = raw_draft.get("raw_content", "") or str(raw_draft)
-        
-        # (Optional) Step 2: Compliance Review could happen here via another call
-        # For v10_10 MVP, we assume the drafting prompt includes compliance instructions.
+        sections = self._parse_structure(struct_raw, drafting_plan)
 
-        section = DraftSection(
-            section_id=section_name.lower().replace(" ", "_"),
-            content=text_content,
-            critique=None
+        # 2. Narrative Specialist: write content per section
+        for section in sections:
+            narrative_text = self._call_llm(
+                "drafting_narrative",
+                {
+                    "job": job.model_dump(),
+                    "resume": resume.model_dump(),
+                    "drafting_plan": drafting_plan.model_dump(),
+                    "section": section.title,
+                    "outline": section.outline,
+                },
+            )
+            section.text = narrative_text
+
+        # 3. Compliance Specialist: annotate each section
+        for section in sections:
+            compliance_notes = self._call_llm(
+                "drafting_compliance",
+                {
+                    "drafting_plan": drafting_plan.model_dump(),
+                    "section_title": section.title,
+                    "section_text": section.text,
+                    "target_tone": drafting_plan.target_tone,
+                },
+            )
+            section.compliance_notes = compliance_notes
+
+        record_event(
+            "drafting_guild_completed",
+            {"num_sections": len(sections), "mode": drafting_plan.mode.value},
         )
 
-        return DraftingPayload(
-            full_text=text_content,
-            sections=[section],
-            tone_compliance=1.0 # Placeholder for actual critique score
+        return DraftingResult(
+            sections=sections,
+            mode=drafting_plan.mode,
         )
+
+    # -------------------------------------------------------------------------
+    # Helper: parse structure JSON
+    # -------------------------------------------------------------------------
+
+    def _parse_structure(
+        self, struct_text: str, plan: DraftingPlan
+    ) -> List[DraftSectionResult]:
+        """
+        Interpret the structure specialist output as JSON.
+
+        Expected format:
+            [
+              {"title": "...", "outline": "..."},
+              ...
+            ]
+
+        Fallback: if not JSON, treat each line as a section title.
+        """
+        try:
+            raw = json.loads(struct_text)
+        except Exception:
+            lines = [l.strip() for l in struct_text.splitlines() if l.strip()]
+            raw = [{"title": line, "outline": ""} for line in lines]
+
+        sections: List[DraftSectionResult] = []
+        for entry in raw:
+            title = entry.get("title", "Untitled Section")
+            outline = entry.get("outline", "")
+            sections.append(
+                DraftSectionResult(
+                    title=title,
+                    outline=outline,
+                    text="",
+                    compliance_notes="",
+                )
+            )
+
+        return sections
 
 
 # =============================================================================
-# 3. SEMANTIC QA AGENT (Reasoning: Critique)
+# 3. SemanticQAAgent
 # =============================================================================
 
-class SemanticQAAgent(CognitiveAgent):
+
+class SemanticQAAgent(LLMBaseAgent):
     """
-    Critic agent that validates logic, tone, and evidence grounding.
+    Semantic QA Agent.
+
+    Evaluates each QACheck in QAPlan against:
+        - the current DraftingResult
+        - RAG evidence
+        - job/resume inputs
     """
-    def __init__(self):
-        super().__init__("semantic_qa")
 
-    async def validate(self, content: str, requirements: List[str]) -> QAPayload:
-        # In a full implementation, this would use a "l2_qa_critic" prompt bundle.
-        # For the Zero-Loss Merge, we simulate the result or add the bundle to PromptRegistry.
-        # Assuming the prompt bundle exists or we rely on the Gateway mock for simulation.
-        
-        # Simulating a pass for the harness
-        return QAPayload(
-            passed=True,
-            score=0.95,
-            findings=[],
-            summary="Content meets all semantic requirements."
-        )
+    def run_qa(
+        self,
+        qa_plan: QAPlan,
+        draft: DraftingResult,
+        rag: RAGResult,
+        job: JobInput,
+        resume: ResumeInput,
+        config: WorkflowConfig,
+    ) -> QAResult:
+        results: List[QACheckResult] = []
 
+        for check in qa_plan.checks:
+            raw = self._call_llm(
+                "qa_semantic_check",
+                {
+                    "check": check.model_dump(),
+                    "draft": draft.model_dump(),
+                    "rag_evidence": [e.text for e in rag.evidence],
+                    "job": job.model_dump(),
+                    "resume": resume.model_dump(),
+                },
+            )
+            result = self._parse_qa_result(raw, check.id)
+            results.append(result)
 
-# =============================================================================
-# 4. CONSTITUTIONAL SAFETY AGENT (Reasoning: Policy)
-# =============================================================================
-
-class ConstitutionalSafetyAgent(CognitiveAgent):
-    """
-    Guardian agent that enforces SafetyPolicy.
-    """
-    def __init__(self):
-        super().__init__("safety_guardian")
-
-    async def evaluate(self, content: str, policy: SafetyPolicy) -> SafetyPayload:
-        
-        # Serialize rules for the LLM
-        rules_text = "\n".join([f"- [{r.severity}] {r.description}" for r in policy.rules])
-
-        raw_result = await self._think(
-            prompt_bundle="l5_safety_judge",
-            inputs={
-                "content": content,
-                "policy_rules": rules_text
+        record_event(
+            "qa_semantic_completed",
+            {
+                "num_checks": len(qa_plan.checks),
+                "num_failed": sum(1 for r in results if not r.passed),
             },
-            task_type="safety",
-            # Safety always gets high reasoning priority (Pillar 9)
-            complexity="high" 
         )
+        return QAResult(checks=results)
 
-        # Convert to Typed Contract
-        findings = []
-        for f in raw_result.get("findings", []):
-            findings.append(SafetyFinding(
-                rule_id=f.get("rule_id", "unknown"),
-                violated=f.get("violated", True),
-                confidence=f.get("confidence", 1.0),
-                snippet=f.get("snippet", "")
-            ))
+    def _parse_qa_result(self, raw: str, check_id: str) -> QACheckResult:
+        """
+        Parse LLM QA JSON into QACheckResult.
+        """
+        try:
+            data = json.loads(raw)
+            return QACheckResult(
+                id=check_id,
+                passed=bool(data.get("passed", False)),
+                reason=str(data.get("reason", "")),
+                severity=int(data.get("severity", 1)),
+            )
+        except Exception:
+            record_event("qa_semantic_malformed_json", {"check_id": check_id})
+            return QACheckResult(
+                id=check_id,
+                passed=False,
+                reason="Malformed QA JSON from model",
+                severity=3,
+            )
 
-        return SafetyPayload(
-            blocked=raw_result.get("blocked", False),
-            findings=findings,
-            policy_version="v1.0" # In prod, link to policy.policy_id
+
+# =============================================================================
+# 4. ConstitutionalSafetyAgent
+# =============================================================================
+
+
+class ConstitutionalSafetyAgent(LLMBaseAgent):
+    """
+    Constitutional Safety Agent.
+
+    Evaluates the draft for:
+        - PII exposure
+        - Disallowed / risky content (policy)
+        - Professionalism issues
+    """
+
+    def run_safety(
+        self,
+        safety_plan: SafetyPlan,
+        draft: DraftingResult,
+        qa_result: QAResult,
+        job: JobInput,
+        resume: ResumeInput,
+        config: WorkflowConfig,
+    ) -> SafetyResult:
+        findings: List[SafetyFinding] = []
+
+        for check in safety_plan.checks:
+            raw = self._call_llm(
+                "safety_check",
+                {
+                    "check": check.model_dump(),
+                    "draft": draft.model_dump(),
+                    "qa": qa_result.model_dump(),
+                    "job": job.model_dump(),
+                    "resume": resume.model_dump(),
+                },
+            )
+            finding = self._parse_safety_result(raw, check.id)
+            findings.append(finding)
+
+        record_event(
+            "safety_constitutional_completed",
+            {
+                "num_findings": len(findings),
+                "num_blocking": sum(1 for f in findings if f.blocking),
+            },
         )
+        return SafetyResult(findings=findings)
+
+    def _parse_safety_result(self, raw: str, check_id: str) -> SafetyFinding:
+        """
+        Parse LLM safety JSON into SafetyFinding.
+        """
+        try:
+            data = json.loads(raw)
+            return SafetyFinding(
+                id=check_id,
+                category=str(data.get("category", "")),
+                blocking=bool(data.get("blocking", False)),
+                reason=str(data.get("reason", "")),
+            )
+        except Exception:
+            record_event("safety_malformed_json", {"check_id": check_id})
+            return SafetyFinding(
+                id=check_id,
+                category="unknown",
+                blocking=True,
+                reason="Malformed safety JSON from model",
+            )
