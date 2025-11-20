@@ -1,274 +1,303 @@
-# FILE: l2.py
+# FILE: 10_10/l2.py
 """
-Unified L2 Execution Layer (v10_10) — COGNITIVE COORDINATION
-
-This module implements Pillar 2 (Agent Boundaries).
-It is the "Hands" of the architecture, but it doesn't do the work itself.
-It delegates to specialized `CognitiveAgents` (for reasoning) or `Sandbox` (for tools).
+Unified L2 Execution Layer (v10_10)
+===================================
 
 Responsibilities:
-    1. Task Routing: Map `PlanObject.mode` to the right Executor.
-    2. Agent Delegation: Invoke `DraftingGuild`, `StrategyLLMAgent`, etc.
-    3. Tool Orchestration: Call `SANDBOX` for RAG/Search.
-    4. Contract Enforcement: Return strict `ExecutionResult` to L3.
+    • Execute L1 plans using cognitive agents + deterministic modules.
+    • Use StrategyLLMAgent, DraftingGuild, SemanticQAAgent,
+      ConstitutionalSafetyAgent.
+    • Run deterministic RAG pipeline.
+    • Produce typed L2ResultBundle for L3.
 
-Refactor Highlights (v10_10):
-    • Removed all prompt logic (moved to `cognitive_agents`).
-    • Removed HTTP logic (moved to `runtime_utils`).
-    • Uses `models.py` types strictly.
+Non-Responsibilities:
+    • No planning (L1).
+    • No orchestrating retries or DAG (L3).
+    • No state mutation (L4).
+    • No final gating (L5).
+
+This file is purely a “single-pass executor”.
 """
 
 from __future__ import annotations
 
-import asyncio
-from typing import Any, Dict, List, Type, TypeVar
+from dataclasses import dataclass
+from typing import Optional
 
 from models import (
-    PlanObject,
-    ExecutionResult,
-    NodeStatus,
-    StrategyPayload,
-    RAGExecutionPayload,
-    RAGDocument,
-    DraftingPayload,
-    QAPayload,
-    SafetyPayload,
-    SafetyMode,
-    SafetyPolicy
+    WorkflowPlanBundle,
+    ExecutionContext,
+    StrategyResult,
+    DraftingResult,
+    RAGResult,
+    QAResult,
+    SafetyResult,
+    L2ResultBundle,
 )
 from cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,
-    ConstitutionalSafetyAgent
+    ConstitutionalSafetyAgent,
 )
-from registry import REGISTRY # Used for looking up Safety Policies
-from runtime_utils import SANDBOX, Retrieval, RAGUtils
+from runtime_utils import PredictiveCacheManager, SandboxConfig, get_sandbox
+from retrieval import run_rag_retrieval
+from ranking import rank_evidence
+from observability import (
+    start_span,
+    end_span,
+    record_event,
+    record_exception,
+)
 
-# =============================================================================
-# BASE EXECUTOR
-# =============================================================================
 
-class BaseExecutor:
+# ==============================================================================
+# L2 Environment (dependency injection)
+# ==============================================================================
+
+@dataclass
+class L2Environment:
+    cache: Optional[PredictiveCacheManager]
+    sandbox: SandboxConfig
+    agent_strategy: StrategyLLMAgent
+    agent_drafting: DraftingGuild
+    agent_qa: SemanticQAAgent
+    agent_safety: ConstitutionalSafetyAgent
+
+
+def build_l2_environment(ctx: ExecutionContext) -> L2Environment:
     """
-    Standard interface for L2 components.
+    Construct cognitive agents + sandbox for this run.
     """
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult:
-        raise NotImplementedError()
+    sandbox = get_sandbox(ctx.sandbox_config)
 
-    def _success(self, payload: Any, meta: Dict[str, Any] = None) -> ExecutionResult:
-        return ExecutionResult(
-            status=NodeStatus.SUCCESS,
-            payload=payload,
-            meta=meta or {}
+    agent_strategy = StrategyLLMAgent(
+        routing_policy=ctx.routing_policy,
+        meta_profile=ctx.meta_profile_snapshot,
+        prompt_registry=ctx.prompt_registry,
+        sandbox=sandbox,
+    )
+
+    agent_drafting = DraftingGuild(
+        routing_policy=ctx.routing_policy,
+        meta_profile=ctx.meta_profile_snapshot,
+        prompt_registry=ctx.prompt_registry,
+        sandbox=sandbox,
+    )
+
+    agent_qa = SemanticQAAgent(
+        routing_policy=ctx.routing_policy,
+        meta_profile=ctx.meta_profile_snapshot,
+        prompt_registry=ctx.prompt_registry,
+        sandbox=sandbox,
+    )
+
+    agent_safety = ConstitutionalSafetyAgent(
+        routing_policy=ctx.routing_policy,
+        meta_profile=ctx.meta_profile_snapshot,
+        prompt_registry=ctx.prompt_registry,
+        sandbox=sandbox,
+    )
+
+    return L2Environment(
+        cache=ctx.cache_manager,
+        sandbox=sandbox,
+        agent_strategy=agent_strategy,
+        agent_drafting=agent_drafting,
+        agent_qa=agent_qa,
+        agent_safety=agent_safety,
+    )
+
+
+# ==============================================================================
+# Strategy Execution
+# ==============================================================================
+
+def run_strategy(plans: WorkflowPlanBundle, ctx: ExecutionContext, env: L2Environment) -> StrategyResult:
+    span = start_span("l2.strategy", ctx=ctx.span_context())
+    try:
+        result = env.agent_strategy.run_strategy(plans.strategy, ctx)
+        record_event("strategy_done", {"chosen": result.chosen_branch_id})
+        return result
+    except Exception as exc:
+        record_exception("l2_strategy_error", exc)
+        raise
+    finally:
+        end_span(span)
+
+
+# ==============================================================================
+# Deterministic RAG
+# ==============================================================================
+
+def run_rag(plans: WorkflowPlanBundle, ctx: ExecutionContext, env: L2Environment, strategy_result: StrategyResult) -> RAGResult:
+    span = start_span("l2.rag", ctx=ctx.span_context())
+    try:
+        cache_key = None
+        if env.cache:
+            cache_key = env.cache.make_key("rag", plans.rag, ctx)
+            cached = env.cache.get(cache_key)
+            if cached:
+                record_event("rag_cache_hit", {"key": cache_key})
+                return cached
+
+        # Deterministic retrieval
+        hits = run_rag_retrieval(
+            rag_plan=plans.rag,
+            job=ctx.job,
+            resume=ctx.resume,
+            config=ctx.config,
+            strategy_hint=strategy_result,
+            sandbox=env.sandbox,
         )
 
-    def _failure(self, error: str) -> ExecutionResult:
-        return ExecutionResult(
-            status=NodeStatus.FAILURE,
-            error=error
+        ranked = rank_evidence(hits, plans.rag, ctx)
+        result = RAGResult(evidence=ranked, used_hyde=plans.rag.allow_hyde)
+
+        if env.cache and cache_key:
+            env.cache.set(cache_key, result)
+
+        return result
+    except Exception as exc:
+        record_exception("l2_rag_error", exc)
+        raise
+    finally:
+        end_span(span)
+
+
+# ==============================================================================
+# Drafting Execution
+# ==============================================================================
+
+def run_drafting(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+    env: L2Environment,
+    strategy_result: StrategyResult,
+    rag_result: RAGResult,
+) -> DraftingResult:
+    span = start_span("l2.drafting", ctx=ctx.span_context())
+    try:
+        result = env.agent_drafting.run_drafting(
+            drafting_plan=plans.drafting,
+            job=ctx.job,
+            resume=ctx.resume,
+            strategy_result=strategy_result,
+            rag_result=rag_result,
+            config=ctx.config,
         )
-
-# =============================================================================
-# 1. STRATEGY EXECUTOR (Uses StrategyLLMAgent)
-# =============================================================================
-
-class StrategyExecutor(BaseExecutor):
-    """
-    Coordinator for Strategic Planning.
-    """
-    def __init__(self):
-        self.agent = StrategyLLMAgent()
-
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[StrategyPayload]:
-        # Extract context pointers (passed from L1)
-        context_text = state.get("summary", "")
-        
-        try:
-            # Delegate to Cognitive Agent (Pillar 6)
-            payload = await self.agent.generate_plan(
-                objective=plan.objective,
-                context=context_text,
-                complexity=plan.complexity
-            )
-            return self._success(payload)
-        except Exception as e:
-            return self._failure(f"Strategy Agent failed: {str(e)}")
+        record_event("drafting_done", {"num_sections": len(result.sections)})
+        return result
+    except Exception as exc:
+        record_exception("l2_drafting_error", exc)
+        raise
+    finally:
+        end_span(span)
 
 
-# =============================================================================
-# 2. RAG EXECUTOR (Uses Sandbox + Retrieval Utils)
-# =============================================================================
+# ==============================================================================
+# QA Execution
+# ==============================================================================
 
-class RAGExecutor(BaseExecutor):
-    """
-    Coordinator for Retrieval.
-    Unlike other executors, this uses Tools (Sandbox), not Agents.
-    """
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[RAGExecutionPayload]:
-        queries = []
-        docs = []
-        
-        # 1. Extract Queries from Plan Steps
-        # (L1 decided how many queries to run)
-        target_count = 3
-        for step in plan.steps:
-            if step.step_id == "query_gen":
-                target_count = step.config.get("count", 3)
-        
-        # 2. Execute Search in Sandbox (Pillar 14)
-        # In a real app, we'd run these in parallel using asyncio.gather
-        try:
-            # Simulating the primary query
-            result = await SANDBOX.run(
-                function="web_search", # Placeholder for function pointer
-                args={"tool_id": "web_search", "query": plan.objective},
-                timeout_sec=10
-            )
-            
-            # 3. Normalize (Pillar 7)
-            # Convert raw text/json to RAGDocument
-            docs.append(RAGDocument(
-                query=plan.objective,
-                content=str(result),
-                source="web_search",
-                score=1.0,
-                rank=1
-            ))
-            queries.append(plan.objective)
-            
-            # Normalize metadata
-            docs_dict = [d.model_dump() for d in docs]
-            final_docs = RAGUtils.normalize_rag_results(docs_dict)
-            
-            # Convert back to Pydantic for Payload
-            typed_docs = [RAGDocument(**d) for d in final_docs]
-
-            return self._success(RAGExecutionPayload(
-                queries=queries,
-                documents=typed_docs
-            ))
-
-        except Exception as e:
-            return self._failure(f"RAG Execution failed: {str(e)}")
-
-
-# =============================================================================
-# 3. DRAFTING EXECUTOR (Uses DraftingGuild)
-# =============================================================================
-
-class DraftingExecutor(BaseExecutor):
-    """
-    Coordinator for Content Creation.
-    """
-    def __init__(self):
-        self.guild = DraftingGuild()
-
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[DraftingPayload]:
-        # 1. Gather Evidence
-        rag_result = state.get("rag_result")
-        evidence_text = ""
-        if rag_result and hasattr(rag_result, "documents"):
-            evidence_text = "\n".join([d.content for d in rag_result.documents])
-
-        try:
-            # 2. Delegate to Guild (Pillar 2)
-            # The Guild manages the internal "Structure -> Draft" loop
-            payload = await self.guild.produce_artifact(
-                section_name="Main Deliverable",
-                evidence=evidence_text,
-                tone="professional"
-            )
-            return self._success(payload)
-        except Exception as e:
-            return self._failure(f"Drafting Guild failed: {str(e)}")
-
-
-# =============================================================================
-# 4. QA EXECUTOR (Uses SemanticQAAgent)
-# =============================================================================
-
-class QAExecutor(BaseExecutor):
-    """
-    Coordinator for Quality Assurance.
-    """
-    def __init__(self):
-        self.agent = SemanticQAAgent()
-
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[QAPayload]:
-        # Extract content to validate
-        draft = state.get("draft_result")
-        content = draft.full_text if draft else ""
-        
-        try:
-            # Delegate to Critic
-            payload = await self.agent.validate(
-                content=content,
-                requirements=plan.context_pointers.get("requirements", [])
-            )
-            return self._success(payload)
-        except Exception as e:
-            return self._failure(f"QA Agent failed: {str(e)}")
-
-
-# =============================================================================
-# 5. SAFETY EXECUTOR (Uses ConstitutionalSafetyAgent)
-# =============================================================================
-
-class SafetyExecutor(BaseExecutor):
-    """
-    Coordinator for Safety Governance.
-    """
-    def __init__(self):
-        self.agent = ConstitutionalSafetyAgent()
-
-    async def execute(self, plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult[SafetyPayload]:
-        # 1. Determine Content
-        draft = state.get("draft_result")
-        content = draft.full_text if draft else str(state.get("messages", ""))
-
-        # 2. Determine Policy (Pillar 9)
-        # We look up the *Active* policy from the Registry based on the Plan's mode.
-        mode_str = plan.meta.get("safety_mode", "balanced")
-        # In a real implementation, REGISTRY.get_policy returns a SafetyPolicy object
-        # For Zero-Loss, we simulate constructing/fetching it here or via REGISTRY import
-        policy = SafetyPolicy(
-            policy_id="dynamic_lookup",
-            mode=SafetyMode(mode_str),
-            rules=[], # In prod: REGISTRY.get_rules(mode)
-            threshold=0.5
+def run_qa(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+    env: L2Environment,
+    draft_result: DraftingResult,
+    rag_result: RAGResult,
+) -> QAResult:
+    span = start_span("l2.qa", ctx=ctx.span_context())
+    try:
+        result = env.agent_qa.run_qa(
+            qa_plan=plans.qa,
+            draft=draft_result,
+            rag=rag_result,
+            job=ctx.job,
+            resume=ctx.resume,
+            config=ctx.config,
         )
+        record_event("qa_done", {"failed": sum(1 for c in result.checks if not c.passed)})
+        return result
+    except Exception as exc:
+        record_exception("l2_qa_error", exc)
+        raise
+    finally:
+        end_span(span)
 
-        try:
-            # 3. Delegate to Guardian
-            payload = await self.agent.evaluate(content, policy)
-            return self._success(payload)
-        except Exception as e:
-            return self._failure(f"Safety Guardian failed: {str(e)}")
 
+# ==============================================================================
+# Safety Execution
+# ==============================================================================
 
-# =============================================================================
-# ROUTER / DISPATCHER
-# =============================================================================
-
-async def route_executor(plan: PlanObject, state: Dict[str, Any]) -> ExecutionResult:
-    """
-    The switchboard that connects L3 Plans to L2 Executors.
-    """
-    executors: Dict[str, Type[BaseExecutor]] = {
-        "strategy": StrategyExecutor,
-        "rag": RAGExecutor,
-        "drafting": DraftingExecutor,
-        "qa": QAExecutor,
-        "safety": SafetyExecutor
-    }
-    
-    executor_cls = executors.get(plan.mode)
-    if not executor_cls:
-        return ExecutionResult(
-            status=NodeStatus.FAILURE, 
-            error=f"No executor found for mode: {plan.mode}"
+def run_safety(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+    env: L2Environment,
+    draft_result: DraftingResult,
+    qa_result: QAResult,
+) -> SafetyResult:
+    span = start_span("l2.safety", ctx=ctx.span_context())
+    try:
+        result = env.agent_safety.run_safety(
+            safety_plan=plans.safety,
+            draft=draft_result,
+            qa_result=qa_result,
+            job=ctx.job,
+            resume=ctx.resume,
+            config=ctx.config,
         )
-        
-    executor = executor_cls()
-    return await executor.execute(plan, state)
+        record_event("safety_done", {"blocking": sum(1 for f in result.findings if f.blocking)})
+        return result
+    except Exception as exc:
+        record_exception("l2_safety_error", exc)
+        raise
+    finally:
+        end_span(span)
+
+
+# ==============================================================================
+# Top-Level L2 Executor
+# ==============================================================================
+
+def execute_workflow_plans(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+    env: Optional[L2Environment] = None,
+) -> L2ResultBundle:
+    """
+    The SINGLE L2 entrypoint used by L3 orchestrator.
+
+    Performs:
+        1. Strategy (LLM)
+        2. RAG (deterministic)
+        3. Drafting (LLM)
+        4. QA (LLM)
+        5. Safety (LLM)
+
+    No retries — L3 handles correction loops.
+    """
+    if env is None:
+        env = build_l2_environment(ctx)
+
+    span = start_span("l2.execute", ctx=ctx.span_context())
+
+    try:
+        strategy = run_strategy(plans, ctx, env)
+        rag = run_rag(plans, ctx, env, strategy)
+        draft = run_drafting(plans, ctx, env, strategy, rag)
+        qa = run_qa(plans, ctx, env, draft, rag)
+        safety = run_safety(plans, ctx, env, draft, qa)
+
+        return L2ResultBundle(
+            strategy=strategy,
+            rag=rag,
+            drafting=draft,
+            qa=qa,
+            safety=safety,
+        )
+    except Exception as exc:
+        record_exception("l2_execute_error", exc)
+        raise
+    finally:
+        end_span(span)
+
