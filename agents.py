@@ -1,35 +1,60 @@
 # FILE: 10_10/agents.py
 """
-Deprecated Multi-Agent Coordination Layer (v10_10)
-==================================================
+Deprecated Multi-Agent Layer (v10_10)
+=====================================
 
-In v10_7 / v10_8 / early v10_9 designs, this module hosted
-multi-agent "councils" and complex AgentGraph topologies.
+This file replaces the v10_9 multi-agent coordination system.
 
-In v10_10, those responsibilities have been fully and correctly
-refactored into:
+In v10_9, this module implemented:
+    • AgentGraph
+    • AgentNode
+    • Multi-agent councils (QA, Safety, Meta)
+    • MultiAgentVote / MultiAgentCouncilResult
+    • Delegation graphs
+    • Multi-agent scoring
+    • Orchestration surfaces
+    • L4 patch-ready payload emitters
 
-    • cognitive_agents.py   — Specialized LLM personas (Strategy, Drafting, QA, Safety)
-    • l2.py                 — Single-pass execution using cognitive agents
-    • l3.py                 — DAG orchestration + self-correction
-    • self_correction.py    — Correction surfaces (pure decision logic)
+NONE of this is permitted inside the v10_10 runtime.
 
-This file is kept ONLY for backward compatibility with older branches
-or stray imports. New code MUST NOT depend on it.
+The v10_10 L1–L5 architecture *eliminates the multi-agent layer entirely*:
 
-If you see any reference like:
+    L1 = Planning
+    L2 = Cognition (Strategy / Drafting / QA / Safety agents)
+    L3 = DAG + Self-Correction
+    L4 = State Adapter
+    L5 = Safety Policy
 
-    from agents import AgentGraph, AgentNode, MultiAgentCouncilResult
+Multi-agent arbitration is NOT part of L1–L5 and must NOT be imported by
+any runtime component.
 
-you should refactor that call site to use the new 10_10 architecture instead.
+This module exists ONLY as a backward-compatibility stub so legacy imports
+like:
+
+    from agents import AgentGraph
+    from agents import MultiAgentCouncilResult
+
+do not crash older scripts or notebooks.
+
+All such use is invalid in v10_10 and must be removed.
 """
 
 from __future__ import annotations
 
-# No runtime classes or functions are intentionally exposed from here.
-# All multi-agent coordination is handled by:
-#   • l3.run_dag
-#   • self_correction.evaluate_all_surfaces
-#   • cognitive_agents (individual LLM personas)
-
 __all__: list[str] = []
+
+
+def __getattr__(name: str):
+    """
+    Intercept legacy attribute access and provide a precise upgrade error.
+
+    Any code trying to import multi-agent constructs (AgentGraph,
+    AgentNode, MultiAgentVote, MultiAgentCouncilResult, SelfCorrectionSurface)
+    MUST be refactored to use the v10_10 architecture, which does not
+    contain a meta-agent layer.
+    """
+    raise AttributeError(
+        f"'agents' module is deprecated in v10_10. Multi-agent graphs, "
+        f"councils, and arbitration logic were removed. Attempted access: {name!r}. "
+        f"Refactor this code — no multi-agent constructs exist in v10_10."
+    )
