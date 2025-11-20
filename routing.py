@@ -3,78 +3,90 @@
 Routing Policy for Agentic Workflow v10_10
 ==========================================
 
-This module handles *all* model selection decisions.
+This is the v10_10 refactor of the v10_9 routing layer.
 
-Responsibilities:
-    • Choose the correct LLM model family for each task.
-    • Use ComplexityLevel, RoutingHint, and MetaProfileSnapshot.
-    • Balance cost, latency, safety sensitivity, and reasoning needs.
-    • Provide number-of-branches for Strategy ToT.
-    • Remain pure (no I/O, no LLM calls).
+It removes:
+    • PlanObject-dependent logic
+    • L5.ModelRouter
+    • PromptEnvelope construction
+    • META-only routing criteria classes
+    • direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)
+    • simulated model invocation stubs
 
-Non-Responsibilities:
-    • No prompt logic (PromptRegistry handles that).
-    • No network calls (runtime_utils.invoke_model handles that).
+and replaces them with a **minimal, deterministic RoutingPolicy** that:
+
+    • Selects models based on task + ComplexityLevel.
+    • Is influenced by a MetaProfileSnapshot (read-only).
+    • Provides ToT branch counts for StrategyLLMAgent.
+    • Contains NO provider SDK calls.
+    • Contains NO L1/L2/L3/L4/L5 logic.
+
+This module is used only by L2 cognitive agents and L1 complexity
+classification. It is **pure decision logic**.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Optional, Any
 
-from models import ComplexityLevel, RoutingHint
+from models import ComplexityLevel
 from meta_profile import MetaProfileSnapshot
 
 
-# ==============================================================================
-# Model Families
-# ==============================================================================
+# =============================================================================
+# Model Family Definitions
+# =============================================================================
 
-# Light, cheap, fast — shallow reasoning
+# "Light" models: fast, cheap, shallow reasoning
 LIGHT_MODELS = {
     "openai": "gpt-4.1-mini",
     "anthropic": "claude-3-haiku",
 }
 
-# Balanced — solid reasoning, moderate price
+# "Medium" models: balanced cost vs reasoning depth
 MEDIUM_MODELS = {
     "openai": "gpt-5.1",
     "anthropic": "claude-3.5-sonnet",
 }
 
-# Heavy — deep reasoning, best for complex planning & strategy
+# "Heavy" models: deep reasoning, longer outputs
 HEAVY_MODELS = {
     "openai": "gpt-5.1-codex",
     "anthropic": "claude-3.5-opus",
 }
 
-# Specialized for multi-step narrative generation
+# Specialized drafting models
 DRAFTING_MODELS = {
     "openai": "gpt-5.1-codex",
     "anthropic": "claude-3.5-opus",
 }
 
-# Specialized for QA & Safety JSON output requirements
+# Specialized QA/Safety models
 QA_SAFETY_MODELS = {
     "openai": "gpt-4.1",
     "anthropic": "claude-3.5-sonnet",
 }
 
 
-# ==============================================================================
+# =============================================================================
 # Routing Policy
-# ==============================================================================
+# =============================================================================
 
 @dataclass
 class RoutingPolicy:
     """
-    RoutingPolicy encapsulates provider & model preferences.
+    v10_10 RoutingPolicy: pure model-selection logic.
 
     Fields:
-        prefer_anthropic: bias toward Anthropic models (semantic/long outputs)
-        prefer_openai:    bias toward OpenAI models (structured/code reasoning)
-        allow_heavy:      whether heavy models are allowed under current budgets
-        enforce_low_cost: if True, light-tier is preferred unless complexity=high
+        prefer_anthropic: Prefer Anthropic models if True.
+        prefer_openai:    Prefer OpenAI models if True.
+        allow_heavy:      Allow heavy models (deep reasoning).
+        enforce_low_cost: Prefer light models when possible.
+
+    Notes:
+        - MetaProfileSnapshot can override provider preference based on
+          recent QA / correction rates.
     """
 
     prefer_anthropic: bool = False
@@ -82,12 +94,10 @@ class RoutingPolicy:
     allow_heavy: bool = True
     enforce_low_cost: bool = False
 
-    def _choose_provider(
-        self, meta_profile: Optional[MetaProfileSnapshot]
-    ) -> str:
-        """
-        Decide between OpenAI and Anthropic.
-        """
+    # ---------------------------------------------------------------------
+    # Provider selection
+    # ---------------------------------------------------------------------
+    def _choose_provider(self, meta_profile: Optional[MetaProfileSnapshot]) -> str:
         provider = "openai"
 
         if self.prefer_anthropic:
@@ -95,8 +105,8 @@ class RoutingPolicy:
         if self.prefer_openai:
             provider = "openai"
 
-        # Meta-learning overrides user bias
-        if meta_profile:
+        # Let meta-profile override user-configured bias
+        if meta_profile is not None:
             if meta_profile.prefers_anthropic:
                 provider = "anthropic"
             if meta_profile.prefers_openai:
@@ -104,19 +114,22 @@ class RoutingPolicy:
 
         return provider
 
-    # ----------------------------------------------------------------------
-    # Strategy ToT branch depth
-    # ----------------------------------------------------------------------
+    # ---------------------------------------------------------------------
+    # ToT branch count for Strategy agent
+    # ---------------------------------------------------------------------
     def strategy_branches_for(self, complexity: ComplexityLevel) -> int:
+        """
+        Number of branches StrategyLLMAgent should explore.
+        """
         if complexity == ComplexityLevel.LOW:
             return 1
         if complexity == ComplexityLevel.MEDIUM:
             return 3
-        return 4  # HIGH -> deeper ToT exploration
+        return 4  # HIGH complexity → deeper exploration
 
-    # ----------------------------------------------------------------------
-    # Main routing logic
-    # ----------------------------------------------------------------------
+    # ---------------------------------------------------------------------
+    # Main model-selection entrypoint
+    # ---------------------------------------------------------------------
     def select_model(
         self,
         task: str,
@@ -124,19 +137,27 @@ class RoutingPolicy:
         meta_profile: Optional[MetaProfileSnapshot],
     ) -> str:
         """
-        Top-level router used by ALL cognitive agents.
+        Select the appropriate model for a given task and complexity.
 
-        Inputs:
-            task         — prompt ID (e.g. "drafting_narrative", "qa_semantic_check")
-            complexity   — ComplexityLevel
-            meta_profile — historical signals
+        task:
+            Prompt ID used by cognitive_agents, e.g.:
+                - "strategy_generate_branch"
+                - "strategy_select_branch"
+                - "drafting_structure"
+                - "drafting_narrative"
+                - "drafting_compliance"
+                - "qa_semantic_check"
+                - "safety_check"
 
-        Output:
-            model string (e.g. "gpt-5.1-codex")
+        complexity:
+            L1-estimated ComplexityLevel for the workload.
+
+        meta_profile:
+            Optional MetaProfileSnapshot influencing provider choice.
         """
         provider = self._choose_provider(meta_profile)
 
-        # 1. Task-specific overrides first
+        # Task-specific overrides
         if task.startswith("drafting_"):
             return DRAFTING_MODELS[provider]
 
@@ -148,12 +169,15 @@ class RoutingPolicy:
                 return HEAVY_MODELS[provider]
             return MEDIUM_MODELS[provider]
 
-        # 2. Complexity-based general routing
+        # Complexity-based routing
         if complexity == ComplexityLevel.LOW:
+            # If low cost is enforced, always pick light models
+            if self.enforce_low_cost:
+                return LIGHT_MODELS[provider]
+            # Otherwise balanced defaults
             return LIGHT_MODELS[provider]
 
         if complexity == ComplexityLevel.MEDIUM:
-            # Enforce low-cost mode if enabled
             if self.enforce_low_cost:
                 return LIGHT_MODELS[provider]
             return MEDIUM_MODELS[provider]
@@ -163,13 +187,13 @@ class RoutingPolicy:
                 return HEAVY_MODELS[provider]
             return MEDIUM_MODELS[provider]
 
-        # 3. Fallback (unlikely)
+        # Fallback
         return MEDIUM_MODELS[provider]
 
 
-# ==============================================================================
-# Complexity Classifier (used in L1)
-# ==============================================================================
+# =============================================================================
+# Complexity Classifier (L1 Helper)
+# =============================================================================
 
 def classify_complexity(
     job: Any,
@@ -178,38 +202,53 @@ def classify_complexity(
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> ComplexityLevel:
     """
-    Lightweight heuristic classifier used by L1.
+    Heuristic classifier used by L1 to estimate ComplexityLevel.
 
-    Factors:
+    Factors (purely deterministic):
         • Job seniority
-        • Resume length / density
-        • Requirement count
-        • Meta-profile failure history
-    """
-    score = 1.0  # start baseline at medium-ish
+        • Count of job requirements
+        • Resume length (experience sections)
+        • QA/correction rates from meta_profile
 
-    # Senior jobs → more complexity
-    if job.seniority in ("Director", "VP", "SVP", "C-level"):
+    This logic is intentionally simple and stable.
+    """
+    score = 1.0  # baseline: between LOW and MEDIUM
+
+    # Senior roles → more complexity
+    if getattr(job, "seniority", "").lower() in ("director", "vp", "svp", "c-level", "chief"):
         score += 0.5
 
-    # Long resumes -> more reasoning complexity
-    if len(resume.experience_sections) > 6:
-        score += 0.4
+    # Many requirements → more alignment complexity
+    try:
+        reqs = getattr(job, "requirements", []) or []
+        if len(reqs) > 8:
+            score += 0.3
+        if len(reqs) > 15:
+            score += 0.3
+    except Exception:
+        pass
 
-    # Many job requirements → more alignment work
-    if len(job.requirements) > 8:
-        score += 0.3
+    # Long experience → more data to integrate
+    try:
+        exp_sections = getattr(resume, "experience_sections", []) or []
+        if len(exp_sections) > 6:
+            score += 0.3
+        if len(exp_sections) > 10:
+            score += 0.3
+    except Exception:
+        pass
 
-    # Meta-learning feedback
-    if meta_profile:
+    # Meta-profile signal (recent QA/correction rates)
+    if meta_profile is not None:
         if meta_profile.qa_failure_rate_last_10 > 0.4:
             score += 0.3
         if meta_profile.correction_rate_last_10 > 0.3:
             score += 0.2
 
+    # Map score → ComplexityLevel
     if score < 1.2:
         return ComplexityLevel.LOW
-    elif score < 1.8:
+    if score < 1.8:
         return ComplexityLevel.MEDIUM
-    else:
-        return ComplexityLevel.HIGH
+    return ComplexityLevel.HIGH
+
