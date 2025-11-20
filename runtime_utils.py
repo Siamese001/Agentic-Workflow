@@ -1,221 +1,269 @@
-# FILE: runtime_utils.py
+# FILE: 10_10/runtime_utils.py
 """
-Unified Runtime Infrastructure (v10_10) — HARDWARE LAYER
+Runtime Utilities for v10_10
+============================
 
-This module provides the raw mechanical capabilities required by the
-Cognitive Layer. It contains NO business logic, NO policies, and NO prompts.
+This module provides the infrastructure utilities required by the L2 cognitive
+agents and the rest of the workflow:
 
-COMPONENTS:
-    1. AsyncModelClient: Low-level HTTP stub for LLM providers.
-    2. SandboxedExecution: Process isolation wrapper for tools (Pillar 14).
-    3. RetrievalMath: BM25/Fusion algorithms (Pillar 7).
-    4. Resilience: Standard Exception hierarchy (Pillar 8).
+    • invoke_model()          — unified LLM invocation wrapper
+    • PredictiveCacheManager  — semantic/predictive cache
+    • SandboxConfig           — execution sandbox abstraction
+    • get_sandbox()           — normalized sandbox allocator
+
+Design Goals:
+    • Zero business logic.
+    • Zero coupling to L1–L5 semantics.
+    • All external calls routed through invoke_model().
+    • DI-friendly: no global registries, no global state.
+    • Observability integrated into every invocation.
 """
 
 from __future__ import annotations
 
-import time
+import os
 import json
 import hashlib
-import asyncio
-from typing import Any, Dict, List, Optional, Union
+import time
+from dataclasses import dataclass, field
+from typing import Optional, Any, Dict, Tuple
 
-# =============================================================================
-# 1. EXCEPTION HIERARCHY (Pillar 8)
-# =============================================================================
+from observability import record_event, record_exception
 
-class AgenticError(Exception):
-    """Root exception for the architecture."""
 
-class ValidationError(AgenticError):
-    """Contract violation (Pydantic/Schema mismatch)."""
+# ==============================================================================
+# Optional Provider SDKs
+# ==============================================================================
 
-class ModelClientError(AgenticError):
-    """Network/Provider failure (500s, Rate Limits)."""
+try:  # pragma: no cover
+    import openai
+except ImportError:  # pragma: no cover
+    openai = None
 
-class ToolExecutionError(AgenticError):
-    """Sandbox failure (Runtime error in tool)."""
+try:  # pragma: no cover
+    import anthropic
+except ImportError:  # pragma: no cover
+    anthropic = None
 
-class SandboxTimeoutError(AgenticError):
-    """Execution exceeded time limit."""
 
-class ContextLimitError(AgenticError):
-    """Token budget exceeded."""
+# ==============================================================================
+# Sandbox
+# ==============================================================================
 
-# =============================================================================
-# 2. NETWORK CLIENT (The "Wire")
-# =============================================================================
-
-class AsyncModelClient:
+@dataclass
+class SandboxConfig:
     """
-    Raw interface to LLM Providers (OpenAI, Anthropic).
-    This layer handles retries, timeouts, and raw HTTP.
-    It DOES NOT handle Prompt Rendering or Routing Policy.
+    Sandbox descriptor for runtime execution.
+
+    NOTE:
+        Windsurf provides the actual isolation. This structure just
+        enforces logical constraints for policy, token limits, and timeouts.
     """
 
-    async def invoke(
-        self, 
-        provider: str, 
-        model_id: str, 
-        prompt_text: str, 
-        config: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    name: str = "default"
+    allow_network: bool = True
+    request_timeout_s: int = 60
+    max_tokens_per_call: int = 2048
+
+
+def get_sandbox(config: Optional[SandboxConfig]) -> SandboxConfig:
+    """
+    Normalize sandbox configuration (never return None).
+    """
+    return config if config is not None else SandboxConfig()
+
+
+# ==============================================================================
+# Predictive Cache Manager
+# ==============================================================================
+
+@dataclass
+class PredictiveCacheManager:
+    """
+    Simple in-memory cache for deterministic speed-ups and cost savings.
+
+    Keys are derived from domain ("rag", "drafting", etc.), plan, and context.
+
+    You may replace this with Redis or any other backing store as long as:
+        .make_key(), .get(), .set() remain stable.
+    """
+
+    max_entries: int = 1024
+    _store: Dict[str, Tuple[float, Any]] = field(default_factory=dict)
+
+    def make_key(self, domain: str, plan: Any, ctx: Any) -> str:
         """
-        Simulates the network call.
-        In prod, this wraps `openai.AsyncClient` or `anthropic.AsyncClient`.
-        """
-        # Simulate Network Latency
-        await asyncio.sleep(0.1)
-
-        # --- MOCK RESPONSES FOR SIMULATION ---
-        # This ensures our "Golden State" tests pass without real API keys.
-        
-        # 1. Strategy JSON Mock
-        if "Strategic Planning Agent" in prompt_text:
-            return {
-                "content": json.dumps({
-                    "branches": [
-                        {"branch_id": "b1", "name": "Cloud-First", "rationale": "Scalable", "steps": ["Audit", "Migrate"], "score": 0.9},
-                        {"branch_id": "b2", "name": "Hybrid", "rationale": "Secure", "steps": ["VPN", "Sync"], "score": 0.8}
-                    ],
-                    "selected_branch_id": "b1",
-                    "reasoning_trace": "Analyzed complexity vs cost..."
-                }),
-                "usage": {"input": 100, "output": 50},
-                "latency_ms": 450
-            }
-
-        # 2. Drafting Mock
-        if "Content Drafter" in prompt_text:
-            return {
-                "content": "This is a drafted section based on the provided evidence. It adheres to the professional tone requested.",
-                "usage": {"input": 200, "output": 100},
-                "latency_ms": 300
-            }
-
-        # 3. Safety Mock
-        if "Constitutional Safety Judge" in prompt_text:
-            # Trigger block if "Safety Intervention" scenario keywords appear
-            if "Ignore rules" in prompt_text or "password" in prompt_text:
-                 return {
-                    "content": json.dumps({
-                        "blocked": True,
-                        "findings": [{"rule_id": "no_pii", "violated": True, "confidence": 0.99, "snippet": "password: 12345"}],
-                        "policy_version": "v1.0"
-                    }),
-                    "usage": {"input": 100, "output": 20},
-                    "latency_ms": 200
-                }
-            # Otherwise Pass
-            return {
-                "content": json.dumps({
-                    "blocked": False,
-                    "findings": [],
-                    "policy_version": "v1.0"
-                }),
-                "usage": {"input": 100, "output": 20},
-                    "latency_ms": 200
-            }
-
-        # Fallback
-        return {
-            "content": f"[Simulated Output from {model_id}]",
-            "usage": {"input": 10, "output": 10},
-            "latency_ms": 100
-        }
-
-# Global Client Singleton
-NETWORK = AsyncModelClient()
-
-
-# =============================================================================
-# 3. TOOL SANDBOX (Pillar 14)
-# =============================================================================
-
-class SandboxedExecution:
-    """
-    Hardened execution environment.
-    Enforces timeouts and isolation logic.
-    """
-    
-    async def run(
-        self, 
-        function: callable, 
-        args: Dict[str, Any], 
-        timeout_sec: int = 30
-    ) -> Any:
-        """
-        Run a function with strict timeout guardrails.
+        Create a stable hash key from (domain, plan, context signature).
         """
         try:
-            return await asyncio.wait_for(self._unsafe_execute(function, args), timeout=timeout_sec)
-        except asyncio.TimeoutError:
-            raise SandboxTimeoutError(f"Tool execution exceeded {timeout_sec}s limit.")
-        except Exception as e:
-            raise ToolExecutionError(f"Sandbox runtime error: {str(e)}")
+            plan_data = (
+                plan.model_dump()
+                if hasattr(plan, "model_dump")
+                else plan.__dict__
+            )
+        except Exception:
+            plan_data = str(plan)
 
-    async def _unsafe_execute(self, function: callable, args: Dict[str, Any]) -> Any:
+        ctx_data = {
+            "job_title": getattr(getattr(ctx, "job", None), "title", ""),
+            "role_type": getattr(getattr(ctx, "job", None), "role_type", ""),
+            "seniority": getattr(getattr(ctx, "job", None), "seniority", ""),
+            "config_hash": hashlib.sha256(
+                json.dumps(
+                    getattr(ctx.config, "model_dump", lambda: {})(),
+                    sort_keys=True,
+                    default=str,
+                ).encode("utf-8")
+            ).hexdigest(),
+        }
+
+        raw = json.dumps(
+            {"domain": domain, "plan": plan_data, "ctx": ctx_data},
+            sort_keys=True,
+            default=str,
+        )
+        digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+        return f"{domain}:{digest}"
+
+    def get(self, key: str) -> Optional[Any]:
         """
-        The actual execution logic.
-        In a real system, this would spin up a Docker container or E2B sandbox.
+        Retrieve a cached value.
         """
-        # Simulate overhead
-        await asyncio.sleep(0.05)
-        
-        # For simulation, we map "tool_id" strings to logic here
-        # assuming 'function' is a placeholder string in this harness.
-        
-        tool_id = args.get("tool_id", "unknown")
-        
-        if tool_id == "web_search":
-            return "Search Results: Found relevant leadership principles and cloud strategies."
-            
-        return f"Executed {tool_id} successfully."
+        entry = self._store.get(key)
+        if not entry:
+            return None
 
-# Global Sandbox Singleton
-SANDBOX = SandboxedExecution()
+        ts, value = entry
+        record_event("predictive_cache_hit", {"key": key, "age_s": time.time() - ts})
+        return value
+
+    def set(self, key: str, value: Any) -> None:
+        """
+        Store a cached value (evicting oldest if needed).
+        """
+        if len(self._store) >= self.max_entries:
+            oldest_key = min(self._store.items(), key=lambda kv: kv[1][0])[0]
+            self._store.pop(oldest_key, None)
+            record_event("predictive_cache_eviction", {"evicted_key": oldest_key})
+
+        self._store[key] = (time.time(), value)
+        record_event("predictive_cache_set", {"key": key})
 
 
-# =============================================================================
-# 4. RETRIEVAL MATH (Pillar 7)
-# =============================================================================
+# ==============================================================================
+# Provider Inference
+# ==============================================================================
 
-class RetrievalMath:
+def _infer_provider(model: str) -> str:
     """
-    Pure logic for ranking and fusion.
-    No state, no network.
-    """
-    
-    @staticmethod
-    def bm25_score(query: str, doc: str) -> float:
-        """Heuristic length/term match scorer."""
-        q_terms = set(query.lower().split())
-        d_terms = doc.lower().split()
-        score = 0.0
-        for t in q_terms:
-            score += d_terms.count(t)
-        return min(score, 10.0) # Cap
+    Infer provider (OpenAI/Anthropic) from model name.
 
-    @staticmethod
-    def reciprocal_rank_fusion(lists: List[List[Dict[str, Any]]], k: int = 60) -> List[Dict[str, Any]]:
-        """
-        Fuses multiple ranked lists.
-        """
-        scores: Dict[str, float] = {}
-        docs_map: Dict[str, Dict[str, Any]] = {}
-        
-        for ranked_list in lists:
-            for rank, item in enumerate(ranked_list):
-                content = item.get("content", "")
-                # Dedupe key
-                if content not in docs_map:
-                    docs_map[content] = item
-                
-                # RRF Formula
-                scores[content] = scores.get(content, 0.0) + (1.0 / (k + rank + 1))
-        
-        # Sort by score
-        sorted_content = sorted(scores.keys(), key=lambda x: scores[x], reverse=True)
-        
-        # Reconstruct list
-        return [docs_map[c] for c in sorted_content]
+    This is deliberately simple, but can be extended to use explicit routing.
+    """
+    m = model.lower()
+
+    if m.startswith("gpt") or m.startswith("o") or m.startswith("gpt-5"):
+        return "openai"
+
+    if m.startswith("claude"):
+        return "anthropic"
+
+    # Future support (Gemini, Cohere, etc.)
+    return "openai"
+
+
+# ==============================================================================
+# invoke_model(): Single entrypoint for all LLM calls
+# ==============================================================================
+
+class LLMInvocationError(RuntimeError):
+    pass
+
+
+def invoke_model(
+    model: str,
+    prompt: str,
+    sandbox: SandboxConfig,
+    temperature: float = 0.2,
+    max_tokens: int = 1024,
+) -> str:
+    """
+    Unified LLM invocation API for v10_10.
+
+    Ensures:
+        - provider detection
+        - sandbox max_tokens enforcement
+        - observability
+        - consistent exception handling
+
+    Called by:
+        - StrategyLLMAgent
+        - DraftingGuild
+        - SemanticQAAgent
+        - ConstitutionalSafetyAgent
+    """
+
+    provider = _infer_provider(model)
+    max_tokens = min(max_tokens, sandbox.max_tokens_per_call)
+
+    record_event(
+        "llm_invoke_start",
+        {"model": model, "provider": provider, "temperature": temperature, "max_tokens": max_tokens},
+    )
+
+    try:
+        # ----------------------------------------------------------------------
+        # OpenAI Provider
+        # ----------------------------------------------------------------------
+        if provider == "openai":
+            if openai is None:
+                raise LLMInvocationError("openai package is not installed.")
+
+            client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            response = client.chat.completions.create(
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                timeout=sandbox.request_timeout_s,
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+            text = response.choices[0].message.content or ""
+            record_event("llm_invoke_success", {"provider": provider, "len": len(text)})
+            return text
+
+        # ----------------------------------------------------------------------
+        # Anthropic Provider
+        # ----------------------------------------------------------------------
+        elif provider == "anthropic":
+            if anthropic is None:
+                raise LLMInvocationError("anthropic package is not installed.")
+
+            client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+            response = client.messages.create(
+                model=model,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                timeout=sandbox.request_timeout_s,
+                messages=[{"role": "user", "content": prompt}],
+            )
+
+            parts = []
+            for block in response.content:
+                if getattr(block, "type", None) == "text":
+                    parts.append(getattr(block, "text", ""))
+            text = "\n".join(parts)
+
+            record_event("llm_invoke_success", {"provider": provider, "len": len(text)})
+            return text
+
+        # ----------------------------------------------------------------------
+        # Unsupported provider
+        # ----------------------------------------------------------------------
+        else:
+            raise LLMInvocationError(f"Unsupported provider inferred for model: {model}")
+
+    except Exception as exc:
+        record_exception("llm_invoke_failure", exc)
+        raise LLMInvocationError(f"Failed to invoke model {model}: {exc}") from exc
