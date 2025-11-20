@@ -64,7 +64,6 @@ class L2Environment:
         - sandbox
         - cognitive agents (Strategy, Drafting, QA, Safety)
     """
-
     cache_manager: Optional[PredictiveCacheManager]
     sandbox: SandboxConfig
 
@@ -80,41 +79,33 @@ def build_l2_environment(ctx: ExecutionContext) -> L2Environment:
     """
     sandbox = get_sandbox(ctx.sandbox_config)
 
-    strat = StrategyLLMAgent(
-        routing_policy=ctx.routing_policy,
-        meta_profile=ctx.meta_profile_snapshot,
-        prompt_registry=ctx.prompt_registry,
-        sandbox=sandbox,
-    )
-
-    draft = DraftingGuild(
-        routing_policy=ctx.routing_policy,
-        meta_profile=ctx.meta_profile_snapshot,
-        prompt_registry=ctx.prompt_registry,
-        sandbox=sandbox,
-    )
-
-    qa = SemanticQAAgent(
-        routing_policy=ctx.routing_policy,
-        meta_profile=ctx.meta_profile_snapshot,
-        prompt_registry=ctx.prompt_registry,
-        sandbox=sandbox,
-    )
-
-    safety = ConstitutionalSafetyAgent(
-        routing_policy=ctx.routing_policy,
-        meta_profile=ctx.meta_profile_snapshot,
-        prompt_registry=ctx.prompt_registry,
-        sandbox=sandbox,
-    )
-
     return L2Environment(
         cache_manager=ctx.cache_manager,
         sandbox=sandbox,
-        strategy_agent=strat,
-        drafting_agent=draft,
-        qa_agent=qa,
-        safety_agent=safety,
+        strategy_agent=StrategyLLMAgent(
+            routing_policy=ctx.routing_policy,
+            meta_profile=ctx.meta_profile_snapshot,
+            prompt_registry=ctx.prompt_registry,
+            sandbox=sandbox,
+        ),
+        drafting_agent=DraftingGuild(
+            routing_policy=ctx.routing_policy,
+            meta_profile=ctx.meta_profile_snapshot,
+            prompt_registry=ctx.prompt_registry,
+            sandbox=sandbox,
+        ),
+        qa_agent=SemanticQAAgent(
+            routing_policy=ctx.routing_policy,
+            meta_profile=ctx.meta_profile_snapshot,
+            prompt_registry=ctx.prompt_registry,
+            sandbox=sandbox,
+        ),
+        safety_agent=ConstitutionalSafetyAgent(
+            routing_policy=ctx.routing_policy,
+            meta_profile=ctx.meta_profile_snapshot,
+            prompt_registry=ctx.prompt_registry,
+            sandbox=sandbox,
+        ),
     )
 
 
@@ -161,7 +152,7 @@ def execute_rag(
         if env.cache_manager:
             cache_key = env.cache_manager.make_key("rag", plans.rag, ctx)
             cached = env.cache_manager.get(cache_key)
-            if cached is not None:
+            if cached:
                 record_event("l2.rag_cache_hit", {"key": cache_key})
                 return cached
 
@@ -329,4 +320,5 @@ def execute_workflow_plans(
         raise
     finally:
         end_span(span)
+
 
