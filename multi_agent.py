@@ -3,58 +3,49 @@
 Deprecated Multi-Agent Layer (v10_10)
 =====================================
 
-In earlier architectures (v10_7, v10_8, early v10_9):
------------------------------------------------------
-This module hosted:
-    • Multi-agent “councils”
-    • Emergent-agent routing
-    • AgentGraph topologies
-    • Meta-agent arbitration
-    • Multi-step group reasoning
+The multi-agent graph, council, committee, and coordination patterns
+from v10_7–v10_9 are **not part of the v10_10 runtime architecture**.
 
 In v10_10:
------------
-ALL cognitive behavior has been refactored into SINGLE-PURPOSE L2 agents:
 
-    cognitive_agents.py
-        • StrategyLLMAgent
-        • DraftingGuild
-        • SemanticQAAgent
-        • ConstitutionalSafetyAgent
+    • L1 handles planning ONLY.
+    • L2 handles ALL cognition (Strategy, Drafting, QA, Safety).
+    • L3 handles the DAG + retries.
+    • L4 handles deterministic state patches.
+    • L5 handles final safety gating.
 
-ALL orchestration has been refactored into:
+No multi-agent arbitration, council voting, committee formation,
+delegation routing, graph topologies, or meta-layer simulations are
+permitted inside a v10_10 runtime.
 
-    l3.py
-        • DAG
-        • Correction surfaces + retry loop
+This module exists *ONLY* to prevent import failures for legacy code.
+All multi-agent logic has been removed by design.
 
-ALL safety gating has been refactored into:
+If you see any imports like:
 
-    l5.py
-        • deterministic SafetyPolicy
+    from multi_agent import MultiAgentCoordinator
+    from multi_agent import build_council
 
-Therefore:
------------
-There is *no longer* any valid use case for this module.
+You MUST remove or refactor those call sites. The 10_10 architecture
+provides no runtime multi-agent layer.
 
-It remains ONLY as a compatibility stub so older branches
-or legacy scripts importing `multi_agent` will not crash.
-
-DO NOT place any agent logic, planning, routing, or orchestration here.
+This file intentionally exposes nothing.
 """
 
+from __future__ import annotations
 
-# This file intentionally exports nothing.
+
 __all__: list[str] = []
 
 
 def __getattr__(name: str):
     """
-    Catch all legacy attribute accesses (for safety).
-    Provide a clear error message at runtime.
+    Legacy guard: if older code tries to access multi-agent constructs,
+    raise a clear, explicit error.
     """
     raise AttributeError(
         f"'multi_agent' is deprecated in v10_10. "
-        f"All cognitive agents are now in `cognitive_agents.py` and "
-        f"all orchestration is in `l3.py`. Accessing '{name}' is invalid."
+        f"The multi-agent coordination layer was removed. "
+        f"All cognition is handled by L2 cognitive agents, and all "
+        f"orchestration by L3 DAG. '{name}' does not exist in v10_10."
     )
