@@ -1,365 +1,205 @@
-# FILE: 10_10/main_v10_10.py
+# FILE: main_v10_10.py
 """
-Main Entry Point — v10_10 Agentic Workflow (L1–L5 Refactor)
+Main Orchestration Entrypoint (v10_10 · Phase 2)
+================================================
 
-This is the v10_10 refactor of the v10_9 main entrypoint. :contentReference[oaicite:1]{index=1}
+This is the top-level runtime entrypoint for the v10_10 workflow.
 
-It no longer uses:
-    • PlanObject
-    • DAGExecutor
-    • StateAdapter
-    • SafetyEngine / PolicyEngine / ArbitrationEngine
-    • CostTracker
-    • Multi-agent or HIL payloads
+Phase-2 guarantees:
+    • Pure orchestration only — NO LLM calls here.
+    • All LLM calls route through L2 → cognitive_agents → prompt_builder.
+    • All prompts routed through prompt_system_v10_10 with ACL enforcement.
+    • All state mutation (future L4) strictly excluded here.
+    • All model routing governed via RoutingPolicy.
+    • Observability spans for the entire workflow.
+    • Deterministic execution: L1 → L2 → L3/L5 orchestration pattern.
 
-Instead, it wires together the new, strictly layered architecture:
+Valid high-level data flow:
+    1. L1:   planning only (no tools, no LLM).
+    2. L2:   LLM execution (strategy, drafting, QA, safety pre-check).
+    3. L3:   control flow, retries, fallback behaviors.
+    4. L4:   state updates (disabled until Phase 4).
+    5. L5:   safety enforcement (policy finalization).
 
-    • L1: build_workflow_plan_bundle (no LLM, no tools)
-    • L2: execute_workflow_plans       (LLM + tools; called inside L3)
-    • L3: run_dag                      (DAG + retries + correction surfaces)
-    • L4: apply_state_patch            (deterministic state patch; called in L3)
-    • L5: safety_gate                  (deterministic safety policy; called in L3)
-
-This module exposes:
-    • async run_workflow_v10_10(initial_state, compat_mode, debug_mode, stream_callback)
-    • sync  run_workflow_sync_v10_10(...)
-
-It bridges from the v10_9-style "initial_state" dict to the new
-typed v10_10 models (JobInput, ResumeInput, WorkflowConfig).
+This file constructs:
+    • ExecutionContext
+    • Performs L1 planning
+    • Calls L2 workflow executor
+    • Applies L3/L5 enforcement logic
+    • Returns a final structured result bundle
 """
 
 from __future__ import annotations
 
-import asyncio
-from pathlib import Path
-from typing import Any, Dict, Optional, Callable
+import traceback
+from typing import Optional
 
 from models import (
     JobInput,
     ResumeInput,
     WorkflowConfig,
+    WorkflowPlanBundle,
     ExecutionContext,
+    FinalWorkflowResult,
 )
+
+from observability import start_span, end_span, log_exception, record_event
+from l1 import generate_workflow_plans
+from l2 import execute_workflow_plans
+from l3 import orchestrate_l3_fallbacks
+from l5 import enforce_final_safety_policy
+
 from routing import RoutingPolicy
-from registry import build_default_prompt_registry
-from runtime_utils import PredictiveCacheManager, SandboxConfig
-from l1 import build_workflow_plan_bundle
-from l3 import run_dag
-from observability import start_span, end_span, record_event
+from runtime_utils import SandboxConfig
+from meta_profile import load_meta_profile_snapshot
 
 
 # =============================================================================
-# 1. STATE NORMALIZATION (FROM v10_9 STYLE)
+# Initialization Helpers
 # =============================================================================
 
-def _initialize_state(
-    initial_state: Optional[Dict[str, Any]],
+
+def _build_execution_context(
     *,
-    compat_mode: Optional[str],
-    debug_mode: bool,
-) -> Dict[str, Any]:
+    job: JobInput,
+    resume: ResumeInput,
+    config: WorkflowConfig,
+    routing_policy: Optional[RoutingPolicy] = None,
+    sandbox: Optional[SandboxConfig] = None,
+) -> ExecutionContext:
     """
-    Normalize incoming state dict.
-
-    Ensures:
-        • workflow_id is present
-        • messages is a list
-        • metadata is a dict
-        • compat/debug flags are stored in metadata
-
-    This is a simplified v10_10 variant of the v10_9 initializer. :contentReference[oaicite:2]{index=2}
+    Build the typed ExecutionContext consumed by all layers.
     """
-    state: Dict[str, Any] = dict(initial_state or {})
-    metadata = state.setdefault("metadata", {})
+    rp = routing_policy or RoutingPolicy.from_config(config)
+    sb = sandbox or SandboxConfig()
 
-    workflow_id = (
-        state.get("workflow_id")
-        or metadata.get("workflow_id")
-        or "workflow_v10_10"
+    meta = load_meta_profile_snapshot(
+        job=job,
+        resume=resume,
+        config=config,
     )
-    state["workflow_id"] = workflow_id
-    metadata["workflow_id"] = workflow_id
 
-    # Ensure messages exist
-    if not isinstance(state.get("messages"), list):
-        state["messages"] = []
-
-    # Compat + debug metadata
-    if compat_mode is not None:
-        metadata["compat_mode"] = str(compat_mode)
-    metadata["debug_mode"] = bool(debug_mode)
-
-    return state
+    return ExecutionContext(
+        job=job,
+        resume=resume,
+        config=config,
+        routing_policy=rp,
+        sandbox_config=sb,
+        cache_manager=None,
+        prompt_registry=None,
+        meta_profile_snapshot=meta,
+    )
 
 
-def _emit_stream_event(
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]],
-    *,
-    event_type: str,
-    payload: Dict[str, Any],
-) -> None:
+# =============================================================================
+# Main Orchestration Entry Point
+# =============================================================================
+
+
+def run_workflow(
+    job: JobInput,
+    resume: ResumeInput,
+    config: WorkflowConfig,
+) -> FinalWorkflowResult:
     """
-    Best-effort stream event emission, as in v10_9 main. :contentReference[oaicite:3]{index=3}
+    Single public API for executing the full v10_10 workflow.
+
+    Validated processing order:
+        1. Build ExecutionContext
+        2. L1: planning (pure reasoning)
+        3. L2: execution (LLM calls)
+        4. L3: fallback & recovery routing
+        5. L5: enforce safety policy
+        6. Return FinalWorkflowResult
     """
-    if stream_callback is None:
-        return
+
+    top_span = start_span("workflow.run", {"job": job.title, "resume": resume.name})
+
     try:
-        stream_callback({"event": event_type, "payload": payload})
-    except Exception:
-        # Observability must not break the workflow
-        pass
+        # ------------------------------------------------------------------
+        # Build unified context
+        # ------------------------------------------------------------------
+        ctx = _build_execution_context(job=job, resume=resume, config=config)
+        record_event("workflow.context_ready")
 
+        # ------------------------------------------------------------------
+        # L1 – Planning (NO LLM calls, no retrieval)
+        # ------------------------------------------------------------------
+        l1_span = start_span("workflow.l1_planning")
+        try:
+            plans: WorkflowPlanBundle = generate_workflow_plans(job, resume, config)
+            record_event("workflow.l1_completed")
+        except Exception as exc:
+            log_exception("workflow.l1_error", exc)
+            end_span(l1_span)
+            raise
+        end_span(l1_span)
 
-def _extract_job_resume_texts(state: Dict[str, Any]) -> Dict[str, str]:
-    """
-    Extract job_text and resume_text from a v10_9-style initial_state.
+        # ------------------------------------------------------------------
+        # L2 – Execution (all LLM calls routed through cognitive agents)
+        # ------------------------------------------------------------------
+        l2_span = start_span("workflow.l2_execute")
+        try:
+            l2_results = execute_workflow_plans(plans, ctx)
+            record_event("workflow.l2_completed")
+        except Exception as exc:
+            log_exception("workflow.l2_error", exc)
+            end_span(l2_span)
+            raise
+        end_span(l2_span)
 
-    Mirrors the logic from v10_9 main where possible. :contentReference[oaicite:4]{index=4}
-    """
-    job_text = str(
-        state.get("job_description")
-        or state.get("job_text")
-        or state.get("jd_text")
-        or ""
-    )
+        # ------------------------------------------------------------------
+        # L3 – Orchestration / fallback logic
+        # ------------------------------------------------------------------
+        l3_span = start_span("workflow.l3_orchestration")
+        try:
+            l3_results = orchestrate_l3_fallbacks(
+                l2_results=l2_results,
+                plans=plans,
+                ctx=ctx,
+            )
+            record_event("workflow.l3_completed")
+        except Exception as exc:
+            log_exception("workflow.l3_error", exc)
+            end_span(l3_span)
+            raise
+        end_span(l3_span)
 
-    resume_summary = ""
-    resume = (state.get("resume") or {}).get("master_resume") or {}
-    if isinstance(resume, dict):
-        resume_summary = str(resume.get("summary", ""))
+        # ------------------------------------------------------------------
+        # L5 – Final safety enforcement (policy layer)
+        # ------------------------------------------------------------------
+        l5_span = start_span("workflow.l5_safety")
+        try:
+            safe_result = enforce_final_safety_policy(
+                l3_results=l3_results,
+                safety_plan=plans.safety,
+                ctx=ctx,
+            )
+            record_event("workflow.l5_completed")
+        except Exception as exc:
+            log_exception("workflow.l5_error", exc)
+            end_span(l5_span)
+            raise
+        end_span(l5_span)
 
-    return {"job_text": job_text, "resume_text": resume_summary}
-
-
-# =============================================================================
-# 2. BRIDGE: BUILD TYPED INPUT MODELS FROM STATE
-# =============================================================================
-
-def _build_job_input_from_state(state: Dict[str, Any]) -> JobInput:
-    """
-    Construct a JobInput from v10_9-style state.
-
-    Since v10_9 had a free-form PlanObject, we approximate:
-        • title      ← state.get("job_title") or "Unknown Role"
-        • role_type  ← state.get("role_type") or "unspecified"
-        • seniority  ← state.get("seniority") or "unspecified"
-        • posting_text ← job_text extracted from state
-        • requirements ← state.get("requirements", []) if present
-    """
-    jt = _extract_job_resume_texts(state)["job_text"]
-
-    return JobInput(
-        title=str(state.get("job_title") or "Unknown Role"),
-        role_type=str(state.get("role_type") or "unspecified"),
-        seniority=str(state.get("seniority") or "unspecified"),
-        posting_text=jt,
-        requirements=list(state.get("requirements", [])),
-    )
-
-
-def _build_resume_input_from_state(state: Dict[str, Any]) -> ResumeInput:
-    """
-    Construct a ResumeInput from v10_9-style state.
-
-    We look into state["resume"]["master_resume"] if available.
-    """
-    resume_root = (state.get("resume") or {}).get("master_resume") or {}
-    if not isinstance(resume_root, dict):
-        resume_root = {}
-
-    return ResumeInput(
-        name=str(resume_root.get("name", "Candidate")),
-        email=resume_root.get("email"),
-        phone=resume_root.get("phone"),
-        linkedin=resume_root.get("linkedin"),
-        summary=resume_root.get("summary"),
-        experience_sections=list(resume_root.get("professional_experience", [])),
-        skills=list(resume_root.get("skills", [])),
-        projects=list(resume_root.get("projects", [])),
-    )
-
-
-def _build_config_from_state(state: Dict[str, Any]) -> WorkflowConfig:
-    """
-    Optionally pick up config hints from state; otherwise use defaults.
-    """
-    cfg = state.get("config") or {}
-    return WorkflowConfig(
-        cost_budget=float(cfg.get("cost_budget", 0.10)),
-        latency_slo_ms=int(cfg.get("latency_slo_ms", 3000)),
-        safety_sensitivity=int(cfg.get("safety_sensitivity", 3)),
-        drafting_depth=int(cfg.get("drafting_depth", 3)),
-        target_tone=str(cfg.get("target_tone", "professional")),
-        target_total_tokens=int(cfg.get("target_total_tokens", 1800)),
-    )
-
-
-# =============================================================================
-# 3. ASYNC ENTRYPOINT (v10_10)
-# =============================================================================
-
-async def run_workflow_v10_10(
-    initial_state: Dict[str, Any],
-    *,
-    compat_mode: Optional[str] = None,
-    debug_mode: bool = False,
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
-) -> Dict[str, Any]:
-    """
-    Execute a single v10_10 agentic workflow pass, starting from a v10_9-style
-    initial_state dict but using the v10_10 L1–L5 architecture.
-    """
-
-    # ---------- Normalize state ----------
-    state = _initialize_state(initial_state, compat_mode=compat_mode, debug_mode=debug_mode)
-    workflow_id = state["workflow_id"]
-
-    _emit_stream_event(
-        stream_callback,
-        event_type="workflow_started",
-        payload={"workflow_id": workflow_id},
-    )
-
-    # ---------- Build Typed Inputs ----------
-    job = _build_job_input_from_state(state)
-    resume = _build_resume_input_from_state(state)
-    config = _build_config_from_state(state)
-
-    # ---------- Build DI Components ----------
-    routing_policy = RoutingPolicy()
-    prompt_registry = build_default_prompt_registry()
-    sandbox = SandboxConfig()
-    cache_manager = PredictiveCacheManager(max_entries=1024)
-
-    # ---------- Build ExecutionContext ----------
-    ctx = ExecutionContext(
-        job=job,
-        resume=resume,
-        config=config,
-        routing_policy=routing_policy,
-        sandbox_config=sandbox,
-        prompt_registry=prompt_registry,
-        cache_manager=cache_manager,
-        meta_profile_snapshot=None,  # future: integrate meta_profile
-    )
-
-    # ---------- L1 Planning ----------
-    planning_span = start_span("planning", ctx=ctx.span_context())
-    plans = build_workflow_plan_bundle(
-        job=job,
-        resume=resume,
-        config=config,
-        meta_profile=None,
-        routing_policy=routing_policy,
-        prompt_registry=prompt_registry,
-    )
-    end_span(planning_span)
-
-    _emit_stream_event(
-        stream_callback,
-        event_type="planning_completed",
-        payload={"workflow_id": workflow_id, "complexity": plans.strategy.complexity.value},
-    )
-
-    # ---------- L3 DAG Orchestration (L2 + L4 + L5) ----------
-    exec_span = start_span("execution", ctx=ctx.span_context())
-    dag_result = run_dag(ctx, plans, max_retries=2)
-    end_span(exec_span)
-
-    _emit_stream_event(
-        stream_callback,
-        event_type="execution_completed",
-        payload={
-            "workflow_id": workflow_id,
-            "corrected": dag_result.corrected,
-            "safety_passed": dag_result.safety_passed,
-        },
-    )
-
-    # ---------- Build Final Output ----------
-    final_state_patch = dag_result.final_state_patch
-
-    result = {
-        "workflow_id": workflow_id,
-        "state_patch": final_state_patch,
-        "safety_passed": dag_result.safety_passed,
-        "corrected": dag_result.corrected,
-        # L2 raw results (optional, for debugging / downstream processing)
-        "l2_results": {
-            "strategy": dag_result.l2_results.strategy.model_dump(),
-            "rag": dag_result.l2_results.rag.model_dump(),
-            "drafting": dag_result.l2_results.drafting.model_dump(),
-            "qa": dag_result.l2_results.qa.model_dump(),
-            "safety": dag_result.l2_results.safety.model_dump(),
-        },
-    }
-
-    _emit_stream_event(
-        stream_callback,
-        event_type="workflow_completed",
-        payload={
-            "workflow_id": workflow_id,
-            "safety_passed": dag_result.safety_passed,
-            "corrected": dag_result.corrected,
-        },
-    )
-
-    return result
-
-
-# =============================================================================
-# 4. SYNC WRAPPER
-# =============================================================================
-
-def run_workflow_sync_v10_10(
-    initial_state: Dict[str, Any],
-    *,
-    compat_mode: Optional[str] = None,
-    debug_mode: bool = False,
-    stream_callback: Optional[Callable[[Dict[str, Any]], Any]] = None,
-) -> Dict[str, Any]:
-    """
-    Blocking wrapper around run_workflow_v10_10() for CLI/local execution.
-    """
-    return asyncio.run(
-        run_workflow_v10_10(
-            initial_state,
-            compat_mode=compat_mode,
-            debug_mode=debug_mode,
-            stream_callback=stream_callback,
+        # ------------------------------------------------------------------
+        # Final output
+        # ------------------------------------------------------------------
+        return FinalWorkflowResult(
+            job=job,
+            resume=resume,
+            config=config,
+            strategy=l2_results.strategy,
+            rag=l2_results.rag,
+            drafting=l2_results.drafting,
+            qa=l3_results.qa,
+            safety=safe_result,
         )
-    )
 
+    except Exception as exc:
+        log_exception("workflow.fatal", exc)
+        traceback.print_exc()
+        raise
 
-# =============================================================================
-# 5. OPTIONAL CLI TEST
-# =============================================================================
-
-if __name__ == "__main__":
-    example_state = {
-        "objective": "draft a concise professional summary",
-        "job_description": "Senior AI leader role overseeing ML platforms.",
-        "messages": [
-            {"role": "user", "content": "Summarize my profile for an executive recruiter."}
-        ],
-        "resume": {
-            "master_resume": {
-                "name": "Senior AI Leader",
-                "summary": "Senior leader with 15+ years of experience in AI, data, and product.",
-                "professional_experience": [],
-                "skills": ["AI", "ML", "Cloud"],
-            }
-        },
-    }
-
-    def _print_stream(event: Dict[str, Any]) -> None:
-        print(f"[STREAM] {event['event']}: {event['payload']}")
-
-    result = run_workflow_sync_v10_10(
-        example_state,
-        compat_mode=None,
-        debug_mode=True,
-        stream_callback=_print_stream,
-    )
-    print("=== v10_10 Workflow Result ===")
-    print(json.dumps(result, indent=2))
+    finally:
+        end_span(top_span)
