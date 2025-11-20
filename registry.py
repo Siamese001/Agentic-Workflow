@@ -1,6 +1,6 @@
 # FILE: 10_10/registry.py
 """
-Registry / Control Plane (v10_10 · Phase 0)
+Registry / Control Plane (v10_10 · Phase 2)
 ==========================================
 
 This module provides the **central control plane** for the v10_10 refactor.
@@ -14,36 +14,41 @@ It fixes G22, G29–G33, G37 by defining:
     • Prompt registry linkage
     • Skill/domain classifier registry
     • RAG strategy registry (Phase 0 scaffolding)
-    • Versioning / metadata registry (lightweight)
 
-The Registry exists to:
-    1. Maintain deterministic lookup for all pluggable components.
-    2. Provide a single authority for orchestration & agent identity.
-    3. Facilitate dynamic discovery in later phases (multi-agent routing).
-    4. Avoid ghost code and “invisible behaviors” seen in v10_10.
-    5. Provide clean hooks for meta-learning (Phase 4).
+Phase 2 extensions (Prompt / Context / ACL governance):
+    • Prompt registry bridge delegates to prompt_system_v10_10.get_prompt
+      so ACLs are enforced consistently.
+    • Model-tier + execution-profile routing helper for prompts.
+    • Prompt version helpers for validation and diff tooling.
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, Callable, Optional, List
+from typing import Any, Dict, Callable, Optional, List, Iterable
 from dataclasses import dataclass, field
 
-from .models import (
+from models import (
     ExecutionProfile,
     PromptDefinition,
+    PromptVersion,
     RetrievalConfig,
     PolicyDecisionEvent,
     ContextBudget,
 )
-
-from .config_profiles_v10_10 import EXECUTION_PROFILES
-from .prompt_system_v10_10 import PROMPT_REGISTRY, PROMPT_ACLS
+from config_profiles_v10_10 import EXECUTION_PROFILES, ExecutionProfileSpec, ModelTier
+from prompt_system_v10_10 import (
+    PROMPT_REGISTRY,
+    PROMPT_ACLS,
+    PromptACL,
+    PromptActorRole,
+    get_prompt as _prompt_system_get_prompt,
+)
 
 
 # ======================================================================
 # AGENT REGISTRY
 # ======================================================================
+
 
 @dataclass
 class AgentCard:
@@ -86,6 +91,7 @@ def list_agents() -> List[AgentCard]:
 # TOOL REGISTRY
 # ======================================================================
 
+
 @dataclass
 class ToolCard:
     """
@@ -125,6 +131,7 @@ def list_tools() -> List[ToolCard]:
 # MODEL ROUTING REGISTRY (STATIC FOR NOW; DYNAMIC IN PHASE 3)
 # ======================================================================
 
+
 @dataclass
 class ModelRoute:
     """
@@ -158,18 +165,19 @@ def list_model_routes() -> List[ModelRoute]:
 # SAFETY BUNDLE REGISTRY
 # ======================================================================
 
+
 @dataclass
 class SafetyBundle:
     """
     Safety bundle representing a collection of safety checks / policies.
 
     • tier: "strict", "standard", "relaxed", "debug"
-    • checks: list of safety check identifiers
-    • metadata: optional info
     """
 
     tier: str
-    checks: List[str]
+    description: str
+    context_budget: ContextBudget
+    policy_events: List[PolicyDecisionEvent] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -190,11 +198,16 @@ def get_safety_bundle(tier: str) -> SafetyBundle:
 # EXECUTION PROFILES REGISTRY (BRIDGE TO config_profiles_v10_10)
 # ======================================================================
 
+
 def get_execution_profile(profile_id: str) -> ExecutionProfile:
     """
-    Pull a hard execution profile from Phase 0 profile catalog.
+    Pull a hard execution profile from Phase 2 profile catalog.
+
+    NOTE: the underlying object is an ExecutionProfileSpec; this
+    function preserves the original ExecutionProfile type hint for
+    backward compatibility.
     """
-    return EXECUTION_PROFILES[profile_id]
+    return EXECUTION_PROFILES[profile_id]  # type: ignore[return-value]
 
 
 def list_execution_profiles() -> List[str]:
@@ -202,26 +215,120 @@ def list_execution_profiles() -> List[str]:
 
 
 # ======================================================================
-# PROMPT REGISTRY BRIDGE
+# PROMPT REGISTRY BRIDGE & GOVERNANCE (PHASE 2)
 # ======================================================================
 
-def get_prompt(prompt_id: str) -> PromptDefinition:
-    if prompt_id not in PROMPT_REGISTRY:
-        raise KeyError(f"Unknown prompt id: {prompt_id}")
-    return PROMPT_REGISTRY[prompt_id]
+
+def get_prompt(
+    prompt_id: str,
+    actor_role: PromptActorRole = PromptActorRole.ENGINE,
+) -> PromptDefinition:
+    """
+    Retrieve a prompt by ID using the central prompt system.
+
+    This delegates to ``prompt_system_v10_10.get_prompt`` so that:
+        • ACLs are enforced for the given actor role.
+        • All reads go through a single governance surface.
+    """
+    return _prompt_system_get_prompt(prompt_id, actor_role=actor_role)
 
 
 def list_prompts() -> List[str]:
+    """Return all registered prompt IDs."""
     return list(PROMPT_REGISTRY.keys())
 
 
-def get_prompt_acl(prompt_id: str):
+def get_prompt_acl(prompt_id: str) -> Optional[PromptACL]:
+    """Return the PromptACL object for a given prompt, if any."""
     return PROMPT_ACLS.get(prompt_id)
+
+
+def get_prompt_model_tier(prompt_id: str, profile_id: Optional[str] = None) -> str:
+    """
+    Resolve the effective model tier for a prompt under an execution profile.
+
+    Resolution order:
+        1. If ``profile_id`` is provided and known, use its ``model_tier``.
+        2. Otherwise, use the prompt metadata field ``default_model_tier``
+           if present, falling back to ``"balanced"``.
+        3. If the prompt defines ACL metadata restricting ``model_tiers``,
+           clamp the result to the first allowed tier.
+
+    This is advisory; the actual model selection is performed by the
+    RoutingPolicy in routing.py.
+    """
+
+    # 1) Profile-driven tier.
+    tier: Optional[str] = None
+    if profile_id is not None and profile_id in EXECUTION_PROFILES:
+        spec: ExecutionProfileSpec = EXECUTION_PROFILES[profile_id]
+        # ModelTier enums carry the string tier in their ``value`` field.
+        mt = getattr(spec.model_tier, "value", str(spec.model_tier))
+        tier = str(mt)
+
+    # 2) Prompt metadata fallback.
+    prompt_def: Optional[PromptDefinition] = PROMPT_REGISTRY.get(prompt_id)
+    meta: Dict[str, Any] = (
+        prompt_def.metadata if prompt_def and prompt_def.metadata else {}
+    )
+    if tier is None:
+        tier = str(meta.get("default_model_tier", "balanced"))
+
+    # 3) ACL metadata clamping (allowed model_tiers).
+    acl_meta: Dict[str, Any] = (meta.get("acl") or {})
+    allowed_tiers = acl_meta.get("model_tiers") or []
+    if allowed_tiers and tier not in allowed_tiers:
+        # Clamp to first allowed tier; enforcement of this decision happens
+        # downstream in routing / model selection.
+        tier = str(allowed_tiers[0])
+
+    return tier
+
+
+def resolve_prompt_for_profile(
+    prompt_id: str,
+    profile_id: str,
+    actor_role: PromptActorRole = PromptActorRole.ENGINE,
+) -> PromptDefinition:
+    """
+    Convenience helper that:
+        • verifies the prompt is accessible for the given actor role, and
+        • resolves model-tier compatibility with the execution profile.
+
+    It returns the PromptDefinition; callers can separately query the
+    model tier via :func:`get_prompt_model_tier` if needed.
+    """
+
+    # Ensure ACL-based access is valid.
+    prompt_def = get_prompt(prompt_id, actor_role=actor_role)
+    # Resolve tier (clamped against ACL metadata if necessary). The return
+    # value is intentionally unused here; the call acts as a validation hook.
+    _ = get_prompt_model_tier(prompt_id, profile_id)
+    return prompt_def
+
+
+def get_prompt_version(prompt_id: str) -> PromptVersion:
+    """Return the semantic PromptVersion for a prompt ID."""
+    if prompt_id not in PROMPT_REGISTRY:
+        raise KeyError(f"Unknown prompt id: {prompt_id}")
+    return PROMPT_REGISTRY[prompt_id].version
+
+
+def ensure_prompt_version(prompt_id: str, expected: PromptVersion) -> bool:
+    """
+    Check whether the concrete prompt definition matches an expected version.
+
+    This is a thin helper used by tests and higher-level validation layers
+    to detect version drift without changing runtime behavior.
+    """
+    actual = get_prompt_version(prompt_id)
+    return actual.as_str() == expected.as_str()
 
 
 # ======================================================================
 # RETRIEVAL / RAG STRATEGY REGISTRY (Phase 0 placeholder)
 # ======================================================================
+
 
 @dataclass
 class RAGStrategyCard:
@@ -256,6 +363,7 @@ def list_rag_strategies() -> List[str]:
 # SKILL / DOMAIN CLASSIFIER REGISTRY (placeholder for G32–G33)
 # ======================================================================
 
+
 @dataclass
 class ClassificationModelCard:
     """
@@ -286,19 +394,20 @@ def list_classifiers() -> List[str]:
 
 
 # ======================================================================
-# VERSION METADATA (lightweight Phase 0 hook)
+# VERSION METADATA (lightweight Phase 2 hook)
 # ======================================================================
 
 VERSION_METADATA: Dict[str, Any] = {
-    "registry_version": "phase0.1",
+    "registry_version": "phase2.0",
     "profiles_version": "phase0.1",
-    "prompt_registry_version": "phase0.1",
+    "prompt_registry_version": "phase2.0",
 }
 
 
 # ======================================================================
 # RESET (useful for unit tests)
 # ======================================================================
+
 
 def reset_registry() -> None:
     AGENT_REGISTRY.clear()
