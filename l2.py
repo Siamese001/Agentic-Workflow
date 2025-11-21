@@ -1,6 +1,6 @@
 # FILE: 10_10/l2.py
 """
-Unified L2 Execution Layer (v10_10 · Phase 2)
+Unified L2 Execution Layer (v10_10 · Phase 3)
 =============================================
 
 Responsibilities:
@@ -8,7 +8,7 @@ Responsibilities:
     • Perform all LLM calls (via cognitive_agents), plus retrieval hooks.
     • Produce structured outputs:
           – StrategyResult
-          – RAGResult
+          – RAGResult (evidence + Phase-3 RAG reasoning signal)
           – DraftingResult
           – QAResult
           – SafetyResult
@@ -16,11 +16,18 @@ Responsibilities:
     • NO state mutation (L4 only).
 
 Layering Rules:
-    • L1 performs planning only (no LLM, no retrieval).
-    • L2 performs execution: retrieval + ranking + LLM calls.
-    • L3 orchestrates DAG and concurrency, no LLM calls.
-    • L4 is the only legal state mutation surface.
-    • L5 performs safety enforcement and policy decisions.
+    • L1 (planning) must not call this module.
+    • L2 must not orchestrate retries or mutate state.
+    • L3 orchestrator calls run_l2(...) as its only L2 entrypoint.
+    • All LLM calls happen via cognitive_agents.
+
+Phase-3 additions in this file:
+    • Retriever-level fallback is implemented in retrieval.run_rag_retrieval().
+    • New RAG reasoning stage between retrieval and drafting:
+        – Uses build_rag_prompt(...) to generate a PromptInstance.
+        – Uses a lightweight cognitive agent to reason over evidence.
+        – Injects reasoning as a synthetic Evidence item.
+    • No changes to L1/L3/L4/L5 contracts.
 """
 
 from __future__ import annotations
@@ -33,6 +40,7 @@ from models import (
     WorkflowPlanBundle,
     StrategyResult,
     StrategyBranch,
+    Evidence,
     RAGResult,
     DraftingResult,
     QAResult,
@@ -43,6 +51,7 @@ from models import (
 )
 from observability import start_span, end_span, log_exception, emit_cost_snapshot
 from retrieval import run_rag_retrieval
+from prompt_builder import build_rag_prompt
 from cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
@@ -61,7 +70,7 @@ async def _execute_strategy(
     ctx: ExecutionContext,
 ) -> StrategyResult:
     """
-    Run the strategy agent with the StrategyPlan using the Phase-2
+    Run the strategy agent with the StrategyPlan using the Phase-2/3
     cognitive agent + prompt builder layer.
     """
     span = start_span("l2.strategy", ctx=ctx.span_context())
@@ -71,12 +80,12 @@ async def _execute_strategy(
             sandbox=ctx.sandbox_config,
             meta_profile=ctx.meta_profile_snapshot,
         )
-        # Strategy agent returns a StrategyResult directly.
-        result = agent.run_strategy(plans.strategy, ctx)
-        return result
-    except Exception as exc:
+
+        return agent.run_strategy(plan=plans.strategy, ctx=ctx)
+    except Exception as exc:  # noqa: BLE001
         log_exception("l2.strategy_error", exc)
-        # Fallback: synthesize a minimal StrategyResult encoding the error.
+        # Strategy failure should not bring the whole pipeline down.
+        # Synthesize a minimal StrategyResult describing the error.
         return StrategyResult(
             branches=[StrategyBranch(id="error", text=str(exc))],
             chosen_branch_id="error",
@@ -123,7 +132,7 @@ def _build_rag_raw_hits(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> lis
 
     # Individual job requirements (truncated by rag_max_job_chunks).
     max_job_chunks = getattr(cfg, "rag_max_job_chunks", 8)
-    for idx, req in enumerate(getattr(job, "requirements", [])[:max_job_chunks]):
+    for req in getattr(job, "requirements", [])[:max_job_chunks]:
         if not req:
             continue
         raw_hits.append(
@@ -163,7 +172,7 @@ def _build_rag_raw_hits(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> lis
             }
         )
 
-    # Hybrid padding: if there is room, include combined job+resume text.
+    # Hybrid padding: combined job+resume text if there is room.
     max_hybrid_chunks = getattr(cfg, "rag_max_hybrid_chunks", 12)
     if (
         len(raw_hits) < max_hybrid_chunks
@@ -193,13 +202,12 @@ async def _execute_retrieval(
 
         1. Build raw hits from job + resume (no external side effects).
         2. Call retrieval.run_rag_retrieval() to:
-              – normalize
-              – deduplicate
-              – safety-filter
-              – rank (via ranking.rank_evidence)
+              – normalize / deduplicate
+              – apply per-retriever failure fallback
+              – rank (RRF, BM25, dense, hybrid, HYDE)
         3. Wrap the Evidence list in a typed RAGResult.
 
-    All heavy lifting (normalization, ranking, safety) lives in
+    All heavy lifting (normalization, ranking, fallback) lives in
     retrieval.py / ranking.py. L2 only orchestrates and applies the
     WorkflowConfig context budgets.
     """
@@ -218,16 +226,91 @@ async def _execute_retrieval(
             job=ctx.job,
             resume=ctx.resume,
             config=ctx.config,
-            strategy_hint=None,
+            strategy_hint=rag_plan.strategy_hint,
             sandbox=ctx.sandbox_config,
             raw_hits=raw_hits,
         )
 
         return RAGResult(evidence=evidence_list, used_hyde=False)
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log_exception("l2.retrieval_error", exc)
         # On any failure, downstream layers must still be able to run.
         return RAGResult(evidence=[], used_hyde=False)
+    finally:
+        end_span(span)
+
+
+# =============================================================================
+# RAG Reasoning Execution (Phase 3)
+# =============================================================================
+
+
+async def _execute_rag_reasoning(
+    plans: WorkflowPlanBundle,
+    rag_result: RAGResult,
+    ctx: ExecutionContext,
+) -> RAGResult:
+    """
+    Phase-3 RAG reasoning step.
+
+    Runs between retrieval and drafting:
+
+        1. Build a RAG prompt using build_rag_prompt.
+        2. Call a lightweight LLM agent to reason over the retrieved
+           evidence (no additional retrieval).
+        3. Inject the reasoning as a synthetic Evidence item at the
+           front of the evidence list.
+
+    On any failure, this function logs the exception and returns the
+    original rag_result unchanged so that downstream stages can still
+    execute.
+    """
+    span = start_span("l2.rag_reasoning", ctx=ctx.span_context())
+    try:
+        # If there is no evidence, there is nothing to reason over.
+        if not rag_result.evidence:
+            return rag_result
+
+        # Build the RAG reasoning prompt instance.
+        prompt = build_rag_prompt(
+            plan=plans.rag,
+            ctx=ctx,
+            evidence=rag_result.evidence,
+        )
+
+        # Use the strategy LLM agent as a lightweight generic reasoning agent.
+        # This reuses the existing routing + invocation machinery without
+        # introducing a new agent type.
+        agent = StrategyLLMAgent(
+            routing_policy=ctx.routing_policy,
+            sandbox=ctx.sandbox_config,
+            meta_profile=ctx.meta_profile_snapshot,
+        )
+
+        try:
+            reasoning_text = agent._call_llm(prompt)  # type: ignore[attr-defined]
+        except Exception as exc:  # noqa: BLE001
+            # If the RAG reasoning call fails, keep the original RAGResult.
+            log_exception("l2.rag_reasoning_error", exc)
+            return rag_result
+
+        reasoning_text = (reasoning_text or "").strip()
+        if not reasoning_text:
+            return rag_result
+
+        reasoning_evidence = Evidence(
+            text=reasoning_text,
+            score=1.0,
+            source="rag_reasoning",
+            metadata={"type": "rag_reasoning"},
+        )
+
+        combined_evidence = [reasoning_evidence, *rag_result.evidence]
+        return RAGResult(evidence=combined_evidence, used_hyde=rag_result.used_hyde)
+    except Exception as exc:  # noqa: BLE001
+        # Failure here must never stop the pipeline.
+        log_exception("l2.rag_reasoning_fatal", exc)
+        return rag_result
     finally:
         end_span(span)
 
@@ -245,9 +328,9 @@ async def _execute_drafting(
 ) -> DraftingResult:
     """
     Run the drafting agent with:
-        - DraftingPlan
-        - StrategyResult
-        - RAGResult (evidence, if any)
+        • DraftingPlan
+        • StrategyResult
+        • RAGResult (evidence, including RAG reasoning Evidence if present)
     """
     span = start_span("l2.drafting", ctx=ctx.span_context())
     try:
@@ -266,7 +349,7 @@ async def _execute_drafting(
             config=ctx.config,
         )
         return result
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log_exception("l2.drafting_error", exc)
         # Fallback: empty DraftingResult in the configured mode.
         return DraftingResult(sections=[])
@@ -286,28 +369,32 @@ async def _execute_qa(
     ctx: ExecutionContext,
 ) -> QAResult:
     """
-    Run the QA agent on the drafted document + retrieval evidence.
+    Run the QA agent over the drafted resume + retrieval evidence.
+
+    The QA agent produces structured QACheckResult findings.
     """
     span = start_span("l2.qa", ctx=ctx.span_context())
     try:
+        if plans.qa is None:
+            # QA is optional; return an empty QAResult if no plan is provided.
+            return QAResult(findings=[])
+
         agent = SemanticQAAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
             meta_profile=ctx.meta_profile_snapshot,
         )
 
-        result = agent.run_qa(
+        return agent.run_qa(
             qa_plan=plans.qa,
             draft=drafting_result,
-            rag=rag_result,
+            rag_result=rag_result,
             job=ctx.job,
             resume=ctx.resume,
             config=ctx.config,
         )
-        return result
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log_exception("l2.qa_error", exc)
-        # Fallback: single internal-error QA finding.
         return QAResult(
             findings=[
                 QACheckResult(
@@ -335,34 +422,37 @@ async def _execute_safety(
     ctx: ExecutionContext,
 ) -> SafetyResult:
     """
-    Run the safety agent on drafted content + QA findings.
+    Run the safety agent over the drafted resume + QA findings.
+
+    Produces SafetyFinding items that codify L5 safety enforcement.
     """
     span = start_span("l2.safety", ctx=ctx.span_context())
     try:
+        if plans.safety is None:
+            return SafetyResult(findings=[])
+
         agent = ConstitutionalSafetyAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
             meta_profile=ctx.meta_profile_snapshot,
         )
 
-        result = agent.run_safety(
+        return agent.run_safety(
             safety_plan=plans.safety,
             draft=drafting_result,
-            qa=qa_result,
+            qa_result=qa_result,
             job=ctx.job,
             resume=ctx.resume,
             config=ctx.config,
         )
-        return result
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log_exception("l2.safety_error", exc)
-        # Fallback: single blocked finding.
         return SafetyResult(
             findings=[
                 SafetyFinding(
                     check_id="safety_internal_error",
                     category="internal",
-                    status="blocked",
+                    severity="error",
                     message=str(exc),
                     details={},
                 )
@@ -373,7 +463,7 @@ async def _execute_safety(
 
 
 # =============================================================================
-# L2 Orchestration (called by L3)
+# Main L2 Entrypoint
 # =============================================================================
 
 
@@ -387,22 +477,26 @@ async def run_l2(
     It runs:
         • Strategy
         • Retrieval
+        • RAG reasoning
         • Drafting
         • QA
         • Safety
 
     With concurrency:
         • Strategy + Retrieval in parallel.
-        • Drafting → QA → Safety sequentially.
+        • RAG reasoning → Drafting → QA → Safety sequentially.
     """
     span = start_span("l2.run", ctx=ctx.span_context())
     try:
-        # Strategy and RAG can be independent
+        # Strategy and RAG can be independent.
         strategy_task = asyncio.create_task(_execute_strategy(plans, ctx))
         rag_task = asyncio.create_task(_execute_retrieval(plans, ctx))
 
-        # Wait for Strategy + RAG to complete before drafting
+        # Wait for Strategy + RAG to complete before drafting.
         strategy_result, rag_result = await asyncio.gather(strategy_task, rag_task)
+
+        # Phase 3: RAG reasoning stage between retrieval and drafting.
+        rag_result = await _execute_rag_reasoning(plans, rag_result, ctx)
 
         drafting_result = await _execute_drafting(plans, strategy_result, rag_result, ctx)
         qa_result = await _execute_qa(plans, drafting_result, rag_result, ctx)
@@ -419,7 +513,7 @@ async def run_l2(
             qa=qa_result,
             safety=safety_result,
         )
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log_exception("l2.run_error", exc)
         # On catastrophic failure, synthesize an empty result bundle.
         empty_strategy = StrategyResult(
@@ -444,7 +538,7 @@ async def run_l2(
                 SafetyFinding(
                     check_id="safety_internal_error",
                     category="internal",
-                    status="blocked",
+                    severity="error",
                     message=str(exc),
                     details={},
                 )
