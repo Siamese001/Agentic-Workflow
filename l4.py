@@ -1,12 +1,12 @@
 # FILE: 10_10/l4.py
 """
-Unified L4 State Adapter (v10_10 · Phase 1)
+Unified L4 State Adapter (v10_10 · Phase 3)
 ==========================================
 
 Responsibilities:
     • L4 is the ONLY layer allowed to mutate persisted workflow state.
     • Apply typed StateTransitionEvent objects to build final state patches.
-    • Generate checkpoint and rollback snapshots for L3 correction loops.
+    • Generate checkpoint and rollback snapshots for correction loops.
     • Record all mutations to observability telemetry streams.
     • No LLM, no retrieval, no planning, no safety logic.
 
@@ -14,20 +14,12 @@ Non-Responsibilities:
     • No generation of transitions (L2/L3 create transitions).
     • No DAG orchestration (L3).
     • No safety enforcement (L5).
-    • No business logic (L1/L2).
-
-This module restores the full v10_8 / v10_9 state-engine capability:
-    • Typed patches
-    • Deterministic state merge
-    • Checkpoint/rollback
-    • Correction-aware application
-    • Telemetry via StateTransitionEvent and patch-level spans
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from models import (
     WorkflowState,
@@ -49,13 +41,10 @@ from observability import (
 # Helpers
 # =============================================================================
 
-def _apply_transition(
-    base: Dict[str, Any],
-    event: StateTransitionEvent,
-) -> Dict[str, Any]:
+
+def _apply_transition(base: Dict[str, Any], event: StateTransitionEvent) -> Dict[str, Any]:
     """
-    Deterministically merge a typed transition event into state.
-    Never mutates input dict in place.
+    Apply a single StateTransitionEvent to a dict representing WorkflowState.
     """
     new_state = dict(base)
 
@@ -87,81 +76,18 @@ def _apply_transition(
 
 
 def _apply_patch_series(
-    state: WorkflowState,
-    transitions: List[StateTransitionEvent],
+    base_state: WorkflowState,
+    events: List[StateTransitionEvent],
 ) -> WorkflowState:
     """
-    Apply a series of StateTransitionEvents to the WorkflowState.
+    Apply a series of StateTransitionEvent objects to a WorkflowState.
     """
-    result = state.to_dict()
+    state_dict: Dict[str, Any] = base_state.model_dump()
 
-    for evt in transitions:
-        result = _apply_transition(result, evt)
+    for ev in events:
+        state_dict = _apply_transition(state_dict, ev)
 
-    return WorkflowState.from_dict(result)
-
-
-# =============================================================================
-# Checkpoint / Rollback System
-# =============================================================================
-
-@dataclass
-class CheckpointSnapshot:
-    """
-    A copy of the WorkflowState before entering a retry/replan branch.
-    """
-    state_dict: Dict[str, Any]
-
-
-def create_checkpoint(state: WorkflowState) -> CheckpointSnapshot:
-    return CheckpointSnapshot(state_dict=state.to_dict())
-
-
-def rollback_to(checkpoint: CheckpointSnapshot) -> WorkflowState:
-    return WorkflowState.from_dict(dict(checkpoint.state_dict))
-
-
-# =============================================================================
-# Correction-Aware Patch Construction
-# =============================================================================
-
-def _build_correction_transitions(
-    corrections: List[CorrectionSignal],
-) -> List[StateTransitionEvent]:
-    """
-    Convert CorrectionSignal objects into StateTransitionEvents.
-    Phase 1 version: minimal signals.
-    """
-    transitions: List[StateTransitionEvent] = []
-
-    for c in corrections:
-        transitions.append(
-            StateTransitionEvent(
-                operation="append_list",
-                field="correction_log",
-                value=[{
-                    "surface": c.surface,
-                    "severity": c.severity,
-                    "reason": c.reason,
-                    "action": c.recommended_action,
-                }],
-            )
-        )
-
-    return transitions
-
-
-def _build_safety_transitions(safety_passed: bool) -> List[StateTransitionEvent]:
-    """
-    Encode safety gating into state.
-    """
-    return [
-        StateTransitionEvent(
-            operation="update_field",
-            field="safety_passed",
-            value=bool(safety_passed),
-        )
-    ]
+    return WorkflowState(**state_dict)
 
 
 def _build_l2_output_transition(l2_results: Any) -> List[StateTransitionEvent]:
@@ -172,82 +98,146 @@ def _build_l2_output_transition(l2_results: Any) -> List[StateTransitionEvent]:
         StateTransitionEvent(
             operation="update_field",
             field="draft_output",
-            value=l2_results.drafting.output,
+            value=[s.model_dump() for s in getattr(l2_results.drafting, "sections", [])],
         ),
         StateTransitionEvent(
             operation="update_field",
             field="qa_findings",
-            value=[f for f in getattr(l2_results.qa, "findings", [])],
+            value=[f.model_dump() for f in getattr(l2_results.qa, "findings", [])],
         ),
         StateTransitionEvent(
             operation="update_field",
             field="safety_findings",
-            value=[f for f in getattr(l2_results.safety, "findings", [])],
+            value=[f.model_dump() for f in getattr(l2_results.safety, "findings", [])],
         ),
     ]
 
 
+def _build_correction_transitions(
+    corrections: List[CorrectionSignal],
+) -> List[StateTransitionEvent]:
+    """
+    Convert CorrectionSignal objects into StateTransitionEvents.
+    Phase 3 version: structured log entries.
+    """
+    transitions: List[StateTransitionEvent] = []
+
+    for c in corrections:
+        transitions.append(
+            StateTransitionEvent(
+                operation="append_list",
+                field="correction_log",
+                value=[
+                    {
+                        "surface": c.surface,
+                        "severity": c.severity,
+                        "reason": c.reason,
+                        "action": c.recommended_action,
+                    }
+                ],
+            )
+        )
+
+    return transitions
+
+
+def _build_safety_transitions(safety_passed: bool) -> List[StateTransitionEvent]:
+    """
+    Persist safety pass/fail signal.
+    """
+    return [
+        StateTransitionEvent(
+            operation="update_field",
+            field="safety_passed",
+            value=bool(safety_passed),
+        )
+    ]
+
+
 # =============================================================================
-# Public Entrypoint
+# Checkpoints & Rollback
 # =============================================================================
 
-def apply_state_patch(
+
+@dataclass
+class CheckpointSnapshot:
+    """
+    Immutable snapshot of WorkflowState for rollback.
+
+    L4 is responsible for creating and applying checkpoints.
+    """
+
+    workflow_id: str
+    state_dict: Dict[str, Any]
+
+
+def create_checkpoint(state: WorkflowState) -> CheckpointSnapshot:
+    """
+    Create a checkpoint snapshot from a WorkflowState.
+    """
+    return CheckpointSnapshot(
+        workflow_id=state.workflow_id,
+        state_dict=state.model_dump(),
+    )
+
+
+def rollback_to(checkpoint: CheckpointSnapshot) -> WorkflowState:
+    """
+    Roll back to a previously-created checkpoint.
+    """
+    return WorkflowState(**checkpoint.state_dict)
+
+
+# =============================================================================
+# Public API: apply_l2_results_to_state
+# =============================================================================
+
+
+def apply_l2_results_to_state(
+    ctx: ExecutionContext,
+    state: WorkflowState,
     l2_results: Any,
     corrections: List[CorrectionSignal],
-    ctx: ExecutionContext,
     safety_passed: bool,
 ) -> Dict[str, Any]:
     """
-    Primary L4 entrypoint called by L3.
+    Apply L2 results and correction signals to the workflow state.
 
-    Inputs:
-        • l2_results: L2ResultBundle
-        • corrections: correction signals from L3
-        • safety_passed: safety gate result
-        • ctx: execution context (provides previous WorkflowState)
+    L4 is the only layer allowed to perform this mutation.
 
-    Outputs:
-        • final state patch dict
-
-    Behavior:
-        • Collect transitions: L2 outputs + corrections + safety gating
-        • Apply transitions to existing state
-        • Emit telemetry events
-        • Return final diff as a patch
+    Returns:
+        A dict representing the state patch (delta) applied.
     """
-    span = start_span("l4.apply_state_patch", ctx=ctx.span_context())
+    span = start_span("l4.apply_state", ctx=ctx.span_context())
     try:
-        prev_state = ctx.state
+        prev_state = state
+
+        # Build transitions from L2 outputs, corrections, and safety.
         transitions: List[StateTransitionEvent] = []
-
-        # L2 output transitions
         transitions.extend(_build_l2_output_transition(l2_results))
-
-        # Correction transitions
         transitions.extend(_build_correction_transitions(corrections))
-
-        # Safety pass/fail
         transitions.extend(_build_safety_transitions(safety_passed))
 
-        # Emit transition telemetry
-        for evt in transitions:
-            emit_state_transition(evt)
+        # Emit transition-level telemetry.
+        for ev in transitions:
+            emit_state_transition(ev)
 
-        # Compute new state
+        # Apply patch series.
         new_state = _apply_patch_series(prev_state, transitions)
 
-        # Emit "final patch" event
         emit_telemetry_event(
-            "l4.state_patch_complete",
-            attributes={
+            "state_mutation",
+            {
+                "workflow_id": state.workflow_id,
                 "num_transitions": len(transitions),
-                "safety_passed": safety_passed,
             },
         )
 
-        # Compute diff patch dict
+        # Compute diff patch dict.
         patch = StatePatch.from_states(prev_state, new_state)
-        ctx.state = new_state  # L4 is the ONLY layer allowed to mutate
+
+        # L4 is the ONLY layer allowed to mutate ctx.state.
+        ctx.state = new_state  # type: ignore[attr-defined]
 
         return patch.to_dict()
 
