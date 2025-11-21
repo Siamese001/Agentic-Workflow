@@ -1,13 +1,13 @@
 # FILE: 10_10/prompt_builder.py
 """
-Prompt Builder Layer (v10_10 · Phase 2)
-=======================================
+Prompt Builder Layer (v10_10 · Phase 2/3)
+=========================================
 
-This module implements the Phase 2 prompt builder responsible for:
+This module implements the Phase 2/3 prompt builder responsible for:
 
     • Constructing rich, multi-section prompt envelopes for:
           – Strategy reasoning
-          – Retrieval evidence
+          – Retrieval evidence / RAG reasoning
           – Drafting sections
           – QA summary
           – Safety summary
@@ -509,7 +509,8 @@ def build_rag_prompt(
     Build a retrieval / evidence fusion prompt.
 
     This prompt conditions the LLM to treat the provided evidence as
-    soft constraints and to avoid hallucinating beyond them.
+    soft constraints and to avoid hallucinating beyond them. It is used
+    by the Phase-3 RAG reasoning stage between retrieval and drafting.
     """
     envelope = PromptEnvelope(
         framing=(
