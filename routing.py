@@ -1,7 +1,7 @@
 # FILE: 10_10/routing.py
 """
 Routing Policy for Agentic Workflow v10_10
-==========================================
+=========================================
 
 This is the v10_10 refactor of the v10_9 routing layer.
 
@@ -28,10 +28,11 @@ classification. It is **pure decision logic**.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Any
+from typing import Optional, Any, List, Dict
 
-from models import ComplexityLevel
+from models import ComplexityLevel, SkillClassifierResult, DomainClassifierResult
 from meta_profile import MetaProfileSnapshot
+from observability import get_all_events
 
 
 # =============================================================================
@@ -112,6 +113,23 @@ class RoutingPolicy:
             if meta_profile.prefers_openai:
                 provider = "openai"
 
+        # Telemetry-aware adjustment: if recent exception volume is high,
+        # bias toward the default provider ("openai") to stabilize behavior.
+        try:
+            events = get_all_events()
+            exception_count = 0
+            for evt in events:
+                attrs = getattr(evt, "attributes", {}) or {}
+                if attrs.get("event_type") == "exception":
+                    exception_count += 1
+            # If there are many recent exceptions and the current provider
+            # is not the default, flip back to "openai".
+            if exception_count > 20 and provider != "openai":
+                provider = "openai"
+        except Exception:
+            # Telemetry must never break routing.
+            pass
+
         return provider
 
     # ---------------------------------------------------------------------
@@ -140,7 +158,7 @@ class RoutingPolicy:
         Select the appropriate model for a given task and complexity.
 
         task:
-            Prompt ID used by cognitive_agents, e.g.:
+            A string identifier describing the logical task, e.g.:
                 - "strategy_generate_branch"
                 - "strategy_select_branch"
                 - "drafting_structure"
@@ -174,25 +192,113 @@ class RoutingPolicy:
             # If low cost is enforced, always pick light models
             if self.enforce_low_cost:
                 return LIGHT_MODELS[provider]
-            # Otherwise balanced defaults
-            return LIGHT_MODELS[provider]
+            return MEDIUM_MODELS[provider]
 
         if complexity == ComplexityLevel.MEDIUM:
-            if self.enforce_low_cost:
-                return LIGHT_MODELS[provider]
             return MEDIUM_MODELS[provider]
 
-        if complexity == ComplexityLevel.HIGH:
-            if self.allow_heavy:
-                return HEAVY_MODELS[provider]
-            return MEDIUM_MODELS[provider]
-
-        # Fallback
+        # HIGH complexity
+        if self.allow_heavy:
+            return HEAVY_MODELS[provider]
         return MEDIUM_MODELS[provider]
 
 
 # =============================================================================
-# Complexity Classifier (L1 Helper)
+# Skill / Domain Classifiers (non-LLM, deterministic)
+# =============================================================================
+
+def classify_skill_profile(job: Any, resume: Any) -> SkillClassifierResult:
+    """Deterministic, rule-based skill classifier (non-LLM).
+
+    Uses simple keyword / structural heuristics on job + resume to
+    derive a coarse skill profile. This is intentionally conservative
+    but stable for routing and complexity decisions.
+    """
+    labels: List[str] = []
+    features: Dict[str, Any] = {}
+
+    title = str(getattr(job, "title", "")).lower()
+    desc = str(getattr(job, "description", "")).lower()
+    resume_text = str(getattr(resume, "raw_text", "")).lower()
+
+    # Seniority
+    senior_tokens = ("vp", "vice president", "chief", "director", "head", "principal")
+    mid_tokens = ("manager", "lead", "senior")
+    if any(t in title for t in senior_tokens):
+        labels.append("senior_leadership")
+    elif any(t in title for t in mid_tokens):
+        labels.append("senior_individual_contributor")
+    else:
+        labels.append("individual_contributor")
+
+    # Technical focus
+    if "machine learning" in desc or "ml" in desc or "data science" in desc:
+        labels.append("ml_data_science")
+    if "llm" in desc or "prompt" in desc or "rag" in desc:
+        labels.append("llm_systems")
+    if "actuary" in desc or "insurance" in desc:
+        labels.append("actuarial_insurance")
+
+    # Resume signals
+    exp_sections = getattr(resume, "experience_sections", []) or []
+    features["experience_sections"] = len(exp_sections)
+    features["title"] = title
+    features["resume_contains_llm"] = "llm" in resume_text
+
+    primary_label = labels[0] if labels else None
+    confidence = 0.7 if primary_label is not None else 0.0
+
+    return SkillClassifierResult(
+        labels=labels,
+        primary_label=primary_label,
+        confidence=confidence,
+        features=features,
+    )
+
+
+def classify_domain_profile(job: Any, resume: Any) -> DomainClassifierResult:
+    """Deterministic domain / industry classifier (non-LLM)."""
+    labels: List[str] = []
+    features: Dict[str, Any] = {}
+
+    company = str(getattr(job, "company", "")).lower()
+    desc = str(getattr(job, "description", "")).lower()
+    industry = (
+        str(getattr(job, "metadata", {}).get("industry", "")).lower()
+        if hasattr(job, "metadata")
+        else ""
+    )
+
+    text_blob = " ".join([company, desc, industry])
+
+    if any(tok in text_blob for tok in ("insurance", "actuarial", "p&c", "life insurance")):
+        labels.append("insurance")
+    if any(tok in text_blob for tok in ("bank", "fintech", "asset management", "trading", "brokerage")):
+        labels.append("financial_services")
+    if any(tok in text_blob for tok in ("healthcare", "hospital", "pharma", "biotech")):
+        labels.append("healthcare")
+    if any(tok in text_blob for tok in ("retail", "ecommerce", "marketplace")):
+        labels.append("retail_ecommerce")
+
+    if not labels:
+        labels.append("general")
+
+    primary_label = labels[0]
+    confidence = 0.6
+
+    features["company"] = company
+    features["industry"] = industry
+
+    return DomainClassifierResult(
+        labels=labels,
+        primary_label=primary_label,
+        confidence=confidence,
+        features=features,
+    )
+
+
+# =============================================================================
+# Complexity Classification (used by L1)
 # =============================================================================
 
 def classify_complexity(
@@ -201,21 +307,34 @@ def classify_complexity(
     config: Any,
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> ComplexityLevel:
-    """
-    Heuristic classifier used by L1 to estimate ComplexityLevel.
+    """Heuristic classifier used by L1 to estimate ComplexityLevel.
 
-    Factors (purely deterministic):
-        • Job seniority
-        • Count of job requirements
-        • Resume length (experience sections)
-        • QA/correction rates from meta_profile
+    This version incorporates:
+        • Job seniority / requirements
+        • Resume length
+        • QA / correction rates from meta_profile
+        • Deterministic skill and domain classifiers (non-LLM)
 
-    This logic is intentionally simple and stable.
+    All logic is deterministic and side-effect free.
     """
-    score = 1.0  # baseline: between LOW and MEDIUM
+    # Baseline between LOW and MEDIUM
+    score = 1.0
+
+    # Skill / domain profiles (non-LLM, deterministic)
+    try:
+        skill_profile = classify_skill_profile(job, resume)
+        domain_profile = classify_domain_profile(job, resume)
+    except Exception:
+        # Classifier failure must not break complexity classification.
+        skill_profile = None
+        domain_profile = None
 
     # Senior roles → more complexity
-    if getattr(job, "seniority", "").lower() in ("director", "vp", "svp", "c-level", "chief"):
+    seniority = str(getattr(job, "seniority", "")).lower()
+    title = str(getattr(job, "title", "")).lower()
+    if seniority in ("director", "vp", "svp", "c-level", "chief") or any(
+        t in title for t in ("director", "vp", "svp", "chief", "head")
+    ):
         score += 0.5
 
     # Many requirements → more alignment complexity
@@ -238,12 +357,25 @@ def classify_complexity(
     except Exception:
         pass
 
+    # Skill / domain-based adjustments
+    if skill_profile is not None and "senior_leadership" in (skill_profile.labels or []):
+        score += 0.2
+    if domain_profile is not None and domain_profile.primary_label in (
+        "insurance",
+        "financial_services",
+        "healthcare",
+    ):
+        score += 0.1
+
     # Meta-profile signal (recent QA/correction rates)
     if meta_profile is not None:
-        if meta_profile.qa_failure_rate_last_10 > 0.4:
-            score += 0.3
-        if meta_profile.correction_rate_last_10 > 0.3:
-            score += 0.2
+        try:
+            if meta_profile.qa_failure_rate_last_10 > 0.4:
+                score += 0.3
+            if meta_profile.correction_rate_last_10 > 0.3:
+                score += 0.2
+        except Exception:
+            pass
 
     # Map score → ComplexityLevel
     if score < 1.2:
@@ -251,4 +383,3 @@ def classify_complexity(
     if score < 1.8:
         return ComplexityLevel.MEDIUM
     return ComplexityLevel.HIGH
-
