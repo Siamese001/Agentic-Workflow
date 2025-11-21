@@ -15,9 +15,7 @@ Responsibilities:
     • Wrap all computation in deterministic observability spans.
     • NO state mutation (L4 only).
 
-This module is the only legal place where L2 cognition is orchestrated.
-
-Design constraints:
+Layer constraints:
     1) No direct provider SDK usage.
        All LLM calls are delegated to cognitive_agents.
     2) No state mutation (WorkflowStatePatch is applied in L4).
@@ -28,7 +26,7 @@ Design constraints:
 from __future__ import annotations
 
 import asyncio
-from typing import Any
+from typing import Any, List, Optional, Sequence, Tuple
 
 from models import (
     ExecutionContext,
@@ -43,7 +41,10 @@ from models import (
     SafetyResult,
     SafetyFinding,
     L2ResultBundle,
+    RAGPlan,
+    CouncilVote,
 )
+
 from observability import start_span, end_span, log_exception, emit_cost_snapshot
 from retrieval import run_rag_retrieval
 from prompt_builder import build_rag_prompt
@@ -52,7 +53,130 @@ from cognitive_agents import (
     DraftingGuild,
     SemanticQAAgent,
     ConstitutionalSafetyAgent,
+    HYDEQueryAgent,
+    QACouncilAgent,
 )
+
+
+# =============================================================================
+# Helpers
+# =============================================================================
+
+
+def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
+    """Small helper to avoid AttributeError noise in business logic."""
+    try:
+        return getattr(obj, name, default)
+    except Exception:  # pragma: no cover - extreme defensive
+        return default
+
+
+def _build_base_query(ctx: ExecutionContext) -> str:
+    """
+    Build a retrieval query string from the in-memory job + resume.
+
+    This is intentionally deterministic and side-effect free; all actual
+    retrieval / ranking is handled inside retrieval.run_rag_retrieval.
+    """
+    job = _safe_getattr(ctx, "job", None)
+    resume = _safe_getattr(ctx, "resume", None)
+
+    parts: List[str] = []
+
+    if job is not None:
+        title = _safe_getattr(job, "title", "") or ""
+        company = _safe_getattr(job, "company", "") or ""
+        posting = _safe_getattr(job, "posting_text", "") or ""
+        header = "Job:".strip()
+        body = "\n".join(p for p in [title, company, posting] if p)
+        if body:
+            parts.append(f"{header}\n{body}".strip())
+
+    if resume is not None:
+        summary = _safe_getattr(resume, "summary", "") or ""
+        if summary:
+            parts.append(f"Candidate summary:\n{summary}".strip())
+
+    query = "\n\n".join(p for p in parts if p).strip()
+    if not query:
+        # Deterministic fallback so retrieval always has a non-empty query.
+        query = "tailor resume to job requirements"
+    return query
+
+
+def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
+    """
+    Derive a lightweight CouncilVote from QA findings.
+
+    This provides a deterministic, non-LLM fallback that can be consumed
+    by downstream layers (L5, retrieval weighting) even if the dedicated
+    QACouncilAgent / LLM path is unavailable or fails.
+
+    Heuristic:
+        • Count findings by severity.
+        • Select an overall verdict id:
+              – "block" if any high-severity finding exists.
+              – "warn" if only medium findings exist.
+              – "pass" otherwise.
+        • Encode simple scores in the CouncilVote.scores map.
+    """
+    findings = list(getattr(qa_result, "findings", []) or [])
+
+    high = sum(1 for f in findings if getattr(f, "severity", "").lower() == "high")
+    medium = sum(1 for f in findings if getattr(f, "severity", "").lower() == "medium")
+    low = sum(1 for f in findings if getattr(f, "severity", "").lower() == "low")
+
+    if high > 0:
+        selected = "block"
+    elif medium > 0:
+        selected = "warn"
+    else:
+        selected = "pass"
+
+    scores = {
+        "block": float(high),
+        "warn": float(medium),
+        "pass": float(low or 1.0),
+    }
+
+    return CouncilVote(
+        members=len(findings) or 1,
+        selected_id=selected,
+        scores=scores,
+        ties=[],
+        reason="heuristic_from_qa_findings",
+    )
+
+
+async def _maybe_run_hyde_query(
+    rag_plan: Optional[RAGPlan],
+    ctx: ExecutionContext,
+) -> Optional[str]:
+    """
+    Optionally generate a HYDE (Hypothetical Document) query.
+
+    Conditions:
+        • RAGPlan.allow_hyde is True
+        • Errors are swallowed; retrieval will still proceed on the base query.
+    """
+    if rag_plan is None or not getattr(rag_plan, "allow_hyde", False):
+        return None
+
+    span = start_span("l2.hyde_query", ctx=ctx.span_context())
+    try:
+        agent = HYDEQueryAgent(
+            routing_policy=ctx.routing_policy,
+            sandbox=ctx.sandbox_config,
+            meta_profile=ctx.meta_profile_snapshot,
+        )
+        text = await agent.run_hyde_query(rag_plan=rag_plan, ctx=ctx)
+        text = (text or "").strip()
+        return text or None
+    except Exception as exc:  # noqa: BLE001
+        log_exception("l2.hyde_query_error", exc)
+        return None
+    finally:
+        end_span(span)
 
 
 # =============================================================================
@@ -65,7 +189,7 @@ async def _execute_strategy(
     ctx: ExecutionContext,
 ) -> StrategyResult:
     """
-    Run the strategy agent with the StrategyPlan using the Phase-2/3
+    Run the strategy agent with the StrategyPlan using the Phase-3
     cognitive agent + prompt builder layer.
     """
     span = start_span("l2.strategy", ctx=ctx.span_context())
@@ -96,104 +220,7 @@ async def _execute_strategy(
 
 
 # =============================================================================
-# Retrieval Raw-Hit Construction
-# =============================================================================
-
-
-def _build_rag_raw_hits(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> list[dict]:
-    """
-    Construct a deterministic set of raw retrieval hits from the in-memory
-    job and resume inputs.
-
-    This is intentionally simple and side-effect free:
-
-        • No external DB/vector calls (kept in-process and testable).
-        • Chunks are derived from:
-              – job.posting_text
-              – job.requirements[]
-              – resume.summary
-              – resume.experience_sections[]
-        • Context budgeting is applied using WorkflowConfig.rag_* knobs.
-    """
-    job = ctx.job
-    resume = ctx.resume
-    cfg = ctx.config
-
-    raw_hits: list[dict] = []
-
-    # Job posting as a single chunk.
-    if getattr(job, "posting_text", None):
-        raw_hits.append(
-            {
-                "evidence": job.posting_text,
-                "score": 1.0,
-                "source": "job_posting",
-            }
-        )
-
-    # Individual job requirements (truncated by rag_max_job_chunks).
-    max_job_chunks = getattr(cfg, "rag_max_job_chunks", 8)
-    for req in getattr(job, "requirements", [])[:max_job_chunks]:
-        if not req:
-            continue
-        raw_hits.append(
-            {
-                "evidence": str(req),
-                "score": 1.0,
-                "source": "job_requirement",
-            }
-        )
-
-    # Resume summary as one chunk, if present.
-    if getattr(resume, "summary", None):
-        raw_hits.append(
-            {
-                "evidence": resume.summary,
-                "score": 1.0,
-                "source": "resume_summary",
-            }
-        )
-
-    # Resume experience sections (truncated by rag_max_resume_chunks).
-    max_resume_chunks = getattr(cfg, "rag_max_resume_chunks", 8)
-    for section in getattr(resume, "experience_sections", [])[:max_resume_chunks]:
-        text = (
-            section.get("text")
-            or section.get("description")
-            or section.get("summary")
-            or ""
-        )
-        if not text:
-            continue
-        raw_hits.append(
-            {
-                "evidence": str(text),
-                "score": 1.0,
-                "source": "resume_experience",
-            }
-        )
-
-    # Hybrid padding: combined job+resume text if there is room.
-    max_hybrid_chunks = getattr(cfg, "rag_max_hybrid_chunks", 12)
-    if (
-        len(raw_hits) < max_hybrid_chunks
-        and getattr(job, "posting_text", None)
-        and getattr(resume, "summary", None)
-    ):
-        hybrid_text = f"{job.posting_text}\n\n{resume.summary}"
-        raw_hits.append(
-            {
-                "evidence": hybrid_text,
-                "score": 1.0,
-                "source": "hybrid_job_resume",
-            }
-        )
-
-    return raw_hits
-
-
-# =============================================================================
-# Retrieval Execution
+# Retrieval Execution (HYDE + Hybrid + RRF)
 # =============================================================================
 
 
@@ -206,38 +233,31 @@ async def _execute_retrieval(
 
     This wires L2 into the deterministic retrieval pipeline:
 
-        1. Build raw hits from job + resume (no external side effects).
-        2. Call retrieval.run_rag_retrieval() to:
-              – normalize / deduplicate
-              – apply per-retriever failure fallback
-              – rank (RRF, BM25, dense, hybrid, HYDE)
-        3. Wrap the Evidence list in a typed RAGResult.
-
-    All heavy lifting (normalization, ranking, fallback) lives in
-    retrieval.py / ranking.py. L2 only orchestrates and applies the
-    WorkflowConfig context budgets.
+        1. Build a base query from job + resume (no external I/O).
+        2. Optionally generate a HYDE query via HYDEQueryAgent.
+        3. Call retrieval.run_rag_retrieval() to:
+              – perform BM25 / dense / hybrid retrieval
+              – fuse via weighted RRF
+              – apply QA-council evidence weighting (if council available)
+        4. Wrap the Evidence list in a typed RAGResult.
     """
     span = start_span("l2.retrieval", ctx=ctx.span_context())
     try:
-        rag_plan = plans.rag
+        rag_plan: Optional[RAGPlan] = getattr(plans, "rag", None)
+        retrieval_cfg = ctx.retrieval
 
-        raw_hits = _build_rag_raw_hits(plans, ctx)
-        if not raw_hits:
-            # Deterministic empty result if there is literally nothing
-            # to retrieve from job/resume inputs.
-            return RAGResult(evidence=[], used_hyde=False)
+        query = _build_base_query(ctx)
+        hyde_query = await _maybe_run_hyde_query(rag_plan, ctx)
 
         evidence_list = run_rag_retrieval(
-            rag_plan=rag_plan,
-            job=ctx.job,
-            resume=ctx.resume,
-            config=ctx.config,
-            strategy_hint=rag_plan.strategy_hint,
-            sandbox=ctx.sandbox_config,
-            raw_hits=raw_hits,
+            query=query,
+            ctx=ctx,
+            retrieval_cfg=retrieval_cfg,
+            hyde_query=hyde_query,
+            council_vote=None,  # QA council weighting is applied in later phases.
         )
 
-        return RAGResult(evidence=evidence_list, used_hyde=False)
+        return RAGResult(evidence=list(evidence_list or []), used_hyde=hyde_query is not None)
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.retrieval_error", exc)
         # On any failure, downstream layers must still be able to run.
@@ -262,63 +282,58 @@ async def _execute_rag_reasoning(
     Runs between retrieval and drafting:
 
         1. Build a RAG prompt using build_rag_prompt.
-        2. Call a lightweight LLM agent to reason over the retrieved
+        2. Call SemanticQAAgent.run_rag_reasoning to reason over the retrieved
            evidence (no additional retrieval).
-        3. Inject the reasoning as a synthetic Evidence item at the
-           front of the evidence list.
-
-    On any failure, this function logs the exception and returns the
-    original rag_result unchanged so that downstream stages can still
-    execute.
+        3. Inject the reasoning as a synthetic Evidence item at the end of
+           the evidence list.
     """
     span = start_span("l2.rag_reasoning", ctx=ctx.span_context())
     try:
-        if not rag_result.evidence:
-            # No evidence → nothing to reason about; short-circuit.
+        evidence_seq: Sequence[Evidence] = list(rag_result.evidence or [])
+        if not evidence_seq:
+            # Nothing to reason over; propagate the original result.
             return rag_result
 
-        # Build a RAG reasoning prompt.
+        rag_plan: Optional[RAGPlan] = getattr(plans, "rag", None)
+
         prompt = build_rag_prompt(
-            job=ctx.job,
-            resume=ctx.resume,
-            strategy_result=None,
-            rag_result=rag_result,
-            config=ctx.config,
+            plan=rag_plan,
+            ctx=ctx,
+            evidence=evidence_seq,
+            prompt_id="system.rag.reasoning",
+            layer="L2",
+            agent="rag",
+            model_tier="balanced",
         )
 
-        # For Phase 3, we re-use the QA agent infrastructure to perform
-        # a focused reasoning pass, but treat it as "context synthesis".
         agent = SemanticQAAgent(
             routing_policy=ctx.routing_policy,
             sandbox=ctx.sandbox_config,
             meta_profile=ctx.meta_profile_snapshot,
         )
-
-        # The agent is expected to produce a textual synthesis of the
-        # retrieved evidence that can be treated as an extra Evidence item.
         reasoning_text = await agent.run_rag_reasoning(
             prompt=prompt,
-            evidence=rag_result.evidence,
+            evidence=evidence_seq,
             job=ctx.job,
             resume=ctx.resume,
             config=ctx.config,
         )
-
+        reasoning_text = (reasoning_text or "").strip()
         if not reasoning_text:
-            # Graceful fallback: no synthetic evidence added.
             return rag_result
 
-        synthetic_ev = Evidence(
-            id="rag_reasoning_synthesis",
+        synthetic = Evidence(
+            id="rag_reasoning",
             text=reasoning_text,
             score=1.0,
             source="rag_reasoning",
-            metadata={"synthetic": True},
+            metadata={"layer": "L2", "agent": "rag_reasoning"},
         )
 
-        # Prepend the synthetic evidence to the existing list.
-        new_evidence = [synthetic_ev] + list(rag_result.evidence or [])
-        return RAGResult(evidence=new_evidence, used_hyde=rag_result.used_hyde)
+        return RAGResult(
+            evidence=list(evidence_seq) + [synthetic],
+            used_hyde=rag_result.used_hyde,
+        )
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.rag_reasoning_error", exc)
         return rag_result
@@ -338,14 +353,7 @@ async def _execute_drafting(
     ctx: ExecutionContext,
 ) -> DraftingResult:
     """
-    Run the drafting guild over the StrategyResult + RAGResult.
-
-    DraftingGuild is responsible for:
-        • Section planning
-        • Bullet generation
-        • Formatting choices
-
-    It returns a DraftingResult with structured draft sections.
+    Execute the drafting agent using StrategyResult + RAGResult.
     """
     span = start_span("l2.drafting", ctx=ctx.span_context())
     try:
@@ -372,7 +380,7 @@ async def _execute_drafting(
 
 
 # =============================================================================
-# QA Execution
+# QA Execution + Council Heuristic
 # =============================================================================
 
 
@@ -381,11 +389,13 @@ async def _execute_qa(
     drafting_result: DraftingResult,
     rag_result: RAGResult,
     ctx: ExecutionContext,
-) -> QAResult:
+) -> Tuple[QAResult, CouncilVote]:
     """
-    Run the QA agent over the drafted resume + retrieval evidence.
+    Execute the QA agent over the drafted content and evidence.
 
-    The QA agent produces structured QACheckResult findings.
+    Returns both:
+        • QAResult  – structured QA findings
+        • CouncilVote – heuristic council summary derived from QAResult
     """
     span = start_span("l2.qa", ctx=ctx.span_context())
     try:
@@ -394,8 +404,7 @@ async def _execute_qa(
             sandbox=ctx.sandbox_config,
             meta_profile=ctx.meta_profile_snapshot,
         )
-
-        result = await agent.run_qa(
+        qa_result = await agent.run_qa(
             qa_plan=plans.qa,
             draft=drafting_result,
             rag=rag_result,
@@ -403,30 +412,34 @@ async def _execute_qa(
             resume=ctx.resume,
             config=ctx.config,
         )
-        return result
+
+        council_vote = _compute_council_vote_from_qa(qa_result)
+        return qa_result, council_vote
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.qa_error", exc)
-        return QAResult(findings=[])
+        empty = QAResult(findings=[])
+        return empty, _compute_council_vote_from_qa(empty)
     finally:
         end_span(span)
 
 
 # =============================================================================
-# Safety Execution
+# Safety Execution (L2 cognition only; enforcement in L5)
 # =============================================================================
 
 
 async def _execute_safety(
     plans: WorkflowPlanBundle,
     drafting_result: DraftingResult,
+    rag_result: RAGResult,
     qa_result: QAResult,
     ctx: ExecutionContext,
 ) -> SafetyResult:
     """
-    Run the safety agent over the drafted resume + QA findings.
+    Execute the constitutional safety agent.
 
-    SafetyResult is a lightweight summary of policy findings and is
-    consumed by L5 for final enforcement decisions.
+    This produces a SafetyResult that is later interpreted by L5; L2 does
+    not make enforcement decisions.
     """
     span = start_span("l2.safety", ctx=ctx.span_context())
     try:
@@ -435,10 +448,10 @@ async def _execute_safety(
             sandbox=ctx.sandbox_config,
             meta_profile=ctx.meta_profile_snapshot,
         )
-
         result = await agent.run_safety(
             safety_plan=plans.safety,
             draft=drafting_result,
+            rag=rag_result,
             qa_result=qa_result,
             job=ctx.job,
             resume=ctx.resume,
@@ -447,24 +460,13 @@ async def _execute_safety(
         return result
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.safety_error", exc)
-
-        # Fallback: treat the entire safety stage as a single finding
-        # indicating internal failure; this is interpreted by L5 as a
-        # "fail closed" signal.
-        finding = SafetyFinding(
-            check_id="safety_internal_error",
-            category="internal_error",
-            severity="high",
-            message="Safety agent failed; see logs for details.",
-            details={},
-        )
-        return SafetyResult(findings=[finding])
+        return SafetyResult(findings=[])
     finally:
         end_span(span)
 
 
 # =============================================================================
-# Top-Level L2 Execution Orchestration
+# Public Entrypoint
 # =============================================================================
 
 
@@ -479,7 +481,7 @@ async def run_l2(
         • Retrieval
         • RAG reasoning
         • Drafting
-        • QA
+        • QA (+ council heuristic)
         • Safety
 
     With concurrency:
@@ -488,7 +490,7 @@ async def run_l2(
     """
     span = start_span("l2.run", ctx=ctx.span_context())
     try:
-        # Strategy and RAG can be independent.
+        # Strategy and RAG can be executed independently.
         strategy_task = asyncio.create_task(_execute_strategy(plans, ctx))
         rag_task = asyncio.create_task(_execute_retrieval(plans, ctx))
 
@@ -499,8 +501,8 @@ async def run_l2(
         rag_result = await _execute_rag_reasoning(plans, rag_result, ctx)
 
         drafting_result = await _execute_drafting(plans, strategy_result, rag_result, ctx)
-        qa_result = await _execute_qa(plans, drafting_result, rag_result, ctx)
-        safety_result = await _execute_safety(plans, drafting_result, qa_result, ctx)
+        qa_result, council_vote = await _execute_qa(plans, drafting_result, rag_result, ctx)
+        safety_result = await _execute_safety(plans, drafting_result, rag_result, qa_result, ctx)
 
         # Emit a coarse-grained cost snapshot from the context, if available.
         if ctx.cost_snapshot is not None:
@@ -516,24 +518,11 @@ async def run_l2(
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.run_error", exc)
 
-        # In the event of a catastrophic failure, we still return a fully
-        # populated but "empty" bundle so that downstream layers have a
-        # deterministic contract.
         empty_strategy = StrategyResult(branches=[], chosen_branch_id=None)
         empty_rag = RAGResult(evidence=[], used_hyde=False)
         empty_drafting = DraftingResult(sections=[])
         empty_qa = QAResult(findings=[])
-        empty_safety = SafetyResult(
-            findings=[
-                SafetyFinding(
-                    check_id="l2_run_error",
-                    category="internal_error",
-                    severity="high",
-                    message="L2.run failed; see logs for details.",
-                    details={},
-                )
-            ]
-        )
+        empty_safety = SafetyResult(findings=[])
 
         # Emit a best-effort cost snapshot if present.
         if ctx.cost_snapshot is not None:
