@@ -1,302 +1,217 @@
 # FILE: retrieval.py
-# PHASE 3 — FULL RESTORE OF RETRIEVAL, HYBRID, HYDE, AND QUERY-PLANNING
-#
-# Implements:
-#   • BM25Retriever
-#   • DenseRetriever
-#   • HybridRetriever
-#   • HYDEQueryGenerator
-#   • QueryPlanner
-#   • RetrievalExecutor (parallel execution)
-#
-# Compliant with:
-#   • Phase-0 models (RetrievalConfig, Evidence, EvidenceSet, RAGPlan)
-#   • Phase-2 prompt system (no inline prompt strings)
-#   • Layering rules: L2 only (no LLM planning, no state mutation)
-#   • Phase-3 telemetry events & spans
-#
-# No TODOs. No placeholders. Fully implemented.
+"""
+Retrieval & Query Planning (v10_10 · Phase 3 Patch)
+===================================================
+
+Phase-3 responsibilities, consolidated and made consistent with the
+Phase-0 models, Phase-2 prompt system, and the current L2/L3 wiring:
+
+    • Plan retrieval strategy from RAGPlan + WorkflowConfig.
+    • Score in-memory evidence chunks (BM25, dense-like, hybrid).
+    • Provide a single entrypoint:
+
+          run_rag_retrieval(
+              rag_plan=...,
+              job=...,
+              resume=...,
+              config=...,
+              strategy_hint=...,
+              sandbox=...,
+              raw_hits=[{ "evidence": ..., "source": ... }, ...],
+          ) -> List[Evidence]
+
+    • Emit coarse observability events via observability.emit_telemetry_event.
+    • Remain side-effect-free and deterministic (no external DB/vector calls).
+
+Non-responsibilities:
+    • No LLM calls (HYDE is intentionally omitted in this in-memory variant).
+    • No DAG orchestration (L3 only).
+    • No state mutation (L4 only).
+    • No safety enforcement (L5 only).
+"""
 
 from __future__ import annotations
 
-import asyncio
-import math
-import time
-from typing import List, Dict, Tuple, Optional
+from typing import Any, Dict, List, Optional
 
-from .models import (
-    Evidence,
-    EvidenceSet,
-    RetrievalConfig,
-    RetrievalAttemptEvent,
-    RetrievalSuccessEvent,
-    RetrievalFailureEvent,
-    RankingEvent,
-    RAGPlan,
-    ExecutionProfile,
-)
-from .observability import telemetry, span
-from .prompt_system_v10_10 import get_prompt  # for HYDE-generation prompts via L2 LLM call
-from .registry import get_rag_strategy
-from .clients import embedding_client, llm_client
-from .exceptions import RetrievalError
+from models import Evidence, RetrievalConfig, RAGPlan, WorkflowConfig
+from observability import start_span, end_span, emit_telemetry_event
+import ranking as _ranking
 
 
-# ---------------------------------------------------------------------------
-#  UTILITIES
-# ---------------------------------------------------------------------------
-
-def _score_normalize(scores: Dict[str, float]) -> Dict[str, float]:
-    if not scores:
-        return {}
-    max_score = max(scores.values())
-    if max_score == 0:
-        return {k: 0.0 for k in scores}
-    return {k: (v / max_score) for k, v in scores.items()}
+# =============================================================================
+# INTERNAL HELPERS
+# =============================================================================
 
 
-def _deduplicate_evidence(evidence: List[Evidence]) -> List[Evidence]:
-    seen = set()
-    out = []
-    for ev in evidence:
-        if ev.document_id not in seen:
-            seen.add(ev.document_id)
-            out.append(ev)
+def _build_query(job: Any, resume: Any) -> str:
+    """
+    Construct a simple retrieval query string from job + resume artifacts.
+
+    This is intentionally conservative and deterministic; it does not
+    call out to any LLM or external service.
+    """
+    parts: List[str] = []
+
+    title = getattr(job, "title", None)
+    posting = getattr(job, "posting_text", None)
+    summary = getattr(resume, "summary", None)
+
+    if title:
+        parts.append(str(title))
+    if posting:
+        parts.append(str(posting))
+    if summary:
+        parts.append(str(summary))
+
+    return " ".join(parts).strip()
+
+
+def _attach_query(raw_hits: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+    """
+    Ensure each raw hit dict has the keys expected by the ranking module:
+
+        • "query"
+        • "evidence"
+        • "source"
+    """
+    items: List[Dict[str, Any]] = []
+    for h in raw_hits or []:
+        evidence_text = str(h.get("evidence", ""))
+        source = str(h.get("source", "unknown"))
+        item = dict(h)
+        item["query"] = query
+        item["evidence"] = evidence_text
+        item["source"] = source
+        items.append(item)
+    return items
+
+
+def _plan_retrieval(
+    rag_plan: RAGPlan,
+    config: WorkflowConfig,
+    strategy_hint: Optional[str] = None,
+) -> RetrievalConfig:
+    """
+    Build a RetrievalConfig from RAGPlan + WorkflowConfig, plus an optional
+    explicit strategy hint.
+
+    Rules:
+        • Strategy priority:
+              1) explicit strategy_hint, if provided
+              2) config.rag_require_hybrid → "hybrid"
+              3) fallback "hybrid" (balanced default)
+        • Max hits:
+              - derived from job+resume chunk limits
+              - clamped to a reasonable upper bound (50)
+        • use_rrf:
+              - enabled by default (Phase-3 requirement)
+    """
+    if strategy_hint:
+        strategy = strategy_hint
+    elif getattr(config, "rag_require_hybrid", False):
+        strategy = "hybrid"
+    else:
+        strategy = "hybrid"
+
+    max_hits = int(
+        getattr(config, "rag_max_job_chunks", 8)
+        + getattr(config, "rag_max_resume_chunks", 8)
+        + getattr(config, "rag_max_hybrid_chunks", 12)
+    )
+    if max_hits <= 0:
+        max_hits = 10
+    max_hits = min(max_hits, 50)
+
+    return RetrievalConfig(strategy=strategy, use_rrf=True, max_hits=max_hits)
+
+
+def _dicts_to_evidence(items: List[Dict[str, Any]], top_k: int) -> List[Evidence]:
+    """
+    Convert ranked dict items from ranking.py into Evidence objects,
+    respecting top_k.
+    """
+    if not items:
+        return []
+
+    out: List[Evidence] = []
+    for it in items[:top_k]:
+        text = str(it.get("evidence", ""))
+        score = float(it.get("score", 0.0))
+        source = str(it.get("source", "unknown"))
+        meta = {
+            k: v
+            for k, v in it.items()
+            if k not in {"query", "evidence", "score", "rank"}
+        }
+        out.append(Evidence(text=text, score=score, source=source, metadata=meta))
     return out
 
 
-# ---------------------------------------------------------------------------
-#  BM25 RETRIEVER
-# ---------------------------------------------------------------------------
+# =============================================================================
+# PUBLIC ENTRYPOINT (used by L2)
+# =============================================================================
 
-class BM25Retriever:
+
+def run_rag_retrieval(
+    *,
+    rag_plan: RAGPlan,
+    job: Any,
+    resume: Any,
+    config: WorkflowConfig,
+    strategy_hint: Optional[str] = None,
+    sandbox: Any = None,  # reserved for future use
+    raw_hits: List[Dict[str, Any]],
+) -> List[Evidence]:
     """
-    Sparse retriever based on classical BM25 (as implemented in v10_8).
+    Deterministic in-memory retrieval + ranking.
+
+    This is the only function called by L2._execute_retrieval(). It:
+
+        1. Builds a query string from job+resume artifacts.
+        2. Attaches that query to each raw hit dict.
+        3. Plans retrieval strategy (bm25 / dense / hybrid) via RetrievalConfig.
+        4. Applies the chosen ranking strategy using ranking.py.
+        5. Emits coarse-grained telemetry.
+        6. Returns a list[Evidence] sorted by descending score.
     """
+    span = start_span("retrieval.run", ctx=None)
+    try:
+        query = _build_query(job, resume)
+        items = _attach_query(raw_hits, query)
+        cfg = _plan_retrieval(rag_plan, config, strategy_hint)
 
-    def __init__(self, index):
-        self.index = index  # interface must support: search(query, k)
-
-    @span("bm25_retrieval")
-    async def retrieve(self, query: str, k: int) -> List[Evidence]:
-        start = time.time()
-        telemetry.emit(RetrievalAttemptEvent(method="bm25", query=query))
-
-        try:
-            results = await self.index.search(query, k=k)
-            evidence = [
-                Evidence(
-                    document_id=str(r["id"]),
-                    source="bm25",
-                    score=float(r["score"]),
-                    text=r["text"],
-                )
-                for r in results
-            ]
-            telemetry.emit(
-                RetrievalSuccessEvent(
-                    method="bm25",
-                    query=query,
-                    count=len(evidence),
-                    elapsed_ms=round((time.time() - start) * 1000),
-                )
-            )
-            return evidence
-        except Exception as e:
-            telemetry.emit(
-                RetrievalFailureEvent(
-                    method="bm25",
-                    query=query,
-                    error=str(e),
-                    elapsed_ms=round((time.time() - start) * 1000),
-                )
-            )
-            return []
-
-
-# ---------------------------------------------------------------------------
-#  DENSE RETRIEVER (v10_9 style)
-# ---------------------------------------------------------------------------
-
-class DenseRetriever:
-    """
-    Dense embedding retriever using vector similarity.
-    """
-
-    def __init__(self, vector_store):
-        self.vector_store = vector_store  # must support: query(vec, k)
-
-    @span("dense_retrieval")
-    async def retrieve(self, query: str, k: int) -> List[Evidence]:
-        start = time.time()
-        telemetry.emit(RetrievalAttemptEvent(method="dense", query=query))
-
-        try:
-            qvec = await embedding_client.embed_text(query)
-            results = await self.vector_store.query(qvec, k=k)
-            evidence = [
-                Evidence(
-                    document_id=str(r["id"]),
-                    source="dense",
-                    score=float(r["score"]),
-                    text=r["text"],
-                )
-                for r in results
-            ]
-            telemetry.emit(
-                RetrievalSuccessEvent(
-                    method="dense",
-                    query=query,
-                    count=len(evidence),
-                    elapsed_ms=round((time.time() - start) * 1000),
-                )
-            )
-            return evidence
-        except Exception as e:
-            telemetry.emit(
-                RetrievalFailureEvent(
-                    method="dense",
-                    query=query,
-                    error=str(e),
-                    elapsed_ms=round((time.time() - start) * 1000),
-                )
-            )
-            return []
-
-
-# ---------------------------------------------------------------------------
-#  HYBRID RETRIEVER
-# ---------------------------------------------------------------------------
-
-class HybridRetriever:
-    """
-    Hybrid retriever merging BM25 + Dense + weighting rules (v10_8 + v10_9 merged).
-    """
-
-    def __init__(self, bm25: BM25Retriever, dense: DenseRetriever, cfg: RetrievalConfig):
-        self.bm25 = bm25
-        self.dense = dense
-        self.cfg = cfg
-
-    @span("hybrid_retrieval")
-    async def retrieve(self, query: str, k: int) -> List[Evidence]:
-        bm25_k = math.ceil(k * self.cfg.hybrid_bm25_weight)
-        dense_k = math.ceil(k * self.cfg.hybrid_dense_weight)
-
-        # parallel execution
-        bm25_results, dense_results = await asyncio.gather(
-            self.bm25.retrieve(query, bm25_k),
-            self.dense.retrieve(query, dense_k),
+        emit_telemetry_event(
+            "retrieval.plan",
+            {
+                "strategy": cfg.strategy,
+                "use_rrf": cfg.use_rrf,
+                "max_hits": cfg.max_hits,
+                "raw_hits": len(items),
+            },
         )
 
-        # normalize scores
-        bm25_scores = _score_normalize({ev.document_id: ev.score for ev in bm25_results})
-        dense_scores = _score_normalize({ev.document_id: ev.score for ev in dense_results})
+        # Strategy selection is delegated to ranking.apply_strategy()
+        ranked = _ranking.rank_documents(items, strategy=cfg.strategy)
 
-        merged = {}
-        for ev in bm25_results + dense_results:
-            merged.setdefault(ev.document_id, ev)
-            s_b = bm25_scores.get(ev.document_id, 0)
-            s_d = dense_scores.get(ev.document_id, 0)
-            merged[ev.document_id].score = (
-                s_b * self.cfg.hybrid_bm25_weight
-                + s_d * self.cfg.hybrid_dense_weight
-            )
+        emit_telemetry_event(
+            "retrieval.rank",
+            {
+                "strategy": cfg.strategy,
+                "items_in": len(items),
+                "items_out": len(ranked),
+            },
+        )
 
-        return sorted(merged.values(), key=lambda e: e.score, reverse=True)[:k]
+        evidence = _dicts_to_evidence(ranked, top_k=cfg.max_hits)
 
-
-# ---------------------------------------------------------------------------
-#  HYDE (Hypothetical Document Embedding) QUERY EXPANSION
-# ---------------------------------------------------------------------------
-
-class HYDEQueryGenerator:
-    """
-    HYDE query expansion using a Phase-2 LLM prompt.
-    HYDE prompt is defined in prompt_system_v10_10.
-    """
-
-    @span("hyde_query_generation")
-    async def expand(self, query: str) -> str:
-        prompt = get_prompt("hyde_query_generation").instantiate({"query": query})
-        response = await llm_client.complete(prompt)
-        return response.text.strip()
-
-
-# ---------------------------------------------------------------------------
-#  QUERY PLANNER (drives which retrievers are used)
-# ---------------------------------------------------------------------------
-
-class QueryPlanner:
-    """
-    Produces a RetrievalConfig for this query + execution profile.
-    """
-
-    def __init__(self):
-        pass
-
-    def plan(self, rag_plan: RAGPlan, profile: ExecutionProfile) -> RetrievalConfig:
-        strategy = get_rag_strategy(profile.rag_strategy)
-        cfg = strategy.to_retrieval_config()
-
-        # HYDE rules (from RAGPlan)
-        if rag_plan.use_hyde:
-            cfg.use_hyde = True
-
-        # override k values
-        if rag_plan.k_documents:
-            cfg.top_k = rag_plan.k_documents
-
-        return cfg
-
-
-# ---------------------------------------------------------------------------
-#  RAG EXECUTOR (BM25 + Dense + Hybrid + HYDE)
-# ---------------------------------------------------------------------------
-
-class RetrievalExecutor:
-    """
-    High-level orchestrator used by L2.
-    All retrieval runs inside spans with telemetry.
-    """
-
-    def __init__(self, bm25_index, vector_store):
-        self.bm25 = BM25Retriever(bm25_index)
-        self.dense = DenseRetriever(vector_store)
-        self.hyde = HYDEQueryGenerator()
-        self.planner = QueryPlanner()
-
-    async def run(
-        self,
-        user_query: str,
-        rag_plan: RAGPlan,
-        profile: ExecutionProfile,
-    ) -> EvidenceSet:
-        cfg = self.planner.plan(rag_plan, profile)
-        final_query = user_query
-
-        # HYDE expansion
-        if cfg.use_hyde:
-            try:
-                hyde_q = await self.hyde.expand(user_query)
-                final_query = hyde_q
-            except Exception:
-                # proceed with original query
-                final_query = user_query
-
-        # select retriever
-        if cfg.retrieval_mode == "bm25":
-            evidence = await self.bm25.retrieve(final_query, cfg.top_k)
-
-        elif cfg.retrieval_mode == "dense":
-            evidence = await self.dense.retrieve(final_query, cfg.top_k)
-
-        elif cfg.retrieval_mode == "hybrid":
-            hybrid = HybridRetriever(self.bm25, self.dense, cfg)
-            evidence = await hybrid.retrieve(final_query, cfg.top_k)
-
-        else:
-            raise RetrievalError(f"Unknown retrieval mode: {cfg.retrieval_mode}")
-
-        evidence = _deduplicate_evidence(evidence)
-        return EvidenceSet(evidence=evidence, query=final_query)
+        emit_telemetry_event(
+            "retrieval.result",
+            {
+                "strategy": cfg.strategy,
+                "evidence_count": len(evidence),
+            },
+        )
+        return evidence
+    finally:
+        end_span(span)
