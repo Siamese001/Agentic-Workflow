@@ -1,6 +1,6 @@
 # FILE: 10_10/meta_profile.py
 """
-Meta Profile & Adaptive Biases (v10_10 · Phase 0) — META LAYER ONLY
+Meta Profile & Adaptive Biases (v10_10 · Phase 3) — META LAYER ONLY
 ===================================================================
 
 This module defines the *meta-layer* profile for the agentic system.
@@ -14,33 +14,18 @@ signals that L1, L2, routing, and self-correction may consult:
     • Safety-related hints (heightened caution, HIL bias).
     • Rolling statistics (QA failures, correction usage).
 
-Phase 0 objectives:
-    • Provide a **deterministic**, in-memory MetaProfile that:
-        – can be snapshotted and passed into ExecutionContext
-        – influences routing (e.g., prefers_anthropic / prefers_openai)
-        – exposes QA / correction failure rates
-    • Keep it META-LAYER ONLY:
-        – no L1–L5 imports
-        – no network calls
-        – no side-effects beyond local in-memory state
+Key types:
 
-Compatibility requirements:
-    • Preserve `MetaProfileSnapshot` type for existing v10_10 modules:
-        – l1.py
-        – cognitive_agents.py
-        – routing.py
-    • Keep helper accessors:
-        – get_routing_bias()
-        – get_planning_bias()
-        – get_qa_bias()
-        – get_safety_bias()
+    • MetaProfile          – mutable, long-lived state across workflows.
+    • MetaProfileSnapshot  – frozen, per-workflow snapshot.
+    • MetaProfileUpdater   – updates MetaProfile and produces snapshots.
 
-Later phases (3–4) may:
-    • Wire meta_profile feedback into:
-        – routing decisions,
-        – reasoning selector,
-        – safety bundle choice,
-        – execution profile selection.
+This module must remain PURE META:
+
+    • No LLM calls.
+    • No state mutation outside MetaProfile.
+    • No orchestration.
+    • No direct provider SDK calls.
 """
 
 from __future__ import annotations
@@ -48,7 +33,7 @@ from __future__ import annotations
 from dataclasses import dataclass, asdict
 from typing import Dict, Any
 
-from .models import ReasoningMode
+from models import ReasoningMode
 
 
 # ======================================================================
@@ -58,15 +43,6 @@ from .models import ReasoningMode
 
 @dataclass
 class RoutingBias:
-    """
-    Routing preferences and signals.
-
-    • prefers_anthropic / prefers_openai:
-        – Soft hint to routing provider selection.
-    • prefers_fast_models:
-        – Soft hint for latency vs robustness.
-    """
-
     prefers_anthropic: bool = False
     prefers_openai: bool = True
     prefers_fast_models: bool = False
@@ -74,48 +50,19 @@ class RoutingBias:
 
 @dataclass
 class PlanningBias:
-    """
-    Planning preferences at the meta level.
-
-    • reasoning_mode_hint:
-        – A soft suggestion for ReasoningSelector.
-    • conservative_planning:
-        – Fewer steps, shallower exploration.
-    • exploratory_planning:
-        – More steps, deeper exploration.
-    """
-
     reasoning_mode_hint: ReasoningMode = ReasoningMode.COT
     conservative_planning: bool = False
-    exploratory_planning: bool = False
+    exploratory_planning: bool = True
 
 
 @dataclass
 class QABias:
-    """
-    Biases related to QA behavior.
-
-    • extra_qa_passes:
-        – Encourages more QA passes when true.
-    • reinforce_strictness:
-        – Encourages stricter QA interpretation.
-    """
-
     extra_qa_passes: bool = False
     reinforce_strictness: bool = False
 
 
 @dataclass
 class SafetyBias:
-    """
-    Biases related to safety behavior.
-
-    • elevated_caution:
-        – Ask safety to be more conservative.
-    • hil_preferred:
-        – Prefer HIL escalation for borderline cases.
-    """
-
     elevated_caution: bool = False
     hil_preferred: bool = False
 
@@ -166,10 +113,13 @@ class MetaProfileSnapshot:
     and used by routing, L1, cognitive agents, etc.
 
     Existing v10_10 callsites expect:
-        • prefers_anthropic
-        • prefers_openai
+        • prefers_anthropic / prefers_openai
+        • prefers_fast_models
+        • reasoning_mode_hint (string)
         • qa_failure_rate_last_10
         • correction_rate_last_10
+        • extra_qa_passes / reinforce_strictness
+        • elevated_caution / hil_preferred
     """
 
     active_profile_id: str
@@ -191,17 +141,13 @@ class MetaProfileSnapshot:
 
 
 # ======================================================================
-# META PROFILE UPDATER (SINGLETON)
+# UPDATER
 # ======================================================================
 
 
 class MetaProfileUpdater:
     """
-    Simple, deterministic meta-profile updater.
-
-    Phase 0:
-        • Keeps counters for QA outcomes and corrections.
-        • Updates soft routing/planning/QA/safety biases.
+    Handles mutation of MetaProfile and snapshot extraction.
     """
 
     def __init__(self) -> None:
@@ -239,8 +185,8 @@ class MetaProfileUpdater:
         if not success:
             p.qa_failures_last_10 = min(10, p.qa_failures_last_10 + 1)
 
-        # Soft rule: if QA failure rate > 0.4, encourage extra QA passes.
-        if p.qa_failure_rate() > 0.4:
+        # Soft rule: if QA keeps failing, request extra passes and stricter QA.
+        if p.qa_failure_rate() > 0.3:
             p.qa_bias.extra_qa_passes = True
             p.qa_bias.reinforce_strictness = True
             p.safety_bias.elevated_caution = True
@@ -270,63 +216,36 @@ class MetaProfileUpdater:
         Update routing bias based on provider choices.
         """
         p = self.profile
-        if provider.lower().startswith("anthropic"):
+        provider = (provider or "").lower()
+        if provider.startswith("anthropic"):
             p.routing_bias.prefers_anthropic = True
             p.routing_bias.prefers_openai = False
-        elif provider.lower().startswith("openai"):
+        elif provider.startswith("openai"):
             p.routing_bias.prefers_openai = True
             p.routing_bias.prefers_anthropic = False
 
-    def set_reasoning_hint(self, mode: ReasoningMode) -> None:
-        self.profile.planning_bias.reasoning_mode_hint = mode
+    def register_fast_model_usage(self, used_fast: bool) -> None:
+        """
+        Update routing bias based on whether "fast" models were used.
+        """
+        p = self.profile
+        if used_fast:
+            p.routing_bias.prefers_fast_models = True
 
-    def reset(self) -> None:
-        self.profile = MetaProfile()
+
+# ======================================================================
+# MODULE-LEVEL SINGLETON + HELPERS
+# ======================================================================
 
 
-# Singleton updater instance.
 _META_UPDATER = MetaProfileUpdater()
 
 
-# ======================================================================
-# PUBLIC API
-# ======================================================================
-
 def get_meta_profile_snapshot() -> MetaProfileSnapshot:
     """
-    Return a read-only MetaProfileSnapshot for injection into ExecutionContext.
+    Return a read-only snapshot of the current MetaProfile.
     """
     return _META_UPDATER.snapshot()
-
-
-def register_qa_outcome(success: bool) -> None:
-    _META_UPDATER.register_qa_outcome(success)
-
-
-def register_correction(applied: bool) -> None:
-    _META_UPDATER.register_correction(applied)
-
-
-def register_provider_choice(provider: str) -> None:
-    _META_UPDATER.register_provider_choice(provider)
-
-
-def set_active_profile(profile_id: str) -> None:
-    _META_UPDATER.set_active_profile(profile_id)
-
-
-def set_reasoning_hint(mode: ReasoningMode) -> None:
-    _META_UPDATER.set_reasoning_hint(mode)
-
-
-def reset_meta_profile() -> None:
-    _META_UPDATER.reset()
-
-
-# ----------------------------------------------------------------------
-# Legacy-style bias accessors (used in comments / possible callsites).
-# These return dicts, matching earlier "asdict(profile.*_bias)" patterns.
-# ----------------------------------------------------------------------
 
 
 def get_routing_bias() -> Dict[str, Any]:
