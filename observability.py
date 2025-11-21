@@ -1,7 +1,7 @@
 # FILE: observability.py
 """
-Observability / Telemetry Layer (v10_10 · Phase 3 — FINAL)
-==========================================================
+Observability / Telemetry Layer (v10_10 · Phase 3)
+==================================================
 
 This module provides:
     • Structured spans (start_span / end_span)
@@ -15,12 +15,10 @@ This module provides:
     • Deterministic logging for DAG orchestration (L3)
     • Zero external I/O (collects events; callers decide persistence)
 
-Non-responsibilities:
-    • No LLM calls
-    • No retrieval
-    • No ranking logic
-    • No state mutation
-    • No safety decisions
+Design constraints:
+    • No LLM calls.
+    • No state mutation outside in-memory telemetry buffers.
+    • No routing / planning decisions.
 """
 
 from __future__ import annotations
@@ -51,6 +49,7 @@ _span_stack: List[Dict[str, Any]] = []
 # INTERNAL HELPERS
 # =============================================================================
 
+
 def _now_ms() -> int:
     return int(time.time() * 1000)
 
@@ -66,6 +65,7 @@ def _log(evt: TelemetryEvent) -> None:
 # =============================================================================
 # SPANS
 # =============================================================================
+
 
 def start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
@@ -128,8 +128,35 @@ def end_span(span_record: Dict[str, Any]) -> None:
 
 
 # =============================================================================
+# NODE-LEVEL EVENTS (L3)
+# =============================================================================
+
+
+def emit_node_event(node: str, status: str, details: Optional[str] = None) -> None:
+    """
+    Node-level events for L3 orchestration visibility.
+
+    Example:
+        emit_node_event("strategy", "start")
+        emit_node_event("strategy", "success")
+    """
+    _log(
+        TelemetryEvent(
+            name=node,
+            ts_ms=_now_ms(),
+            attributes={
+                "event_type": "node",
+                "status": status,
+                "details": details,
+            },
+        )
+    )
+
+
+# =============================================================================
 # GENERIC EVENT EMISSION
 # =============================================================================
+
 
 def emit_telemetry_event(name: str, attributes: Dict[str, Any]) -> None:
     """
@@ -160,24 +187,31 @@ def log_exception(name: str, exc: Exception) -> None:
     )
 
 
+# Convenience aliases for infrastructure layers (runtime_utils, etc.)
+def record_event(name: str, attributes: Dict[str, Any]) -> None:
+    """
+    Convenience wrapper so infrastructure code can call record_event(...)
+    without depending on TelemetryEvent directly.
+    """
+    emit_telemetry_event(name, attributes)
+
+
+def record_exception(name: str, exc: Exception) -> None:
+    """
+    Convenience wrapper so infrastructure code can call record_exception(...)
+    and still use the same telemetry pipeline as log_exception.
+    """
+    log_exception(name, exc)
+
+
 # =============================================================================
 # PHASE 3 — RETRIEVAL EVENTS
 # =============================================================================
 
+
 def emit_retrieval_attempt(evt: RetrievalAttemptEvent) -> None:
     """
     Emit a typed retrieval attempt event.
-
-    Typical usage from retrieval layer:
-        emit_retrieval_attempt(
-            RetrievalAttemptEvent(
-                name="retrieval",
-                method="hybrid",
-                query=...,
-                ts_ms=...,
-                attributes={...},
-            )
-        )
     """
     _log(evt)
 
@@ -200,6 +234,7 @@ def emit_retrieval_failure(evt: RetrievalFailureEvent) -> None:
 # PHASE 3 — RANKING EVENTS
 # =============================================================================
 
+
 def emit_ranking_event(evt: RankingEvent) -> None:
     """
     Emit a typed ranking event (e.g. for RRF fusion).
@@ -208,33 +243,9 @@ def emit_ranking_event(evt: RankingEvent) -> None:
 
 
 # =============================================================================
-# DAG / NODE EVENTS (L3)
-# =============================================================================
-
-def emit_node_event(node: str, status: str, details: Optional[str] = None) -> None:
-    """
-    Node-level events for L3 orchestration visibility.
-
-    Example:
-        emit_node_event("strategy", "start")
-        emit_node_event("strategy", "success")
-    """
-    _log(
-        TelemetryEvent(
-            name=node,
-            ts_ms=_now_ms(),
-            attributes={
-                "event_type": "node",
-                "status": status,
-                "details": details,
-            },
-        )
-    )
-
-
-# =============================================================================
 # COST SNAPSHOT
 # =============================================================================
+
 
 def emit_cost_snapshot(snapshot: CostSnapshot) -> None:
     """
@@ -257,6 +268,7 @@ def emit_cost_snapshot(snapshot: CostSnapshot) -> None:
 # =============================================================================
 # PUBLIC INSPECTION APIS
 # =============================================================================
+
 
 def get_all_events() -> List[TelemetryEvent]:
     """
