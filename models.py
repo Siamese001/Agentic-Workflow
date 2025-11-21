@@ -14,19 +14,21 @@ used throughout the v10_10 agentic runtime:
     • Telemetry models (Phase 3 typed events)
     • CostSnapshot
     • PolicyDecisionEvent
+    • Skill / Domain classifier results
+    • CouncilVote + CorrectionLoopState (Phase-3 DAG)
 
-The Phase-3 upgrade adds:
-    • Typed retrieval events:
-          – RetrievalAttemptEvent
-          – RetrievalSuccessEvent
-          – RetrievalFailureEvent
-    • Typed ranking event:
-          – RankingEvent
+Design constraints:
+
+    1. This module is *data-only* (no I/O, no business logic).
+    2. Models are intentionally verbose and explicit.
+    3. All cross-layer contracts must be defined here (or imported here).
 """
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Literal
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -34,22 +36,190 @@ from pydantic import BaseModel, Field
 # BASIC STRUCTURES (JOB / RESUME)
 # ======================================================================
 
-class Job(BaseModel):
+
+class JobDescription(BaseModel):
     id: str
-    title: Optional[str] = None
-    posting_text: Optional[str] = None
-    requirements: List[str] = Field(default_factory=list)
+    title: str
+    company: str
+    description: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
-class Resume(BaseModel):
+class ResumeProfile(BaseModel):
     id: str
+    name: str
+    headline: Optional[str] = None
     summary: Optional[str] = None
-    experience_sections: List[Dict[str, Any]] = Field(default_factory=list)
+    raw_text: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 # ======================================================================
-# PROMPTS AND PROMPT VERSIONS (Phase-2)
+# WORKFLOW STATE + PATCHES
 # ======================================================================
+
+
+class WorkflowState(BaseModel):
+    """
+    Canonical workflow state.
+
+    This is the single source of truth for all cross-layer state.
+
+    L4 is the *only* layer allowed to mutate instances of this model;
+    other layers must work with copies or immutable views.
+    """
+
+    workflow_id: str
+    job: JobDescription
+    resume: ResumeProfile
+
+    # High-level artifacts
+    strategy_notes: Optional[str] = None
+    rag_context: Optional[str] = None
+    draft_text: Optional[str] = None
+    qa_findings_summary: Optional[str] = None
+    safety_summary: Optional[str] = None
+
+    # Arbitrary extensions
+    slots: Dict[str, Any] = Field(default_factory=dict)
+
+
+class WorkflowStatePatch(BaseModel):
+    """
+    A typed, partial update to WorkflowState.
+
+    L2/L3 produce patches; L4 applies them.
+    """
+
+    strategy_notes: Optional[str] = None
+    rag_context: Optional[str] = None
+    draft_text: Optional[str] = None
+    qa_findings_summary: Optional[str] = None
+    safety_summary: Optional[str] = None
+
+    # Arbitrary dynamic slots
+    slots: Dict[str, Any] = Field(default_factory=dict)
+
+
+# ======================================================================
+# EXECUTION CONTEXT + TRANSITION EVENTS
+# ======================================================================
+
+
+class ExecutionContext(BaseModel):
+    """
+    ExecutionContext is an immutable snapshot of:
+
+        • Runtime configuration (ExecutionProfile / RetrievalConfig)
+        • Routing hints
+        • Meta-profile snapshot
+        • Telemetry / cost containers (read-only at this layer)
+
+    It is passed down the stack but never mutated in-place.
+    """
+
+    workflow_id: str
+    profile_name: str
+
+    # These are light-typed views into config_profiles_v10_10
+    retrieval: "RetrievalConfig"
+    routing_policy: Any = None
+    sandbox_config: Any = None
+    meta_profile_snapshot: Any = None
+
+    cost_snapshot: Optional["CostSnapshot"] = None
+
+    def span_context(self) -> Dict[str, Any]:
+        return {}
+
+
+# ======================================================================
+# L2 RESULT BUNDLE (returned by L2.run)
+# ======================================================================
+
+
+class L2ResultBundle(BaseModel):
+    strategy: "StrategyResult"
+    rag: "RAGResult"
+    drafting: "DraftingResult"
+    qa: "QAResult"
+    safety: "SafetyResult"
+
+    @classmethod
+    def empty_with_error(cls, msg: str):
+        return cls(
+            strategy=StrategyResult(branches=[], chosen_branch_id=None),
+            rag=RAGResult(evidence=[], used_hyde=False),
+            drafting=DraftingResult(sections=[]),
+            qa=QAResult(findings=[]),
+            safety=SafetyResult(
+                findings=[
+                    SafetyFinding(
+                        check_id="internal_error",
+                        category="internal",
+                        severity="high",
+                        message=msg,
+                        details={},
+                    )
+                ]
+            ),
+        )
+
+
+# ======================================================================
+# TELEMETRY MODELS (Phase-3)
+# ======================================================================
+
+
+class TelemetryEvent(BaseModel):
+    name: str
+    ts_ms: Optional[int] = None
+    span_id: Optional[str] = None
+    parent_span_id: Optional[str] = None
+    workflow_id: Optional[str] = None
+    attributes: Dict[str, Any] = Field(default_factory=dict)
+
+
+class RetrievalAttemptEvent(TelemetryEvent):
+    method: str
+    query: str
+
+
+class RetrievalResultEvent(TelemetryEvent):
+    method: str
+    hit_count: int
+    max_hits: int
+
+
+class RankingEvent(TelemetryEvent):
+    stage: str
+    input_count: int
+    output_count: int
+    details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class RoutingDecisionEvent(TelemetryEvent):
+    agent_id: str
+    provider: str
+    model_name: str
+    reason: Optional[str] = None
+
+
+class CorrectionEvent(TelemetryEvent):
+    """
+    Emitted when the workflow graph performs a correction loop
+    (e.g., re-running RAG or QA).
+    """
+
+    node: str
+    iteration: int
+    reason: str
+
+
+# ======================================================================
+# PROMPT MODELS
+# ======================================================================
+
 
 class PromptVersion(BaseModel):
     major: int
@@ -71,6 +241,7 @@ class PromptDefinition(BaseModel):
 # RETRIEVAL CONFIG (used by Phase-3 RAG)
 # ======================================================================
 
+
 class RetrievalConfig(BaseModel):
     strategy: str = "hybrid"
     use_rrf: bool = True
@@ -83,12 +254,19 @@ class RetrievalConfig(BaseModel):
     # Optional weights for weighted RRF
     rrf_weights: Optional[List[float]] = None
 
+    # HYDE and QA council configuration
+    allow_hyde: bool = False
+    qa_council_size: int = 1
+    qa_council_mode: str = "simple"
+
 
 # ======================================================================
 # EVIDENCE + RAG MODELS
 # ======================================================================
 
+
 class Evidence(BaseModel):
+    id: str
     text: str
     score: float
     source: str
@@ -110,6 +288,7 @@ class RAGPlan(BaseModel):
 # STRATEGY / DRAFTING / QA / SAFETY RESULTS
 # ======================================================================
 
+
 class StrategyBranch(BaseModel):
     id: str
     text: str
@@ -126,26 +305,33 @@ class StrategyResult(BaseModel):
         return ""
 
 
+class DraftSection(BaseModel):
+    id: str
+    title: str
+    text: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class DraftingResult(BaseModel):
-    sections: List[Dict[str, Any]] = Field(default_factory=list)
+    sections: List[DraftSection]
 
 
-class QACheckResult(BaseModel):
-    check_id: str
+class QAFinding(BaseModel):
+    id: str
     category: str
-    status: str
+    severity: str
     message: str
-    details: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
 class QAResult(BaseModel):
-    findings: List[QACheckResult] = Field(default_factory=list)
+    findings: List[QAFinding] = Field(default_factory=list)
 
 
 class SafetyFinding(BaseModel):
     check_id: str
     category: str
-    status: str
+    severity: str
     message: str
     details: Dict[str, Any] = Field(default_factory=dict)
 
@@ -155,102 +341,20 @@ class SafetyResult(BaseModel):
 
 
 # ======================================================================
-# EXECUTION PROFILE / WORKFLOW CONTEXT
+# EXECUTION PROFILE (lightweight view; full profiles in config_profiles_v10_10.py)
 # ======================================================================
 
+
 class ExecutionProfile(BaseModel):
-    id: str
-    model_tier: str
+    name: str
+    description: str
     retrieval: RetrievalConfig
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
-class WorkflowConfig(BaseModel):
-    target_total_tokens: int = 1800
-    rag_max_job_chunks: int = 8
-    rag_max_resume_chunks: int = 8
-    rag_max_hybrid_chunks: int = 12
-    rag_allow_hyde: bool = False
-    rag_require_hybrid: bool = False
-
-
-class ExecutionContext(BaseModel):
-    job: Job
-    resume: Resume
-    config: WorkflowConfig
-
-    routing_policy: Any = None
-    sandbox_config: Any = None
-    meta_profile_snapshot: Any = None
-
-    cost_snapshot: Optional["CostSnapshot"] = None
-
-    def span_context(self) -> Dict[str, Any]:
-        return {}
-
-
 # ======================================================================
-# L2 RESULT BUNDLE (returned by L2.run)
+# COST + POLICY MODELS (Phase-3)
 # ======================================================================
-
-class L2ResultBundle(BaseModel):
-    strategy: StrategyResult
-    rag: RAGResult
-    drafting: DraftingResult
-    qa: QAResult
-    safety: SafetyResult
-
-    @classmethod
-    def empty_with_error(cls, msg: str):
-        return cls(
-            strategy=StrategyResult(branches=[], chosen_branch_id=None),
-            rag=RAGResult(evidence=[], used_hyde=False),
-            drafting=DraftingResult(sections=[]),
-            qa=QAResult(findings=[]),
-            safety=SafetyResult(findings=[SafetyFinding(
-                check_id="internal_error",
-                category="internal",
-                status="blocked",
-                message=msg,
-                details={}
-            )]),
-        )
-
-
-# ======================================================================
-# TELEMETRY MODELS (Phase-3)
-# ======================================================================
-
-class TelemetryEvent(BaseModel):
-    name: str
-    ts_ms: Optional[int] = None
-    span_id: Optional[str] = None
-    parent_span_id: Optional[str] = None
-    workflow_id: Optional[str] = None
-    attributes: Dict[str, Any] = Field(default_factory=dict)
-
-
-class RetrievalAttemptEvent(TelemetryEvent):
-    method: str
-    query: str
-
-
-class RetrievalSuccessEvent(TelemetryEvent):
-    method: str
-    query: str
-    count: int
-
-
-class RetrievalFailureEvent(TelemetryEvent):
-    method: str
-    query: str
-    error: str
-
-
-class RankingEvent(TelemetryEvent):
-    stage: str
-    strategy: str
-    use_rrf: bool
 
 
 class CostSnapshot(BaseModel):
@@ -258,9 +362,53 @@ class CostSnapshot(BaseModel):
     output_tokens: int = 0
     total_cost_usd: float = 0.0
 
+    # Extended accounting for routing / telemetry
+    call_count: int = 0
+    cache_hits: int = 0
+    provider: Optional[str] = None
+    model_name: Optional[str] = None
+    layer: Optional[str] = None
+
 
 class PolicyDecisionEvent(BaseModel):
     classifier_id: str
     outcome: str
     details: Dict[str, Any] = Field(default_factory=dict)
 
+
+class SkillClassifierResult(BaseModel):
+    """Deterministic classification of user skills (non-LLM)."""
+
+    labels: List[str] = Field(default_factory=list)
+    primary_label: Optional[str] = None
+    confidence: float = 0.0
+    features: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DomainClassifierResult(BaseModel):
+    """Deterministic classification of domain / industry (non-LLM)."""
+
+    labels: List[str] = Field(default_factory=list)
+    primary_label: Optional[str] = None
+    confidence: float = 0.0
+    features: Dict[str, Any] = Field(default_factory=dict)
+
+
+class CouncilVote(BaseModel):
+    """Aggregated vote from a council / committee of agents."""
+
+    members: int
+    selected_id: Optional[str] = None
+    scores: Dict[str, float] = Field(default_factory=dict)
+    ties: List[str] = Field(default_factory=list)
+    reason: Optional[str] = None
+
+
+class CorrectionLoopState(BaseModel):
+    """Summary of a workflow's correction loop over the DAG."""
+
+    iteration: int = 0
+    max_iterations: int = 0
+    surfaces_triggered: List[str] = Field(default_factory=list)
+    last_signal: Optional[str] = None
+    terminated_reason: Optional[str] = None
