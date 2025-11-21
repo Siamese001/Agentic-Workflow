@@ -3,39 +3,29 @@
 Unified Runtime Utilities (v10_10) — INFRASTRUCTURE LAYER
 =========================================================
 
-This is the v10_10 refactor of the v10_9 runtime_utils module. :contentReference[oaicite:1]{index=1}
+This module is the v10_10 runtime utility layer.
 
-It removes:
-    • v10_9 telemetry buffer (_TELEMETRY_EVENTS)
-    • CostTracker / Optimization helpers
-    • Retrieval / Ranking / RAGUtils meta-layer helpers
-
-Those concerns have been moved into:
-    • observability.py          — spans, events, exceptions logging
-    • retrieval.py              — deterministic post-processing of raw hits
-    • ranking.py                — deterministic ranking of Evidence
-
-This module now provides ONLY:
-
-    1. Exception hierarchy for runtime surfaces
-    2. SandboxConfig + get_sandbox()
-    3. PredictiveCacheManager (optional predictive/semantic cache)
-    4. invoke_model() unified LLM gateway (OpenAI + Anthropic)
+Responsibilities:
+    1. Exception hierarchy for runtime surfaces.
+    2. SandboxConfig + get_sandbox() for logical isolation.
+    3. PredictiveCacheManager for in-memory predictive/semantic caching.
+    4. invoke_model() unified LLM gateway (OpenAI + Anthropic).
 
 Design constraints:
     • No planning (L1).
     • No tool logic besides LLM call wrappers (L2).
     • No DAG/orchestration (L3).
-    • No state mutation (L4).
+    • No state mutation of WorkflowState (L4).
     • No safety/policy decisions (L5).
-    • No meta-learning or telemetry aggregation.
+    • No meta-learning or telemetry aggregation (telemetry is delegated
+      to observability.py via record_event / record_exception).
 """
 
 from __future__ import annotations
 
-import os
-import json
 import hashlib
+import json
+import os
 import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Tuple
@@ -61,11 +51,7 @@ class ModelClientError(Exception):
 
 
 class SafetyException(Exception):
-    """Safety contract violation (L5 error surface)."""
-
-
-class WorkflowTimeoutError(Exception):
-    """Async workflow exceeded its time budget."""
+    """Safety-related error at runtime (e.g., policy violations)."""
 
 
 class LLMInvocationError(RuntimeError):
@@ -76,13 +62,14 @@ class LLMInvocationError(RuntimeError):
 # 2. SANDBOX CONFIGURATION
 # ============================================================================
 
+
 @dataclass
 class SandboxConfig:
     """
     Logical sandbox configuration for tool/LLM invocations.
 
     Actual isolation is provided by the surrounding environment (e.g.,
-    Windsurf container). This object provides *logical* constraints:
+    container). This object provides *logical* constraints:
 
         • allow_network: whether network calls are permitted.
         • request_timeout_s: per-call timeout.
@@ -97,7 +84,7 @@ class SandboxConfig:
 
 def get_sandbox(config: Optional[SandboxConfig]) -> SandboxConfig:
     """
-    Normalize a possibly-None sandbox config.
+    Return a non-None SandboxConfig, falling back to defaults.
     """
     return config or SandboxConfig()
 
@@ -105,6 +92,7 @@ def get_sandbox(config: Optional[SandboxConfig]) -> SandboxConfig:
 # ============================================================================
 # 3. PREDICTIVE CACHE
 # ============================================================================
+
 
 @dataclass
 class PredictiveCacheManager:
@@ -127,28 +115,33 @@ class PredictiveCacheManager:
         """
         Build a stable cache key based on:
             - domain         (e.g., "rag", "strategy", "drafting")
-            - plan.model_dump() or __dict__
-            - job + config signature
+            - plan           (serialized in a stable way)
+            - selected ctx fields (e.g., job id, resume id)
         """
-        try:
-            plan_data = plan.model_dump()
-        except Exception:
-            plan_data = getattr(plan, "__dict__", str(plan))
-
-        ctx_sig = {
-            "job_title": getattr(getattr(ctx, "job", None), "title", ""),
-            "role_type": getattr(getattr(ctx, "job", None), "role_type", ""),
-            "seniority": getattr(getattr(ctx, "job", None), "seniority", ""),
-            "config": getattr(getattr(ctx, "config", None), "model_dump", lambda: {})(),
+        payload = {
+            "domain": domain,
+            "plan": self._safe_serialize(plan),
+            "ctx": self._safe_serialize(ctx),
         }
-
-        raw = json.dumps(
-            {"domain": domain, "plan": plan_data, "ctx": ctx_sig},
-            sort_keys=True,
-            default=str,
-        )
+        raw = json.dumps(payload, sort_keys=True, default=str)
         digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()
         return f"{domain}:{digest}"
+
+    @staticmethod
+    def _safe_serialize(obj: Any) -> Any:
+        """
+        Convert objects into a JSON-serializable structure where possible.
+        """
+        if obj is None:
+            return None
+        if isinstance(obj, (str, int, float, bool)):
+            return obj
+        if isinstance(obj, dict):
+            return {str(k): PredictiveCacheManager._safe_serialize(v) for k, v in obj.items()}
+        if isinstance(obj, (list, tuple)):
+            return [PredictiveCacheManager._safe_serialize(v) for v in obj]
+        # Fallback to string representation
+        return str(obj)
 
     def get(self, key: str) -> Optional[Any]:
         """
@@ -180,22 +173,21 @@ class PredictiveCacheManager:
 
 
 # ============================================================================
-# 4. UNIFIED LLM GATEWAY
+# 4. LLM INVOCATION
 # ============================================================================
 
-def _detect_provider(model: str) -> str:
-    """
-    Infer provider from model name string.
 
-    Very simple heuristic:
-        - "gpt-" or "o"  → OpenAI
-        - "claude"       → Anthropic
-        - default        → OpenAI
+def _infer_provider(model: str) -> str:
     """
-    m = model.lower()
-    if m.startswith("gpt") or m.startswith("o"):
-        return "openai"
-    if m.startswith("claude"):
+    Infer provider from model string.
+
+    Heuristics (deterministic):
+
+        • If "claude" in model → "anthropic"
+        • Else → "openai"
+    """
+    m = (model or "").lower()
+    if "claude" in m:
         return "anthropic"
     return "openai"
 
@@ -216,16 +208,16 @@ def invoke_model(
         prompt:      final rendered prompt text.
         sandbox:     SandboxConfig (request_timeout_s, max_tokens_per_call).
         temperature: sampling temperature.
-        max_tokens:  max token count (capped by sandbox).
-
-    Returns:
-        Model's text response.
-
-    Raises:
-        LLMInvocationError on failure.
+        max_tokens:  requested max tokens (will be clamped to sandbox).
     """
-    provider = _detect_provider(model)
-    max_tokens = min(max_tokens, sandbox.max_tokens_per_call)
+    if not sandbox.allow_network:
+        raise ToolExecutionError("Network access disabled by SandboxConfig")
+
+    # Clamp max_tokens to sandbox policy.
+    if max_tokens > sandbox.max_tokens_per_call:
+        max_tokens = sandbox.max_tokens_per_call
+
+    provider = _infer_provider(model)
 
     record_event(
         "invoke_model_start",
