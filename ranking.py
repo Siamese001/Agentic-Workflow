@@ -1,18 +1,29 @@
-# FILE: 10_10/ranking.py
+# FILE: ranking.py
 """
-Ranking Utilities (v10_10 · Phase 3)
-====================================
-
-This module is the Phase 3 upgrade of the v10_10 ranking utilities.
+Ranking Utilities (v10_10 · Phase 3 — FINAL)
+============================================
 
 Responsibilities:
     • Provide deterministic, side-effect-free ranking functions.
-    • Support both:
-        - Dict-based ranking (backward compatibility with v10_9-style callers).
-        - Evidence-based ranking for the v10_10 RAG pipeline.
-    • Implement Reciprocal Rank Fusion (RRF) and weighted RRF.
-    • Normalize and deduplicate evidence.
-    • Build RAGResult objects for downstream prompting.
+    • Dict-based API (backward-compatible):
+          - bm25(items)
+          - dense(items)
+          - hybrid(items)
+          - fuse_ranked_groups(groups, ...)
+          - rank_documents(items, strategy=...)
+    • Evidence-based API (for RAG):
+          - normalize_evidence_scores(...)
+          - deduplicate_evidence(...)
+          - rank_evidence(...)
+          - fuse_evidence_groups_rrf(...)
+          - build_rag_result(...)
+
+Phase-3 Enhancements:
+    • Weighted Reciprocal Rank Fusion (RRF) driven by RetrievalConfig.rrf_weights
+      when provided; falls back to uniform weights otherwise.
+    • Emits typed RankingEvent telemetry for:
+          - RRF fusion
+          - Final evidence ranking
 
 Non-Responsibilities:
     • No LLM calls.
@@ -24,10 +35,10 @@ Non-Responsibilities:
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from models import Evidence, RAGPlan, RetrievalConfig, RAGResult
-from observability import emit_telemetry_event
+from models import Evidence, RetrievalConfig, RAGPlan, RAGResult, RankingEvent
+from observability import emit_telemetry_event, emit_ranking_event
 
 
 # =============================================================================
@@ -41,14 +52,11 @@ def _tokenize(text: str) -> List[str]:
 
 def _bm25_score(item: Dict[str, Any]) -> float:
     """
-    Very simple BM25-like scoring approximation for dict-based ranking.
+    Simple BM25-like approximation for dict-based ranking.
 
     Expects:
         item["query"]:    str
         item["evidence"]: str
-
-    We approximate BM25 by counting overlapping tokens normalized
-    by query length. This is deterministic and purely lexical.
     """
     query = str(item.get("query", ""))
     evidence = str(item.get("evidence", ""))
@@ -68,9 +76,7 @@ def _dense_score(item: Dict[str, Any]) -> float:
     """
     Dense-score approximation using deterministic hash-based pseudo-similarity.
 
-    This is a non-ML, purely deterministic heuristic to stand in place of
-    embedding-based similarity in environments where we can't call out to
-    a real embedding service.
+    This is a non-ML, purely deterministic heuristic.
     """
     query = str(item.get("query", ""))
     evidence = str(item.get("evidence", ""))
@@ -78,15 +84,12 @@ def _dense_score(item: Dict[str, Any]) -> float:
     q_hash = hash(query) & 0xFFFFFFFF
     e_hash = hash(evidence) & 0xFFFFFFFF
 
-    # Normalize difference to [0, 1], invert so smaller diff → higher score
     diff = abs(q_hash - e_hash) / float(0xFFFFFFFF or 1)
     return max(0.0, 1.0 - diff)
 
 
 def _hybrid_score(item: Dict[str, Any]) -> float:
-    """
-    Hybrid score = average of bm25-like and dense scores.
-    """
+    """Hybrid score = average of bm25-like and dense scores."""
     b = _bm25_score(item)
     d = _dense_score(item)
     return (b + d) / 2.0
@@ -99,7 +102,7 @@ def _hybrid_score(item: Dict[str, Any]) -> float:
 
 def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
-    Deterministic BM25-like ranking over dict items.
+    BM25-like ranking over dict items.
 
     Each item should contain:
         - "query":    str
@@ -118,9 +121,7 @@ def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Deterministic dense-score ranking (hash-based pseudo-embedding).
-    """
+    """Deterministic dense-score ranking (hash-based pseudo-embedding)."""
     scored: List[Dict[str, Any]] = []
     for it in items or []:
         new_it = dict(it)
@@ -134,9 +135,7 @@ def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Combined ranking (BM25 + dense), averaging the two scores.
-    """
+    """Combined ranking (BM25 + dense), averaging the two scores."""
     scored: List[Dict[str, Any]] = []
     for it in items or []:
         new_it = dict(it)
@@ -188,13 +187,34 @@ def _rrf_weights_from_config(
     """
     Compute weights for weighted RRF.
 
-    Phase 3: RetrievalConfig does not yet carry per-retriever weights,
-    so we default to uniform weights. This function centralizes the
-    decision so it can be extended without touching callers.
+    Phase-3 requirement:
+        "Weighted RRF (if config specifies)"
+
+    Implementation:
+        • If cfg.rrf_weights exists and is a sequence of floats, use it.
+          - If shorter than n_groups, last weight is repeated.
+          - If longer, excess weights are ignored.
+        • Otherwise, fall back to uniform weights (=1.0).
     """
     if n_groups <= 0:
         return []
-    return [1.0 for _ in range(n_groups)]
+    if cfg is None:
+        return [1.0] * n_groups
+
+    weights = getattr(cfg, "rrf_weights", None)
+    if not isinstance(weights, Iterable):
+        return [1.0] * n_groups
+
+    w_list = [float(w) for w in weights]  # type: ignore[arg-type]
+    if not w_list:
+        return [1.0] * n_groups
+
+    if len(w_list) >= n_groups:
+        return w_list[:n_groups]
+
+    # Extend by repeating the last weight
+    last = w_list[-1]
+    return w_list + [last] * (n_groups - len(w_list))
 
 
 def fuse_ranked_groups(
@@ -208,25 +228,22 @@ def fuse_ranked_groups(
     Fuse multiple pre-ranked lists into a single deterministic list.
 
     If use_rrf is True:
-        • Apply (weighted) Reciprocal Rank Fusion:
+        • Apply weighted Reciprocal Rank Fusion:
               score(doc) = Σ_i w_i / (rrf_k + rank_i)
-        • w_i is derived from RetrievalConfig (currently uniform).
+          where w_i are driven by RetrievalConfig.rrf_weights if provided.
 
     If use_rrf is False:
-        • Fall back to the earlier deterministic "minimal-rank" fusion:
+        • Fall back to minimal-rank fusion:
             1. Flatten.
             2. Deduplicate by (query, evidence).
             3. Sort by minimal rank across groups, then alphabetical evidence.
             4. Re-assign ranks.
-
-    All behavior purely deterministic.
     """
-    # Flatten first; if no groups, short-circuit.
     if not groups:
         return []
 
+    # ----- Non-RRF path (minimal rank) -----
     if not use_rrf:
-        # Minimal-rank deterministic fusion (v10_9 style)
         flattened: List[Dict[str, Any]] = []
         seen: set[Tuple[str, str]] = set()
 
@@ -243,13 +260,12 @@ def fuse_ranked_groups(
                 str(x.get("evidence", "")).lower(),
             )
         )
-
         for idx, item in enumerate(flattened):
             item["rank"] = idx + 1
 
         emit_telemetry_event(
-            name="ranking.fuse.minrank",
-            attributes={
+            "ranking.fuse.minrank",
+            {
                 "strategy": "min_rank",
                 "groups": len(groups),
                 "items_in": sum(len(g or []) for g in groups),
@@ -258,7 +274,7 @@ def fuse_ranked_groups(
         )
         return flattened
 
-    # RRF path
+    # ----- RRF path -----
     weights = _rrf_weights_from_config(cfg, len(groups))
     doc_scores: Dict[Tuple[str, str], float] = {}
     doc_repr: Dict[Tuple[str, str], Dict[str, Any]] = {}
@@ -279,20 +295,35 @@ def fuse_ranked_groups(
         fused.append(item)
 
     fused.sort(key=lambda x: x.get("score", 0.0), reverse=True)
-
     for idx, item in enumerate(fused):
         item["rank"] = idx + 1
 
-    emit_telemetry_event(
-        name="ranking.rrf",
-        attributes={
-            "strategy": "rrf_weighted",
-            "rrf_k": rrf_k,
-            "groups": len(groups),
-            "items_in": sum(len(g or []) for g in groups),
-            "items_out": len(fused),
-        },
-    )
+    # Typed ranking event
+    if cfg is not None:
+        evt = RankingEvent(
+            stage="rrf_fusion",
+            strategy=cfg.strategy,
+            use_rrf=True,
+            metadata={
+                "rrf_k": rrf_k,
+                "groups": len(groups),
+                "items_in": sum(len(g or []) for g in groups),
+                "items_out": len(fused),
+                "weights": weights,
+            },
+        )
+        emit_ranking_event(evt)
+    else:
+        emit_telemetry_event(
+            "ranking.rrf",
+            {
+                "rrf_k": rrf_k,
+                "groups": len(groups),
+                "items_in": sum(len(g or []) for g in groups),
+                "items_out": len(fused),
+                "weights": weights,
+            },
+        )
 
     return fused
 
@@ -307,7 +338,7 @@ def rank_documents(
     strategy: str = "hybrid",
 ) -> List[Dict[str, Any]]:
     """
-    Top-level ranking helper used by dict-based RAG components (backward compatible).
+    Top-level ranking helper used by dict-based RAG components.
 
         items:
             list[{ query, evidence, ... }]
@@ -322,18 +353,25 @@ def rank_documents(
 
     ranked = apply_strategy(items, strategy=strategy)
 
-    # Final stability sort
     ranked.sort(
         key=lambda x: (
             int(x.get("rank", 9_999_999)),
             str(x.get("evidence", "")).lower(),
         )
     )
+
+    emit_telemetry_event(
+        "ranking.dict.final",
+        {
+            "strategy": strategy,
+            "items": len(ranked),
+        },
+    )
     return ranked
 
 
 # =============================================================================
-# 5. EVIDENCE-BASED RANKING (PRIMARY v10_10 RAG PATH)
+# 5. EVIDENCE-BASED RANKING (PRIMARY RAG PATH)
 # =============================================================================
 
 
@@ -341,8 +379,8 @@ def _evidence_key(ev: Evidence) -> Tuple[str, str]:
     """
     Canonical deduplication key for Evidence.
 
-    We prefer a stable document identifier if present in metadata,
-    otherwise fall back to (source, text).
+    Prefer a stable document identifier from metadata if present; else
+    fall back to (source, text).
     """
     meta = ev.metadata or {}
     doc_id = str(meta.get("document_id") or meta.get("id") or "")
@@ -352,11 +390,7 @@ def _evidence_key(ev: Evidence) -> Tuple[str, str]:
 
 
 def normalize_evidence_scores(evidence: Sequence[Evidence]) -> List[Evidence]:
-    """
-    Normalize scores across Evidence items to [0, 1].
-
-    Returns NEW Evidence objects with updated scores.
-    """
+    """Normalize scores across Evidence items to [0, 1]."""
     if not evidence:
         return []
 
@@ -365,21 +399,18 @@ def normalize_evidence_scores(evidence: Sequence[Evidence]) -> List[Evidence]:
     min_score = min(scores)
 
     if max_score == min_score:
-        # All equal → normalize to 1.0
         return [e.model_copy(update={"score": 1.0}) for e in evidence]
 
     span = max_score - min_score
-    normalized: List[Evidence] = []
+    out: List[Evidence] = []
     for e in evidence:
         norm = (e.score - min_score) / span
-        normalized.append(e.model_copy(update={"score": float(norm)}))
-    return normalized
+        out.append(e.model_copy(update={"score": float(norm)}))
+    return out
 
 
 def deduplicate_evidence(evidence: Sequence[Evidence]) -> List[Evidence]:
-    """
-    Deduplicate Evidence items by canonical key, preserving first occurrence.
-    """
+    """Deduplicate Evidence items by canonical key, preserving first."""
     seen: set[Tuple[str, str]] = set()
     out: List[Evidence] = []
     for ev in evidence or []:
@@ -392,9 +423,6 @@ def deduplicate_evidence(evidence: Sequence[Evidence]) -> List[Evidence]:
 
 
 def _trim_evidence_text(ev: Evidence, max_chars: int) -> Evidence:
-    """
-    Trim evidence text to max_chars, preserving other fields.
-    """
     if max_chars <= 0 or len(ev.text) <= max_chars:
         return ev
     trimmed = ev.text[: max_chars - 3] + "..."
@@ -407,6 +435,7 @@ def rank_evidence(
     top_k: Optional[int] = None,
     normalize: bool = True,
     max_chars: int = 0,
+    strategy: str = "hybrid",
 ) -> List[Evidence]:
     """
     Rank Evidence by score, with optional normalization, truncation, and trimming.
@@ -432,6 +461,19 @@ def rank_evidence(
     if max_chars > 0:
         hits = [_trim_evidence_text(ev, max_chars) for ev in hits]
 
+    # Emit typed ranking event
+    evt = RankingEvent(
+        stage="evidence_final",
+        strategy=strategy,
+        use_rrf=False,
+        metadata={
+            "items_out": len(hits),
+            "top_k": top_k,
+            "max_chars": max_chars,
+        },
+    )
+    emit_ranking_event(evt)
+
     return hits
 
 
@@ -445,8 +487,6 @@ def fuse_evidence_groups_rrf(
     Evidence-level Reciprocal Rank Fusion.
 
         score(ev) = Σ_i w_i / (rrf_k + rank_i)
-
-    Weighting is derived from RetrievalConfig (currently uniform).
     """
     if not groups:
         return []
@@ -471,16 +511,19 @@ def fuse_evidence_groups_rrf(
 
     fused.sort(key=lambda e: e.score, reverse=True)
 
-    emit_telemetry_event(
-        name="ranking.evidence.rrf",
-        attributes={
-            "strategy": "rrf_weighted",
+    evt = RankingEvent(
+        stage="evidence_rrf",
+        strategy=cfg.strategy if cfg is not None else "unknown",
+        use_rrf=True,
+        metadata={
             "rrf_k": rrf_k,
             "groups": len(groups),
             "items_in": sum(len(g or []) for g in groups),
             "items_out": len(fused),
+            "weights": weights,
         },
     )
+    emit_ranking_event(evt)
 
     return fused
 
@@ -497,25 +540,13 @@ def build_rag_result(
     """
     High-level helper to fuse and rank Evidence sets and produce a RAGResult.
 
-    Inputs:
-        • groups   – list of evidence lists (e.g., [bm25_hits, dense_hits, hyde_hits]).
-        • cfg      – RetrievalConfig controlling strategy (use_rrf).
-        • rag_plan – optional (for future extensions; currently unused here).
-        • top_k    – max number of evidence items to keep.
-        • max_chars – char-level trimming per evidence text.
-        • used_hyde – whether HYDE was used in retrieval.
-
-    Behavior:
-        • If cfg.use_rrf is True:
-            – apply evidence-level RRF across groups;
-            – rank, truncate, and trim.
-        • Otherwise:
-            – concatenate all groups;
-            – deduplicate, rank by score, truncate, and trim.
+    If cfg.use_rrf is True:
+        • Apply evidence-level RRF across groups, then truncate/trim.
+    Otherwise:
+        • Concatenate groups, deduplicate, rank by score, truncate/trim.
     """
     cfg = cfg or RetrievalConfig()
 
-    flat: List[Evidence]
     if cfg.use_rrf:
         flat = fuse_evidence_groups_rrf(groups, cfg=cfg)
     else:
@@ -525,9 +556,9 @@ def build_rag_result(
         flat = deduplicate_evidence(all_hits)
 
         emit_telemetry_event(
-            name="ranking.evidence.simple_fuse",
-            attributes={
-                "strategy": "simple_concat",
+            "ranking.evidence.simple_fuse",
+            {
+                "strategy": cfg.strategy,
                 "groups": len(groups),
                 "items_in": len(all_hits),
                 "items_out": len(flat),
@@ -539,16 +570,18 @@ def build_rag_result(
         top_k=top_k or cfg.max_hits,
         normalize=True,
         max_chars=max_chars,
+        strategy=cfg.strategy,
     )
 
-    emit_telemetry_event(
-        name="ranking.evidence.final",
-        attributes={
+    evt = RankingEvent(
+        stage="rag_result",
+        strategy=cfg.strategy,
+        use_rrf=cfg.use_rrf,
+        metadata={
             "items_out": len(ranked),
             "used_hyde": used_hyde,
-            "use_rrf": cfg.use_rrf,
-            "strategy": cfg.strategy,
         },
     )
+    emit_ranking_event(evt)
 
     return RAGResult(evidence=ranked, used_hyde=used_hyde)
