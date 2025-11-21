@@ -1,31 +1,30 @@
 # FILE: 10_10/prompt_builder.py
 """
-Prompt Builder Layer (v10_10 · Phase 2/3)
-=========================================
+Prompt Builder Layer (v10_10 · Phase 3)
+=======================================
 
-This module implements the Phase 2/3 prompt builder responsible for:
+This module builds PromptInstance objects for all major agents:
 
-    • Constructing rich, multi-section prompt envelopes for:
-          – Strategy reasoning
-          – Retrieval evidence / RAG reasoning
-          – Drafting sections
-          – QA summary
-          – Safety summary
-    • Enforcing prompt ACL metadata (layer / agent / model tier).
-    • Routing all prompt construction through the central prompt registry
-      defined in ``prompt_system_v10_10.py`` – no inline, ad-hoc templates.
-    • Emitting ``PromptInstance`` objects that L2 can hand off to
+    • Strategy reasoning
+    • Retrieval evidence / RAG reasoning
+    • HYDE query expansion
+    • Drafting
+    • QA
+    • Safety
+
+It:
+
+    • Enforces prompt ACL metadata (layer / agent / model tier).
+    • Routes all prompt construction through the central prompt registry
+      defined in ``prompt_system_v10_10.py`` – no inline templates.
+    • Emits ``PromptInstance`` objects that L2 can hand off to
       cognitive agents / LLM clients.
 
-Design notes
-------------
+Design constraints:
 
-    • This module is **pure L2** – it does not perform any LLM calls.
-      It only prepares structured prompt objects.
-    • It intentionally depends only on Phase-0 models and the prompt
-      registry / ACL primitives; it does not invent new core types.
-    • Context-budget hints are attached as metadata but no actual
-      token counting is performed yet (G27–G28 hook).
+    • Pure L2: no LLM calls.
+    • Depends only on models + prompt_system for registry/ACL.
+    • No direct provider SDK or routing logic.
 """
 
 from __future__ import annotations
@@ -51,8 +50,7 @@ from models import (
     PromptDefinition,
     PromptVersion,
 )
-from prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL
-from registry import get_prompt, get_prompt_acl
+from prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
 
 
 # =============================================================================
@@ -81,9 +79,8 @@ class PromptEnvelope:
         """
         Return an ordered mapping of envelope sections.
 
-        The order is **semantic**, not lexical; callers that want to
-        render a textual prompt should iterate over these keys in the
-        order defined by ``SECTION_ORDER`` below.
+        The order is semantic; callers that render a textual prompt
+        should iterate using SECTION_ORDER.
         """
         return {
             "Framing": self.framing.strip(),
@@ -109,9 +106,6 @@ SECTION_ORDER: Tuple[str, ...] = (
 class PromptInstance:
     """
     Concrete prompt ready for LLM invocation.
-
-    This type is intentionally simple: it wraps the registry definition,
-    the rendered text, and the governance metadata needed for L2 calls.
     """
 
     prompt_id: str
@@ -132,6 +126,37 @@ class PromptInstance:
 # =============================================================================
 
 
+def _extract_acl_metadata(defn: PromptDefinition) -> Dict[str, List[str]]:
+    """
+    Extract ACL metadata from a PromptDefinition.
+
+    Expected shape (stored in defn.metadata["acl"]):
+
+        {
+            "layers": ["L1", "L2", ...],
+            "agents": ["strategy", "rag", "drafting", "qa", "safety"],
+            "model_tiers": ["cheap", "balanced", "premium"],
+        }
+
+    All fields are optional; missing fields are treated as "no restriction".
+    """
+    raw_acl = {}
+    try:
+        raw_acl = defn.metadata.get("acl", {}) or {}
+    except Exception:
+        raw_acl = {}
+
+    layers = list(raw_acl.get("layers", []))
+    agents = list(raw_acl.get("agents", []))
+    tiers = list(raw_acl.get("model_tiers", []))
+
+    return {
+        "layers": layers,
+        "agents": agents,
+        "model_tiers": tiers,
+    }
+
+
 def _get_prompt_definition(prompt_id: str) -> PromptDefinition:
     """
     Retrieve a PromptDefinition from the central registry.
@@ -148,36 +173,6 @@ def _get_prompt_definition(prompt_id: str) -> PromptDefinition:
         return PROMPT_REGISTRY[prompt_id]
 
 
-def _extract_acl_metadata(defn: PromptDefinition) -> Dict[str, List[str]]:
-    """
-    Extract ACL metadata from a PromptDefinition.
-
-    Expected shape (stored in defn.metadata["acl"]):
-
-        {
-            "layers": ["L1", "L2", ...],
-            "agents": ["strategy", "rag", "drafting", "qa", "safety"],
-            "model_tiers": ["cheap", "balanced", "premium"],
-        }
-
-    All fields are optional; missing fields are treated as "no
-    additional restriction" for that dimension.
-    """
-    raw_acl = {}
-    if defn.metadata and isinstance(defn.metadata, dict):
-        raw_acl = defn.metadata.get("acl", {}) or {}
-
-    layers = list(raw_acl.get("layers", []))
-    agents = list(raw_acl.get("agents", []))
-    tiers = list(raw_acl.get("model_tiers", []))
-
-    return {
-        "layers": layers,
-        "agents": agents,
-        "model_tiers": tiers,
-    }
-
-
 def _check_prompt_acl(
     *,
     prompt_id: str,
@@ -189,7 +184,7 @@ def _check_prompt_acl(
     Enforce both registry-level ACLs and per-prompt ACL metadata.
 
     This function is intentionally side-effect free; it either returns
-    ``None`` (allowed) or raises ``PermissionError`` for violations.
+    or raises PermissionError.
     """
     # 1) Registry-level ACL (PromptACL)
     acl_obj = PROMPT_ACLS.get(prompt_id)
@@ -231,16 +226,14 @@ def _render_envelope_with_template(
     """
     Merge a PromptEnvelope with the registry template into a final string.
 
-    The default templates shipped in ``prompt_system_v10_10`` follow the
-    pattern:
+    Default templates follow the pattern:
 
         "## CONTEXT\\n\\n## INSTRUCTIONS\\n\\n## OUTPUT_FORMAT\\n"
 
     This helper injects the envelope contents into those anchors while
     also adding the richer sections (Framing, Reasoning, Safety).
     """
-    template = (defn.template or "").strip()
-
+    template = (defn.text or "").strip()
     sections = envelope.to_sections()
 
     # Inject into known anchors if present.
@@ -272,131 +265,37 @@ def _render_envelope_with_template(
     prefix_parts: List[str] = []
 
     if sections["Framing"]:
-        prefix_parts.append(f"## FRAMING\n{sections['Framing']}")
-
+        prefix_parts.append("### FRAMING\n" + sections["Framing"])
     if sections["Reasoning"]:
-        prefix_parts.append(f"## REASONING\n{sections['Reasoning']}")
-
+        prefix_parts.append("### REASONING\n" + sections["Reasoning"])
     if sections["Safety Signals"]:
-        prefix_parts.append(f"## SAFETY_SIGNALS\n{sections['Safety Signals']}")
+        prefix_parts.append("### SAFETY\n" + sections["Safety Signals"])
 
-    prefix = "\n\n".join(prefix_parts).strip()
-
-    if prefix:
-        return prefix + "\n\n" + body
+    if prefix_parts:
+        return "\n\n".join(prefix_parts + [body])
     return body
 
 
 def _build_context_budget_hints_from_plan(plan: Any) -> Dict[str, Any]:
     """
-    Derive coarse context-budget hints from a plan.
+    Extract context-budget hints from a plan object if it carries them.
 
-    These hints are **advisory only** – Phase 2 does not perform
-    token counting or hard enforcement.
+    This is intentionally shallow and structure-agnostic.
     """
-    hints: Dict[str, Any] = {}
-
-    # Strategy: more steps → more budget for reasoning.
-    if isinstance(plan, StrategyPlan):
-        hints["max_reasoning_sections"] = len(plan.steps)
-        hints["priority"] = "strategy"
-
-    # RAG: number of hints informs evidence cap.
-    if isinstance(plan, RAGPlan):
-        hints["max_evidence_items"] = max(5, len(plan.hints) * 2)
-        hints["priority"] = "rag"
-
-    # Drafting: number of sections informs per-section budget.
-    if isinstance(plan, DraftingPlan):
-        hints["max_sections"] = len(plan.sections)
-        hints["priority"] = "drafting"
-
-    # QA: number / severity of checks informs analysis depth.
-    if isinstance(plan, QAPlan):
-        hints["max_checks"] = len(plan.checks)
-        hints["priority"] = "qa"
-
-    # Safety: similar to QA but for policy/PII checks.
-    if isinstance(plan, SafetyPlan):
-        hints["max_checks"] = len(plan.checks)
-        hints["priority"] = "safety"
-
-    return hints
-
-
-def _format_evidence(evidence: Sequence[Evidence], max_items: int = 10) -> str:
-    """
-    Render retrieval evidence into a deterministic textual block.
-    """
-    if not evidence:
-        return "No retrieval evidence was provided."
-
-    sorted_items = sorted(evidence, key=lambda e: e.score, reverse=True)[:max_items]
-
-    lines: List[str] = []
-    for idx, item in enumerate(sorted_items, start=1):
-        source = item.source or "unknown"
-        lines.append(f"[{idx}] (score={item.score:.3f}, source={source})\n{item.text}")
-
-    return "\n\n".join(lines)
-
-
-def _summarize_strategy(plan: StrategyPlan) -> str:
-    if not plan.steps:
-        return "No strategy steps were provided."
-
-    parts = []
-    for step in sorted(plan.steps, key=lambda s: s.order):
-        flag = "MUST" if step.must_complete else "OPTIONAL"
-        parts.append(f"{step.order}. [{flag}] {step.description}")
-    return "\n".join(parts)
-
-
-def _summarize_qa_plan(plan: QAPlan) -> str:
-    if not plan.checks:
-        return "No QA checks were specified."
-
-    parts = []
-    for chk in plan.checks:
-        if not chk.enabled:
-            continue
-        parts.append(f"- (sev={chk.severity}) {chk.id}: {chk.description}")
-    return "\n".join(parts) or "All QA checks are disabled."
-
-
-def _summarize_safety_plan(plan: SafetyPlan) -> str:
-    if not plan.checks:
-        return "No safety checks were specified."
-
-    parts = []
-    for chk in plan.checks:
-        parts.append(f"- {chk.id}: {chk.description}")
-    return "\n".join(parts)
-
-
-def _summarize_job_and_resume(ctx: ExecutionContext) -> str:
-    """
-    Compact textual summary of the job + resume inputs for use in prompts.
-    """
-    job = ctx.job
-    resume = ctx.resume
-
-    job_lines = [
-        f"Job Title: {job.title}",
-        f"Role Type: {job.role_type}",
-        f"Seniority: {job.seniority}",
-        "",
-        "Key Requirements:",
-    ] + [f"- {req}" for req in (job.requirements or [])]
-
-    resume_lines = [
-        f"Candidate: {resume.name}",
-        f"Summary: {resume.summary or 'N/A'}",
-        "",
-        "Skills:",
-    ] + [f"- {s}" for s in (resume.skills or [])]
-
-    return "\n".join(job_lines + ["", "----", ""] + resume_lines)
+    if plan is None:
+        return {}
+    hints = {}
+    if hasattr(plan, "context_budget") and isinstance(plan.context_budget, ContextBudget):
+        cb = plan.context_budget
+        hints = {
+            "total_tokens": getattr(cb, "total_tokens", None),
+            "planning_tokens": getattr(cb, "planning_tokens", None),
+            "rag_tokens": getattr(cb, "rag_tokens", None),
+            "drafting_tokens": getattr(cb, "drafting_tokens", None),
+            "qa_tokens": getattr(cb, "qa_tokens", None),
+            "safety_tokens": getattr(cb, "safety_tokens", None),
+        }
+    return {k: v for k, v in hints.items() if v is not None}
 
 
 def _make_prompt_instance(
@@ -417,11 +316,13 @@ def _make_prompt_instance(
     rendered = _render_envelope_with_template(defn, envelope)
     context_budget_hints = _build_context_budget_hints_from_plan(variables.get("plan"))
 
+    role = defn.metadata.get("role", "system") if isinstance(defn.metadata, dict) else "system"
+
     return PromptInstance(
         prompt_id=prompt_id,
         definition=defn,
         version=defn.version,
-        role=defn.role,
+        role=role,
         rendered=rendered,
         envelope=envelope,
         variables=variables,
@@ -430,6 +331,43 @@ def _make_prompt_instance(
         model_tier=model_tier,
         context_budget_hints=context_budget_hints,
     )
+
+
+# =============================================================================
+# Formatting helpers
+# =============================================================================
+
+
+def _format_evidence(evidence: Sequence[Evidence]) -> str:
+    parts: List[str] = []
+    for idx, ev in enumerate(evidence or [], start=1):
+        parts.append(f"[{idx}] ({ev.source}) score={ev.score:.3f}\n{ev.text}")
+    return "\n\n".join(parts)
+
+
+def _summarize_job_and_resume(ctx: ExecutionContext) -> str:
+    """
+    Compact textual summary of the job + resume inputs for use in prompts.
+    """
+    job = ctx.job
+    resume = ctx.resume
+
+    job_lines = [
+        f"Job Title: {getattr(job, 'title', '')}",
+        f"Role Type: {getattr(job, 'role_type', '')}",
+        f"Seniority: {getattr(job, 'seniority', '')}",
+        "",
+        "Key Requirements:",
+    ] + [f"- {req}" for req in getattr(job, "requirements", []) or []]
+
+    resume_lines = [
+        f"Candidate: {getattr(resume, 'name', '')}",
+        f"Summary: {getattr(resume, 'summary', '') or 'N/A'}",
+        "",
+        "Skills:",
+    ] + [f"- {s}" for s in getattr(resume, "skills", []) or []]
+
+    return "\n".join(job_lines + ["", "----", ""] + resume_lines)
 
 
 # =============================================================================
@@ -447,38 +385,24 @@ def build_strategy_prompt(
     model_tier: str = "balanced",
 ) -> PromptInstance:
     """
-    Build a strategy reasoning prompt.
-
-    Inputs:
-        • plan – L1 StrategyPlan
-        • ctx  – ExecutionContext with job / resume / config
+    Build a strategy planning prompt.
     """
     envelope = PromptEnvelope(
         framing=(
-            "You are the Strategy LLM agent (Layer {layer}) in a multi-step "
-            "job-search workflow. Your role is to refine and extend the "
-            "strategy plan produced by L1 while staying within the provided "
-            "workflow configuration."
+            "You are the Strategy Planning agent (Layer {layer}). "
+            "You design a plan to tailor the resume to the job."
         ).format(layer=layer),
         context=_summarize_job_and_resume(ctx),
-        reasoning=(
-            "Reason step-by-step over the strategy steps, identifying "
-            "gaps, risks, and opportunities. Prefer concise reasoning "
-            "that still exposes your key assumptions."
+        reasoning="Propose several strategy branches and select the best one.",
+        instructions=(
+            "Produce a small set of strategy branches and then select a "
+            "single branch id as the chosen strategy."
         ),
-        instructions=_summarize_strategy(plan),
-        safety_signals=(
-            "Do not fabricate job requirements or candidate experience. "
-            "If information is missing, explicitly call it out instead of "
-            "hallucinating."
-        ),
-        output_schema=(
-            "Return an updated strategy narrative in markdown with clear "
-            "step numbers and brief justification for each step."
-        ),
+        safety_signals="Avoid fabricating experience or skills.",
+        output_schema="Return structured branches with ids and rationales.",
     )
 
-    variables: Dict[str, Any] = {
+    variables = {
         "plan": plan,
         "job": ctx.job,
         "resume": ctx.resume,
@@ -508,9 +432,7 @@ def build_rag_prompt(
     """
     Build a retrieval / evidence fusion prompt.
 
-    This prompt conditions the LLM to treat the provided evidence as
-    soft constraints and to avoid hallucinating beyond them. It is used
-    by the Phase-3 RAG reasoning stage between retrieval and drafting.
+    Used by the Phase-3 RAG reasoning stage between retrieval and drafting.
     """
     envelope = PromptEnvelope(
         framing=(
@@ -519,8 +441,7 @@ def build_rag_prompt(
             "downstream drafting and QA."
         ).format(layer=layer),
         context=_summarize_job_and_resume(ctx)
-        + "\n\n"
-        + "Retrieved Evidence:\n"
+        + "\n\nRetrieved Evidence:\n"
         + _format_evidence(evidence),
         reasoning=(
             "Identify which evidence items are most relevant for tailoring "
@@ -528,27 +449,74 @@ def build_rag_prompt(
             "requirements and candidate experience."
         ),
         instructions=(
-            "Focus on:\n"
-            "- Mapping evidence to specific requirements.\n"
-            "- Flagging gaps where evidence is weak or missing.\n"
-            "- Avoiding verbatim copying unless explicitly helpful."
+            "Analyze the evidence and produce a concise reasoning summary that "
+            "captures the most important overlaps and gaps. Do not rewrite the "
+            "resume; instead, describe what the drafting agent should focus on."
         ),
-        safety_signals=(
-            "Do not invent evidence or claim experience not supported by "
-            "the snippets. Treat evidence as soft but primary source."
-        ),
+        safety_signals="Do not infer skills or experience not supported by evidence.",
         output_schema=(
-            "Return a markdown bullet list grouping evidence under job "
-            "requirements, plus a short 'Gaps' section."
+            "Return a short reasoning summary plus a bullet list of key evidence "
+            "references (by index) the drafting agent should respect."
         ),
     )
 
-    variables: Dict[str, Any] = {
+    variables = {
         "plan": plan,
         "job": ctx.job,
         "resume": ctx.resume,
         "config": ctx.config,
-        "evidence": list(evidence),
+        "evidence": list(evidence or []),
+    }
+
+    return _make_prompt_instance(
+        prompt_id=prompt_id,
+        layer=layer,
+        agent=agent,
+        model_tier=model_tier,
+        envelope=envelope,
+        variables=variables,
+    )
+
+
+def build_hyde_prompt(
+    plan: RAGPlan,
+    ctx: ExecutionContext,
+    *,
+    prompt_id: str = "system.rag.hyde_query",
+    layer: str = "L2",
+    agent: str = "rag",
+    model_tier: str = "balanced",
+) -> PromptInstance:
+    """
+    Build a HYDE prompt: generate an ideal answer for use as a retrieval proxy.
+
+    The output is a synthetic, idealized answer to the user's (implicit) query
+    for the job/resume pair, which retrieval.py will treat as a dense query.
+    """
+    envelope = PromptEnvelope(
+        framing=(
+            "You are the HYDE (Hypothetical Document) generator for retrieval."
+        ),
+        context=_summarize_job_and_resume(ctx),
+        reasoning=(
+            "Imagine the ideal, well-written answer that would perfectly match "
+            "this job and candidate. This answer will be used as a semantic "
+            "query to retrieve similar documents."
+        ),
+        instructions=(
+            "Write a single, coherent paragraph that describes the ideal "
+            "candidate's experience and impact for this role, grounded in the "
+            "provided job and resume information."
+        ),
+        safety_signals="Do not fabricate credentials or experience not hinted in the resume.",
+        output_schema="Return only the hypothetical answer paragraph.",
+    )
+
+    variables = {
+        "plan": plan,
+        "job": ctx.job,
+        "resume": ctx.resume,
+        "config": ctx.config,
     }
 
     return _make_prompt_instance(
@@ -573,45 +541,27 @@ def build_drafting_prompt(
     model_tier: str = "balanced",
 ) -> PromptInstance:
     """
-    Build a drafting prompt for generating resume sections.
-
-    The prompt conditions the LLM to respect the planned structure and
-    align with both strategy and evidence.
+    Build a drafting prompt for resume sections.
     """
     envelope = PromptEnvelope(
         framing=(
-            "You are the Drafting Guild (Layer {layer}) responsible for "
-            "turning strategy and evidence into polished resume sections."
+            "You are the Drafting agent (Layer {layer}). "
+            "You generate resume sections tailored to the job."
         ).format(layer=layer),
-        context=_summarize_job_and_resume(ctx)
-        + "\n\n"
-        + "Strategy Summary:\n"
-        + strategy.get_chosen_branch_text()
-        + "\n\nEvidence Summary:\n"
-        + _format_evidence(rag.evidence),
+        context=_summarize_job_and_resume(ctx),
         reasoning=(
-            "Plan the narrative for each section before writing. For each "
-            "section, decide what impact, scope, and technologies to "
-            "emphasize based on the job requirements."
+            "Use the chosen strategy and the RAG reasoning summary to decide "
+            "what to emphasize and how to structure the resume."
         ),
         instructions=(
-            "Generate resume-ready content that:\n"
-            "- Is truthful and grounded in the candidate history.\n"
-            "- Is tailored to the target job.\n"
-            "- Uses concise, impact-focused bullets."
+            "Produce well-structured resume sections with bullet points that "
+            "highlight impact and alignment with job requirements."
         ),
-        safety_signals=(
-            "Do not fabricate employers, dates, or titles. If a required "
-            "experience is missing, state that it is missing instead of "
-            "inventing it."
-        ),
-        output_schema=(
-            "Return markdown sections matching the DraftingPlan structure, "
-            "with headings and bullet points for each section."
-        ),
+        safety_signals="Do not claim experiences not grounded in the candidate's history.",
+        output_schema="Return a set of sections with titles and bullet points.",
     )
 
-    variables: Dict[str, Any] = {
+    variables = {
         "plan": plan,
         "job": ctx.job,
         "resume": ctx.resume,
@@ -643,48 +593,32 @@ def build_qa_prompt(
 ) -> PromptInstance:
     """
     Build a QA prompt for validating drafted content.
-
-    This prompt focuses on logical consistency, alignment to the job,
-    and hallucination risk.
     """
-    drafted_text_parts: List[str] = []
-    for section in drafting.sections:
-        drafted_text_parts.append(f"# {section.title}\n{section.text}")
-    drafted_text = "\n\n".join(drafted_text_parts)
-
     envelope = PromptEnvelope(
         framing=(
-            "You are the QA Agent (Layer {layer}) reviewing drafted resume "
-            "content before it is sent to the user."
+            "You are the QA agent (Layer {layer}). "
+            "You check the drafted resume for correctness, coherence, and "
+            "alignment with the job."
         ).format(layer=layer),
-        context=_summarize_job_and_resume(ctx)
-        + "\n\nDrafted Resume Content:\n"
-        + drafted_text,
+        context=_summarize_job_and_resume(ctx),
         reasoning=(
-            "Systematically evaluate the draft for correctness, clarity, "
-            "and alignment with the job. Pay particular attention to "
-            "hallucinated claims and unsupported skills."
+            "Cross-check the drafted content with the job description and "
+            "retrieved evidence to detect hallucinations or misalignment."
         ),
-        instructions=_summarize_qa_plan(plan),
-        safety_signals=(
-            "Flag any potentially misleading or false claims. Flag content "
-            "that might leak sensitive personal data beyond what is "
-            "expected in a resume."
+        instructions=(
+            "Identify issues such as unsupported claims, missing key "
+            "requirements, or unclear phrasing. Suggest concrete fixes."
         ),
-        output_schema=(
-            "Return a markdown report with sections:\n"
-            "- Issues (with severity and location).\n"
-            "- Strengths.\n"
-            "- Recommended edits."
-        ),
+        safety_signals="Flag any content that could be misleading or unethical.",
+        output_schema="Return a list of QA findings with severity and recommendations.",
     )
 
-    variables: Dict[str, Any] = {
+    variables = {
         "plan": plan,
         "job": ctx.job,
         "resume": ctx.resume,
         "config": ctx.config,
-        "drafting": drafting,
+        "draft": drafting,
         "rag": rag,
     }
 
@@ -701,6 +635,7 @@ def build_qa_prompt(
 def build_safety_prompt(
     plan: SafetyPlan,
     ctx: ExecutionContext,
+    drafting: DraftingResult,
     qa: QAResult,
     *,
     prompt_id: str = "system.safety.agent",
@@ -709,43 +644,33 @@ def build_safety_prompt(
     model_tier: str = "balanced",
 ) -> PromptInstance:
     """
-    Build a safety / policy prompt to run after QA.
-
-    This prompt focuses on PII, policy constraints, and overall risk.
+    Build a safety prompt for final policy / safety review.
     """
-    qa_summary = qa.summary or ""
-
     envelope = PromptEnvelope(
         framing=(
-            "You are the Constitutional Safety Agent (Layer {layer}) "
-            "performing a final review of the resume draft."
+            "You are the Safety agent (Layer {layer}). "
+            "You ensure the final resume output complies with policies."
         ).format(layer=layer),
-        context=_summarize_job_and_resume(ctx)
-        + "\n\nQA Summary:\n"
-        + qa_summary,
+        context=_summarize_job_and_resume(ctx),
         reasoning=(
-            "Evaluate the content strictly against safety and policy "
-            "requirements. Consider PII exposure, discriminatory language, "
-            "and compliance with general professional norms."
+            "Consider the drafted content and QA findings to assess risk "
+            "and ensure compliance with internal and external policies."
         ),
-        instructions=_summarize_safety_plan(plan),
-        safety_signals=(
-            "Be conservative. If in doubt, flag the issue with an "
-            "explanation rather than silently allowing it."
+        instructions=(
+            "Identify any content that may violate safety policies, "
+            "privacy, or fairness considerations. Suggest required edits "
+            "or blocks."
         ),
-        output_schema=(
-            "Return a markdown report with:\n"
-            "- Blockers (must fix).\n"
-            "- Warnings (should fix).\n"
-            "- Notes (informational)."
-        ),
+        safety_signals="Err on the side of caution; escalate ambiguous cases.",
+        output_schema="Return a list of safety findings with severity and required actions.",
     )
 
-    variables: Dict[str, Any] = {
+    variables = {
         "plan": plan,
         "job": ctx.job,
         "resume": ctx.resume,
         "config": ctx.config,
+        "draft": drafting,
         "qa": qa,
     }
 
