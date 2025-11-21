@@ -14,21 +14,17 @@
 #   • Concurrency rules
 #   • Typed node definitions
 #   • Retrieval parallelization
-#   • Correction loop across L2 surfaces (strategy, rag, drafting, qa, safety)
+#   • Bounded correction loop orchestration
 #
-# Inputs/Outputs:
-#   • Input: WorkflowPlanBundle, ExecutionContext
-#   • Output: L2ResultBundle (produced by invoking L2 nodes)
+# This module wires together the L2 execution primitives into a canonical,
+# deterministic workflow graph with a bounded correction loop across all
+# surfaces (strategy, retrieval, drafting, QA, safety).
 #
-# Implements DAG for:
-#   Strategy  ┐
-#             ├── parallel
-#   Retrieval ┘
-#        ↓ (fan-in)
-#   Drafting → QA → Safety
-#        ↑──────────── correction loop (bounded by max_corrections)
-#
-# No business logic lives here. Pure scheduling.
+# Layering:
+#   • This is strictly L3. It owns orchestration and nothing else.
+#   • L2 owns all cognition (LLM, RAG, tools).
+#   • L4 owns state mutation.
+#   • L5 owns safety enforcement.
 
 from __future__ import annotations
 
@@ -51,10 +47,9 @@ from observability import (
     emit_node_event,
     log_exception,
 )
-
-# L2 execution entrypoints (Phase-3 compliant)
 from l2 import (
     _execute_strategy,
+    _execute_rag_reasoning,
     _execute_retrieval,
     _execute_drafting,
     _execute_qa,
@@ -102,16 +97,14 @@ async def _run_node(
 
     Returns:
         - The result of fn() OR
-        - None on failure (L3 never raises)
+        - None on error (caller is responsible for fallback behavior).
     """
     span = start_span(f"workflow.{node_name}", ctx=ctx.span_context())
-    emit_node_event(node=node_name, status="start")
-
+    emit_node_event(node=node_name, status="start", details={})
     try:
         result = await fn(*args, **kwargs)
-        emit_node_event(node=node_name, status="success")
+        emit_node_event(node=node_name, status="success", details={})
         return result
-
     except Exception as exc:  # noqa: BLE001
         log_exception(f"workflow.{node_name}.error", exc)
         emit_node_event(node=node_name, status="error", details=str(exc))
@@ -216,10 +209,10 @@ async def run_workflow_graph(
                 )
             )
 
+            # Wait for both to complete; errors are handled inside _run_node.
             strategy_result = await strategy_task
             rag_result = await retrieval_task
 
-            # Retrieval fallback path
             if rag_result is None:
                 rag_result = RAGResult(evidence=[], used_hyde=False)
 
@@ -278,13 +271,7 @@ async def run_workflow_graph(
             if safety_result is None:
                 safety_result = SafetyResult(findings=[])
 
-            emit_node_event(
-                node="workflow_iteration",
-                status="end",
-                details={"iteration": iteration},
-            )
-
-            # -----------------------------------------------------------
+            # ---------------------------------------------------------------
             # 5. Correction evaluation (meta-level, no state mutation)
             # -----------------------------------------------------------
             try:
