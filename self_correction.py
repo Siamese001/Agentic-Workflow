@@ -15,21 +15,22 @@ This version:
         - DraftingResult
         - QAResult
         - SafetyResult
-    • Produces simple, typed CorrectionSignal objects.
+
     • Provides:
         - evaluate_all_surfaces(...) → list[CorrectionSignal]
         - aggregate_correction_signals(...) → best CorrectionSignal | None
 
 Responsibilities:
-    • Detect when a retry/replan is advisable.
-    • Provide severity + recommended_action hints to L3.
-    • Remain PURE decision logic (no I/O, no LLM, no state mutation).
+    • Detect when a re-run of part of the pipeline would likely improve quality.
+    • NEVER call LLMs or tools.
+    • NEVER mutate WorkflowState.
+    • Provide deterministic, side-effect-free advice to the L3 workflow graph.
 
-Non-Responsibilities:
-    • No orchestration (L3 handles retries).
-    • No LLM/tool execution (L2).
-    • No safety decisions (L5).
-    • No state patching (L4).
+This module is purely META-layer logic:
+
+    - It analyzes L2 outputs (StrategyResult, etc.).
+    - It emits structured CorrectionSignal objects.
+    - L3 (workflow_graph) decides whether/how to apply corrections.
 """
 
 from __future__ import annotations
@@ -44,12 +45,12 @@ from models import (
     QAResult,
     SafetyResult,
 )
-from observability import record_event
 
 
 # =============================================================================
 # Correction Signal
 # =============================================================================
+
 
 @dataclass
 class CorrectionSignal:
@@ -68,30 +69,47 @@ class CorrectionSignal:
     surface: str
     severity: int
     reason: str
-    recommended_action: str = "none"
+    recommended_action: str
 
     @property
     def needs_correction(self) -> bool:
-        return self.severity >= 1
+        """Return True if this signal indicates that some correction is needed."""
+        return self.severity > 0 and self.recommended_action != "none"
 
 
 # =============================================================================
 # Strategy Surface
 # =============================================================================
 
+
 def _evaluate_strategy_surface(strategy: StrategyResult) -> CorrectionSignal:
     """
-    Strategy surface: check if chosen branch is valid and substantive.
+    Inspect StrategyResult and decide whether the strategy surface needs correction.
+
+    Heuristics (deterministic, non-LLM):
+
+        • If there are zero branches → severe issue → retry strategy.
+        • If chosen_branch_id is None or invalid:
+             – severity = 3 (severe)
+             – recommended_action = "retry_strategy"
+        • If chosen branch text is suspiciously short (e.g., < 40 chars):
+             – severity = 2 (moderate)
+             – recommended_action = "retry_strategy"
+        • Otherwise:
+             – severity = 0 (no correction)
     """
+    # No branches at all → strong signal to retry strategy
     if not strategy.branches:
         return CorrectionSignal(
             surface="strategy",
             severity=3,
-            reason="No strategy branches generated.",
+            reason="No strategy branches were produced.",
             recommended_action="retry_strategy",
         )
 
-    if strategy.chosen_branch_id not in [b.id for b in strategy.branches]:
+    # chosen_branch_id must correspond to an existing branch
+    branch_ids = {b.id for b in strategy.branches}
+    if strategy.chosen_branch_id not in branch_ids:
         return CorrectionSignal(
             surface="strategy",
             severity=3,
@@ -108,120 +126,235 @@ def _evaluate_strategy_surface(strategy: StrategyResult) -> CorrectionSignal:
             recommended_action="retry_strategy",
         )
 
-    return CorrectionSignal(surface="strategy", severity=0, reason="OK")
+    return CorrectionSignal(
+        surface="strategy",
+        severity=0,
+        reason="Strategy surface is acceptable.",
+        recommended_action="none",
+    )
 
 
 # =============================================================================
 # RAG Surface
 # =============================================================================
 
+
 def _evaluate_rag_surface(rag: RAGResult) -> CorrectionSignal:
     """
-    RAG surface: check if retrieval was insufficient.
+    Inspect RAGResult evidence for retrieval/coverage issues.
+
+    Heuristics:
+
+        • If no evidence at all:
+             – severity = 3
+             – recommended_action = "retry_rag"
+        • If evidence exists but is very small (< 3 items) AND none are marked
+          as "hybrid" or "resume_experience":
+             – severity = 2
+             – recommended_action = "retry_rag"
+        • Otherwise:
+             – severity = 0
     """
-    if not rag.evidence:
+    evidence = rag.evidence or []
+
+    if not evidence:
         return CorrectionSignal(
             surface="rag",
-            severity=2,
-            reason="No RAG evidence retrieved.",
+            severity=3,
+            reason="No retrieval evidence was produced.",
             recommended_action="retry_rag",
         )
 
-    low_scores = [ev for ev in rag.evidence if ev.score < 0.01]
-    if len(low_scores) == len(rag.evidence):
-        return CorrectionSignal(
-            surface="rag",
-            severity=2,
-            reason="All RAG evidence scores are extremely low.",
-            recommended_action="retry_rag",
-        )
+    if len(evidence) < 3:
+        has_hybrid = any(ev.source == "hybrid_job_resume" for ev in evidence)
+        has_resume = any(ev.source == "resume_experience" for ev in evidence)
+        if not has_hybrid and not has_resume:
+            return CorrectionSignal(
+                surface="rag",
+                severity=2,
+                reason="Too few evidence items and no hybrid/resume coverage.",
+                recommended_action="retry_rag",
+            )
 
-    return CorrectionSignal(surface="rag", severity=0, reason="OK")
+    return CorrectionSignal(
+        surface="rag",
+        severity=0,
+        reason="RAG surface is acceptable.",
+        recommended_action="none",
+    )
 
 
 # =============================================================================
 # Drafting Surface
 # =============================================================================
 
+
 def _evaluate_drafting_surface(drafting: DraftingResult) -> CorrectionSignal:
     """
-    Drafting surface: check if draft has sections and content.
+    Inspect DraftingResult section structure.
+
+    Heuristics:
+
+        • If zero sections, or total characters across sections < 400:
+             – severity = 3
+             – recommended_action = "retry_drafting"
+        • If < 3 sections:
+             – severity = 2
+             – recommended_action = "retry_drafting"
+        • Otherwise:
+             – severity = 0
     """
-    if not drafting.sections:
+    sections = drafting.sections or []
+    if not sections:
         return CorrectionSignal(
             surface="drafting",
             severity=3,
-            reason="Drafting produced zero sections.",
+            reason="Drafting produced no sections.",
             recommended_action="retry_drafting",
         )
 
-    blank = [s for s in drafting.sections if not s.text.strip()]
-    if blank:
+    total_chars = sum(len(s.text or "") for s in sections)
+    if total_chars < 400:
+        return CorrectionSignal(
+            surface="drafting",
+            severity=3,
+            reason="Drafting output is too short.",
+            recommended_action="retry_drafting",
+        )
+
+    if len(sections) < 3:
         return CorrectionSignal(
             surface="drafting",
             severity=2,
-            reason=f"{len(blank)} drafting sections are blank.",
+            reason="Too few sections produced by drafting.",
             recommended_action="retry_drafting",
         )
 
-    return CorrectionSignal(surface="drafting", severity=0, reason="OK")
+    return CorrectionSignal(
+        surface="drafting",
+        severity=0,
+        reason="Drafting surface is acceptable.",
+        recommended_action="none",
+    )
 
 
 # =============================================================================
 # QA Surface
 # =============================================================================
 
+
 def _evaluate_qa_surface(qa: QAResult) -> CorrectionSignal:
     """
-    QA surface: check for failed QA checks.
-    """
-    failed = [chk for chk in qa.checks if not chk.passed]
+    Inspect QAResult for severity of findings.
 
-    if len(failed) >= 3:
+    Heuristics:
+
+        • If there are ≥ 3 high-severity findings:
+             – severity = 3
+             – recommended_action = "retry_qa"
+        • If there are ≥ 5 total findings (any severity):
+             – severity = 2
+             – recommended_action = "retry_qa"
+        • Otherwise:
+             – severity = 0
+    """
+    checks = qa.checks or []
+    if not checks:
+        # No QA checks present does not automatically mean retry;
+        # treat it as "no signal".
+        return CorrectionSignal(
+            surface="qa",
+            severity=0,
+            reason="No QA checks present; treating as neutral.",
+            recommended_action="none",
+        )
+
+    high_severity = [chk for chk in checks if getattr(chk, "severity", "").lower() == "high"]
+    if len(high_severity) >= 3:
         return CorrectionSignal(
             surface="qa",
             severity=3,
-            reason=f"{len(failed)} QA checks failed.",
+            reason="Three or more high-severity QA findings detected.",
             recommended_action="retry_qa",
         )
 
-    if 1 <= len(failed) <= 2:
+    if len(checks) >= 5:
         return CorrectionSignal(
             surface="qa",
             severity=2,
-            reason=f"{len(failed)} QA checks failed.",
-            recommended_action="retry_drafting",
+            reason="Many QA findings detected; consider retry.",
+            recommended_action="retry_qa",
         )
 
-    return CorrectionSignal(surface="qa", severity=0, reason="OK")
+    return CorrectionSignal(
+        surface="qa",
+        severity=0,
+        reason="QA surface is acceptable.",
+        recommended_action="none",
+    )
 
 
 # =============================================================================
 # Safety Surface
 # =============================================================================
 
+
 def _evaluate_safety_surface(safety: SafetyResult) -> CorrectionSignal:
     """
-    Safety surface: detect blocking safety findings.
-    """
-    blocking = [f for f in safety.findings if f.blocking]
+    Inspect SafetyResult for policy violations.
 
-    if blocking:
+    Heuristics:
+
+        • Any "high" severity finding:
+             – severity = 3
+             – recommended_action = "retry_safety"
+        • ≥ 3 total findings of any severity:
+             – severity = 2
+             – recommended_action = "retry_safety"
+        • Otherwise:
+             – severity = 0
+    """
+    findings = safety.findings or []
+    if not findings:
+        return CorrectionSignal(
+            surface="safety",
+            severity=0,
+            reason="No safety findings present.",
+            recommended_action="none",
+        )
+
+    high = [f for f in findings if getattr(f, "severity", "").lower() == "high"]
+    if high:
         return CorrectionSignal(
             surface="safety",
             severity=3,
-            reason="Blocking safety findings present.",
+            reason="High-severity safety findings present.",
             recommended_action="retry_safety",
         )
 
-    return CorrectionSignal(surface="safety", severity=0, reason="OK")
+    if len(findings) >= 3:
+        return CorrectionSignal(
+            surface="safety",
+            severity=2,
+            reason="Multiple safety findings present.",
+            recommended_action="retry_safety",
+        )
+
+    return CorrectionSignal(
+        surface="safety",
+        severity=0,
+        reason="Safety surface is acceptable.",
+        recommended_action="none",
+    )
 
 
 # =============================================================================
-# Public API: Evaluate All Surfaces
+# Public API
 # =============================================================================
+
 
 def evaluate_all_surfaces(
+    *,
     strategy: StrategyResult,
     rag: RAGResult,
     drafting: DraftingResult,
@@ -229,35 +362,35 @@ def evaluate_all_surfaces(
     safety: SafetyResult,
 ) -> List[CorrectionSignal]:
     """
-    Evaluate all correction surfaces and return a list of CorrectionSignal objects.
-    """
-    signals = [
-        _evaluate_strategy_surface(strategy),
-        _evaluate_rag_surface(rag),
-        _evaluate_drafting_surface(drafting),
-        _evaluate_qa_surface(qa),
-        _evaluate_safety_surface(safety),
-    ]
+    Evaluate all L2 surfaces and return a list of CorrectionSignal.
 
-    for sig in signals:
-        record_event(
-            "self_correction_surface_evaluated",
-            {
-                "surface": sig.surface,
-                "severity": sig.severity,
-                "recommended_action": sig.recommended_action,
-            },
-        )
+    The list will contain one signal per surface:
+        ["strategy", "rag", "drafting", "qa", "safety"]
+
+    Each signal may have severity 0..3 and a recommended_action.
+    """
+    signals: List[CorrectionSignal] = []
+
+    signals.append(_evaluate_strategy_surface(strategy))
+    signals.append(_evaluate_rag_surface(rag))
+    signals.append(_evaluate_drafting_surface(drafting))
+    signals.append(_evaluate_qa_surface(qa))
+    signals.append(_evaluate_safety_surface(safety))
 
     return signals
 
 
-def aggregate_correction_signals(signals: List[CorrectionSignal]) -> Optional[CorrectionSignal]:
+def aggregate_correction_signals(
+    signals: List[CorrectionSignal],
+) -> Optional[CorrectionSignal]:
     """
-    Aggregate signals into a single "best" CorrectionSignal.
+    Aggregate a list of CorrectionSignal into a single best signal.
 
-    Strategy:
-        • Select highest severity.
+    Rules:
+
+        • Ignore all signals where needs_correction is False.
+        • If none need correction, return None.
+        • Otherwise, pick the signal with highest severity.
         • If multiple share the highest severity, pick the first
           in canonical order (strategy → rag → drafting → qa → safety).
     """
