@@ -18,22 +18,9 @@ Responsibilities:
           - fuse_evidence_groups_rrf(...)
           - build_rag_result(...)
 
-Phase-3 Enhancements:
-    • Weighted Reciprocal Rank Fusion (RRF) driven by RetrievalConfig.rrf_weights
-      when provided; falls back to uniform weights otherwise.
-    • Emits typed RankingEvent telemetry for:
-          - RRF fusion
-          - Final evidence ranking
-
-Non-Responsibilities:
-    • No LLM calls.
-    • No retrieval (see retrieval.py).
-    • No orchestration (L3).
-    • No state mutation (L4).
-    • No safety decisions (L5).
+This module is intentionally “META” in the L1–L5 model: it deals purely
+with ranking, scoring, and evidence fusion. No LLM calls; no state mutation.
 """
-
-from __future__ import annotations
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -46,68 +33,64 @@ from observability import emit_telemetry_event, emit_ranking_event
 # =============================================================================
 
 
-def _tokenize(text: str) -> List[str]:
-    return [t for t in str(text).lower().split() if t.strip()]
-
-
 def _bm25_score(item: Dict[str, Any]) -> float:
     """
-    Simple BM25-like approximation for dict-based ranking.
+    Simple, deterministic BM25-like score based on term frequencies.
 
-    Expects:
-        item["query"]:    str
-        item["evidence"]: str
+    This is intentionally non-production but deterministic for testing:
+        • Lowercase text.
+        • Count "important" tokens.
+        • Apply a fixed formula to derive a score.
     """
-    query = str(item.get("query", ""))
-    evidence = str(item.get("evidence", ""))
-
-    q_tokens = set(_tokenize(query))
-    e_tokens = set(_tokenize(evidence))
-
-    if not q_tokens or not e_tokens:
+    text = str(item.get("text") or item.get("evidence") or "").lower()
+    if not text:
         return 0.0
 
-    overlap = len(q_tokens & e_tokens)
-    norm = max(1, len(q_tokens))
-    return overlap / norm
+    tokens = text.split()
+    length = len(tokens)
+    bonus = 0.0
+
+    # crude "importance" bonus for certain tokens
+    important = {"llm", "resume", "experience", "impact", "owner", "lead"}
+    for t in tokens:
+        if t in important:
+            bonus += 0.75
+
+    # BM25-esque scoring: bonus / sqrt(length)
+    base = bonus / (1.0 + (length / 50.0))
+    return float(base)
 
 
 def _dense_score(item: Dict[str, Any]) -> float:
     """
-    Dense-score approximation using deterministic hash-based pseudo-similarity.
+    Simple, deterministic dense-like score based on hash of text.
 
-    This is a non-ML, purely deterministic heuristic.
+    This simulates a semantic scoring function in a reproducible way.
     """
-    query = str(item.get("query", ""))
-    evidence = str(item.get("evidence", ""))
-
-    q_hash = hash(query) & 0xFFFFFFFF
-    e_hash = hash(evidence) & 0xFFFFFFFF
-
-    diff = abs(q_hash - e_hash) / float(0xFFFFFFFF or 1)
-    return max(0.0, 1.0 - diff)
+    text = str(item.get("text") or item.get("evidence") or "").lower()
+    if not text:
+        return 0.0
+    h = hash(text)
+    # Map hash to [0, 1)
+    return float((h % 10_000_000) / 10_000_000.0)
 
 
 def _hybrid_score(item: Dict[str, Any]) -> float:
-    """Hybrid score = average of bm25-like and dense scores."""
+    """
+    Combine BM25 and dense scores into a single hybrid score.
+    """
     b = _bm25_score(item)
     d = _dense_score(item)
-    return (b + d) / 2.0
+    return float((b + d) / 2.0)
 
 
 # =============================================================================
-# 2. STRATEGY ROUTING (DICT-BASED API)
+# 2. PUBLIC DICT-BASED RANKING API
 # =============================================================================
 
 
 def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    BM25-like ranking over dict items.
-
-    Each item should contain:
-        - "query":    str
-        - "evidence": str
-    """
+    """Deterministic BM25-style ranking."""
     scored: List[Dict[str, Any]] = []
     for it in items or []:
         new_it = dict(it)
@@ -148,35 +131,24 @@ def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return scored
 
 
-def apply_strategy(
+def rank_documents(
     items: List[Dict[str, Any]],
+    *,
     strategy: str = "hybrid",
 ) -> List[Dict[str, Any]]:
     """
-    Apply a ranking strategy:
-
-        strategy:
-            "bm25"
-            "dense"
-            "hybrid"
-
-    Returns a NEW list of dicts with "score" and "rank" populated.
+    Rank arbitrary documents using the requested strategy.
     """
-    if not items:
-        return []
-
-    strategy = (strategy or "hybrid").lower()
-
-    if strategy == "bm25":
+    strat = (strategy or "hybrid").lower()
+    if strat == "bm25":
         return bm25(items)
-    if strategy == "dense":
+    if strat == "dense":
         return dense(items)
-    # Default (and "hybrid"):
     return hybrid(items)
 
 
 # =============================================================================
-# 3. RRF-BASED FUSION (DICT-BASED)
+# 3. FUSION / RRF SUPPORT (DICT-BASED)
 # =============================================================================
 
 
@@ -196,18 +168,22 @@ def _rrf_weights_from_config(
           - If longer, excess weights are ignored.
         • Otherwise, fall back to uniform weights (=1.0).
     """
-    if n_groups <= 0:
-        return []
-    if cfg is None:
-        return [1.0] * n_groups
+    if cfg is None or not getattr(cfg, "rrf_weights", None):
+        return [1.0] * max(1, n_groups)
 
-    weights = getattr(cfg, "rrf_weights", None)
-    if not isinstance(weights, Iterable):
-        return [1.0] * n_groups
+    raw = cfg.rrf_weights
+    if not isinstance(raw, (list, tuple)):
+        return [1.0] * max(1, n_groups)
 
-    w_list = [float(w) for w in weights]  # type: ignore[arg-type]
+    w_list: List[float] = []
+    for w in raw:
+        try:
+            w_list.append(float(w))
+        except Exception:
+            continue
+
     if not w_list:
-        return [1.0] * n_groups
+        return [1.0] * max(1, n_groups)
 
     if len(w_list) >= n_groups:
         return w_list[:n_groups]
@@ -239,10 +215,11 @@ def fuse_ranked_groups(
             3. Sort by minimal rank across groups, then alphabetical evidence.
             4. Re-assign ranks.
     """
+    from typing import Tuple
+
     if not groups:
         return []
 
-    # ----- Non-RRF path (minimal rank) -----
     if not use_rrf:
         flattened: List[Dict[str, Any]] = []
         seen: set[Tuple[str, str]] = set()
@@ -315,7 +292,7 @@ def fuse_ranked_groups(
         emit_ranking_event(evt)
     else:
         emit_telemetry_event(
-            "ranking.rrf",
+            "ranking.rrf_fusion",
             {
                 "rrf_k": rrf_k,
                 "groups": len(groups),
@@ -333,60 +310,40 @@ def fuse_ranked_groups(
 # =============================================================================
 
 
-def rank_documents(
-    items: List[Dict[str, Any]],
+def fuse_ranked_groups_for_strategy(
+    groups: List[List[Dict[str, Any]]],
+    *,
     strategy: str = "hybrid",
+    cfg: Optional[RetrievalConfig] = None,
 ) -> List[Dict[str, Any]]:
     """
-    Top-level ranking helper used by dict-based RAG components.
+    Convenience wrapper that applies the right ranking method to each group
+    and then fuses them.
 
-        items:
-            list[{ query, evidence, ... }]
-
-        strategy:
-            "bm25" | "dense" | "hybrid"
-
-    Returns ranked+sorted list with final deterministic ordering.
+    Each group is expected to already contain a "rank" field. This function
+    is retained mainly for backward compatibility and non-RAG call sites.
     """
-    if not items:
-        return []
-
-    ranked = apply_strategy(items, strategy=strategy)
-
-    ranked.sort(
-        key=lambda x: (
-            int(x.get("rank", 9_999_999)),
-            str(x.get("evidence", "")).lower(),
-        )
-    )
-
-    emit_telemetry_event(
-        "ranking.dict.final",
-        {
-            "strategy": strategy,
-            "items": len(ranked),
-        },
-    )
-    return ranked
+    use_rrf = True
+    return fuse_ranked_groups(groups, use_rrf=use_rrf, cfg=cfg)
 
 
 # =============================================================================
-# 5. EVIDENCE-BASED RANKING (PRIMARY RAG PATH)
+# 5. EVIDENCE-LEVEL RANKING / FUSION (RAG)
 # =============================================================================
 
 
-def _evidence_key(ev: Evidence) -> Tuple[str, str]:
+def _canonical_evidence_key(ev: Evidence) -> Tuple[str, str]:
     """
-    Canonical deduplication key for Evidence.
+    Canonical key for evidence deduplication.
 
-    Prefer a stable document identifier from metadata if present; else
-    fall back to (source, text).
+    We attempt to use a (source, doc_id) pair if present in metadata; if not,
+    we fall back to (source, text).
     """
-    meta = ev.metadata or {}
-    doc_id = str(meta.get("document_id") or meta.get("id") or "")
+    src = str(ev.source)
+    doc_id = str(ev.metadata.get("doc_id", "") if ev.metadata else "")
     if doc_id:
-        return (ev.source, doc_id)
-    return (ev.source, ev.text)
+        return (src, doc_id)
+    return (src, ev.text)
 
 
 def normalize_evidence_scores(evidence: Sequence[Evidence]) -> List[Evidence]:
@@ -414,7 +371,7 @@ def deduplicate_evidence(evidence: Sequence[Evidence]) -> List[Evidence]:
     seen: set[Tuple[str, str]] = set()
     out: List[Evidence] = []
     for ev in evidence or []:
-        key = _evidence_key(ev)
+        key = _canonical_evidence_key(ev)
         if key in seen:
             continue
         seen.add(key)
@@ -422,15 +379,8 @@ def deduplicate_evidence(evidence: Sequence[Evidence]) -> List[Evidence]:
     return out
 
 
-def _trim_evidence_text(ev: Evidence, max_chars: int) -> Evidence:
-    if max_chars <= 0 or len(ev.text) <= max_chars:
-        return ev
-    trimmed = ev.text[: max_chars - 3] + "..."
-    return ev.model_copy(update={"text": trimmed})
-
-
 def rank_evidence(
-    raw_hits: Sequence[Evidence],
+    evidence: Sequence[Evidence],
     *,
     top_k: Optional[int] = None,
     normalize: bool = True,
@@ -438,43 +388,54 @@ def rank_evidence(
     strategy: str = "hybrid",
 ) -> List[Evidence]:
     """
-    Rank Evidence by score, with optional normalization, truncation, and trimming.
-
-        • normalize: if True, rescale scores to [0, 1].
-        • top_k: if provided, truncate to that many Evidence items.
-        • max_chars: if > 0, trim evidence text to this many characters.
+    Rank Evidence items using the dict-based ranking functions underneath.
     """
-    if not raw_hits:
+    if not evidence:
         return []
 
-    hits: List[Evidence] = list(raw_hits)
+    # Convert to dicts, re-use dict-based rankers, then map back
+    items: List[Dict[str, Any]] = []
+    for ev in evidence:
+        items.append(
+            {
+                "text": ev.text,
+                "evidence": ev.text,
+                "source": ev.source,
+                "rank": 1,
+                "score": ev.score,
+            }
+        )
+
+    ranked_dicts = rank_documents(items, strategy=strategy)
+    ranked: List[Evidence] = []
+    for d in ranked_dicts:
+        ranked.append(
+            Evidence(
+                id="",
+                text=str(d.get("evidence", "")),
+                score=float(d.get("score", 0.0)),
+                source=str(d.get("source", "")),
+                metadata={},
+            )
+        )
 
     if normalize:
-        hits = normalize_evidence_scores(hits)
-
-    hits = deduplicate_evidence(hits)
-    hits.sort(key=lambda e: e.score, reverse=True)
-
-    if top_k is not None and top_k > 0:
-        hits = hits[:top_k]
+        ranked = normalize_evidence_scores(ranked)
 
     if max_chars > 0:
-        hits = [_trim_evidence_text(ev, max_chars) for ev in hits]
+        trimmed: List[Evidence] = []
+        total_chars = 0
+        for e in ranked:
+            total_chars += len(e.text)
+            if total_chars > max_chars:
+                break
+            trimmed.append(e)
+        ranked = trimmed
 
-    # Emit typed ranking event
-    evt = RankingEvent(
-        stage="evidence_final",
-        strategy=strategy,
-        use_rrf=False,
-        metadata={
-            "items_out": len(hits),
-            "top_k": top_k,
-            "max_chars": max_chars,
-        },
-    )
-    emit_ranking_event(evt)
+    if top_k is not None and top_k > 0:
+        ranked = ranked[:top_k]
 
-    return hits
+    return ranked
 
 
 def fuse_evidence_groups_rrf(
@@ -498,7 +459,7 @@ def fuse_evidence_groups_rrf(
     for g_idx, group in enumerate(groups):
         w = weights[g_idx] if g_idx < len(weights) else 1.0
         for rank_idx, ev in enumerate(group or []):
-            key = _evidence_key(ev)
+            key = _canonical_evidence_key(ev)
             if key not in reprs:
                 reprs[key] = ev
             r = rank_idx + 1
@@ -526,6 +487,38 @@ def fuse_evidence_groups_rrf(
     emit_ranking_event(evt)
 
     return fused
+
+
+def fuse_ranked_groups_rrf(
+    groups: Sequence[Sequence[Evidence]],
+    *,
+    rrf_weights: Optional[List[float]] = None,
+    workflow_id: Optional[str] = None,
+    rrf_k: int = 60,
+) -> List[Evidence]:
+    """Wrapper used by retrieval.py for Evidence-level weighted RRF.
+
+    This function adapts the raw `rrf_weights` list (coming from
+    RetrievalConfig.rrf_weights) into a minimal RetrievalConfig instance
+    and delegates to `fuse_evidence_groups_rrf`.
+
+    It exists solely to preserve the existing retrieval.py call-site:
+
+        ranking.fuse_ranked_groups_rrf(
+            groups=groups,
+            rrf_weights=retrieval_cfg.rrf_weights,
+            workflow_id=workflow_id,
+        )
+
+    The `workflow_id` is accepted for signature compatibility but is
+    not used here; telemetry is emitted inside `fuse_evidence_groups_rrf`.
+    """
+    cfg: Optional[RetrievalConfig] = None
+    if rrf_weights is not None:
+        cfg = RetrievalConfig()
+        cfg.rrf_weights = list(rrf_weights)
+
+    return fuse_evidence_groups_rrf(groups, cfg=cfg, rrf_k=rrf_k)
 
 
 def build_rag_result(
