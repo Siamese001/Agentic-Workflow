@@ -1,33 +1,41 @@
 # FILE: retrieval.py
 """
-Retrieval & Query Planning (v10_10 · Phase 3 Patch)
-===================================================
+Retrieval & Query Planning (v10_10 · Phase 3 — FINAL FULL IMPLEMENTATION)
+=========================================================================
 
-Phase-3 responsibilities, consolidated and made consistent with the
-Phase-0 models, Phase-2 prompt system, and the current L2/L3 wiring:
+Implements full Phase-3 capabilities:
 
-    • Plan retrieval strategy from RAGPlan + WorkflowConfig.
-    • Score in-memory evidence chunks (BM25, dense-like, hybrid).
-    • Provide a single entrypoint:
+A. Retrieval:
+   • BM25 scoring
+   • Dense scoring
+   • Hybrid scoring
+   • HYDE query-expansion hook (no LLM call yet)
 
-          run_rag_retrieval(
-              rag_plan=...,
-              job=...,
-              resume=...,
-              config=...,
-              strategy_hint=...,
-              sandbox=...,
-              raw_hits=[{ "evidence": ..., "source": ... }, ...],
-          ) -> List[Evidence]
+B. Ranking (multi-group):
+   • BM25 ranked list
+   • Dense ranked list
+   • Hybrid ranked list
+   • HYDE ranked list (if allowed)
+   • Fused via Reciprocal Rank Fusion (RRF)
 
-    • Emit coarse observability events via observability.emit_telemetry_event.
-    • Remain side-effect-free and deterministic (no external DB/vector calls).
+C. Evidence Fusion:
+   • Deduplication
+   • Score normalization (inside ranking)
+   • Context-budget-aware snippet trimming
 
-Non-responsibilities:
-    • No LLM calls (HYDE is intentionally omitted in this in-memory variant).
-    • No DAG orchestration (L3 only).
-    • No state mutation (L4 only).
-    • No safety enforcement (L5 only).
+D. Output:
+   • Returns List[Evidence] exactly as L2 expects.
+
+E. Telemetry:
+   • retrieval.plan
+   • retrieval.groups
+   • retrieval.rrf
+   • retrieval.result
+
+F. Layer purity:
+   • No LLM calls
+   • No state mutation
+   • Called only from L2
 """
 
 from __future__ import annotations
@@ -39,119 +47,142 @@ from observability import start_span, end_span, emit_telemetry_event
 import ranking as _ranking
 
 
-# =============================================================================
+# ============================================================================
 # INTERNAL HELPERS
-# =============================================================================
+# ============================================================================
 
-
-def _build_query(job: Any, resume: Any) -> str:
-    """
-    Construct a simple retrieval query string from job + resume artifacts.
-
-    This is intentionally conservative and deterministic; it does not
-    call out to any LLM or external service.
-    """
+def _build_base_query(job: Any, resume: Any) -> str:
+    """Combine job title/posting and resume summary."""
     parts: List[str] = []
-
-    title = getattr(job, "title", None)
-    posting = getattr(job, "posting_text", None)
-    summary = getattr(resume, "summary", None)
-
-    if title:
-        parts.append(str(title))
-    if posting:
-        parts.append(str(posting))
-    if summary:
-        parts.append(str(summary))
-
+    if getattr(job, "title", None):
+        parts.append(str(job.title))
+    if getattr(job, "posting_text", None):
+        parts.append(str(job.posting_text))
+    if getattr(resume, "summary", None):
+        parts.append(str(resume.summary))
     return " ".join(parts).strip()
 
 
-def _attach_query(raw_hits: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+def _hyde_expand_query(query: str, rag_plan: RAGPlan, config: WorkflowConfig) -> str:
     """
-    Ensure each raw hit dict has the keys expected by the ranking module:
+    HYDE hook: Phase-3 requires placeholder only.
+    No LLM call; simply return base query for determinism.
+    """
+    return query  # Hook for Phase-4
 
-        • "query"
-        • "evidence"
-        • "source"
-    """
-    items: List[Dict[str, Any]] = []
+
+def _attach_query(raw_hits: List[Dict[str, Any]], query: str) -> List[Dict[str, Any]]:
+    """Attach query, ensure evidence and source exist."""
+    out: List[Dict[str, Any]] = []
     for h in raw_hits or []:
-        evidence_text = str(h.get("evidence", ""))
-        source = str(h.get("source", "unknown"))
+        ev = str(h.get("evidence", "")).strip()
+        if not ev:
+            continue
         item = dict(h)
         item["query"] = query
-        item["evidence"] = evidence_text
-        item["source"] = source
-        items.append(item)
-    return items
+        item["evidence"] = ev
+        item["source"] = item.get("source", "raw")
+        out.append(item)
+    return out
 
 
 def _plan_retrieval(
     rag_plan: RAGPlan,
     config: WorkflowConfig,
-    strategy_hint: Optional[str] = None,
+    strategy_hint: Optional[str],
 ) -> RetrievalConfig:
     """
-    Build a RetrievalConfig from RAGPlan + WorkflowConfig, plus an optional
-    explicit strategy hint.
+    Decide retrieval strategy, HYDE flag, and max_hits from RAGPlan + config.
 
-    Rules:
-        • Strategy priority:
-              1) explicit strategy_hint, if provided
-              2) config.rag_require_hybrid → "hybrid"
-              3) fallback "hybrid" (balanced default)
-        • Max hits:
-              - derived from job+resume chunk limits
-              - clamped to a reasonable upper bound (50)
-        • use_rrf:
-              - enabled by default (Phase-3 requirement)
+    Strategy precedence:
+        1. explicit strategy_hint
+        2. config.rag_require_hybrid or rag_plan.require_hybrid → "hybrid"
+        3. default → "bm25"
+
+    HYDE:
+        enabled if config.rag_allow_hyde or rag_plan.allow_hyde
+
+    Max hits:
+        derived from RAG knobs on WorkflowConfig, clamped to [1, 50].
     """
     if strategy_hint:
         strategy = strategy_hint
-    elif getattr(config, "rag_require_hybrid", False):
+    elif getattr(config, "rag_require_hybrid", False) or getattr(
+        rag_plan, "require_hybrid", False
+    ):
         strategy = "hybrid"
     else:
-        strategy = "hybrid"
+        strategy = "bm25"
+
+    allow_hyde = bool(
+        getattr(config, "rag_allow_hyde", False)
+        or getattr(rag_plan, "allow_hyde", False)
+    )
 
     max_hits = int(
         getattr(config, "rag_max_job_chunks", 8)
         + getattr(config, "rag_max_resume_chunks", 8)
         + getattr(config, "rag_max_hybrid_chunks", 12)
     )
-    if max_hits <= 0:
-        max_hits = 10
-    max_hits = min(max_hits, 50)
+    max_hits = max(1, min(50, max_hits))
 
-    return RetrievalConfig(strategy=strategy, use_rrf=True, max_hits=max_hits)
+    cfg = RetrievalConfig(
+        strategy=strategy,
+        use_rrf=True,
+        max_hits=max_hits,
+        bm25_k1=1.2,
+        bm25_b=0.75,
+    )
+    # store HYDE flag on cfg without requiring model change
+    cfg._allow_hyde = allow_hyde  # type: ignore[attr-defined]
+
+    emit_telemetry_event(
+        "retrieval.plan",
+        {"strategy": strategy, "allow_hyde": allow_hyde, "max_hits": max_hits},
+    )
+    return cfg
 
 
-def _dicts_to_evidence(items: List[Dict[str, Any]], top_k: int) -> List[Evidence]:
+def _max_chars_per_snippet(cfg: RetrievalConfig, config: WorkflowConfig) -> int:
     """
-    Convert ranked dict items from ranking.py into Evidence objects,
-    respecting top_k.
+    Derive snippet budget from target_total_tokens.
     """
-    if not items:
-        return []
+    target_tokens = int(getattr(config, "target_total_tokens", 1800))
+    total_chars = max(1024, target_tokens * 4)
+    return max(256, total_chars // max(cfg.max_hits, 1))
 
+
+def _dicts_to_evidence(
+    items: List[Dict[str, Any]],
+    max_k: int,
+    max_chars: int,
+) -> List[Evidence]:
+    """
+    Convert fused ranking dicts → Evidence with trimming.
+    """
     out: List[Evidence] = []
-    for it in items[:top_k]:
+    for it in items[:max_k]:
         text = str(it.get("evidence", ""))
-        score = float(it.get("score", 0.0))
-        source = str(it.get("source", "unknown"))
-        meta = {
-            k: v
-            for k, v in it.items()
-            if k not in {"query", "evidence", "score", "rank"}
-        }
-        out.append(Evidence(text=text, score=score, source=source, metadata=meta))
+        if max_chars > 0 and len(text) > max_chars:
+            text = text[: max_chars - 3] + "..."
+        out.append(
+            Evidence(
+                text=text,
+                score=float(it.get("score", 0.0)),
+                source=str(it.get("source", "unknown")),
+                metadata={
+                    k: v
+                    for k, v in it.items()
+                    if k not in {"query", "evidence", "score", "rank"}
+                },
+            )
+        )
     return out
 
 
-# =============================================================================
-# PUBLIC ENTRYPOINT (used by L2)
-# =============================================================================
-
+# ============================================================================
+# PUBLIC ENTRYPOINT (USED BY L2)
+# ============================================================================
 
 def run_rag_retrieval(
     *,
@@ -160,58 +191,104 @@ def run_rag_retrieval(
     resume: Any,
     config: WorkflowConfig,
     strategy_hint: Optional[str] = None,
-    sandbox: Any = None,  # reserved for future use
+    sandbox: Any = None,  # reserved for future HYDE / multi-agent use
     raw_hits: List[Dict[str, Any]],
 ) -> List[Evidence]:
     """
-    Deterministic in-memory retrieval + ranking.
+    Deterministic Phase-3 retrieval + multi-group RRF ranking.
 
-    This is the only function called by L2._execute_retrieval(). It:
-
-        1. Builds a query string from job+resume artifacts.
-        2. Attaches that query to each raw hit dict.
-        3. Plans retrieval strategy (bm25 / dense / hybrid) via RetrievalConfig.
-        4. Applies the chosen ranking strategy using ranking.py.
-        5. Emits coarse-grained telemetry.
-        6. Returns a list[Evidence] sorted by descending score.
+    Steps:
+        1. Build base query from job + resume.
+        2. Optionally build HYDE query (hook only).
+        3. Attach query to each raw hit.
+        4. Plan retrieval (strategy, HYDE, max_hits).
+        5. Build BM25 / dense / hybrid / HYDE ranked groups.
+        6. Fuse groups via RRF.
+        7. Trim to context budget and convert to Evidence.
     """
     span = start_span("retrieval.run", ctx=None)
     try:
-        query = _build_query(job, resume)
-        items = _attach_query(raw_hits, query)
+        base_query = _build_base_query(job, resume)
         cfg = _plan_retrieval(rag_plan, config, strategy_hint)
+        allow_hyde: bool = bool(getattr(cfg, "_allow_hyde", False))
+
+        hyde_query = (
+            _hyde_expand_query(base_query, rag_plan, config) if allow_hyde else base_query
+        )
+
+        base_items = _attach_query(raw_hits, base_query)
+        hyde_items = _attach_query(raw_hits, hyde_query) if allow_hyde else []
+
+        if not base_items:
+            emit_telemetry_event(
+                "retrieval.empty_corpus",
+                {"strategy": cfg.strategy, "allow_hyde": allow_hyde},
+            )
+            return []
+
+        groups: List[List[Dict[str, Any]]] = []
+
+        # BM25 group
+        bm25_group = _ranking.bm25(base_items)
+        for it in bm25_group:
+            it["source"] += "|bm25"
+        groups.append(bm25_group)
+
+        # Dense group
+        dense_group = _ranking.dense(base_items)
+        for it in dense_group:
+            it["source"] += "|dense"
+        groups.append(dense_group)
+
+        # Hybrid group (if using hybrid strategy)
+        if cfg.strategy == "hybrid":
+            hybrid_group = _ranking.hybrid(base_items)
+            for it in hybrid_group:
+                it["source"] += "|hybrid"
+            groups.append(hybrid_group)
+
+        # HYDE group
+        if allow_hyde and hyde_items:
+            hyde_group = _ranking.dense(hyde_items)
+            for it in hyde_group:
+                it["source"] += "|hyde"
+            groups.append(hyde_group)
 
         emit_telemetry_event(
-            "retrieval.plan",
+            "retrieval.groups",
             {
                 "strategy": cfg.strategy,
-                "use_rrf": cfg.use_rrf,
-                "max_hits": cfg.max_hits,
-                "raw_hits": len(items),
+                "allow_hyde": allow_hyde,
+                "num_groups": len(groups),
+                "group_sizes": [len(g) for g in groups],
             },
         )
 
-        # Strategy selection is delegated to ranking.apply_strategy()
-        ranked = _ranking.rank_documents(items, strategy=cfg.strategy)
-
-        emit_telemetry_event(
-            "retrieval.rank",
-            {
-                "strategy": cfg.strategy,
-                "items_in": len(items),
-                "items_out": len(ranked),
-            },
+        fused = _ranking.fuse_ranked_groups(
+            groups,
+            use_rrf=cfg.use_rrf,
+            cfg=cfg,
+            rrf_k=60,
         )
 
-        evidence = _dicts_to_evidence(ranked, top_k=cfg.max_hits)
+        emit_telemetry_event(
+            "retrieval.rrf",
+            {"groups": len(groups), "fused": len(fused)},
+        )
+
+        max_chars = _max_chars_per_snippet(cfg, config)
+        evidence = _dicts_to_evidence(fused, cfg.max_hits, max_chars)
 
         emit_telemetry_event(
             "retrieval.result",
             {
                 "strategy": cfg.strategy,
+                "allow_hyde": allow_hyde,
                 "evidence_count": len(evidence),
+                "max_chars": max_chars,
             },
         )
+
         return evidence
     finally:
         end_span(span)
