@@ -14,39 +14,33 @@ Responsibilities (strict L3-only):
     • Zero safety/state mutation.
 
 This module must NOT:
-    • Call any LLM agents (L2 only).
-    • Perform any retrieval (L2 only).
-    • Mutate state (L4 only).
-    • Enforce safety or policy (L5 only).
+    • Call any LLM client.
+    • Perform retrieval, ranking, or RAG reasoning.
+    • Apply state patches or enforce safety.
 
-Phase-3 Changes:
-    • Retrieval node is explicitly parallelizable.
-    • Adds fallback paths:
-          – If retrieval fails → continue workflow with empty RAGResult.
-    • Ensures retrieval spans do not block Strategy execution.
-    • Ensures DAG emits typed node events for observability.
+L3 delegates:
+    • L2 cognitive agents via l2.py
+    • Correction loops and DAG wiring via workflow_graph.py
 """
 
 from __future__ import annotations
 
 import asyncio
-from typing import Optional
 
 from models import (
-    ExecutionContext,
     WorkflowPlanBundle,
+    ExecutionContext,
+    L2ResultBundle,
     RAGResult,
-    StrategyResult,
     DraftingResult,
     QAResult,
     SafetyResult,
-    L2ResultBundle,
 )
 from observability import (
     start_span,
     end_span,
-    log_exception,
     emit_node_event,
+    log_exception,
 )
 from l2 import (
     _execute_strategy,
@@ -61,6 +55,7 @@ from l2 import (
 # L3 NODE ENUMS
 # ============================================================================
 
+
 class Node:
     """Typed DAG nodes for observability + determinism."""
     STRATEGY = "strategy"
@@ -73,6 +68,7 @@ class Node:
 # ============================================================================
 # INTERNAL HELPERS FOR NODE EXECUTION
 # ============================================================================
+
 
 async def _run_node(name: str, ctx: ExecutionContext, fn, *args, **kwargs):
     """
@@ -88,8 +84,8 @@ async def _run_node(name: str, ctx: ExecutionContext, fn, *args, **kwargs):
         result = await fn(*args, **kwargs)
         emit_node_event(node=name, status="success")
         return result
-    except Exception as exc:
-        log_exception(f"l3.{name}_error", exc)
+    except Exception as exc:  # noqa: BLE001
+        log_exception(f"l3.{name}.error", exc)
         emit_node_event(node=name, status="error", details=str(exc))
         return None
     finally:
@@ -97,54 +93,52 @@ async def _run_node(name: str, ctx: ExecutionContext, fn, *args, **kwargs):
 
 
 # ============================================================================
-# L3 ORCHESTRATION GRAPH (Phase 3)
+# MAIN ORCHESTRATION
 # ============================================================================
 
-async def run_l3(
+
+async def run_l3_workflow(
     plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
 ) -> L2ResultBundle:
     """
-    PHASE-3 DAG:
+    Execute the core workflow graph at L3 using L2 nodes.
 
-        ┌────────────────────┐
-        │    Strategy Node    │  <-- independent
-        └─────────┬──────────┘
-                  │
-                  │ (parallel)
-                  │
-        ┌─────────▼──────────┐
-        │   Retrieval Node    │  <-- independent
-        └─────────┬──────────┘
-                  │
-        ┌─────────▼──────────┐
-        │  Drafting Node      │  <-- fan-in: needs Strategy + RAG
-        └─────────┬──────────┘
-                  │
-        ┌─────────▼──────────┐
-        │     QA Node         │
-        └─────────┬──────────┘
-                  │
-        ┌─────────▼──────────┐
-        │    Safety Node      │
+    Graph (conceptual):
+
+        ┌─────────┐     ┌───────────────┐
+        │ Strategy│     │   Retrieval   │
+        └────┬────┘     └───────┬───────┘
+             │                │
+             └─────┬──────────┘
+                   │  (fan-in)
+        ┌──────────▼──────────┐
+        │      Drafting       │
+        └──────────┬──────────┘
+                   │
+        ┌──────────▼──────────┐
+        │         QA          │
+        └──────────┬──────────┘
+                   │
+        ┌──────────▼──────────┐
+        │       Safety        │
         └─────────────────────┘
 
-    **Retrieval fallback rule:**
-        - If retrieval fails, L3 MUST continue execution with:
+    Retrieval fallback rule:
+        • If retrieval fails, L3 MUST continue execution with:
               RAGResult(evidence=[], used_hyde=False)
 
-    **Concurrency requirements:**
-        - Strategy and Retrieval must run concurrently.
-        - Following nodes run sequentially.
+    Concurrency requirements:
+        • Strategy and Retrieval run concurrently.
+        • Following nodes run sequentially.
 
-    **L3 never executes LLM or retrieval directly — only orchestrates L2 nodes.**
+    L3 never executes LLM or retrieval directly — only orchestrates L2 nodes.
     """
     span = start_span("l3.run", ctx=ctx.span_context())
     try:
         # ---------------------------------------------------------------
         # 1. PARALLEL NODES: Strategy + Retrieval
         # ---------------------------------------------------------------
-
         strategy_task = asyncio.create_task(
             _run_node(Node.STRATEGY, ctx, _execute_strategy, plans, ctx)
         )
@@ -152,62 +146,35 @@ async def run_l3(
             _run_node(Node.RETRIEVAL, ctx, _execute_retrieval, plans, ctx)
         )
 
-        strategy_result: Optional[StrategyResult]
-        rag_result: Optional[RAGResult]
-        strategy_result, rag_result = await asyncio.gather(strategy_task, retrieval_task)
+        strategy_result = await strategy_task
+        rag_result = await retrieval_task
 
-        # Fallback if retrieval failed
         if rag_result is None:
+            # Retrieval failure must not halt the pipeline.
             rag_result = RAGResult(evidence=[], used_hyde=False)
 
-        # ---------------------------------------------------------------
-        # 2. DRAFTING NODE (fan-in)
-        # ---------------------------------------------------------------
-        drafting_result: Optional[DraftingResult] = await _run_node(
-            Node.DRAFTING,
-            ctx,
-            _execute_drafting,
-            plans,
-            strategy_result,
-            rag_result,
-            ctx,
+        # Drafting node must see some DraftingResult, even on failure.
+        drafting_result: DraftingResult = await _run_node(
+            Node.DRAFTING, ctx, _execute_drafting, plans, strategy_result, rag_result, ctx
         )
         if drafting_result is None:
             drafting_result = DraftingResult(sections=[])
 
-        # ---------------------------------------------------------------
-        # 3. QA NODE
-        # ---------------------------------------------------------------
-        qa_result: Optional[QAResult] = await _run_node(
-            Node.QA,
-            ctx,
-            _execute_qa,
-            plans,
-            drafting_result,
-            rag_result,
-            ctx,
+        # QA node
+        qa_result: QAResult = await _run_node(
+            Node.QA, ctx, _execute_qa, plans, drafting_result, rag_result, ctx
         )
         if qa_result is None:
             qa_result = QAResult(findings=[])
 
-        # ---------------------------------------------------------------
-        # 4. SAFETY NODE
-        # ---------------------------------------------------------------
-        safety_result: Optional[SafetyResult] = await _run_node(
-            Node.SAFETY,
-            ctx,
-            _execute_safety,
-            plans,
-            drafting_result,
-            qa_result,
-            ctx,
+        # Safety node
+        safety_result: SafetyResult = await _run_node(
+            Node.SAFETY, ctx, _execute_safety, plans, drafting_result, qa_result, ctx
         )
         if safety_result is None:
             safety_result = SafetyResult(findings=[])
 
-        # ---------------------------------------------------------------
-        # RETURN CONSOLIDATED L2 RESULTS (L3 never mutates)
-        # ---------------------------------------------------------------
+        # Bundle into L2ResultBundle (L3 never mutates state).
         return L2ResultBundle(
             strategy=strategy_result,
             rag=rag_result,
@@ -216,11 +183,10 @@ async def run_l3(
             safety=safety_result,
         )
 
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         log_exception("l3.run_fatal", exc)
         # L3 must NEVER crash the agent; return minimal bundle.
         empty = L2ResultBundle.empty_with_error(str(exc))
         return empty
     finally:
         end_span(span)
-
