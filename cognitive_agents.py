@@ -1,52 +1,44 @@
 # FILE: 10_10/cognitive_agents.py
 """
-Unified Cognitive Agents (v10_10 · Phase 2)
+Unified Cognitive Agents (v10_10 · Phase 3)
 ===========================================
 
 This module implements ALL LLM-based cognition for the v10_10 workflow.
 
 L2 is the only layer allowed to call these agents.
 
-Four agents are defined (L2 cognition only):
+Agents (L2 cognition only):
     • StrategyLLMAgent            – strategy reasoning
     • DraftingGuild              – resume drafting
-    • SemanticQAAgent            – QA reasoning
+    • SemanticQAAgent            – QA reasoning + RAG reasoning
     • ConstitutionalSafetyAgent  – safety / policy review
 
-Phase 2 changes:
-    • All LLM calls go through the Phase-2 prompt system:
-          – prompt_builder.build_*_prompt()
-          – prompt_system_v10_10 / registry ACLs
-    • No inline prompt strings.
-    • Prompt ACLs (layers / agents / model tiers) enforced in prompt_builder.
-    • Prompt envelopes provide deterministic multi-section context.
-    • L1/L3/L4/L5 remain pure – no LLM calls outside this module.
+Design constraints:
+    • Only this module may invoke LLMs.
+    • No planning (L1), orchestration (L3), state mutation (L4),
+      or safety policy enforcement (L5).
+    • All calls use PromptInstance + ACL from prompt_builder.
+    • All model selection goes through RoutingPolicy.
+    • All LLM calls go through runtime_utils.invoke_model.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 import json
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Sequence
 
 from models import (
-    JobInput,
-    ResumeInput,
-    WorkflowConfig,
-    ExecutionContext,
-    StrategyPlan,
-    StrategyBranch,
     StrategyResult,
+    StrategyBranch,
     RAGResult,
-    DraftingPlan,
-    DraftSectionResult,
     DraftingResult,
-    QAPlan,
-    QACheckResult,
+    DraftSection,
     QAResult,
-    SafetyPlan,
-    SafetyFinding,
+    QAFinding,
     SafetyResult,
+    SafetyFinding,
+    Evidence,
 )
 from routing import RoutingPolicy
 from runtime_utils import invoke_model, SandboxConfig
@@ -56,13 +48,34 @@ from prompt_builder import (
     PromptInstance,
     build_strategy_prompt,
     build_drafting_prompt,
+    build_rag_prompt,
     build_qa_prompt,
     build_safety_prompt,
 )
 
 
 # =============================================================================
-# Base LLM Agent (shared invocation logic)
+# Local prompt context
+# =============================================================================
+
+
+@dataclass
+class _PromptContext:
+    """
+    Lightweight context object passed to prompt_builder.
+
+    We intentionally avoid depending on models.ExecutionContext here;
+    prompt_builder only needs job, resume, config, which we expose
+    directly.
+    """
+
+    job: Any
+    resume: Any
+    config: Any
+
+
+# =============================================================================
+# Base LLM Agent
 # =============================================================================
 
 
@@ -96,7 +109,6 @@ class LLMBaseAgent:
         complexity = None
         plan = prompt.variables.get("plan")
         if plan is not None and hasattr(plan, "complexity"):
-            # StrategyPlan, DraftingPlan, etc. may expose a complexity attribute.
             complexity = getattr(plan, "complexity", None)
 
         # Select the concrete model.
@@ -111,7 +123,8 @@ class LLMBaseAgent:
             raise
 
         # Derive LLM parameters from prompt metadata (with safe fallbacks).
-        llm_meta = prompt.definition.metadata.get("llm", {})
+        meta = prompt.definition.metadata or {}
+        llm_meta = meta.get("llm", {}) or {}
         temperature = float(llm_meta.get("temperature", 0.2))
         max_tokens = int(llm_meta.get("max_tokens", 1024))
 
@@ -122,6 +135,8 @@ class LLMBaseAgent:
                 "layer": prompt.layer,
                 "agent": prompt.agent,
                 "model_tier": prompt.model_tier,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
             },
         )
 
@@ -142,7 +157,7 @@ class LLMBaseAgent:
                     "model": model,
                 },
             )
-            return text
+            return text or ""
         except Exception as exc:
             record_exception("llm_call_failure", exc)
             raise
@@ -157,24 +172,32 @@ class StrategyLLMAgent(LLMBaseAgent):
     """
     Strategy cognition for the workflow.
 
-    Phase 2 implementation:
+    Phase 3 implementation:
         • Uses a single, envelope-based strategy prompt.
         • Returns a StrategyResult with one chosen branch.
-        • Tree-of-Thought fan-out can be reintroduced in a later phase by
-          simply looping over build_strategy_prompt() and _call_llm().
     """
 
-    def run_strategy(self, plan: StrategyPlan, ctx: ExecutionContext) -> StrategyResult:
-        # Build the Phase-2 strategy prompt instance.
+    async def run_strategy(
+        self,
+        strategy_plan: Any,
+        job: Any,
+        resume: Any,
+        config: Any,
+    ) -> StrategyResult:
+        """
+        Asynchronous entrypoint used by L2.
+        """
+        ctx = _PromptContext(job=job, resume=resume, config=config)
+
         prompt = build_strategy_prompt(
-            plan=plan,
+            plan=strategy_plan,
             ctx=ctx,
             layer="L2",
             agent="strategy",
             model_tier="balanced",
         )
 
-        raw = self._call_llm(prompt)
+        raw = self._call_llm(prompt).strip()
 
         # For now we treat the entire output as a single branch.
         branch = StrategyBranch(id="branch_0", text=raw or "")
@@ -184,7 +207,7 @@ class StrategyLLMAgent(LLMBaseAgent):
             {
                 "num_branches": 1,
                 "chosen_branch_id": branch.id,
-                "complexity": getattr(plan, "complexity", None),
+                "complexity": getattr(strategy_plan, "complexity", None),
             },
         )
 
@@ -200,33 +223,22 @@ class DraftingGuild(LLMBaseAgent):
     """
     Drafting agent that turns strategy + evidence into resume content.
 
-    Phase 2 implementation:
+    Phase 3 implementation:
         • Uses a single drafting prompt envelope per call.
-        • Emits a DraftingResult with at least one section.
-        • Parsing is robust to both JSON and free-form markdown output.
+        • Emits a DraftingResult with at least one DraftSection.
+        • Parsing is robust to both JSON and free-form text output.
     """
 
-    def run_drafting(
+    async def run_drafting(
         self,
-        drafting_plan: DraftingPlan,
-        job: JobInput,
-        resume: ResumeInput,
+        drafting_plan: Any,
+        job: Any,
+        resume: Any,
         strategy_result: StrategyResult,
         rag_result: RAGResult,
-        config: WorkflowConfig,
+        config: Any,
     ) -> DraftingResult:
-
-        # Construct a minimal ExecutionContext for the builder.
-        ctx = ExecutionContext(
-            job=job,
-            resume=resume,
-            config=config,
-            routing_policy=self.routing_policy,
-            sandbox_config=self.sandbox,
-            prompt_registry=None,
-            cache_manager=None,
-            meta_profile_snapshot=self.meta_profile,
-        )
+        ctx = _PromptContext(job=job, resume=resume, config=config)
 
         prompt = build_drafting_prompt(
             plan=drafting_plan,
@@ -246,56 +258,54 @@ class DraftingGuild(LLMBaseAgent):
             "drafting_completed",
             {
                 "num_sections": len(sections),
-                "mode": getattr(drafting_plan.mode, "value", str(drafting_plan.mode)),
+                "mode": getattr(getattr(drafting_plan, "mode", None), "value", str(getattr(drafting_plan, "mode", ""))),
             },
         )
 
-        return DraftingResult(sections=sections, mode=drafting_plan.mode)
+        return DraftingResult(sections=sections)
 
-    # ------------------------------------------------------------------ #
-    # Parsing helpers
-    # ------------------------------------------------------------------ #
-
-    def _parse_drafting_output(
-        self,
-        raw: str,
-        plan: DraftingPlan,
-    ) -> List[DraftSectionResult]:
+    def _parse_drafting_output(self, raw: str, plan: Any) -> List[DraftSection]:
         """
-        Parse drafting output into DraftSectionResult objects.
+        Parse drafting output into DraftSection objects.
 
-        The parser is intentionally tolerant:
+        Heuristics:
 
-            1) If the output is JSON, expect a list of objects:
-                   [{"title": "...", "text": "...", "outline": "..."}]
+            1) If the output is JSON and looks like a list of sections:
+                   [{"title": "...", "text": "..."}]
+               we map each element to a DraftSection.
+
             2) Otherwise, treat the entire text as a single section whose
-               title is taken from the first planned section (if any).
+               title is taken from the first planned section title if available.
         """
         if not raw:
+            title = ""
+            if getattr(plan, "sections", None):
+                title = getattr(plan.sections[0], "title", "") or ""
             return [
-                DraftSectionResult(
-                    title=(plan.sections[0].title if plan.sections else "Main"),
-                    outline="",
+                DraftSection(
+                    id="section_0",
+                    title=title or "Resume",
                     text="",
-                    compliance_notes="",
+                    metadata={},
                 )
             ]
 
-        # Attempt JSON path first.
+        # Try JSON path.
         try:
             data = json.loads(raw)
             if isinstance(data, list):
-                sections: List[DraftSectionResult] = []
+                sections: List[DraftSection] = []
                 for idx, entry in enumerate(data):
-                    title = entry.get("title") or (
-                        plan.sections[idx].title if idx < len(plan.sections) else f"Section {idx+1}"
-                    )
+                    if not isinstance(entry, dict):
+                        continue
+                    title = str(entry.get("title") or f"Section {idx+1}")
+                    text = str(entry.get("text") or "")
                     sections.append(
-                        DraftSectionResult(
+                        DraftSection(
+                            id=f"section_{idx}",
                             title=title,
-                            outline=str(entry.get("outline", "")),
-                            text=str(entry.get("text", "")),
-                            compliance_notes=str(entry.get("compliance_notes", "")),
+                            text=text,
+                            metadata={},
                         )
                     )
                 if sections:
@@ -304,50 +314,43 @@ class DraftingGuild(LLMBaseAgent):
             record_event("drafting_non_json_output", {})
 
         # Fallback: single-section wrapping of free-form text.
-        title = plan.sections[0].title if plan.sections else "Main"
+        title = ""
+        if getattr(plan, "sections", None):
+            title = getattr(plan.sections[0], "title", "") or ""
         return [
-            DraftSectionResult(
-                title=title,
-                outline="",
+            DraftSection(
+                id="section_0",
+                title=title or "Resume",
                 text=raw.strip(),
-                compliance_notes="",
+                metadata={},
             )
         ]
 
 
 # =============================================================================
-# Semantic QA Agent
+# Semantic QA Agent (QA + RAG reasoning)
 # =============================================================================
 
 
 class SemanticQAAgent(LLMBaseAgent):
     """
-    QA agent that evaluates drafted content against QAPlan checks.
+    QA agent that evaluates drafted content and performs RAG reasoning.
 
-    Output is a QAResult with structured QACheckResult items.
+    Outputs:
+        • QAResult with structured QAFinding items.
+        • RAG reasoning text for Phase-3 reasoning stage.
     """
 
-    def run_qa(
+    async def run_qa(
         self,
-        qa_plan: QAPlan,
+        qa_plan: Any,
         draft: DraftingResult,
         rag: RAGResult,
-        job: JobInput,
-        resume: ResumeInput,
-        config: WorkflowConfig,
+        job: Any,
+        resume: Any,
+        config: Any,
     ) -> QAResult:
-
-        # Build a local ExecutionContext for the builder.
-        ctx = ExecutionContext(
-            job=job,
-            resume=resume,
-            config=config,
-            routing_policy=self.routing_policy,
-            sandbox_config=self.sandbox,
-            prompt_registry=None,
-            cache_manager=None,
-            meta_profile_snapshot=self.meta_profile,
-        )
+        ctx = _PromptContext(job=job, resume=resume, config=config)
 
         prompt = build_qa_prompt(
             plan=qa_plan,
@@ -361,71 +364,90 @@ class SemanticQAAgent(LLMBaseAgent):
 
         raw = self._call_llm(prompt)
 
-        findings = self._parse_qa(raw, qa_plan)
+        findings = self._parse_qa_output(raw, qa_plan)
 
         record_event(
             "qa_completed",
             {
-                "num_checks": len(findings),
-                "num_errors": sum(1 for f in findings if f.status == "error"),
-                "num_warnings": sum(1 for f in findings if f.status == "warning"),
+                "num_findings": len(findings),
+                "num_high_severity": sum(1 for f in findings if f.severity.lower() == "high"),
             },
         )
 
-        return QAResult(findings=findings, summary="")
+        return QAResult(findings=findings)
 
-    # ------------------------------------------------------------------ #
-    # Parsing helpers
-    # ------------------------------------------------------------------ #
-
-    def _parse_qa(self, raw: str, qa_plan: QAPlan) -> List[QACheckResult]:
+    async def run_rag_reasoning(
+        self,
+        prompt: PromptInstance,
+        evidence: Sequence[Evidence],
+        job: Any,
+        resume: Any,
+        config: Any,
+    ) -> str:
         """
-        Parse QA output.
+        Phase-3 RAG reasoning.
 
-        Expected (happy path) format:
+        L2 passes a pre-built RAG prompt; this method simply calls the LLM
+        and returns the reasoning text. L2 turns this into a synthetic
+        Evidence item.
+        """
+        raw = self._call_llm(prompt)
+        text = (raw or "").strip()
 
-            [
-              {"check_id": "...", "status": "ok|warning|error", "message": "...", "details": {...}},
-              ...
-            ]
+        record_event(
+            "rag_reasoning_completed",
+            {
+                "prompt_id": prompt.prompt_id,
+                "evidence_count": len(list(evidence or [])),
+                "text_len": len(text),
+            },
+        )
+        return text
 
-        Fallback:
-            • On malformed JSON, return one "error" entry per check with a generic message.
+    def _parse_qa_output(self, raw: str, qa_plan: Any) -> List[QAFinding]:
+        """
+        Parse QA output into QAFinding items.
+
+        If JSON parsing fails, we fall back to a single generic finding.
         """
         if not raw:
             return [
-                QACheckResult(
-                    check_id=chk.id,
-                    status="error",
+                QAFinding(
+                    id="generic",
+                    category="qa",
+                    severity="high",
                     message="No QA output produced",
-                    details={},
+                    metadata={},
                 )
-                for chk in qa_plan.checks
             ]
 
+        # JSON path: expect list of objects with id / severity / message / category.
         try:
             data = json.loads(raw)
             if not isinstance(data, list):
                 raise ValueError("QA output must be a JSON list")
 
-            findings: List[QACheckResult] = []
-            by_id = {chk.id: chk for chk in qa_plan.checks}
-
+            findings: List[QAFinding] = []
             for item in data:
-                check_id = str(item.get("check_id") or item.get("id") or "")
-                if not check_id or check_id not in by_id:
-                    # Skip unknown checks, but record an event.
-                    record_event("qa_unknown_check_id", {"check_id": check_id})
+                if not isinstance(item, dict):
                     continue
-                status = str(item.get("status", "error"))
+                fid = str(
+                    item.get("id")
+                    or item.get("check_id")
+                    or "unknown"
+                )
+                severity = str(item.get("severity", "medium"))
+                category = str(item.get("category", "qa"))
                 message = str(item.get("message", ""))
-                details = item.get("details") or {}
+                metadata = item.get("details") or item.get("metadata") or {}
+
                 findings.append(
-                    QACheckResult(
-                        check_id=check_id,
-                        status=status,
+                    QAFinding(
+                        id=fid,
+                        category=category,
+                        severity=severity,
                         message=message,
-                        details=details,
+                        metadata=metadata,
                     )
                 )
 
@@ -434,15 +456,15 @@ class SemanticQAAgent(LLMBaseAgent):
         except Exception:
             record_event("qa_malformed_json", {})
 
-        # Fallback: generic error for each configured check.
+        # Fallback: generic finding containing the raw text.
         return [
-            QACheckResult(
-                check_id=chk.id,
-                status="error",
-                message="Malformed QA JSON output",
-                details={},
+            QAFinding(
+                id="generic",
+                category="qa",
+                severity="medium",
+                message=raw.strip(),
+                metadata={},
             )
-            for chk in qa_plan.checks
         ]
 
 
@@ -458,27 +480,16 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
     Output is a SafetyResult with structured SafetyFinding items.
     """
 
-    def run_safety(
+    async def run_safety(
         self,
-        safety_plan: SafetyPlan,
+        safety_plan: Any,
         draft: DraftingResult,
         qa_result: QAResult,
-        job: JobInput,
-        resume: ResumeInput,
-        config: WorkflowConfig,
+        job: Any,
+        resume: Any,
+        config: Any,
     ) -> SafetyResult:
-
-        # Build a local ExecutionContext for the builder.
-        ctx = ExecutionContext(
-            job=job,
-            resume=resume,
-            config=config,
-            routing_policy=self.routing_policy,
-            sandbox_config=self.sandbox,
-            prompt_registry=None,
-            cache_manager=None,
-            meta_profile_snapshot=self.meta_profile,
-        )
+        ctx = _PromptContext(job=job, resume=resume, config=config)
 
         prompt = build_safety_prompt(
             plan=safety_plan,
@@ -491,52 +502,47 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
 
         raw = self._call_llm(prompt)
 
-        findings = self._parse_safety(raw, safety_plan)
-
-        # Derive an overall status.
-        overall_status = "ok"
-        if any(f.status == "blocked" for f in findings):
-            overall_status = "blocked"
-        elif any(f.status == "warning" for f in findings):
-            overall_status = "warning"
+        findings = self._parse_safety_output(raw, safety_plan)
 
         record_event(
             "safety_completed",
             {
                 "num_findings": len(findings),
-                "overall_status": overall_status,
+                "num_high_severity": sum(1 for f in findings if f.severity.lower() == "high"),
             },
         )
 
-        return SafetyResult(findings=findings, overall_status=overall_status)
+        return SafetyResult(findings=findings)
 
-    # ------------------------------------------------------------------ #
-    # Parsing helpers
-    # ------------------------------------------------------------------ #
-
-    def _parse_safety(self, raw: str, safety_plan: SafetyPlan) -> List[SafetyFinding]:
+    def _parse_safety_output(self, raw: str, safety_plan: Any) -> List[SafetyFinding]:
         """
-        Parse safety output.
+        Parse safety output into SafetyFinding items.
 
-        Expected (happy path) format:
-
-            [
-              {"id": "...", "status": "ok|blocked|warning", "message": "...", "details": {...}},
-              ...
-            ]
-
-        Fallback:
-            • On malformed JSON, return one "blocked" entry per check.
+        If JSON parsing fails, we fall back to conservative "blocked" findings.
         """
+        # If nothing returned, treat as blocked.
         if not raw:
+            checks = getattr(safety_plan, "checks", []) or []
+            if not checks:
+                return [
+                    SafetyFinding(
+                        check_id="generic",
+                        category="safety",
+                        severity="high",
+                        message="No safety output produced",
+                        details={},
+                    )
+                ]
+
             return [
                 SafetyFinding(
-                    id=chk.id,
-                    status="blocked",
+                    check_id=getattr(chk, "id", "unknown"),
+                    category="safety",
+                    severity="high",
                     message="No safety output produced",
                     details={},
                 )
-                for chk in safety_plan.checks
+                for chk in checks
             ]
 
         try:
@@ -545,22 +551,30 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
                 raise ValueError("Safety output must be a JSON list")
 
             findings: List[SafetyFinding] = []
-            by_id = {chk.id: chk for chk in safety_plan.checks}
+            checks = getattr(safety_plan, "checks", []) or []
+            by_id = {getattr(chk, "id", ""): chk for chk in checks}
 
             for item in data:
-                check_id = str(item.get("id") or item.get("check_id") or "")
-                if not check_id or check_id not in by_id:
-                    record_event("safety_unknown_check_id", {"check_id": check_id})
+                if not isinstance(item, dict):
                     continue
+                cid = str(item.get("check_id") or item.get("id") or "")
+                if not cid:
+                    cid = "unknown"
 
-                status = str(item.get("status", "blocked"))
+                # Unknown check ids are still allowed but logged.
+                if checks and cid not in by_id:
+                    record_event("safety_unknown_check_id", {"check_id": cid})
+
+                severity = str(item.get("severity", "high"))
+                category = str(item.get("category", "safety"))
                 message = str(item.get("message", ""))
                 details = item.get("details") or {}
 
                 findings.append(
                     SafetyFinding(
-                        id=check_id,
-                        status=status,
+                        check_id=cid,
+                        category=category,
+                        severity=severity,
                         message=message,
                         details=details,
                     )
@@ -571,13 +585,13 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
         except Exception:
             record_event("safety_malformed_json", {})
 
-        # Fallback: generic blocked finding per check.
+        # Fallback: generic blocked finding.
         return [
             SafetyFinding(
-                id=chk.id,
-                status="blocked",
+                check_id="generic",
+                category="safety",
+                severity="high",
                 message="Malformed safety JSON output",
                 details={},
             )
-            for chk in safety_plan.checks
         ]
