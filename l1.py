@@ -90,7 +90,6 @@ def _extract_resume_text(resume: ResumeInput) -> str:
     parts.append(_normalize_text(resume.summary))
 
     for section in resume.experience_sections or []:
-        # section is dict-like
         for key in ("impact_summary", "summary", "description", "details"):
             if key in section and section[key]:
                 parts.append(str(section[key]))
@@ -148,9 +147,6 @@ def _classify_complexity(
 ) -> ComplexityLevel:
     """
     Map the combined text + profile + meta-profile signals into LOW/MEDIUM/HIGH.
-
-    This is intentionally simple and deterministic; richer behavior can be
-    added later without changing the public contract.
     """
     total_tokens = len(job_text.split()) + len(resume_text.split())
 
@@ -161,10 +157,8 @@ def _classify_complexity(
     else:
         level = ComplexityLevel.HIGH
 
-    # Meta-profile can bias the classification slightly.
     if meta_profile is not None:
         if meta_profile.qa_failure_rate_last_10 > 0.4:
-            # If QA has been failing a lot, treat complexity as higher.
             if level is ComplexityLevel.LOW:
                 level = ComplexityLevel.MEDIUM
             elif level is ComplexityLevel.MEDIUM:
@@ -182,7 +176,6 @@ def _choose_reasoning_mode(
     """
     mode = profile_spec.reasoning_mode
 
-    # Meta-profile may nudge toward more robust reasoning.
     if meta_profile is not None:
         hint = (meta_profile.reasoning_mode_hint or "").lower()
         if hint == "tot":
@@ -229,13 +222,10 @@ def _build_strategy_plan(
 ) -> StrategyPlan:
     """
     Build a simple, interpretable strategy plan.
-
-    The goal is to preserve v10_8/v10_9 behavior (clarify → analyze → draft → refine)
-    while keeping the structure strictly typed via StrategyStep.
     """
     steps: List[StrategyStep] = []
-
     order = 1
+
     steps.append(
         StrategyStep(
             id="clarify_objective",
@@ -291,9 +281,6 @@ def _build_rag_plan(
 ) -> RAGPlan:
     """
     Build a RAGPlan describing which retrieval surfaces to use.
-
-    Phase 3 focuses on shaping the hints and HYDE/hybrid knobs; actual
-    retrieval/ranking behavior is implemented in retrieval.py / ranking.py.
     """
     max_hits = profile_spec.retrieval.max_hits
 
@@ -326,7 +313,7 @@ def _build_rag_plan(
     ]
 
     allow_hyde = config.rag_allow_hyde
-    require_hybrid = config.rag_require_hybrid or profile_spec.retrieval.strategy == "hybrid"
+    require_hybrid = getattr(config, "rag_require_hybrid", False) or profile_spec.retrieval.strategy == "hybrid"
 
     return RAGPlan(hints=hints, allow_hyde=allow_hyde, require_hybrid=require_hybrid)
 
@@ -337,21 +324,15 @@ def _select_drafting_mode(
     complexity: ComplexityLevel,
 ) -> DraftingMode:
     """
-    Choose drafting mode (e.g., bullet-heavy vs narrative) based on
-    seniority / job type / complexity.
-
-    Implementation is intentionally simple and deterministic.
+    Choose drafting mode (e.g., bullet-heavy vs narrative).
     """
-    # Senior executives → more narrative.
     seniority = (job.seniority or "").lower()
     if any(k in seniority for k in ("director", "vp", "chief", "head")):
         return DraftingMode.NARRATIVE
 
-    # Lower complexity → bullet-driven.
     if complexity is ComplexityLevel.LOW:
         return DraftingMode.BULLET_HEAVY
 
-    # Default: balanced.
     return DraftingMode.BALANCED
 
 
@@ -363,13 +344,9 @@ def _build_drafting_plan(
 ) -> DraftingPlan:
     """
     Build a DraftingPlan describing which sections to generate.
-
-    The goal is to ensure a predictable resume layout while allowing
-    some flexibility for seniority and job type.
     """
     sections: List[DraftSectionPlan] = []
 
-    # Summary section
     sections.append(
         DraftSectionPlan(
             id="summary",
@@ -380,7 +357,6 @@ def _build_drafting_plan(
         )
     )
 
-    # Experience section
     sections.append(
         DraftSectionPlan(
             id="experience",
@@ -391,7 +367,6 @@ def _build_drafting_plan(
         )
     )
 
-    # Skills section
     sections.append(
         DraftSectionPlan(
             id="skills",
@@ -402,7 +377,6 @@ def _build_drafting_plan(
         )
     )
 
-    # Optional leadership section for senior roles
     seniority = (job.seniority or "").lower()
     if any(k in seniority for k in ("director", "vp", "chief", "head")):
         sections.append(
@@ -431,16 +405,10 @@ def _build_qa_plan(
 ) -> QAPlan:
     """
     Build a QAPlan describing which checks to run.
-
-    Depth of QA is influenced by:
-        • profile_spec.qa_depth
-        • meta-profile.qa_failure_rate_last_10
-        • complexity
     """
     depth = profile_spec.qa_depth
     checks: List[QACheck] = []
 
-    # Baseline checks
     checks.append(
         QACheck(
             id="alignment_to_job",
@@ -463,7 +431,6 @@ def _build_qa_plan(
         )
     )
 
-    # Deeper QA for higher depth / complexity
     if depth in ("medium", "deep") or complexity is ComplexityLevel.MEDIUM:
         checks.append(
             QACheck(
@@ -482,19 +449,14 @@ def _build_qa_plan(
             )
         )
 
-    # Meta-profile can request extra passes or stricter QA.
-    if meta_profile is not None:
-        if meta_profile.extra_qa_passes:
-            checks.append(
-                QACheck(
-                    id="extra_pass",
-                    description="Extra QA pass requested by meta-profile.",
-                    severity="low",
-                )
+    if meta_profile is not None and meta_profile.extra_qa_passes:
+        checks.append(
+            QACheck(
+                id="extra_pass",
+                description="Extra QA pass requested by meta-profile.",
+                severity="low",
             )
-
-    # Phase-3: QA council size is carried in ExecutionProfileSpec (qa_council_size)
-    # and used by downstream layers; L1 just passes profile_spec through.
+        )
 
     return QAPlan(checks=checks)
 
@@ -532,7 +494,6 @@ def _build_safety_plan(
             )
         )
 
-    # Meta-profile may elevate caution or prefer HIL.
     if meta_profile is not None and meta_profile.elevated_caution:
         checks.append(
             SafetyCheck(
@@ -558,24 +519,10 @@ def build_workflow_plan_bundle(
 ) -> WorkflowPlanBundle:
     """
     Top-level L1 entrypoint.
-
-    Inputs:
-        • job, resume: typed workflow inputs.
-        • config:      WorkflowConfig.
-        • meta_profile: MetaProfileSnapshot (may be None).
-
-    Outputs:
-        • WorkflowPlanBundle for L2/L3/L4/L5.
     """
-    # --------------------------------------------------------------
-    # 1) Look up execution profile
-    # --------------------------------------------------------------
     profile_spec: ExecutionProfileSpec = get_profile(config.profile_id)
     execution_profile: ExecutionProfile = _to_execution_profile(profile_spec)
 
-    # --------------------------------------------------------------
-    # 2) Compute complexity + reasoning mode
-    # --------------------------------------------------------------
     job_text = _extract_job_text(job)
     resume_text = _extract_resume_text(resume)
 
@@ -587,24 +534,12 @@ def build_workflow_plan_bundle(
     )
     reasoning_mode = _choose_reasoning_mode(profile_spec, meta_profile)
 
-    # --------------------------------------------------------------
-    # 3) Build plans
-    # --------------------------------------------------------------
     strategy_plan = _build_strategy_plan(job, resume, complexity)
-
-    rag_plan = _build_rag_plan(
-        job=job,
-        resume=resume,
-        config=config,
-        profile_spec=profile_spec,
-        complexity=complexity,
-    )
-
+    rag_plan = _build_rag_plan(job, resume, config, profile_spec, complexity)
     drafting_plan = _build_drafting_plan(job, resume, config, complexity)
     qa_plan = _build_qa_plan(profile_spec, meta_profile, complexity)
     safety_plan = _build_safety_plan(profile_spec, meta_profile)
 
-    # Routing hint based on profile + meta-profile.
     routing_hint = RoutingHint(
         complexity=complexity,
         reasoning_mode=reasoning_mode,
@@ -612,9 +547,6 @@ def build_workflow_plan_bundle(
         meta=_map_meta_profile_to_routing_hint(meta_profile),
     )
 
-    # --------------------------------------------------------------
-    # 4) Bundle and return
-    # --------------------------------------------------------------
     return WorkflowPlanBundle(
         strategy=strategy_plan,
         rag=rag_plan,
