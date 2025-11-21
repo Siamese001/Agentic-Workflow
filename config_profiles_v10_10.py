@@ -1,47 +1,47 @@
 # FILE: 10_10/config_profiles_v10_10.py
 """
-Execution Profiles (v10_10 · Phase 0)
-====================================
+Execution Profiles (v10_10 · Phase 3)
+=====================================
 
 This module defines the **deterministic, hard execution profiles**
-used by the v10_10→v10_11 refactor. These replace the partial,
-unused meta-profile wiring in current v10_10.
+used by the v10_10 stack.
 
-Profiles here will drive:
+Profiles drive:
 
     • Reasoning strategy (CoT, ToT, ReAct)
-    • RAG retrieval strategy (BM25, Hybrid, Dense)
+    • RAG retrieval strategy (BM25, Hybrid, Dense) + HYDE + RRF
     • Safety tier (strict, standard, debug)
     • Context budgets
     • Model tier selection (cheap / balanced / premium)
     • Drafting depth / QA depth
-    • Async / parallel execution allowances
-    • DAG-level execution configs
-    • Cost / latency ceilings
-    • Logging & observability granularity
+    • Async / DAG mode
+    • Phase-3 controls:
+        – qa_council_size
+        – enable_correction_loop, max_corrections
+        – rag_allow_hyde / hyde_model_tier
+        – routing_telemetry_mode
 
-These values are intentionally explicit and static to satisfy
-G1–G3, G18, G28, G33 from the gap table. Dynamic adjustments
-will be introduced in Phase 4 (meta-learning).
+Design notes:
+    • ExecutionProfileSpec is the *authoritative* profile schema.
+    • L1 consumes ExecutionProfileSpec and maps it into the simpler
+      ExecutionProfile model (in models.py) for planning.
+    • RetrievalConfig is Phase-3 aware (HYDE, RRF, council).
 """
 
 from __future__ import annotations
 
 from enum import Enum
-from typing import Dict, Any
+from typing import Dict
 
 from pydantic import BaseModel, Field
 
-from .models import (
-    ReasoningMode,
-    RetrievalConfig,
-    ContextBudget,
-)
+from models import RetrievalConfig, ContextBudget, ReasoningMode
 
 
 # ======================================================================
 # ENUMS
 # ======================================================================
+
 
 class SafetyTier(str, Enum):
     STANDARD = "standard"
@@ -61,19 +61,22 @@ class DAGMode(str, Enum):
     Controls whether the workflow graph may run:
         • sequential only
         • parallel-capable
-        • allow speculative execution (Phase N)
     """
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
 
 
 # ======================================================================
-# PROFILE DEFINITION
+# EXECUTION PROFILE SPEC
 # ======================================================================
+
 
 class ExecutionProfileSpec(BaseModel):
     """
     Canonical representation of a workflow execution profile.
+
+    This type is stable and versioned at the config layer. L1
+    converts this into models.ExecutionProfile for planning.
     """
 
     id: str
@@ -88,7 +91,7 @@ class ExecutionProfileSpec(BaseModel):
     max_cost_usd: float = 0.10
     max_latency_ms: int = 3000
 
-    # RAG tuning
+    # RAG tuning (Phase 3: HYDE / RRF / council via RetrievalConfig)
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
 
     # Context budgeting
@@ -109,44 +112,94 @@ class ExecutionProfileSpec(BaseModel):
     pii_detection_enabled: bool = True
     policy_engine_enabled: bool = True
 
+    # ------------------------------
+    # Phase-3 additions
+    # ------------------------------
+
+    # QA council size and mode
+    qa_council_size: int = 1
+
+    # Correction loop controls
+    enable_correction_loop: bool = True
+    max_corrections: int = 1
+
+    # HYDE controls (RAG-level)
+    rag_allow_hyde: bool = False
+    hyde_model_tier: str = "balanced"
+
+    # Routing telemetry mode
+    routing_telemetry_mode: str = "simple"  # "simple", "full"
+
 
 # ======================================================================
-# PROFILE CATALOG
+# RAG RETRIEVAL CONFIG HELPERS (PHASE 3)
 # ======================================================================
 
-def _balanced_hybrid_retrieval() -> RetrievalConfig:
+
+def _balanced_hybrid_retrieval(
+    *,
+    allow_hyde: bool,
+    qa_council_size: int,
+) -> RetrievalConfig:
+    """
+    Balanced hybrid RAG configuration with optional HYDE and RRF.
+
+    Used by high-quality profiles.
+    """
     return RetrievalConfig(
         strategy="hybrid",
         use_rrf=True,
         max_hits=50,
         bm25_k1=1.2,
         bm25_b=0.75,
+        rrf_weights=None,
+        allow_hyde=allow_hyde,
+        qa_council_size=qa_council_size,
+        qa_council_mode="simple",
     )
 
 
 def _cheap_bm25_retrieval() -> RetrievalConfig:
+    """
+    Cheap, BM25-only retrieval; no HYDE, no RRF, small hit cap.
+    """
     return RetrievalConfig(
         strategy="bm25",
         use_rrf=False,
         max_hits=25,
         bm25_k1=1.0,
-        bm25_b=0.6,
+        bm25_b=0.75,
+        rrf_weights=None,
+        allow_hyde=False,
+        qa_council_size=1,
+        qa_council_mode="simple",
     )
 
 
-def _premium_dense_retrieval() -> RetrievalConfig:
+def _premium_dense_retrieval(
+    *,
+    allow_hyde: bool = False,
+    qa_council_size: int = 1,
+) -> RetrievalConfig:
+    """
+    Dense-oriented retrieval; Phase-3 capable via HYDE/council flags.
+    """
     return RetrievalConfig(
         strategy="dense",
         use_rrf=False,
         max_hits=40,
         bm25_k1=1.2,
         bm25_b=0.75,
+        rrf_weights=None,
+        allow_hyde=allow_hyde,
+        qa_council_size=qa_council_size,
+        qa_council_mode="simple",
     )
 
 
-# =============================================================
-# PROFILE SET
-# =============================================================
+# ======================================================================
+# PROFILE CATALOG
+# ======================================================================
 
 EXECUTION_PROFILES: Dict[str, ExecutionProfileSpec] = {
     # ---------------------------------------------------------
@@ -154,13 +207,19 @@ EXECUTION_PROFILES: Dict[str, ExecutionProfileSpec] = {
     # ---------------------------------------------------------
     "RESUME_HIGH_QUALITY": ExecutionProfileSpec(
         id="RESUME_HIGH_QUALITY",
-        description="High-quality resume with full RAG, deep drafting, strict QA and safety.",
+        description=(
+            "High-quality resume with full RAG, HYDE, deep drafting, "
+            "strict QA and safety."
+        ),
         reasoning_mode=ReasoningMode.TOT,
         safety_tier=SafetyTier.STRICT,
         model_tier=ModelTier.PREMIUM,
         max_cost_usd=0.25,
         max_latency_ms=4500,
-        retrieval=_balanced_hybrid_retrieval(),
+        retrieval=_balanced_hybrid_retrieval(
+            allow_hyde=True,
+            qa_council_size=3,
+        ),
         context_budget=ContextBudget(
             total_tokens=2000,
             planning_tokens=300,
@@ -176,78 +235,108 @@ EXECUTION_PROFILES: Dict[str, ExecutionProfileSpec] = {
         telemetry_granularity="verbose",
         pii_detection_enabled=True,
         policy_engine_enabled=True,
+        qa_council_size=3,
+        enable_correction_loop=True,
+        max_corrections=2,
+        rag_allow_hyde=True,
+        hyde_model_tier="premium",
+        routing_telemetry_mode="full",
     ),
 
     # ---------------------------------------------------------
-    # 🟨 Low-Cost Resume Generation
+    # 🟨 Faster Resume Generation (cheaper, shallower)
     # ---------------------------------------------------------
-    "RESUME_LOW_COST": ExecutionProfileSpec(
-        id="RESUME_LOW_COST",
-        description="Low-cost profile optimized for speed and minimal token spend.",
-        reasoning_mode=ReasoningMode.DIRECT,
+    "RESUME_FAST": ExecutionProfileSpec(
+        id="RESUME_FAST",
+        description=(
+            "Faster resume generation with BM25-only RAG, shallower drafting "
+            "and QA, standard safety."
+        ),
+        reasoning_mode=ReasoningMode.COT,
         safety_tier=SafetyTier.STANDARD,
-        model_tier=ModelTier.CHEAP,
-        max_cost_usd=0.03,
-        max_latency_ms=1500,
+        model_tier=ModelTier.BALANCED,
+        max_cost_usd=0.10,
+        max_latency_ms=2500,
         retrieval=_cheap_bm25_retrieval(),
+        context_budget=ContextBudget(
+            total_tokens=1400,
+            planning_tokens=200,
+            rag_tokens=600,
+            drafting_tokens=400,
+            qa_tokens=128,
+            safety_tokens=128,
+        ),
+        drafting_depth=2,
+        qa_depth="medium",
+        dag_mode=DAGMode.SEQUENTIAL,
+        allow_async=False,
+        telemetry_granularity="standard",
+        pii_detection_enabled=True,
+        policy_engine_enabled=True,
+        qa_council_size=1,
+        enable_correction_loop=True,
+        max_corrections=1,
+        rag_allow_hyde=False,
+        hyde_model_tier="balanced",
+        routing_telemetry_mode="simple",
+    ),
+
+    # ---------------------------------------------------------
+    # 🟨 Outreach / Quick Drafts
+    # ---------------------------------------------------------
+    "OUTREACH_QUICK": ExecutionProfileSpec(
+        id="OUTREACH_QUICK",
+        description=(
+            "Quick outreach-style drafting with hybrid RAG but no HYDE, "
+            "lighter QA and relaxed safety."
+        ),
+        reasoning_mode=ReasoningMode.REACT,
+        safety_tier=SafetyTier.RELAXED,
+        model_tier=ModelTier.CHEAP,
+        max_cost_usd=0.05,
+        max_latency_ms=2000,
+        retrieval=_balanced_hybrid_retrieval(
+            allow_hyde=False,
+            qa_council_size=1,
+        ),
         context_budget=ContextBudget(
             total_tokens=1200,
             planning_tokens=150,
             rag_tokens=500,
-            drafting_tokens=400,
+            drafting_tokens=350,
             qa_tokens=100,
-            safety_tokens=50,
+            safety_tokens=100,
         ),
         drafting_depth=2,
         qa_depth="shallow",
-        dag_mode=DAGMode.SEQUENTIAL,
-        allow_async=False,
+        dag_mode=DAGMode.PARALLEL,
+        allow_async=True,
         telemetry_granularity="minimal",
         pii_detection_enabled=True,
-        policy_engine_enabled=True,
-    ),
-
-    # ---------------------------------------------------------
-    # 🟨 LinkedIn Outreach (Low-Verbosity)
-    # ---------------------------------------------------------
-    "OUTREACH_QUICK": ExecutionProfileSpec(
-        id="OUTREACH_QUICK",
-        description="Fast LinkedIn outreach generation; low latency and minimal RAG.",
-        reasoning_mode=ReasoningMode.COT,
-        safety_tier=SafetyTier.RELAXED,
-        model_tier=ModelTier.CHEAP,
-        max_cost_usd=0.02,
-        max_latency_ms=1000,
-        retrieval=_cheap_bm25_retrieval(),
-        context_budget=ContextBudget(
-            total_tokens=900,
-            planning_tokens=100,
-            rag_tokens=300,
-            drafting_tokens=350,
-            qa_tokens=50,
-            safety_tokens=25,
-        ),
-        drafting_depth=1,
-        qa_depth="shallow",
-        dag_mode=DAGMode.SEQUENTIAL,
-        allow_async=False,
-        telemetry_granularity="minimal",
-        pii_detection_enabled=False,
         policy_engine_enabled=False,
+        qa_council_size=1,
+        enable_correction_loop=False,
+        max_corrections=0,
+        rag_allow_hyde=False,
+        hyde_model_tier="balanced",
+        routing_telemetry_mode="simple",
     ),
 
     # ---------------------------------------------------------
-    # 🟥 Debug Deep-Inspection Mode
+    # 🟥 Debug / Diagnostic
     # ---------------------------------------------------------
-    "DEBUG_PROFILE": ExecutionProfileSpec(
-        id="DEBUG_PROFILE",
-        description="Verbose mode for debugging; maximal logs and loose limits.",
+    "DEBUG_DIAGNOSTIC": ExecutionProfileSpec(
+        id="DEBUG_DIAGNOSTIC",
+        description=(
+            "Diagnostic profile: dense retrieval only, verbose telemetry, "
+            "debug safety tier."
+        ),
         reasoning_mode=ReasoningMode.REACT,
         safety_tier=SafetyTier.DEBUG,
         model_tier=ModelTier.CHEAP,
         max_cost_usd=1.00,
         max_latency_ms=10000,
-        retrieval=_premium_dense_retrieval(),
+        retrieval=_premium_dense_retrieval(allow_hyde=True, qa_council_size=1),
         context_budget=ContextBudget(
             total_tokens=2500,
             planning_tokens=500,
@@ -263,6 +352,12 @@ EXECUTION_PROFILES: Dict[str, ExecutionProfileSpec] = {
         telemetry_granularity="verbose",
         pii_detection_enabled=False,
         policy_engine_enabled=False,
+        qa_council_size=1,
+        enable_correction_loop=True,
+        max_corrections=3,
+        rag_allow_hyde=True,
+        hyde_model_tier="premium",
+        routing_telemetry_mode="full",
     ),
 }
 
@@ -270,6 +365,7 @@ EXECUTION_PROFILES: Dict[str, ExecutionProfileSpec] = {
 # ======================================================================
 # PROFILE LOOKUP API
 # ======================================================================
+
 
 def get_profile(profile_id: str) -> ExecutionProfileSpec:
     """
