@@ -10,6 +10,7 @@ A. Retrieval:
    • Dense scoring
    • Hybrid scoring
    • HYDE query-expansion hook (placeholder, deterministic)
+   • Retriever-level failure-mode fallback (per-retriever isolation)
 
 B. Ranking (multi-retriever):
    • BM25 ranked group
@@ -37,7 +38,8 @@ E. Telemetry:
         – hybrid_retrieval
         – hyde_retrieval
         – ranking_rrf
-   • ranking events emitted indirectly via ranking.fuse_ranked_groups
+   • Ranking events emitted indirectly via ranking.fuse_ranked_groups
+   • Group-level failure telemetry for per-retriever failures
 
 F. Layer purity:
    • No LLM calls
@@ -46,6 +48,7 @@ F. Layer purity:
 
 G. Multi-agent hooks:
    • HYDE hook is surfaced but deterministic (no LLM calls yet).
+   • Router and QA-council evidence weighting hooks (identity pass-throughs).
 """
 
 from __future__ import annotations
@@ -159,7 +162,8 @@ def _plan_retrieval(
         bm25_b=0.75,
         rrf_weights=None,  # uniform unless set by ExecutionProfile
     )
-    cfg._allow_hyde = allow_hyde  # attach flag (not in schema)
+    # Attach non-schema flag for HYDE enablement (Phase-3 behavior).
+    cfg._allow_hyde = allow_hyde  # type: ignore[attr-defined]
 
     emit_telemetry_event(
         "retrieval.plan",
@@ -200,6 +204,50 @@ def _dicts_to_evidence(
 
 
 # ---------------------------------------------------------------------------
+# MULTI-AGENT WEIGHTING HOOKS (PLACEHOLDERS · IDENTITY)
+# ---------------------------------------------------------------------------
+
+def apply_router_weights(
+    evidence: List[Evidence],
+    metadata: Optional[Dict[str, Any]] = None,
+) -> List[Evidence]:
+    """
+    Placeholder for multi-agent router evidence weighting.
+
+    Phase-3 requirement:
+        • This function must exist as a hook surface.
+        • It must currently behave as an identity function (no-op).
+
+    Args:
+        evidence: Ranked evidence list.
+        metadata: Optional context (strategy, HYDE, RAGPlan identifiers, etc.).
+
+    Returns:
+        The input evidence list unchanged.
+    """
+    return evidence
+
+
+def apply_qa_council_weights(
+    evidence: List[Evidence],
+) -> List[Evidence]:
+    """
+    Placeholder for QA council evidence weighting.
+
+    Phase-3 requirement:
+        • This function must exist as a hook surface.
+        • It must currently behave as an identity function (no-op).
+
+    Args:
+        evidence: Evidence list post-router weighting.
+
+    Returns:
+        The input evidence list unchanged.
+    """
+    return evidence
+
+
+# ---------------------------------------------------------------------------
 # PUBLIC ENTRYPOINT (USED BY L2)
 # ---------------------------------------------------------------------------
 
@@ -218,15 +266,17 @@ def run_rag_retrieval(
 
         1. Build base + HYDE query
         2. Build BM25 / dense / hybrid / HYDE groups (each in spans)
-        3. Weighted RRF fusion across groups
-        4. Convert fused groups → Evidence
-        5. Emit typed retrieval events
-        6. Return List[Evidence]
+        3. Per-group failure isolation with fallback across retrievers
+        4. Weighted RRF fusion across successful groups
+        5. Convert fused groups → Evidence
+        6. Apply multi-agent weighting hooks (router + QA council)
+        7. Emit typed retrieval events
+        8. Return List[Evidence]
     """
     span = start_span("retrieval.run", ctx=None)
     base_query = _build_base_query(job, resume)
     cfg = _plan_retrieval(rag_plan, config, strategy_hint)
-    allow_hyde = bool(cfg._allow_hyde)
+    allow_hyde = bool(getattr(cfg, "_allow_hyde", False))
 
     # ----------------------------------------------------------
     # Emit Attempt Event
@@ -250,6 +300,7 @@ def run_rag_retrieval(
         hyde_items = _attach_query(raw_hits, hyde_query) if allow_hyde else []
 
         if not base_items:
+            # No corpus to search at all → hard failure.
             failure_evt = RetrievalFailureEvent(
                 name="retrieval",
                 ts_ms=int(time.time() * 1000),
@@ -262,51 +313,76 @@ def run_rag_retrieval(
             return []
 
         # ----------------------------------------------------------
-        # BUILD RETRIEVAL GROUPS (WITH SPANS)
+        # BUILD RETRIEVAL GROUPS (WITH SPANS + FAILURE ISOLATION)
         # ----------------------------------------------------------
         groups: List[List[Dict[str, Any]]] = []
+        group_failures: Dict[str, str] = {}
 
         # BM25
-        s = start_span("bm25_retrieval", ctx=None)
+        bm25_span = start_span("bm25_retrieval", ctx=None)
         try:
             bm25_group = _ranking.bm25(base_items)
             for it in bm25_group:
                 it["source"] += "|bm25"
             groups.append(bm25_group)
+        except Exception as exc:  # noqa: BLE001
+            group_failures["bm25"] = str(exc)
+            emit_telemetry_event(
+                "retrieval.group_failure",
+                {"group": "bm25", "strategy": cfg.strategy, "error": str(exc)},
+            )
         finally:
-            end_span(s)
+            end_span(bm25_span)
 
         # Dense
-        s = start_span("dense_retrieval", ctx=None)
+        dense_span = start_span("dense_retrieval", ctx=None)
         try:
             dense_group = _ranking.dense(base_items)
             for it in dense_group:
                 it["source"] += "|dense"
             groups.append(dense_group)
+        except Exception as exc:  # noqa: BLE001
+            group_failures["dense"] = str(exc)
+            emit_telemetry_event(
+                "retrieval.group_failure",
+                {"group": "dense", "strategy": cfg.strategy, "error": str(exc)},
+            )
         finally:
-            end_span(s)
+            end_span(dense_span)
 
-        # Hybrid
+        # Hybrid (only when requested)
         if cfg.strategy == "hybrid":
-            s = start_span("hybrid_retrieval", ctx=None)
+            hybrid_span = start_span("hybrid_retrieval", ctx=None)
             try:
                 hybrid_group = _ranking.hybrid(base_items)
                 for it in hybrid_group:
                     it["source"] += "|hybrid"
                 groups.append(hybrid_group)
+            except Exception as exc:  # noqa: BLE001
+                group_failures["hybrid"] = str(exc)
+                emit_telemetry_event(
+                    "retrieval.group_failure",
+                    {"group": "hybrid", "strategy": cfg.strategy, "error": str(exc)},
+                )
             finally:
-                end_span(s)
+                end_span(hybrid_span)
 
-        # HYDE extra path
+        # HYDE extra path (optional)
         if allow_hyde and hyde_items:
-            s = start_span("hyde_retrieval", ctx=None)
+            hyde_span = start_span("hyde_retrieval", ctx=None)
             try:
                 hyde_group = _ranking.dense(hyde_items)
                 for it in hyde_group:
                     it["source"] += "|hyde"
                 groups.append(hyde_group)
+            except Exception as exc:  # noqa: BLE001
+                group_failures["hyde"] = str(exc)
+                emit_telemetry_event(
+                    "retrieval.group_failure",
+                    {"group": "hyde", "strategy": cfg.strategy, "error": str(exc)},
+                )
             finally:
-                end_span(s)
+                end_span(hyde_span)
 
         emit_telemetry_event(
             "retrieval.groups",
@@ -315,8 +391,26 @@ def run_rag_retrieval(
                 "allow_hyde": allow_hyde,
                 "num_groups": len(groups),
                 "group_sizes": [len(g) for g in groups],
+                "group_failures": group_failures,
             },
         )
+
+        # If *all* retrievers failed (no successful groups), emit failure and bail.
+        if not groups:
+            failure_evt = RetrievalFailureEvent(
+                name="retrieval",
+                ts_ms=int(time.time() * 1000),
+                attributes={
+                    "strategy": cfg.strategy,
+                    "reason": "all_retrievers_failed",
+                    "group_failures": group_failures,
+                },
+                method=cfg.strategy,
+                query=base_query,
+                error="all_retrievers_failed",
+            )
+            emit_retrieval_failure(failure_evt)
+            return []
 
         # ----------------------------------------------------------
         # RRF FUSION
@@ -334,6 +428,18 @@ def run_rag_retrieval(
 
         max_chars = _max_chars_per_snippet(cfg, config)
         evidence = _dicts_to_evidence(fused, cfg.max_hits, max_chars)
+
+        # ----------------------------------------------------------
+        # MULTI-AGENT WEIGHTING HOOKS (IDENTITY FOR PHASE 3)
+        # ----------------------------------------------------------
+        router_metadata: Dict[str, Any] = {
+            "strategy": cfg.strategy,
+            "allow_hyde": allow_hyde,
+            "group_failures": group_failures,
+            "rag_plan_id": getattr(rag_plan, "plan_id", None),
+        }
+        evidence = apply_router_weights(evidence, router_metadata)
+        evidence = apply_qa_council_weights(evidence)
 
         emit_telemetry_event(
             "retrieval.result",
@@ -364,9 +470,9 @@ def run_rag_retrieval(
 
         return evidence
 
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         # ----------------------------------------------------------
-        # FAILURE EVENT
+        # FAILURE EVENT (UNEXPECTED ERROR PATH)
         # ----------------------------------------------------------
         failure_evt = RetrievalFailureEvent(
             name="retrieval",
