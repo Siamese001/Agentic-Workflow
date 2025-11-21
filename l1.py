@@ -1,7 +1,7 @@
 # FILE: 10_10/l1.py
 """
-Unified L1 Planning Layer (v10_10 · Phase 3)
-===========================================
+Unified L1 Planning Layer (v10_10 · Phase 3 — FINAL)
+====================================================
 
 Responsibilities (L1 only):
 
@@ -15,21 +15,23 @@ Responsibilities (L1 only):
         – DraftingPlan
         – QAPlan
         – SafetyPlan
-        – RoutingHint
 
-    • Bundle the above into a WorkflowPlanBundle for L2/L3/L4/L5.
+    • Construct a RoutingHint that carries ExecutionProfile + MetaProfile
+      into L2/L3 without doing any execution.
 
-Strict layer constraints:
+Layering constraints:
 
-    • NO LLM calls.
-    • NO retrieval / ranking.
-    • NO DAG orchestration.
-    • NO state mutation or safety enforcement.
+    • NO LLM calls (L2 only, via cognitive_agents).
+    • NO tool calls or side effects.
+    • NO state mutation (WorkflowState is L4-only).
+    • NO safety enforcement (L5-only).
+
+The result of this module is a WorkflowPlanBundle that fully describes
+what should happen in the workflow, but not how it is executed.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from models import (
@@ -77,8 +79,13 @@ def _extract_job_text(job: JobInput) -> str:
     parts.append(_normalize_text(job.role_type))
     parts.append(_normalize_text(job.seniority))
     parts.append(_normalize_text(job.posting_text))
+
     if job.requirements:
-        parts.append(" ".join(str(r) for r in job.requirements))
+        parts.append(" ".join(job.requirements))
+
+    if job.tags:
+        parts.append(" ".join(job.tags))
+
     return "\n".join(p for p in parts if p)
 
 
@@ -99,10 +106,8 @@ def _extract_resume_text(resume: ResumeInput) -> str:
 
     if resume.projects:
         for proj in resume.projects:
-            if isinstance(proj, dict):
-                parts.append(str(proj.get("summary") or proj.get("description") or ""))
-            else:
-                parts.append(str(proj))
+            parts.append(_normalize_text(proj.get("summary")))
+            parts.append(_normalize_text(proj.get("details")))
 
     return "\n".join(p for p in parts if p)
 
@@ -157,12 +162,19 @@ def _classify_complexity(
     else:
         level = ComplexityLevel.HIGH
 
+    # Meta-profile can bump complexity if we see elevated caution / frequent corrections.
     if meta_profile is not None:
-        if meta_profile.qa_failure_rate_last_10 > 0.4:
+        if meta_profile.elevated_caution or meta_profile.correction_rate_last_10 > 0.3:
+            # Do not downshift, only upshift.
             if level is ComplexityLevel.LOW:
                 level = ComplexityLevel.MEDIUM
             elif level is ComplexityLevel.MEDIUM:
                 level = ComplexityLevel.HIGH
+
+    # Execution profile may override to enforce a minimum complexity tier.
+    if profile_spec.min_complexity is not None:
+        if level.value < profile_spec.min_complexity.value:
+            level = profile_spec.min_complexity
 
     return level
 
@@ -178,7 +190,9 @@ def _choose_reasoning_mode(
 
     if meta_profile is not None:
         hint = (meta_profile.reasoning_mode_hint or "").lower()
-        if hint == "tot":
+        if hint == "cot":
+            mode = ReasoningMode.CHAIN_OF_THOUGHT
+        elif hint == "tot":
             mode = ReasoningMode.TOT
         elif hint == "react":
             mode = ReasoningMode.REACT
@@ -190,6 +204,14 @@ def _to_execution_profile(spec: ExecutionProfileSpec) -> ExecutionProfile:
     """
     Map an ExecutionProfileSpec (config) into the simpler ExecutionProfile
     model used at L1 planning time.
+
+    This object (ExecutionProfile) is what gets carried inside RoutingHint,
+    and is the primary top-level knob carrier for Phase-3 features like:
+        • HYDE (rag_allow_hyde)
+        • RRF strategy
+        • QA council size
+        • Correction loop configuration
+        • Telemetry routing mode
     """
     return ExecutionProfile(
         name=spec.id,
@@ -211,7 +233,7 @@ def _to_execution_profile(spec: ExecutionProfileSpec) -> ExecutionProfile:
 
 
 # =============================================================================
-# Builders: StrategyPlan, RAGPlan, DraftingPlan, QAPlan, SafetyPlan
+# Strategy Plan
 # =============================================================================
 
 
@@ -246,7 +268,15 @@ def _build_strategy_plan(
         StrategyStep(
             id="analyze_resume",
             order=order,
-            description="Analyze the resume to extract strengths, gaps, and transferrable skills.",
+            description="Analyze the resume to identify strengths, gaps, and leverage points.",
+        )
+    )
+    order += 1
+    steps.append(
+        StrategyStep(
+            id="alignment_plan",
+            order=order,
+            description="Plan how to align resume content and emphasis with job requirements.",
         )
     )
     order += 1
@@ -272,6 +302,11 @@ def _build_strategy_plan(
     )
 
 
+# =============================================================================
+# RAG Plan
+# =============================================================================
+
+
 def _build_rag_plan(
     job: JobInput,
     resume: ResumeInput,
@@ -281,6 +316,13 @@ def _build_rag_plan(
 ) -> RAGPlan:
     """
     Build a RAGPlan describing which retrieval surfaces to use.
+
+    Phase-3 invariants:
+        • HYDE is controlled by config/profile flags (rag_allow_hyde).
+        • Hybrid vs non-hybrid is determined by RetrievalConfig.strategy.
+        • Hints describe job / resume / hybrid focus surfaces.
+        • strategy_hint links to the configured retrieval strategy, which
+          downstream retrieval/ranking can use.
     """
     max_hits = profile_spec.retrieval.max_hits
 
@@ -291,7 +333,7 @@ def _build_rag_plan(
     hints: List[RAGQueryHint] = [
         RAGQueryHint(
             id="job_core",
-            description="Extract core job requirements and responsibilities.",
+            description="Extract core job requirements and key phrases.",
             focus="job",
             max_chunks=job_chunks,
             importance=1.0,
@@ -313,9 +355,22 @@ def _build_rag_plan(
     ]
 
     allow_hyde = config.rag_allow_hyde
-    require_hybrid = getattr(config, "rag_require_hybrid", False) or profile_spec.retrieval.strategy == "hybrid"
+    require_hybrid = (
+        getattr(config, "rag_require_hybrid", False)
+        or profile_spec.retrieval.strategy == "hybrid"
+    )
 
-    return RAGPlan(hints=hints, allow_hyde=allow_hyde, require_hybrid=require_hybrid)
+    return RAGPlan(
+        hints=hints,
+        allow_hyde=allow_hyde,
+        require_hybrid=require_hybrid,
+        strategy_hint=profile_spec.retrieval.strategy,
+    )
+
+
+# =============================================================================
+# Drafting Plan
+# =============================================================================
 
 
 def _select_drafting_mode(
@@ -362,7 +417,7 @@ def _build_drafting_plan(
             id="experience",
             title="Experience",
             required=True,
-            max_tokens=1024,
+            max_tokens=config.drafting_experience_max_tokens,
             priority=1.0,
         )
     )
@@ -371,31 +426,34 @@ def _build_drafting_plan(
         DraftSectionPlan(
             id="skills",
             title="Skills",
-            required=False,
+            required=True,
             max_tokens=256,
             priority=0.8,
         )
     )
 
-    seniority = (job.seniority or "").lower()
-    if any(k in seniority for k in ("director", "vp", "chief", "head")):
+    if complexity is ComplexityLevel.HIGH:
         sections.append(
             DraftSectionPlan(
-                id="leadership",
-                title="Leadership Highlights",
+                id="projects",
+                title="Projects",
                 required=False,
-                max_tokens=768,
-                priority=0.6,
+                max_tokens=512,
+                priority=0.7,
             )
         )
 
-    drafting_mode = _select_drafting_mode(job, resume, complexity)
+    mode = _select_drafting_mode(job, resume, complexity)
 
     return DraftingPlan(
         sections=sections,
-        mode=drafting_mode,
-        target_tone=config.target_tone,
+        mode=mode,
     )
+
+
+# =============================================================================
+# QA Plan
+# =============================================================================
 
 
 def _build_qa_plan(
@@ -431,34 +489,40 @@ def _build_qa_plan(
         )
     )
 
-    if depth in ("medium", "deep") or complexity is ComplexityLevel.MEDIUM:
+    if depth.value >= 2:
         checks.append(
             QACheck(
-                id="impact_quantification",
-                description="Check for quantified impact where feasible.",
+                id="tone_appropriateness",
+                description="Check that tone and style are appropriate for the target role.",
                 severity="medium",
             )
         )
 
-    if depth == "deep" or complexity is ComplexityLevel.HIGH:
+    if depth.value >= 3:
         checks.append(
             QACheck(
                 id="consistency",
-                description="Check for consistency across sections and dates.",
+                description="Check for internal consistency across sections and roles.",
                 severity="medium",
             )
         )
 
-    if meta_profile is not None and meta_profile.extra_qa_passes:
+    # Meta-profile can request extra QA passes.
+    if meta_profile is not None and meta_profile.extra_qa_passes > 0:
         checks.append(
             QACheck(
-                id="extra_pass",
-                description="Extra QA pass requested by meta-profile.",
-                severity="low",
+                id="extra_pass_meta_profile",
+                description="Extra QA pass requested due to recent failures.",
+                severity="medium",
             )
         )
 
-    return QAPlan(checks=checks)
+    return QAPlan(checks=checks, depth=depth)
+
+
+# =============================================================================
+# Safety Plan
+# =============================================================================
 
 
 def _build_safety_plan(
@@ -466,31 +530,31 @@ def _build_safety_plan(
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> SafetyPlan:
     """
-    Build a SafetyPlan describing which safety / policy checks to run.
+    Build a SafetyPlan describing which safety checks to run.
     """
     checks: List[SafetyCheck] = []
 
     checks.append(
         SafetyCheck(
-            id="privacy",
-            description="Check for privacy violations or sensitive PII.",
+            id="pii",
+            description="Detect and flag any PII or sensitive personal information.",
             severity="high",
         )
     )
     checks.append(
         SafetyCheck(
-            id="fairness",
-            description="Check for fairness / bias issues.",
-            severity="medium",
+            id="policy_violations",
+            description="Detect potential policy violations (disallowed claims, discrimination, etc.).",
+            severity="high",
         )
     )
 
-    if profile_spec.safety_tier in ("strict", "debug"):
+    if profile_spec.safety_tier.value >= 2:
         checks.append(
             SafetyCheck(
-                id="debug_policy",
-                description="Extra debug/policy checks for strict tiers.",
-                severity="low",
+                id="tone",
+                description="Ensure tone is professional and non-inflammatory.",
+                severity="medium",
             )
         )
 
@@ -498,16 +562,16 @@ def _build_safety_plan(
         checks.append(
             SafetyCheck(
                 id="elevated_caution",
-                description="Meta-profile requested elevated safety caution.",
+                description="Apply stricter thresholds due to elevated caution state.",
                 severity="high",
             )
         )
 
-    return SafetyPlan(checks=checks)
+    return SafetyPlan(checks=checks, tier=profile_spec.safety_tier)
 
 
 # =============================================================================
-# Public API: build_workflow_plan_bundle
+# Top-level entrypoint
 # =============================================================================
 
 
@@ -519,6 +583,15 @@ def build_workflow_plan_bundle(
 ) -> WorkflowPlanBundle:
     """
     Top-level L1 entrypoint.
+
+    Produces a WorkflowPlanBundle containing:
+
+        • strategy: StrategyPlan
+        • rag:      RAGPlan
+        • drafting: DraftingPlan
+        • qa:       QAPlan
+        • safety:   SafetyPlan
+        • routing_hint: RoutingHint carrying ExecutionProfile + MetaProfile
     """
     profile_spec: ExecutionProfileSpec = get_profile(config.profile_id)
     execution_profile: ExecutionProfile = _to_execution_profile(profile_spec)
