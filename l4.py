@@ -1,138 +1,178 @@
-# FILE: 10_10/l3.py
+# FILE: 10_10/l4.py
 """
-L3 Orchestration Layer (v10_10 · Phase 3)
-=========================================
+State Adapter · L4 Mutation Layer (v10_10 · Phase 3)
+====================================================
 
-Responsibilities (strict L3-only):
-    • DAG orchestration and scheduling.
-    • Parallelization of retrieval nodes.
-    • Fallback graph edges for retrieval failures.
-    • Concurrency control and ordering.
-    • Fan-out/fan-in of L2 tasks.
-    • Zero LLM execution.
-    • Zero retrieval logic.
-    • Zero safety/state mutation.
+Responsibilities:
+    • Sole legal mutation surface for WorkflowState.
+    • Apply StateTransitionEvent → updated WorkflowState.
+    • Implement checkpoint + rollback hooks (G34–G36).
+    • Emit state-transition telemetry (G15).
+    • Must not:
+          – call LLMs,
+          – retrieve/rank,
+          – plan,
+          – enforce safety,
+          – orchestrate DAG.
 
-This module must NOT:
-    • Call any LLM client.
-    • Perform retrieval, ranking, or RAG reasoning.
-    • Apply state patches or enforce safety.
+Inputs:
+    • WorkflowState
+    • StateTransitionEvent  (typed, atomic)
+    • ExecutionContext      (read-only for telemetry/span)
 
-L3 delegates:
-    • L2 cognitive agents via l2.py
-    • Correction loops and DAG wiring via workflow_graph.py
+Output:
+    • New WorkflowState (pure functional update)
 """
 
 from __future__ import annotations
 
-import asyncio
+from dataclasses import replace
+from typing import Optional
 
 from models import (
-    WorkflowPlanBundle,
+    WorkflowState,
+    StateTransitionEvent,
     ExecutionContext,
-    L2ResultBundle,
-    RAGResult,
-    DraftingResult,
-    QAResult,
-    SafetyResult,
+    Checkpoint,
+    RollbackRequest,
+    RollbackResult,
 )
-from observability import (
-    start_span,
-    end_span,
-    emit_node_event,
-    log_exception,
-)
-from l2 import (
-    _execute_strategy,
-    _execute_retrieval,
-    _execute_drafting,
-    _execute_qa,
-    _execute_safety,
-)
+from observability import start_span, end_span, log_exception
 
 
-class Node:
-    """Typed DAG nodes for observability + determinism."""
-    STRATEGY = "strategy"
-    RETRIEVAL = "retrieval"
-    DRAFTING = "drafting"
-    QA = "qa"
-    SAFETY = "safety"
+# =============================================================================
+# Internal utilities
+# =============================================================================
 
 
-async def _run_node(name: str, ctx: ExecutionContext, fn, *args, **kwargs):
+def _apply_patch(
+    state: WorkflowState,
+    event: StateTransitionEvent,
+) -> WorkflowState:
     """
-    Wraps each L3 node execution in:
-        • span(name)
-        • node-level telemetry events
-        • error capture (no throws to DAG)
-    """
-    span = start_span(f"l3.{name}", ctx=ctx.span_context())
-    emit_node_event(node=name, status="start")
+    Core patch application.
 
+    Requirements:
+        • Deterministic, type-safe update.
+        • No side effects.
+        • No LLM calls.
+        • No orchestration.
+    """
+    # event.patch may be a dict or a typed patch object depending on
+    # Phase-0/Phase-1 canonical models. We assume Phase-0 canonical structure.
+    patch = getattr(event, "patch", None)
+    if patch is None:
+        return state
+
+    if isinstance(patch, dict):
+        return replace(state, **patch)
+
+    # Typed patch object with .__dict__ or fields.
+    if hasattr(patch, "__dict__"):
+        return replace(state, **patch.__dict__)
+
+    # Last-chance fallback: no mutation if patch format is unknown.
+    return state
+
+
+def _make_checkpoint(state: WorkflowState) -> Checkpoint:
+    """
+    Create a new immutable checkpoint snapshot of the WorkflowState.
+    """
+    return Checkpoint(snapshot=state)
+
+
+def _apply_rollback(
+    state: WorkflowState,
+    request: RollbackRequest,
+) -> RollbackResult:
+    """
+    Roll back to the specified checkpoint, returning the new state and localized result.
+    """
+    checkpoint = getattr(request, "checkpoint", None)
+    if checkpoint is None or getattr(checkpoint, "snapshot", None) is None:
+        return RollbackResult(
+            ok=False,
+            reason="invalid_checkpoint",
+            state_after=state,
+        )
+
+    snapshot: WorkflowState = checkpoint.snapshot
+    return RollbackResult(
+        ok=True,
+        reason="rolled_back",
+        state_after=snapshot,
+    )
+
+
+# =============================================================================
+# Public API
+# =============================================================================
+
+
+def apply_state_transition(
+    state: WorkflowState,
+    event: StateTransitionEvent,
+    ctx: Optional[ExecutionContext] = None,
+) -> WorkflowState:
+    """
+    Apply a single typed StateTransitionEvent to the WorkflowState.
+
+    Emits L4-layer state-transition telemetry.
+    """
+    span = start_span("l4.apply_state_transition", ctx=ctx.span_context() if ctx else None)
     try:
-        result = await fn(*args, **kwargs)
-        emit_node_event(node=name, status="success")
-        return result
+        new_state = _apply_patch(state, event)
+        return new_state
     except Exception as exc:  # noqa: BLE001
-        log_exception(f"l3.{name}.error", exc)
-        emit_node_event(node=name, status="error", details=str(exc))
-        return None
+        log_exception("l4.state_transition_error", exc)
+        return state
     finally:
         end_span(span)
 
 
-async def run_l3_workflow(
-    plans: WorkflowPlanBundle,
-    ctx: ExecutionContext,
-) -> L2ResultBundle:
+def commit_checkpoint(
+    state: WorkflowState,
+    ctx: Optional[ExecutionContext] = None,
+) -> Checkpoint:
     """
-    Execute the core workflow graph at L3 using L2 nodes.
+    Create a deterministic checkpoint (G34).
+
+    Does not mutate state; returns a new Checkpoint object.
     """
-    span = start_span("l3.run", ctx=ctx.span_context())
+    span = start_span("l4.commit_checkpoint", ctx=ctx.span_context() if ctx else None)
     try:
-        strategy_task = asyncio.create_task(
-            _run_node(Node.STRATEGY, ctx, _execute_strategy, plans, ctx)
-        )
-        retrieval_task = asyncio.create_task(
-            _run_node(Node.RETRIEVAL, ctx, _execute_retrieval, plans, ctx)
-        )
-
-        strategy_result = await strategy_task
-        rag_result = await retrieval_task
-
-        if rag_result is None:
-            rag_result = RAGResult(evidence=[], used_hyde=False)
-
-        drafting_result: DraftingResult = await _run_node(
-            Node.DRAFTING, ctx, _execute_drafting, plans, strategy_result, rag_result, ctx
-        )
-        if drafting_result is None:
-            drafting_result = DraftingResult(sections=[])
-
-        qa_result: QAResult = await _run_node(
-            Node.QA, ctx, _execute_qa, plans, drafting_result, rag_result, ctx
-        )
-        if qa_result is None:
-            qa_result = QAResult(findings=[])
-
-        safety_result: SafetyResult = await _run_node(
-            Node.SAFETY, ctx, _execute_safety, plans, drafting_result, qa_result, ctx
-        )
-        if safety_result is None:
-            safety_result = SafetyResult(findings=[])
-
-        return L2ResultBundle(
-            strategy=strategy_result,
-            rag=rag_result,
-            drafting=drafting_result,
-            qa=qa_result,
-            safety=safety_result,
-        )
-
+        return _make_checkpoint(state)
     except Exception as exc:  # noqa: BLE001
-        log_exception("l3.run_fatal", exc)
-        empty = L2ResultBundle.empty_with_error(str(exc))
-        return empty
+        log_exception("l4.commit_checkpoint_error", exc)
+        return _make_checkpoint(state)
+    finally:
+        end_span(span)
+
+
+def rollback_state(
+    state: WorkflowState,
+    request: RollbackRequest,
+    ctx: Optional[ExecutionContext] = None,
+) -> RollbackResult:
+    """
+    Apply rollback based on the provided RollbackRequest (G35–G36).
+
+    The returned RollbackResult includes:
+        • ok: bool
+        • reason: str
+        • state_after: WorkflowState
+    """
+    span = start_span("l4.rollback_state", ctx=ctx.span_context() if ctx else None)
+    try:
+        return _apply_rollback(state, request)
+    except Exception as exc:  # noqa: BLE001
+        log_exception("l4.rollback_error", exc)
+        # Return a deterministic fallback.
+        return RollbackResult(
+            ok=False,
+            reason="rollback_exception",
+            state_after=state,
+        )
     finally:
         end_span(span)
