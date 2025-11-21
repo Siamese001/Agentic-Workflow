@@ -1,7 +1,7 @@
 # FILE: 10_10/cognitive_agents.py
 """
-Unified Cognitive Agents (v10_10 · Phase 3)
-===========================================
+Unified Cognitive Agents (v10_10 · Phase 3 — FINAL)
+===================================================
 
 This module implements ALL LLM-based cognition for the v10_10 workflow.
 
@@ -12,6 +12,8 @@ Agents (L2 cognition only):
     • DraftingGuild              – resume drafting
     • SemanticQAAgent            – QA reasoning + RAG reasoning
     • ConstitutionalSafetyAgent  – safety / policy review
+    • HYDEQueryAgent             – HYDE synthetic query generation
+    • QACouncilAgent             – QA council aggregation
 
 Design constraints:
     • Only this module may invoke LLMs.
@@ -39,6 +41,8 @@ from models import (
     SafetyResult,
     SafetyFinding,
     Evidence,
+    RAGPlan,
+    CouncilVote,
 )
 from routing import RoutingPolicy
 from runtime_utils import invoke_model, SandboxConfig
@@ -51,6 +55,7 @@ from prompt_builder import (
     build_rag_prompt,
     build_qa_prompt,
     build_safety_prompt,
+    build_hyde_prompt,
 )
 
 
@@ -75,20 +80,19 @@ class _PromptContext:
 
 
 # =============================================================================
-# Base LLM Agent
+# Base LLM agent
 # =============================================================================
 
 
-@dataclass
 class LLMBaseAgent:
     """
-    Base class for all v10_10 cognitive agents.
+    Base class for all L2 cognitive agents.
 
-    Responsibilities:
-        • Take a PromptInstance from prompt_builder.
-        • Select the concrete model via RoutingPolicy.
-        • Invoke the model via runtime_utils.invoke_model.
-        • Emit basic observability events.
+    This class centralizes:
+        • RoutingPolicy-based model selection.
+        • SandboxConfig usage.
+        • invoke_model() calls.
+        • Basic observability events.
 
     This class must remain **L2-only** and must not perform:
         • planning (L1),
@@ -101,12 +105,22 @@ class LLMBaseAgent:
     sandbox: SandboxConfig
     meta_profile: Optional[MetaProfileSnapshot] = None
 
+    def __init__(
+        self,
+        routing_policy: RoutingPolicy,
+        sandbox: SandboxConfig,
+        meta_profile: Optional[MetaProfileSnapshot] = None,
+    ) -> None:
+        self.routing_policy = routing_policy
+        self.sandbox = sandbox
+        self.meta_profile = meta_profile
+
     def _call_llm(self, prompt: PromptInstance) -> str:
         """
         Execute a single LLM call for the given prompt instance.
         """
         # Derive an optional complexity hint for routing from the plan.
-        complexity = None
+        complexity: Optional[str] = None
         plan = prompt.variables.get("plan")
         if plan is not None and hasattr(plan, "complexity"):
             complexity = getattr(plan, "complexity", None)
@@ -118,63 +132,62 @@ class LLMBaseAgent:
                 complexity=complexity,
                 meta_profile=self.meta_profile,
             )
-        except Exception as exc:
-            record_exception("llm_model_select_failure", exc)
+        except Exception as exc:  # noqa: BLE001
+            record_exception("routing_policy_error", exc)
             raise
-
-        # Derive LLM parameters from prompt metadata (with safe fallbacks).
-        meta = prompt.definition.metadata or {}
-        llm_meta = meta.get("llm", {}) or {}
-        temperature = float(llm_meta.get("temperature", 0.2))
-        max_tokens = int(llm_meta.get("max_tokens", 1024))
 
         record_event(
             "llm_call_start",
             {
                 "prompt_id": prompt.prompt_id,
+                "model": getattr(model, "name", str(model)),
                 "layer": prompt.layer,
                 "agent": prompt.agent,
-                "model_tier": prompt.model_tier,
-                "temperature": temperature,
-                "max_tokens": max_tokens,
             },
         )
 
         try:
-            text = invoke_model(
+            raw = invoke_model(
                 model=model,
-                prompt=prompt.rendered,
+                prompt=prompt,
                 sandbox=self.sandbox,
-                temperature=temperature,
-                max_tokens=max_tokens,
             )
             record_event(
                 "llm_call_success",
                 {
                     "prompt_id": prompt.prompt_id,
+                    "model": getattr(model, "name", str(model)),
                     "layer": prompt.layer,
                     "agent": prompt.agent,
-                    "model": model,
                 },
             )
-            return text or ""
-        except Exception as exc:
+            return raw
+        except Exception as exc:  # noqa: BLE001
             record_exception("llm_call_failure", exc)
+            record_event(
+                "llm_call_failure_event",
+                {
+                    "prompt_id": prompt.prompt_id,
+                    "model": getattr(model, "name", str(model)),
+                    "layer": prompt.layer,
+                    "agent": prompt.agent,
+                },
+            )
             raise
 
 
 # =============================================================================
-# Strategy LLM Agent
+# Strategy Agent
 # =============================================================================
 
 
 class StrategyLLMAgent(LLMBaseAgent):
     """
-    Strategy cognition for the workflow.
+    Strategy agent responsible for high-level reasoning.
 
-    Phase 3 implementation:
-        • Uses a single, envelope-based strategy prompt.
-        • Returns a StrategyResult with one chosen branch.
+    Outputs:
+        • StrategyResult
+        • StrategyBranch list (internally)
     """
 
     async def run_strategy(
@@ -184,9 +197,6 @@ class StrategyLLMAgent(LLMBaseAgent):
         resume: Any,
         config: Any,
     ) -> StrategyResult:
-        """
-        Asynchronous entrypoint used by L2.
-        """
         ctx = _PromptContext(job=job, resume=resume, config=config)
 
         prompt = build_strategy_prompt(
@@ -197,25 +207,50 @@ class StrategyLLMAgent(LLMBaseAgent):
             model_tier="balanced",
         )
 
-        raw = self._call_llm(prompt).strip()
+        raw = self._call_llm(prompt)
+        text = (raw or "").strip()
 
-        # For now we treat the entire output as a single branch.
-        branch = StrategyBranch(id="branch_0", text=raw or "")
+        # Try to parse structured strategy output; fallback to a simple branch.
+        branches: List[StrategyBranch] = []
+        try:
+            data = json.loads(text)
+            if isinstance(data, list):
+                for item in data:
+                    try:
+                        branches.append(
+                            StrategyBranch(
+                                id=str(item.get("id") or len(branches)),
+                                description=str(item.get("description") or ""),
+                                weight=float(item.get("weight", 1.0)),
+                            )
+                        )
+                    except Exception:
+                        continue
+            else:
+                raise ValueError("Strategy output must be a JSON list")
+        except Exception:
+            # Fallback: single generic branch.
+            branches = [
+                StrategyBranch(
+                    id="default",
+                    description=text or "Default strategy branch",
+                    weight=1.0,
+                )
+            ]
 
+        result = StrategyResult(branches=branches)
         record_event(
             "strategy_completed",
             {
-                "num_branches": 1,
-                "chosen_branch_id": branch.id,
-                "complexity": getattr(strategy_plan, "complexity", None),
+                "num_branches": len(branches),
+                "text_len": len(text),
             },
         )
-
-        return StrategyResult(branches=[branch], chosen_branch_id=branch.id)
+        return result
 
 
 # =============================================================================
-# Drafting Guild
+# Drafting Agent
 # =============================================================================
 
 
@@ -251,80 +286,47 @@ class DraftingGuild(LLMBaseAgent):
         )
 
         raw = self._call_llm(prompt)
+        text = (raw or "").strip()
 
-        sections = self._parse_drafting_output(raw, drafting_plan)
+        # Try to parse as JSON list of sections.
+        sections: List[DraftSection] = []
+        try:
+            data = json.loads(text)
+            if not isinstance(data, list):
+                raise ValueError("Drafting output must be a JSON list")
 
-        record_event(
-            "drafting_completed",
-            {
-                "num_sections": len(sections),
-                "mode": getattr(getattr(drafting_plan, "mode", None), "value", str(getattr(drafting_plan, "mode", ""))),
-            },
-        )
-
-        return DraftingResult(sections=sections)
-
-    def _parse_drafting_output(self, raw: str, plan: Any) -> List[DraftSection]:
-        """
-        Parse drafting output into DraftSection objects.
-
-        Heuristics:
-
-            1) If the output is JSON and looks like a list of sections:
-                   [{"title": "...", "text": "..."}]
-               we map each element to a DraftSection.
-
-            2) Otherwise, treat the entire text as a single section whose
-               title is taken from the first planned section title if available.
-        """
-        if not raw:
-            title = ""
-            if getattr(plan, "sections", None):
-                title = getattr(plan.sections[0], "title", "") or ""
-            return [
+            for item in data:
+                try:
+                    sections.append(
+                        DraftSection(
+                            id=str(item.get("id") or len(sections)),
+                            title=str(item.get("title") or ""),
+                            body=str(item.get("body") or ""),
+                            metadata=dict(item.get("metadata") or {}),
+                        )
+                    )
+                except Exception:
+                    continue
+        except Exception:
+            # Fallback: a single section using the full text.
+            sections = [
                 DraftSection(
-                    id="section_0",
-                    title=title or "Resume",
-                    text="",
+                    id="full",
+                    title="Auto-generated Resume",
+                    body=text,
                     metadata={},
                 )
             ]
 
-        # Try JSON path.
-        try:
-            data = json.loads(raw)
-            if isinstance(data, list):
-                sections: List[DraftSection] = []
-                for idx, entry in enumerate(data):
-                    if not isinstance(entry, dict):
-                        continue
-                    title = str(entry.get("title") or f"Section {idx+1}")
-                    text = str(entry.get("text") or "")
-                    sections.append(
-                        DraftSection(
-                            id=f"section_{idx}",
-                            title=title,
-                            text=text,
-                            metadata={},
-                        )
-                    )
-                if sections:
-                    return sections
-        except Exception:
-            record_event("drafting_non_json_output", {})
-
-        # Fallback: single-section wrapping of free-form text.
-        title = ""
-        if getattr(plan, "sections", None):
-            title = getattr(plan.sections[0], "title", "") or ""
-        return [
-            DraftSection(
-                id="section_0",
-                title=title or "Resume",
-                text=raw.strip(),
-                metadata={},
-            )
-        ]
+        result = DraftingResult(sections=sections)
+        record_event(
+            "drafting_completed",
+            {
+                "num_sections": len(sections),
+                "text_len": len(text),
+            },
+        )
+        return result
 
 
 # =============================================================================
@@ -350,31 +352,35 @@ class SemanticQAAgent(LLMBaseAgent):
         resume: Any,
         config: Any,
     ) -> QAResult:
+        """
+        Run QA over drafted resume + retrieval evidence.
+        """
         ctx = _PromptContext(job=job, resume=resume, config=config)
 
         prompt = build_qa_prompt(
             plan=qa_plan,
             ctx=ctx,
-            drafting=draft,
+            draft=draft,
             rag=rag,
-            layer="L3",
+            layer="L2",
             agent="qa",
             model_tier="balanced",
         )
 
         raw = self._call_llm(prompt)
+        text = (raw or "").strip()
 
-        findings = self._parse_qa_output(raw, qa_plan)
+        findings = self._parse_qa_output(text, qa_plan)
+        result = QAResult(findings=findings)
 
         record_event(
             "qa_completed",
             {
                 "num_findings": len(findings),
-                "num_high_severity": sum(1 for f in findings if f.severity.lower() == "high"),
+                "text_len": len(text),
             },
         )
-
-        return QAResult(findings=findings)
+        return result
 
     async def run_rag_reasoning(
         self,
@@ -421,7 +427,6 @@ class SemanticQAAgent(LLMBaseAgent):
                 )
             ]
 
-        # JSON path: expect list of objects with id / severity / message / category.
         try:
             data = json.loads(raw)
             if not isinstance(data, list):
@@ -429,27 +434,18 @@ class SemanticQAAgent(LLMBaseAgent):
 
             findings: List[QAFinding] = []
             for item in data:
-                if not isinstance(item, dict):
-                    continue
-                fid = str(
-                    item.get("id")
-                    or item.get("check_id")
-                    or "unknown"
-                )
-                severity = str(item.get("severity", "medium"))
-                category = str(item.get("category", "qa"))
-                message = str(item.get("message", ""))
-                metadata = item.get("details") or item.get("metadata") or {}
-
-                findings.append(
-                    QAFinding(
-                        id=fid,
-                        category=category,
-                        severity=severity,
-                        message=message,
-                        metadata=metadata,
+                try:
+                    findings.append(
+                        QAFinding(
+                            id=str(item.get("id") or len(findings)),
+                            category=str(item.get("category") or "qa"),
+                            severity=str(item.get("severity") or "medium"),
+                            message=str(item.get("message") or ""),
+                            metadata=dict(item.get("metadata") or {}),
+                        )
                     )
-                )
+                except Exception:
+                    continue
 
             if findings:
                 return findings
@@ -475,44 +471,54 @@ class SemanticQAAgent(LLMBaseAgent):
 
 class ConstitutionalSafetyAgent(LLMBaseAgent):
     """
-    Safety agent that performs final safety / policy checks.
+    Safety agent that performs a constitutional safety pass.
 
-    Output is a SafetyResult with structured SafetyFinding items.
+    This agent does *not* enforce policy; it only produces SafetyResult
+    findings for L5 to interpret and enforce.
     """
 
     async def run_safety(
         self,
         safety_plan: Any,
         draft: DraftingResult,
+        rag: RAGResult,
         qa_result: QAResult,
         job: Any,
         resume: Any,
         config: Any,
     ) -> SafetyResult:
+        """
+        Run the constitutional safety review over all available evidence.
+        """
         ctx = _PromptContext(job=job, resume=resume, config=config)
 
         prompt = build_safety_prompt(
             plan=safety_plan,
             ctx=ctx,
+            draft=draft,
+            rag=rag,
             qa=qa_result,
-            layer="L5",
+            layer="L2",
             agent="safety",
             model_tier="balanced",
         )
 
         raw = self._call_llm(prompt)
+        text = (raw or "").strip()
 
-        findings = self._parse_safety_output(raw, safety_plan)
+        findings = self._parse_safety_output(text, safety_plan)
+        result = SafetyResult(findings=findings)
 
         record_event(
             "safety_completed",
             {
                 "num_findings": len(findings),
-                "num_high_severity": sum(1 for f in findings if f.severity.lower() == "high"),
+                "num_high_severity": sum(
+                    1 for f in findings if f.severity.lower() == "high"
+                ),
             },
         )
-
-        return SafetyResult(findings=findings)
+        return result
 
     def _parse_safety_output(self, raw: str, safety_plan: Any) -> List[SafetyFinding]:
         """
@@ -533,10 +539,9 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
                         details={},
                     )
                 ]
-
             return [
                 SafetyFinding(
-                    check_id=getattr(chk, "id", "unknown"),
+                    check_id=str(chk),
                     category="safety",
                     severity="high",
                     message="No safety output produced",
@@ -552,33 +557,23 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
 
             findings: List[SafetyFinding] = []
             checks = getattr(safety_plan, "checks", []) or []
-            by_id = {getattr(chk, "id", ""): chk for chk in checks}
-
-            for item in data:
-                if not isinstance(item, dict):
-                    continue
-                cid = str(item.get("check_id") or item.get("id") or "")
-                if not cid:
-                    cid = "unknown"
-
-                # Unknown check ids are still allowed but logged.
-                if checks and cid not in by_id:
-                    record_event("safety_unknown_check_id", {"check_id": cid})
-
-                severity = str(item.get("severity", "high"))
-                category = str(item.get("category", "safety"))
-                message = str(item.get("message", ""))
-                details = item.get("details") or {}
-
-                findings.append(
-                    SafetyFinding(
-                        check_id=cid,
-                        category=category,
-                        severity=severity,
-                        message=message,
-                        details=details,
+            for idx, item in enumerate(data):
+                try:
+                    check_id = str(
+                        item.get("check_id")
+                        or (checks[idx] if idx < len(checks) else idx)
                     )
-                )
+                    findings.append(
+                        SafetyFinding(
+                            check_id=check_id,
+                            category=str(item.get("category") or "safety"),
+                            severity=str(item.get("severity") or "medium"),
+                            message=str(item.get("message") or ""),
+                            details=dict(item.get("details") or {}),
+                        )
+                    )
+                except Exception:
+                    continue
 
             if findings:
                 return findings
@@ -595,3 +590,104 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
                 details={},
             )
         ]
+
+
+# =============================================================================
+# HYDE Query Agent
+# =============================================================================
+
+
+class HYDEQueryAgent(LLMBaseAgent):
+    """
+    HYDE (Hypothetical Document) query generator.
+
+    This agent generates an idealized answer for use as a dense retrieval proxy.
+    L2 decides when to call it based on the RAGPlan and config flags.
+    """
+
+    async def run_hyde_query(
+        self,
+        rag_plan: Any,  # RAGPlan; kept as Any to avoid circular typing issues.
+        ctx: Any,  # ExecutionContext; passed through to prompt_builder.
+    ) -> str:
+        prompt = build_hyde_prompt(
+            plan=rag_plan,
+            ctx=ctx,
+            layer="L2",
+            agent="rag",
+            model_tier="balanced",
+        )
+        raw = self._call_llm(prompt)
+        text = (raw or "").strip()
+
+        record_event(
+            "hyde_query_completed",
+            {
+                "prompt_id": prompt.prompt_id,
+                "text_len": len(text),
+            },
+        )
+        return text
+
+
+# =============================================================================
+# QA Council Agent
+# =============================================================================
+
+
+class QACouncilAgent(LLMBaseAgent):
+    """
+    QA-council aggregation agent.
+
+    This agent consumes a PromptInstance specifically designed for council
+    aggregation and returns a typed CouncilVote object.
+
+    NOTE:
+        The concrete prompt template is defined in prompt_builder; this class
+        only executes the prompt and interprets the JSON response.
+    """
+
+    async def run_council(
+        self,
+        prompt: PromptInstance,
+    ) -> CouncilVote:
+        raw = self._call_llm(prompt)
+        text = (raw or "").strip()
+
+        if not text:
+            record_event("qa_council_empty_output", {})
+            return CouncilVote(
+                members=0,
+                selected_id=None,
+                scores={},
+                ties=[],
+                reason="empty_output",
+            )
+
+        try:
+            data = json.loads(text)
+            if not isinstance(data, dict):
+                raise ValueError("Council output must be a JSON object")
+
+            vote = CouncilVote(**data)
+            record_event(
+                "qa_council_completed",
+                {
+                    "members": vote.members,
+                    "selected_id": vote.selected_id,
+                    "num_scores": len(vote.scores),
+                },
+            )
+            return vote
+        except Exception:
+            record_event(
+                "qa_council_malformed_json",
+                {"raw_len": len(text)},
+            )
+            return CouncilVote(
+                members=0,
+                selected_id=None,
+                scores={},
+                ties=[],
+                reason="malformed_or_unparseable",
+            )
