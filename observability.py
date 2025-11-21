@@ -1,34 +1,33 @@
 # FILE: observability.py
 """
-Observability / Telemetry Layer (v10_10 · Phase 3)
-==================================================
+Observability / Telemetry Layer (v10_10 · Phase 3 — FINAL)
+==========================================================
 
 This module provides:
     • Structured spans (start_span / end_span)
     • Structured events (emit_node_event, emit_telemetry_event)
-    • Retrieval + Ranking event types (Phase 3 additions)
+    • Typed retrieval + ranking events:
+          – RetrievalAttemptEvent
+          – RetrievalSuccessEvent
+          – RetrievalFailureEvent
+          – RankingEvent
     • Cost snapshot emission
     • Deterministic logging for DAG orchestration (L3)
-    • Zero external I/O (print-to-log; callers decide persistence layer)
+    • Zero external I/O (collects events; callers decide persistence)
 
 Non-responsibilities:
     • No LLM calls
     • No retrieval
     • No ranking logic
     • No state mutation
-    • No safety filtering
-
-This file is intentionally pure-observability:
-    - context-free
-    - thread-safe
-    - deterministic
+    • No safety decisions
 """
 
 from __future__ import annotations
 
 import time
 import uuid
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, List
 
 from models import (
     TelemetryEvent,
@@ -44,8 +43,8 @@ from models import (
 # GLOBAL IN-MEMORY TELEMETRY BUFFER
 # =============================================================================
 
-_telemetry_buffer: list[TelemetryEvent] = []
-_span_stack: list[Dict[str, Any]] = []
+_telemetry_buffer: List[TelemetryEvent] = []
+_span_stack: List[Dict[str, Any]] = []
 
 
 # =============================================================================
@@ -56,7 +55,7 @@ def _now_ms() -> int:
     return int(time.time() * 1000)
 
 
-def _log(evt: TelemetryEvent):
+def _log(evt: TelemetryEvent) -> None:
     """
     Store event in in-memory buffer; downstream layers
     can choose to flush, export, persist, or ignore.
@@ -71,6 +70,8 @@ def _log(evt: TelemetryEvent):
 def start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """
     Create a uniquely identified span and record the start time.
+
+    Returns a span record dict that must be passed to end_span().
     """
     span_id = str(uuid.uuid4())
     record = {
@@ -83,19 +84,26 @@ def start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any
 
     _log(
         TelemetryEvent(
-            type="span_start",
             name=name,
-            timestamp_ms=record["start_ms"],
-            metadata={"span_id": span_id, "ctx": ctx or {}},
+            span_id=span_id,
+            ts_ms=record["start_ms"],
+            attributes={
+                "event_type": "span_start",
+                "span_id": span_id,
+                "ctx": ctx or {},
+            },
         )
     )
 
     return record
 
 
-def end_span(span_record: Dict[str, Any]):
+def end_span(span_record: Dict[str, Any]) -> None:
     """
     Close a previously-started span.
+
+    If the span is not in the stack (already closed or unknown), this
+    is a no-op.
     """
     if span_record not in _span_stack:
         return
@@ -106,10 +114,11 @@ def end_span(span_record: Dict[str, Any]):
 
     _log(
         TelemetryEvent(
-            type="span_end",
             name=span_record["name"],
-            timestamp_ms=end_ms,
-            metadata={
+            span_id=span_record["span_id"],
+            ts_ms=end_ms,
+            attributes={
+                "event_type": "span_end",
                 "span_id": span_record["span_id"],
                 "duration_ms": duration,
                 "ctx": span_record.get("ctx", {}),
@@ -119,33 +128,34 @@ def end_span(span_record: Dict[str, Any]):
 
 
 # =============================================================================
-# EVENT EMISSION
+# GENERIC EVENT EMISSION
 # =============================================================================
 
-def emit_telemetry_event(name: str, attributes: Dict[str, Any]):
+def emit_telemetry_event(name: str, attributes: Dict[str, Any]) -> None:
     """
     General-purpose event emission for arbitrary telemetry use cases.
     """
     _log(
         TelemetryEvent(
-            type="event",
             name=name,
-            timestamp_ms=_now_ms(),
-            metadata=attributes,
+            ts_ms=_now_ms(),
+            attributes=attributes,
         )
     )
 
 
-def log_exception(name: str, exc: Exception):
+def log_exception(name: str, exc: Exception) -> None:
     """
     Emit an error-level telemetry event for exceptions.
     """
     _log(
         TelemetryEvent(
-            type="exception",
             name=name,
-            timestamp_ms=_now_ms(),
-            metadata={"error": str(exc)},
+            ts_ms=_now_ms(),
+            attributes={
+                "event_type": "exception",
+                "error": str(exc),
+            },
         )
     )
 
@@ -154,15 +164,35 @@ def log_exception(name: str, exc: Exception):
 # PHASE 3 — RETRIEVAL EVENTS
 # =============================================================================
 
-def emit_retrieval_attempt(evt: RetrievalAttemptEvent):
+def emit_retrieval_attempt(evt: RetrievalAttemptEvent) -> None:
+    """
+    Emit a typed retrieval attempt event.
+
+    Typical usage from retrieval layer:
+        emit_retrieval_attempt(
+            RetrievalAttemptEvent(
+                name="retrieval",
+                method="hybrid",
+                query=...,
+                ts_ms=...,
+                attributes={...},
+            )
+        )
+    """
     _log(evt)
 
 
-def emit_retrieval_success(evt: RetrievalSuccessEvent):
+def emit_retrieval_success(evt: RetrievalSuccessEvent) -> None:
+    """
+    Emit a typed retrieval success event.
+    """
     _log(evt)
 
 
-def emit_retrieval_failure(evt: RetrievalFailureEvent):
+def emit_retrieval_failure(evt: RetrievalFailureEvent) -> None:
+    """
+    Emit a typed retrieval failure event.
+    """
     _log(evt)
 
 
@@ -170,7 +200,10 @@ def emit_retrieval_failure(evt: RetrievalFailureEvent):
 # PHASE 3 — RANKING EVENTS
 # =============================================================================
 
-def emit_ranking_event(evt: RankingEvent):
+def emit_ranking_event(evt: RankingEvent) -> None:
+    """
+    Emit a typed ranking event (e.g. for RRF fusion).
+    """
     _log(evt)
 
 
@@ -178,16 +211,23 @@ def emit_ranking_event(evt: RankingEvent):
 # DAG / NODE EVENTS (L3)
 # =============================================================================
 
-def emit_node_event(node: str, status: str, details: Optional[str] = None):
+def emit_node_event(node: str, status: str, details: Optional[str] = None) -> None:
     """
     Node-level events for L3 orchestration visibility.
+
+    Example:
+        emit_node_event("strategy", "start")
+        emit_node_event("strategy", "success")
     """
     _log(
         TelemetryEvent(
-            type="node",
             name=node,
-            timestamp_ms=_now_ms(),
-            metadata={"status": status, "details": details},
+            ts_ms=_now_ms(),
+            attributes={
+                "event_type": "node",
+                "status": status,
+                "details": details,
+            },
         )
     )
 
@@ -196,16 +236,20 @@ def emit_node_event(node: str, status: str, details: Optional[str] = None):
 # COST SNAPSHOT
 # =============================================================================
 
-def emit_cost_snapshot(snapshot: CostSnapshot):
+def emit_cost_snapshot(snapshot: CostSnapshot) -> None:
     """
-    Used by L2 run() after Strategy/Drafting/QA/Safety completes.
+    Used by L2 after Strategy/Drafting/QA/Safety completes.
+
+    The CostSnapshot is converted into telemetry attributes.
     """
     _log(
         TelemetryEvent(
-            type="cost_snapshot",
             name="costs",
-            timestamp_ms=_now_ms(),
-            metadata=snapshot.model_dump(),
+            ts_ms=_now_ms(),
+            attributes={
+                "event_type": "cost_snapshot",
+                **snapshot.model_dump(),
+            },
         )
     )
 
@@ -214,10 +258,18 @@ def emit_cost_snapshot(snapshot: CostSnapshot):
 # PUBLIC INSPECTION APIS
 # =============================================================================
 
-def get_all_events() -> list[TelemetryEvent]:
+def get_all_events() -> List[TelemetryEvent]:
+    """
+    Return a shallow copy of the telemetry buffer.
+    """
     return list(_telemetry_buffer)
 
 
-def clear_events():
+def clear_events() -> None:
+    """
+    Clear all telemetry events and open spans.
+
+    Intended primarily for unit tests.
+    """
     _telemetry_buffer.clear()
     _span_stack.clear()
