@@ -6,22 +6,18 @@ Retrieval & Query Planning (v10_10 · Phase 3 — FINAL)
 Implements:
     • BM25 retrieval
     • Dense retrieval
-    • Hybrid retrieval
-    • HYDE hook (deterministic placeholder; real HYDE is L2-driven)
+    • Hybrid mode (BM25 + Dense)
+    • HYDE query support (real hook; L2 supplies HYDE query)
+    • Retriever-level failure isolation
     • Weighted RRF fusion (Phase-3 requirement)
-    • Retriever-level isolation (fallback logic)
-    • QA-council evidence re-weighting (Phase-3 requirement)
+    • QA-council evidence weighting (Phase-3 requirement)
     • Full telemetry spans / failure events
-    • Deterministic behavior unless HYDE enabled
 
 Layer: META (no LLM calls; L2 generates HYDE query)
-
-This file closes:
-    G6, G9, G10, G13, G29, G31, G37
 """
 
 from __future__ import annotations
-from typing import Dict, List, Optional
+from typing import List, Optional
 
 from models import (
     Evidence,
@@ -39,20 +35,20 @@ from observability import (
     emit_retrieval_success,
     emit_retrieval_failure,
 )
+
 import ranking as _ranking
 
 
-# ===============================================================
-# INTERNAL RETRIEVERS — REAL IMPLEMENTATIONS (NO STUBS)
-# ===============================================================
+# ======================================================================
+# INTERNAL RETRIEVERS — REAL IMPLEMENTATIONS
+# ======================================================================
 
 def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
     """
-    The REAL bm25 implementation already present in your v10.10 code.
-    It is deterministic, uses your integrated scoring function, and
-    correctly returns ranked Evidence objects.
+    Real BM25 retriever — already implemented in your codebase.
+    Deterministic, uses integrated scoring functions.
     """
-    from retrievers.bm25 import bm25_search  # your real module
+    from retrievers.bm25 import bm25_search
     return bm25_search(
         query=query,
         k1=cfg.bm25_k1,
@@ -63,49 +59,49 @@ def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]
 
 def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
     """
-    The REAL dense retrieval implementation using your internal vector index.
-    Deterministic because it seeds the search components internally.
+    Real dense retriever — uses your actual vector index.
+    Deterministic due to seeded search paths.
     """
     from retrievers.dense import dense_search
     return dense_search(query=query, max_hits=max_hits)
 
 
-# ===============================================================
-# COUNCIL-AWARE POST-WEIGHTING (Phase-3 requirement)
-# ===============================================================
+# ======================================================================
+# QA-COUNCIL EVIDENCE WEIGHTING
+# ======================================================================
 
 def _apply_council_weights(
     fused: List[Evidence],
     council: Optional[CouncilVote],
 ) -> List[Evidence]:
     """
-    Adjust final fused evidence according to QA-council decision.
-    Selected-ID is boosted; all others demoted slightly.
+    Apply post-fusion weighting according to QA-council decision.
 
-    Small but meaningful adjustments — does *not* override ranking.
+    Selected-ID receives a ~12% boost.
+    Others receive slight demotion.
     """
-    if not council or not council.selected_id:
+    if council is None or not council.selected_id:
         return fused
 
     sel = council.selected_id
     BOOST = 1.12
     DEMOTE = 0.94
 
-    out = []
+    adjusted = []
     for ev in fused:
         e = ev.copy()
         if sel in ev.text:
             e.score *= BOOST
         else:
             e.score *= DEMOTE
-        out.append(e)
+        adjusted.append(e)
 
-    return out
+    return adjusted
 
 
-# ===============================================================
-# MAIN ENTRYPOINT — FULL HYBRID RETRIEVAL + RRF FUSION
-# ===============================================================
+# ======================================================================
+# MAIN ENTRYPOINT — HYBRID RETRIEVAL + WEIGHTED RRF
+# ======================================================================
 
 def run_rag_retrieval(
     *,
@@ -116,30 +112,44 @@ def run_rag_retrieval(
     council_vote: Optional[CouncilVote] = None,
 ) -> List[Evidence]:
     """
-    Runs all configured retrieval methods, isolates failures, fuses with
-    weighted RRF, applies council-based weighting, and emits telemetry.
+    Primary production retrieval entrypoint.
 
-    This is the canonical production retrieval entrypoint.
+    Steps:
+        1. Select effective query (HYDE if provided)
+        2. Emit attempt telemetry
+        3. Run BM25 (isolated)
+        4. Run Dense (isolated)
+        5. Fuse via weighted RRF
+        6. Apply QA-council evidence weighting
+        7. Emit success/failure events per retriever
+
+    Deterministic unless HYDE is enabled (HYDE generated in L2).
     """
 
     workflow_id = ctx.workflow_id
     max_hits = retrieval_cfg.max_hits
 
-    # Effective query
+    # -----------------------------------------------------
+    # Choose query (if HYDE passed from L2)
+    # -----------------------------------------------------
     effective_query = hyde_query if hyde_query else query
     emit_retrieval_attempt(effective_query, workflow_id)
 
-    span = start_span("retrieval.run", workflow_id=workflow_id, attrs={
-        "query.is_hyde": hyde_query is not None,
-        "retrieval.strategy": retrieval_cfg.strategy,
-        "max_hits": max_hits,
-    })
+    span = start_span(
+        "retrieval.run",
+        workflow_id=workflow_id,
+        attrs={
+            "query.is_hyde": hyde_query is not None,
+            "retrieval.strategy": retrieval_cfg.strategy,
+            "max_hits": max_hits,
+        },
+    )
 
-    groups: List[List[Evidence]] = []
+    groups = []
 
-    # -----------------------------------
-    # BM25 (isolated failure domain)
-    # -----------------------------------
+    # -----------------------------------------------------
+    # BM25 — isolated error domain
+    # -----------------------------------------------------
     try:
         bm25_hits = _run_bm25(effective_query, retrieval_cfg, max_hits)
         groups.append(bm25_hits)
@@ -147,9 +157,9 @@ def run_rag_retrieval(
     except Exception as e:
         emit_retrieval_failure("bm25", str(e), workflow_id)
 
-    # -----------------------------------
-    # Dense (isolated failure domain)
-    # -----------------------------------
+    # -----------------------------------------------------
+    # Dense — isolated error domain
+    # -----------------------------------------------------
     try:
         dense_hits = _run_dense(effective_query, retrieval_cfg, max_hits)
         groups.append(dense_hits)
@@ -157,22 +167,18 @@ def run_rag_retrieval(
     except Exception as e:
         emit_retrieval_failure("dense", str(e), workflow_id)
 
-    # -----------------------------------
-    # Hybrid mode — groups already separated
-    # -----------------------------------
-
-    # ===============================================================
-    # Weighted RRF (Phase-3)
-    # ===============================================================
+    # -----------------------------------------------------
+    # Weighted RRF fusion
+    # -----------------------------------------------------
     fused = _ranking.fuse_ranked_groups_rrf(
         groups=groups,
         rrf_weights=retrieval_cfg.rrf_weights,
         workflow_id=workflow_id,
     )
 
-    # ===============================================================
-    # Apply QA-council weighting (Phase-3)
-    # ===============================================================
+    # -----------------------------------------------------
+    # Council-aware post weighting
+    # -----------------------------------------------------
     fused = _apply_council_weights(fused, council_vote)
 
     end_span(span)
