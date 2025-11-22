@@ -30,7 +30,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Any, List, Dict
 
-from models import (
+from models import (  # type: ignore[attr-defined]
     ComplexityLevel,
     SkillClassifierResult,
     DomainClassifierResult,
@@ -38,8 +38,17 @@ from models import (
     RoutingDecisionEvent,
 )
 from meta_profile import MetaProfileSnapshot
-from multi_agent import MultiAgentCoordinator, build_council, AgentRole
-from observability import get_all_events, record_event
+from multi_agent import (
+    MultiAgentCoordinator,
+    build_council,
+    AgentRole,
+    extract_council_arbitration,
+)
+from observability import (
+    get_all_events,
+    record_event,
+    emit_council_arbitration_event,
+)
 
 
 # =============================================================================
@@ -268,6 +277,20 @@ def route_task_to_agent(
         except Exception:
             council = None
 
+        # Phase-4: emit council arbitration event for observability.
+        if council is not None:
+            try:
+                arbitration = extract_council_arbitration(result)
+                emit_council_arbitration_event(
+                    workflow_id=None,
+                    scenario_id=None,
+                    role=AgentRole.QA.value,
+                    arbitration=arbitration,
+                )
+            except Exception:
+                # Observability must never break routing.
+                pass
+
     # Deterministic reason strings (inspection-friendly).
     if task.startswith("qa_council"):
         reason = "qa_council_multi_agent_routing"
@@ -322,6 +345,38 @@ def route_task_to_agent(
         pass
 
     return decision
+
+
+def get_routing_trace() -> List[Dict[str, Any]]:
+    """Return a structured trace of routing decisions from telemetry.
+
+    This is a META-layer helper intended for evaluation and simulation.
+    It does not influence routing behaviour; it only reads previously
+    emitted `routing_decision` events.
+    """
+
+    trace: List[Dict[str, Any]] = []
+    try:
+        for evt in get_all_events():
+            if getattr(evt, "name", "") != "routing_decision":
+                continue
+            attrs = getattr(evt, "attributes", {}) or {}
+            trace.append(
+                {
+                    "task": attrs.get("task"),
+                    "agent_role": attrs.get("agent_role"),
+                    "reason": attrs.get("reason"),
+                    "has_council": attrs.get("has_council"),
+                    "council_selected_id": attrs.get("council_selected_id"),
+                    "council_aggregated_decision": attrs.get("council_aggregated_decision"),
+                    "council_vote_count": attrs.get("council_vote_count"),
+                }
+            )
+    except Exception:
+        # Evaluation helpers must never break runtime code.
+        pass
+
+    return trace
 
 
 # =============================================================================
