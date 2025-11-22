@@ -23,6 +23,7 @@ from models import (
     ResumeInput,
     WorkflowConfig,
     ExecutionContext,
+    RetrievalConfig,
 )
 from routing import RoutingPolicy
 from registry import build_default_prompt_registry
@@ -108,16 +109,22 @@ def ctx():
     routing = RoutingPolicy()
     sandbox = SandboxConfig()
     prompt_registry = build_default_prompt_registry()
+    retrieval = RetrievalConfig()
 
     return ExecutionContext(
         job=job,
         resume=resume,
         config=config,
-        routing_policy=routing,
-        sandbox_config=sandbox,
         prompt_registry=prompt_registry,
         cache_manager=None,
+        workflow_id="test-workflow",
+        profile_name="default",
+        retrieval=retrieval,
+        routing_policy=routing,
+        sandbox_config=sandbox,
         meta_profile_snapshot=None,
+        meta_profile=None,
+        cost_snapshot=None,
     )
 
 
