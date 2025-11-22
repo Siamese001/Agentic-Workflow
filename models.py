@@ -601,11 +601,16 @@ class RetrievalConfig(BaseModel):
     bm25_k1: float = 1.2
     bm25_b: float = 0.75
 
-    # Weighted RRF fusion (per-group weights for RRF)
-    rrf_weights: List[float] = Field(default_factory=list)
+    # Weighted RRF fusion (per-group weights for RRF). Registry may pass None.
+    rrf_weights: Optional[List[float]] = None
 
     # Whether to use RRF-based fusion in RAG ranking helpers
     use_rrf: bool = True
+
+    # Phase-3 extras used by registry/routing
+    allow_hyde: bool = False
+    qa_council_size: int = 1
+    qa_council_mode: str = "simple"
 
 
 class RAGPlan(BaseModel):
