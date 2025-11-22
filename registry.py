@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 from models import RetrievalConfig
+from prompt_system_v10_10 import PROMPT_REGISTRY
 
 
 # =============================================================================
@@ -101,6 +102,27 @@ def get_rag_strategy(name: str) -> RAGStrategyDefinition:
     Return a RAGStrategyDefinition by name.
     """
     return _RAG_STRATEGIES[name]
+
+
+# =============================================================================
+# PROMPT REGISTRY BRIDGE (Phase 3)
+# =============================================================================
+
+
+def build_default_prompt_registry() -> Dict[str, object]:
+    """Return a dict view of the default prompt registry.
+
+    The underlying prompts are seeded at import time by
+    ``prompt_system_v10_10._seed_core_prompts``. Tests and runtime code
+    treat this as an opaque registry object; we expose a simple
+    ``dict[id -> PromptDefinition]`` view here for convenience.
+
+    No LLM calls, I/O, or mutation are performed.
+    """
+
+    # Return a shallow copy so callers cannot mutate the global registry
+    # by accident.
+    return dict(PROMPT_REGISTRY)
 
 
 # =============================================================================
