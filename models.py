@@ -561,6 +561,60 @@ class DomainClassifierResult(BaseModel):
     features: Dict[str, Any] = Field(default_factory=dict)
 
 
+class AgentMessage(BaseModel):
+    """Conceptual message exchanged between agent roles (META-layer only)."""
+
+    sender: str
+    recipient: str
+    content: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class AgentRequest(BaseModel):
+    """Envelope for requesting work from an agent or council."""
+
+    message: AgentMessage
+    intent: Optional[str] = None
+    routing_metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class AgentResponse(BaseModel):
+    """Normalized agent response with routing metadata."""
+
+    message: AgentMessage
+    success: bool = True
+    error: Optional[str] = None
+    routing_metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class MultiAgentVote(BaseModel):
+    """Single agent vote within a council (v10_9-compatible)."""
+
+    agent_id: str
+    decision: str
+    confidence: float = 0.0
+    rationale: str = ""
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
+
+class MultiAgentCouncilResult(BaseModel):
+    """Aggregate result of a multi-agent council vote (v10_9-compatible)."""
+
+    votes: List[MultiAgentVote] = Field(default_factory=list)
+    aggregated_decision: str = ""
+    aggregated_confidence: float = 0.0
+    rationale: str = ""
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ArbitrationDecision(BaseModel):
+    """Normalized arbitration decision outcome used by orchestration/safety."""
+
+    action: str
+    reason: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class CouncilVote(BaseModel):
     """Aggregated vote from a council / committee of agents."""
 
