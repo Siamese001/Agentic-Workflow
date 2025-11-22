@@ -54,6 +54,10 @@ from models import (
     SafetyCheck,
     SafetyPlan,
     WorkflowPlanBundle,
+    ProfileInferenceResult,
+    SeniorityClassifierResult,
+    SkillClusterResult,
+    DomainClassifierResult,
 )
 from config_profiles_v10_10 import ExecutionProfileSpec, get_profile
 from meta_profile import MetaProfileSnapshot
@@ -136,7 +140,122 @@ def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot
         "reinforce_strictness": meta_profile.reinforce_strictness,
         "elevated_caution": meta_profile.elevated_caution,
         "hil_preferred": meta_profile.hil_preferred,
+        # Phase-1 profile inference view (read-only routing hint metadata)
+        "seniority_label": meta_profile.seniority_label,
+        "domain_label": meta_profile.domain_label,
+        "skill_cluster_labels": list(meta_profile.skill_cluster_labels),
     }
+
+
+# =============================================================================
+# Helpers: profile inference (restored from v10_9 semantics)
+# =============================================================================
+
+
+def _infer_seniority(job_text: str, resume_text: str) -> str:
+    """Very small heuristic seniority inference (v10_9-compatible).
+
+    This mirrors the v10_9 behavior where seniority was derived from
+    combined job + resume text using simple keyword families.
+    """
+
+    combined = f"{job_text} {resume_text}".lower()
+
+    senior_terms = {
+        "executive": ["chief", "cxo", "svp", "evp", "executive"],
+        "director": ["director", "head of", "senior director"],
+        "manager": ["manager", "lead", "team lead"],
+        "senior_ic": ["senior", "staff", "principal"],
+        "junior": ["junior", "entry-level", "associate"],
+    }
+
+    for label, terms in senior_terms.items():
+        if any(t in combined for t in terms):
+            return label
+
+    return "mid"
+
+
+def _infer_domains(job_text: str, resume_text: str) -> List[str]:
+    """Heuristic domain tagging from job/resume content (v10_9-compatible)."""
+
+    text = f"{job_text} {resume_text}".lower()
+    domains: List[str] = []
+
+    if any(k in text for k in ["insurance", "actuary", "actuarial"]):
+        domains.append("insurance")
+    if any(k in text for k in ["bank", "credit", "loan", "trading", "broker"]):
+        domains.append("financial_services")
+    if any(k in text for k in ["llm", "large language model", "rag"]):
+        domains.append("foundation_models")
+    if any(k in text for k in ["ml", "machine learning", "deep learning"]):
+        domains.append("machine_learning")
+    if any(k in text for k in ["cloud", "aws", "azure", "gcp"]):
+        domains.append("cloud")
+    if any(k in text for k in ["data platform", "databricks", "snowflake"]):
+        domains.append("data_platform")
+
+    return sorted(set(domains))
+
+
+def _infer_skill_clusters(job_text: str, resume_text: str) -> List[str]:
+    """Rough skill clustering based on keyword families (v10_9-compatible)."""
+
+    text = f"{job_text} {resume_text}".lower()
+    clusters: List[str] = []
+
+    if any(k in text for k in ["python", "pandas", "numpy"]):
+        clusters.append("python_data")
+    if any(k in text for k in ["pytorch", "tensorflow", "keras"]):
+        clusters.append("deep_learning")
+    if any(k in text for k in ["aws", "azure", "gcp"]):
+        clusters.append("cloud_infra")
+    if any(k in text for k in ["stakeholder", "executive", "c-suite"]):
+        clusters.append("executive_communication")
+    if any(k in text for k in ["roadmap", "strategy", "vision"]):
+        clusters.append("strategy_product")
+
+    return sorted(set(clusters))
+
+
+def _run_profile_inference(
+    job_text: str,
+    resume_text: str,
+    complexity: ComplexityLevel,
+) -> ProfileInferenceResult:
+    """Unified profile inference wrapper for L1.
+
+    Returns a ProfileInferenceResult containing seniority/domain/skills
+    plus the already-estimated ComplexityLevel. This is intentionally
+    deterministic and mirrors the v10_9 heuristic behavior.
+    """
+
+    seniority_label = _infer_seniority(job_text, resume_text)
+    domains = _infer_domains(job_text, resume_text)
+    skill_clusters = _infer_skill_clusters(job_text, resume_text)
+
+    seniority = SeniorityClassifierResult(label=seniority_label)
+
+    domain = None
+    if domains:
+        domain = DomainClassifierResult(
+            labels=domains,
+            primary_label=domains[0],
+        )
+
+    skills = None
+    if skill_clusters:
+        skills = SkillClusterResult(
+            labels=skill_clusters,
+            primary_label=skill_clusters[0],
+        )
+
+    return ProfileInferenceResult(
+        seniority=seniority,
+        domain=domain,
+        skills=skills,
+        complexity=complexity,
+    )
 
 
 # =============================================================================
@@ -489,7 +608,12 @@ def _build_qa_plan(
         )
     )
 
-    if depth.value >= 2:
+    try:
+        depth_value = int(getattr(depth, "value", depth))
+    except (TypeError, ValueError):
+        depth_value = 1
+
+    if depth_value >= 2:
         checks.append(
             QACheck(
                 id="tone_appropriateness",
@@ -498,7 +622,7 @@ def _build_qa_plan(
             )
         )
 
-    if depth.value >= 3:
+    if depth_value >= 3:
         checks.append(
             QACheck(
                 id="consistency",
@@ -549,7 +673,14 @@ def _build_safety_plan(
         )
     )
 
-    if profile_spec.safety_tier.value >= 2:
+    try:
+        safety_tier_value = int(
+            getattr(profile_spec.safety_tier, "value", profile_spec.safety_tier)
+        )
+    except (TypeError, ValueError):
+        safety_tier_value = 1
+
+    if safety_tier_value >= 2:
         checks.append(
             SafetyCheck(
                 id="tone",
@@ -607,17 +738,27 @@ def build_workflow_plan_bundle(
     )
     reasoning_mode = _choose_reasoning_mode(profile_spec, meta_profile)
 
+    # Phase-1: run profile inference before building plans.
+    profile_inference = _run_profile_inference(
+        job_text=job_text,
+        resume_text=resume_text,
+        complexity=complexity,
+    )
+
     strategy_plan = _build_strategy_plan(job, resume, complexity)
     rag_plan = _build_rag_plan(job, resume, config, profile_spec, complexity)
     drafting_plan = _build_drafting_plan(job, resume, config, complexity)
     qa_plan = _build_qa_plan(profile_spec, meta_profile, complexity)
     safety_plan = _build_safety_plan(profile_spec, meta_profile)
 
+    routing_meta = _map_meta_profile_to_routing_hint(meta_profile)
+    routing_meta["profile_inference"] = profile_inference.dict()
+
     routing_hint = RoutingHint(
         complexity=complexity,
         reasoning_mode=reasoning_mode,
         execution_profile=execution_profile,
-        meta=_map_meta_profile_to_routing_hint(meta_profile),
+        meta=routing_meta,
     )
 
     return WorkflowPlanBundle(
