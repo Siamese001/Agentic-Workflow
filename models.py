@@ -458,6 +458,15 @@ class SeniorityClassifierResult(BaseModel):
     features: Dict[str, Any] = Field(default_factory=dict)
 
 
+class DomainClassifierResult(BaseModel):
+    """Deterministic classification of job/resume domain (non-LLM)."""
+
+    labels: List[str] = Field(default_factory=list)
+    primary_label: Optional[str] = None
+    confidence: float = 0.0
+    features: Dict[str, Any] = Field(default_factory=dict)
+
+
 class SkillClassifierResult(BaseModel):
     """Deterministic classification of user skills (non-LLM)."""
 
