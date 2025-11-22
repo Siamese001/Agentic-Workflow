@@ -20,7 +20,7 @@ signals that L1, L2, routing, and self-correction may consult:
 
 from __future__ import annotations
 from dataclasses import dataclass, field, asdict
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from models import ProfileInferenceResult
 
@@ -74,6 +74,39 @@ class MetaProfile:
     profile_inference: ProfileInferenceResult = field(
         default_factory=ProfileInferenceResult
     )
+
+
+@dataclass
+class MetaProfileSnapshot:
+    """Read-only snapshot of MetaProfile used by L1 and routing.
+
+    This is a *view* over the internal MetaProfile plus derived
+    profile inference fields. It must remain backwards compatible
+    with existing Phase-3 consumers (L1, routing, cognitive agents).
+    """
+
+    # Identity / profile selection
+    name: str
+    active_profile_id: str = ""
+
+    # Provider / performance preferences
+    prefers_anthropic: bool = False
+    prefers_openai: bool = True
+    prefers_fast_models: bool = False
+
+    # Reasoning / QA / safety signals
+    reasoning_mode_hint: Optional[str] = None
+    qa_failure_rate_last_10: float = 0.0
+    correction_rate_last_10: float = 0.0
+    extra_qa_passes: int = 0
+    reinforce_strictness: bool = False
+    elevated_caution: bool = False
+    hil_preferred: bool = False
+
+    # NEW - Phase 1 profile inference (read-only view)
+    seniority_label: Optional[str] = None
+    domain_label: Optional[str] = None
+    skill_cluster_labels: List[str] = field(default_factory=list)
 
 
 # ======================================================================
@@ -139,6 +172,54 @@ def set_profile_inference(inference: ProfileInferenceResult):
 
 def get_profile_inference() -> Dict[str, Any]:
     return _META_UPDATER.get_profile_inference()
+
+
+def build_meta_profile_snapshot(name: str) -> MetaProfileSnapshot:
+    """Construct a typed MetaProfileSnapshot for the given profile name.
+
+    This provides a stable, read-only view for L1 and routing that
+    exposes both meta biases and derived profile inference signals.
+    """
+
+    profile = _META_UPDATER.profile
+
+    # Routing / provider preferences
+    routing = profile.routing_bias
+    planning = profile.planning_bias
+    qa = profile.qa_bias
+    safety = profile.safety_bias
+
+    # Map profile inference into flat snapshot fields.
+    inf = profile.profile_inference
+    seniority_label: Optional[str] = None
+    domain_label: Optional[str] = None
+    skill_cluster_labels: List[str] = []
+
+    if inf is not None:
+        if inf.seniority is not None:
+            seniority_label = inf.seniority.label
+        if inf.domain is not None:
+            domain_label = inf.domain.primary_label or (inf.domain.labels[0] if inf.domain.labels else None)
+        if inf.skills is not None:
+            skill_cluster_labels = list(inf.skills.labels or [])
+
+    return MetaProfileSnapshot(
+        name=name,
+        active_profile_id=name,
+        prefers_anthropic=False,
+        prefers_openai=True,
+        prefers_fast_models=routing.prefer_fast,
+        reasoning_mode_hint=None,
+        qa_failure_rate_last_10=0.0,
+        correction_rate_last_10=0.0,
+        extra_qa_passes=qa.extra_passes,
+        reinforce_strictness=planning.conservative,
+        elevated_caution=safety.heightened_caution,
+        hil_preferred=bool(safety.hil_bias and safety.hil_bias > 0.0),
+        seniority_label=seniority_label,
+        domain_label=domain_label,
+        skill_cluster_labels=skill_cluster_labels,
+    )
 
 
 def get_routing_bias() -> Dict[str, Any]:
