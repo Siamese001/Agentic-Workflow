@@ -201,27 +201,73 @@ class ExecutionContext(BaseModel):
 
 
 # ======================================================================
-# L2 RESULT BUNDLE (returned by L2.run)
+# L2 RESULT + FINDING MODELS
 # ======================================================================
 
 
+class StrategyBranch(BaseModel):
+    id: str
+    description: str
+    weight: float = 1.0
+
+
+class StrategyResult(BaseModel):
+    branches: List[StrategyBranch]
+    chosen_branch_id: Optional[str] = None
+
+
+class DraftSection(BaseModel):
+    id: str
+    title: str
+    body: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DraftingResult(BaseModel):
+    sections: List[DraftSection]
+
+
+class QAFinding(BaseModel):
+    id: str
+    category: str
+    severity: str
+    message: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class QAResult(BaseModel):
+    findings: List[QAFinding]
+
+
+class SafetyFinding(BaseModel):
+    check_id: str
+    category: str
+    severity: str
+    message: str
+    details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SafetyResult(BaseModel):
+    findings: List[SafetyFinding]
+
+
 class L2ResultBundle(BaseModel):
-    strategy: "StrategyResult"  # type: ignore[name-defined]
-    rag: "RAGResult"  # type: ignore[name-defined]
-    drafting: "DraftingResult"  # type: ignore[name-defined]
-    qa: "QAResult"  # type: ignore[name-defined]
-    safety: "SafetyResult"  # type: ignore[name-defined]
+    strategy: StrategyResult
+    rag: "RAGResult"
+    drafting: DraftingResult
+    qa: QAResult
+    safety: SafetyResult
 
     @classmethod
     def empty_with_error(cls, msg: str):
         return cls(
-            strategy=StrategyResult(branches=[], chosen_branch_id=None),  # type: ignore[name-defined]
-            rag=RAGResult(evidence=[], used_hyde=False),  # type: ignore[name-defined]
-            drafting=DraftingResult(sections=[]),  # type: ignore[name-defined]
-            qa=QAResult(findings=[]),  # type: ignore[name-defined]
-            safety=SafetyResult(  # type: ignore[name-defined]
+            strategy=StrategyResult(branches=[], chosen_branch_id=None),
+            rag=RAGResult(evidence=[], used_hyde=False),
+            drafting=DraftingResult(sections=[]),
+            qa=QAResult(findings=[]),
+            safety=SafetyResult(
                 findings=[
-                    SafetyFinding(  # type: ignore[name-defined]
+                    SafetyFinding(
                         check_id="internal_error",
                         category="internal",
                         severity="high",
