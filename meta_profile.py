@@ -13,239 +13,132 @@ signals that L1, L2, routing, and self-correction may consult:
     • QA-related hints (recent failure rates, extra passes).
     • Safety-related hints (heightened caution, HIL bias).
     • Rolling statistics (QA failures, correction usage).
+    • Phase-1: ProfileInferenceResult storage (seniority, domains, skills).
 
-Key types:
-
-    • MetaProfile          – mutable, long-lived state across workflows.
-    • MetaProfileSnapshot  – frozen, per-workflow snapshot.
-    • MetaProfileUpdater   – updates MetaProfile and produces snapshots.
-
-This module must remain PURE META:
-
-    • No LLM calls.
-    • No state mutation outside MetaProfile.
-    • No orchestration.
-    • No direct provider SDK calls.
+...
 """
 
 from __future__ import annotations
+from dataclasses import dataclass, field, asdict
+from typing import Any, Dict, Optional
 
-from dataclasses import dataclass, asdict
-from typing import Dict, Any
-
-from models import ReasoningMode
-
+from models import ProfileInferenceResult
 
 # ======================================================================
-# CORE BIAS STRUCTS
+# META-PROFILE DATASTRUCTURES
 # ======================================================================
-
 
 @dataclass
 class RoutingBias:
-    prefers_anthropic: bool = False
-    prefers_openai: bool = True
-    prefers_fast_models: bool = False
+    prefer_fast: bool = False
+    prefer_robust: bool = False
+    last_model_used: Optional[str] = None
 
 
 @dataclass
 class PlanningBias:
-    reasoning_mode_hint: ReasoningMode = ReasoningMode.COT
-    conservative_planning: bool = False
-    exploratory_planning: bool = True
+    conservative: bool = False
+    exploratory: bool = False
+    recent_failures: int = 0
 
 
 @dataclass
 class QABias:
-    extra_qa_passes: bool = False
-    reinforce_strictness: bool = False
+    extra_passes: int = 0
+    last_confidence: float = 0.0
 
 
 @dataclass
 class SafetyBias:
-    elevated_caution: bool = False
-    hil_preferred: bool = False
-
-
-# ======================================================================
-# META PROFILE & SNAPSHOT
-# ======================================================================
+    heightened_caution: bool = False
+    hil_bias: float = 0.0
 
 
 @dataclass
 class MetaProfile:
     """
-    Full meta-profile state for the system (in-memory, mutable).
+    Central meta-profile object representing adaptive, soft preferences.
 
-    This is a long-lived object that accumulates rolling statistics
-    across workflows; snapshots are created per workflow.
+    Phase-1 addition:
+    -----------------
+    profile_inference : ProfileInferenceResult
+        Stores seniority/domain/skills inference from L1 and routes
+        into planning/routing for richer Agent Boundaries.
     """
+    routing_bias: RoutingBias = field(default_factory=RoutingBias)
+    planning_bias: PlanningBias = field(default_factory=PlanningBias)
+    qa_bias: QABias = field(default_factory=QABias)
+    safety_bias: SafetyBias = field(default_factory=SafetyBias)
 
-    # Current "active" profile id (e.g., RESUME_HIGH_QUALITY, OUTREACH_QUICK)
-    active_profile_id: str = "RESUME_HIGH_QUALITY"
-
-    routing_bias: RoutingBias = RoutingBias()
-    planning_bias: PlanningBias = PlanningBias()
-    qa_bias: QABias = QABias()
-    safety_bias: SafetyBias = SafetyBias()
-
-    # Rolling counters for QA / correction behavior
-    qa_total_last_10: int = 0
-    qa_failures_last_10: int = 0
-    corrections_total_last_10: int = 0
-    corrections_applied_last_10: int = 0
-
-    def qa_failure_rate(self) -> float:
-        if self.qa_total_last_10 == 0:
-            return 0.0
-        return self.qa_failures_last_10 / float(self.qa_total_last_10)
-
-    def correction_apply_rate(self) -> float:
-        if self.corrections_total_last_10 == 0:
-            return 0.0
-        return self.corrections_applied_last_10 / float(self.corrections_total_last_10)
-
-
-@dataclass(frozen=True)
-class MetaProfileSnapshot:
-    """
-    Read-only snapshot of the MetaProfile, passed into ExecutionContext
-    and used by routing, L1, cognitive agents, etc.
-
-    Existing v10_10 callsites expect:
-        • prefers_anthropic / prefers_openai
-        • prefers_fast_models
-        • reasoning_mode_hint (string)
-        • qa_failure_rate_last_10
-        • correction_rate_last_10
-        • extra_qa_passes / reinforce_strictness
-        • elevated_caution / hil_preferred
-    """
-
-    active_profile_id: str
-
-    prefers_anthropic: bool
-    prefers_openai: bool
-    prefers_fast_models: bool
-
-    reasoning_mode_hint: str
-
-    qa_failure_rate_last_10: float
-    correction_rate_last_10: float
-
-    extra_qa_passes: bool
-    reinforce_strictness: bool
-
-    elevated_caution: bool
-    hil_preferred: bool
+    # NEW — restored from v10_9 logic, typed for v10_10
+    profile_inference: ProfileInferenceResult = field(
+        default_factory=ProfileInferenceResult
+    )
 
 
 # ======================================================================
-# UPDATER
+# STATE HOLDER (SINGLETON UPDATER)
 # ======================================================================
 
-
-class MetaProfileUpdater:
+class _MetaUpdater:
     """
-    Handles mutation of MetaProfile and snapshot extraction.
+    Internal singleton managing mutations to the MetaProfile.
+    Legal mutation surface occurs here (L4-compatible).
     """
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.profile = MetaProfile()
 
-    # ---------- snapshot API ----------
-
-    def snapshot(self) -> MetaProfileSnapshot:
-        p = self.profile
-        return MetaProfileSnapshot(
-            active_profile_id=p.active_profile_id,
-            prefers_anthropic=p.routing_bias.prefers_anthropic,
-            prefers_openai=p.routing_bias.prefers_openai,
-            prefers_fast_models=p.routing_bias.prefers_fast_models,
-            reasoning_mode_hint=p.planning_bias.reasoning_mode_hint.value,
-            qa_failure_rate_last_10=p.qa_failure_rate(),
-            correction_rate_last_10=p.correction_apply_rate(),
-            extra_qa_passes=p.qa_bias.extra_qa_passes,
-            reinforce_strictness=p.qa_bias.reinforce_strictness,
-            elevated_caution=p.safety_bias.elevated_caution,
-            hil_preferred=p.safety_bias.hil_preferred,
-        )
-
-    # ---------- update API ----------
-
-    def set_active_profile(self, profile_id: str) -> None:
-        self.profile.active_profile_id = profile_id
-
-    def register_qa_outcome(self, success: bool) -> None:
+    # -------------------------------
+    # PROFILE INFERENCE (NEW - PHASE 1)
+    # -------------------------------
+    def update_profile_inference(self, inference: ProfileInferenceResult):
         """
-        Update QA rolling stats and QA/Safety bias hints.
+        Replace the stored profile inference.
+        L1 callers overwrite the entire typed structure.
         """
-        p = self.profile
-        p.qa_total_last_10 = min(10, p.qa_total_last_10 + 1)
-        if not success:
-            p.qa_failures_last_10 = min(10, p.qa_failures_last_10 + 1)
+        self.profile.profile_inference = inference
 
-        # Soft rule: if QA keeps failing, request extra passes and stricter QA.
-        if p.qa_failure_rate() > 0.3:
-            p.qa_bias.extra_qa_passes = True
-            p.qa_bias.reinforce_strictness = True
-            p.safety_bias.elevated_caution = True
-        else:
-            p.qa_bias.extra_qa_passes = False
-            p.qa_bias.reinforce_strictness = False
-            p.safety_bias.elevated_caution = False
+    def get_profile_inference(self) -> Dict[str, Any]:
+        return asdict(self.profile.profile_inference)
 
-    def register_correction(self, applied: bool) -> None:
-        """
-        Update correction stats and bias toward more conservative planning.
-        """
-        p = self.profile
-        p.corrections_total_last_10 = min(10, p.corrections_total_last_10 + 1)
-        if applied:
-            p.corrections_applied_last_10 = min(10, p.corrections_applied_last_10 + 1)
+    # -------------------------------
+    # EXISTING BIASES
+    # -------------------------------
+    def update_routing(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self.profile.routing_bias, k, v)
 
-        # Soft rule: if we keep correcting, nudge planning toward conservative.
-        if p.correction_apply_rate() > 0.3:
-            p.planning_bias.conservative_planning = True
-            p.planning_bias.exploratory_planning = False
-        else:
-            p.planning_bias.conservative_planning = False
+    def update_planning(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self.profile.planning_bias, k, v)
 
-    def register_provider_choice(self, provider: str) -> None:
-        """
-        Update routing bias based on provider choices.
-        """
-        p = self.profile
-        provider = (provider or "").lower()
-        if provider.startswith("anthropic"):
-            p.routing_bias.prefers_anthropic = True
-            p.routing_bias.prefers_openai = False
-        elif provider.startswith("openai"):
-            p.routing_bias.prefers_openai = True
-            p.routing_bias.prefers_anthropic = False
+    def update_qa(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self.profile.qa_bias, k, v)
 
-    def register_fast_model_usage(self, used_fast: bool) -> None:
-        """
-        Update routing bias based on whether "fast" models were used.
-        """
-        p = self.profile
-        if used_fast:
-            p.routing_bias.prefers_fast_models = True
+    def update_safety(self, **kwargs):
+        for k, v in kwargs.items():
+            setattr(self.profile.safety_bias, k, v)
 
 
 # ======================================================================
-# MODULE-LEVEL SINGLETON + HELPERS
+# MODULE-LEVEL SINGLETON
 # ======================================================================
 
+_META_UPDATER = _MetaUpdater()
 
-_META_UPDATER = MetaProfileUpdater()
+
+# ======================================================================
+# PUBLIC API
+# ======================================================================
+
+def set_profile_inference(inference: ProfileInferenceResult):
+    _META_UPDATER.update_profile_inference(inference)
 
 
-def get_meta_profile_snapshot() -> MetaProfileSnapshot:
-    """
-    Return a read-only snapshot of the current MetaProfile.
-    """
-    return _META_UPDATER.snapshot()
+def get_profile_inference() -> Dict[str, Any]:
+    return _META_UPDATER.get_profile_inference()
 
 
 def get_routing_bias() -> Dict[str, Any]:
