@@ -430,6 +430,23 @@ class PromptVersion(BaseModel):
         return f"{self.major}.{self.minor}.{self.patch}"
 
 
+class PromptDefinition(BaseModel):
+    """Canonical prompt definition stored in the prompt registry.
+
+    This mirrors the shape expected by prompt_system_v10_10:
+
+        • id: stable identifier for the prompt
+        • text: template body
+        • version: PromptVersion
+        • metadata: arbitrary governance/ACL metadata
+    """
+
+    id: str
+    text: str
+    version: PromptVersion
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class PolicyDecisionEvent(BaseModel):
     classifier_id: str
     outcome: str
@@ -549,16 +566,16 @@ class CouncilVote(BaseModel):
 
 
 class SafetyPlan(BaseModel):
-    checks: List[SafetyCheck] = Field(default_factory=list)
+    checks: List["SafetyCheck"] = Field(default_factory=list)
 
 
 class WorkflowPlanBundle(BaseModel):
     """Bundle of all L1 plans passed into L2/L3 orchestration."""
 
-    strategy: StrategyPlan
+    strategy: "StrategyPlan"
     rag: RAGPlan
-    drafting: DraftingPlan
-    qa: QAPlan
+    drafting: "DraftingPlan"
+    qa: "QAPlan"
     safety: SafetyPlan
     reason: Optional[str] = None
 
