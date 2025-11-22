@@ -27,6 +27,7 @@ Design constraints:
 from __future__ import annotations
 
 from enum import Enum
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
@@ -104,6 +105,15 @@ class ResumeInput(BaseModel):
     experience_sections: Optional[List[Dict[str, Any]]] = None
     skills: Optional[List[Any]] = None
     projects: Optional[List[Dict[str, Any]]] = None
+
+
+@dataclass
+class RuntimeInputs:
+    job: JobInput
+    resume: ResumeInput
+    config: "WorkflowConfig"
+    prompt_registry: Any
+    cache_manager: Any | None = None
 
 
 class WorkflowConfig(BaseModel):
