@@ -30,9 +30,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Any, List, Dict
 
-from models import ComplexityLevel, SkillClassifierResult, DomainClassifierResult
+from models import (
+    ComplexityLevel,
+    SkillClassifierResult,
+    DomainClassifierResult,
+    MultiAgentCouncilResult,
+    RoutingDecisionEvent,
+)
 from meta_profile import MetaProfileSnapshot
-from observability import get_all_events
+from multi_agent import MultiAgentCoordinator, build_council, AgentRole
+from observability import get_all_events, record_event
 
 
 # =============================================================================
@@ -201,6 +208,120 @@ class RoutingPolicy:
         if self.allow_heavy:
             return HEAVY_MODELS[provider]
         return MEDIUM_MODELS[provider]
+
+
+# =============================================================================
+# Multi-Agent Routing Helpers (META-only, v10_9-compatible semantics)
+# =============================================================================
+
+
+def _choose_agent_role(task: str) -> str:
+    """Map logical task identifiers to canonical AgentRole values.
+
+    This mirrors the v10_9 agent role mapping while using the v10_10
+    AgentRole enum defined in multi_agent.py.
+    """
+
+    if task.startswith("strategy_"):
+        return AgentRole.PLANNER.value
+    if task.startswith("rag_"):
+        return AgentRole.RETRIEVER.value
+    if task.startswith("drafting_"):
+        return AgentRole.DRAFTER.value
+    if task.startswith("qa_council"):
+        return AgentRole.QA.value
+    if task.startswith("qa_"):
+        return AgentRole.QA.value
+    if task.startswith("safety_"):
+        return AgentRole.SAFETY.value
+    return AgentRole.META.value
+
+
+def route_task_to_agent(
+    task: str,
+    complexity: Optional[ComplexityLevel],
+    meta_profile: Optional[MetaProfileSnapshot],
+    council_candidates: Optional[List[Dict[str, Any]]] = None,
+) -> Dict[str, Any]:
+    """META-layer helper to select agent role + optional QA council.
+
+    This does **not** call any LLMs or mutate state. It is intended to be
+    used by L2/L3 orchestration to decide which concrete agent / council
+    to invoke, and to emit a typed RoutingDecisionEvent for observability.
+    """
+
+    agent_role = _choose_agent_role(task)
+    council: Optional[MultiAgentCouncilResult] = None
+
+    # QA council routing (multi-agent surface restored from v10_9).
+    if agent_role == AgentRole.QA.value and task.startswith("qa_council"):
+        size = len(council_candidates) if council_candidates else 3
+        graph = build_council(role=AgentRole.QA.value, size=size)
+        coordinator = MultiAgentCoordinator(graph=graph)
+        result = coordinator.run_council(
+            role=AgentRole.QA.value,
+            candidates=council_candidates or [],
+        )
+        typed_dict = result.get("typed") or {}
+        try:
+            council = MultiAgentCouncilResult(**typed_dict)
+        except Exception:
+            council = None
+
+    # Deterministic reason strings (inspection-friendly).
+    if task.startswith("qa_council"):
+        reason = "qa_council_multi_agent_routing"
+    elif task.startswith("qa_"):
+        reason = "qa_single_agent_routing"
+    elif task.startswith("strategy_"):
+        reason = "strategy_single_agent_routing"
+    elif task.startswith("drafting_"):
+        reason = "drafting_single_agent_routing"
+    elif task.startswith("safety_"):
+        reason = "safety_single_agent_routing"
+    elif task.startswith("rag_"):
+        reason = "rag_single_agent_routing"
+    else:
+        reason = "meta_single_agent_routing"
+
+    decision: Dict[str, Any] = {
+        "task": task,
+        "agent_role": agent_role,
+        "reason": reason,
+        "has_council": council is not None,
+    }
+
+    if council is not None:
+        decision["council"] = council.dict()
+
+    # Emit a typed RoutingDecisionEvent for observability.
+    attrs: Dict[str, Any] = {
+        "task": task,
+        "agent_role": agent_role,
+        "reason": reason,
+        "has_council": council is not None,
+    }
+
+    if council is not None:
+        attrs["council_selected_id"] = council.metadata.get("selected_id")
+        attrs["council_aggregated_decision"] = council.aggregated_decision
+        attrs["council_vote_count"] = len(council.votes)
+
+    event = RoutingDecisionEvent(
+        name="routing_decision",
+        agent_id=agent_role,
+        provider="meta_routing",
+        model_name="",
+        reason=reason,
+        attributes=attrs,
+    )
+    try:
+        record_event(event.name, event.attributes)
+    except Exception:
+        # Observability must never break routing.
+        pass
+
+    return decision
 
 
 # =============================================================================
