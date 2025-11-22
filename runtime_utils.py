@@ -23,13 +23,24 @@ Design constraints:
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import os
+import random
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
 
+from models import (
+    ResilienceError,
+    TransientError,
+    PermanentError,
+    RetryExhaustedError,
+    CircuitBreakerOpenError,
+    ToolInvocationError,
+    ResilienceDecision,
+)
 from observability import record_event, record_exception
 
 
@@ -59,7 +70,179 @@ class LLMInvocationError(RuntimeError):
 
 
 # ============================================================================
-# 2. SANDBOX CONFIGURATION
+# 2. RESILIENCE PRIMITIVES (RETRY + CIRCUIT BREAKER)
+# ============================================================================
+
+
+@dataclass
+class CircuitBreaker:
+    """Minimal circuit breaker with CLOSED / OPEN / HALF_OPEN states.
+
+    This is intentionally simple and process-local; higher-level
+    orchestration (e.g. batch runner) is responsible for coordinating
+    breakers across workers if needed.
+    """
+
+    name: str
+    failure_threshold: int = 5
+    reset_after_s: int = 30
+    half_open_max_calls: int = 3
+
+    state: str = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
+    failure_count: int = 0
+    success_count: int = 0
+    opened_at: float = 0.0
+
+    def can_execute(self) -> bool:
+        now = time.time()
+        if self.state == "OPEN":
+            if now - self.opened_at >= self.reset_after_s:
+                # Move to HALF_OPEN to probe.
+                self.state = "HALF_OPEN"
+                self.failure_count = 0
+                self.success_count = 0
+            else:
+                return False
+
+        if self.state == "HALF_OPEN" and self.success_count >= self.half_open_max_calls:
+            # Enough successes → close the breaker.
+            self.state = "CLOSED"
+            self.failure_count = 0
+            self.success_count = 0
+        return True
+
+    def record_success(self) -> None:
+        self.success_count += 1
+        if self.state in {"OPEN", "HALF_OPEN"} and self.success_count >= self.half_open_max_calls:
+            self.state = "CLOSED"
+            self.failure_count = 0
+            self.success_count = 0
+
+    def record_failure(self) -> None:
+        self.failure_count += 1
+        if self.failure_count >= self.failure_threshold:
+            self.state = "OPEN"
+            self.opened_at = time.time()
+
+
+_BREAKERS: Dict[str, CircuitBreaker] = {}
+
+
+def _get_breaker(name: str) -> CircuitBreaker:
+    brk = _BREAKERS.get(name)
+    if brk is None:
+        brk = CircuitBreaker(name=name)
+        _BREAKERS[name] = brk
+    return brk
+
+
+def _classify_exception(exc: Exception) -> ResilienceError:
+    """Map a Python exception to a typed resilience error descriptor."""
+
+    msg = str(exc)
+
+    if isinstance(exc, (ModelClientError, ToolExecutionError)):
+        return TransientError(message=msg, code=exc.__class__.__name__)
+
+    if isinstance(exc, (ValidationError, SafetyException, LLMInvocationError)):
+        return PermanentError(message=msg, code=exc.__class__.__name__)
+
+    # Fallback: treat as transient but unclassified.
+    return TransientError(message=msg, code=exc.__class__.__name__)
+
+
+def _calculate_backoff_ms(base_backoff_ms: int, attempt: int, jitter_ms: int) -> int:
+    base = base_backoff_ms * max(1, attempt)
+    if jitter_ms <= 0:
+        return base
+    return max(0, base + random.randint(-jitter_ms, jitter_ms))
+
+
+async def invoke_with_retry(
+    fn: Callable[[], Awaitable[Any]],
+    *,
+    max_retries: int = 3,
+    base_backoff_ms: int = 200,
+    jitter_ms: int = 100,
+    breaker_name: Optional[str] = None,
+) -> Any:
+    """Invoke an awaitable with retry + backoff + optional circuit breaker.
+
+    This helper is infrastructure-only; L2/L3 call sites are responsible
+    for deciding which operations to wrap. It does not perform any
+    planning, routing, or safety logic.
+    """
+
+    breaker: Optional[CircuitBreaker] = None
+    if breaker_name is not None:
+        breaker = _get_breaker(breaker_name)
+
+    attempt = 0
+    while True:
+        attempt += 1
+
+        if breaker is not None and not breaker.can_execute():
+            err = CircuitBreakerOpenError(
+                message=f"Circuit breaker '{breaker.name}' is open",
+                breaker_name=breaker.name,
+            )
+            decision = ResilienceDecision(
+                action="open_breaker",
+                retry_attempt=attempt - 1,
+                max_retries=max_retries,
+                backoff_ms=0,
+                breaker_state=breaker.state,
+                error=err,
+            )
+            record_event("resilience_breaker_open", decision.dict())
+            raise ToolExecutionError(err.message)
+
+        try:
+            result = await fn()
+            if breaker is not None:
+                breaker.record_success()
+            return result
+        except Exception as exc:  # noqa: BLE001
+            typed_error = _classify_exception(exc)
+            if breaker is not None and isinstance(typed_error, TransientError):
+                breaker.record_failure()
+
+            # Decide whether to retry based on error type and attempt.
+            if isinstance(typed_error, PermanentError) or attempt > max_retries:
+                if attempt > max_retries and isinstance(typed_error, TransientError):
+                    typed_error = RetryExhaustedError(
+                        message=typed_error.message,
+                        code=typed_error.code,
+                        details=typed_error.details,
+                        attempts=attempt - 1,
+                    )
+
+                decision = ResilienceDecision(
+                    action="fail_fast" if isinstance(typed_error, PermanentError) else "escalate",
+                    retry_attempt=attempt - 1,
+                    max_retries=max_retries,
+                    backoff_ms=0,
+                    breaker_state=breaker.state if breaker is not None else None,
+                    error=typed_error,
+                )
+                record_event("resilience_give_up", decision.dict())
+                raise ToolExecutionError(typed_error.message) from exc
+
+            backoff_ms = _calculate_backoff_ms(base_backoff_ms, attempt, jitter_ms)
+            decision = ResilienceDecision(
+                action="retry",
+                retry_attempt=attempt,
+                max_retries=max_retries,
+                backoff_ms=backoff_ms,
+                breaker_state=breaker.state if breaker is not None else None,
+                error=typed_error,
+            )
+            record_event("resilience_retry", decision.dict())
+            await asyncio.sleep(backoff_ms / 1000.0)
+
+
+# ============================================================================
+# 3. SANDBOX CONFIGURATION
 # ============================================================================
 
 
@@ -90,7 +273,7 @@ def get_sandbox(config: Optional[SandboxConfig]) -> SandboxConfig:
 
 
 # ============================================================================
-# 3. PREDICTIVE CACHE
+# 4. PREDICTIVE CACHE
 # ============================================================================
 
 
@@ -173,7 +356,7 @@ class PredictiveCacheManager:
 
 
 # ============================================================================
-# 4. LLM INVOCATION
+# 5. LLM INVOCATION
 # ============================================================================
 
 
