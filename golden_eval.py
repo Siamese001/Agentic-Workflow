@@ -53,6 +53,10 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 import json
 import sys
 
+from models import CostSnapshot
+from observability import emit_golden_eval_event, get_all_events
+from routing import get_routing_trace
+
 
 # =============================================================================
 # Internal helpers
@@ -156,6 +160,34 @@ def _normalize_title(value: str) -> str:
 
 def _count_where(items: Iterable[Any], predicate) -> int:
     return sum(1 for x in items if predicate(x))
+
+
+def _summarise_resilience_events() -> Dict[str, Any]:
+    """Build a coarse resilience summary from in-memory telemetry events.
+
+    This is META-layer only and does not affect runtime behaviour.
+    """
+
+    summary: Dict[str, Any] = {
+        "event_counts": {},
+    }
+
+    try:
+        for evt in get_all_events():
+            name = getattr(evt, "name", "") or "unknown"
+            attrs = getattr(evt, "attributes", {}) or {}
+            event_type = attrs.get("event_type", "")
+
+            if event_type not in {"resilience_trace", "resilience_retry", "resilience_give_up", "resilience_breaker_open"} and not name.startswith("resilience_"):
+                continue
+
+            key = name or event_type or "unknown"
+            summary["event_counts"][key] = summary["event_counts"].get(key, 0) + 1
+    except Exception:
+        # Evaluation helpers must never break golden evaluation.
+        pass
+
+    return summary
 
 
 # =============================================================================
@@ -1344,67 +1376,60 @@ def evaluate_patch(
     metrics.extend(_metric_telemetry_and_cost(patch_map, expectation))
 
     # 8. Arbitrary field expectations
-    metrics.extend(_metric_field_expectations(patch_map, expectation.field_expectations))
+    if expectation.field_expectations:
+        metrics.extend(
+            _metric_field_expectations(patch_map, expectation.field_expectations)
+        )
 
-    # Construct summary
-    summary: Dict[str, Any] = {
-        "num_sections": len(_extract_sections(patch_map)),
-        "num_evidence": len(_extract_rag_evidence(patch_map)),
-        "num_qa_findings": len(patch_map.get("qa_findings") or []),
-        "num_safety_findings": len(patch_map.get("safety_findings") or []),
-    }
-
-    return EvalReport.from_metrics(
+    report = EvalReport.from_metrics(
         scenario_id=expectation.scenario_id,
         expectation=expectation,
         metrics=metrics,
-        summary=summary,
+        summary={
+            "required_sections": expectation.required_sections,
+            "min_section_coverage": expectation.min_section_coverage,
+            "allowed_qa_failures": expectation.allowed_qa_failures,
+            "max_blocking_safety_findings": expectation.max_blocking_safety_findings,
+        },
     )
 
+    # Phase-4: emit a GoldenEvalEvent for observability (best-effort only).
+    try:
+        workflow_id = _dotted_get(patch_map, "workflow_id", default=None)
+        if workflow_id is None:
+            workflow_id = patch_map.get("workflow_id")
+        if workflow_id is None:
+            workflow_id = "unknown"
 
-def evaluate_suite(
-    state_patches: Mapping[str, Mapping[str, Any]],
-    expectations: Iterable[GoldenExpectation],
-) -> List[EvalReport]:
-    """
-    Evaluate a mapping of scenario_id → patch against a collection of
-    GoldenExpectation objects.
+        routing_trace = get_routing_trace() or None
+        resilience_summary = _summarise_resilience_events()
+        if not resilience_summary.get("event_counts"):
+            resilience_summary = None
 
-    Any expectation without a matching patch will be marked as a failed
-    report with zero score.
-    """
-    expectation_index: Dict[str, GoldenExpectation] = {
-        e.scenario_id: e for e in expectations
-    }
-    reports: List[EvalReport] = []
+        raw_cost = patch_map.get("cost_snapshot")
+        cost_snapshot_obj: Optional[CostSnapshot] = None
+        if isinstance(raw_cost, Mapping):
+            try:
+                cost_snapshot_obj = CostSnapshot(**raw_cost)  # type: ignore[arg-type]
+            except Exception:
+                cost_snapshot_obj = None
 
-    for scenario_id, expectation in expectation_index.items():
-        patch = state_patches.get(scenario_id)
-        if patch is None:
-            # Synthesise a failure report indicating the missing patch.
-            metrics = [
-                EvalMetric(
-                    name="missing_patch",
-                    category="infrastructure",
-                    score=0.0,
-                    passed=False,
-                    weight=1.0,
-                    reason=f"No state patch provided for scenario_id {scenario_id!r}.",
-                    details={},
-                )
-            ]
-            reports.append(
-                EvalReport.from_metrics(
-                    scenario_id=scenario_id,
-                    expectation=expectation,
-                    metrics=metrics,
-                    summary={},
-                )
-            )
-        else:
-            reports.append(evaluate_patch(patch, expectation))
+        emit_golden_eval_event(
+            workflow_id=str(workflow_id),
+            scenario_id=expectation.scenario_id,
+            passed=report.passed,
+            score=report.total_score,
+            summary=report.summary,
+            routing_trace=routing_trace,
+            council_summary=None,
+            resilience_summary=resilience_summary,
+            cost_snapshot=cost_snapshot_obj,
+        )
+    except Exception:
+        # Observability must not break evaluation.
+        pass
 
-    return reports
+    return report
 
 
 # =============================================================================

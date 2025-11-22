@@ -27,9 +27,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
-from models import (
+from models import (  # type: ignore[attr-defined]
     AgentMessage,
     MultiAgentVote,
     MultiAgentCouncilResult,
@@ -356,3 +356,29 @@ class MultiAgentSimulation:
         ]
         result = self.coordinator.run_council(role, dummy_candidates)
         return result
+
+
+def extract_council_arbitration(result: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a normalized arbitration summary from a run_council result.
+
+    This helper is META-layer only and intended for evaluation/simulation.
+    It does not mutate input or depend on runtime layers.
+    """
+
+    selected = result.get("selected") or {}
+    typed = result.get("typed") or {}
+
+    # typed is a dict produced by MultiAgentCouncilResult.dict()
+    aggregated_decision = typed.get("aggregated_decision")
+    aggregated_confidence = typed.get("aggregated_confidence")
+    metadata = typed.get("metadata") or {}
+
+    return {
+        "selected_id": selected.get("id", metadata.get("selected_id")),
+        "selected_score": selected.get("score"),
+        "selected_rationale": selected.get("rationale"),
+        "aggregated_decision": aggregated_decision,
+        "aggregated_confidence": aggregated_confidence,
+        "vote_count": len(typed.get("votes", [])),
+        "metadata": dict(metadata),
+    }

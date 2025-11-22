@@ -189,7 +189,7 @@ class ExecutionContext(BaseModel):
     profile_name: str
 
     # These are light-typed views into config_profiles_v10_10
-    retrieval: "RetrievalConfig"
+    retrieval: "RetrievalConfig"  # type: ignore[name-defined]
     routing_policy: Any = None
     sandbox_config: Any = None
     meta_profile_snapshot: Any = None
@@ -206,22 +206,22 @@ class ExecutionContext(BaseModel):
 
 
 class L2ResultBundle(BaseModel):
-    strategy: "StrategyResult"
-    rag: "RAGResult"
-    drafting: "DraftingResult"
-    qa: "QAResult"
-    safety: "SafetyResult"
+    strategy: "StrategyResult"  # type: ignore[name-defined]
+    rag: "RAGResult"  # type: ignore[name-defined]
+    drafting: "DraftingResult"  # type: ignore[name-defined]
+    qa: "QAResult"  # type: ignore[name-defined]
+    safety: "SafetyResult"  # type: ignore[name-defined]
 
     @classmethod
     def empty_with_error(cls, msg: str):
         return cls(
-            strategy=StrategyResult(branches=[], chosen_branch_id=None),
-            rag=RAGResult(evidence=[], used_hyde=False),
-            drafting=DraftingResult(sections=[]),
-            qa=QAResult(findings=[]),
-            safety=SafetyResult(
+            strategy=StrategyResult(branches=[], chosen_branch_id=None),  # type: ignore[name-defined]
+            rag=RAGResult(evidence=[], used_hyde=False),  # type: ignore[name-defined]
+            drafting=DraftingResult(sections=[]),  # type: ignore[name-defined]
+            qa=QAResult(findings=[]),  # type: ignore[name-defined]
+            safety=SafetyResult(  # type: ignore[name-defined]
                 findings=[
-                    SafetyFinding(
+                    SafetyFinding(  # type: ignore[name-defined]
                         check_id="internal_error",
                         category="internal",
                         severity="high",
@@ -245,6 +245,19 @@ class TelemetryEvent(BaseModel):
     parent_span_id: Optional[str] = None
     workflow_id: Optional[str] = None
     attributes: Dict[str, Any] = Field(default_factory=dict)
+
+
+class CostSnapshot(BaseModel):
+    """Aggregated token and cost accounting for a workflow run.
+
+    This is intentionally generic so that different cost accounting
+    implementations can populate it without changing the contract
+    exposed to observability and evaluation layers.
+    """
+
+    total_tokens: int = 0
+    total_cost_usd: float = 0.0
+    details: Dict[str, Any] = Field(default_factory=dict)
 
 
 class RetrievalAttemptEvent(TelemetryEvent):
