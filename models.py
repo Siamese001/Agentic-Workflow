@@ -185,25 +185,37 @@ class WorkflowStatePatch(BaseModel):
 
 class ExecutionContext(BaseModel):
     """
-    ExecutionContext is an immutable snapshot of:
+    ExecutionContext is a runtime snapshot passed down the stack.
 
-        • Runtime configuration (ExecutionProfile / RetrievalConfig)
-        • Routing hints
-        • Meta-profile snapshot
-        • Telemetry / cost containers (read-only at this layer)
+    In v10_10 it intentionally carries both:
 
-    It is passed down the stack but never mutated in-place.
+        • Domain inputs needed by L2/L3 orchestration (job, resume, config,
+          prompt registry, cache manager).
+        • Runtime configuration and META-layer hints (retrieval config,
+          routing policy, sandbox config, meta-profile snapshot, cost).
+
+    It is treated as immutable by callers.
     """
 
-    workflow_id: str
-    profile_name: str
+    # Domain inputs (L1/L2-facing)
+    job: JobInput
+    resume: ResumeInput
+    config: WorkflowConfig
+    prompt_registry: Any
+    cache_manager: Any = None
 
-    # These are light-typed views into config_profiles_v10_10
+    # High-level workflow identity
+    workflow_id: str = ""
+    profile_name: str = ""
+
+    # Runtime configuration / META-layer hints
     retrieval: "RetrievalConfig"  # type: ignore[name-defined]
     routing_policy: Any = None
     sandbox_config: Any = None
     meta_profile_snapshot: Any = None
+    meta_profile: Any = None
 
+    # Telemetry / cost containers
     cost_snapshot: Optional["CostSnapshot"] = None
 
     def span_context(self) -> Dict[str, Any]:
