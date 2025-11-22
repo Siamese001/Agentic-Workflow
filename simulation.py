@@ -30,21 +30,25 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 from itertools import product
-from typing import Any, Awaitable, Callable, Dict, Iterable, List, Mapping, Optional, Sequence
+from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
 from main_v10_10 import (
     run_workflow,
     RRFStrategy,
     TelemetryRoutingMode,
 )
-from run_batch_v10_10 import run_batch
+from run_batch_v10_10 import run_batch, BatchJobResult, BatchTelemetrySummary
 from golden_eval import (
     GOLDEN_SCENARIOS,
     GoldenScenario,
-    GoldenExpectation,
     ScenarioKnobs,
     EvalReport,
     evaluate_patch,
+)
+from observability import (
+    emit_scenario_start_event,
+    emit_scenario_end_event,
+    emit_scenario_simulation_event,
 )
 
 
@@ -321,6 +325,13 @@ async def _run_with_golden_scenario(
 
     sim_knobs = SimulationKnobs.from_scenario_knobs(golden.knobs)
 
+    # Phase-4: emit scenario_start before running.
+    emit_scenario_start_event(
+        workflow_id=None,
+        scenario_id=golden.scenario_id,
+        description=golden.description,
+    )
+
     try:
         raw_output = run_workflow(
             user_request,
@@ -368,7 +379,7 @@ async def _run_with_golden_scenario(
         eval_report = None
         workflow_id = None
 
-    return SimulationResult(
+    sim_result = SimulationResult(
         scenario_id=golden.scenario_id,
         description=golden.description,
         workflow_id=workflow_id,
@@ -379,6 +390,28 @@ async def _run_with_golden_scenario(
         state_patch=patch,
         snapshot=snapshot,
     )
+
+    # Phase-4: emit scenario_end + scenario_simulation (best-effort only).
+    try:
+        emit_scenario_end_event(
+            workflow_id=sim_result.workflow_id,
+            scenario_id=sim_result.scenario_id,
+            passed=sim_result.eval_report.passed if sim_result.eval_report else None,
+            score=sim_result.eval_report.total_score if sim_result.eval_report else None,
+        )
+
+        emit_scenario_simulation_event(
+            workflow_id=sim_result.workflow_id,
+            scenario_id=sim_result.scenario_id,
+            outcome=sim_result.outcome,
+            telemetry=sim_result.telemetry,
+            error_taxonomy=None,
+        )
+    except Exception:
+        # Observability must never break simulation.
+        pass
+
+    return sim_result
 
 
 async def _run_knob_matrix_async(
@@ -422,6 +455,13 @@ async def _run_knob_matrix_async(
             telemetry_routing_mode=TelemetryRoutingMode(telemetry_mode),
         )
 
+        # Phase-4: emit scenario_start for matrix scenario.
+        emit_scenario_start_event(
+            workflow_id=None,
+            scenario_id=scenario_id,
+            description="HYDE/council/correction/telemetry matrix scenario",
+        )
+
         try:
             raw_output = run_workflow(
                 user_request,
@@ -461,7 +501,7 @@ async def _run_knob_matrix_async(
             }
             workflow_id = None
 
-        results[scenario_id] = SimulationResult(
+        sim_result = SimulationResult(
             scenario_id=scenario_id,
             description=(
                 "Matrix scenario for HYDE / council / correction / telemetry "
@@ -475,6 +515,28 @@ async def _run_knob_matrix_async(
             state_patch=patch,
             snapshot=snapshot,
         )
+
+        # Phase-4: emit scenario_end + scenario_simulation for matrix scenario.
+        try:
+            emit_scenario_end_event(
+                workflow_id=sim_result.workflow_id,
+                scenario_id=sim_result.scenario_id,
+                passed=None,
+                score=None,
+            )
+
+            emit_scenario_simulation_event(
+                workflow_id=sim_result.workflow_id,
+                scenario_id=sim_result.scenario_id,
+                outcome=sim_result.outcome,
+                telemetry=sim_result.telemetry,
+                error_taxonomy=None,
+            )
+        except Exception:
+            # Observability must never break simulation.
+            pass
+
+        results[scenario_id] = sim_result
 
     return results
 
@@ -589,7 +651,7 @@ def run_batch_simulation(
     sandbox_profile_name: str = "default",
     meta_profile_name: str = "default",
     knobs: Optional[SimulationKnobs] = None,
-) -> Mapping[str, Any]:
+) -> Tuple[Sequence[BatchJobResult], BatchTelemetrySummary]:
     """
     Convenience wrapper around run_batch_v10_10.run_batch for tests.
 
