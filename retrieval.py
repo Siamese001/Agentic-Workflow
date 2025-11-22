@@ -133,12 +133,23 @@ def run_rag_retrieval(
     # Choose query (if HYDE passed from L2)
     # -----------------------------------------------------
     effective_query = hyde_query if hyde_query else query
-    emit_retrieval_attempt(effective_query, workflow_id)
+    emit_retrieval_attempt(
+        RetrievalAttemptEvent(
+            name="retrieval_attempt",
+            method=retrieval_cfg.strategy,
+            query=effective_query,
+            workflow_id=workflow_id,
+            attributes={
+                "is_hyde": hyde_query is not None,
+                "max_hits": max_hits,
+            },
+        )
+    )
 
     span = start_span(
         "retrieval.run",
-        workflow_id=workflow_id,
-        attrs={
+        {
+            "workflow_id": workflow_id,
             "query.is_hyde": hyde_query is not None,
             "retrieval.strategy": retrieval_cfg.strategy,
             "max_hits": max_hits,
@@ -153,9 +164,24 @@ def run_rag_retrieval(
     try:
         bm25_hits = _run_bm25(effective_query, retrieval_cfg, max_hits)
         groups.append(bm25_hits)
-        emit_retrieval_success("bm25", len(bm25_hits), workflow_id)
+        emit_retrieval_success(
+            RetrievalSuccessEvent(
+                name="retrieval_success",
+                method="bm25",
+                hit_count=len(bm25_hits),
+                max_hits=max_hits,
+                workflow_id=workflow_id,
+            )
+        )
     except Exception as e:
-        emit_retrieval_failure("bm25", str(e), workflow_id)
+        emit_retrieval_failure(
+            RetrievalFailureEvent(
+                name="retrieval_failure",
+                method="bm25",
+                reason=str(e),
+                workflow_id=workflow_id,
+            )
+        )
 
     # -----------------------------------------------------
     # Dense — isolated error domain
@@ -163,16 +189,31 @@ def run_rag_retrieval(
     try:
         dense_hits = _run_dense(effective_query, retrieval_cfg, max_hits)
         groups.append(dense_hits)
-        emit_retrieval_success("dense", len(dense_hits), workflow_id)
+        emit_retrieval_success(
+            RetrievalSuccessEvent(
+                name="retrieval_success",
+                method="dense",
+                hit_count=len(dense_hits),
+                max_hits=max_hits,
+                workflow_id=workflow_id,
+            )
+        )
     except Exception as e:
-        emit_retrieval_failure("dense", str(e), workflow_id)
+        emit_retrieval_failure(
+            RetrievalFailureEvent(
+                name="retrieval_failure",
+                method="dense",
+                reason=str(e),
+                workflow_id=workflow_id,
+            )
+        )
 
     # -----------------------------------------------------
     # Weighted RRF fusion
     # -----------------------------------------------------
     fused = _ranking.fuse_ranked_groups_rrf(
         groups=groups,
-        rrf_weights=retrieval_cfg.rrf_weights,
+        rrf_weights=list(retrieval_cfg.rrf_weights.values()) if retrieval_cfg.rrf_weights else None,
         workflow_id=workflow_id,
     )
 
