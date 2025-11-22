@@ -26,10 +26,39 @@ Design constraints:
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
+
+
+# ======================================================================
+# ENUMS USED ACROSS MODELS
+# ======================================================================
+
+
+class ComplexityLevel(str, Enum):
+    """Coarse-grained complexity buckets for planning/routing."""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+
+
+class DraftingMode(str, Enum):
+    """Drafting style for downstream drafting agents."""
+
+    BULLET_HEAVY = "bullet_heavy"
+    BALANCED = "balanced"
+    NARRATIVE = "narrative"
+
+
+class ReasoningMode(str, Enum):
+    """Reasoning mode hint for L2 cognitive agents."""
+
+    CHAIN_OF_THOUGHT = "cot"
+    TOT = "tot"
+    REACT = "react"
 
 
 # ======================================================================
@@ -52,6 +81,44 @@ class ResumeProfile(BaseModel):
     summary: Optional[str] = None
     raw_text: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class JobInput(BaseModel):
+    """L1-facing view of job inputs used for planning.
+
+    This is intentionally light-weight and mirrors the fields accessed in l1.
+    """
+
+    title: Optional[str] = None
+    role_type: Optional[str] = None
+    seniority: Optional[str] = None
+    posting_text: Optional[str] = None
+    requirements: Optional[List[str]] = None
+    tags: Optional[List[str]] = None
+
+
+class ResumeInput(BaseModel):
+    """L1-facing view of resume inputs used for planning."""
+
+    summary: Optional[str] = None
+    experience_sections: Optional[List[Dict[str, Any]]] = None
+    skills: Optional[List[Any]] = None
+    projects: Optional[List[Dict[str, Any]]] = None
+
+
+class WorkflowConfig(BaseModel):
+    """Workflow configuration knobs required at L1 planning time."""
+
+    profile_id: str
+
+    # RAG configuration used by L1
+    rag_max_job_chunks: int = 8
+    rag_max_resume_chunks: int = 8
+    rag_max_hybrid_chunks: int = 8
+    rag_allow_hyde: bool = False
+
+    # Drafting configuration used by L1
+    drafting_experience_max_tokens: int = 1024
 
 
 # ======================================================================
@@ -340,6 +407,80 @@ class SafetyResult(BaseModel):
     findings: List[SafetyFinding] = Field(default_factory=list)
 
 
+class RoutingHint(BaseModel):
+    """Lightweight routing + execution profile hint passed from L1 to L2/L3."""
+
+    complexity: ComplexityLevel
+    reasoning_mode: ReasoningMode
+    execution_profile: "ExecutionProfile"
+    meta: Dict[str, Any] = Field(default_factory=dict)
+
+
+class StrategyStep(BaseModel):
+    id: str
+    order: int
+    description: str
+
+
+class StrategyPlan(BaseModel):
+    steps: List[StrategyStep] = Field(default_factory=list)
+    complexity: ComplexityLevel
+
+
+class RAGQueryHint(BaseModel):
+    id: str
+    description: str
+    focus: str
+    max_chunks: int
+    importance: float = 1.0
+
+
+class DraftSectionPlan(BaseModel):
+    id: str
+    title: str
+    required: bool = True
+    max_tokens: int = 256
+    priority: float = 1.0
+
+
+class DraftingPlan(BaseModel):
+    sections: List[DraftSectionPlan] = Field(default_factory=list)
+    mode: DraftingMode = DraftingMode.BALANCED
+
+
+class QACheck(BaseModel):
+    id: str
+    description: str
+    severity: str
+
+
+class QAPlan(BaseModel):
+    checks: List[QACheck] = Field(default_factory=list)
+    depth: Any
+
+
+class SafetyCheck(BaseModel):
+    id: str
+    description: str
+    severity: str
+
+
+class SafetyPlan(BaseModel):
+    checks: List[SafetyCheck] = Field(default_factory=list)
+    tier: Any
+
+
+class WorkflowPlanBundle(BaseModel):
+    """Top-level bundle of L1 plans consumed by L2/L3."""
+
+    strategy: StrategyPlan
+    rag: RAGPlan
+    drafting: DraftingPlan
+    qa: QAPlan
+    safety: SafetyPlan
+    routing_hint: RoutingHint
+
+
 # ======================================================================
 # EXECUTION PROFILE (lightweight view; full profiles in config_profiles_v10_10.py)
 # ======================================================================
@@ -374,6 +515,32 @@ class PolicyDecisionEvent(BaseModel):
     classifier_id: str
     outcome: str
     details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SeniorityClassifierResult(BaseModel):
+    """Deterministic seniority classifier result (non-LLM)."""
+
+    label: Optional[str] = None
+    confidence: float = 0.0
+    features: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SkillClusterResult(BaseModel):
+    """Deterministic skill cluster classifier result (non-LLM)."""
+
+    labels: List[str] = Field(default_factory=list)
+    primary_label: Optional[str] = None
+    confidence: float = 0.0
+    features: Dict[str, Any] = Field(default_factory=dict)
+
+
+class ProfileInferenceResult(BaseModel):
+    """Unified profile inference container for meta-profile and routing."""
+
+    seniority: Optional[SeniorityClassifierResult] = None
+    domain: Optional["DomainClassifierResult"] = None
+    skills: Optional[SkillClusterResult] = None
+    complexity: Optional[ComplexityLevel] = None
 
 
 class SkillClassifierResult(BaseModel):
