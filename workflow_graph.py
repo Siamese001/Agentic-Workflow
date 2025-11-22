@@ -29,7 +29,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Optional, Callable, Dict
+from typing import Optional, Callable, Awaitable
 
 from models import (
     WorkflowPlanBundle,
@@ -49,12 +49,12 @@ from observability import (
 )
 from l2 import (
     _execute_strategy,
-    _execute_rag_reasoning,
     _execute_retrieval,
     _execute_drafting,
     _execute_qa,
     _execute_safety,
 )
+from routing import route_task_to_agent
 
 # Self-correction surfaces (meta-layer, no L1–L5 violations)
 from self_correction import (
@@ -84,7 +84,7 @@ class Node:
 async def _run_node(
     node_name: str,
     ctx: ExecutionContext,
-    fn: Callable[..., object],
+    fn: Callable[..., Awaitable[object]],
     *args,
     **kwargs,
 ):
@@ -100,10 +100,10 @@ async def _run_node(
         - None on error (caller is responsible for fallback behavior).
     """
     span = start_span(f"workflow.{node_name}", ctx=ctx.span_context())
-    emit_node_event(node=node_name, status="start", details={})
+    emit_node_event(node=node_name, status="start", details=None)
     try:
         result = await fn(*args, **kwargs)
-        emit_node_event(node=node_name, status="success", details={})
+        emit_node_event(node=node_name, status="success", details=None)
         return result
     except Exception as exc:  # noqa: BLE001
         log_exception(f"workflow.{node_name}.error", exc)
@@ -112,6 +112,30 @@ async def _run_node(
 
     finally:
         end_span(span)
+
+
+def _emit_routing_decision(ctx: ExecutionContext, task: str) -> None:
+    """Emit a meta-level routing decision for a logical task.
+
+    This is L3-only and uses routing.route_task_to_agent, which is itself
+    a META-layer helper. It does not call any LLMs or mutate state.
+    """
+
+    try:
+        meta_profile = getattr(ctx, "meta_profile", None)
+        decision = route_task_to_agent(
+            task=task,
+            complexity=None,
+            meta_profile=meta_profile,
+        )
+        emit_node_event(
+            node=f"routing.{task}",
+            status="decision",
+            details=str(decision),
+        )
+    except Exception as exc:  # noqa: BLE001
+        # Routing observability must never break orchestration.
+        log_exception("workflow.routing_decision_error", exc)
 
 
 # ============================================================================
@@ -184,12 +208,14 @@ async def run_workflow_graph(
             emit_node_event(
                 node="workflow_iteration",
                 status="start",
-                details={"iteration": iteration, "max_corrections": max_corrections},
+                details=f"iteration={iteration}, max_corrections={max_corrections}",
             )
 
             # ---------------------------------------------------------------
             # 1. STRATEGY + RETRIEVAL (parallel)
             # ---------------------------------------------------------------
+            _emit_routing_decision(ctx, task="strategy_generate_branch")
+            _emit_routing_decision(ctx, task="rag_retrieval")
             strategy_task = asyncio.create_task(
                 _run_node(
                     Node.STRATEGY,
@@ -226,6 +252,7 @@ async def run_workflow_graph(
             # ---------------------------------------------------------------
             # 2. DRAFTING (depends on Strategy + Retrieval)
             # ---------------------------------------------------------------
+            _emit_routing_decision(ctx, task="drafting_structure")
             drafting_result = await _run_node(
                 Node.DRAFTING,
                 ctx,
@@ -242,6 +269,7 @@ async def run_workflow_graph(
             # ---------------------------------------------------------------
             # 3. QA
             # ---------------------------------------------------------------
+            _emit_routing_decision(ctx, task="qa_semantic_check")
             qa_result = await _run_node(
                 Node.QA,
                 ctx,
@@ -258,6 +286,7 @@ async def run_workflow_graph(
             # ---------------------------------------------------------------
             # 4. SAFETY
             # ---------------------------------------------------------------
+            _emit_routing_decision(ctx, task="safety_check")
             safety_result = await _run_node(
                 Node.SAFETY,
                 ctx,
@@ -293,15 +322,15 @@ async def run_workflow_graph(
                     break
 
                 # Otherwise, loop continues and we re-run the full pass.
+                details = (
+                    f"iteration={iteration}, surface={correction.surface}, "
+                    f"severity={correction.severity}, "
+                    f"recommended_action={correction.recommended_action}"
+                )
                 emit_node_event(
                     node="workflow_correction",
                     status="requested",
-                    details={
-                        "iteration": iteration,
-                        "surface": correction.surface,
-                        "severity": correction.severity,
-                        "recommended_action": correction.recommended_action,
-                    },
+                    details=details,
                 )
             except Exception as exc:  # noqa: BLE001
                 # Correction evaluation must never break the workflow;
@@ -311,7 +340,19 @@ async def run_workflow_graph(
 
         # ---------------------------------------------------------------
         # Return results (L3 does not modify them)
+        # Ensure non-optional values for type-checking.
         # ---------------------------------------------------------------
+        if strategy_result is None:
+            strategy_result = StrategyResult(branches=[], chosen_branch_id="error")
+        if rag_result is None:
+            rag_result = RAGResult(evidence=[], used_hyde=False)
+        if drafting_result is None:
+            drafting_result = DraftingResult(sections=[])
+        if qa_result is None:
+            qa_result = QAResult(findings=[])
+        if safety_result is None:
+            safety_result = SafetyResult(findings=[])
+
         return L2ResultBundle(
             strategy=strategy_result,
             rag=rag_result,
