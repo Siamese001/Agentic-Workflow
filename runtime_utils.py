@@ -188,11 +188,14 @@ async def invoke_with_retry(
             )
             decision = ResilienceDecision(
                 action="open_breaker",
-                retry_attempt=attempt - 1,
-                max_retries=max_retries,
-                backoff_ms=0,
-                breaker_state=breaker.state,
-                error=err,
+                reason="circuit_breaker_open",
+                metadata={
+                    "retry_attempt": attempt - 1,
+                    "max_retries": max_retries,
+                    "backoff_ms": 0,
+                    "breaker_state": breaker.state,
+                    "error": str(err),
+                },
             )
             record_event("resilience_breaker_open", decision.dict())
             raise ToolExecutionError(err.message)
@@ -219,11 +222,14 @@ async def invoke_with_retry(
 
                 decision = ResilienceDecision(
                     action="fail_fast" if isinstance(typed_error, PermanentError) else "escalate",
-                    retry_attempt=attempt - 1,
-                    max_retries=max_retries,
-                    backoff_ms=0,
-                    breaker_state=breaker.state if breaker is not None else None,
-                    error=typed_error,
+                    reason="resilience_give_up",
+                    metadata={
+                        "retry_attempt": attempt - 1,
+                        "max_retries": max_retries,
+                        "backoff_ms": 0,
+                        "breaker_state": breaker.state if breaker is not None else None,
+                        "error": typed_error.dict() if hasattr(typed_error, "dict") else str(typed_error),
+                    },
                 )
                 record_event("resilience_give_up", decision.dict())
                 raise ToolExecutionError(typed_error.message) from exc
@@ -231,11 +237,14 @@ async def invoke_with_retry(
             backoff_ms = _calculate_backoff_ms(base_backoff_ms, attempt, jitter_ms)
             decision = ResilienceDecision(
                 action="retry",
-                retry_attempt=attempt,
-                max_retries=max_retries,
-                backoff_ms=backoff_ms,
-                breaker_state=breaker.state if breaker is not None else None,
-                error=typed_error,
+                reason="resilience_retry",
+                metadata={
+                    "retry_attempt": attempt,
+                    "max_retries": max_retries,
+                    "backoff_ms": backoff_ms,
+                    "breaker_state": breaker.state if breaker is not None else None,
+                    "error": typed_error.dict() if hasattr(typed_error, "dict") else str(typed_error),
+                },
             )
             record_event("resilience_retry", decision.dict())
             await asyncio.sleep(backoff_ms / 1000.0)

@@ -278,6 +278,26 @@ class RankingEvent(TelemetryEvent):
     details: Dict[str, Any] = Field(default_factory=dict)
 
 
+class RetrievalSuccessEvent(TelemetryEvent):
+    """Typed retrieval success event (Phase-3 compatibility shim).
+
+    This is a thin wrapper over RetrievalResultEvent semantics so that
+    existing telemetry surfaces importing RetrievalSuccessEvent continue
+    to function without behavior changes.
+    """
+
+    method: str
+    hit_count: int
+    max_hits: int
+
+
+class RetrievalFailureEvent(TelemetryEvent):
+    """Typed retrieval failure event (Phase-3 compatibility shim)."""
+
+    method: str
+    reason: str
+
+
 class RoutingDecisionEvent(TelemetryEvent):
     agent_id: str
     provider: str
@@ -325,6 +345,33 @@ class ResilienceError(BaseModel):
     code: str
     message: str
     details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class TransientError(ResilienceError):
+    """Transient, retryable error (network, provider, tool flakiness)."""
+
+
+class PermanentError(ResilienceError):
+    """Non-retryable error (validation, safety, logical failures)."""
+
+
+class RetryExhaustedError(ResilienceError):
+    """Raised when max retry attempts are exceeded for a transient error."""
+
+    attempts: int
+
+
+class CircuitBreakerOpenError(ResilienceError):
+    """Error descriptor used when a circuit breaker is open."""
+
+    breaker_name: str
+
+
+class ToolInvocationError(Exception):
+    """Historical tool invocation error type (compatibility shim)."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__(message)
 
 
 class CircuitBreakerState(BaseModel):
@@ -378,3 +425,57 @@ class CorrectionLoopState(BaseModel):
     surfaces_triggered: List[str] = Field(default_factory=list)
     last_signal: Optional[str] = None
     terminated_reason: Optional[str] = None
+
+
+# ======================================================================
+# RETRIEVAL MODELS
+# ======================================================================
+
+
+class Evidence(BaseModel):
+    """Canonical evidence item used by retrieval and RAG."""
+
+    text: str
+    score: float
+    source: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class RetrievalConfig(BaseModel):
+    """Retrieval configuration knobs used by META/L2.
+
+    This is a minimal schema capturing only the fields required by the
+    v10_10 retrieval.py implementation.
+    """
+
+    strategy: str = "hybrid"
+    max_hits: int = 16
+
+    # BM25 parameters
+    bm25_k1: float = 1.2
+    bm25_b: float = 0.75
+
+    # Weighted RRF fusion (per-group weights for RRF)
+    rrf_weights: List[float] = Field(default_factory=list)
+
+    # Whether to use RRF-based fusion in RAG ranking helpers
+    use_rrf: bool = True
+
+
+class RAGPlan(BaseModel):
+    """Minimal RAG plan model used by ranking/build_rag_result.
+
+    This is intentionally lightweight and only encodes the fields used
+    in ranking.py so that tests and helpers depending on RAGPlan can
+    construct a compatible object.
+    """
+
+    strategy: str = "hybrid"
+    max_hits: int = 16
+
+
+class RAGResult(BaseModel):
+    """Result of RAG evidence fusion and ranking."""
+
+    evidence: List[Evidence]
+    used_hyde: bool = False
