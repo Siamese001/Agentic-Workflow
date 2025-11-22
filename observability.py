@@ -86,7 +86,7 @@ def start_span(name: str, ctx: Optional[Dict[str, Any]] = None) -> Dict[str, Any
         TelemetryEvent(
             name=name,
             span_id=span_id,
-            ts_ms=int(record["start_ms"]),
+            ts_ms=record["start_ms"],
             attributes={
                 "event_type": "span_start",
                 "span_id": span_id,
