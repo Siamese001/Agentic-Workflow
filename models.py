@@ -373,6 +373,38 @@ class RoutingDecisionEvent(TelemetryEvent):
     reason: Optional[str] = None
 
 
+class AgentMessage(BaseModel):
+    """Typed message used by multi-agent META layer.
+
+    Mirrors the fields used in multi_agent.MultiAgentCoordinator.
+    """
+
+    sender: str
+    recipient: str
+    content: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class MultiAgentVote(BaseModel):
+    """Individual council member vote (META-only)."""
+
+    agent_id: str
+    decision: str
+    confidence: float
+    rationale: str
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
+
+class MultiAgentCouncilResult(BaseModel):
+    """Aggregated council result used by routing/evaluation layers."""
+
+    votes: List[MultiAgentVote] = Field(default_factory=list)
+    aggregated_decision: str
+    aggregated_confidence: float
+    rationale: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
 class CorrectionEvent(TelemetryEvent):
     """
     Emitted when the workflow graph performs a correction loop
@@ -458,6 +490,19 @@ class SeniorityClassifierResult(BaseModel):
     features: Dict[str, Any] = Field(default_factory=dict)
 
 
+class ProfileInferenceResult(BaseModel):
+    """Aggregated profile inference used by L1 and meta_profile.
+
+    Holds seniority/domain/skills classification plus the overall
+    ComplexityLevel estimate for the workflow.
+    """
+
+    seniority: Optional[SeniorityClassifierResult] = None
+    domain: Optional[DomainClassifierResult] = None
+    skills: Optional[SkillClusterResult] = None
+    complexity: Optional[ComplexityLevel] = None
+
+
 class DomainClassifierResult(BaseModel):
     """Deterministic classification of job/resume domain (non-LLM)."""
 
@@ -469,6 +514,15 @@ class DomainClassifierResult(BaseModel):
 
 class SkillClassifierResult(BaseModel):
     """Deterministic classification of user skills (non-LLM)."""
+
+    labels: List[str] = Field(default_factory=list)
+    primary_label: Optional[str] = None
+    confidence: float = 0.0
+    features: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SkillClusterResult(BaseModel):
+    """Clustered skill labels inferred from job/resume text (L1 profile inference)."""
 
     labels: List[str] = Field(default_factory=list)
     primary_label: Optional[str] = None
@@ -491,6 +545,21 @@ class CouncilVote(BaseModel):
     selected_id: Optional[str] = None
     scores: Dict[str, float] = Field(default_factory=dict)
     ties: List[str] = Field(default_factory=list)
+    reason: Optional[str] = None
+
+
+class SafetyPlan(BaseModel):
+    checks: List[SafetyCheck] = Field(default_factory=list)
+
+
+class WorkflowPlanBundle(BaseModel):
+    """Bundle of all L1 plans passed into L2/L3 orchestration."""
+
+    strategy: StrategyPlan
+    rag: RAGPlan
+    drafting: DraftingPlan
+    qa: QAPlan
+    safety: SafetyPlan
     reason: Optional[str] = None
 
 
