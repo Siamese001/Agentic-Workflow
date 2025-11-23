@@ -31,7 +31,7 @@ from __future__ import annotations
 import asyncio
 from typing import Optional, Callable, Awaitable
 
-from models import (
+from core.models.models import (
     WorkflowPlanBundle,
     ExecutionContext,
     RAGResult,
@@ -41,7 +41,7 @@ from models import (
     SafetyResult,
     L2ResultBundle,
 )
-from observability import (
+from runtime.observability import (
     start_span,
     end_span,
     emit_node_event,
