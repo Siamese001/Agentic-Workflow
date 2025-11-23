@@ -32,6 +32,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
 
+from infra.model_routing.models import RoutingContext
+from infra.model_routing.selector import select_model
 from models import (
     ResilienceError,
     TransientError,
@@ -460,7 +462,15 @@ def invoke_model(
     if max_tokens > sandbox.max_tokens_per_call:
         max_tokens = sandbox.max_tokens_per_call
 
-    provider = _infer_provider(model)
+    # Dynamic model routing (provider-aware, profile-ready).
+    routing_ctx = RoutingContext(
+        agent_id="runtime_utils",
+        task_type="llm_call",
+        execution_profile=None,
+    )
+    choice = select_model(routing_ctx, requested_model=model, execution_profile=None)
+    provider = choice.provider
+    routed_model = choice.model_name
 
     # Optional Redis-backed LLM response cache (exact-match).
     cache_client = _get_redis_client_for_llm_cache()
@@ -468,7 +478,7 @@ def invoke_model(
     if cache_client is not None:
         try:
             payload = {
-                "model": model,
+                "model": routed_model,
                 "prompt": prompt,
                 "temperature": temperature,
                 "max_tokens": max_tokens,
@@ -484,7 +494,7 @@ def invoke_model(
                 record_event(
                     "invoke_model_cache_hit",
                     {
-                        "model": model,
+                        "model": routed_model,
                         "provider": provider,
                         "cache_key": cache_key,
                     },
@@ -496,7 +506,7 @@ def invoke_model(
     record_event(
         "invoke_model_start",
         {
-            "model": model,
+            "model": routed_model,
             "provider": provider,
             "temperature": temperature,
             "max_tokens": max_tokens,
@@ -506,7 +516,7 @@ def invoke_model(
     try:
         if provider == "openai":
             text = run_llm_openai(
-                model=model,
+                model=routed_model,
                 prompt=prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
@@ -515,7 +525,7 @@ def invoke_model(
 
         elif provider == "anthropic":
             text = run_llm_anthropic(
-                model=model,
+                model=routed_model,
                 prompt=prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
@@ -524,7 +534,7 @@ def invoke_model(
 
         elif provider == "google":
             text = run_llm_google(
-                model=model,
+                model=routed_model,
                 prompt=prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
@@ -532,7 +542,7 @@ def invoke_model(
             )
 
         else:
-            raise LLMInvocationError(f"Unsupported provider inferred for model: {model}")
+            raise LLMInvocationError(f"Unsupported provider inferred for model: {routed_model}")
 
         # Write-through to cache on success.
         if cache_client is not None and cache_key is not None and set_llm_cache is not None:
@@ -541,7 +551,7 @@ def invoke_model(
                 record_event(
                     "invoke_model_cache_store",
                     {
-                        "model": model,
+                        "model": routed_model,
                         "provider": provider,
                         "cache_key": cache_key,
                     },
@@ -551,11 +561,13 @@ def invoke_model(
 
         record_event(
             "invoke_model_success",
-            {"model": model, "provider": provider, "response_len": len(text)},
+            {"model": routed_model, "provider": provider, "response_len": len(text)},
         )
         return text
 
     except Exception as exc:
         # Log and re-raise as LLMInvocationError to keep a clean surface.
         record_exception("invoke_model_failure", exc)
-        raise LLMInvocationError(f"LLM invocation failed for model {model}: {exc}") from exc
+        raise LLMInvocationError(
+            f"LLM invocation failed for model {routed_model}: {exc}"
+        ) from exc
