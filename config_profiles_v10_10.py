@@ -43,6 +43,7 @@ from models import (
     ChromaVectorConfig,
     GoogleGenAIConfig,
     BM25BackendConfig,
+    ComplexityLevel,
 )
 
 
@@ -94,6 +95,9 @@ class ExecutionProfileSpec(BaseModel):
     reasoning_mode: ReasoningMode = ReasoningMode.COT
     safety_tier: SafetyTier = SafetyTier.STANDARD
     model_tier: ModelTier = ModelTier.BALANCED
+
+    # Minimum complexity override (optional).
+    min_complexity: ComplexityLevel | None = None
 
     # Budgets / SLOs
     max_cost_usd: float = 0.10

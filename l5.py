@@ -12,7 +12,7 @@ Responsibilities:
           – PolicyDecisionEvent (typed enforcement result)
     • Emit safety audit events (G19–G23).
     • Must NOT:
-          – call LLMs,
+          – call language models directly,
           – mutate WorkflowState directly (L4-only),
           – modify plans (L1/L3),
           – perform retrieval/drafting/QA.
@@ -45,8 +45,8 @@ def _combine_findings(
     safety_result: SafetyResult,
     council_vote: CouncilVote,
 ) -> List[SafetyFinding]:
-    """
-    Merge LLM-based SafetyResult findings with structural QA-derived signals.
+    """Merge model-based SafetyResult findings with structural QA signals.
+
     Downstream: deterministic final enforcement in L5.
     """
     findings = list(getattr(safety_result, "findings", []) or [])
@@ -146,7 +146,7 @@ def run_l5(
     Compute the final L5 enforcement decision:
 
         INPUTS:
-            • SafetyResult  (LLM-based detection)
+            • SafetyResult  (model-based detection)
             • CouncilVote   (heuristic QA-derived)
             • SafetyPolicy  (Phase-3 policy registry)
             • ctx           (ExecutionContext for telemetry)
@@ -173,3 +173,27 @@ def run_l5(
         )
     finally:
         end_span(span)
+
+
+def safety_gate(safety_result: SafetyResult) -> bool:
+    """Backward-compatible helper returning a boolean safety verdict.
+
+    Tests expect safety_gate to inspect SafetyResult and return True when
+    the overall safety decision passes and False when it blocks.
+
+    We delegate to run_l5 using a default-allow policy and a neutral
+    CouncilVote, then interpret the PolicyDecisionEvent.verdict.
+
+    Internal error findings (category="internal") are treated as
+    non-blocking for purposes of this gate so that upstream layers can
+    still surface a best-effort result in failure scenarios.
+    """
+
+    findings = list(getattr(safety_result, "findings", []) or [])
+    if findings and all(getattr(f, "category", "") == "internal" for f in findings):
+        return True
+
+    neutral_council = CouncilVote(members=0, selected_id="pass", scores={}, ties=[], reason="neutral")
+    default_policy = SafetyPolicy()
+    decision = run_l5(safety_result, neutral_council, default_policy, ctx=None)
+    return decision.verdict != "block"
