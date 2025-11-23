@@ -50,7 +50,7 @@ from models import (
 from observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
 import config_profiles_v10_10 as config_profiles
 from meta.schema_validation import validate_schema_version
-from retrieval import run_rag_retrieval
+from meta.retrieval import run_rag_retrieval
 from prompt_builder import build_rag_prompt
 from cognitive_agents import (
     StrategyLLMAgent,
