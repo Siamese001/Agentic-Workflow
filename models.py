@@ -814,12 +814,18 @@ class GoogleGenAIConfig(BaseModel):
 class RetrievalConfig(BaseModel):
     """Retrieval configuration knobs used by META/L2.
 
-    This is a minimal schema capturing only the fields required by the
-    v10_10 retrieval.py implementation.
+    This remains minimal but now also exposes RRF-related controls used by
+    META ranking/fusion helpers.
     """
 
     strategy: str = "hybrid"
     max_hits: int = 16
+
+    # Reciprocal Rank Fusion controls (optional; safe defaults preserved).
+    # When rrf_weights is None or empty, uniform weights are used.
+    rrf_k: int = 60
+    rrf_weights: Optional[List[float]] = None
+    use_rrf: bool = True
 
 
 class RAGQueryHint(BaseModel):

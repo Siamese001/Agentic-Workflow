@@ -30,13 +30,12 @@ from models import (
 from observability import (
     start_span,
     end_span,
-    emit_telemetry_event,
     emit_retrieval_attempt,
     emit_retrieval_success,
     emit_retrieval_failure,
 )
 
-import ranking as _ranking
+from meta.retrieval.hybrid_ranker import fuse_and_rank
 
 try:  # pragma: no cover - optional Chroma wiring
     from vector_store_chroma import (
@@ -217,41 +216,12 @@ def run_rag_retrieval(
         },
     )
 
-    groups = []
-
     # -----------------------------------------------------
-    # Chroma (if enabled) — isolated error domain
+    # BM25 — lexical retriever (isolated error domain)
     # -----------------------------------------------------
-    if getattr(retrieval_cfg, "chroma", None) and retrieval_cfg.chroma.enabled:
-        try:
-            chroma_hits = _run_chroma(effective_query, retrieval_cfg, max_hits)
-            if chroma_hits:
-                groups.append(chroma_hits)
-                emit_retrieval_success(
-                    RetrievalSuccessEvent(
-                        name="retrieval_success",
-                        method="chroma",
-                        hit_count=len(chroma_hits),
-                        max_hits=max_hits,
-                        workflow_id=workflow_id,
-                    )
-                )
-        except Exception as e:  # pragma: no cover - Chroma is optional
-            emit_retrieval_failure(
-                RetrievalFailureEvent(
-                    name="retrieval_failure",
-                    method="chroma",
-                    reason=str(e),
-                    workflow_id=workflow_id,
-                )
-            )
-
-    # -----------------------------------------------------
-    # BM25 — isolated error domain
-    # -----------------------------------------------------
+    bm25_hits: List[Evidence] = []
     try:
         bm25_hits = _run_bm25(effective_query, retrieval_cfg, max_hits)
-        groups.append(bm25_hits)
         emit_retrieval_success(
             RetrievalSuccessEvent(
                 name="retrieval_success",
@@ -272,11 +242,11 @@ def run_rag_retrieval(
         )
 
     # -----------------------------------------------------
-    # Dense — isolated error domain
+    # Dense — semantic retriever (isolated error domain)
     # -----------------------------------------------------
+    dense_hits: List[Evidence] = []
     try:
         dense_hits = _run_dense(effective_query, retrieval_cfg, max_hits)
-        groups.append(dense_hits)
         emit_retrieval_success(
             RetrievalSuccessEvent(
                 name="retrieval_success",
@@ -297,18 +267,42 @@ def run_rag_retrieval(
         )
 
     # -----------------------------------------------------
-    # Weighted RRF fusion
+    # Optional Chroma retrieval — currently merged into dense hits
     # -----------------------------------------------------
-    fused = _ranking.fuse_ranked_groups_rrf(
-        groups=groups,
-        rrf_weights=list(retrieval_cfg.rrf_weights.values()) if retrieval_cfg.rrf_weights else None,
-        workflow_id=workflow_id,
+    if getattr(retrieval_cfg, "chroma", None) and retrieval_cfg.chroma.enabled:
+        try:
+            chroma_hits = _run_chroma(effective_query, retrieval_cfg, max_hits)
+            if chroma_hits:
+                dense_hits = list(dense_hits or []) + list(chroma_hits)
+                emit_retrieval_success(
+                    RetrievalSuccessEvent(
+                        name="retrieval_success",
+                        method="chroma",
+                        hit_count=len(chroma_hits),
+                        max_hits=max_hits,
+                        workflow_id=workflow_id,
+                    )
+                )
+        except Exception as e:  # pragma: no cover - Chroma is optional
+            emit_retrieval_failure(
+                RetrievalFailureEvent(
+                    name="retrieval_failure",
+                    method="chroma",
+                    reason=str(e),
+                    workflow_id=workflow_id,
+                )
+            )
+
+    # -----------------------------------------------------
+    # Hybrid fusion + evidence ranking (delegated to META hybrid_ranker)
+    # -----------------------------------------------------
+    rag_result = fuse_and_rank(
+        lex_results=bm25_hits,
+        dense_results=dense_hits,
+        cfg=retrieval_cfg,
+        council_vote=council_vote,
+        used_hyde=hyde_query is not None,
     )
 
-    # -----------------------------------------------------
-    # Council-aware post weighting
-    # -----------------------------------------------------
-    fused = _apply_council_weights(fused, council_vote)
-
     end_span(span)
-    return fused
+    return list(rag_result.evidence or [])
