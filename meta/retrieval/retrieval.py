@@ -2,34 +2,99 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from models import Evidence, RetrievalConfig, CouncilVote, RAGResult, RetrievalAttemptEvent, RetrievalSuccessEvent, RetrievalFailureEvent
-from observability import start_span, end_span, emit_retrieval_attempt, emit_retrieval_success, emit_retrieval_failure
+from models import (
+    Evidence,
+    RetrievalConfig,
+    CouncilVote,
+    RAGResult,
+    RetrievalAttemptEvent,
+    RetrievalSuccessEvent,
+    RetrievalFailureEvent,
+)
+from observability import (
+    start_span,
+    end_span,
+    emit_retrieval_attempt,
+    emit_retrieval_success,
+    emit_retrieval_failure,
+)
 
 from meta.retrieval.hybrid_ranker import fuse_and_rank
-from meta.retrieval.retrievers.bm25 import bm25_search as _bm25_search
-from meta.retrieval.retrievers.dense import dense_search as _dense_search
-from meta.retrieval.vector_store_chroma import chroma_hybrid_search as _chroma_hybrid_search
 
 
-def run_bm25_retrieval(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    corpus = []  # Placeholder corpus; real wiring is handled by existing retrievers.
-    scored = _bm25_search(query=query, corpus=corpus, cfg=None)  # type: ignore[arg-type]
-    return [
-        Evidence(text=str(item.get("text", "")), score=float(item.get("score", 0.0)), source="bm25", metadata={})
-        for item in scored[:max_hits]
-    ]
+def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
+    """Delegate to the existing BM25 retriever (lexical backend)."""
+
+    from retrievers.bm25 import bm25_search
+
+    return bm25_search(
+        query=query,
+        k1=cfg.bm25_k1,
+        b=cfg.bm25_b,
+        max_hits=max_hits,
+    )
 
 
-def run_dense_retrieval(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    return _dense_search(query=query, max_hits=max_hits)
+def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
+    """Delegate to the existing dense retriever (vector backend)."""
+
+    from retrievers.dense import dense_search
+
+    return dense_search(query=query, max_hits=max_hits)
 
 
-def run_hyde_expansion(base_query: str, hyde_query: Optional[str]) -> str:
-    return hyde_query if hyde_query else base_query
+def _run_chroma(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
+    """Optional Chroma-based dense/hybrid retrieval.
 
+    This mirrors the previous retrieval.py implementation but lives in the
+    META retrieval namespace.
+    """
 
-def normalize_documents(evidence: List[Evidence]) -> List[Evidence]:
-    return evidence
+    try:  # pragma: no cover - optional Chroma wiring
+        from vector_store_chroma import (
+            ChromaConfig as _ChromaConfig,
+            init_chroma_client as _init_chroma_client,
+            chroma_hybrid_search as _chroma_hybrid_search,
+        )
+    except Exception:  # pragma: no cover - Chroma is optional
+        return []
+
+    if not getattr(cfg, "chroma", None) or not cfg.chroma.enabled:
+        return []
+
+    chroma_cfg = cfg.chroma
+    if not chroma_cfg.collection_name:
+        return []
+
+    client, collection = _init_chroma_client(
+        _ChromaConfig(
+            collection_name=chroma_cfg.collection_name,
+            persist_directory=chroma_cfg.persist_directory,
+            require_collection=True,
+        )
+    )
+
+    raw = _chroma_hybrid_search(
+        collection,
+        query_texts=[query],
+        n_results=max_hits,
+    )
+
+    docs = (raw.get("documents") or [[]])[0]
+    scores = (raw.get("distances") or [[]])[0]
+
+    evidence: List[Evidence] = []
+    for text, score in zip(docs, scores):
+        evidence.append(
+            Evidence(
+                text=str(text),
+                score=float(score),
+                source="chroma",
+                metadata={},
+            )
+        )
+
+    return evidence[:max_hits]
 
 
 def orchestrate_retrieval(
@@ -40,10 +105,17 @@ def orchestrate_retrieval(
     hyde_query: Optional[str] = None,
     council_vote: Optional[CouncilVote] = None,
 ) -> RAGResult:
+    """Central META retrieval orchestrator.
+
+    This function mirrors the previous retrieval.run_rag_retrieval behavior
+    but returns a typed RAGResult instead of a bare Evidence list.
+    """
+
     workflow_id = ctx.workflow_id
     max_hits = cfg.max_hits
 
-    effective_query = run_hyde_expansion(query, hyde_query)
+    # Choose query (if HYDE passed from L2)
+    effective_query = hyde_query if hyde_query else query
     emit_retrieval_attempt(
         RetrievalAttemptEvent(
             name="retrieval_attempt",
@@ -67,9 +139,10 @@ def orchestrate_retrieval(
         },
     )
 
+    # BM25 — lexical retriever (isolated error domain)
     bm25_hits: List[Evidence] = []
     try:
-        bm25_hits = run_bm25_retrieval(effective_query, cfg, max_hits)
+        bm25_hits = _run_bm25(effective_query, cfg, max_hits)
         emit_retrieval_success(
             RetrievalSuccessEvent(
                 name="retrieval_success",
@@ -89,9 +162,10 @@ def orchestrate_retrieval(
             )
         )
 
+    # Dense — semantic retriever (isolated error domain)
     dense_hits: List[Evidence] = []
     try:
-        dense_hits = run_dense_retrieval(effective_query, cfg, max_hits)
+        dense_hits = _run_dense(effective_query, cfg, max_hits)
         emit_retrieval_success(
             RetrievalSuccessEvent(
                 name="retrieval_success",
@@ -111,10 +185,10 @@ def orchestrate_retrieval(
             )
         )
 
-    # Optional Chroma retrieval via META adapter
+    # Optional Chroma retrieval — currently merged into dense hits
     if getattr(cfg, "chroma", None) and cfg.chroma.enabled:
         try:
-            chroma_hits = _chroma_hybrid_search(effective_query, cfg, max_hits)
+            chroma_hits = _run_chroma(effective_query, cfg, max_hits)
             if chroma_hits:
                 dense_hits = list(dense_hits or []) + list(chroma_hits)
                 emit_retrieval_success(
@@ -126,7 +200,7 @@ def orchestrate_retrieval(
                         workflow_id=workflow_id,
                     )
                 )
-        except Exception as e:  # pragma: no cover - defensive
+        except Exception as e:  # pragma: no cover - Chroma is optional
             emit_retrieval_failure(
                 RetrievalFailureEvent(
                     name="retrieval_failure",
@@ -136,6 +210,7 @@ def orchestrate_retrieval(
                 )
             )
 
+    # Hybrid fusion + evidence ranking (delegated to META hybrid_ranker)
     rag_result = fuse_and_rank(
         lex_results=bm25_hits,
         dense_results=dense_hits,
