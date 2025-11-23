@@ -35,7 +35,7 @@ from typing import Dict
 
 from pydantic import BaseModel, Field
 
-from models import (
+from core.models.models import (
     RetrievalConfig,
     ContextBudget,
     ReasoningMode,

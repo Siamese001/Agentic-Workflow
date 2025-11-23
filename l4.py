@@ -29,7 +29,7 @@ from __future__ import annotations
 from dataclasses import replace
 from typing import Optional
 
-from models import (
+from core.models.models import (
     WorkflowState,
     StateTransitionEvent,
     ExecutionContext,
@@ -37,7 +37,7 @@ from models import (
     RollbackRequest,
     RollbackResult,
 )
-from observability import start_span, end_span, log_exception
+from runtime.observability import start_span, end_span, log_exception
 
 
 # =============================================================================

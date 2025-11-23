@@ -30,7 +30,7 @@ import json
 from dataclasses import dataclass
 from typing import Any, List, Optional, Sequence
 
-from models import (
+from core.models.models import (
     AgentCard,
     AgentRole,
     StrategyResult,
@@ -46,7 +46,7 @@ from models import (
     CouncilVote,
 )
 from core.routing import RoutingPolicy
-from runtime_utils import invoke_model, SandboxConfig
+from runtime.runtime_utils import invoke_model, SandboxConfig
 from observability import record_event, record_exception
 from meta_profile import MetaProfileSnapshot
 from prompt_builder import (

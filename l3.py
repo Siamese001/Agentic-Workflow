@@ -35,8 +35,8 @@ import asyncio
 from dataclasses import dataclass, field
 from typing import Optional, Any, Dict, List
 
-from models import WorkflowPlanBundle, ExecutionContext, L2ResultBundle
-from observability import start_span, end_span, emit_node_event, log_exception
+from core.models.models import WorkflowPlanBundle, ExecutionContext, L2ResultBundle
+from runtime.observability import start_span, end_span, emit_node_event, log_exception
 from core.workflow_graph import run_workflow_graph
 from core.l5 import safety_gate
 

@@ -30,7 +30,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Any, List, Dict
 
-from models import (  # type: ignore[attr-defined]
+from core.models.models import (  # type: ignore[attr-defined]
     ComplexityLevel,
     SkillClassifierResult,
     DomainClassifierResult,
@@ -44,7 +44,7 @@ from multi_agent import (
     AgentRole,
     extract_council_arbitration,
 )
-from observability import (
+from runtime.observability import (
     get_all_events,
     record_event,
     emit_council_arbitration_event,
