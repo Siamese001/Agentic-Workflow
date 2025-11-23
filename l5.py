@@ -24,8 +24,7 @@ from __future__ import annotations
 
 from typing import Optional, List
 
-from infra.control_plane.control_plane import run_safety_pipeline
-from infra.control_plane.models import SafetyContext
+from orchestration.control_plane import run_safety_pipeline, SafetyContext
 from models import (
     SafetyResult,
     SafetyFinding,
