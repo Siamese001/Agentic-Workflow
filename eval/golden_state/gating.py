@@ -25,3 +25,17 @@ def gate_experiment(new_scores: Dict[str, float], baseline_scores: Dict[str, flo
             return False
 
     return True
+
+
+def gate_against_baseline(
+    current_scores: Dict[str, float],
+    baseline_scores: Dict[str, float],
+    tolerance: float = 0.0,
+) -> bool:
+    if not baseline_scores:
+        return True
+
+    adjusted_baseline = dict(baseline_scores)
+    base_avg = float(baseline_scores.get("avg_score", 0.0))
+    adjusted_baseline["avg_score"] = max(0.0, base_avg - tolerance)
+    return gate_experiment(current_scores, adjusted_baseline)
