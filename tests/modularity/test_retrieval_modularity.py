@@ -23,3 +23,16 @@ def test_retriever_placeholders_present() -> None:
     ]
     for f in expected_files:
         assert f.exists(), f"Expected retriever module missing: {f}"
+
+
+def test_meta_ranking_and_hybrid_ranker_present() -> None:
+    """Ensure META ranking + hybrid ranker modules exist and are wired."""
+    ranking_file = PROJECT_ROOT / "meta" / "ranking.py"
+    hybrid_ranker_file = PROJECT_ROOT / "meta" / "retrieval" / "hybrid_ranker.py"
+
+    assert ranking_file.exists(), f"Expected META ranking module missing: {ranking_file}"
+    assert hybrid_ranker_file.exists(), f"Expected hybrid_ranker module missing: {hybrid_ranker_file}"
+
+    retrieval_file = PROJECT_ROOT / "retrieval.py"
+    text = retrieval_file.read_text(encoding="utf-8")
+    assert "from meta.retrieval.hybrid_ranker import fuse_and_rank" in text
