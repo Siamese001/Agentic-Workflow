@@ -34,6 +34,8 @@ from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
 
 from infra.model_routing.models import RoutingContext
 from infra.model_routing.selector import select_model
+from runtime.observability.agentic_events import CostEvent
+from runtime.observability.agentic_collectors import append_event as append_agentic_event
 from models import (
     ResilienceError,
     TransientError,
@@ -563,6 +565,19 @@ def invoke_model(
             "invoke_model_success",
             {"model": routed_model, "provider": provider, "response_len": len(text)},
         )
+
+        # Emit an agentic CostEvent for observability of per-call cost/latency.
+        cost_evt = CostEvent(
+            ts_ms=int(time.time() * 1000),
+            workflow_id=None,
+            agent_id="runtime_utils",
+            provider=provider,
+            model_name=routed_model,
+            estimated_cost=getattr(choice, "estimated_cost", 0.0),
+            latency_ms=getattr(choice, "latency_ms", 0),
+            metadata={},
+        )
+        append_agentic_event(cost_evt)
         return text
 
     except Exception as exc:
