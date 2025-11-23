@@ -711,6 +711,8 @@ def build_workflow_plan_bundle(
     resume: ResumeInput,
     config: WorkflowConfig,
     meta_profile: Optional[MetaProfileSnapshot] = None,
+    routing_policy: Any | None = None,
+    prompt_registry: Any | None = None,
 ) -> WorkflowPlanBundle:
     """
     Top-level L1 entrypoint.

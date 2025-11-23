@@ -121,7 +121,7 @@ class RuntimeInputs:
 class WorkflowConfig(BaseModel):
     """Workflow configuration knobs required at L1 planning time."""
 
-    profile_id: str
+    profile_id: str = "RESUME_FAST"
 
     # RAG configuration used by L1
     rag_max_job_chunks: int = 8
@@ -131,6 +131,9 @@ class WorkflowConfig(BaseModel):
 
     # Drafting configuration used by L1
     drafting_experience_max_tokens: int = 1024
+
+    # Depth / complexity hints for drafting and routing tests
+    drafting_depth: int = 1
 
 
 # ======================================================================
@@ -161,6 +164,36 @@ class WorkflowState(BaseModel):
 
     # Arbitrary extensions
     slots: Dict[str, Any] = Field(default_factory=dict)
+
+
+# Events and rollback artifacts used by L4
+
+
+class StateTransitionEvent(BaseModel):
+    """Typed event describing a single WorkflowState transition.
+
+    For v10_10 tests we only need a minimal schema: an event id and a
+    patch payload (dict or WorkflowStatePatch-like object).
+    """
+
+    event_id: str
+    patch: Any = None
+
+
+class Checkpoint(BaseModel):
+    """Immutable snapshot wrapper around WorkflowState used for rollback."""
+
+    snapshot: WorkflowState
+
+
+class RollbackRequest(BaseModel):
+    checkpoint: Optional[Checkpoint] = None
+
+
+class RollbackResult(BaseModel):
+    ok: bool
+    reason: str
+    state_after: WorkflowState
 
 
 class WorkflowStatePatch(BaseModel):
@@ -211,7 +244,7 @@ class ExecutionContext(BaseModel):
     profile_name: str = ""
 
     # Runtime configuration / META-layer hints
-    retrieval: "RetrievalConfig"  # type: ignore[name-defined]
+    retrieval: Optional["RetrievalConfig"] = None  # type: ignore[name-defined]
     routing_policy: Any = None
     sandbox_config: Any = None
     meta_profile_snapshot: Any = None
@@ -288,6 +321,12 @@ class DraftSection(BaseModel):
     body: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
+    @property
+    def text(self) -> str:
+        """Compatibility alias for body used by older tests/code paths."""
+
+        return self.body
+
 
 class DraftingResult(BaseModel):
     sections: List[DraftSection]
@@ -354,6 +393,24 @@ class L2ResultBundle(BaseModel):
                 ]
             ),
         )
+
+
+class SafetyEnforcementVerdict(BaseModel):
+    """Normalized L5 safety verdict used by SafetyPolicy evaluation."""
+
+    verdict: str  # "pass" | "warn" | "block"
+    reason: str
+
+
+class SafetyPolicy(BaseModel):
+    """Configuration for L5 safety enforcement.
+
+    Only the fields accessed in l5.py are modeled here.
+    """
+
+    allow_generation: bool = True
+    allow_pii: bool = True
+    disallowed_categories: List[str] = Field(default_factory=list)
 
 
 # ======================================================================
@@ -503,9 +560,16 @@ class PromptDefinition(BaseModel):
 
 
 class PolicyDecisionEvent(BaseModel):
-    classifier_id: str
-    outcome: str
-    details: Dict[str, Any] = Field(default_factory=dict)
+    """Final L5 enforcement decision event.
+
+    This matches the shape constructed in l5.run_l5: a simple verdict,
+    human-readable reason, and the list of SafetyFinding objects that
+    informed the decision.
+    """
+
+    verdict: str
+    reason: str
+    findings: List["SafetyFinding"] = Field(default_factory=list)
 
 
 # ======================================================================
