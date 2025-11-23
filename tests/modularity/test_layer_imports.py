@@ -86,3 +86,49 @@ def test_non_providers_do_not_import_providers():
             violations.append((str(path), sorted(imported)))
 
     assert not violations, f"Non-provider modules importing providers: {violations}"
+
+
+def test_meta_does_not_import_core_or_legacy_l_layers():
+    """meta/ modules must not import core or legacy l1/l2/cognitive_agents."""
+
+    violations: list[tuple[str, list[str]]] = []
+    for path in _iter_project_py_files():
+        if "tests" in path.parts:
+            continue
+
+        top = _top_level_dir_for(path)
+        if top != "meta":
+            continue
+
+        imported = _get_imported_modules(path)
+        bad = imported & (FORBIDDEN_TOP_LEVEL | {"core"})
+        if bad:
+            violations.append((str(path), sorted(bad)))
+
+    assert not violations, f"meta modules importing forbidden core/L layers: {violations}"
+
+
+def test_prompt_files_do_not_import_providers_or_core():
+    """prompt_* files must not import providers or core/l1/l2/cognitive_agents."""
+
+    violations: list[tuple[str, list[str]]] = []
+    for path in _iter_project_py_files():
+        if "tests" in path.parts:
+            continue
+
+        # Treat top-level prompt_* files as prompts layer for now.
+        if path.name not in {"prompt_builder.py", "prompt_system_v10_10.py"}:
+            continue
+
+        imported = _get_imported_modules(path)
+        bad = set()
+        if PROVIDERS_PACKAGE in imported:
+            bad.add(PROVIDERS_PACKAGE)
+        if "core" in imported:
+            bad.add("core")
+        bad |= imported & FORBIDDEN_TOP_LEVEL
+
+        if bad:
+            violations.append((str(path), sorted(bad)))
+
+    assert not violations, f"prompt_* files importing forbidden modules: {violations}"
