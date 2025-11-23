@@ -124,3 +124,20 @@ def fallback_chain(choice: ModelChoice) -> list[ModelChoice]:
         )
 
     return fallbacks
+
+
+def choose_model(ctx: RoutingContext) -> ModelChoice:
+    """Phase-3 wrapper returning a ModelChoice for a RoutingContext.
+
+    This delegates to the existing choose_provider_and_model helper while
+    keeping a minimal, ExecutionProfile-free signature as requested by the
+    new safety/observability/cost layer.
+    """
+
+    return choose_provider_and_model(ctx, requested_model=None)
+
+
+def enforce_cost_budget(choice: ModelChoice, profile: Optional[ExecutionProfile]) -> ModelChoice:
+    """Phase-3 wrapper over enforce_budget to match the new API surface."""
+
+    return enforce_budget(choice, profile)
