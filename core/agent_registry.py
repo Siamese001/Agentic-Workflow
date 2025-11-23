@@ -17,6 +17,17 @@ class AgentRegistry:
 
     _agents: Dict[str, AgentCard] = field(default_factory=dict)
 
+    @property
+    def agents(self) -> Dict[str, AgentCard]:
+        """Public view of the registry mapping (Phase-1 compatibility).
+
+        Exposes the underlying in-memory mapping so helper policies such as
+        agent_router_policy can iterate over all registered agents without
+        depending on private attributes.
+        """
+
+        return self._agents
+
     def register_agent(self, agent_card: AgentCard) -> None:
         """Register or overwrite an AgentCard by its agent_id."""
 
@@ -37,6 +48,28 @@ class AgentRegistry:
 
         role_value = role.value if isinstance(role, AgentRole) else str(role)
         return [a for a in self._agents.values() if a.role.value == role_value]
+
+
+    # Phase-1 compatibility helpers -------------------------------------
+
+    def find_agents_by_type(self, agent_type: str) -> List[AgentCard]:
+        """Return all agents whose agent_type matches the given string."""
+
+        matches: List[AgentCard] = []
+        for a in self._agents.values():
+            atype = getattr(a, "agent_type", None)
+            if atype == agent_type:
+                matches.append(a)
+                continue
+
+            # Fallback: infer from role when agent_type is not explicitly set.
+            try:
+                role_val = a.role.value  # type: ignore[union-attr]
+            except Exception:  # pragma: no cover - defensive
+                role_val = None
+            if role_val == agent_type:
+                matches.append(a)
+        return matches
 
     def find_agents_by_capability(self, capability: str) -> List[AgentCard]:
         """Return all agents whose capabilities include the given string."""
