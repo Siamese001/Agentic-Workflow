@@ -24,8 +24,8 @@ with ranking, scoring, and evidence fusion. No LLM calls; no state mutation.
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from models import Evidence, RetrievalConfig, RAGPlan, RAGResult, RankingEvent
-from observability import emit_telemetry_event, emit_ranking_event
+from core.models.models import Evidence, RetrievalConfig, RAGPlan, RAGResult, RankingEvent
+from runtime.observability import emit_telemetry_event, emit_ranking_event
 
 
 # =============================================================================

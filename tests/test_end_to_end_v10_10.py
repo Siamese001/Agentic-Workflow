@@ -18,7 +18,7 @@ import pytest
 from unittest.mock import patch
 import json
 
-from models import (
+from core.models.models import (
     JobInput,
     ResumeInput,
     WorkflowConfig,

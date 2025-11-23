@@ -18,7 +18,7 @@ Layer: META (no LLM calls; L2 generates HYDE query)
 
 from typing import Optional
 
-from models import RetrievalConfig, CouncilVote, RAGResult
+from core.models.models import RetrievalConfig, CouncilVote, RAGResult
 
 from meta.retrieval.retrieval import orchestrate_retrieval
 

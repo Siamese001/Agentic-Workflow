@@ -34,7 +34,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List, Optional
 
-from models import (
+from core.models.models import (
     ComplexityLevel,
     DraftingMode,
     ReasoningMode,
