@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from cognitive_agents import (
+from core.cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,
@@ -11,7 +11,7 @@ from cognitive_agents import (
     QACouncilAgent,
 )
 from models import AgentCard, AgentRole
-from routing import RoutingPolicy
+from core.routing import RoutingPolicy
 from runtime_utils import SandboxConfig
 
 

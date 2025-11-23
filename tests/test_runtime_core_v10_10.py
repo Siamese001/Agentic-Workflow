@@ -25,20 +25,20 @@ from models import (
     WorkflowPlanBundle,
     ExecutionContext,
 )
-from routing import RoutingPolicy, classify_complexity
+from core.routing import RoutingPolicy, classify_complexity
 from registry import build_default_prompt_registry
 from runtime_utils import SandboxConfig
-from cognitive_agents import (
+from core.cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,
     ConstitutionalSafetyAgent,
 )
-from l1 import build_workflow_plan_bundle
-from l2 import execute_workflow_plans
-from l3 import run_dag
-from l4 import apply_state_patch
-from l5 import safety_gate
+from core.l1 import build_workflow_plan_bundle
+from core.l2 import execute_workflow_plans
+from core.l3 import run_dag
+from core.l4 import apply_state_patch
+from core.l5 import safety_gate
 from self_correction import evaluate_all_surfaces, aggregate_correction_signals
 
 
@@ -254,7 +254,7 @@ def test_architecture_layer_purity():
     L5 must be deterministic.
     """
     import inspect
-    import l3, l4, l5
+    import core.l3 as l3, core.l4 as l4, core.l5 as l5
 
     # L3 must not import cognitive_agents
     l3_src = inspect.getsource(l3)
