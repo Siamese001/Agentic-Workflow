@@ -18,27 +18,31 @@ Covers:
 import pytest
 from unittest.mock import patch
 
-from models import (
+from core.models.models import (
     JobInput,
     ResumeInput,
     WorkflowConfig,
     WorkflowPlanBundle,
     ExecutionContext,
 )
+
 from core.routing import RoutingPolicy, classify_complexity
 from registry import build_default_prompt_registry
 from runtime_utils import SandboxConfig
+
 from core.cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,
     ConstitutionalSafetyAgent,
 )
+
 from core.l1 import build_workflow_plan_bundle
 from core.l2 import execute_workflow_plans
 from core.l3 import run_dag
 from core.l4 import apply_state_patch
 from core.l5 import safety_gate
+
 from self_correction import evaluate_all_surfaces, aggregate_correction_signals
 
 
@@ -120,16 +124,15 @@ MOCK_LLM_RESPONSES = {
 
 
 def mock_invoke_model(model, prompt, sandbox, temperature=0.2, max_tokens=1024):
-    for key in MOCK_LLM_RESPONSES:
+    for key, val in MOCK_LLM_RESPONSES.items():
         if key in prompt:
-            return MOCK_LLM_RESPONSES[key]
+            return val
     return "Default mock LLM output."
 
 
 # -------------------------------------------------------------------------
 # TESTS
 # -------------------------------------------------------------------------
-
 
 def test_l1_builds_valid_plans(job, resume, config, routing_policy, prompt_registry):
     plans = build_workflow_plan_bundle(
@@ -156,6 +159,7 @@ def test_l2_execute_with_mock_llm(mock_llm, ctx):
         prompt_registry=ctx.prompt_registry,
     )
     result = execute_workflow_plans(plans, ctx)
+
     assert result.strategy.branches
     assert result.drafting.sections
     assert all(sec.text for sec in result.drafting.sections)
@@ -172,21 +176,21 @@ def test_l3_dag_orchestration(mock_llm, ctx):
         prompt_registry=ctx.prompt_registry,
     )
     dag = run_dag(ctx, plans, max_retries=2)
+
     assert dag.l2_results.strategy
     assert dag.l2_results.drafting
     assert dag.final_state_patch["strategy_text"]
 
 
-@pytest.mark.skip(reason="L4 state patch API changed in v10_10; test needs to be updated to use apply_state_transition/commit_checkpoint.")
+@pytest.mark.skip(reason="L4 state patch API changed in v10_10; test needs migration to apply_state_transition/commit_checkpoint.")
 def test_l4_state_patch_deterministic(ctx):
-    # Create minimal fake L2 results for determinism test
-    from models import (
+    from core.models.models import (
         StrategyResult, StrategyBranch,
         RAGResult, Evidence,
         DraftingResult, DraftSectionResult,
         QAResult, QACheckResult,
         SafetyResult, SafetyFinding,
-        L2ResultBundle
+        L2ResultBundle,
     )
 
     strategy = StrategyResult(
@@ -194,29 +198,33 @@ def test_l4_state_patch_deterministic(ctx):
         chosen_branch_id="b1",
     )
     rag = RAGResult(evidence=[Evidence(text="x", score=0.5, source="job")])
-    drafting = DraftingResult(sections=[
-        DraftSectionResult(title="Summary", outline="", text="Draft", compliance_notes="")
-    ], mode="balanced")
+    drafting = DraftingResult(
+        sections=[
+            DraftSectionResult(title="Summary", outline="", text="Draft", compliance_notes="")
+        ],
+        mode="balanced",
+    )
     qa = QAResult(checks=[QACheckResult(id="c1", passed=True, reason="ok", severity=1)])
     safety = SafetyResult(findings=[SafetyFinding(id="s1", category="none", blocking=False, reason="ok")])
 
     l2 = L2ResultBundle(strategy=strategy, rag=rag, drafting=drafting, qa=qa, safety=safety)
+
     patch1 = apply_state_patch(l2, [], ctx, safety_passed=True)
     patch2 = apply_state_patch(l2, [], ctx, safety_passed=True)
 
     assert patch1 == patch2
 
 
-@pytest.mark.skip(reason="SafetyResult/SafetyFinding model shape changed in v10_10; test needs to be updated to new fields.")
+@pytest.mark.skip(reason="SafetyResult model shape changed in v10_10; test needs schema update.")
 def test_l5_safety_gate_basic():
-    from models import SafetyResult, SafetyFinding
+    from core.models.models import SafetyResult, SafetyFinding
     result = SafetyResult(findings=[SafetyFinding(id="a", category="none", blocking=False, reason="ok")])
     assert safety_gate(result) is True
 
 
-@pytest.mark.skip(reason="Self-correction surfaces test uses legacy result models; needs to be updated to current StrategyResult/DraftingResult/QAResult/SafetyResult.")
+@pytest.mark.skip(reason="Self-correction surfaces test uses legacy result models; needs update.")
 def test_self_correction_surfaces_basic():
-    from models import (
+    from core.models.models import (
         StrategyResult, StrategyBranch,
         RAGResult, Evidence,
         DraftingResult, DraftSectionResult,
@@ -224,18 +232,17 @@ def test_self_correction_surfaces_basic():
         SafetyResult, SafetyFinding,
     )
 
-    strategy = StrategyResult(branches=[StrategyBranch(id="b1", text="some strategy text that is long")],
+    strategy = StrategyResult(branches=[StrategyBranch(id="b1", text="some strategy text")],
                               chosen_branch_id="b1")
     rag = RAGResult(evidence=[Evidence(text="x", score=0.5, source="job")])
-    drafting = DraftingResult(sections=[
-        DraftSectionResult(title="s", outline="", text="some text", compliance_notes="")
-    ], mode="balanced")
+    drafting = DraftingResult(
+        sections=[DraftSectionResult(title="s", outline="", text="txt", compliance_notes="")],
+        mode="balanced",
+    )
     qa = QAResult(checks=[QACheckResult(id="c1", passed=True, reason="ok", severity=1)])
     safety = SafetyResult(findings=[SafetyFinding(id="s1", category="none", blocking=False, reason="ok")])
 
-    signals = evaluate_all_surfaces(
-        strategy=strategy, rag=rag, drafting=drafting, qa=qa, safety=safety
-    )
+    signals = evaluate_all_surfaces(strategy=strategy, rag=rag, drafting=drafting, qa=qa, safety=safety)
     assert all(sig.severity == 0 for sig in signals)
 
     best = aggregate_correction_signals(signals)
@@ -248,22 +255,21 @@ def test_self_correction_surfaces_basic():
 
 def test_architecture_layer_purity():
     """
-    Ensures no forbidden cross-layer imports.
-    L3 must not import cognitive agents.
-    L4 must not call LLM.
-    L5 must be deterministic.
+    Ensures:
+      • L3 does NOT import cognitive agents
+      • L4 does NOT call invoke_model
+      • L5 does NOT call invoke_model
     """
     import inspect
-    import core.l3 as l3, core.l4 as l4, core.l5 as l5
+    import core.l3 as l3
+    import core.l4 as l4
+    import core.l5 as l5
 
-    # L3 must not import cognitive_agents
     l3_src = inspect.getsource(l3)
     assert "cognitive_agents" not in l3_src
 
-    # L4 must not call invoke_model
     l4_src = inspect.getsource(l4)
     assert "invoke_model" not in l4_src
 
-    # L5 must not call invoke_model
     l5_src = inspect.getsource(l5)
     assert "invoke_model" not in l5_src
