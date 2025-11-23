@@ -1,5 +1,4 @@
-from infra.control_plane.models import SafetyContext
-from infra.control_plane.control_plane import run_safety_pipeline
+from orchestration.control_plane import SafetyContext, run_safety_pipeline
 
 
 def test_control_plane_allows_safe_text():

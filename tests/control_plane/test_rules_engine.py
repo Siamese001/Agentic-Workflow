@@ -1,5 +1,4 @@
-from infra.control_plane.models import SafetyContext, PolicyRule
-from infra.control_plane.rules_engine import evaluate_rules
+from orchestration.control_plane import SafetyContext, PolicyRule, evaluate_rules
 
 
 def test_rules_engine_detects_pii_email():
