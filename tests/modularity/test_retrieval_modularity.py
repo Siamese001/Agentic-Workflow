@@ -35,4 +35,5 @@ def test_meta_ranking_and_hybrid_ranker_present() -> None:
 
     retrieval_file = PROJECT_ROOT / "retrieval.py"
     text = retrieval_file.read_text(encoding="utf-8")
-    assert "from meta.retrieval.hybrid_ranker import fuse_and_rank" in text
+    assert "from meta.retrieval.retrieval import orchestrate_retrieval" in text
+    assert "from retrievers." not in text
