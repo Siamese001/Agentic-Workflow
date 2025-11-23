@@ -28,9 +28,11 @@ from __future__ import annotations
 
 import json
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, List, Optional, Sequence
 
 from models import (
+    AgentCard,
+    AgentRole,
     StrategyResult,
     StrategyBranch,
     RAGResult,
@@ -41,7 +43,6 @@ from models import (
     SafetyResult,
     SafetyFinding,
     Evidence,
-    RAGPlan,
     CouncilVote,
 )
 from routing import RoutingPolicy
@@ -52,7 +53,6 @@ from prompt_builder import (
     PromptInstance,
     build_strategy_prompt,
     build_drafting_prompt,
-    build_rag_prompt,
     build_qa_prompt,
     build_safety_prompt,
     build_hyde_prompt,
@@ -104,16 +104,55 @@ class LLMBaseAgent:
     routing_policy: RoutingPolicy
     sandbox: SandboxConfig
     meta_profile: Optional[MetaProfileSnapshot] = None
+    agent_card: AgentCard
 
     def __init__(
         self,
         routing_policy: RoutingPolicy,
         sandbox: SandboxConfig,
         meta_profile: Optional[MetaProfileSnapshot] = None,
+        agent_card: Optional[AgentCard] = None,
     ) -> None:
         self.routing_policy = routing_policy
         self.sandbox = sandbox
         self.meta_profile = meta_profile
+
+        if agent_card is not None:
+            self.agent_card = agent_card
+        else:
+            # Derive a default AgentCard based on concrete subclass.
+            name = self.__class__.__name__
+            role_map = {
+                "StrategyLLMAgent": AgentRole.PLANNER,
+                "DraftingGuild": AgentRole.EXECUTION,
+                "SemanticQAAgent": AgentRole.QA,
+                "ConstitutionalSafetyAgent": AgentRole.SAFETY,
+                "HYDEQueryAgent": AgentRole.META,
+                "QACouncilAgent": AgentRole.QA,
+            }
+            role = role_map.get(name, AgentRole.META)
+
+            default_capabilities: List[str] = []
+            if name == "StrategyLLMAgent":
+                default_capabilities = ["planning", "strategy_reasoning"]
+            elif name == "DraftingGuild":
+                default_capabilities = ["drafting", "content_generation"]
+            elif name == "SemanticQAAgent":
+                default_capabilities = ["qa", "rag_reasoning"]
+            elif name == "ConstitutionalSafetyAgent":
+                default_capabilities = ["safety_analysis"]
+            elif name == "HYDEQueryAgent":
+                default_capabilities = ["hyde_query_generation"]
+            elif name == "QACouncilAgent":
+                default_capabilities = ["qa_council_aggregation"]
+
+            self.agent_card = AgentCard(
+                agent_id=name,
+                role=role,
+                capabilities=default_capabilities,
+                allowed_tools=[],
+                policy_scope={},
+            )
 
     def _call_llm(self, prompt: PromptInstance) -> str:
         """
@@ -143,6 +182,9 @@ class LLMBaseAgent:
                 "model": getattr(model, "name", str(model)),
                 "layer": prompt.layer,
                 "agent": prompt.agent,
+                "agent_id": self.agent_card.agent_id,
+                "agent_role": self.agent_card.role.value,
+                "agent_capabilities": list(self.agent_card.capabilities or []),
             },
         )
 
@@ -159,6 +201,9 @@ class LLMBaseAgent:
                     "model": getattr(model, "name", str(model)),
                     "layer": prompt.layer,
                     "agent": prompt.agent,
+                    "agent_id": self.agent_card.agent_id,
+                    "agent_role": self.agent_card.role.value,
+                    "agent_capabilities": list(self.agent_card.capabilities or []),
                 },
             )
             return raw
@@ -171,6 +216,9 @@ class LLMBaseAgent:
                     "model": getattr(model, "name", str(model)),
                     "layer": prompt.layer,
                     "agent": prompt.agent,
+                    "agent_id": self.agent_card.agent_id,
+                    "agent_role": self.agent_card.role.value,
+                    "agent_capabilities": list(self.agent_card.capabilities or []),
                 },
             )
             raise

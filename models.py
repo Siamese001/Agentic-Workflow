@@ -28,7 +28,7 @@ from __future__ import annotations
 
 from enum import Enum
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Literal
 
 from pydantic import BaseModel, Field
 
@@ -62,6 +62,26 @@ class ReasoningMode(str, Enum):
     CHAIN_OF_THOUGHT = "cot"
     TOT = "tot"
     REACT = "react"
+
+
+class AgentRole(str, Enum):
+    """Logical role of an agent across L1–L5 and META."""
+
+    PLANNER = "planner"
+    EXECUTION = "execution"
+    QA = "qa"
+    SAFETY = "safety"
+    META = "meta"
+
+
+class AgentCard(BaseModel):
+    """Typed description of a micro-agent's capabilities and scope."""
+
+    agent_id: str
+    role: AgentRole
+    capabilities: List[str] = Field(default_factory=list)
+    allowed_tools: List[str] = Field(default_factory=list)
+    policy_scope: Dict[str, Any] = Field(default_factory=dict)
 
 
 # ======================================================================
@@ -368,6 +388,7 @@ class SafetyResult(BaseModel):
 
 
 class L2ResultBundle(BaseModel):
+    schema_version: Literal["v1"] = "v1"
     strategy: StrategyResult
     rag: "RAGResult"
     drafting: DraftingResult
@@ -747,6 +768,7 @@ class SafetyPlan(BaseModel):
 class WorkflowPlanBundle(BaseModel):
     """Bundle of all L1 plans passed into L2/L3 orchestration."""
 
+    schema_version: Literal["v1"] = "v1"
     strategy: "StrategyPlan"
     rag: RAGPlan
     drafting: "DraftingPlan"
