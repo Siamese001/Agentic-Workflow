@@ -5,7 +5,7 @@ import types
 
 import core.l2 as l2
 from config_profiles_v10_10 import get_profile
-from models import (
+from core.models.models import (
     Evidence,
     ExecutionContext,
     JobInput,
@@ -79,11 +79,16 @@ def test_execute_retrieval_uses_high_quality_profile_retrieval_cfg(monkeypatch) 
     async def _fake_maybe_run_hyde_query(rag_plan, ctx):  # noqa: ARG001
         return "hyde-generated-query"
 
-    def _fake_run_rag_retrieval(*, query: str, ctx, retrieval_cfg: RetrievalConfig, hyde_query, council_vote) -> RAGResult:  # noqa: ARG001
+    def _fake_run_rag_retrieval(
+        *, query: str, ctx, retrieval_cfg: RetrievalConfig, hyde_query, council_vote
+    ) -> RAGResult:  # noqa: ARG001
         captured["query"] = query
         captured["cfg"] = retrieval_cfg
         captured["hyde_query"] = hyde_query
-        return RAGResult(evidence=[Evidence(text="e", score=1.0, source="bm25", metadata={})], used_hyde=bool(hyde_query))
+        return RAGResult(
+            evidence=[Evidence(text="e", score=1.0, source="bm25", metadata={})],
+            used_hyde=bool(hyde_query),
+        )
 
     monkeypatch.setattr(l2, "_maybe_run_hyde_query", _fake_maybe_run_hyde_query, raising=True)
     # Patch the symbol that l2._execute_retrieval actually uses.
@@ -118,8 +123,13 @@ def test_execute_retrieval_uses_fast_profile_without_hyde(monkeypatch) -> None:
     async def _fake_maybe_run_hyde_query(rag_plan, ctx):  # noqa: ARG001
         return None
 
-    def _fake_run_rag_retrieval(*, query: str, ctx, retrieval_cfg: RetrievalConfig, hyde_query, council_vote) -> RAGResult:  # noqa: ARG001
-        return RAGResult(evidence=[Evidence(text="e", score=1.0, source="bm25", metadata={})], used_hyde=False)
+    def _fake_run_rag_retrieval(
+        *, query: str, ctx, retrieval_cfg: RetrievalConfig, hyde_query, council_vote
+    ) -> RAGResult:  # noqa: ARG001
+        return RAGResult(
+            evidence=[Evidence(text="e", score=1.0, source="bm25", metadata={})],
+            used_hyde=False,
+        )
 
     monkeypatch.setattr(l2, "_maybe_run_hyde_query", _fake_maybe_run_hyde_query, raising=True)
     monkeypatch.setattr(retrieval_mod, "run_rag_retrieval", _fake_run_rag_retrieval, raising=True)
