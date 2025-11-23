@@ -24,6 +24,8 @@ from __future__ import annotations
 
 from typing import Optional, List
 
+from infra.control_plane.control_plane import run_safety_pipeline
+from infra.control_plane.models import SafetyContext
 from models import (
     SafetyResult,
     SafetyFinding,
@@ -157,11 +159,47 @@ def run_l5(
     span = start_span("l5.run", ctx=ctx.span_context() if ctx else None)
     try:
         findings = _combine_findings(safety_result, council_vote)
-        verdict = _decide_verdict(findings, policy)
+
+        # Construct a SafetyContext for the hybrid control-plane.
+        safety_text_parts = [
+            getattr(f, "message", "") for f in findings if getattr(f, "message", "")
+        ]
+        safety_text = "\n".join(safety_text_parts)
+
+        safety_ctx = SafetyContext(
+            workflow_id=getattr(ctx, "workflow_id", None) if ctx else None,
+            agent_id="l5_safety",
+            task_type="safety_enforcement",
+            input_text=safety_text,
+            tools=[],
+            execution_profile=None,
+            metadata={},
+        )
+
+        decision, _trace = run_safety_pipeline(safety_ctx, execution_profile=None)
+
+        base_verdict = _decide_verdict(findings, policy)
+        final_verdict = base_verdict
+
+        if decision.action == "deny":
+            final_verdict = SafetyEnforcementVerdict(
+                verdict="block",
+                reason=f"{base_verdict.reason}|control_plane_deny",
+            )
+        elif decision.action == "revise" and base_verdict.verdict == "pass":
+            final_verdict = SafetyEnforcementVerdict(
+                verdict="warn",
+                reason=f"{base_verdict.reason}|control_plane_revise",
+            )
+        elif decision.action == "escalate":
+            final_verdict = SafetyEnforcementVerdict(
+                verdict="warn",
+                reason=f"{base_verdict.reason}|control_plane_escalate_hitl",
+            )
 
         return PolicyDecisionEvent(
-            verdict=verdict.verdict,
-            reason=verdict.reason,
+            verdict=final_verdict.verdict,
+            reason=final_verdict.reason,
             findings=findings,
         )
     except Exception as exc:  # noqa: BLE001
