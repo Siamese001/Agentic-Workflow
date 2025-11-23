@@ -51,6 +51,10 @@ from models import (
     PromptVersion,
 )
 from prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
+from infra.context_engine.assembly import assemble_context
+from infra.context_engine.pinned import PinnedItem
+from infra.context_engine.relevance import ContextItem
+from infra.context_engine.slots import ContextSlot
 
 
 # =============================================================================
@@ -345,6 +349,73 @@ def _format_evidence(evidence: Sequence[Evidence]) -> str:
     return "\n\n".join(parts)
 
 
+def _build_curated_context_for_rag(
+    ctx: ExecutionContext,
+    evidence: Sequence[Evidence],
+) -> str:
+    try:
+        query = getattr(ctx.job, "posting_text", "") or getattr(ctx.resume, "summary", "") or ""
+        pinned = [
+            PinnedItem(
+                id="job_resume_summary",
+                text=_summarize_job_and_resume(ctx),
+                metadata={},
+            )
+        ]
+        candidates = [
+            ContextItem(
+                id=str(idx),
+                text=getattr(ev, "text", ""),
+                metadata={"source": getattr(ev, "source", None)},
+            )
+            for idx, ev in enumerate(evidence or [], start=1)
+        ]
+        if not candidates:
+            return ""
+        slots = [ContextSlot(id="rag", max_items=min(len(candidates), 8), metadata={})]
+        assembled = assemble_context(query, pinned, candidates, slots)
+        return "\n\n".join(assembled or [])
+    except Exception:
+        return ""
+
+
+def _build_curated_context_for_drafting(
+    ctx: ExecutionContext,
+    strategy: StrategyResult,
+    rag: RAGResult,
+) -> str:
+    try:
+        chosen_id = getattr(strategy, "chosen_branch_id", None)
+        branches = list(getattr(strategy, "branches", []) or [])
+        chosen_desc = ""
+        for br in branches:
+            if getattr(br, "id", None) == chosen_id:
+                chosen_desc = getattr(br, "description", "")
+                break
+        query = chosen_desc or getattr(ctx.resume, "summary", "") or ""
+
+        pinned = [
+            PinnedItem(
+                id="job_resume_summary",
+                text=_summarize_job_and_resume(ctx),
+                metadata={},
+            )
+        ]
+        candidates = [
+            ContextItem(
+                id=str(idx),
+                text=getattr(ev, "text", ""),
+                metadata={"source": getattr(ev, "source", None)},
+            )
+            for idx, ev in enumerate(getattr(rag, "evidence", []) or [], start=1)
+        ]
+        slots = [ContextSlot(id="drafting", max_items=min(len(candidates), 8) or 4, metadata={})]
+        assembled = assemble_context(query, pinned, candidates, slots)
+        return "\n\n".join(assembled or [])
+    except Exception:
+        return ""
+
+
 def _summarize_job_and_resume(ctx: ExecutionContext) -> str:
     """
     Compact textual summary of the job + resume inputs for use in prompts.
@@ -384,9 +455,8 @@ def build_strategy_prompt(
     agent: str = "strategy",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """
-    Build a strategy planning prompt.
-    """
+    """Build a strategy planning prompt."""
+
     envelope = PromptEnvelope(
         framing=(
             "You are the Strategy Planning agent (Layer {layer}). "
@@ -429,20 +499,25 @@ def build_rag_prompt(
     agent: str = "rag",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """
-    Build a retrieval / evidence fusion prompt.
+    """Build a retrieval / evidence fusion prompt.
 
     Used by the Phase-3 RAG reasoning stage between retrieval and drafting.
     """
+
+    base_context = (
+        _summarize_job_and_resume(ctx)
+        + "\n\nRetrieved Evidence:\n"
+        + _format_evidence(evidence)
+    )
+    curated_context = _build_curated_context_for_rag(ctx, evidence) or base_context
+
     envelope = PromptEnvelope(
         framing=(
             "You are the Retrieval & Evidence Fusion agent (Layer {layer}). "
             "You summarize and interpret retrieval results to support "
             "downstream drafting and QA."
         ).format(layer=layer),
-        context=_summarize_job_and_resume(ctx)
-        + "\n\nRetrieved Evidence:\n"
-        + _format_evidence(evidence),
+        context=curated_context,
         reasoning=(
             "Identify which evidence items are most relevant for tailoring "
             "the resume to this job. Highlight overlaps between job "
@@ -540,15 +615,17 @@ def build_drafting_prompt(
     agent: str = "drafting",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """
-    Build a drafting prompt for resume sections.
-    """
+    """Build a drafting prompt for resume sections."""
+
+    base_context = _summarize_job_and_resume(ctx)
+    curated_context = _build_curated_context_for_drafting(ctx, strategy, rag) or base_context
+
     envelope = PromptEnvelope(
         framing=(
             "You are the Drafting agent (Layer {layer}). "
             "You generate resume sections tailored to the job."
         ).format(layer=layer),
-        context=_summarize_job_and_resume(ctx),
+        context=curated_context,
         reasoning=(
             "Use the chosen strategy and the RAG reasoning summary to decide "
             "what to emphasize and how to structure the resume."
