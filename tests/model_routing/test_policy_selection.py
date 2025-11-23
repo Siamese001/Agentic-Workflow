@@ -1,5 +1,4 @@
-from infra.model_routing.models import RoutingContext
-from infra.model_routing.policies import choose_provider_and_model
+from orchestration.model_routing import RoutingContext, choose_provider_and_model
 
 
 def test_policy_selection_honors_requested_model():
