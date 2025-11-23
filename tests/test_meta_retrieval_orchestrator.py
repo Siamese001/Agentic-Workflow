@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 from typing import List
-
 import types
 
 from meta.retrieval.retrieval import orchestrate_retrieval
-from models import Evidence, RetrievalConfig, CouncilVote, RAGResult
+from core.models.models import Evidence, RetrievalConfig, CouncilVote, RAGResult
 
 
 class _DummyCtx:
@@ -126,7 +125,6 @@ def test_orchestrate_retrieval_includes_chroma_hits(monkeypatch) -> None:
             self.chroma = types.SimpleNamespace(enabled=True, collection_name="test_collection")
 
     cfg = _Cfg()
-
     ctx = _DummyCtx()
 
     rag = orchestrate_retrieval(

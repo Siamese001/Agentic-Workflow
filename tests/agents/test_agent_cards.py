@@ -10,7 +10,7 @@ from core.cognitive_agents import (
     HYDEQueryAgent,
     QACouncilAgent,
 )
-from models import AgentCard, AgentRole
+from core.models.models import AgentCard, AgentRole  # normalized import
 from core.routing import RoutingPolicy
 from runtime_utils import SandboxConfig
 

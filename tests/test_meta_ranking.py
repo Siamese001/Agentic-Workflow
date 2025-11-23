@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores
-from models import Evidence
+from core.models.models import Evidence
 
 
 def _make_item(text: str) -> Dict[str, Any]:
