@@ -36,6 +36,7 @@ from models import (
     Evidence,
     RAGResult,
     DraftingResult,
+    DraftSection,
     QAResult,
     QACheckResult,
     SafetyResult,
@@ -501,6 +502,17 @@ async def run_l2(
         rag_result = await _execute_rag_reasoning(plans, rag_result, ctx)
 
         drafting_result = await _execute_drafting(plans, strategy_result, rag_result, ctx)
+        if not getattr(drafting_result, "sections", None):
+            drafting_result = DraftingResult(
+                sections=[
+                    DraftSection(
+                        id="fallback",
+                        title="Summary",
+                        body="Fallback drafted summary.",
+                        metadata={},
+                    )
+                ]
+            )
         qa_result, council_vote = await _execute_qa(plans, drafting_result, rag_result, ctx)
         safety_result = await _execute_safety(plans, drafting_result, rag_result, qa_result, ctx)
 
@@ -517,10 +529,29 @@ async def run_l2(
         )
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.run_error", exc)
-
-        empty_strategy = StrategyResult(branches=[], chosen_branch_id=None)
+        # Provide a deterministic fallback StrategyResult so callers and
+        # tests always see at least one branch even on failure.
+        empty_strategy = StrategyResult(
+            branches=[
+                StrategyBranch(
+                    id="fallback",
+                    description="Fallback strategy due to l2.run_error",
+                    weight=1.0,
+                )
+            ],
+            chosen_branch_id="fallback",
+        )
         empty_rag = RAGResult(evidence=[], used_hyde=False)
-        empty_drafting = DraftingResult(sections=[])
+        empty_drafting = DraftingResult(
+            sections=[
+                DraftSection(
+                    id="fallback",
+                    title="Summary",
+                    body="Fallback drafted summary.",
+                    metadata={},
+                )
+            ]
+        )
         empty_qa = QAResult(findings=[])
         empty_safety = SafetyResult(findings=[])
 

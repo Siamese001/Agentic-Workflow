@@ -285,6 +285,56 @@ def _seed_core_prompts() -> None:
             agents=["qa_council"],
             tiers=["cheap", "balanced", "premium"],
         ),
+        # IDs used directly in tests/test_end_to_end_v10_10.py
+        _pd(
+            pid="strategy_generate_branch",
+            description="L2 strategy branch generation prompt.",
+            layers=["L2"],
+            agents=["strategy"],
+            tiers=["cheap", "balanced", "premium"],
+        ),
+        _pd(
+            pid="strategy_select_branch",
+            description="L2 strategy branch selection prompt.",
+            layers=["L2"],
+            agents=["strategy"],
+            tiers=["cheap", "balanced", "premium"],
+        ),
+        _pd(
+            pid="drafting_structure",
+            description="L2 drafting structure prompt for resume sections.",
+            layers=["L2"],
+            agents=["drafting"],
+            tiers=["balanced", "premium"],
+        ),
+        _pd(
+            pid="drafting_narrative",
+            description="L2 drafting narrative prompt for resume sections.",
+            layers=["L2"],
+            agents=["drafting"],
+            tiers=["balanced", "premium"],
+        ),
+        _pd(
+            pid="drafting_compliance",
+            description="L2 drafting compliance / style prompt.",
+            layers=["L2"],
+            agents=["drafting"],
+            tiers=["balanced", "premium"],
+        ),
+        _pd(
+            pid="qa_semantic_check",
+            description="L2 QA semantic check prompt for drafted content.",
+            layers=["L2"],
+            agents=["qa"],
+            tiers=["cheap", "balanced", "premium"],
+        ),
+        _pd(
+            pid="safety_check",
+            description="L2 safety check prompt for drafted content.",
+            layers=["L2"],
+            agents=["safety"],
+            tiers=["balanced", "premium"],
+        ),
     ]
 
     for pd in core_prompts:
