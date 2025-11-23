@@ -48,6 +48,7 @@ from models import (
 )
 
 from observability import start_span, end_span, log_exception, emit_cost_snapshot
+from meta.schema_validation import validate_schema_version
 from retrieval import run_rag_retrieval
 from prompt_builder import build_rag_prompt
 from cognitive_agents import (
@@ -490,6 +491,12 @@ async def run_l2(
         • Strategy + Retrieval in parallel.
         • RAG reasoning → Drafting → QA → Safety sequentially.
     """
+    # Validate the input plan bundle schema version before execution.
+    try:
+        validate_schema_version(plans, model_type=WorkflowPlanBundle)
+    except Exception as exc:  # noqa: BLE001
+        log_exception("l2.run.schema_validation_input_error", exc)
+
     span = start_span("l2.run", ctx=ctx.span_context())
     try:
         # Strategy and RAG can be executed independently.
@@ -521,13 +528,20 @@ async def run_l2(
         if ctx.cost_snapshot is not None:
             emit_cost_snapshot(ctx.cost_snapshot)
 
-        return L2ResultBundle(
+        result = L2ResultBundle(
             strategy=strategy_result,
             rag=rag_result,
             drafting=drafting_result,
             qa=qa_result,
             safety=safety_result,
         )
+        # Validate the output bundle schema version before returning.
+        try:
+            validate_schema_version(result, model_type=L2ResultBundle)
+        except Exception as exc:  # noqa: BLE001
+            log_exception("l2.run.schema_validation_output_error", exc)
+
+        return result
     except Exception as exc:  # noqa: BLE001
         log_exception("l2.run_error", exc)
         # Provide a deterministic fallback StrategyResult so callers and
@@ -560,13 +574,19 @@ async def run_l2(
         if ctx.cost_snapshot is not None:
             emit_cost_snapshot(ctx.cost_snapshot)
 
-        return L2ResultBundle(
+        result = L2ResultBundle(
             strategy=empty_strategy,
             rag=empty_rag,
             drafting=empty_drafting,
             qa=empty_qa,
             safety=empty_safety,
         )
+        try:
+            validate_schema_version(result, model_type=L2ResultBundle)
+        except Exception as exc:  # noqa: BLE001
+            log_exception("l2.run.schema_validation_output_error", exc)
+
+        return result
     finally:
         end_span(span)
 
@@ -581,4 +601,10 @@ def execute_workflow_plans(
     and returns the resulting L2ResultBundle.
     """
 
-    return asyncio.run(run_l2(plans, ctx))
+    result = asyncio.run(run_l2(plans, ctx))
+    try:
+        validate_schema_version(result, model_type=L2ResultBundle)
+    except Exception:
+        # Legacy callers should not fail solely due to schema validation.
+        pass
+    return result
