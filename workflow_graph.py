@@ -47,6 +47,7 @@ from observability import (
     emit_node_event,
     log_exception,
 )
+from infra.dag_engine import Node as DagNode, Edge as DagEdge, Graph as DagGraph, DAGExecutor
 from l2 import (
     _execute_strategy,
     _execute_retrieval,
@@ -74,6 +75,40 @@ class Node:
     DRAFTING = "drafting"
     QA = "qa"
     SAFETY = "safety"
+
+
+def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> DagGraph:
+    """Construct a DAG that mirrors the logical workflow stages.
+
+    This helper is a thin adapter between the L3 workflow and the generic
+    DAG engine. For now it only defines nodes and edges; run_workflow_graph
+    continues to orchestrate execution directly until we delegate to
+    DAGExecutor in a follow-up step.
+    """
+
+    async def _noop(dag_ctx):  # type: ignore[unused-argument]
+        # Placeholder node function; real execution will be wired later.
+        return dag_ctx
+
+    nodes = {
+        Node.STRATEGY: DagNode(id=Node.STRATEGY, fn=_noop),
+        Node.RETRIEVAL: DagNode(id=Node.RETRIEVAL, fn=_noop),
+        Node.DRAFTING: DagNode(id=Node.DRAFTING, fn=_noop),
+        Node.QA: DagNode(id=Node.QA, fn=_noop),
+        Node.SAFETY: DagNode(id=Node.SAFETY, fn=_noop),
+    }
+
+    edges = [
+        DagEdge(source=Node.STRATEGY, target=Node.DRAFTING),
+        DagEdge(source=Node.RETRIEVAL, target=Node.DRAFTING),
+        DagEdge(source=Node.DRAFTING, target=Node.QA),
+        DagEdge(source=Node.QA, target=Node.SAFETY),
+    ]
+
+    # The constructed graph is currently unused but will be executed via
+    # DAGExecutor in a subsequent refactor step.
+    _ = DAGExecutor(DagGraph(nodes=nodes, edges=edges))
+    return DagGraph(nodes=nodes, edges=edges)
 
 
 # ============================================================================
