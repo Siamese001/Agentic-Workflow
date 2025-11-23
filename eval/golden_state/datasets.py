@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 
-from eval.golden_state.models import TestCase
+from eval.golden_state.models import TestCase, GoldenCase
 
 
 _BASE_DIR = Path(__file__).resolve().parent
@@ -53,3 +53,22 @@ def load_exemplar_prompts() -> Dict[str, Any]:
 
     data = _load_json("exemplar_prompts.json")
     return data or {}
+
+
+def load_golden_cases() -> List[GoldenCase]:
+    cases: List[GoldenCase] = []
+    for tc in load_golden_inputs():
+        cases.append(
+            GoldenCase(
+                id=tc.id,
+                input_text=tc.input_text,
+                agent_sequence=["strategy", "drafting", "qa", "safety"],
+                expected_keypoints=[tc.expected_behavior],
+                correctness_criteria={"category": tc.metadata.get("category")},
+            )
+        )
+    return cases
+
+
+def load_golden_baseline_scores() -> Dict[str, Any]:
+    return load_baseline_scores()
