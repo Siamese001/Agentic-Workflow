@@ -154,6 +154,27 @@ class LLMBaseAgent:
                 policy_scope={},
             )
 
+    # ------------------------------------------------------------------
+    # Tool permission helper
+    # ------------------------------------------------------------------
+
+    def _check_tool_allowed(self, tool_name: str) -> None:
+        """Raise PermissionError if tool_name is not allowed for this agent.
+
+        This helper is intentionally opt-in: existing agents only enforce
+        tool ACLs where they explicitly call _check_tool_allowed.
+        """
+
+        allowed = list(self.agent_card.allowed_tools or [])
+        if not allowed:
+            # Empty allowed_tools means "no ACL applied" for now.
+            return
+
+        if tool_name not in allowed:
+            raise PermissionError(
+                f"Agent '{self.agent_card.agent_id}' is not allowed to use tool '{tool_name}'"
+            )
+
     def _call_llm(self, prompt: PromptInstance) -> str:
         """
         Execute a single LLM call for the given prompt instance.
