@@ -754,7 +754,7 @@ def build_workflow_plan_bundle(
     safety_plan = _build_safety_plan(profile_spec, meta_profile)
 
     routing_meta = _map_meta_profile_to_routing_hint(meta_profile)
-    routing_meta["profile_inference"] = profile_inference.dict()
+    routing_meta["profile_inference"] = profile_inference.model_dump()
 
     routing_hint = RoutingHint(
         complexity=complexity,

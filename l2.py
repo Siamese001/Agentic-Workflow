@@ -43,6 +43,7 @@ from models import (
     SafetyFinding,
     L2ResultBundle,
     RAGPlan,
+    RetrievalConfig,
     CouncilVote,
 )
 
@@ -245,7 +246,7 @@ async def _execute_retrieval(
     span = start_span("l2.retrieval", ctx=ctx.span_context())
     try:
         rag_plan: Optional[RAGPlan] = getattr(plans, "rag", None)
-        retrieval_cfg = ctx.retrieval
+        retrieval_cfg = ctx.retrieval or RetrievalConfig()
 
         query = _build_base_query(ctx)
         hyde_query = await _maybe_run_hyde_query(rag_plan, ctx)

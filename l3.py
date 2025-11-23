@@ -38,6 +38,7 @@ from typing import Optional, Any, Dict, List
 from models import WorkflowPlanBundle, ExecutionContext, L2ResultBundle
 from observability import start_span, end_span, emit_node_event, log_exception
 from workflow_graph import run_workflow_graph
+from l5 import safety_gate
 
 
 # =============================================================================
@@ -117,33 +118,99 @@ def run_dag(
 
     l2_results = asyncio.run(orchestrate_execution(plans, ctx))
 
-    # Derive a simple strategy_text from the first strategy branch, if any.
+    # Derive a simple strategy_text from the chosen or first strategy branch.
     strategy_text = ""
     try:
         branches = list(getattr(l2_results.strategy, "branches", []) or [])
-        if branches:
+        chosen_id = getattr(l2_results.strategy, "chosen_branch_id", None)
+        branch = None
+        if branches and chosen_id is not None:
+            for b in branches:
+                if getattr(b, "id", None) == chosen_id:
+                    branch = b
+                    break
+        if branch is None and branches:
             branch = branches[0]
+        if branch is not None:
             strategy_text = getattr(branch, "description", "") or getattr(branch, "text", "") or ""
         else:
             strategy_text = "error"
     except Exception:
         strategy_text = "error"
 
+    # Build RAG evidence view.
+    rag_evidence: List[Dict[str, Any]] = []
+    try:
+        for ev in list(getattr(l2_results.rag, "evidence", []) or []):
+            rag_evidence.append(
+                {
+                    "text": getattr(ev, "text", ""),
+                    "score": getattr(ev, "score", 0.0),
+                    "source": getattr(ev, "source", None),
+                }
+            )
+    except Exception:
+        rag_evidence = []
+
+    # Drafted sections view.
+    drafted_sections: List[Dict[str, Any]] = []
+    try:
+        for sec in list(getattr(l2_results.drafting, "sections", []) or []):
+            drafted_sections.append(
+                {
+                    "title": getattr(sec, "title", ""),
+                    "text": getattr(sec, "text", ""),
+                }
+            )
+    except Exception:
+        drafted_sections = []
+
+    # QA findings view.
+    qa_findings: List[Dict[str, Any]] = []
+    try:
+        for f in list(getattr(l2_results.qa, "findings", []) or []):
+            qa_findings.append(
+                {
+                    "id": getattr(f, "id", ""),
+                    "severity": getattr(f, "severity", ""),
+                    "message": getattr(f, "message", ""),
+                }
+            )
+    except Exception:
+        qa_findings = []
+
+    # Safety findings view.
+    safety_findings: List[Dict[str, Any]] = []
+    try:
+        for f in list(getattr(l2_results.safety, "findings", []) or []):
+            safety_findings.append(
+                {
+                    "id": getattr(f, "check_id", ""),
+                    "category": getattr(f, "category", ""),
+                    "severity": getattr(f, "severity", ""),
+                    "message": getattr(f, "message", ""),
+                }
+            )
+    except Exception:
+        safety_findings = []
+
+    safety_passed = safety_gate(l2_results.safety)
+
     # Minimal, deterministic patch structure matching GOLDEN_PATCH keys.
     final_state_patch: Dict[str, Any] = {
         "strategy_text": strategy_text,
-        "rag_evidence": [],
-        "drafted_sections": [],
-        "qa_findings": [],
-        "safety_findings": [],
+        "rag_evidence": rag_evidence,
+        "drafted_sections": drafted_sections,
+        "qa_findings": qa_findings,
+        "safety_findings": safety_findings,
         "correction_signals": [],
-        "safety_passed": True,
+        "safety_passed": safety_passed,
     }
 
     return DAGResult(
         l2_results=l2_results,
         final_state_patch=final_state_patch,
-        safety_passed=True,
+        safety_passed=safety_passed,
         corrected=False,
         corrections=[],
     )
