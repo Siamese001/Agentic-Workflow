@@ -42,9 +42,12 @@ from models import (
     ResilienceDecision,
 )
 from observability import record_event, record_exception
+from providers.openai_client import run_llm_openai
+from providers.anthropic_client import run_llm_anthropic
+from providers.google_genai_client import run_llm_google
 
 try:  # pragma: no cover - optional dependency wiring
-    from cache_redis import (
+    from meta.cache.redis_cache import (
         init_redis_client,
         get_llm_cache,
         set_llm_cache,
@@ -502,58 +505,31 @@ def invoke_model(
 
     try:
         if provider == "openai":
-            try:
-                import openai  # type: ignore
-            except ImportError as exc:  # pragma: no cover
-                raise ModelClientError("openai package not installed") from exc
-
-            client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-            resp = client.chat.completions.create(
+            text = run_llm_openai(
                 model=model,
-                messages=[{"role": "user", "content": prompt}],
+                prompt=prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                timeout=sandbox.request_timeout_s,
+                timeout_s=sandbox.request_timeout_s,
             )
-            text = resp.choices[0].message.content or ""
 
         elif provider == "anthropic":
-            try:
-                import anthropic  # type: ignore
-            except ImportError as exc:  # pragma: no cover
-                raise ModelClientError("anthropic package not installed") from exc
-
-            client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
-
-            resp = client.messages.create(
+            text = run_llm_anthropic(
                 model=model,
-                messages=[{"role": "user", "content": prompt}],
+                prompt=prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                timeout=sandbox.request_timeout_s,
+                timeout_s=sandbox.request_timeout_s,
             )
 
-            parts = []
-            for block in resp.content:
-                if getattr(block, "type", None) == "text":
-                    parts.append(getattr(block, "text", ""))
-            text = "\n".join(parts)
-
         elif provider == "google":
-            try:
-                import google.generativeai as genai  # type: ignore
-            except ImportError as exc:  # pragma: no cover
-                raise ModelClientError("google-generativeai package not installed") from exc
-
-            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-            if not api_key:
-                raise ModelClientError("GOOGLE_API_KEY or GEMINI_API_KEY must be set")
-
-            genai.configure(api_key=api_key)
-            model_client = genai.GenerativeModel(model)
-            resp = model_client.generate_content(prompt)
-            text = getattr(resp, "text", "") or ""
+            text = run_llm_google(
+                model=model,
+                prompt=prompt,
+                temperature=temperature,
+                max_tokens=max_tokens,
+                timeout_s=sandbox.request_timeout_s,
+            )
 
         else:
             raise LLMInvocationError(f"Unsupported provider inferred for model: {model}")
