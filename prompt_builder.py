@@ -32,6 +32,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
+from prompts.cms.compiler import compile_prompt
+from prompts.cms.schemas import validate_prompt
 from models import (
     ContextBudget,
     DraftingPlan,
@@ -177,6 +179,29 @@ def _get_prompt_definition(prompt_id: str) -> PromptDefinition:
         return PROMPT_REGISTRY[prompt_id]
 
 
+def _get_template_text(defn: PromptDefinition) -> str:
+    """Return the base template text for a PromptDefinition.
+
+    If the definition carries a CMS schema under metadata["cms_schema"], we
+    compile it via the Prompt CMS; otherwise we fall back to defn.text.
+    """
+
+    meta = defn.metadata or {}
+    try:
+        cms_payload = meta.get("cms_schema") if isinstance(meta, dict) else None
+    except Exception:
+        cms_payload = None
+
+    if cms_payload:
+        try:
+            return compile_prompt(validate_prompt(cms_payload))
+        except Exception:
+            # Governance failures must not break core runtime; fall back.
+            pass
+
+    return (defn.text or "").strip()
+
+
 def _check_prompt_acl(
     *,
     prompt_id: str,
@@ -237,7 +262,7 @@ def _render_envelope_with_template(
     This helper injects the envelope contents into those anchors while
     also adding the richer sections (Framing, Reasoning, Safety).
     """
-    template = (defn.text or "").strip()
+    template = _get_template_text(defn)
     sections = envelope.to_sections()
 
     # Inject into known anchors if present.
