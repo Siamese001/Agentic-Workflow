@@ -75,12 +75,33 @@ class AgentRole(str, Enum):
 
 
 class AgentCard(BaseModel):
-    """Typed description of a micro-agent's capabilities and scope."""
+    """Typed description of a micro-agent's capabilities and scope.
+
+    This model is the single source of truth for agent metadata across the
+    runtime and is intentionally richer than earlier versions. New fields are
+    optional / defaulted to preserve backward compatibility.
+    """
 
     agent_id: str
     role: AgentRole
+
+    # High-level classification and trust.
+    agent_type: Optional[str] = None
+    trust_level: Optional[str] = None
+
+    # Execution profile + model/tool preferences.
+    default_execution_profile: Optional[str] = None
+    preferred_models: List[str] = Field(default_factory=list)
+
+    # Fine-grained capabilities and tool permissions.
     capabilities: List[str] = Field(default_factory=list)
     allowed_tools: List[str] = Field(default_factory=list)
+    allowed_tool_kinds: List[str] = Field(default_factory=list)
+
+    # Communication / routing hints.
+    communication_channels: List[str] = Field(default_factory=list)
+
+    # Arbitrary policy / governance scope.
     policy_scope: Dict[str, Any] = Field(default_factory=dict)
 
 
@@ -511,15 +532,48 @@ class RoutingDecisionEvent(TelemetryEvent):
 
 
 class AgentMessage(BaseModel):
-    """Typed message used by multi-agent META layer.
+    """Typed message used by the multi-agent substrate.
 
-    Mirrors the fields used in multi_agent.MultiAgentCoordinator.
+    This is a superset of the original v10_10 AgentMessage. The legacy
+    `sender`/`recipient` fields remain as compatibility aliases for
+    `source_agent_id` and `target_agent_id`.
     """
 
-    sender: str
-    recipient: str
+    # Core addressing and identity.
+    message_id: str
+    source_agent_id: str
+    target_agent_id: str
+    channel: str
+
+    # High-level semantics of the payload.
+    payload_type: Literal[
+        "plan",
+        "hypothesis",
+        "critique",
+        "request",
+        "answer",
+        "safety_alert",
+    ]
+
+    # Free-form payload and metadata.
     content: Dict[str, Any] = Field(default_factory=dict)
     metadata: Dict[str, Any] = Field(default_factory=dict)
+
+    # Backwards-compatibility aliases.
+    @property
+    def sender(self) -> str:  # pragma: no cover - thin compatibility shim
+        return self.source_agent_id
+
+    @property
+    def recipient(self) -> str:  # pragma: no cover - thin compatibility shim
+        return self.target_agent_id
+
+
+class AgentConversation(BaseModel):
+    """Ordered collection of AgentMessage instances between agents."""
+
+    conversation_id: str
+    messages: List[AgentMessage] = Field(default_factory=list)
 
 
 class MultiAgentVote(BaseModel):
