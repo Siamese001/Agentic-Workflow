@@ -57,6 +57,8 @@ class DraftingMode(str, Enum):
 class ReasoningMode(str, Enum):
     """Reasoning mode hint for L2 cognitive agents."""
 
+    # Historical/short name kept for compatibility with config profiles.
+    COT = "cot"
     CHAIN_OF_THOUGHT = "cot"
     TOT = "tot"
     REACT = "react"
@@ -222,6 +224,48 @@ class ExecutionContext(BaseModel):
         return {}
 
 
+class ContextBudget(BaseModel):
+    """Context budgeting hints used by profiles and prompt builder.
+
+    This mirrors the fields populated in config_profiles_v10_10 and
+    read in prompt_builder._build_context_budget_hints_from_plan.
+    """
+
+    total_tokens: int = 0
+    planning_tokens: int = 0
+    rag_tokens: int = 0
+    drafting_tokens: int = 0
+    qa_tokens: int = 0
+    safety_tokens: int = 0
+
+
+class ExecutionProfile(BaseModel):
+    """Flattened execution profile used for routing hints.
+
+    L1 maps a config-layer ExecutionProfileSpec into this simpler
+    structure, which is then carried inside RoutingHint and inspected
+    by routing / meta layers.
+    """
+
+    name: str
+    description: str
+    retrieval: "RetrievalConfig"  # type: ignore[name-defined]
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class RoutingHint(BaseModel):
+    """Lightweight routing hint passed from L1 into L2/L3.
+
+    Carries complexity / reasoning mode plus an ExecutionProfile and
+    arbitrary metadata derived from the MetaProfileSnapshot.
+    """
+
+    complexity: ComplexityLevel
+    reasoning_mode: ReasoningMode
+    execution_profile: ExecutionProfile
+    meta: Dict[str, Any] = Field(default_factory=dict)
+
+
 # ======================================================================
 # L2 RESULT + FINDING MODELS
 # ======================================================================
@@ -255,6 +299,17 @@ class QAFinding(BaseModel):
     severity: str
     message: str
     metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class QACheckResult(BaseModel):
+    """Result of running a single QA check.
+
+    This groups one or more QAFinding objects under a check id so that
+    L2 and downstream layers can reason about per-check outcomes.
+    """
+
+    check_id: str
+    findings: List[QAFinding] = Field(default_factory=list)
 
 
 class QAResult(BaseModel):
@@ -565,8 +620,64 @@ class CouncilVote(BaseModel):
     reason: Optional[str] = None
 
 
+class StrategyStep(BaseModel):
+    """Single step in a high-level strategy plan (L1 output)."""
+
+    id: str
+    order: int
+    description: str
+
+
+class StrategyPlan(BaseModel):
+    """L1 strategy plan consumed by L2/L3 and prompt_builder."""
+
+    steps: List[StrategyStep] = Field(default_factory=list)
+    complexity: ComplexityLevel = ComplexityLevel.MEDIUM
+
+
+class DraftSectionPlan(BaseModel):
+    """Planned drafting section (e.g., Summary, Experience, Skills)."""
+
+    id: str
+    title: str
+    required: bool = True
+    max_tokens: int = 256
+    priority: float = 1.0
+
+
+class DraftingPlan(BaseModel):
+    """Drafting plan describing which sections to generate."""
+
+    sections: List[DraftSectionPlan] = Field(default_factory=list)
+    mode: DraftingMode = DraftingMode.BALANCED
+
+
+class QACheck(BaseModel):
+    """Single QA check definition used in QAPlan."""
+
+    id: str
+    description: str
+    severity: str
+
+
+class QAPlan(BaseModel):
+    """QA plan describing which checks to run and at what depth."""
+
+    checks: List[QACheck] = Field(default_factory=list)
+    depth: Any = "1"
+
+
+class SafetyCheck(BaseModel):
+    """Single safety check definition used in SafetyPlan."""
+
+    id: str
+    description: str
+    severity: str
+
+
 class SafetyPlan(BaseModel):
-    checks: List["SafetyCheck"] = Field(default_factory=list)
+    checks: List[SafetyCheck] = Field(default_factory=list)
+    tier: Any | None = None
 
 
 class WorkflowPlanBundle(BaseModel):
@@ -604,6 +715,38 @@ class Evidence(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+class RedisCacheConfig(BaseModel):
+    """Configuration for Redis-backed exact / semantic caching."""
+
+    enabled: bool = False
+    url: Optional[str] = None
+    ttl_s: int = 3600
+
+
+class ChromaVectorConfig(BaseModel):
+    """Configuration for ChromaDB-backed vector store / semantic cache."""
+
+    enabled: bool = False
+    collection_name: Optional[str] = None
+    persist_directory: Optional[str] = None
+
+
+class BM25BackendConfig(BaseModel):
+    """Configuration for BM25 backend selection and tuning."""
+
+    backend: str = "rank_bm25"
+    k1: float = 1.2
+    b: float = 0.75
+
+
+class GoogleGenAIConfig(BaseModel):
+    """Configuration for Google Generative AI (Gemini) usage."""
+
+    enabled: bool = False
+    model: Optional[str] = None
+    api_key_env: str = "GOOGLE_API_KEY"
+
+
 class RetrievalConfig(BaseModel):
     """Retrieval configuration knobs used by META/L2.
 
@@ -614,9 +757,24 @@ class RetrievalConfig(BaseModel):
     strategy: str = "hybrid"
     max_hits: int = 16
 
-    # BM25 parameters
+
+class RAGQueryHint(BaseModel):
+    """Hint describing an individual RAG retrieval surface.
+
+    Used by L1 planning to describe job/resume/hybrid retrieval
+    surfaces; consumed by downstream retrieval/ranking logic.
+    """
+
+    id: str
+    description: str
+    focus: str
+    max_chunks: int
+    importance: float = 1.0
+
+    # BM25 parameters (for built-in ranking) and backend selection.
     bm25_k1: float = 1.2
     bm25_b: float = 0.75
+    bm25_backend: BM25BackendConfig = Field(default_factory=BM25BackendConfig)
 
     # Weighted RRF fusion (per-group weights for RRF). Registry may pass None.
     rrf_weights: Optional[List[float]] = None
@@ -628,6 +786,11 @@ class RetrievalConfig(BaseModel):
     allow_hyde: bool = False
     qa_council_size: int = 1
     qa_council_mode: str = "simple"
+
+    # Infrastructure knobs restored from v10_7 capabilities.
+    redis_cache: RedisCacheConfig = Field(default_factory=RedisCacheConfig)
+    chroma: ChromaVectorConfig = Field(default_factory=ChromaVectorConfig)
+    google_genai: GoogleGenAIConfig = Field(default_factory=GoogleGenAIConfig)
 
 
 class RAGPlan(BaseModel):

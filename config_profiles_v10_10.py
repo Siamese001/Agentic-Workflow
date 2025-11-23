@@ -35,7 +35,15 @@ from typing import Dict
 
 from pydantic import BaseModel, Field
 
-from models import RetrievalConfig, ContextBudget, ReasoningMode
+from models import (
+    RetrievalConfig,
+    ContextBudget,
+    ReasoningMode,
+    RedisCacheConfig,
+    ChromaVectorConfig,
+    GoogleGenAIConfig,
+    BM25BackendConfig,
+)
 
 
 # ======================================================================
@@ -152,10 +160,16 @@ def _balanced_hybrid_retrieval(
         max_hits=50,
         bm25_k1=1.2,
         bm25_b=0.75,
+        bm25_backend=BM25BackendConfig(backend="rank_bm25", k1=1.2, b=0.75),
         rrf_weights=None,
         allow_hyde=allow_hyde,
         qa_council_size=qa_council_size,
         qa_council_mode="simple",
+        # Default infra knobs: enable Redis + Chroma for rich RAG, allow
+        # Google GenAI as an optional provider.
+        redis_cache=RedisCacheConfig(enabled=True),
+        chroma=ChromaVectorConfig(enabled=True, collection_name="resume_documents"),
+        google_genai=GoogleGenAIConfig(enabled=True, model="gemini-pro"),
     )
 
 
@@ -169,10 +183,14 @@ def _cheap_bm25_retrieval() -> RetrievalConfig:
         max_hits=25,
         bm25_k1=1.0,
         bm25_b=0.75,
+        bm25_backend=BM25BackendConfig(backend="rank_bm25", k1=1.0, b=0.75),
         rrf_weights=None,
         allow_hyde=False,
         qa_council_size=1,
         qa_council_mode="simple",
+        # Cheap profile: enable Redis for basic caching; leave Chroma/Google
+        # disabled by default.
+        redis_cache=RedisCacheConfig(enabled=True),
     )
 
 
@@ -190,10 +208,16 @@ def _premium_dense_retrieval(
         max_hits=40,
         bm25_k1=1.2,
         bm25_b=0.75,
+        bm25_backend=BM25BackendConfig(backend="rank_bm25", k1=1.2, b=0.75),
         rrf_weights=None,
         allow_hyde=allow_hyde,
         qa_council_size=qa_council_size,
         qa_council_mode="simple",
+        # Debug / dense-oriented profile: enable Redis + Chroma; keep
+        # Google GenAI available for experimentation.
+        redis_cache=RedisCacheConfig(enabled=True),
+        chroma=ChromaVectorConfig(enabled=True, collection_name="resume_documents"),
+        google_genai=GoogleGenAIConfig(enabled=True, model="gemini-pro"),
     )
 
 
