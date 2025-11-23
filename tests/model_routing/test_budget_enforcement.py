@@ -1,4 +1,4 @@
-from models import ExecutionProfile
+from models import ExecutionProfile, RetrievalConfig
 from infra.model_routing.models import ModelChoice
 from infra.model_routing.policies import enforce_budget
 
@@ -15,7 +15,7 @@ def test_budget_enforcement_downgrades_cost_tier():
     profile = ExecutionProfile(
         name="test_profile",
         description="test",
-        retrieval=None,  # type: ignore[arg-type]
+        retrieval=RetrievalConfig(),
         metadata={"max_cost_tier": "medium"},
     )
 
