@@ -23,9 +23,9 @@ Non-Responsibilities:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, Any
 
-from models import RetrievalConfig
+from models import RetrievalConfig, PromptDefinition
 from prompt_system_v10_10 import PROMPT_REGISTRY
 
 
@@ -109,20 +109,32 @@ def get_rag_strategy(name: str) -> RAGStrategyDefinition:
 # =============================================================================
 
 
-def build_default_prompt_registry() -> Dict[str, object]:
-    """Return a dict view of the default prompt registry.
+class PromptRegistry:
+    """Thin wrapper over the core prompt registry used in tests.
+
+    Exposes a get_prompt(prompt_id) method as expected by the
+    test_end_to_end_v10_10 suite while delegating storage to the
+    underlying dict of PromptDefinition objects.
+    """
+
+    def __init__(self, prompts: Dict[str, PromptDefinition]):
+        self._prompts = prompts
+
+    def get_prompt(self, prompt_id: str) -> PromptDefinition:
+        return self._prompts[prompt_id]
+
+
+def build_default_prompt_registry() -> PromptRegistry:
+    """Return a PromptRegistry view of the default prompt registry.
 
     The underlying prompts are seeded at import time by
     ``prompt_system_v10_10._seed_core_prompts``. Tests and runtime code
-    treat this as an opaque registry object; we expose a simple
-    ``dict[id -> PromptDefinition]`` view here for convenience.
-
-    No LLM calls, I/O, or mutation are performed.
+    treat this as an opaque registry object.
     """
 
-    # Return a shallow copy so callers cannot mutate the global registry
-    # by accident.
-    return dict(PROMPT_REGISTRY)
+    # Return a wrapper around a shallow copy so callers cannot mutate the
+    # global registry by accident.
+    return PromptRegistry(dict(PROMPT_REGISTRY))
 
 
 # =============================================================================

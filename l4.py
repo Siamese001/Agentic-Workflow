@@ -176,3 +176,18 @@ def rollback_state(
         )
     finally:
         end_span(span)
+
+
+def apply_state_patch(
+    state: WorkflowState,
+    patch,
+    ctx: Optional[ExecutionContext] = None,
+) -> WorkflowState:
+    """Compatibility shim for older call sites expecting apply_state_patch.
+
+    Wraps the provided patch object into a StateTransitionEvent and
+    delegates to apply_state_transition, which owns all mutation logic.
+    """
+
+    event = StateTransitionEvent(event_id="patch", patch=patch)
+    return apply_state_transition(state, event, ctx)
