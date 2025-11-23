@@ -55,6 +55,7 @@ def run_safety_pipeline(
             "matches": [m.dict() for m in rules_result.matches],
             "max_severity": rules_result.max_severity,
             "has_pii": rules_result.has_pii,
+            "match_count": len(rules_result.matches),
         },
         judge={
             "verdict": judge_verdict.verdict,
