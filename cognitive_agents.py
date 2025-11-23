@@ -47,7 +47,25 @@ from core.models.models import (
 )
 from core.routing import RoutingPolicy
 from runtime.runtime_utils import invoke_model, SandboxConfig
-from observability import record_event, record_exception
+from runtime.observability import (
+    emit_node_event,
+    emit_telemetry_event,
+    emit_ranking_event,
+    emit_cost_snapshot,
+    emit_golden_eval_event,
+    emit_scenario_start_event,
+    emit_scenario_end_event,
+    emit_scenario_simulation_event,
+    emit_council_arbitration_event,
+    emit_resilience_event,
+    emit_resilience_trace_event,
+    start_span,
+    end_span,
+    clear_events,
+    get_all_events,
+    record_event,
+    record_exception,
+)
 from meta_profile import MetaProfileSnapshot
 from prompt_builder import (
     PromptInstance,
