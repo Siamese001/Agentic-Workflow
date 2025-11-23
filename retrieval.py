@@ -38,6 +38,17 @@ from observability import (
 
 import ranking as _ranking
 
+try:  # pragma: no cover - optional Chroma wiring
+    from vector_store_chroma import (
+        ChromaConfig as _ChromaConfig,
+        init_chroma_client as _init_chroma_client,
+        chroma_hybrid_search as _chroma_hybrid_search,
+    )
+except Exception:  # pragma: no cover - Chroma is optional
+    _ChromaConfig = None  # type: ignore[assignment]
+    _init_chroma_client = None  # type: ignore[assignment]
+    _chroma_hybrid_search = None  # type: ignore[assignment]
+
 
 # ======================================================================
 # INTERNAL RETRIEVERS — REAL IMPLEMENTATIONS
@@ -64,6 +75,55 @@ def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence
     """
     from retrievers.dense import dense_search
     return dense_search(query=query, max_hits=max_hits)
+
+
+def _run_chroma(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
+    """Optional Chroma-based dense/hybrid retrieval.
+
+    When ``cfg.chroma.enabled`` is True and the vector_store_chroma META
+    module is available, this function queries the configured Chroma
+    collection and adapts results into Evidence objects.
+    """
+
+    if not getattr(cfg, "chroma", None) or not cfg.chroma.enabled:
+        return []
+
+    if _ChromaConfig is None or _init_chroma_client is None or _chroma_hybrid_search is None:
+        return []
+
+    chroma_cfg = cfg.chroma
+    if not chroma_cfg.collection_name:
+        return []
+
+    client, collection = _init_chroma_client(
+        _ChromaConfig(
+            collection_name=chroma_cfg.collection_name,
+            persist_directory=chroma_cfg.persist_directory,
+            require_collection=True,
+        )
+    )
+
+    raw = _chroma_hybrid_search(
+        collection,
+        query_texts=[query],
+        n_results=max_hits,
+    )
+
+    docs = (raw.get("documents") or [[]])[0]
+    scores = (raw.get("distances") or [[]])[0]
+
+    evidence: List[Evidence] = []
+    for text, score in zip(docs, scores):
+        evidence.append(
+            Evidence(
+                text=str(text),
+                score=float(score),
+                source="chroma",
+                metadata={},
+            )
+        )
+
+    return evidence[:max_hits]
 
 
 # ======================================================================
@@ -119,9 +179,10 @@ def run_rag_retrieval(
         2. Emit attempt telemetry
         3. Run BM25 (isolated)
         4. Run Dense (isolated)
-        5. Fuse via weighted RRF
-        6. Apply QA-council evidence weighting
-        7. Emit success/failure events per retriever
+        5. Run Chroma (isolated, if enabled)
+        6. Fuse via weighted RRF
+        7. Apply QA-council evidence weighting
+        8. Emit success/failure events per retriever
 
     Deterministic unless HYDE is enabled (HYDE generated in L2).
     """
@@ -157,6 +218,33 @@ def run_rag_retrieval(
     )
 
     groups = []
+
+    # -----------------------------------------------------
+    # Chroma (if enabled) — isolated error domain
+    # -----------------------------------------------------
+    if getattr(retrieval_cfg, "chroma", None) and retrieval_cfg.chroma.enabled:
+        try:
+            chroma_hits = _run_chroma(effective_query, retrieval_cfg, max_hits)
+            if chroma_hits:
+                groups.append(chroma_hits)
+                emit_retrieval_success(
+                    RetrievalSuccessEvent(
+                        name="retrieval_success",
+                        method="chroma",
+                        hit_count=len(chroma_hits),
+                        max_hits=max_hits,
+                        workflow_id=workflow_id,
+                    )
+                )
+        except Exception as e:  # pragma: no cover - Chroma is optional
+            emit_retrieval_failure(
+                RetrievalFailureEvent(
+                    name="retrieval_failure",
+                    method="chroma",
+                    reason=str(e),
+                    workflow_id=workflow_id,
+                )
+            )
 
     # -----------------------------------------------------
     # BM25 — isolated error domain
