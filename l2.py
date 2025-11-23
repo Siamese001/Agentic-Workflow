@@ -537,3 +537,16 @@ async def run_l2(
         )
     finally:
         end_span(span)
+
+
+def execute_workflow_plans(
+    plans: WorkflowPlanBundle,
+    ctx: ExecutionContext,
+) -> L2ResultBundle:
+    """Synchronous wrapper around run_l2 used by legacy tests/call sites.
+
+    This helper simply runs the async run_l2 coroutine via asyncio.run
+    and returns the resulting L2ResultBundle.
+    """
+
+    return asyncio.run(run_l2(plans, ctx))

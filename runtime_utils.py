@@ -43,6 +43,21 @@ from models import (
 )
 from observability import record_event, record_exception
 
+try:  # pragma: no cover - optional dependency wiring
+    from cache_redis import (
+        init_redis_client,
+        get_llm_cache,
+        set_llm_cache,
+        RedisClientError,
+        RedisNotConfiguredError,
+    )
+except Exception:  # pragma: no cover - cache is optional
+    init_redis_client = None  # type: ignore[assignment]
+    get_llm_cache = None  # type: ignore[assignment]
+    set_llm_cache = None  # type: ignore[assignment]
+    RedisClientError = Exception  # type: ignore[assignment]
+    RedisNotConfiguredError = Exception  # type: ignore[assignment]
+
 
 # ============================================================================
 # 1. EXCEPTIONS (RUNTIME SURFACES)
@@ -370,18 +385,51 @@ class PredictiveCacheManager:
 
 
 def _infer_provider(model: str) -> str:
-    """
-    Infer provider from model string.
+    """Infer provider from model string.
 
     Heuristics (deterministic):
 
         • If "claude" in model → "anthropic"
+        • If "gemini" or "google" in model → "google"
         • Else → "openai"
     """
     m = (model or "").lower()
     if "claude" in m:
         return "anthropic"
+    if "gemini" in m or "google" in m:
+        return "google"
     return "openai"
+
+
+_LLM_CACHE_CLIENT: Optional[Any] = None
+
+
+def _get_redis_client_for_llm_cache() -> Optional[Any]:
+    """Return a shared Redis client for LLM caching, or None if disabled.
+
+    This uses REDIS_URL and LLM_CACHE_ENABLED=1 to decide whether to
+    attempt a connection. Failures are logged but do not raise.
+    """
+
+    global _LLM_CACHE_CLIENT
+
+    if init_redis_client is None:
+        return None
+
+    if os.getenv("LLM_CACHE_ENABLED", "0") != "1":
+        return None
+
+    if _LLM_CACHE_CLIENT is not None:
+        return _LLM_CACHE_CLIENT
+
+    try:
+        client = init_redis_client()
+    except (RedisClientError, RedisNotConfiguredError) as exc:  # type: ignore[misc]
+        record_exception("llm_cache_init_failure", exc)
+        return None
+
+    _LLM_CACHE_CLIENT = client
+    return client
 
 
 def invoke_model(
@@ -410,6 +458,37 @@ def invoke_model(
         max_tokens = sandbox.max_tokens_per_call
 
     provider = _infer_provider(model)
+
+    # Optional Redis-backed LLM response cache (exact-match).
+    cache_client = _get_redis_client_for_llm_cache()
+    cache_key = None
+    if cache_client is not None:
+        try:
+            payload = {
+                "model": model,
+                "prompt": prompt,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+            cache_key = hashlib.sha256(
+                json.dumps(payload, sort_keys=True, default=str).encode("utf-8")
+            ).hexdigest()
+            if get_llm_cache is not None:
+                cached = get_llm_cache(cache_client, cache_key)
+            else:
+                cached = None
+            if isinstance(cached, dict) and "text" in cached:
+                record_event(
+                    "invoke_model_cache_hit",
+                    {
+                        "model": model,
+                        "provider": provider,
+                        "cache_key": cache_key,
+                    },
+                )
+                return str(cached["text"])
+        except Exception as exc:  # pragma: no cover - cache failures are non-fatal
+            record_exception("invoke_model_cache_error", exc)
 
     record_event(
         "invoke_model_start",
@@ -461,8 +540,38 @@ def invoke_model(
                     parts.append(getattr(block, "text", ""))
             text = "\n".join(parts)
 
+        elif provider == "google":
+            try:
+                import google.generativeai as genai  # type: ignore
+            except ImportError as exc:  # pragma: no cover
+                raise ModelClientError("google-generativeai package not installed") from exc
+
+            api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            if not api_key:
+                raise ModelClientError("GOOGLE_API_KEY or GEMINI_API_KEY must be set")
+
+            genai.configure(api_key=api_key)
+            model_client = genai.GenerativeModel(model)
+            resp = model_client.generate_content(prompt)
+            text = getattr(resp, "text", "") or ""
+
         else:
             raise LLMInvocationError(f"Unsupported provider inferred for model: {model}")
+
+        # Write-through to cache on success.
+        if cache_client is not None and cache_key is not None and set_llm_cache is not None:
+            try:
+                set_llm_cache(cache_client, cache_key, {"text": text})
+                record_event(
+                    "invoke_model_cache_store",
+                    {
+                        "model": model,
+                        "provider": provider,
+                        "cache_key": cache_key,
+                    },
+                )
+            except Exception as exc:  # pragma: no cover - cache failures are non-fatal
+                record_exception("invoke_model_cache_store_error", exc)
 
         record_event(
             "invoke_model_success",
