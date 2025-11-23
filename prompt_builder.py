@@ -33,6 +33,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from prompts.cms.compiler import compile_prompt
+from prompts.cms.store import get_prompt_version
 from prompts.cms.schemas import validate_prompt
 from models import (
     ContextBudget,
@@ -482,11 +483,29 @@ def build_strategy_prompt(
 ) -> PromptInstance:
     """Build a strategy planning prompt."""
 
+    framing_text = (
+        "You are the Strategy Planning agent (Layer {layer}). "
+        "You design a plan to tailor the resume to the job."
+    ).format(layer=layer)
+
+    try:
+        cms_prompt = get_prompt_version("strategy", "v1")
+        if cms_prompt is not None:
+            cms_text = compile_prompt(
+                cms_prompt,
+                {
+                    "layer": layer,
+                    "agent": agent,
+                    "model_tier": model_tier,
+                },
+            )
+            if cms_text:
+                framing_text = cms_text
+    except Exception:
+        pass
+
     envelope = PromptEnvelope(
-        framing=(
-            "You are the Strategy Planning agent (Layer {layer}). "
-            "You design a plan to tailor the resume to the job."
-        ).format(layer=layer),
+        framing=framing_text,
         context=_summarize_job_and_resume(ctx),
         reasoning="Propose several strategy branches and select the best one.",
         instructions=(

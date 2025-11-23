@@ -5,6 +5,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
 
+from prompts.cms.schemas import PromptSchema
+
 
 _BASE_DIR = Path(__file__).resolve().parent
 _CHANGELOG_DIR = _BASE_DIR / "changelog"
@@ -48,3 +50,15 @@ def get_history(prompt_id: str) -> List[Dict[str, Any]]:
             except Exception:
                 continue
     return entries
+
+
+def record_prompt_change(prompt: PromptSchema, user: str, comment: str) -> None:
+    diff: Dict[str, Any] = {
+        "comment": comment,
+        "schema": prompt.model_dump(),
+    }
+    record_change(prompt.id, prompt.version, user, diff)
+
+
+def get_prompt_history(prompt_id: str) -> List[Dict[str, Any]]:
+    return get_history(prompt_id)
