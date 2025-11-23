@@ -51,14 +51,14 @@ from orchestration.dag_engine import Node as DagNode, Edge as DagEdge, Graph as 
 from core.agent_registry import AgentRegistry
 from profiles.agent_profile import AgentCard
 from core.agent_router_policy import choose_agents_for_task
-from l2 import (
+from core.l2 import (
     _execute_strategy,
     _execute_retrieval,
     _execute_drafting,
     _execute_qa,
     _execute_safety,
 )
-from routing import route_task_to_agent
+from core.routing import route_task_to_agent
 
 # Self-correction surfaces (meta-layer, no L1–L5 violations)
 from self_correction import (

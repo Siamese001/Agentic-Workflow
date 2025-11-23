@@ -45,7 +45,7 @@ from models import (
     Evidence,
     CouncilVote,
 )
-from routing import RoutingPolicy
+from core.routing import RoutingPolicy
 from runtime_utils import invoke_model, SandboxConfig
 from observability import record_event, record_exception
 from meta_profile import MetaProfileSnapshot
