@@ -1,5 +1,5 @@
 from core.agent_bus import AgentBus
-from models import AgentMessage
+from core.models.models import AgentMessage  # normalized import
 
 
 def test_agent_bus_send_and_get():
@@ -21,3 +21,4 @@ def test_agent_bus_send_and_get():
 
     bus.clear()
     assert bus.get_for("qa-1") == []
+
