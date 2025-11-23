@@ -45,6 +45,11 @@ from models import (
     BM25BackendConfig,
     ComplexityLevel,
 )
+from profiles.llm_profile import LLMProfile
+from profiles.retrieval_profile import RetrievalProfile
+from profiles.safety_profile import SafetyProfile
+from profiles.context_profile import ContextProfile
+from profiles.budget_profile import BudgetProfile
 
 
 # ======================================================================
@@ -141,6 +146,54 @@ class ExecutionProfileSpec(BaseModel):
 
     # Routing telemetry mode
     routing_telemetry_mode: str = "simple"  # "simple", "full"
+
+
+class ExecutionProfileV2(BaseModel):
+    """Aggregator profile composed of dedicated sub-profiles.
+
+    This does not replace ExecutionProfileSpec for existing callers but
+    provides a structured view for future integrations.
+    """
+
+    llm: LLMProfile
+    retrieval: RetrievalProfile
+    safety: SafetyProfile
+    context: ContextProfile
+    budget: BudgetProfile
+
+
+def build_execution_profile_v2(spec: ExecutionProfileSpec) -> ExecutionProfileV2:
+    """Build an ExecutionProfileV2 from an existing ExecutionProfileSpec.
+
+    This helper is backwards-compatible and side-effect free; it does
+    not change how EXECUTION_PROFILES are defined or consumed today.
+    """
+
+    llm = LLMProfile(
+        reasoning_mode=spec.reasoning_mode,
+        model_tier=spec.model_tier.value if hasattr(spec.model_tier, "value") else str(spec.model_tier),
+        max_cost_usd=spec.max_cost_usd,
+        max_latency_ms=spec.max_latency_ms,
+    )
+    retrieval = RetrievalProfile(retrieval=spec.retrieval)
+    safety = SafetyProfile(
+        safety_tier=spec.safety_tier.value if hasattr(spec.safety_tier, "value") else str(spec.safety_tier),
+        pii_detection_enabled=spec.pii_detection_enabled,
+        policy_engine_enabled=spec.policy_engine_enabled,
+    )
+    context = ContextProfile(context_budget=spec.context_budget)
+    budget = BudgetProfile(
+        max_cost_usd=spec.max_cost_usd,
+        max_latency_ms=spec.max_latency_ms,
+    )
+
+    return ExecutionProfileV2(
+        llm=llm,
+        retrieval=retrieval,
+        safety=safety,
+        context=context,
+        budget=budget,
+    )
 
 
 # ======================================================================
