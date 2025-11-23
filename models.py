@@ -331,6 +331,7 @@ class StrategyBranch(BaseModel):
 
 
 class StrategyResult(BaseModel):
+    schema_version: Literal["v1"] = "v1"
     branches: List[StrategyBranch]
     chosen_branch_id: Optional[str] = None
 
@@ -349,6 +350,7 @@ class DraftSection(BaseModel):
 
 
 class DraftingResult(BaseModel):
+    schema_version: Literal["v1"] = "v1"
     sections: List[DraftSection]
 
 
@@ -372,6 +374,7 @@ class QACheckResult(BaseModel):
 
 
 class QAResult(BaseModel):
+    schema_version: Literal["v1"] = "v1"
     findings: List[QAFinding]
 
 
@@ -384,6 +387,7 @@ class SafetyFinding(BaseModel):
 
 
 class SafetyResult(BaseModel):
+    schema_version: Literal["v1"] = "v1"
     findings: List[SafetyFinding]
 
 
@@ -716,6 +720,7 @@ class StrategyStep(BaseModel):
 class StrategyPlan(BaseModel):
     """L1 strategy plan consumed by L2/L3 and prompt_builder."""
 
+    schema_version: Literal["v1"] = "v1"
     steps: List[StrategyStep] = Field(default_factory=list)
     complexity: ComplexityLevel = ComplexityLevel.MEDIUM
 
@@ -733,6 +738,7 @@ class DraftSectionPlan(BaseModel):
 class DraftingPlan(BaseModel):
     """Drafting plan describing which sections to generate."""
 
+    schema_version: Literal["v1"] = "v1"
     sections: List[DraftSectionPlan] = Field(default_factory=list)
     mode: DraftingMode = DraftingMode.BALANCED
 
@@ -748,6 +754,7 @@ class QACheck(BaseModel):
 class QAPlan(BaseModel):
     """QA plan describing which checks to run and at what depth."""
 
+    schema_version: Literal["v1"] = "v1"
     checks: List[QACheck] = Field(default_factory=list)
     depth: Any = "1"
 
@@ -761,6 +768,7 @@ class SafetyCheck(BaseModel):
 
 
 class SafetyPlan(BaseModel):
+    schema_version: Literal["v1"] = "v1"
     checks: List[SafetyCheck] = Field(default_factory=list)
     tier: Any | None = None
 
@@ -893,6 +901,7 @@ class RAGPlan(BaseModel):
     construct a compatible object.
     """
 
+    schema_version: Literal["v1"] = "v1"
     strategy: str = "hybrid"
     max_hits: int = 16
 
@@ -900,5 +909,6 @@ class RAGPlan(BaseModel):
 class RAGResult(BaseModel):
     """Result of RAG evidence fusion and ranking."""
 
+    schema_version: Literal["v1"] = "v1"
     evidence: List[Evidence]
     used_hyde: bool = False
