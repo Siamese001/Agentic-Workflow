@@ -28,7 +28,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, List, Optional, Sequence, Tuple
 
-from models import (
+from core.models.models import (
     ExecutionContext,
     WorkflowPlanBundle,
     StrategyResult,
@@ -47,7 +47,7 @@ from models import (
     CouncilVote,
 )
 
-from observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
+from runtime.observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
 import config_profiles_v10_10 as config_profiles
 from meta.schema_validation import validate_schema_version
 from meta.retrieval import run_rag_retrieval

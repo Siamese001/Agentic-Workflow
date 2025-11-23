@@ -25,7 +25,7 @@ from __future__ import annotations
 from typing import Optional, List
 
 from orchestration.control_plane import run_safety_pipeline, SafetyContext
-from models import (
+from core.models.models import (
     SafetyResult,
     SafetyFinding,
     CouncilVote,
@@ -34,7 +34,7 @@ from models import (
     SafetyPolicy,
     ExecutionContext,
 )
-from observability import start_span, end_span, log_exception
+from runtime.observability import start_span, end_span, record_exception
 
 
 # =============================================================================
@@ -202,7 +202,7 @@ def run_l5(
             findings=findings,
         )
     except Exception as exc:  # noqa: BLE001
-        log_exception("l5.enforcement_error", exc)
+        record_exception("l5.enforcement_error", exc)
         return PolicyDecisionEvent(
             verdict="pass",
             reason="safety_enforcement_exception",
