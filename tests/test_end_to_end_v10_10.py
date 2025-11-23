@@ -134,11 +134,6 @@ def ctx():
 
 @patch("runtime_utils.invoke_model", side_effect=mock_llm)
 def test_e2e_full_pipeline(mocked_llm, ctx):
-    """
-    Full L1 → L2 → L3 → L4 → L5 pipeline test.
-    Ensures the entire system produces a deterministic state patch.
-    """
-    # L1 planning
     plans = build_workflow_plan_bundle(
         job=ctx.job,
         resume=ctx.resume,
@@ -147,28 +142,20 @@ def test_e2e_full_pipeline(mocked_llm, ctx):
         routing_policy=ctx.routing_policy,
         prompt_registry=ctx.prompt_registry,
     )
-
-    # L3 executes everything inside DAG
     dag_result = run_dag(ctx, plans)
 
-    # Validate basic structure:
     assert dag_result.l2_results.strategy
     assert dag_result.final_state_patch
     assert dag_result.safety_passed in (True, False)
 
-    # Golden regression check:
     patch = dag_result.final_state_patch
 
-    # Weak regression: keys must all exist
     for key in GOLDEN_PATCH:
         assert key in patch
 
 
 @patch("runtime_utils.invoke_model", side_effect=mock_llm)
 def test_e2e_safety_flow(mocked_llm, ctx):
-    """
-    Ensures that safety gating is applied correctly and consistently.
-    """
     plans = build_workflow_plan_bundle(
         job=ctx.job,
         resume=ctx.resume,
@@ -185,10 +172,6 @@ def test_e2e_safety_flow(mocked_llm, ctx):
 
 @patch("runtime_utils.invoke_model", side_effect=mock_llm)
 def test_e2e_correction_loop(mocked_llm, ctx):
-    """
-    Ensures L3 correctly iterates the DAG and respects correction surfaces.
-    With mock data, no corrections should fire.
-    """
     plans = build_workflow_plan_bundle(
         job=ctx.job,
         resume=ctx.resume,
@@ -199,7 +182,6 @@ def test_e2e_correction_loop(mocked_llm, ctx):
     )
     dag = run_dag(ctx, plans)
 
-    # Because everything passes, no correction cycles should occur
     assert dag.corrected is False
     assert len([s for s in dag.corrections if s.severity > 0]) == 0
 
@@ -210,10 +192,6 @@ def test_e2e_correction_loop(mocked_llm, ctx):
 
 @patch("runtime_utils.invoke_model", side_effect=mock_llm)
 def test_regression_state_patch_against_golden(mock_llm, ctx):
-    """
-    Confirms the pipeline remains deterministic and matches the golden patch
-    structure when mock outputs are used.
-    """
     plans = build_workflow_plan_bundle(
         job=ctx.job,
         resume=ctx.resume,
@@ -225,8 +203,6 @@ def test_regression_state_patch_against_golden(mock_llm, ctx):
     dag = run_dag(ctx, plans)
     patch = dag.final_state_patch
 
-    # We don't check exact text equality (LLM content changes), 
-    # but keys and structure must match golden.
     assert set(patch.keys()) == set(GOLDEN_PATCH.keys())
 
 
@@ -268,7 +244,6 @@ def test_agentic_layer_purity_l3_has_no_llm_calls():
 def test_agentic_layer_purity_l4_is_pure(ctx):
     import inspect, l4
     src = inspect.getsource(l4)
-    # No routing, no LLM, no imports from cognitive agents
     assert "invoke_model" not in src
     assert "StrategyLLMAgent" not in src
     assert "DraftingGuild" not in src
@@ -322,9 +297,6 @@ SCENARIOS = [
 @patch("runtime_utils.invoke_model", side_effect=mock_llm)
 @pytest.mark.parametrize("scenario", SCENARIOS)
 def test_multi_scenario_e2e(mock_llm, scenario):
-    """
-    Runs multiple scenario shapes to ensure broad stability and routing robustness.
-    """
     config = WorkflowConfig()
     routing = RoutingPolicy()
     prompt_registry = build_default_prompt_registry()
