@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import List
+from typing import List, Dict, Any, Optional
 
 from .schemas import PromptSchema, validate_prompt
 
 
-def compile_prompt(schema_obj: PromptSchema | dict) -> str:
+def compile_prompt(prompt: PromptSchema | dict, context: Optional[Dict[str, Any]] = None) -> str:
     """Compile a governed prompt into a final string.
 
     This function is intentionally formatting-only and does not perform
@@ -14,7 +14,7 @@ def compile_prompt(schema_obj: PromptSchema | dict) -> str:
     safety tags.
     """
 
-    schema = validate_prompt(schema_obj)
+    schema = validate_prompt(prompt)
 
     lines: List[str] = []
 
