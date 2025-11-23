@@ -48,6 +48,9 @@ from observability import (
     log_exception,
 )
 from infra.dag_engine import Node as DagNode, Edge as DagEdge, Graph as DagGraph, DAGExecutor
+from core.agent_registry import AgentRegistry
+from profiles.agent_profile import AgentCard
+from core.agent_router_policy import choose_agents_for_task
 from l2 import (
     _execute_strategy,
     _execute_retrieval,
@@ -124,11 +127,31 @@ def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> Dag
         return dag_ctx
 
     nodes = {
-        Node.STRATEGY: DagNode(id=Node.STRATEGY, fn=_node_strategy),
-        Node.RETRIEVAL: DagNode(id=Node.RETRIEVAL, fn=_node_retrieval),
-        Node.DRAFTING: DagNode(id=Node.DRAFTING, fn=_node_drafting),
-        Node.QA: DagNode(id=Node.QA, fn=_node_qa),
-        Node.SAFETY: DagNode(id=Node.SAFETY, fn=_node_safety),
+        Node.STRATEGY: DagNode(
+            id=Node.STRATEGY,
+            fn=_node_strategy,
+            metadata={"agent_type": "planner"},
+        ),
+        Node.RETRIEVAL: DagNode(
+            id=Node.RETRIEVAL,
+            fn=_node_retrieval,
+            metadata={"agent_type": "researcher"},
+        ),
+        Node.DRAFTING: DagNode(
+            id=Node.DRAFTING,
+            fn=_node_drafting,
+            metadata={"agent_type": "drafter"},
+        ),
+        Node.QA: DagNode(
+            id=Node.QA,
+            fn=_node_qa,
+            metadata={"agent_type": "qa"},
+        ),
+        Node.SAFETY: DagNode(
+            id=Node.SAFETY,
+            fn=_node_safety,
+            metadata={"agent_type": "safety"},
+        ),
     }
 
     edges = [
@@ -149,7 +172,18 @@ async def _run_single_pass_via_dag(plans: WorkflowPlanBundle, ctx: ExecutionCont
     """
 
     graph = _build_workflow_dag(plans, ctx)
-    executor = DAGExecutor(graph)
+
+    # Minimal agent registry for DAG-backed runs. For now we register
+    # one agent per logical type so that the DAGExecutor can attach
+    # advisory agent assignments to node executions.
+    registry = AgentRegistry()
+    registry.register_agent(AgentCard(agent_id="planner-1", agent_type="planner", role=None))  # type: ignore[arg-type]
+    registry.register_agent(AgentCard(agent_id="researcher-1", agent_type="researcher", role=None))  # type: ignore[arg-type]
+    registry.register_agent(AgentCard(agent_id="drafter-1", agent_type="drafter", role=None))  # type: ignore[arg-type]
+    registry.register_agent(AgentCard(agent_id="qa-1", agent_type="qa", role=None))  # type: ignore[arg-type]
+    registry.register_agent(AgentCard(agent_id="safety-1", agent_type="safety", role=None))  # type: ignore[arg-type]
+
+    executor = DAGExecutor(graph, agent_registry=registry)
     dag_ctx = {"plans": plans, "ctx": ctx}
     return await executor.run(ctx=dag_ctx)
 
