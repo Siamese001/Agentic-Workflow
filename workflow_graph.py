@@ -47,7 +47,7 @@ from observability import (
     emit_node_event,
     log_exception,
 )
-from infra.dag_engine import Node as DagNode, Edge as DagEdge, Graph as DagGraph, DAGExecutor
+from orchestration.dag_engine import Node as DagNode, Edge as DagEdge, Graph as DagGraph, DAGExecutor
 from core.agent_registry import AgentRegistry
 from profiles.agent_profile import AgentCard
 from core.agent_router_policy import choose_agents_for_task

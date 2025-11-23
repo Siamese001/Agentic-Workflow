@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict
 
-from infra.dag_engine import Graph, Node, Edge, DAGExecutor
+from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
 from core.agent_registry import AgentRegistry
 from profiles.agent_profile import AgentCard
 from models import AgentRole

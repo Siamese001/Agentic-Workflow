@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 import pytest
 
-from infra.dag_engine import Graph, Node, Edge, DAGExecutor
+from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
 
 
 async def _id_node(ctx: Dict[str, Any]) -> Dict[str, Any]:
