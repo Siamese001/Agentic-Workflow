@@ -25,3 +25,15 @@ class AgentBus:
 
     def clear(self) -> None:
         self._queues.clear()
+
+    # Phase-1 compatibility helpers -------------------------------------
+
+    def send(self, message: AgentMessage) -> None:
+        """Alias for send_message used by Phase-1 AgentBus API."""
+
+        self.send_message(message)
+
+    def get_for(self, agent_id: str) -> List[AgentMessage]:
+        """Alias for get_messages_for used by Phase-1 AgentBus API."""
+
+        return self.get_messages_for(agent_id)
