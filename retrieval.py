@@ -16,151 +16,12 @@ Implements:
 Layer: META (no LLM calls; L2 generates HYDE query)
 """
 
-from __future__ import annotations
-from typing import List, Optional
+from typing import Optional
 
-from models import (
-    Evidence,
-    RetrievalConfig,
-    CouncilVote,
-    RetrievalAttemptEvent,
-    RetrievalSuccessEvent,
-    RetrievalFailureEvent,
-)
-from observability import (
-    start_span,
-    end_span,
-    emit_retrieval_attempt,
-    emit_retrieval_success,
-    emit_retrieval_failure,
-)
+from models import RetrievalConfig, CouncilVote, RAGResult
 
-from meta.retrieval.hybrid_ranker import fuse_and_rank
+from meta.retrieval.retrieval import orchestrate_retrieval
 
-try:  # pragma: no cover - optional Chroma wiring
-    from vector_store_chroma import (
-        ChromaConfig as _ChromaConfig,
-        init_chroma_client as _init_chroma_client,
-        chroma_hybrid_search as _chroma_hybrid_search,
-    )
-except Exception:  # pragma: no cover - Chroma is optional
-    _ChromaConfig = None  # type: ignore[assignment]
-    _init_chroma_client = None  # type: ignore[assignment]
-    _chroma_hybrid_search = None  # type: ignore[assignment]
-
-
-# ======================================================================
-# INTERNAL RETRIEVERS — REAL IMPLEMENTATIONS
-# ======================================================================
-
-def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    """
-    Real BM25 retriever — already implemented in your codebase.
-    Deterministic, uses integrated scoring functions.
-    """
-    from retrievers.bm25 import bm25_search
-    return bm25_search(
-        query=query,
-        k1=cfg.bm25_k1,
-        b=cfg.bm25_b,
-        max_hits=max_hits,
-    )
-
-
-def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    """
-    Real dense retriever — uses your actual vector index.
-    Deterministic due to seeded search paths.
-    """
-    from retrievers.dense import dense_search
-    return dense_search(query=query, max_hits=max_hits)
-
-
-def _run_chroma(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    """Optional Chroma-based dense/hybrid retrieval.
-
-    When ``cfg.chroma.enabled`` is True and the vector_store_chroma META
-    module is available, this function queries the configured Chroma
-    collection and adapts results into Evidence objects.
-    """
-
-    if not getattr(cfg, "chroma", None) or not cfg.chroma.enabled:
-        return []
-
-    if _ChromaConfig is None or _init_chroma_client is None or _chroma_hybrid_search is None:
-        return []
-
-    chroma_cfg = cfg.chroma
-    if not chroma_cfg.collection_name:
-        return []
-
-    client, collection = _init_chroma_client(
-        _ChromaConfig(
-            collection_name=chroma_cfg.collection_name,
-            persist_directory=chroma_cfg.persist_directory,
-            require_collection=True,
-        )
-    )
-
-    raw = _chroma_hybrid_search(
-        collection,
-        query_texts=[query],
-        n_results=max_hits,
-    )
-
-    docs = (raw.get("documents") or [[]])[0]
-    scores = (raw.get("distances") or [[]])[0]
-
-    evidence: List[Evidence] = []
-    for text, score in zip(docs, scores):
-        evidence.append(
-            Evidence(
-                text=str(text),
-                score=float(score),
-                source="chroma",
-                metadata={},
-            )
-        )
-
-    return evidence[:max_hits]
-
-
-# ======================================================================
-# QA-COUNCIL EVIDENCE WEIGHTING
-# ======================================================================
-
-def _apply_council_weights(
-    fused: List[Evidence],
-    council: Optional[CouncilVote],
-) -> List[Evidence]:
-    """
-    Apply post-fusion weighting according to QA-council decision.
-
-    Selected-ID receives a ~12% boost.
-    Others receive slight demotion.
-    """
-    if council is None or not council.selected_id:
-        return fused
-
-    sel = council.selected_id
-    BOOST = 1.12
-    DEMOTE = 0.94
-
-    adjusted = []
-    for ev in fused:
-        e = ev.copy()
-        if sel in ev.text:
-            e.score *= BOOST
-        else:
-            e.score *= DEMOTE
-        adjusted.append(e)
-
-    return adjusted
-
-
-# ======================================================================
-# MAIN ENTRYPOINT — HYBRID RETRIEVAL + WEIGHTED RRF
-# ======================================================================
 
 def run_rag_retrieval(
     *,
@@ -169,140 +30,18 @@ def run_rag_retrieval(
     retrieval_cfg: RetrievalConfig,
     hyde_query: Optional[str] = None,
     council_vote: Optional[CouncilVote] = None,
-) -> List[Evidence]:
-    """
-    Primary production retrieval entrypoint.
+) -> RAGResult:
+    """Primary production retrieval entrypoint (thin wrapper).
 
-    Steps:
-        1. Select effective query (HYDE if provided)
-        2. Emit attempt telemetry
-        3. Run BM25 (isolated)
-        4. Run Dense (isolated)
-        5. Run Chroma (isolated, if enabled)
-        6. Fuse via weighted RRF
-        7. Apply QA-council evidence weighting
-        8. Emit success/failure events per retriever
-
-    Deterministic unless HYDE is enabled (HYDE generated in L2).
+    All retrieval logic (BM25/dense/Chroma, RRF fusion, council weighting,
+    telemetry) is implemented inside the META orchestrator in
+    meta.retrieval.retrieval.orchestrate_retrieval.
     """
 
-    workflow_id = ctx.workflow_id
-    max_hits = retrieval_cfg.max_hits
-
-    # -----------------------------------------------------
-    # Choose query (if HYDE passed from L2)
-    # -----------------------------------------------------
-    effective_query = hyde_query if hyde_query else query
-    emit_retrieval_attempt(
-        RetrievalAttemptEvent(
-            name="retrieval_attempt",
-            method=retrieval_cfg.strategy,
-            query=effective_query,
-            workflow_id=workflow_id,
-            attributes={
-                "is_hyde": hyde_query is not None,
-                "max_hits": max_hits,
-            },
-        )
-    )
-
-    span = start_span(
-        "retrieval.run",
-        {
-            "workflow_id": workflow_id,
-            "query.is_hyde": hyde_query is not None,
-            "retrieval.strategy": retrieval_cfg.strategy,
-            "max_hits": max_hits,
-        },
-    )
-
-    # -----------------------------------------------------
-    # BM25 — lexical retriever (isolated error domain)
-    # -----------------------------------------------------
-    bm25_hits: List[Evidence] = []
-    try:
-        bm25_hits = _run_bm25(effective_query, retrieval_cfg, max_hits)
-        emit_retrieval_success(
-            RetrievalSuccessEvent(
-                name="retrieval_success",
-                method="bm25",
-                hit_count=len(bm25_hits),
-                max_hits=max_hits,
-                workflow_id=workflow_id,
-            )
-        )
-    except Exception as e:
-        emit_retrieval_failure(
-            RetrievalFailureEvent(
-                name="retrieval_failure",
-                method="bm25",
-                reason=str(e),
-                workflow_id=workflow_id,
-            )
-        )
-
-    # -----------------------------------------------------
-    # Dense — semantic retriever (isolated error domain)
-    # -----------------------------------------------------
-    dense_hits: List[Evidence] = []
-    try:
-        dense_hits = _run_dense(effective_query, retrieval_cfg, max_hits)
-        emit_retrieval_success(
-            RetrievalSuccessEvent(
-                name="retrieval_success",
-                method="dense",
-                hit_count=len(dense_hits),
-                max_hits=max_hits,
-                workflow_id=workflow_id,
-            )
-        )
-    except Exception as e:
-        emit_retrieval_failure(
-            RetrievalFailureEvent(
-                name="retrieval_failure",
-                method="dense",
-                reason=str(e),
-                workflow_id=workflow_id,
-            )
-        )
-
-    # -----------------------------------------------------
-    # Optional Chroma retrieval — currently merged into dense hits
-    # -----------------------------------------------------
-    if getattr(retrieval_cfg, "chroma", None) and retrieval_cfg.chroma.enabled:
-        try:
-            chroma_hits = _run_chroma(effective_query, retrieval_cfg, max_hits)
-            if chroma_hits:
-                dense_hits = list(dense_hits or []) + list(chroma_hits)
-                emit_retrieval_success(
-                    RetrievalSuccessEvent(
-                        name="retrieval_success",
-                        method="chroma",
-                        hit_count=len(chroma_hits),
-                        max_hits=max_hits,
-                        workflow_id=workflow_id,
-                    )
-                )
-        except Exception as e:  # pragma: no cover - Chroma is optional
-            emit_retrieval_failure(
-                RetrievalFailureEvent(
-                    name="retrieval_failure",
-                    method="chroma",
-                    reason=str(e),
-                    workflow_id=workflow_id,
-                )
-            )
-
-    # -----------------------------------------------------
-    # Hybrid fusion + evidence ranking (delegated to META hybrid_ranker)
-    # -----------------------------------------------------
-    rag_result = fuse_and_rank(
-        lex_results=bm25_hits,
-        dense_results=dense_hits,
+    return orchestrate_retrieval(
+        query=query,
+        ctx=ctx,
         cfg=retrieval_cfg,
+        hyde_query=hyde_query,
         council_vote=council_vote,
-        used_hyde=hyde_query is not None,
     )
-
-    end_span(span)
-    return list(rag_result.evidence or [])
