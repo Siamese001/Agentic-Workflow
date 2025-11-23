@@ -4,9 +4,10 @@ from typing import List
 
 from models import ExecutionProfile
 
-from eval.golden_state.datasets import load_golden_inputs
+from eval.golden_state.datasets import load_golden_inputs, load_golden_cases
+from eval.golden_state.evaluator import evaluate_case_output
 from eval.golden_state.judge import evaluate_output
-from eval.golden_state.models import EvalResult
+from eval.golden_state.models import EvalResult, GoldenOutput
 
 
 def _mock_agent_output(input_text: str) -> str:
@@ -41,3 +42,18 @@ def run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:
             )
         )
     return results
+
+
+def run_golden_suite(execution_profile: ExecutionProfile) -> List[GoldenOutput]:
+    outputs: List[GoldenOutput] = []
+    for case in load_golden_cases():
+        out = GoldenOutput(
+            case_id=case.id,
+            produced_keypoints=case.expected_keypoints,
+            correctness_map={},
+            safety_decisions={},
+            metacognition_summary={},
+            final_verdict="borderline",
+        )
+        outputs.append(evaluate_case_output(case, out))
+    return outputs
