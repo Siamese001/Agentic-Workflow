@@ -1,7 +1,7 @@
 from core.agent_registry import AgentRegistry
 from core.agent_router_policy import choose_agents_for_task
 from profiles.agent_profile import AgentCard
-from models import AgentRole
+from core.models.models import AgentRole  # normalized import
 
 
 def test_choose_agents_for_strategy_task_prefers_planner():
@@ -15,3 +15,4 @@ def test_choose_agents_for_strategy_task_prefers_planner():
 
     chosen = choose_agents_for_task("strategy", registry)
     assert planner in chosen
+

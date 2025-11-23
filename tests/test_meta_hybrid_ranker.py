@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from meta.retrieval.hybrid_ranker import fuse_and_rank
-from models import CouncilVote, Evidence, RetrievalConfig
+from core.models.models import CouncilVote, Evidence, RetrievalConfig
 
 
 def test_fuse_and_rank_rrf_with_uniform_weights() -> None:

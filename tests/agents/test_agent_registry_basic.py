@@ -1,6 +1,6 @@
 from core.agent_registry import AgentRegistry
 from profiles.agent_profile import AgentCard
-from models import AgentRole
+from core.models.models import AgentRole  # normalized import
 
 
 def test_agent_registry_register_and_lookup():
@@ -30,3 +30,4 @@ def test_agent_registry_find_by_capability():
 
     writers = registry.find_agents_by_capability("write")
     assert a1 in writers
+
