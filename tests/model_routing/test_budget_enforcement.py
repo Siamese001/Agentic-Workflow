@@ -1,6 +1,5 @@
 from models import ExecutionProfile, RetrievalConfig
-from infra.model_routing.models import ModelChoice
-from infra.model_routing.policies import enforce_budget
+from orchestration.model_routing import ModelChoice, enforce_budget
 
 
 def test_budget_enforcement_downgrades_cost_tier():

@@ -1,5 +1,4 @@
-from infra.model_routing.models import RoutingContext
-from infra.model_routing.selector import select_model
+from orchestration.model_routing import RoutingContext, select_model
 
 
 def test_selector_integration_uses_cache_for_generic_calls():
