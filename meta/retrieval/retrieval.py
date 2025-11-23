@@ -221,3 +221,26 @@ def orchestrate_retrieval(
 
     end_span(span)
     return RAGResult(evidence=list(rag_result.evidence or []), used_hyde=rag_result.used_hyde)
+
+
+def run_rag_retrieval(
+    *,
+    query: str,
+    ctx,
+    cfg: RetrievalConfig,
+    hyde_query: Optional[str] = None,
+    council_vote: Optional[CouncilVote] = None,
+) -> RAGResult:
+    """Backward-compatible wrapper delegating to orchestrate_retrieval.
+
+    This preserves the legacy ``run_rag_retrieval`` entrypoint while routing
+    all behavior through the typed ``orchestrate_retrieval`` function.
+    """
+
+    return orchestrate_retrieval(
+        query=query,
+        ctx=ctx,
+        cfg=cfg,
+        hyde_query=hyde_query,
+        council_vote=council_vote,
+    )
