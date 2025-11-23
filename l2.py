@@ -52,7 +52,7 @@ import config_profiles_v10_10 as config_profiles
 from meta.schema_validation import validate_schema_version
 from meta.retrieval import run_rag_retrieval
 from prompt_builder import build_rag_prompt
-from cognitive_agents import (
+from core.cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,

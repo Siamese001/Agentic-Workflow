@@ -37,8 +37,8 @@ from typing import Optional, Any, Dict, List
 
 from models import WorkflowPlanBundle, ExecutionContext, L2ResultBundle
 from observability import start_span, end_span, emit_node_event, log_exception
-from workflow_graph import run_workflow_graph
-from l5 import safety_gate
+from core.workflow_graph import run_workflow_graph
+from core.l5 import safety_gate
 
 
 # =============================================================================

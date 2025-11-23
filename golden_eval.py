@@ -55,7 +55,7 @@ import sys
 
 from models import CostSnapshot
 from observability import emit_golden_eval_event, get_all_events
-from routing import get_routing_trace
+from runtime.trace.trace_reconstruction import get_routing_trace
 
 
 # =============================================================================
