@@ -47,7 +47,7 @@ from models import (
     CouncilVote,
 )
 
-from observability import start_span, end_span, log_exception, emit_cost_snapshot
+from observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
 from meta.schema_validation import validate_schema_version
 from retrieval import run_rag_retrieval
 from prompt_builder import build_rag_prompt
@@ -59,6 +59,9 @@ from cognitive_agents import (
     HYDEQueryAgent,
     QACouncilAgent,
 )
+from eval.health.adapter import collect_error_events
+from eval.health.failure_detector import detect_repeated_failures
+from eval.health.repair_policies import propose_repairs
 
 
 # =============================================================================
@@ -527,6 +530,30 @@ async def run_l2(
         # Emit a coarse-grained cost snapshot from the context, if available.
         if ctx.cost_snapshot is not None:
             emit_cost_snapshot(ctx.cost_snapshot)
+
+        # AIS: collect error telemetry and log recommended repair actions.
+        try:
+            error_events = collect_error_events()
+            signals = detect_repeated_failures(error_events)
+            actions = propose_repairs(signals)
+            for action in actions:
+                record_event(
+                    "ais_repair_action",
+                    {
+                        "kind": action.kind,
+                        "reason": action.reason,
+                        "metadata": {
+                            "code": getattr(action.metadata.get("signal"), "code", None)
+                            if action.metadata.get("signal")
+                            else None,
+                            "severity": getattr(action.metadata.get("signal"), "severity", None)
+                            if action.metadata.get("signal")
+                            else None,
+                        },
+                    },
+                )
+        except Exception as exc:  # noqa: BLE001
+            log_exception("l2.run.ais_logging_error", exc)
 
         result = L2ResultBundle(
             strategy=strategy_result,
