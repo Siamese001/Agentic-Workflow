@@ -4,7 +4,7 @@ This module contains pure planning functions that generate typed plans for
 vector search operations. No actual vector operations are performed here.
 """
 from dataclasses import dataclass
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 
 
 @dataclass

@@ -1,7 +1,7 @@
 """Pinecone client wrapper for vector operations."""
-from typing import Any, Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, TypedDict
 import os
-import pinecone
+from pinecone import Pinecone
 from openai import OpenAI
 
 
@@ -25,15 +25,15 @@ class PineconeClient:
             api_key: Pinecone API key
             index_name: Name of the Pinecone index to use
         """
-        pinecone.init(api_key=api_key)
-        self.index = pinecone.Index(index_name)
+        pc = Pinecone(api_key=api_key)
+        self.index = pc.Index(index_name)
         self.openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
     def upsert(
         self, 
         namespace: str, 
         vectors: List[Vector],
-        **kwargs
+        **kwargs: Any
     ) -> None:
         """Upsert vectors into the specified namespace.
         
@@ -42,8 +42,13 @@ class PineconeClient:
             vectors: List of vector dictionaries with 'id', 'values', and 'metadata'
             **kwargs: Additional arguments to pass to Pinecone's upsert
         """
+        # Convert to format expected by Pinecone SDK
+        formatted_vectors = [
+            (v["id"], v["values"], v["metadata"])
+            for v in vectors
+        ]
         self.index.upsert(
-            vectors=vectors,
+            vectors=formatted_vectors,  # type: ignore[arg-type]
             namespace=namespace,
             **kwargs
         )
@@ -53,7 +58,7 @@ class PineconeClient:
         namespace: str,
         vector: List[float],
         top_k: int = 5,
-        **kwargs
+        **kwargs: Any
     ) -> List[Dict[str, Any]]:
         """Query the vector database for similar vectors.
         
@@ -73,13 +78,23 @@ class PineconeClient:
             include_metadata=True,
             **kwargs
         )
-        return results.get('matches', [])
+        # Handle both dict and object response formats
+        if hasattr(results, 'matches'):
+            return [
+                {
+                    "id": match.id,
+                    "score": match.score,
+                    "metadata": match.metadata or {}
+                }
+                for match in results.matches
+            ]
+        return []
     
     def delete(
         self,
         namespace: str,
         ids: List[str],
-        **kwargs
+        **kwargs: Any
     ) -> None:
         """Delete vectors by their IDs from the specified namespace.
         
