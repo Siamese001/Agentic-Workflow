@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import types
 
-import core.l2 as l2
+import l2
 from config_profiles_v10_10 import get_profile
 from core.models.models import (
     Evidence,
