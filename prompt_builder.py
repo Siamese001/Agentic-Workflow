@@ -24,6 +24,7 @@ from models import (
     StrategyResult,
     WorkflowPlanBundle,
     PromptDefinition,
+    PromptMeta,
     PromptVersion,
 )
 from prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
@@ -427,6 +428,21 @@ def _summarize_job_and_resume(ctx: ExecutionContext) -> str:
     ] + [f"- {s}" for s in getattr(resume, "skills", []) or []]
 
     return "\n".join(job_lines + ["", "----", ""] + resume_lines)
+
+
+def get_prompt_meta_from_plan(bundle: Optional[WorkflowPlanBundle]) -> Optional[PromptMeta]:
+    """Return the PromptMeta attached to a WorkflowPlanBundle, if any.
+
+    This is a tiny, read-only helper so callers can safely inspect prompt_meta
+    without depending on internal L1 planning details.
+    """
+
+    if bundle is None:
+        return None
+    try:
+        return getattr(bundle, "prompt_meta", None)
+    except Exception:
+        return None
 
 
 # =============================================================================
