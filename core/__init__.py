@@ -4,7 +4,7 @@ Note: Layer modules (l1, l2, l3, l4, l5), cognitive_agents, and workflow_graph
 are now imported directly from the root level, not from core.
 
 Example:
-    import l1_planning
+    import l1
     from cognitive_agents import StrategyLLMAgent
     from workflow_graph import run_workflow_graph
 """
