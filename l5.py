@@ -195,3 +195,34 @@ def safety_gate(safety_result: SafetyResult) -> bool:
     default_policy = SafetyPolicy()
     decision = run_l5(safety_result, neutral_council, default_policy, ctx=None)
     return decision.verdict != "block"
+
+
+def arbitrate_safety(
+    safety_result: SafetyResult,
+    council_vote: CouncilVote,
+    policy: SafetyPolicy,
+    ctx: Optional[ExecutionContext] = None,
+) -> dict:
+    """L5-only compatibility shim mapping PolicyDecisionEvent to a legacy dict.
+
+    This adapter delegates the decision entirely to run_l5 and then translates its
+    verdict into the historical "allow" / "replan" / "block" surface expected by
+    older call sites.
+    """
+
+    event = run_l5(safety_result, council_vote, policy, ctx=ctx)
+
+    verdict = getattr(event, "verdict", "pass") or "pass"
+    reason = getattr(event, "reason", "") or ""
+
+    if verdict == "block":
+        decision = "block"
+    elif verdict == "warn":
+        decision = "replan"
+    else:
+        decision = "allow"
+
+    return {
+        "decision": decision,
+        "reason": reason,
+    }
