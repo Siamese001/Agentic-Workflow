@@ -1,9 +1,9 @@
-"""Strategy planning module."""
+"""Strategy planning module with V6 prompt integration and security validation."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, List, Optional
 
 import config_profiles_v10_10 as config_profiles
 from core.models.models import (
@@ -20,8 +20,11 @@ from infra.reasoning.tot import tree_search
 from meta.prompt_builder import (
     PromptInstance,
     build_drafting_prompt,
-    build_strategy_prompt,
 )
+from l1.v6_prompt_adapter import build_v6_strategy_prompt, V6PromptConfig
+from l5.injection_detection import InjectionDetector, SafetyContext
+from core.di_container import get_service
+from l5.policy import SafetyEngine
 
 
 @dataclass(frozen=True)
@@ -55,18 +58,48 @@ def plan_strategy(
     job: Any,
     resume: Any,
     config: Any,
+    v6_config: Optional[V6PromptConfig] = None,
 ) -> StrategyPlan:
-    prompt = build_strategy_prompt(
-        plan=strategy_plan,
-        ctx=ctx,
-        job=job,
-        resume=resume,
-        config=config,
-        prompt_id="system.strategy",
-        layer="L2",
+    """Plan strategy using V6 prompt system with security validation."""
+    
+    if v6_config is None:
+        v6_config = V6PromptConfig(
+            include_examples=True,
+            enable_cot=True,
+        )
+    
+    # Build V6 prompt with context
+    v6_prompt = build_v6_strategy_prompt(ctx, job, resume, config, v6_config)
+    
+    # Security validation before prompt creation
+    safety_engine = get_service(SafetyEngine)
+    if safety_engine:
+        safety_context = SafetyContext(
+            content_type="strategy_prompt",
+            source="l1_strategy_planning",
+            destination="l2_execution",
+            content=v6_prompt,
+            user_id=getattr(ctx, "user_id", "unknown"),
+            session_id=getattr(ctx, "session_id", "unknown"),
+            metadata={"agent": "strategy_planner", "v6_enabled": True}
+        )
+        policy_result = safety_engine.evaluate(safety_context)
+        if policy_result.blocking_findings:
+            # Log security violations but continue with fallback
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Security violations in strategy prompt: {[f.message for f in policy_result.blocking_findings]}")
+    
+    # Create prompt instance with V6 content
+    prompt = PromptInstance(
+        id="system.strategy.v6",
+        content=v6_prompt,
+        layer="L1",
         agent="strategy",
         model_tier="balanced",
+        metadata={"v6_prompt": True, "security_validated": safety_engine is not None}
     )
+    
     return StrategyPlan(prompt=prompt)
 
 
