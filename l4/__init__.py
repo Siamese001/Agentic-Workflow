@@ -5,146 +5,120 @@ This layer handles all state management operations.
 No business logic, tool execution, or orchestration is allowed here.
 """
 from __future__ import annotations
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Callable
-from dataclasses import dataclass, field
-from enum import Enum
-import uuid
 
-T = TypeVar('T')
+from dataclasses import is_dataclass, replace
+from typing import Any, Dict, Optional
 
-class StateOperation(str, Enum):
-    """Types of state operations."""
-    CREATE = "create"
-    READ = "read"
-    UPDATE = "update"
-    DELETE = "delete"
-    PATCH = "patch"
+from .types import (
+    StateOperation,
+    StateEventType,
+    StatePath,
+    StateTransition,
+    StateSnapshot,
+    StateError,
+    StateValidationError,
+    StateRollbackError,
+    T,
+)
+from .manager import StateManager
 
-@dataclass
-class StateTransition:
-    """Represents a state change operation."""
-    operation: StateOperation
-    path: str  # Dot notation path to the state being modified
-    value: Any = None
-    condition: Optional[Callable[[Any], bool]] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
 
-@dataclass
-class StateSnapshot(Generic[T]):
-    """Immutable snapshot of state at a point in time."""
-    state_id: str
-    data: T
-    parent_id: Optional[str] = None
-    timestamp: float = field(default_factory=lambda: datetime.datetime.now().timestamp())
-    metadata: Dict[str, Any] = field(default_factory=dict)
+def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
+    """Bound message and RAG history retention without mutating the input.
 
-class StateManager(Generic[T]):
-    """Manages state with full history and rollback capabilities."""
-    
-    def __init__(self, initial_state: T):
-        self._current: StateSnapshot[T] = StateSnapshot(
-            state_id=str(uuid.uuid4()),
-            data=initial_state
-        )
-        self._history: List[StateSnapshot[T]] = [self._current]
-    
-    @property
-    def current(self) -> StateSnapshot[T]:
-        """Get the current state snapshot."""
-        return self._current
-    
-    def get_history(self) -> List[StateSnapshot[T]]:
-        """Get the complete history of state changes."""
-        return self._history.copy()
-    
-    def apply_transition(self, transition: StateTransition) -> StateSnapshot[T]:
-        """Apply a state transition and return the new snapshot."""
-        new_data = self._apply_to_state(
-            self._current.data,
-            transition.path,
-            transition.operation,
-            transition.value
-        )
-        
-        new_snapshot = StateSnapshot(
-            state_id=str(uuid.uuid4()),
-            data=new_data,
-            parent_id=self._current.state_id,
-            metadata={
-                **self._current.metadata,
-                **transition.metadata,
-                'operation': transition.operation.value,
-                'path': transition.path
-            }
-        )
-        
-        self._current = new_snapshot
-        self._history.append(new_snapshot)
-        return new_snapshot
-    
-    def rollback(self, target_state_id: str) -> Optional[StateSnapshot[T]]:
-        """Roll back to a previous state by its ID."""
-        for snapshot in reversed(self._history):
-            if snapshot.state_id == target_state_id:
-                self._current = snapshot
-                return snapshot
-        return None
-    
-    def _apply_to_state(
-        self, 
-        state: Any, 
-        path: str, 
-        operation: StateOperation,
-        value: Any = None
-    ) -> Any:
-        """Apply an operation to a nested state object."""
-        # Implementation of state patching logic
-        # This is a simplified version - a real implementation would:
-        # - Handle nested paths (e.g., "user.profile.name")
-        # - Support different patch strategies
-        # - Handle edge cases and errors
-        if operation == StateOperation.CREATE:
-            return value
-        elif operation == StateOperation.READ:
-            return self._get_nested(state, path)
-        elif operation == StateOperation.UPDATE:
-            return self._set_nested(state, path, value)
-        elif operation == StateOperation.DELETE:
-            return self._delete_nested(state, path)
-        elif operation == StateOperation.PATCH:
-            current = self._get_nested(state, path)
-            if isinstance(current, dict) and isinstance(value, dict):
-                return {**current, **value}
-            return value
-        
-        raise ValueError(f"Unsupported operation: {operation}")
-    
-    def _get_nested(self, obj: Any, path: str) -> Any:
-        """Get a value from a nested object using dot notation."""
-        for part in path.split('.'):
-            if isinstance(obj, dict):
-                obj = obj.get(part)
-            else:
-                obj = getattr(obj, part, None)
-            if obj is None:
-                break
-        return obj
-    
-    def _set_nested(self, obj: Any, path: str, value: Any) -> Any:
-        """Set a value in a nested object using dot notation."""
-        # Implementation left as an exercise
-        # Should handle creating intermediate dictionaries/objects as needed
-        pass
-    
-    def _delete_nested(self, obj: Any, path: str) -> Any:
-        """Delete a value from a nested object using dot notation."""
-        # Implementation left as an exercise
-        pass
+    Behavior (see tests/test_l4_state_adapter_v10_10.py):
+    - If the state has neither `messages` nor `rag_history`, return it as-is.
+    - If present and longer than `max_items`, truncate from the *front*,
+      keeping the most recent entries.
+    - For dataclass states, return a new instance with updated fields so the
+      original object is never mutated in-place.
+    """
 
-# Re-export public interfaces
+    has_messages = hasattr(state, "messages")
+    has_rag = hasattr(state, "rag_history")
+
+    if not has_messages and not has_rag:
+        return state
+
+    if not is_dataclass(state):
+        # Fallback: operate defensively and avoid surprising mutations for
+        # non-dataclass objects by simply returning the original.
+        return state
+
+    updates: Dict[str, Any] = {}
+
+    if has_messages:
+        messages = getattr(state, "messages")
+        if isinstance(messages, list) and len(messages) > max_items:
+            updates["messages"] = messages[-max_items:]
+
+    if has_rag:
+        rag_history = getattr(state, "rag_history")
+        if isinstance(rag_history, list) and len(rag_history) > max_items:
+            updates["rag_history"] = rag_history[-max_items:]
+
+    if not updates:
+        return state
+
+    return replace(state, **updates)
+
+
+def record_correction_event(
+    state: Any,
+    *,
+    surface: str,
+    message: str,
+    metadata: Optional[Dict[str, Any]] = None,
+    ctx: Any = None,  # kept for signature compatibility; intentionally unused
+) -> Any:
+    """Append a correction entry to `correction_journal` if present.
+
+    Contract from tests/test_l4_state_adapter_v10_10.py:
+    - If the state has no `correction_journal` attribute, return it unchanged.
+    - Otherwise, append a dict with keys `surface`, `message`, `metadata`.
+    - Do not mutate the original instance; always inspect the returned one.
+    """
+
+    if not hasattr(state, "correction_journal"):
+        return state
+
+    journal = getattr(state, "correction_journal")
+    if not isinstance(journal, list):
+        return state
+
+    if not is_dataclass(state):
+        # Best-effort fallback for non-dataclass objects: mutate the journal
+        # list but keep the state instance the same.
+        entry = {
+            "surface": surface,
+            "message": message,
+            "metadata": dict(metadata or {}),
+        }
+        journal.append(entry)
+        return state
+
+    new_journal = list(journal)
+    new_journal.append(
+        {
+            "surface": surface,
+            "message": message,
+            "metadata": dict(metadata or {}),
+        }
+    )
+
+    return replace(state, correction_journal=new_journal)
+
+
 __all__ = [
-    'StateOperation',
-    'StateTransition',
-    'StateSnapshot',
-    'StateManager',
+    "StateOperation",
+    "StateEventType",
+    "StatePath",
+    "StateTransition",
+    "StateSnapshot",
+    "StateError",
+    "StateValidationError",
+    "StateRollbackError",
+    "StateManager",
+    "_prune_memory",
+    "record_correction_event",
 ]

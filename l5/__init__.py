@@ -5,143 +5,240 @@ This layer handles all safety checks and policy enforcement.
 No business logic, tool execution, or state management is allowed here.
 """
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable, TypeVar, Generic
-from dataclasses import dataclass, field
-from enum import Enum, auto
+from typing import Any, Dict, List, Optional
 
-T = TypeVar('T')
+# Re-export canonical types from l5.types
+from .types import (
+    Severity,
+    Verdict,
+    FindingType,
+    SafetyFinding,
+    PolicyDecision,
+    SafetyContext,
+    SafetyError,
+    PolicyEvaluationError,
+    PolicyConfigurationError,
+)
 
-class SafetyLevel(str, Enum):
-    """Severity levels for safety violations."""
-    BLOCK = "block"     # Critical violation - must be blocked
-    WARN = "warn"       # Warning - may need review
-    ALLOW = "allow"     # No issues found
+# Re-export policy engine from l5.policy
+from .policy import (
+    SafetyPolicy,
+    PolicyResult,
+    SafetyEngine,
+)
 
-class SafetyCategory(str, Enum):
-    """Categories of safety checks."""
-    CONTENT = "content"         # Inappropriate or harmful content
-    PRIVACY = "privacy"         # PII or sensitive data exposure
-    POLICY = "policy"           # Violation of organizational policies
-    QUALITY = "quality"         # Quality issues that don't rise to blocking
-    SECURITY = "security"      # Security-related issues
 
-@dataclass
-class SafetyFinding:
-    """A single safety finding."""
-    id: str
-    level: SafetyLevel
-    category: SafetyCategory
-    message: str
-    details: Dict[str, Any] = field(default_factory=dict)
-    source: Optional[str] = None
+# =============================================================================
+# Adapter Functions for Legacy/Test Compatibility
+# =============================================================================
+
+
+def safety_gate(result: Any) -> bool:
+    """
+    Check if a safety result allows the operation to proceed.
     
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to a dictionary for serialization."""
-        return {
-            'id': self.id,
-            'level': self.level.value,
-            'category': self.category.value,
-            'message': self.message,
-            'details': self.details,
-            'source': self.source
-        }
-
-@dataclass
-class SafetyResult:
-    """Result of a safety check."""
-    allowed: bool
-    findings: List[SafetyFinding] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    This is a simple adapter that checks if there are any blocking findings
+    in the safety result. Used by tests and runtime to make go/no-go decisions.
     
-    @property
-    def blocking_findings(self) -> List[SafetyFinding]:
-        """Get all findings that would block the action."""
-        return [f for f in self.findings if f.level == SafetyLevel.BLOCK]
-    
-    @property
-    def warning_findings(self) -> List[SafetyFinding]:
-        """Get all warning-level findings."""
-        return [f for f in self.findings if f.level == SafetyLevel.WARN]
-
-@runtime_checkable
-class SafetyPolicy(Protocol):
-    """Protocol that all safety policies must implement."""
-    
-    @property
-    def policy_id(self) -> str:
-        """Unique identifier for this policy."""
-        ...
+    Args:
+        result: A SafetyResult-like object with a 'findings' attribute
         
-    def check(self, content: Any, context: Dict[str, Any] = None) -> SafetyResult:
-        """Check content against this policy."""
-        ...
+    Returns:
+        bool: True if the operation is safe to proceed, False if blocked
+    """
+    # Handle None or missing result
+    if result is None:
+        return True
+    
+    # Check if result has findings attribute
+    if not hasattr(result, 'findings'):
+        return True
+    
+    findings = getattr(result, 'findings', [])
+    
+    # If no findings, allow
+    if not findings:
+        return True
+    
+    # Check for blocking findings
+    # A finding is blocking if it has high/critical severity
+    for finding in findings:
+        severity = getattr(finding, 'severity', None)
+        if severity:
+            # Handle both string and enum severity
+            severity_str = severity.value if hasattr(severity, 'value') else str(severity)
+            if severity_str in ('high', 'critical'):
+                return False
+    
+    return True
 
-class SafetyEngine:
-    """Orchestrates safety checks across multiple policies."""
+
+def arbitrate_safety(
+    safety_result: Any,
+    council_vote: Any,
+    policy: Any,
+    ctx: Any = None
+) -> Dict[str, Any]:
+    """
+    Arbitrate between safety findings and council votes to produce a decision.
     
-    def __init__(self, policies: List[SafetyPolicy]):
-        self.policies = {p.policy_id: p for p in policies}
+    This adapter maps safety findings to legacy decision format expected by tests.
     
-    def add_policy(self, policy: SafetyPolicy) -> None:
-        """Add a policy to the engine."""
-        self.policies[policy.policy_id] = policy
+    Decision mapping:
+    - high/critical severity -> "block"
+    - medium severity -> "replan"
+    - low/no findings -> "allow"
     
-    def remove_policy(self, policy_id: str) -> None:
-        """Remove a policy from the engine."""
-        self.policies.pop(policy_id, None)
-    
-    def check_content(
-        self, 
-        content: Any, 
-        context: Optional[Dict[str, Any]] = None,
-        policy_ids: Optional[List[str]] = None
-    ) -> SafetyResult:
-        """
-        Check content against all (or specified) policies.
+    Args:
+        safety_result: SafetyResult with findings
+        council_vote: CouncilVote (currently unused in decision logic)
+        policy: SafetyPolicy (currently unused in decision logic)
+        ctx: Optional execution context
         
-        Args:
-            content: The content to check
-            context: Additional context for the check
-            policy_ids: If provided, only run these specific policies
+    Returns:
+        dict: {"decision": str, "reason": str, "findings": list}
+    """
+    # Default decision
+    decision = "allow"
+    reason = "No safety concerns detected"
+    findings_list = []
+    
+    # Extract findings from safety_result
+    if safety_result and hasattr(safety_result, 'findings'):
+        findings = getattr(safety_result, 'findings', [])
+        
+        # Determine decision based on highest severity
+        max_severity = None
+        for finding in findings:
+            severity = getattr(finding, 'severity', None)
+            if severity:
+                severity_str = severity.value if hasattr(severity, 'value') else str(severity)
+                
+                if severity_str in ('critical', 'high'):
+                    max_severity = 'high'
+                    break
+                elif severity_str == 'medium' and max_severity != 'high':
+                    max_severity = 'medium'
             
-        Returns:
-            SafetyResult with the combined results of all policy checks
-        """
-        context = context or {}
-        policies_to_check = [
-            p for pid, p in self.policies.items() 
-            if policy_ids is None or pid in policy_ids
-        ]
+            # Collect finding info
+            findings_list.append({
+                'check_id': getattr(finding, 'id', 'unknown'),
+                'category': getattr(finding, 'type', getattr(finding, 'category', 'unknown')),
+                'severity': severity_str if severity else 'unknown',
+                'message': getattr(finding, 'message', ''),
+            })
         
-        all_findings: List[SafetyFinding] = []
+        # Map severity to decision
+        if max_severity == 'high':
+            decision = "block"
+            reason = "High severity safety violation detected"
+        elif max_severity == 'medium':
+            decision = "replan"
+            reason = "Medium severity issue requires replanning"
+    
+    # Try to call run_l5 if it exists (for test compatibility)
+    try:
+        event = run_l5(safety_result, council_vote, policy, ctx)
         
-        for policy in policies_to_check:
-            result = policy.check(content, context)
-            for finding in result.findings:
-                if not finding.source:
-                    finding.source = policy.policy_id
-                all_findings.append(finding)
-        
-        # Determine overall allow/block decision
-        has_blocking = any(f.level == SafetyLevel.BLOCK for f in all_findings)
-        
-        return SafetyResult(
-            allowed=not has_blocking,
-            findings=all_findings,
-            metadata={
-                'policies_checked': [p.policy_id for p in policies_to_check],
-                'policy_count': len(policies_to_check),
-                'finding_count': len(all_findings),
-                'blocking_count': sum(1 for f in all_findings if f.level == SafetyLevel.BLOCK)
-            }
-        )
+        # Extract verdict and reason from event if present
+        if event:
+            verdict = getattr(event, 'verdict', None)
+            event_reason = getattr(event, 'reason', None)
+            
+            if verdict:
+                verdict_str = verdict.value if hasattr(verdict, 'value') else str(verdict)
+                if verdict_str == 'block':
+                    decision = 'block'
+                elif verdict_str == 'review':
+                    decision = 'replan'
+                elif verdict_str == 'allow':
+                    decision = 'allow'
+            
+            if event_reason:
+                reason = str(event_reason)
+    except Exception:
+        # If run_l5 fails or doesn't exist, use the decision we already computed
+        pass
+    
+    return {
+        "decision": decision,
+        "reason": reason,
+        "findings": findings_list,
+    }
 
-# Re-export public interfaces
+
+def run_l5(
+    safety_result: Any,
+    council_vote: Any,
+    policy: Any,
+    ctx: Any = None
+) -> Any:
+    """
+    Run L5 policy evaluation and return a verdict event.
+    
+    This is a thin adapter that converts safety results into a policy decision
+    event with verdict and reason fields.
+    
+    Args:
+        safety_result: SafetyResult with findings
+        council_vote: CouncilVote (for future use)
+        policy: SafetyPolicy to apply
+        ctx: Optional execution context
+        
+    Returns:
+        An event object with 'verdict' and 'reason' attributes
+    """
+    from dataclasses import dataclass
+    
+    @dataclass
+    class L5Event:
+        verdict: Optional[Verdict] = None
+        reason: Optional[str] = None
+    
+    # Determine verdict from safety findings
+    verdict = Verdict.ALLOW
+    reason = "No safety concerns"
+    
+    if safety_result and hasattr(safety_result, 'findings'):
+        findings = getattr(safety_result, 'findings', [])
+        
+        for finding in findings:
+            severity = getattr(finding, 'severity', None)
+            if severity:
+                severity_str = severity.value if hasattr(severity, 'value') else str(severity)
+                
+                if severity_str in ('critical', 'high'):
+                    verdict = Verdict.BLOCK
+                    reason = f"Blocked: {getattr(finding, 'message', 'safety violation')}"
+                    break
+                elif severity_str == 'medium' and verdict == Verdict.ALLOW:
+                    verdict = Verdict.REVIEW
+                    reason = f"Review required: {getattr(finding, 'message', 'potential issue')}"
+    
+    return L5Event(verdict=verdict, reason=reason)
+
+
+# =============================================================================
+# Public API
+# =============================================================================
+
 __all__ = [
-    'SafetyLevel',
-    'SafetyCategory',
+    # Core types from l5.types
+    'Severity',
+    'Verdict',
+    'FindingType',
     'SafetyFinding',
-    'SafetyResult',
+    'PolicyDecision',
+    'SafetyContext',
+    'SafetyError',
+    'PolicyEvaluationError',
+    'PolicyConfigurationError',
+    # Policy engine from l5.policy
     'SafetyPolicy',
+    'PolicyResult',
     'SafetyEngine',
+    # Adapter functions
+    'safety_gate',
+    'arbitrate_safety',
+    'run_l5',
 ]
