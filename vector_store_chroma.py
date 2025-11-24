@@ -1,18 +1,19 @@
-"""ChromaDB-backed vector store utilities (v10_10 · META layer).
+"""ChromaDB Vector Store - Infrastructure Layer
 
-This module encapsulates all direct interactions with ChromaDB so that
-L1–L5 layers and agents remain pure. It is safe to import even if the
-`chromadb` package is not installed: imports are performed lazily inside
-helper functions and surfaced as explicit errors.
+This module provides ChromaDB integration for vector storage and retrieval.
 
+Layer: Infrastructure/Meta
 Responsibilities:
-    • Initialise a Chroma client and collection.
-    • Provide hybrid search helpers over stored documents.
-    • Support semantic cache upsert operations.
+- Chroma client initialization
+- Collection management
+- Hybrid search
+- Semantic cache operations
 
 Non-responsibilities:
-    • No knowledge of prompts, agents, or workflow plans.
-    • No business logic for key construction or corpus management.
+- Prompt knowledge
+- Agent logic
+- Workflow plans
+- Business logic
 """
 
 from __future__ import annotations

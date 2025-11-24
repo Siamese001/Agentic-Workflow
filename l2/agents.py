@@ -1,4 +1,24 @@
-"""Defines the specialized LLM agents that plan, draft, review, and safety-check resumes so each step applies focused reasoning to improve alignment, clarity, and risk control."""
+"""L2 - Cognitive Agents (Execution Layer)
+
+This module defines specialized LLM agents that execute planned tasks:
+- Strategy execution
+- Drafting execution
+- QA execution
+- Safety execution
+- HYDE query generation
+
+Layer: L2 (Execution)
+Responsibilities:
+- Execute LLM calls based on L1 plans
+- Parse and validate LLM outputs
+- Return structured results
+
+Non-responsibilities:
+- Planning (L1)
+- Orchestration (L3)
+- State management (L4)
+- Policy decisions (L5)
+"""
 
 from __future__ import annotations
 

@@ -1,4 +1,20 @@
-"""Builds the structured prompts that tell each agent how to analyze, rewrite, review, and safety-check a resume so outputs stay aligned to the job, clear to recruiters, and safe to ship."""
+"""Prompt Builder - Meta Layer
+
+This module builds structured prompts for agents.
+
+Layer: Meta
+Responsibilities:
+- Construct prompt envelopes
+- Assemble context
+- Apply prompt templates
+- Validate prompt schemas
+
+Non-responsibilities:
+- LLM invocation
+- Planning
+- Execution
+- State management
+"""
 
 from __future__ import annotations
 
