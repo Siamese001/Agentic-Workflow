@@ -45,7 +45,7 @@ def verify_phase_a():
     
     # Check 3: Cognitive agents
     try:
-        from core.cognitive_agents import (
+        from cognitive_agents import (
             StrategyLLMAgent,
             DraftingGuild,
             SemanticQAAgent,
@@ -76,7 +76,7 @@ def verify_phase_a():
     try:
         from core.models import models
         import l1
-        from core import cognitive_agents
+        import cognitive_agents
         import l2
         checks.append(("No Circular Dependencies", True, "Import order verified"))
     except Exception as e:
