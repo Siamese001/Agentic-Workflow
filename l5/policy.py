@@ -16,6 +16,7 @@ from .types import (
     PolicyDecision,
     Verdict,
     Severity,
+    SafetyPolicy,
     SafetyError,
     PolicyEvaluationError,
     PolicyConfigurationError
@@ -24,35 +25,6 @@ from .types import (
 logger = logging.getLogger(__name__)
 
 T = TypeVar('T')
-
-@runtime_checkable
-class SafetyPolicy(Protocol):
-    """Protocol that all safety policies must implement."""
-    
-    @property
-    def policy_id(self) -> str:
-        """Unique identifier for this policy."""
-        ...
-    
-    @property
-    def description(self) -> str:
-        """Human-readable description of the policy."""
-        ...
-    
-    def evaluate(self, context: SafetyContext) -> PolicyDecision:
-        """
-        Evaluate the given context against this policy.
-        
-        Args:
-            context: The safety context to evaluate
-            
-        Returns:
-            PolicyDecision with the evaluation results
-            
-        Raises:
-            PolicyEvaluationError: If the evaluation fails
-        """
-        ...
 
 @dataclass
 class PolicyResult:
