@@ -53,7 +53,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
 import json
 import sys
 
-from models import CostSnapshot
+from core.models.models import CostSnapshot
 from observability import emit_golden_eval_event, get_all_events
 from runtime.trace.trace_reconstruction import get_routing_trace
 

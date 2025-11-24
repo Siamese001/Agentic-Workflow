@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional, Literal
 
 from pydantic import BaseModel, Field
 
-from models import ExecutionProfile
+from core.models.models import ExecutionProfile
 
 
 class SafetyContext(BaseModel):

@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from models import ReasoningMode
+from core.models.models import ReasoningMode
 
 
 class LLMProfile(BaseModel):

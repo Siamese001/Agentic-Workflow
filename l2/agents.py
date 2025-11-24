@@ -47,7 +47,7 @@ from runtime.observability import (
     record_exception,
 )
 from meta_profile import MetaProfileSnapshot
-from prompt_builder import PromptInstance
+from meta.prompt_builder import PromptInstance
 import l1
 
 

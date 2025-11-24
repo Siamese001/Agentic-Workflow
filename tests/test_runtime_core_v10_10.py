@@ -37,13 +37,13 @@ from core.cognitive_agents import (
     ConstitutionalSafetyAgent,
 )
 
-from workflow_planning import build_workflow_plan_bundle
+from l1.workflow_planning import build_workflow_plan_bundle
 from l2 import execute_workflow_plans
 from l3 import run_dag
 from l4 import apply_state_patch
 from l5 import safety_gate
 
-from self_correction import evaluate_all_surfaces, aggregate_correction_signals
+from meta.self_correction import evaluate_all_surfaces, aggregate_correction_signals
 
 
 # -------------------------------------------------------------------------

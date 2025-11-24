@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from models import (
+from core.models.models import (
     PromptMeta,
     StrategyPlan,
     DraftingPlan,
@@ -12,7 +12,7 @@ from models import (
     WorkflowPlanBundle,
 )
 
-from prompt_builder import get_prompt_meta_from_plan
+from meta.prompt_builder import get_prompt_meta_from_plan
 
 
 def _make_bundle_with_prompt_meta() -> WorkflowPlanBundle:

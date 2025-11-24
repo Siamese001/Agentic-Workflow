@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from models import PromptDefinition, PromptVersion
+from core.models.models import PromptDefinition, PromptVersion
 
 
 # ============================================================================

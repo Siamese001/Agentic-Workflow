@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
 
-from models import ExecutionProfile
+from core.models.models import ExecutionProfile
 
 
 @dataclass

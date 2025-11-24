@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from models import ExecutionProfile
+from core.models.models import ExecutionProfile
 
 from eval.golden_state.datasets import load_golden_inputs, load_golden_cases
 from eval.golden_state.evaluator import evaluate_case_output
