@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from models import ContextBudget
+from core.models.models import ContextBudget
 
 
 class ContextProfile(BaseModel):

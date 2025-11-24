@@ -4,7 +4,7 @@ import time
 import uuid
 from typing import Any, Dict, Optional
 
-from models import TelemetryEvent
+from core.models.models import TelemetryEvent
 from runtime.observability.collectors import append_event, push_span, pop_span
 
 

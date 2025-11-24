@@ -10,7 +10,7 @@ from core.models.models import (
     DraftingResult,
     RAGResult,
 )
-from prompt_builder import PromptInstance, build_qa_prompt
+from meta.prompt_builder import PromptInstance, build_qa_prompt
 
 
 @dataclass(frozen=True)

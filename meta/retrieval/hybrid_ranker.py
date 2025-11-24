@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
-from models import CouncilVote, Evidence, RAGResult, RetrievalConfig
+from core.models.models import CouncilVote, Evidence, RAGResult, RetrievalConfig
 
 
 def _apply_council_weights(evidence: Sequence[Evidence], council: Optional[CouncilVote]) -> List[Evidence]:

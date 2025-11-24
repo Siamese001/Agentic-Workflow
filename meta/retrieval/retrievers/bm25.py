@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from models import Evidence, RetrievalConfig
+from core.models.models import Evidence, RetrievalConfig
 from retrievers.bm25 import bm25_search as _core_bm25_search, BM25Config
 
 

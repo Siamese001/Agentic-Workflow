@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from models import RetrievalConfig
+from core.models.models import RetrievalConfig
 
 
 class RetrievalProfile(BaseModel):

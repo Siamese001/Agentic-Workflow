@@ -28,7 +28,7 @@ from core.models.models import (
 from core.routing import RoutingPolicy
 from registry import build_default_prompt_registry
 from runtime_utils import SandboxConfig
-from workflow_planning import build_workflow_plan_bundle
+from l1.workflow_planning import build_workflow_plan_bundle
 from l3 import run_dag
 from l5 import safety_gate
 

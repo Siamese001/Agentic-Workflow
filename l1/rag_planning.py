@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Sequence
 
 from core.models.models import ExecutionContext, Evidence
-from prompt_builder import PromptInstance, build_rag_prompt, build_hyde_prompt
+from meta.prompt_builder import PromptInstance, build_rag_prompt, build_hyde_prompt
 
 
 @dataclass(frozen=True)

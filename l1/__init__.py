@@ -26,6 +26,7 @@ from .safety_planning import (
     SafetyPlan,
     plan_safety_review,
 )
+from .workflow_planning import build_workflow_plan_bundle
 
 __all__ = [
     "StrategyPlan",
@@ -44,5 +45,6 @@ __all__ = [
     "plan_council_review",
     "SafetyPlan",
     "plan_safety_review",
+    "build_workflow_plan_bundle",
 ]
 

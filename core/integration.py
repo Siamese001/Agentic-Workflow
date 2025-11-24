@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar
 
 from l4.manager import StateManager
-from l5.integration import SafetySystem
+from l5 import SafetySystem
 
 from .errors import (
     ErrorContext,
