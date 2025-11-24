@@ -1,31 +1,4 @@
-# FILE: 10_10/prompt_builder.py
-"""
-Prompt Builder Layer (v10_10 · Phase 3)
-=======================================
-
-This module builds PromptInstance objects for all major agents:
-
-    • Strategy reasoning
-    • Retrieval evidence / RAG reasoning
-    • HYDE query expansion
-    • Drafting
-    • QA
-    • Safety
-
-It:
-
-    • Enforces prompt ACL metadata (layer / agent / model tier).
-    • Routes all prompt construction through the central prompt registry
-      defined in ``prompt_system_v10_10.py`` – no inline templates.
-    • Emits ``PromptInstance`` objects that L2 can hand off to
-      cognitive agents / LLM clients.
-
-Design constraints:
-
-    • Pure L2: no LLM calls.
-    • Depends only on models + prompt_system for registry/ACL.
-    • No direct provider SDK or routing logic.
-"""
+"""Builds the structured prompts that tell each agent how to analyze, rewrite, review, and safety-check a resume so outputs stay aligned to the job, clear to recruiters, and safe to ship."""
 
 from __future__ import annotations
 
@@ -67,13 +40,7 @@ from infra.context_engine.slots import ContextSlot
 
 @dataclass
 class PromptEnvelope:
-    """
-    Structured container for deterministic prompt assembly.
-
-    Sections map directly to the v10_8 envelope design, with explicit
-    naming so that downstream rendering and logging can reason about
-    each component separately.
-    """
+    """Represents the main sections of a prompt so resume-related instructions, context, and output format stay structured and easy to audit."""
 
     framing: str = ""
     context: str = ""
@@ -83,12 +50,7 @@ class PromptEnvelope:
     output_schema: str = ""
 
     def to_sections(self) -> Dict[str, str]:
-        """
-        Return an ordered mapping of envelope sections.
-
-        The order is semantic; callers that render a textual prompt
-        should iterate using SECTION_ORDER.
-        """
+        """Returns the envelope sections as an ordered mapping so downstream tools can render and log exactly what the agent saw."""
         return {
             "Framing": self.framing.strip(),
             "Context": self.context.strip(),
@@ -481,7 +443,13 @@ def build_strategy_prompt(
     agent: str = "strategy",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """Build a strategy planning prompt."""
+    """Create the instructions for planning how to tailor the resume.
+
+    This prompt tells the strategy agent to read the job and resume, propose
+    several options for how to position the candidate, and pick the most
+    effective one. The goal is to ensure later steps work from a clear plan
+    that reflects the role's expectations and the candidate's strengths.
+    """
 
     framing_text = (
         "You are the Strategy Planning agent (Layer {layer}). "
@@ -543,9 +511,12 @@ def build_rag_prompt(
     agent: str = "rag",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """Build a retrieval / evidence fusion prompt.
+    """Create the instructions for reasoning over retrieved evidence.
 
-    Used by the Phase-3 RAG reasoning stage between retrieval and drafting.
+    This prompt guides the agent to review the evidence gathered about the job
+    and candidate, highlight the most relevant pieces, and explain how they
+    should influence the resume rewrite. It keeps drafting grounded in real
+    signals instead of generic assumptions.
     """
 
     base_context = (
@@ -606,11 +577,12 @@ def build_hyde_prompt(
     agent: str = "rag",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """
-    Build a HYDE prompt: generate an ideal answer for use as a retrieval proxy.
+    """Create the instructions for imagining an ideal candidate profile.
 
-    The output is a synthetic, idealized answer to the user's (implicit) query
-    for the job/resume pair, which retrieval.py will treat as a dense query.
+    This prompt asks the agent to write a short description of a "perfect"
+    candidate for the role, based on the job and resume. Retrieval uses this
+    text as a semantic query to pull in better-matching examples and
+    references, which in turn supports more targeted resume improvements.
     """
     envelope = PromptEnvelope(
         framing=(
@@ -659,7 +631,13 @@ def build_drafting_prompt(
     agent: str = "drafting",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """Build a drafting prompt for resume sections."""
+    """Create the instructions for writing or rewriting resume sections.
+
+    This prompt explains to the drafting agent what sections to produce, what
+    strategy to follow, and which evidence to lean on. It emphasizes impact,
+    clarity, and alignment to the job so that the resulting resume feels
+    tailored and recruiter-friendly rather than generic.
+    """
 
     base_context = _summarize_job_and_resume(ctx)
     curated_context = _build_curated_context_for_drafting(ctx, strategy, rag) or base_context
@@ -712,8 +690,12 @@ def build_qa_prompt(
     agent: str = "qa",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """
-    Build a QA prompt for validating drafted content.
+    """Create the instructions for reviewing the drafted resume.
+
+    This prompt tells the QA agent to check the draft against the job
+    description and evidence, surface issues such as unsupported claims or
+    missing requirements, and suggest concrete fixes. It helps keep the final
+    resume accurate, clear, and focused on what employers care about.
     """
     envelope = PromptEnvelope(
         framing=(
@@ -764,8 +746,12 @@ def build_safety_prompt(
     agent: str = "safety",
     model_tier: str = "balanced",
 ) -> PromptInstance:
-    """
-    Build a safety prompt for final policy / safety review.
+    """Create the instructions for the final safety and policy review.
+
+    This prompt asks the safety agent to look for content that might violate
+    policies, privacy expectations, or fairness standards, and to recommend
+    any required edits or blocks. It is a key part of ensuring resumes are not
+    only compelling but also safe and appropriate to share.
     """
     envelope = PromptEnvelope(
         framing=(

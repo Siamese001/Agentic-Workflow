@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+"""Defines simple routing rules that pick which specialist agents handle planning, drafting, review, and safety so each resume step is done by the right expertise."""
+
 from typing import List
 
 from profiles.agent_profile import AgentCard
@@ -7,16 +9,7 @@ from core.agent_registry import AgentRegistry
 
 
 def choose_agents_for_task(task_type: str, registry: AgentRegistry) -> List[AgentCard]:
-    """Return a list of AgentCard objects appropriate for the given task.
-
-    Simple policy:
-      - For strategy tasks → prefer agent_type == "planner"
-      - For retrieval/RAG tasks → prefer "researcher"
-      - For drafting → "drafter"
-      - For QA → "qa"
-      - For safety → "safety"
-    Fallback: return all agents if no specific type matches.
-    """
+    """Chooses agents for a given task type so planning, retrieval, drafting, QA, and safety work are handled by specialists, leading to clearer, more relevant, and safer resumes."""
 
     mapping = {
         "strategy": "planner",

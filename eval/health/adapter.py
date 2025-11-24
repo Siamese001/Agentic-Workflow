@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-"""AIS telemetry adapter.
-
-This module bridges observability events into the simple dict-based
-format expected by eval.health failure detectors and metrics.
-"""
+"""Transforms low-level observability events into a simple format so health checks can spot patterns that might harm resume quality or reliability."""
 
 from typing import Any, Dict, List
 
@@ -12,14 +8,7 @@ from observability import get_all_events
 
 
 def collect_error_events() -> List[Dict[str, Any]]:
-    """Collect error-like events from the global observability stream.
-
-    The returned list is a lightweight projection with the keys used by
-    eval.health failure detectors and metrics:
-        • event_type
-        • error_code
-        • message
-    """
+    """Collects error-like events from the global stream so health detectors can flag recurring issues before they impact resume runs."""
 
     events: List[Dict[str, Any]] = []
     for evt in get_all_events():

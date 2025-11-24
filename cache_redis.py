@@ -1,19 +1,4 @@
-"""Redis-backed caching utilities (v10_10 · META layer).
-
-This module encapsulates all direct interactions with Redis so that
-L1–L5 layers and agents remain pure. It is safe to import even if the
-`redis` package is not installed: imports are performed lazily inside
-helper functions and surfaced as explicit errors.
-
-Responsibilities:
-    • Provide a thin, testable abstraction over a Redis client.
-    • Support exact LLM response caching (key → JSON/text payload).
-    • Provide basic health checks.
-
-Non-responsibilities:
-    • No knowledge of prompts, agents, or workflow plans.
-    • No business logic for cache key construction.
-"""
+"""Provides Redis-based caching so repeated resume improvement runs can reuse LLM outputs, reducing latency and cost without changing business logic."""
 
 from __future__ import annotations
 
@@ -23,19 +8,15 @@ from typing import Any, Optional
 
 
 class RedisNotConfiguredError(RuntimeError):
-    """Raised when Redis usage is requested but not configured/enabled."""
+    """Signals that caching is unavailable so resume runs can fall back instead of failing silently."""
 
 
 class RedisClientError(RuntimeError):
-    """Raised when the underlying Redis client cannot be created or used."""
+    """Wraps low-level Redis issues so they can be surfaced cleanly in logs and monitoring."""
 
 
 def _import_redis():
-    """Import the redis package lazily.
-
-    This helper ensures the module can be imported even if `redis` is not
-    installed, while still providing a clear error at call time.
-    """
+    """Imports the redis package lazily so the rest of the resume stack stays import-safe even when caching is disabled."""
 
     try:  # pragma: no cover - import path is environment dependent
         import redis  # type: ignore
@@ -45,17 +26,7 @@ def _import_redis():
 
 
 def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):
-    """Initialise a synchronous Redis client.
-
-    Parameters
-    ----------
-    url:
-        Redis connection URL. If omitted, REDIS_URL is read from the
-        environment. If still missing, :class:`RedisNotConfiguredError`
-        is raised.
-    timeout_s:
-        Socket/connect timeout in seconds.
-    """
+    """Creates a Redis client for caching so repeated resume work can be served faster and more cheaply when configuration allows it."""
 
     url = url or os.getenv("REDIS_URL")
     if not url:
@@ -74,7 +45,7 @@ def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):
 
 
 def redis_healthcheck(client) -> bool:
-    """Return True if the Redis client responds to PING, False otherwise."""
+    """Checks whether the Redis cache is reachable so the system knows if it can safely rely on cached resume results."""
 
     try:
         return bool(client.ping())
@@ -83,11 +54,7 @@ def redis_healthcheck(client) -> bool:
 
 
 def get_llm_cache(client, key: str) -> Optional[Any]:
-    """Fetch a cached LLM payload by key.
-
-    The value is expected to be JSON-encoded; failures to decode will
-    result in ``None``.
-    """
+    """Fetches a cached LLM payload by key so repeated resume runs can reuse earlier reasoning or drafting instead of recomputing it."""
 
     try:
         raw = client.get(key)
@@ -111,11 +78,7 @@ def set_llm_cache(
     *,
     ttl_s: Optional[int] = 3600,
 ) -> None:
-    """Store a cached LLM payload by key.
-
-    The value is JSON-encoded before writing. Errors are surfaced as
-    :class:`RedisClientError`.
-    """
+    """Stores a cached LLM payload by key so future resume runs can avoid paying again for the same model call."""
 
     try:
         payload = json.dumps(value)
