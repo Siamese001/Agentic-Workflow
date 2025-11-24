@@ -30,7 +30,6 @@ from runtime.observability import start_span, end_span, log_exception, emit_cost
 import config_profiles_v10_10 as config_profiles
 from meta.schema_validation import validate_schema_version
 from meta.retrieval import run_rag_retrieval
-from prompt_builder import build_rag_prompt
 from core.cognitive_agents import (
     StrategyLLMAgent,
     DraftingGuild,
@@ -42,10 +41,7 @@ from core.cognitive_agents import (
 from eval.health.adapter import collect_error_events
 from eval.health.failure_detector import detect_repeated_failures
 from eval.health.repair_policies import propose_repairs
-from infra.reasoning.cot import expand_chain_of_thought
-from infra.reasoning.tot import tree_search
-from infra.reasoning.react import run_react_loop
-from infra.reasoning.reflexion import apply_reflexion
+import l1
 
 
 # =============================================================================
@@ -142,52 +138,14 @@ def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
     """Emit a latent thinking trace event based on the execution profile."""
 
     try:
-        profile_name = ctx.profile_name or ctx.config.profile_id
-    except Exception:
-        return
-
-    try:
-        get_profile = getattr(config_profiles, "get_profile", None)
-        if callable(get_profile):
-            spec = get_profile(profile_name)
-        else:
-            spec = getattr(config_profiles, profile_name, None)
-        if spec is None:
-            return
-    except Exception:
-        return
-
-    mode = getattr(spec, "reasoning_mode", None)
-    depth = getattr(spec, "drafting_depth", 1) or 1
-
-    try:
-        sections = getattr(result.drafting, "sections", []) or []
-        if not sections:
-            return
-        text = (sections[0].body or "").strip()
-        if not text:
-            return
-
-        trace = None
-        mode_str = str(mode) if mode is not None else ""
-        if "tot" in mode_str.lower():
-            path, explored = tree_search(text, max_depth=2, branching=max(1, depth))
-            trace = [n.content for n in path]
-        elif "react" in mode_str.lower():
-            steps = run_react_loop(text, max_steps=max(1, depth))
-            trace = [s.thought for s in steps]
-        else:
-            trace = expand_chain_of_thought(text, steps=max(1, depth))
-
-        if not trace:
-            return
-
+        l1_plan = l1.generate_latent_thinking_plan(result=result, ctx=ctx)
+        
         record_event(
             "l2.latent_thinking",
             {
-                "profile": profile_name,
-                "reasoning_mode": mode_str,
-                "trace_length": len(trace),
+                "profile": l1_plan.profile_name,
+                "reasoning_mode": l1_plan.reasoning_mode,
+                "trace_length": len(l1_plan.trace),
             },
         )
     except Exception:
@@ -327,7 +285,7 @@ async def _execute_rag_reasoning(
 
     Runs between retrieval and drafting:
 
-        1. Build a RAG prompt using build_rag_prompt.
+        1. Call L1 to generate RAG reasoning plan.
         2. Call SemanticQAAgent.run_rag_reasoning to reason over the retrieved
            evidence (no additional retrieval).
         3. Inject the reasoning as a synthetic Evidence item at the end of
@@ -342,14 +300,10 @@ async def _execute_rag_reasoning(
 
         rag_plan: Optional[RAGPlan] = getattr(plans, "rag", None)
 
-        prompt = build_rag_prompt(
-            plan=rag_plan,
+        l1_plan = l1.plan_rag_reasoning(
+            rag_plan=rag_plan,
             ctx=ctx,
             evidence=evidence_seq,
-            prompt_id="system.rag.reasoning",
-            layer="L2",
-            agent="rag",
-            model_tier="balanced",
         )
 
         agent = SemanticQAAgent(
@@ -358,7 +312,7 @@ async def _execute_rag_reasoning(
             meta_profile=ctx.meta_profile_snapshot,
         )
         reasoning_text = await agent.run_rag_reasoning(
-            prompt=prompt,
+            prompt=l1_plan.prompt,
             evidence=evidence_seq,
             job=ctx.job,
             resume=ctx.resume,
