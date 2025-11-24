@@ -17,9 +17,7 @@ from core.models.models import (
     DraftingResult,
     DraftSection,
     QAResult,
-    QACheckResult,
     SafetyResult,
-    SafetyFinding,
     L2ResultBundle,
     RAGPlan,
     RetrievalConfig,
@@ -27,7 +25,6 @@ from core.models.models import (
 )
 
 from runtime.observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
-import config_profiles_v10_10 as config_profiles
 from meta.schema_validation import validate_schema_version
 from meta.retrieval import run_rag_retrieval
 from cognitive_agents import (
@@ -36,7 +33,6 @@ from cognitive_agents import (
     SemanticQAAgent,
     ConstitutionalSafetyAgent,
     HYDEQueryAgent,
-    QACouncilAgent,
 )
 from eval.health.adapter import collect_error_events
 from eval.health.failure_detector import detect_repeated_failures
