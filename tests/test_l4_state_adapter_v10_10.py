@@ -15,7 +15,7 @@ usage.
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-from core.l4 import _prune_memory, record_correction_event  # type: ignore[import]
+from l4 import _prune_memory, record_correction_event  # type: ignore[import]
 
 
 @dataclass
