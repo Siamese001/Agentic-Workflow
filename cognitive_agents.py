@@ -10,10 +10,8 @@ from core.models.models import (
     AgentCard,
     AgentRole,
     StrategyResult,
-    StrategyBranch,
     RAGResult,
     DraftingResult,
-    DraftSection,
     QAResult,
     QAFinding,
     SafetyResult,
@@ -30,7 +28,7 @@ from runtime.observability import (
 )
 from meta_profile import MetaProfileSnapshot
 from prompt_builder import PromptInstance
-import l1
+import l1_planning
 
 
 # =============================================================================
@@ -249,52 +247,11 @@ class StrategyLLMAgent(LLMBaseAgent):
             meta_profile_snapshot=self.meta_profile,
         )
 
-        l1_plan = l1.plan_strategy(
-            strategy_plan=strategy_plan,
+        from l2 import _execute_strategy as l2_execute_strategy
+        return await l2_execute_strategy(
+            plans=type('Plans', (), {'strategy': strategy_plan})(),
             ctx=ctx,
-            job=job,
-            resume=resume,
-            config=config,
         )
-
-        raw = self._call_llm(l1_plan.prompt)
-        text = (raw or "").strip()
-
-        branches: List[StrategyBranch] = []
-        try:
-            data = json.loads(text)
-            if isinstance(data, list):
-                for item in data:
-                    try:
-                        branches.append(
-                            StrategyBranch(
-                                id=str(item.get("id") or len(branches)),
-                                description=str(item.get("description") or ""),
-                                weight=float(item.get("weight", 1.0)),
-                            )
-                        )
-                    except Exception:
-                        continue
-            else:
-                raise ValueError("Strategy output must be a JSON list")
-        except Exception:
-            branches = [
-                StrategyBranch(
-                    id="default",
-                    description=text or "Default strategy branch",
-                    weight=1.0,
-                )
-            ]
-
-        result = StrategyResult(branches=branches)
-        record_event(
-            "strategy_completed",
-            {
-                "num_branches": len(branches),
-                "text_len": len(text),
-            },
-        )
-        return result
 
 
 # =============================================================================
@@ -333,56 +290,13 @@ class DraftingGuild(LLMBaseAgent):
             meta_profile_snapshot=self.meta_profile,
         )
 
-        l1_plan = l1.plan_draft(
-            drafting_plan=drafting_plan,
-            ctx=ctx,
+        from l2 import _execute_drafting as l2_execute_drafting
+        return await l2_execute_drafting(
+            plans=type('Plans', (), {'drafting': drafting_plan})(),
             strategy_result=strategy_result,
             rag_result=rag_result,
-            job=job,
-            resume=resume,
-            config=config,
+            ctx=ctx,
         )
-
-        raw = self._call_llm(l1_plan.prompt)
-        text = (raw or "").strip()
-
-        sections: List[DraftSection] = []
-        try:
-            data = json.loads(text)
-            if not isinstance(data, list):
-                raise ValueError("Drafting output must be a JSON list")
-
-            for item in data:
-                try:
-                    sections.append(
-                        DraftSection(
-                            id=str(item.get("id") or len(sections)),
-                            title=str(item.get("title") or ""),
-                            body=str(item.get("body") or ""),
-                            metadata=dict(item.get("metadata") or {}),
-                        )
-                    )
-                except Exception:
-                    continue
-        except Exception:
-            sections = [
-                DraftSection(
-                    id="full",
-                    title="Auto-generated Resume",
-                    body=text,
-                    metadata={},
-                )
-            ]
-
-        result = DraftingResult(sections=sections)
-        record_event(
-            "drafting_completed",
-            {
-                "num_sections": len(sections),
-                "text_len": len(text),
-            },
-        )
-        return result
 
 
 # =============================================================================
@@ -425,27 +339,14 @@ class SemanticQAAgent(LLMBaseAgent):
             meta_profile_snapshot=self.meta_profile,
         )
 
-        l1_plan = l1.plan_semantic_qa(
-            qa_plan=qa_plan,
+        from l2 import _execute_qa as l2_execute_qa
+        qa_result, _ = await l2_execute_qa(
+            plans=type('Plans', (), {'qa': qa_plan})(),
+            drafting_result=draft,
+            rag_result=rag,
             ctx=ctx,
-            draft=draft,
-            rag=rag,
         )
-
-        raw = self._call_llm(l1_plan.prompt)
-        text = (raw or "").strip()
-
-        findings = self._parse_qa_output(text, qa_plan)
-        result = QAResult(findings=findings)
-
-        record_event(
-            "qa_completed",
-            {
-                "num_findings": len(findings),
-                "text_len": len(text),
-            },
-        )
-        return result
+        return qa_result
 
     async def run_rag_reasoning(
         self,
@@ -462,13 +363,26 @@ class SemanticQAAgent(LLMBaseAgent):
         and returns the reasoning text. L2 turns this into a synthetic
         Evidence item.
         """
-        raw = self._call_llm(prompt)
+        ctx = ExecutionContext(
+            job=job,
+            resume=resume,
+            config=config,
+            routing_policy=self.routing_policy,
+            sandbox_config=self.sandbox,
+            meta_profile_snapshot=self.meta_profile,
+        )
+        l1_plan = l1_planning.plan_rag_reasoning(
+            rag_plan=None,
+            ctx=ctx,
+            evidence=evidence,
+        )
+        raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
         record_event(
             "rag_reasoning_completed",
             {
-                "prompt_id": prompt.prompt_id,
+                "prompt_id": l1_plan.prompt.prompt_id,
                 "evidence_count": len(list(evidence or [])),
                 "text_len": len(text),
             },
@@ -568,30 +482,14 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
             meta_profile_snapshot=self.meta_profile,
         )
 
-        l1_plan = l1.plan_safety_review(
-            safety_plan=safety_plan,
+        from l2 import _execute_safety as l2_execute_safety
+        return await l2_execute_safety(
+            plans=type('Plans', (), {'safety': safety_plan})(),
+            drafting_result=draft,
+            rag_result=rag,
+            qa_result=qa_result,
             ctx=ctx,
-            draft=draft,
-            rag=rag,
-            qa=qa_result,
         )
-
-        raw = self._call_llm(l1_plan.prompt)
-        text = (raw or "").strip()
-
-        findings = self._parse_safety_output(text, safety_plan)
-        result = SafetyResult(findings=findings)
-
-        record_event(
-            "safety_completed",
-            {
-                "num_findings": len(findings),
-                "num_high_severity": sum(
-                    1 for f in findings if f.severity.lower() == "high"
-                ),
-            },
-        )
-        return result
 
     def _parse_safety_output(self, raw: str, safety_plan: Any) -> List[SafetyFinding]:
         """
@@ -686,7 +584,7 @@ class HYDEQueryAgent(LLMBaseAgent):
         rag_plan: Any,  # RAGPlan; kept as Any to avoid circular typing issues.
         ctx: Any,  # ExecutionContext; passed through to prompt_builder.
     ) -> str:
-        l1_plan = l1.plan_hyde_query(
+        l1_plan = l1_planning.plan_hyde_query(
             hyde_plan=rag_plan,
             ctx=ctx,
         )
