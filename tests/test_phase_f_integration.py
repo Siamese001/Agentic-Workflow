@@ -35,7 +35,30 @@ from l4.temporal_kg import (
     create_experience_fact,
     create_application_fact,
 )
-from core.models.models import ExecutionContext
+from core.models.models import ExecutionContext, JobInput, ResumeInput, WorkflowConfig
+
+
+def _create_test_context(**kwargs):
+    """Helper to create ExecutionContext with required fields for tests."""
+    defaults = {
+        "job": JobInput(
+            title="Software Engineer",
+            role_type="engineering", 
+            seniority="mid",
+            posting_text="Looking for a software engineer"
+        ),
+        "resume": ResumeInput(
+            full_text="John Doe\nSoftware Engineer\nPython, JavaScript",
+            sections={}
+        ),
+        "config": WorkflowConfig(),
+        "prompt_registry": {},
+        "user_id": "user_123",
+        "job_id": "job_456",
+        "workflow_id": "wf_789",
+    }
+    defaults.update(kwargs)
+    return ExecutionContext(**defaults)
 
 
 class TestV6PromptIntegration:
@@ -44,10 +67,7 @@ class TestV6PromptIntegration:
     def test_build_v6_strategy_prompt(self):
         """Test v6 strategy prompt building."""
         # Create mock context
-        ctx = ExecutionContext(
-            user_id="user_123",
-            job_id="job_456",
-            workflow_id="wf_789",
+        ctx = _create_test_context(
         )
         
         job = Mock()
@@ -77,7 +97,7 @@ class TestV6PromptIntegration:
     
     def test_build_v6_rag_prompt(self):
         """Test v6 RAG prompt building."""
-        ctx = ExecutionContext(user_id="user_123")
+        ctx = _create_test_context()
         rag_plan = Mock()
         rag_plan.top_k = 10
         
@@ -89,7 +109,7 @@ class TestV6PromptIntegration:
     
     def test_v6_prompt_with_examples(self):
         """Test v6 prompts include examples."""
-        ctx = ExecutionContext()
+        ctx = _create_test_context()
         job = Mock()
         resume = Mock()
         config = Mock()
@@ -110,7 +130,7 @@ class TestV6PromptIntegration:
     
     def test_v6_prompt_without_examples(self):
         """Test v6 prompts can exclude examples."""
-        ctx = ExecutionContext()
+        ctx = _create_test_context()
         job = Mock()
         resume = Mock()
         config = Mock()
@@ -358,10 +378,7 @@ class TestEndToEndIntegration:
         mock_pinecone = Mock()
         mock_state_manager = Mock()
         
-        ctx = ExecutionContext(
-            user_id="user_123",
-            job_id="job_456",
-            workflow_id="wf_789",
+        ctx = _create_test_context(
             pinecone_adapter=mock_pinecone,
             state_manager=mock_state_manager,
         )
@@ -378,9 +395,7 @@ class TestEndToEndIntegration:
         mock_pinecone = Mock()
         mock_pinecone.build_namespace = Mock(return_value="user_123_job_456")
         
-        ctx = ExecutionContext(
-            user_id="user_123",
-            job_id="job_456",
+        ctx = _create_test_context(
             pinecone_adapter=mock_pinecone,
             rag_results=[{"id": "doc1"}, {"id": "doc2"}],
             temporal_kg_facts=[{"fact": "user has Python"}],
