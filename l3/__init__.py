@@ -84,6 +84,52 @@ class Workflow:
                 
         return results
 
+@dataclass
+class DAGResult:
+    """Result of a DAG execution."""
+    success: bool
+    results: Dict[str, NodeResult] = field(default_factory=dict)
+    error: Optional[str] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+async def run_dag(
+    nodes: List[WorkflowNode],
+    edges: List[Edge],
+    initial_context: Dict[str, Any]
+) -> DAGResult:
+    """Execute a DAG workflow.
+    
+    Args:
+        nodes: List of workflow nodes to execute
+        edges: List of edges defining dependencies
+        initial_context: Initial execution context
+        
+    Returns:
+        DAGResult with execution results
+    """
+    try:
+        workflow = Workflow(nodes, edges)
+        results = await workflow.execute(initial_context)
+        
+        # Check if any node failed
+        failed = any(r.status == NodeStatus.FAILED for r in results.values())
+        
+        return DAGResult(
+            success=not failed,
+            results=results,
+            error=None if not failed else "One or more nodes failed",
+            metadata={"node_count": len(nodes), "edge_count": len(edges)}
+        )
+    except Exception as e:
+        return DAGResult(
+            success=False,
+            results={},
+            error=str(e),
+            metadata={"node_count": len(nodes), "edge_count": len(edges)}
+        )
+
+
 # Re-export public interfaces
 __all__ = [
     'NodeStatus',
@@ -91,4 +137,6 @@ __all__ = [
     'WorkflowNode',
     'Edge',
     'Workflow',
+    'DAGResult',
+    'run_dag',
 ]

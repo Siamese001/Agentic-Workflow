@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from cognitive_agents import (
+from l2.agents import (
     LLMBaseAgent,
     StrategyLLMAgent,
     DraftingGuild,

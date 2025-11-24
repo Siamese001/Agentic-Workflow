@@ -1,10 +1,19 @@
-# FILE: observability.py
-"""Compatibility shim for observability.
+"""Observability - Runtime Layer
 
-This module now forwards to the runtime.observability package, which
-contains the actual implementations for spans, events, emitters, and
-collectors. Existing imports of `observability` continue to work.
+This module provides observability compatibility shim.
+
+Layer: Runtime/Infrastructure
+Responsibilities:
+- Forward to runtime.observability
+- Maintain backward compatibility
+- Provide unified observability API
+
+Non-responsibilities:
+- Business logic
+- Layer-specific operations
 """
+
+# FILE: observability.py
 
 from __future__ import annotations
 

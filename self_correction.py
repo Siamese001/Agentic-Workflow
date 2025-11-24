@@ -1,37 +1,22 @@
-# FILE: 10_10/self_correction.py
-"""
-Self-Correction Surfaces (v10_10)
-=================================
+"""Self-Correction - Meta Layer
 
-v10_10 refactor of the v10_9 self_correction module.
+This module provides self-correction surface evaluation.
 
-This version:
-
-    • NO longer operates on raw state dicts.
-    • NO longer uses SelfCorrectionSurface enums or SafetyIssue types.
-    • Operates directly on typed L2 results:
-        - StrategyResult
-        - RAGResult
-        - DraftingResult
-        - QAResult
-        - SafetyResult
-
-    • Provides:
-        - evaluate_all_surfaces(...) → list[CorrectionSignal]
-        - aggregate_correction_signals(...) → best CorrectionSignal | None
-
+Layer: Meta
 Responsibilities:
-    • Detect when a re-run of part of the pipeline would likely improve quality.
-    • NEVER call LLMs or tools.
-    • NEVER mutate WorkflowState.
-    • Provide deterministic, side-effect-free advice to the L3 workflow graph.
+- Evaluate L2 results for quality issues
+- Detect correction opportunities
+- Emit CorrectionSignal objects
+- Deterministic, side-effect-free analysis
 
-This module is purely META-layer logic:
-
-    - It analyzes L2 outputs (StrategyResult, etc.).
-    - It emits structured CorrectionSignal objects.
-    - L3 (workflow_graph) decides whether/how to apply corrections.
+Non-responsibilities:
+- LLM calls
+- Tool execution
+- State mutation
+- Correction application (L3 decides)
 """
+
+# FILE: self_correction.py
 
 from __future__ import annotations
 

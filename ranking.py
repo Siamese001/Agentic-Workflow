@@ -1,32 +1,29 @@
-# FILE: ranking.py
-"""
-Ranking Utilities (v10_10 · Phase 3 — FINAL)
-============================================
+"""Ranking Utilities - Meta Layer
 
+This module provides deterministic ranking and fusion functions.
+
+Layer: Meta
 Responsibilities:
-    • Provide deterministic, side-effect-free ranking functions.
-    • Dict-based API (backward-compatible):
-          - bm25(items)
-          - dense(items)
-          - hybrid(items)
-          - fuse_ranked_groups(groups, ...)
-          - rank_documents(items, strategy=...)
-    • Evidence-based API (for RAG):
-          - normalize_evidence_scores(...)
-          - deduplicate_evidence(...)
-          - rank_evidence(...)
-          - fuse_evidence_groups_rrf(...)
-          - build_rag_result(...)
+- BM25 ranking
+- Dense ranking
+- Hybrid ranking
+- RRF fusion
+- Evidence normalization and deduplication
+- Deterministic, side-effect-free operations
 
-This module is intentionally “META” in the L1–L5 model: it deals purely
-with ranking, scoring, and evidence fusion. No LLM calls; no state mutation.
+Non-responsibilities:
+- LLM calls
+- State mutation
+- Retrieval execution
+- Orchestration
 """
+
+# FILE: ranking.py
 
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 from core.models.models import Evidence, RetrievalConfig, RAGPlan, RAGResult, RankingEvent
 from runtime.observability import emit_telemetry_event, emit_ranking_event
-
 
 # =============================================================================
 # 1. INTERNAL HELPERS (DICT-BASED SCORING)
