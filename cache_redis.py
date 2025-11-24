@@ -1,4 +1,18 @@
-"""Provides Redis-based caching so repeated resume improvement runs can reuse LLM outputs, reducing latency and cost without changing business logic."""
+"""Redis Cache - Infrastructure Layer
+
+This module provides Redis-based caching for LLM outputs.
+
+Layer: Infrastructure/Meta
+Responsibilities:
+- Redis client initialization
+- Cache operations
+- Health checks
+- Error handling
+
+Non-responsibilities:
+- Business logic
+- Layer-specific operations
+"""
 
 from __future__ import annotations
 

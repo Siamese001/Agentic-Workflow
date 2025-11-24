@@ -1,6 +1,23 @@
-"""Plans how the system should rewrite a resume so later steps stay aligned to the job, focus on high-value experience, and follow a clear, personalized workflow."""
+"""L1 - Planning Layer
 
-# FILE: 10_10/l1.py
+This module provides high-level workflow planning functions that analyze
+job and resume inputs to produce execution plans.
+
+Layer: L1 (Planning/Cognition)
+Responsibilities:
+- Analyze job and resume complexity
+- Generate workflow plans (strategy, RAG, drafting, QA, safety)
+- Determine execution profiles
+- Produce pure, stateless plans
+
+Non-responsibilities:
+- Execution (L2)
+- Orchestration (L3)
+- State management (L4)
+- Policy enforcement (L5)
+"""
+
+# FILE: workflow_planning.py
 
 from __future__ import annotations
 

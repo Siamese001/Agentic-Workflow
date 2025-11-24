@@ -1,30 +1,31 @@
+"""L3 - Orchestration Layer
+
+This module provides the main workflow graph orchestration with correction loops.
+
+Layer: L3 (Orchestration)
+Responsibilities:
+- DAG construction and execution
+- Concurrency control
+- Typed node definitions
+- Correction loop orchestration
+- Error propagation and recovery
+
+Non-responsibilities:
+- Planning (L1)
+- LLM execution (L2)
+- State mutation (L4)
+- Safety evaluation (L5)
+
+Strict L3 constraints:
+- No LLM calls
+- No retrieval logic
+- No ranking logic
+- No prompting
+- No state mutation
+- No safety evaluation
+"""
+
 # FILE: workflow_graph.py
-# PHASE 3 — FULL ORCHESTRATION GRAPH RESTORE (WITH CORRECTION LOOP)
-#
-# Strict L3 orchestration only:
-#   • No LLM calls
-#   • No retrieval logic
-#   • No ranking logic
-#   • No prompting
-#   • No state mutation
-#   • No safety evaluation
-#
-# Responsibilities:
-#   • DAG construction
-#   • Concurrency rules
-#   • Typed node definitions
-#   • Retrieval parallelization
-#   • Bounded correction loop orchestration
-#
-# This module wires together the L2 execution primitives into a canonical,
-# deterministic workflow graph with a bounded correction loop across all
-# surfaces (strategy, retrieval, drafting, QA, safety).
-#
-# Layering:
-#   • This is strictly L3. It owns orchestration and nothing else.
-#   • L2 owns all cognition (LLM, RAG, tools).
-#   • L4 owns state mutation.
-#   • L5 owns safety enforcement.
 
 from __future__ import annotations
 

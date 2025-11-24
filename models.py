@@ -1,28 +1,32 @@
+"""Core Models - Data Layer
+
+This module defines all structured dataclasses and types used across layers.
+
+Layer: Core/Data
+Responsibilities:
+- Define all dataclasses and types
+- Provide cross-layer contracts
+- Ensure type safety
+
+Non-responsibilities:
+- Business logic
+- I/O operations
+- Layer-specific logic
+
+Contents:
+- Core workflow dataclasses
+- Plans / Results (Strategy, RAG, Drafting, QA, Safety)
+- RetrievalConfig
+- PromptDefinition / PromptVersion
+- ExecutionProfile
+- Telemetry models
+- CostSnapshot
+- PolicyDecisionEvent
+- Skill / Domain classifier results
+- CouncilVote + CorrectionLoopState
+"""
+
 # FILE: models.py
-"""
-Unified Runtime Models (v10_10 · Phase 3 — FINAL)
-=================================================
-
-This file defines all structured dataclasses and Pydantic models
-used throughout the v10_10 agentic runtime:
-
-    • Core workflow dataclasses
-    • Plans / Results (Strategy, RAG, Drafting, QA, Safety)
-    • RetrievalConfig
-    • PromptDefinition / PromptVersion
-    • ExecutionProfile
-    • Telemetry models (Phase 3 typed events)
-    • CostSnapshot
-    • PolicyDecisionEvent
-    • Skill / Domain classifier results
-    • CouncilVote + CorrectionLoopState (Phase-3 DAG)
-
-Design constraints:
-
-    1. This module is *data-only* (no I/O, no business logic).
-    2. Models are intentionally verbose and explicit.
-    3. All cross-layer contracts must be defined here (or imported here).
-"""
 
 from __future__ import annotations
 

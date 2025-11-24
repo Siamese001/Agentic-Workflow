@@ -1,25 +1,24 @@
-# FILE: 10_10/runtime_utils.py
-"""
-Unified Runtime Utilities (v10_10) — INFRASTRUCTURE LAYER
-=========================================================
+"""Runtime Utilities - Infrastructure Layer
 
-This module is the v10_10 runtime utility layer.
+This module provides core runtime infrastructure.
 
+Layer: Runtime/Infrastructure
 Responsibilities:
-    1. Exception hierarchy for runtime surfaces.
-    2. SandboxConfig + get_sandbox() for logical isolation.
-    3. PredictiveCacheManager for in-memory predictive/semantic caching.
-    4. invoke_model() unified LLM gateway (OpenAI + Anthropic).
+- Exception hierarchy
+- SandboxConfig and isolation
+- PredictiveCacheManager
+- invoke_model() LLM gateway
+- Provider routing
 
-Design constraints:
-    • No planning (L1).
-    • No tool logic besides LLM call wrappers (L2).
-    • No DAG/orchestration (L3).
-    • No state mutation of WorkflowState (L4).
-    • No safety/policy decisions (L5).
-    • No meta-learning or telemetry aggregation (telemetry is delegated
-      to observability.py via record_event / record_exception).
+Non-responsibilities:
+- Planning (L1)
+- Tool execution logic (L2)
+- DAG/orchestration (L3)
+- State mutation (L4)
+- Safety/policy (L5)
 """
+
+# FILE: runtime_utils.py
 
 from __future__ import annotations
 
