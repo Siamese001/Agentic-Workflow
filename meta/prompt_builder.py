@@ -43,7 +43,7 @@ from core.models.models import (
     PromptMeta,
     PromptVersion,
 )
-from prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
+from prompts.prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
 from infra.context_engine.assembly import assemble_context
 from infra.context_engine.pinned import PinnedItem
 from infra.context_engine.relevance import ContextItem
@@ -821,3 +821,6 @@ def build_safety_prompt(
         envelope=envelope,
         variables=variables,
     )
+
+
+

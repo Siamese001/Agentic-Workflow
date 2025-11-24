@@ -446,3 +446,6 @@ class PineconeAdapter:
         
         self.upsert_records(records=records, namespace=namespace)
         return ids
+
+
+

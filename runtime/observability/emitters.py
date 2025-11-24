@@ -224,3 +224,6 @@ def emit_resilience_trace_event(
     attrs["workflow_id"] = workflow_id
     attrs["scenario_id"] = scenario_id
     emit_resilience_event(name, attrs)
+
+
+

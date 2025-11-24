@@ -30,3 +30,6 @@ def aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:
         "fail_count": float(fail_count),
         "total": float(total),
     }
+
+
+

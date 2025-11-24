@@ -32,3 +32,6 @@ def compute_uncertainty(
 
     score = 0.3 * spread + 0.4 * qa_factor + 0.3 * safety_factor
     return max(0.0, min(1.0, score))
+
+
+

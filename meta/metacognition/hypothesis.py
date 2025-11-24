@@ -48,3 +48,6 @@ def generate_initial_hypotheses(task: str, rag_result: Any, agent_card: Any) -> 
         )
 
     return hypotheses
+
+
+

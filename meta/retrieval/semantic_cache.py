@@ -31,3 +31,6 @@ def write_semantic_cache(key: str, value: Any, cfg: RetrievalConfig) -> None:
     client = init_redis_client(url=redis_cfg.url)
     set_llm_cache(client, key, value, ttl_s=redis_cfg.ttl_s)
 
+
+
+

@@ -22,3 +22,6 @@ def clear_events() -> None:
     """Clear all collected agentic events."""
 
     EVENTS.clear()
+
+
+

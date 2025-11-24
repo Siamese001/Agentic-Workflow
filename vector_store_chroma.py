@@ -154,3 +154,6 @@ def chroma_semantic_cache_upsert(
         )
     except Exception as exc:  # pragma: no cover - network/dependency dependent
         raise ChromaClientError(f"Chroma upsert failed: {exc}") from exc
+
+
+

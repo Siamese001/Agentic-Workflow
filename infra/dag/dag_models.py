@@ -35,3 +35,6 @@ class Graph:
 
     def predecessors(self, node_id: str) -> List[Node]:
         return [self.nodes[e.source] for e in self.edges if e.target == node_id]
+
+
+

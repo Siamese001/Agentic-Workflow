@@ -22,3 +22,6 @@ class DAGNode(BaseModel):
     agent_type: Optional[str] = None
     required_capabilities: List[str] = Field(default_factory=list)
     preferred_agent_ids: List[str] = Field(default_factory=list)
+
+
+

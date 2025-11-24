@@ -78,3 +78,6 @@ class PolicyDecision(BaseModel):
 
     # Free-form, structured details (e.g., matched snippets, tool flags).
     details: Dict[str, Any] = Field(default_factory=dict)
+
+
+

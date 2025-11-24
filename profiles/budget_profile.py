@@ -12,3 +12,6 @@ class BudgetProfile(BaseModel):
 
     max_cost_usd: float = Field(default=0.10, ge=0.0)
     max_latency_ms: int = Field(default=3000, ge=0)
+
+
+

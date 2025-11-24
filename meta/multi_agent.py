@@ -380,3 +380,6 @@ def extract_council_arbitration(result: Dict[str, Any]) -> Dict[str, Any]:
         "vote_count": len(typed.get("votes", [])),
         "metadata": dict(metadata),
     }
+
+
+

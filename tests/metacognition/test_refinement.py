@@ -11,3 +11,9 @@ def test_refine_marks_very_low_confidence_as_discarded():
     refined = refine_low_confidence(hs, threshold=0.4)
     assert refined[0].content.startswith("[DISCARDED_CANDIDATE]")
     assert "needs further evidence" in refined[1].content
+
+
+
+
+
+

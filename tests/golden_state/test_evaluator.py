@@ -20,3 +20,9 @@ def test_evaluate_case_output_basic():
     evaluated = evaluate_case_output(case, output)
     assert isinstance(evaluated, GoldenOutput)
     assert evaluated.final_verdict in {"pass", "fail", "borderline"}
+
+
+
+
+
+

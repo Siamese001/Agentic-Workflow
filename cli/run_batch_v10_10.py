@@ -26,7 +26,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple, cast
 
-from main_v10_10 import (
+from cli.main_v10_10 import (
     run_workflow,
     RRFStrategy,
     TelemetryRoutingMode,
@@ -860,3 +860,7 @@ def main(argv: Optional[Sequence[str]] = None) -> None:
 
 if __name__ == "__main__":  # pragma: no cover - CLI entrypoint
     main()
+
+
+
+

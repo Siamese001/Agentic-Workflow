@@ -29,3 +29,6 @@ def expand_chain_of_thought(seed: str, steps: int = 3) -> List[str]:
     for i in range(0, len(tokens), chunk_size):
         thoughts.append(" ".join(tokens[i : i + chunk_size]))
     return thoughts[:steps]
+
+
+
