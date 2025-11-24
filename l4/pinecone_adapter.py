@@ -21,7 +21,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence
-from datetime import datetime
+from datetime import datetime, UTC
 import hashlib
 import os
 
@@ -135,7 +135,7 @@ class PineconeAdapter:
         if timestamp:
             parts.append(timestamp.strftime("%Y%m%d%H%M%S"))
         else:
-            parts.append(datetime.utcnow().strftime("%Y%m%d%H%M%S"))
+            parts.append(datetime.now(UTC).strftime("%Y%m%d%H%M%S"))
             
         return "_".join(parts)
     
@@ -433,7 +433,7 @@ class PineconeAdapter:
             # Build metadata
             metadata = metadata_list[i].copy() if metadata_list else {}
             metadata["text"] = text
-            metadata["timestamp"] = datetime.utcnow().isoformat()
+            metadata["timestamp"] = datetime.now(UTC).isoformat()
             metadata["record_type"] = record_type
             
             records.append(

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-"""Defines simple routing rules that pick which specialist agents handle planning, drafting, review, and safety so each resume step is done by the right expertise."""
-
 from typing import List
 
 from profiles.agent_profile import AgentCard
 from core.agent_registry import AgentRegistry
+
+"""Defines simple routing rules that pick which specialist agents handle planning, drafting, review, and safety so each resume step is done by the right expertise."""
 
 
 def choose_agents_for_task(task_type: str, registry: AgentRegistry) -> List[AgentCard]:

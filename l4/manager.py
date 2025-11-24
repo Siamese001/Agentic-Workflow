@@ -6,7 +6,7 @@ Implements the core state management functionality with strict immutability.
 from __future__ import annotations
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Callable, Type, cast
 from dataclasses import dataclass, field, asdict
-from datetime import datetime, timedelta
+from datetime import datetime, UTC, timedelta
 import uuid
 import json
 import logging
@@ -251,7 +251,7 @@ class StateManager(Generic[T]):
     
     def _prune_history(self) -> None:
         """Remove old snapshots based on retention policy."""
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         min_timestamp = now - self._max_age
         
         # Find the index of the first snapshot to keep

@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, TypeVar
 from dataclasses import dataclass, field
 import logging
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 
 from .types import (
     SafetyContext,
@@ -185,7 +185,7 @@ class SafetyEngine:
         result = PolicyResult(
             decisions=decisions,
             metadata={
-                "evaluated_at": datetime.utcnow().isoformat(),
+                "evaluated_at": datetime.now(UTC).isoformat(),
                 "policy_count": len(decisions),
                 "finding_count": sum(len(d.findings) for d in decisions),
                 "severity_threshold": threshold.value,
