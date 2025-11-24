@@ -201,16 +201,21 @@ def test_run_dag_builds_expected_final_state_patch(
         {"id": "s1", "category": "cat", "severity": "low", "message": "ok"},
     ]
 
-    # Correction signals should include both per-surface and aggregate entries.
+    # Correction signals should include per-surface, aggregate, and AIS-derived entries.
     assert isinstance(patch["correction_signals"], list)
-    assert len(patch["correction_signals"]) == 2
-    assert patch["correction_signals"][0]["surface"] == "l2.qa"
-    assert patch["correction_signals"][1]["aggregate"] is True
+    # At least one surface-level and one aggregate self-correction signal
+    assert any(s.get("surface") == "l2.qa" for s in patch["correction_signals"])
+    assert any(s.get("aggregate") is True for s in patch["correction_signals"])
+    # And at least one AIS-derived signal (we tagged by the presence of error_code/message).
+    assert any(s.get("reason") == "err" or s.get("message") == "err" for s in patch["correction_signals"])
 
     assert isinstance(patch["ais_error_events"], list)
     assert patch["ais_error_events"][0]["code"] == "E"
     assert "safety_passed" in patch
     assert isinstance(patch["safety_passed"], bool)
+
+    # DAGResult.corrected should reflect that signals (self-correction or AIS) exist.
+    assert result.corrected is True
 
 
 @patch("l3.collect_error_events", side_effect=Exception("boom"))
@@ -236,6 +241,9 @@ def test_run_dag_tolerates_correction_and_ais_failures(
     assert "ais_error_events" in patch
     assert "safety_passed" in patch
     assert isinstance(patch["safety_passed"], bool)
+    # With both correction evaluation and AIS collection failing, no signals
+    # should be recorded and the corrected flag should remain False.
+    assert result.corrected is False
 
 
 @patch("l3.orchestrate_execution")
