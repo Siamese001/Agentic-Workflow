@@ -25,21 +25,6 @@ from core.models.models import (
 from core.routing import RoutingPolicy
 from runtime.runtime_utils import invoke_model, SandboxConfig
 from runtime.observability import (
-    emit_node_event,
-    emit_telemetry_event,
-    emit_ranking_event,
-    emit_cost_snapshot,
-    emit_golden_eval_event,
-    emit_scenario_start_event,
-    emit_scenario_end_event,
-    emit_scenario_simulation_event,
-    emit_council_arbitration_event,
-    emit_resilience_event,
-    emit_resilience_trace_event,
-    start_span,
-    end_span,
-    clear_events,
-    get_all_events,
     record_event,
     record_exception,
 )
@@ -275,7 +260,6 @@ class StrategyLLMAgent(LLMBaseAgent):
         raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
-        # Try to parse structured strategy output; fallback to a simple branch.
         branches: List[StrategyBranch] = []
         try:
             data = json.loads(text)
@@ -294,7 +278,6 @@ class StrategyLLMAgent(LLMBaseAgent):
             else:
                 raise ValueError("Strategy output must be a JSON list")
         except Exception:
-            # Fallback: single generic branch.
             branches = [
                 StrategyBranch(
                     id="default",
@@ -363,7 +346,6 @@ class DraftingGuild(LLMBaseAgent):
         raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
-        # Try to parse as JSON list of sections.
         sections: List[DraftSection] = []
         try:
             data = json.loads(text)
@@ -383,7 +365,6 @@ class DraftingGuild(LLMBaseAgent):
                 except Exception:
                     continue
         except Exception:
-            # Fallback: a single section using the full text.
             sections = [
                 DraftSection(
                     id="full",
