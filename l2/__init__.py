@@ -22,66 +22,50 @@ from __future__ import annotations
 # Re-export execution functions from l2.execution
 from .execution import (
     execute_workflow_plans,
+    run_l2,
+    _execute_strategy,
+    _execute_retrieval,
+    _execute_drafting,
+    _execute_qa,
+    _execute_safety,
+    _maybe_run_hyde_query,
 )
-
-# Add missing functions expected by tests
-async def _execute_retrieval(plans, ctx):
-    """Execute retrieval step - stub for tests."""
-    from core.models.models import RAGResult, Evidence
-    
-    # Call the patched functions that tests expect
-    hyde_query = await _maybe_run_hyde_query(plans.rag if hasattr(plans, 'rag') else None, ctx)
-    
-    # Call run_rag_retrieval with expected parameters
-    result = run_rag_retrieval(
-        query="test query",
-        ctx=ctx,
-        retrieval_cfg=getattr(ctx, 'retrieval', None),
-        hyde_query=hyde_query,
-        council_vote=None
-    )
-    
-    return result
-
-async def _maybe_run_hyde_query(query, ctx):
-    """Maybe run HYDE query - stub for tests."""
-    return "hyde-generated-query"
-
-def run_rag_retrieval(*, query, ctx, retrieval_cfg, hyde_query, council_vote):
-    """Run RAG retrieval - stub for tests."""
-    from core.models.models import RAGResult
-    return RAGResult(evidence=[], used_hyde=False)
-
-def start_span(*args, **kwargs):
-    """Start observability span - stub for tests."""
-    import types
-    return types.SimpleNamespace()
-
-def end_span(*args, **kwargs):
-    """End observability span - stub for tests."""
-    pass
 
 # Re-export agents from l2.agents
 from .agents import (
+    LLMBaseAgent,
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,
     ConstitutionalSafetyAgent,
     HYDEQueryAgent,
+    QACouncilAgent,
 )
+
+# Re-export retrieval and observability for test compatibility
+from .execution import run_rag_retrieval
+from runtime.observability import start_span, end_span
 
 __all__ = [
     # Execution functions
     'execute_workflow_plans',
+    'run_l2',
+    '_execute_strategy',
     '_execute_retrieval',
+    '_execute_drafting',
+    '_execute_qa',
+    '_execute_safety',
     '_maybe_run_hyde_query',
-    'run_rag_retrieval',
-    'start_span',
-    'end_span',
     # Agents
+    'LLMBaseAgent',
     'StrategyLLMAgent',
     'DraftingGuild',
     'SemanticQAAgent',
     'ConstitutionalSafetyAgent',
     'HYDEQueryAgent',
+    'QACouncilAgent',
+    # Re-exports for test compatibility
+    'run_rag_retrieval',
+    'start_span',
+    'end_span',
 ]

@@ -48,7 +48,6 @@ from runtime.observability import (
 )
 from meta_profile import MetaProfileSnapshot
 from meta.prompt_builder import PromptInstance
-import l1
 
 
 # =============================================================================
@@ -164,13 +163,30 @@ class LLMBaseAgent:
                 f"Agent '{self.agent_card.agent_id}' is not allowed to use tool '{tool_name}'"
             )
 
-    def _call_llm(self, prompt: PromptInstance) -> str:
+    def _call_llm(self, prompt: Any) -> str:
         """
-        Execute a single LLM call for the given prompt instance.
+        Execute a single LLM call for the given prompt instance or string.
+        
+        Args:
+            prompt: Either a PromptInstance or a string prompt text
         """
+        # Handle string prompts by extracting text directly
+        if isinstance(prompt, str):
+            prompt_id = "direct_prompt"
+            prompt_text = prompt
+            layer = "L2"
+            agent = self.agent_card.agent_id if self.agent_card else "unknown"
+            variables: dict = {}
+        else:
+            prompt_id = getattr(prompt, "prompt_id", "unknown")
+            prompt_text = getattr(prompt, "rendered", str(prompt))
+            layer = getattr(prompt, "layer", "L2")
+            agent = getattr(prompt, "agent", self.agent_card.agent_id if self.agent_card else "unknown")
+            variables = getattr(prompt, "variables", {})
+        
         # Derive an optional complexity hint for routing from the plan.
         complexity: Optional[Any] = None
-        plan = prompt.variables.get("plan")
+        plan = variables.get("plan") if isinstance(variables, dict) else None
         if plan is not None and hasattr(plan, "complexity"):
             complexity_val = getattr(plan, "complexity", None)
             # Convert to ComplexityLevel if it's a string
@@ -186,7 +202,7 @@ class LLMBaseAgent:
         # Select the concrete model.
         try:
             model = self.routing_policy.select_model(
-                task=prompt.prompt_id,
+                task=prompt_id,
                 complexity=complexity,
                 meta_profile=self.meta_profile,
             )
@@ -197,10 +213,10 @@ class LLMBaseAgent:
         record_event(
             "llm_call_start",
             {
-                "prompt_id": prompt.prompt_id,
+                "prompt_id": prompt_id,
                 "model": getattr(model, "name", str(model)),
-                "layer": prompt.layer,
-                "agent": prompt.agent,
+                "layer": layer,
+                "agent": agent,
                 "agent_id": self.agent_card.agent_id,
                 "agent_role": self.agent_card.role.value,
                 "agent_capabilities": list(self.agent_card.capabilities or []),
@@ -208,8 +224,6 @@ class LLMBaseAgent:
         )
 
         try:
-            # Convert PromptInstance to string for invoke_model
-            prompt_text = prompt.rendered if hasattr(prompt, 'rendered') else str(prompt)
             raw = invoke_model(
                 model=model,
                 prompt=prompt_text,
@@ -218,10 +232,10 @@ class LLMBaseAgent:
             record_event(
                 "llm_call_success",
                 {
-                    "prompt_id": prompt.prompt_id,
+                    "prompt_id": prompt_id,
                     "model": getattr(model, "name", str(model)),
-                    "layer": prompt.layer,
-                    "agent": prompt.agent,
+                    "layer": layer,
+                    "agent": agent,
                     "agent_id": self.agent_card.agent_id,
                     "agent_role": self.agent_card.role.value,
                     "agent_capabilities": list(self.agent_card.capabilities or []),
@@ -233,10 +247,10 @@ class LLMBaseAgent:
             record_event(
                 "llm_call_failure_event",
                 {
-                    "prompt_id": prompt.prompt_id,
+                    "prompt_id": prompt_id,
                     "model": getattr(model, "name", str(model)),
-                    "layer": prompt.layer,
-                    "agent": prompt.agent,
+                    "layer": layer,
+                    "agent": agent,
                     "agent_id": self.agent_card.agent_id,
                     "agent_role": self.agent_card.role.value,
                     "agent_capabilities": list(self.agent_card.capabilities or []),
@@ -384,7 +398,7 @@ class SemanticQAAgent(LLMBaseAgent):
 
     async def run_rag_reasoning(
         self,
-        prompt: PromptInstance,
+        prompt: Any,  # Can be PromptInstance or str
         evidence: Sequence[Evidence],
         job: Any,
         resume: Any,
@@ -393,31 +407,21 @@ class SemanticQAAgent(LLMBaseAgent):
         """
         Phase-3 RAG reasoning.
 
-        L2 passes a pre-built RAG prompt; this method simply calls the LLM
+        L2 passes a pre-built prompt; this method simply calls the LLM
         and returns the reasoning text. L2 turns this into a synthetic
         Evidence item.
+        
+        Note: L2 agents do not call L1. The prompt is passed directly.
         """
-        ctx = ExecutionContext(
-            job=job,
-            resume=resume,
-            config=config,
-            prompt_registry={},
-            routing_policy=self.routing_policy,
-            sandbox_config=self.sandbox,
-            meta_profile_snapshot=self.meta_profile,
-        )
-        l1_plan = l1.plan_rag_reasoning(
-            rag_plan=None,
-            ctx=ctx,
-            evidence=evidence,
-        )
-        raw = self._call_llm(l1_plan.prompt)
+        # _call_llm now handles both string and PromptInstance
+        raw = self._call_llm(prompt)
         text = (raw or "").strip()
 
+        prompt_id = getattr(prompt, "prompt_id", "rag_reasoning") if not isinstance(prompt, str) else "rag_reasoning"
         record_event(
             "rag_reasoning_completed",
             {
-                "prompt_id": l1_plan.prompt.prompt_id,
+                "prompt_id": prompt_id,
                 "evidence_count": len(list(evidence or [])),
                 "text_len": len(text),
             },
@@ -620,17 +624,34 @@ class HYDEQueryAgent(LLMBaseAgent):
         rag_plan: Any,  # RAGPlan; kept as Any to avoid circular typing issues.
         ctx: Any,  # ExecutionContext; passed through to prompt_builder.
     ) -> str:
-        l1_plan = l1.plan_hyde_query(
-            hyde_plan=rag_plan,
-            ctx=ctx,
-        )
-        raw = self._call_llm(l1_plan.prompt)
+        """Generate a HYDE query without calling L1.
+        
+        Note: L2 agents do not call L1. The HYDE prompt is built directly
+        from the context and RAG plan.
+        """
+        # Build HYDE prompt directly (no L1 call)
+        job = getattr(ctx, "job", None)
+        resume = getattr(ctx, "resume", None)
+        
+        job_title = getattr(job, "title", "") if job else ""
+        job_text = getattr(job, "posting_text", "") if job else ""
+        resume_summary = getattr(resume, "summary", "") if resume else ""
+        
+        hyde_prompt_text = f"""Generate a hypothetical ideal candidate description for this job:
+Job Title: {job_title}
+Job Description: {job_text[:500] if job_text else 'N/A'}
+Candidate Summary: {resume_summary[:300] if resume_summary else 'N/A'}
+
+Write a short paragraph describing the ideal candidate's qualifications."""
+
+        # Pass string directly to _call_llm (it handles both string and PromptInstance)
+        raw = self._call_llm(hyde_prompt_text)
         text = (raw or "").strip()
 
         record_event(
             "hyde_query_completed",
             {
-                "prompt_id": l1_plan.prompt.prompt_id,
+                "prompt_id": "hyde_query",
                 "text_len": len(text),
             },
         )
