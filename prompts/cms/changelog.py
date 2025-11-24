@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -28,7 +28,7 @@ def record_change(prompt_id: str, version: str, user: str, diff: Dict[str, Any])
         "version": version,
         "user": user,
         "diff": diff,
-        "ts": datetime.utcnow().isoformat() + "Z",
+        "ts": datetime.now(UTC).isoformat() + "Z",
     }
     path = _changelog_path(prompt_id)
     with path.open("a", encoding="utf-8") as f:

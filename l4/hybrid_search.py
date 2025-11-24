@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 @dataclass
@@ -342,7 +342,7 @@ class HybridSearchExecutor:
             if tf.recent_only:
                 # Recent N days
                 from datetime import timedelta
-                now = datetime.utcnow()
+                now = datetime.now(UTC)
                 start = now - timedelta(days=tf.recent_days)
                 filter_dict[tf.field] = {"$gte": start.isoformat()}
             else:

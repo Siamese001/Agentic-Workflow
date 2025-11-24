@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Any, Awaitable, Callable, Dict, Optional, Type, TypeVar, Generic
 
 from l4.manager import StateManager
@@ -69,7 +69,7 @@ class WorkflowContext(Generic[TState]):
         self.state_manager = state_manager
         self.safety_system = safety_system
         self.metadata: Dict[str, Any] = metadata or {}
-        self.start_time = start_time or datetime.utcnow()
+        self.start_time = start_time or datetime.now(UTC)
 
         self._error_handlers: Dict[Type[BaseException], Callable[[BaseException], Awaitable[None]]] = {}
 
@@ -104,7 +104,7 @@ class WorkflowContext(Generic[TState]):
                     "workflow_id": self.workflow_id,
                     "node_id": node_id,
                     "phase": phase,
-                    "timestamp": datetime.utcnow().isoformat(),
+                    "timestamp": datetime.now(UTC).isoformat(),
                 },
             )
         except Exception as exc:  # noqa: BLE001
@@ -201,7 +201,7 @@ class WorkflowContext(Generic[TState]):
         result = NodeExecutionResult[Any](
             node_id=node_id,
             status=NodeStatus.RUNNING,
-            start_time=datetime.utcnow(),
+            start_time=datetime.now(UTC),
         )
 
         try:
@@ -253,7 +253,7 @@ class WorkflowContext(Generic[TState]):
             await self._dispatch_error(wrapped)
             raise wrapped
         finally:
-            result.end_time = datetime.utcnow()
+            result.end_time = datetime.now(UTC)
 
     async def rollback_to_snapshot(self, snapshot_id: str) -> None:
         """Request a rollback to a prior snapshot via the state manager."""

@@ -158,7 +158,7 @@ class SelfCorrectionEngine:
                 improved_output=improved_output,
                 quality_score_before=self._calculate_quality_score(output, context),
                 quality_score_after=new_quality_score,
-                timestamp=str(datetime.utcnow())
+                timestamp=str(datetime.now(UTC))
             )
             self.correction_history.append(attempt)
             
@@ -364,7 +364,7 @@ def create_self_correction_provider() -> SelfCorrectionInjectionProvider:
 
 
 # Import datetime for timestamp generation
-from datetime import datetime
+from datetime import datetime, UTC
 
 __all__ = [
     'CorrectionType',
