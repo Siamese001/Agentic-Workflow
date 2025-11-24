@@ -638,6 +638,19 @@ class PromptDefinition(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
+class PromptMeta(BaseModel):
+    """L1 prompt-planning metadata consumed by prompt builders.
+
+    This model is intentionally data-only and describes how prompts *should* be
+    structured, not the rendered prompt text itself.
+    """
+
+    sections: List[Dict[str, Any]] = Field(default_factory=list)
+    injection_types: List[str] = Field(default_factory=list)
+    taxonomy: Dict[str, Any] = Field(default_factory=dict)
+    meta_bias: Dict[str, Any] = Field(default_factory=dict)
+
+
 class PolicyDecisionEvent(BaseModel):
     """Final L5 enforcement decision event.
 
@@ -836,6 +849,7 @@ class WorkflowPlanBundle(BaseModel):
     drafting: "DraftingPlan"
     qa: "QAPlan"
     safety: SafetyPlan
+    prompt_meta: Optional[PromptMeta] = None
     reason: Optional[str] = None
 
 
