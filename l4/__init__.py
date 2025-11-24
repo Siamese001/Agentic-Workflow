@@ -20,6 +20,12 @@ from .types import (
     StateRollbackError,
 )
 from .manager import StateManager
+from .pinecone_adapter import (
+    PineconeAdapter,
+    PineconeConfig,
+    VectorRecord,
+    VectorQueryResult,
+)
 
 
 def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
@@ -152,6 +158,10 @@ __all__ = [
     "StateValidationError",
     "StateRollbackError",
     "StateManager",
+    "PineconeAdapter",
+    "PineconeConfig",
+    "VectorRecord",
+    "VectorQueryResult",
     "_prune_memory",
     "record_correction_event",
     "apply_state_patch",

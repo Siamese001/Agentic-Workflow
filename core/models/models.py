@@ -267,12 +267,20 @@ class ExecutionContext(BaseModel):
     """
     ExecutionContext is a runtime snapshot passed down the stack.
 
+    PHASE C ENHANCEMENT: Now includes richer L4 state context:
+    - Pinecone adapter for vector operations
+    - State manager for temporal state
+    - RAG retrieval results
+    - Temporal KG views
+    - Scene assembly for planning
+
     In v10_10 it intentionally carries both:
 
         • Domain inputs needed by L2/L3 orchestration (job, resume, config,
           prompt registry, cache manager).
         • Runtime configuration and META-layer hints (retrieval config,
           routing policy, sandbox config, meta-profile snapshot, cost).
+        • L4 state adapters (Pinecone, StateManager, temporal views)
 
     It is treated as immutable by callers.
     """
@@ -287,6 +295,8 @@ class ExecutionContext(BaseModel):
     # High-level workflow identity
     workflow_id: str = ""
     profile_name: str = ""
+    user_id: str = ""  # For Pinecone namespace management
+    job_id: str = ""   # For Pinecone namespace management
 
     # Runtime configuration / META-layer hints
     retrieval: Optional["RetrievalConfig"] = None  # type: ignore[name-defined]
@@ -295,11 +305,34 @@ class ExecutionContext(BaseModel):
     meta_profile_snapshot: Any = None
     meta_profile: Any = None
 
+    # PHASE C: L4 State Adapters
+    pinecone_adapter: Any = None  # L4 PineconeAdapter for vector ops
+    state_manager: Any = None     # L4 StateManager for temporal state
+    
+    # PHASE C: Retrieved Context (from L4)
+    rag_results: List[Any] = Field(default_factory=list)  # RAG retrieval results
+    temporal_kg_facts: List[Any] = Field(default_factory=list)  # Temporal KG facts
+    scene_context: Dict[str, Any] = Field(default_factory=dict)  # Assembled scene for planning
+
     # Telemetry / cost containers
     cost_snapshot: Optional["CostSnapshot"] = None
 
     def span_context(self) -> Dict[str, Any]:
         return {}
+    
+    def get_pinecone_namespace(self) -> str:
+        """Build Pinecone namespace from context identifiers.
+        
+        This provides a consistent namespace for all vector operations
+        within this execution context.
+        """
+        if self.pinecone_adapter is not None:
+            return self.pinecone_adapter.build_namespace(
+                user_id=self.user_id or None,
+                job_id=self.job_id or None,
+                workflow_id=self.workflow_id or None,
+            )
+        return "default"
 
 
 class ContextBudget(BaseModel):
