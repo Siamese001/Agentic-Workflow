@@ -37,7 +37,7 @@ from cognitive_agents import (
 from eval.health.adapter import collect_error_events
 from eval.health.failure_detector import detect_repeated_failures
 from eval.health.repair_policies import propose_repairs
-import l1_planning
+import l1
 
 
 # =============================================================================
@@ -134,7 +134,7 @@ def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
     """Emit a latent thinking trace event based on the execution profile."""
 
     try:
-        l1_plan = l1_planning.generate_latent_thinking_plan(result=result, ctx=ctx)
+        l1_plan = l1.generate_latent_thinking_plan(result=result, ctx=ctx)
         
         record_event(
             "l2.latent_thinking",
@@ -296,7 +296,7 @@ async def _execute_rag_reasoning(
 
         rag_plan: Optional[RAGPlan] = getattr(plans, "rag", None)
 
-        l1_plan = l1_planning.plan_rag_reasoning(
+        l1_plan = l1.plan_rag_reasoning(
             rag_plan=rag_plan,
             ctx=ctx,
             evidence=evidence_seq,

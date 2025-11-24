@@ -28,7 +28,7 @@ from runtime.observability import (
 )
 from meta_profile import MetaProfileSnapshot
 from prompt_builder import PromptInstance
-import l1_planning
+import l1
 
 
 # =============================================================================
@@ -371,7 +371,7 @@ class SemanticQAAgent(LLMBaseAgent):
             sandbox_config=self.sandbox,
             meta_profile_snapshot=self.meta_profile,
         )
-        l1_plan = l1_planning.plan_rag_reasoning(
+        l1_plan = l1.plan_rag_reasoning(
             rag_plan=None,
             ctx=ctx,
             evidence=evidence,
@@ -584,7 +584,7 @@ class HYDEQueryAgent(LLMBaseAgent):
         rag_plan: Any,  # RAGPlan; kept as Any to avoid circular typing issues.
         ctx: Any,  # ExecutionContext; passed through to prompt_builder.
     ) -> str:
-        l1_plan = l1_planning.plan_hyde_query(
+        l1_plan = l1.plan_hyde_query(
             hyde_plan=rag_plan,
             ctx=ctx,
         )
