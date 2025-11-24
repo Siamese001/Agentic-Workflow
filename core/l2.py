@@ -16,6 +16,8 @@ job description while still being safe, accurate, and easy for recruiters to
 scan.
 """
 
+import sys
+import os
 from typing import Optional
 
 from core.models.models import (  # type: ignore[attr-defined]
@@ -28,15 +30,16 @@ from core.models.models import (  # type: ignore[attr-defined]
 from runtime.observability import start_span, end_span, log_exception
 from meta.retrieval import run_rag_retrieval
 
-from l2 import (  # type: ignore[import]
-    _execute_strategy,
-    _execute_drafting,
-    _execute_qa,
-    _execute_safety,
-    _maybe_run_hyde_query,
-    _build_base_query,
-)
-from l2 import *  # noqa: F401,F403
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+import l2 as l2_module  # type: ignore[import]
+
+_execute_strategy = l2_module._execute_strategy
+_execute_drafting = l2_module._execute_drafting
+_execute_qa = l2_module._execute_qa
+_execute_safety = l2_module._execute_safety
+_maybe_run_hyde_query = l2_module._maybe_run_hyde_query
+_build_base_query = l2_module._build_base_query
 
 
 async def _execute_retrieval(
