@@ -18,7 +18,6 @@ from .types import (
     StateError,
     StateValidationError,
     StateRollbackError,
-    T,
 )
 from .manager import StateManager
 
@@ -109,6 +108,40 @@ def record_correction_event(
     return replace(state, correction_journal=new_journal)
 
 
+def apply_state_patch(
+    l2_results: Any,
+    corrections: Any,
+    ctx: Any,
+    *,
+    safety_passed: bool = True
+) -> Dict[str, Any]:
+    """Apply L2 results as a state patch.
+    
+    This is a compatibility function for tests. It converts L2 execution
+    results into a state patch dictionary.
+    
+    Args:
+        l2_results: L2ResultBundle with execution results
+        corrections: List of corrections to apply
+        ctx: Execution context
+        safety_passed: Whether safety checks passed
+        
+    Returns:
+        dict: State patch with results
+    """
+    # Simple deterministic patch generation for testing
+    patch = {
+        "strategy": getattr(l2_results, "strategy", None),
+        "rag": getattr(l2_results, "rag", None),
+        "drafting": getattr(l2_results, "drafting", None),
+        "qa": getattr(l2_results, "qa", None),
+        "safety": getattr(l2_results, "safety", None),
+        "corrections": list(corrections) if corrections else [],
+        "safety_passed": safety_passed,
+    }
+    return patch
+
+
 __all__ = [
     "StateOperation",
     "StateEventType",
@@ -121,4 +154,5 @@ __all__ = [
     "StateManager",
     "_prune_memory",
     "record_correction_event",
+    "apply_state_patch",
 ]

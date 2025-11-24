@@ -169,10 +169,19 @@ class LLMBaseAgent:
         Execute a single LLM call for the given prompt instance.
         """
         # Derive an optional complexity hint for routing from the plan.
-        complexity: Optional[str] = None
+        complexity: Optional[Any] = None
         plan = prompt.variables.get("plan")
         if plan is not None and hasattr(plan, "complexity"):
-            complexity = getattr(plan, "complexity", None)
+            complexity_val = getattr(plan, "complexity", None)
+            # Convert to ComplexityLevel if it's a string
+            if isinstance(complexity_val, str):
+                from core.models.models import ComplexityLevel
+                try:
+                    complexity = ComplexityLevel(complexity_val.lower())
+                except (ValueError, AttributeError):
+                    complexity = complexity_val
+            else:
+                complexity = complexity_val
 
         # Select the concrete model.
         try:
@@ -199,9 +208,11 @@ class LLMBaseAgent:
         )
 
         try:
+            # Convert PromptInstance to string for invoke_model
+            prompt_text = prompt.rendered if hasattr(prompt, 'rendered') else str(prompt)
             raw = invoke_model(
                 model=model,
-                prompt=prompt,
+                prompt=prompt_text,
                 sandbox=self.sandbox,
             )
             record_event(
@@ -262,12 +273,13 @@ class StrategyLLMAgent(LLMBaseAgent):
             job=job,
             resume=resume,
             config=config,
+            prompt_registry={},
             routing_policy=self.routing_policy,
             sandbox_config=self.sandbox,
             meta_profile_snapshot=self.meta_profile,
         )
 
-        from l2 import _execute_strategy as l2_execute_strategy
+        from l2.execution import _execute_strategy as l2_execute_strategy
         return await l2_execute_strategy(
             plans=type('Plans', (), {'strategy': strategy_plan})(),
             ctx=ctx,
@@ -305,12 +317,13 @@ class DraftingGuild(LLMBaseAgent):
             job=job,
             resume=resume,
             config=config,
+            prompt_registry={},
             routing_policy=self.routing_policy,
             sandbox_config=self.sandbox,
             meta_profile_snapshot=self.meta_profile,
         )
 
-        from l2 import _execute_drafting as l2_execute_drafting
+        from l2.execution import _execute_drafting as l2_execute_drafting
         return await l2_execute_drafting(
             plans=type('Plans', (), {'drafting': drafting_plan})(),
             strategy_result=strategy_result,
@@ -354,12 +367,13 @@ class SemanticQAAgent(LLMBaseAgent):
             job=job,
             resume=resume,
             config=config,
+            prompt_registry={},
             routing_policy=self.routing_policy,
             sandbox_config=self.sandbox,
             meta_profile_snapshot=self.meta_profile,
         )
 
-        from l2 import _execute_qa as l2_execute_qa
+        from l2.execution import _execute_qa as l2_execute_qa
         qa_result, _ = await l2_execute_qa(
             plans=type('Plans', (), {'qa': qa_plan})(),
             drafting_result=draft,
@@ -387,6 +401,7 @@ class SemanticQAAgent(LLMBaseAgent):
             job=job,
             resume=resume,
             config=config,
+            prompt_registry={},
             routing_policy=self.routing_policy,
             sandbox_config=self.sandbox,
             meta_profile_snapshot=self.meta_profile,
@@ -497,12 +512,13 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
             job=job,
             resume=resume,
             config=config,
+            prompt_registry={},
             routing_policy=self.routing_policy,
             sandbox_config=self.sandbox,
             meta_profile_snapshot=self.meta_profile,
         )
 
-        from l2 import _execute_safety as l2_execute_safety
+        from l2.execution import _execute_safety as l2_execute_safety
         return await l2_execute_safety(
             plans=type('Plans', (), {'safety': safety_plan})(),
             drafting_result=draft,
