@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import asyncio
 from dataclasses import dataclass, field
-from typing import Optional, Any, Dict, List
+from typing import Any, Dict, List
 
 from core.models.models import WorkflowPlanBundle, ExecutionContext, L2ResultBundle
 from runtime.observability import start_span, end_span, emit_node_event, log_exception
@@ -25,9 +25,13 @@ from eval.health.adapter import collect_error_events
 class DAGResult:
     """Collects the key artifacts from a workflow run so teams can quickly see how a resume was planned, drafted, checked, and cleared for safety without digging into low-level logs."""
 
+    # Canonical L2 execution bundle (strategy, retrieval, drafting, QA, safety).
     l2_results: L2ResultBundle
-    final_state_patch: Dict[str, Any]
+
+    # High-level safety outcome as decided by L5.
     safety_passed: bool
+
+    # Meta-level correction information (observation-only, no state mutation).
     corrected: bool = False
     corrections: List[Any] = field(default_factory=list)
     correction_signals: List[Any] = field(default_factory=list)
