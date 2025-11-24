@@ -7,6 +7,6 @@ core.agent_router_policy and future profile tooling can depend on a
 stable import path.
 """
 
-from models import AgentCard  # noqa: F401
+from core.models.models import AgentCard  # noqa: F401
 
 __all__ = ["AgentCard"]

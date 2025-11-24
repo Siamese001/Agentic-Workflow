@@ -16,7 +16,7 @@ Non-responsibilities:
 - Model invocation
 """
 
-# FILE: routing.py
+# FILE: meta/routing.py
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ from core.models.models import (  # type: ignore[attr-defined]
     RoutingDecisionEvent,
 )
 from meta_profile import MetaProfileSnapshot
-from multi_agent import (
+from meta.multi_agent import (
     MultiAgentCoordinator,
     build_council,
     AgentRole,

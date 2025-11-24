@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from models import TelemetryEvent
+from core.models.models import TelemetryEvent
 
 
 _telemetry_buffer: List[TelemetryEvent] = []

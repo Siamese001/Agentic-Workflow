@@ -24,7 +24,7 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 from prompts.cms.compiler import compile_prompt
 from prompts.cms.store import get_prompt_version
 from prompts.cms.schemas import validate_prompt
-from models import (
+from core.models.models import (
     ContextBudget,
     DraftingPlan,
     DraftingResult,

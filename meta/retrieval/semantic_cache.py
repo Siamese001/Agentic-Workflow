@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Optional
 
-from models import RetrievalConfig
+from core.models.models import RetrievalConfig
 from meta.cache.redis_cache import init_redis_client, get_llm_cache, set_llm_cache
 
 
