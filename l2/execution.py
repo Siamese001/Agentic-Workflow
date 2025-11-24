@@ -1,6 +1,23 @@
-"""Executes the planned steps that actually rewrite and review the resume so content stays tailored to the job, clearly written, and checked for risks before it is shared."""
+"""L2 - Execution Layer
 
-# FILE: 10_10/l2.py
+This module provides the main execution functions that invoke cognitive agents
+and return structured results. It bridges L1 plans to actual LLM execution.
+
+Layer: L2 (Execution)
+Responsibilities:
+- Execute strategy, RAG, drafting, QA, safety tasks
+- Invoke cognitive agents with proper context
+- Handle execution errors and retries
+- Return structured L2 results
+
+Non-responsibilities:
+- Planning (L1)
+- Orchestration/DAG (L3)
+- State management (L4)
+- Policy enforcement (L5)
+"""
+
+# FILE: l2.py
 
 from __future__ import annotations
 
@@ -27,7 +44,7 @@ from core.models.models import (
 from runtime.observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
 from meta.schema_validation import validate_schema_version
 from meta.retrieval import run_rag_retrieval
-from cognitive_agents import (
+from .agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,

@@ -1,20 +1,23 @@
+"""Retrieval - Meta Layer
+
+This module provides the main retrieval entrypoint.
+
+Layer: Meta
+Responsibilities:
+- Orchestrate retrieval (BM25/dense/hybrid)
+- HYDE query support
+- RRF fusion
+- QA-council evidence weighting
+- Failure isolation
+- Telemetry
+
+Non-responsibilities:
+- LLM calls (L2 generates HYDE query)
+- Planning
+- State mutation
+"""
+
 # FILE: retrieval.py
-"""
-Retrieval & Query Planning (v10_10 · Phase 3 — FINAL)
-=====================================================
-
-Implements:
-    • BM25 retrieval
-    • Dense retrieval
-    • Hybrid mode (BM25 + Dense)
-    • HYDE query support (real hook; L2 supplies HYDE query)
-    • Retriever-level failure isolation
-    • Weighted RRF fusion (Phase-3 requirement)
-    • QA-council evidence weighting (Phase-3 requirement)
-    • Full telemetry spans / failure events
-
-Layer: META (no LLM calls; L2 generates HYDE query)
-"""
 
 from typing import Optional
 

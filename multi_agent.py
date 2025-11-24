@@ -1,27 +1,25 @@
-# FILE: multi_agent.py
-"""Multi-Agent Coordination Patterns (v10_10 · META LAYER ONLY)
+"""Multi-Agent Coordination - Meta Layer
 
-This module is a v10_10-style port of the v10_9 multi_agent.py logic.
-It provides reusable, *meta-layer only* multi-agent coordination
-primitives:
+This module provides multi-agent coordination primitives.
 
-    • Graph patterns (pipeline, star-hub, council, committee).
-    • Deterministic delegation rules between agent roles.
-    • Council voting helpers producing typed MultiAgentCouncilResult.
-    • A MultiAgentCoordinator that routes AgentMessage instances
-      and runs councils without touching L1–L5 business logic.
 
-STRICT LAYER BOUNDARIES:
-    • NO L1 planning
-    • NO L2 execution
-    • NO L3 orchestration
-    • NO L4 state mutation
-    • NO L5 safety/policy decisions
-    • PURE advisory/meta logic only
+Layer: Meta
+Responsibilities:
+- Graph patterns (pipeline, star-hub, council, committee)
+- Deterministic delegation rules
+- Council voting
+- Agent message routing
+- Pure advisory logic
 
-Safe to call from routing, cognitive agents, or workflow graph
-construction as a pure helper.
+Non-responsibilities:
+- L1 planning
+- L2 execution
+- L3 orchestration
+- L4 state mutation
+- L5 safety/policy
 """
+
+# FILE: multi_agent.py
 
 from __future__ import annotations
 

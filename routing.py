@@ -1,29 +1,22 @@
-# FILE: 10_10/routing.py
+"""Routing Policy - Meta Layer
+
+This module provides model routing and selection logic.
+
+Layer: Meta
+Responsibilities:
+- Model selection based on task + complexity
+- ToT branch count determination
+- MetaProfile-influenced routing
+- Pure decision logic
+
+Non-responsibilities:
+- Provider SDK calls
+- L1/L2/L3/L4/L5 logic
+- Prompt construction
+- Model invocation
 """
-Routing Policy for Agentic Workflow v10_10
-=========================================
 
-This is the v10_10 refactor of the v10_9 routing layer.
-
-It removes:
-    • PlanObject-dependent logic
-    • L5.ModelRouter
-    • PromptEnvelope construction
-    • META-only routing criteria classes
-    • direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)
-    • simulated model invocation stubs
-
-and replaces them with a **minimal, deterministic RoutingPolicy** that:
-
-    • Selects models based on task + ComplexityLevel.
-    • Is influenced by a MetaProfileSnapshot (read-only).
-    • Provides ToT branch counts for StrategyLLMAgent.
-    • Contains NO provider SDK calls.
-    • Contains NO L1/L2/L3/L4/L5 logic.
-
-This module is used only by L2 cognitive agents and L1 complexity
-classification. It is **pure decision logic**.
-"""
+# FILE: routing.py
 
 from __future__ import annotations
 

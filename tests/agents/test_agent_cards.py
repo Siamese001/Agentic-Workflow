@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from cognitive_agents import (
+from l2.agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,

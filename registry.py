@@ -1,24 +1,23 @@
-# FILE: registry.py
-"""
-Registry Layer (v10_10 · Phase 3)
-===================================
+"""Registry - Meta Layer
 
-This module defines:
-    • RAG strategy registry
-    • RetrievalConfig factories
-    • Static mappings for BM25 / DENSE / HYBRID / HYDE / RRF
+This module provides strategy and configuration registries.
 
+Layer: Meta
 Responsibilities:
-    • Provide read-only strategy definitions
-    • Produce RetrievalConfig objects for the RAG pipeline
+- RAG strategy registry
+- RetrievalConfig factories
+- Static strategy mappings
+- Prompt registry bridge
 
-Non-Responsibilities:
-    • No retrieval
-    • No ranking
-    • No LLM calls
-    • No orchestration
-    • No state mutation
+Non-responsibilities:
+- Retrieval execution
+- Ranking execution
+- LLM calls
+- Orchestration
+- State mutation
 """
+
+# FILE: registry.py
 
 from __future__ import annotations
 
