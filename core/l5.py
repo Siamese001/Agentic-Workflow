@@ -1,10 +1,17 @@
 from __future__ import annotations
 
-"""Core L5 safety shim for v10_10 tests.
+"""Entry point for the workflow's safety and gating layer.
 
-Re-exports the snapshot-local ``l5`` module so imports like
-``from core.l5 import safety_gate`` work when tests are run with
-rootdir=Agentic-Workflow-10_10.
+This file exposes a stable ``core.l5`` import path that forwards to the
+snapshot-specific ``l5`` module. Conceptually, this layer is where safety
+gates and final checks live — the logic that decides whether a resume output
+is acceptable to return or needs to be revised or blocked.
+
+By keeping this safety entry point stable, the system can evolve how it
+detects and handles risky or low-quality content without breaking callers.
+That flexibility is important for maintaining trustworthy, professional
+resumes that reflect well on both candidates and the organizations using the
+workflow.
 """
 
 from l5 import *  # noqa: F401,F403

@@ -1,28 +1,4 @@
-# FILE: 10_10/cognitive_agents.py
-"""
-Unified Cognitive Agents (v10_10 · Phase 3 — FINAL)
-===================================================
-
-This module implements ALL LLM-based cognition for the v10_10 workflow.
-
-L2 is the only layer allowed to call these agents.
-
-Agents (L2 cognition only):
-    • StrategyLLMAgent            – strategy reasoning
-    • DraftingGuild              – resume drafting
-    • SemanticQAAgent            – QA reasoning + RAG reasoning
-    • ConstitutionalSafetyAgent  – safety / policy review
-    • HYDEQueryAgent             – HYDE synthetic query generation
-    • QACouncilAgent             – QA council aggregation
-
-Design constraints:
-    • Only this module may invoke LLMs.
-    • No planning (L1), orchestration (L3), state mutation (L4),
-      or safety policy enforcement (L5).
-    • All calls use PromptInstance + ACL from prompt_builder.
-    • All model selection goes through RoutingPolicy.
-    • All LLM calls go through runtime_utils.invoke_model.
-"""
+"""Defines the specialized LLM agents that plan, draft, review, and safety-check resumes so each step applies focused reasoning to improve alignment, clarity, and risk control."""
 
 from __future__ import annotations
 
@@ -84,12 +60,12 @@ from prompt_builder import (
 
 @dataclass
 class _PromptContext:
-    """
-    Lightweight context object passed to prompt_builder.
+    """Minimal view of job and resume data used to build prompts.
 
-    We intentionally avoid depending on models.ExecutionContext here;
-    prompt_builder only needs job, resume, config, which we expose
-    directly.
+    This helper groups together just the information prompt builders need:
+    the job, the candidate's resume, and configuration. By keeping this
+    context small and focused, prompts stay clear and on-topic, which helps
+    the agents produce more relevant and accurate resume improvements.
     """
 
     job: Any
@@ -103,20 +79,17 @@ class _PromptContext:
 
 
 class LLMBaseAgent:
-    """
-    Base class for all L2 cognitive agents.
+    """Common foundation for all resume-focused "thinking" agents.
 
-    This class centralizes:
-        • RoutingPolicy-based model selection.
-        • SandboxConfig usage.
-        • invoke_model() calls.
-        • Basic observability events.
+    This base class knows how to select the right model, call it safely, and
+    emit basic telemetry about each call. Concrete agents build on top of it
+    to handle specific jobs such as planning, drafting, QA, or safety
+    analysis.
 
-    This class must remain **L2-only** and must not perform:
-        • planning (L1),
-        • orchestration / retries (L3),
-        • state mutation (L4),
-        • safety policy enforcement (L5).
+    For a business reader, this shared base helps ensure that every agent
+    follows the same rules for which models it may use, how those models are
+    called, and how results are logged. That consistency supports predictable
+    behavior and easier monitoring of resume quality over time.
     """
 
     routing_policy: RoutingPolicy
@@ -269,12 +242,15 @@ class LLMBaseAgent:
 
 
 class StrategyLLMAgent(LLMBaseAgent):
-    """
-    Strategy agent responsible for high-level reasoning.
+    """Agent that designs how the resume should be tailored to the job.
 
-    Outputs:
-        • StrategyResult
-        • StrategyBranch list (internally)
+    This agent reads the job description, the candidate's resume, and the
+    planning instructions, then proposes one or more strategy options for how
+    to present the candidate. The result guides later steps on what to
+    emphasize, what gaps to address, and how ambitious the rewrite should be.
+
+    In business terms, it answers: "What is our game plan for making this
+    resume compelling for this particular role?"
     """
 
     async def run_strategy(
@@ -342,13 +318,16 @@ class StrategyLLMAgent(LLMBaseAgent):
 
 
 class DraftingGuild(LLMBaseAgent):
-    """
-    Drafting agent that turns strategy + evidence into resume content.
+    """Agent that writes and rewrites resume sections.
 
-    Phase 3 implementation:
-        • Uses a single drafting prompt envelope per call.
-        • Emits a DraftingResult with at least one DraftSection.
-        • Parsing is robust to both JSON and free-form text output.
+    Using the chosen strategy, job description, and retrieved evidence, this
+    agent drafts or rewrites sections such as Summary, Experience, and Skills.
+    It focuses on highlighting impact, aligning wording with the job, and
+    keeping the structure readable for recruiters.
+
+    Practically, this is the agent that turns guidance into actual resume
+    text, which makes it central to how personalized and compelling the final
+    document feels.
     """
 
     async def run_drafting(
@@ -422,12 +401,17 @@ class DraftingGuild(LLMBaseAgent):
 
 
 class SemanticQAAgent(LLMBaseAgent):
-    """
-    QA agent that evaluates drafted content and performs RAG reasoning.
+    """Agent that reviews drafts for quality and reasons over evidence.
 
-    Outputs:
-        • QAResult with structured QAFinding items.
-        • RAG reasoning text for Phase-3 reasoning stage.
+    This agent has two main roles:
+
+    * Quality assurance – it inspects drafted resume content for unsupported
+      claims, missing key requirements, unclear phrasing, and other issues.
+    * RAG reasoning – it reads retrieved evidence and produces a concise
+      reasoning summary that later steps can rely on.
+
+    For the business, this agent acts like a careful reviewer who ensures the
+    resume is truthful, relevant to the job, and easy to understand.
     """
 
     async def run_qa(
@@ -557,11 +541,15 @@ class SemanticQAAgent(LLMBaseAgent):
 
 
 class ConstitutionalSafetyAgent(LLMBaseAgent):
-    """
-    Safety agent that performs a constitutional safety pass.
+    """Agent that scans resume content for safety and policy issues.
 
-    This agent does *not* enforce policy; it only produces SafetyResult
-    findings for L5 to interpret and enforce.
+    This agent reviews the draft, evidence, and QA signals to identify
+    potential safety concerns such as sensitive personal information, policy
+    violations, or risky wording. It records these as structured findings that
+    the L5 safety layer later interprets.
+
+    It does not make the final allow/block decision itself, but it provides
+    the detailed analysis that decision is based on.
     """
 
     async def run_safety(
@@ -685,11 +673,14 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
 
 
 class HYDEQueryAgent(LLMBaseAgent):
-    """
-    HYDE (Hypothetical Document) query generator.
+    """Agent that imagines an ideal answer to improve retrieval.
 
-    This agent generates an idealized answer for use as a dense retrieval proxy.
-    L2 decides when to call it based on the RAGPlan and config flags.
+    This agent generates a short, idealized description of the "perfect"
+    candidate for the job, grounded in the provided context. Retrieval uses
+    this text as a semantic query to find more relevant supporting evidence.
+
+    Business impact: better evidence leads to more targeted rewrites and
+    higher-quality alignment between the resume and the job description.
     """
 
     async def run_hyde_query(
@@ -723,15 +714,15 @@ class HYDEQueryAgent(LLMBaseAgent):
 
 
 class QACouncilAgent(LLMBaseAgent):
-    """
-    QA-council aggregation agent.
+    """Agent that aggregates multiple QA opinions into a single verdict.
 
-    This agent consumes a PromptInstance specifically designed for council
-    aggregation and returns a typed CouncilVote object.
+    When the system runs a "council" of QA checks, this agent reads their
+    combined output and turns it into a single CouncilVote. That vote can then
+    influence ranking, safety, or additional review steps.
 
-    NOTE:
-        The concrete prompt template is defined in prompt_builder; this class
-        only executes the prompt and interprets the JSON response.
+    For business users, this is how the system simulates a panel of reviewers
+    and turns their perspectives into one clear signal about the quality and
+    risk level of a resume draft.
     """
 
     async def run_council(

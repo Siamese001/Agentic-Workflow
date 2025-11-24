@@ -1,24 +1,6 @@
+"""Turns safety findings and policy rules into a final pass, warn, or block decision for a resume so risky or non-compliant content is caught before delivery."""
+
 # FILE: 10_10/l5.py
-"""
-Safety Enforcement Layer · L5 (v10_10 · Phase 3)
-================================================
-
-Responsibilities:
-    • Enforce SafetyPolicy (PII, disallowed content, category violations).
-    • Consume:
-          – SafetyResult (from L2's ConstitutionalSafetyAgent)
-          – CouncilVote (from QA → deterministic heuristic)
-    • Produce:
-          – PolicyDecisionEvent (typed enforcement result)
-    • Emit safety audit events (G19–G23).
-    • Must NOT:
-          – call language models directly,
-          – mutate WorkflowState directly (L4-only),
-          – modify plans (L1/L3),
-          – perform retrieval/drafting/QA.
-
-Pure decision + audit layer.
-"""
 
 from __future__ import annotations
 
@@ -69,16 +51,7 @@ def _decide_verdict(
     findings: List[SafetyFinding],
     policy: SafetyPolicy,
 ) -> SafetyEnforcementVerdict:
-    """
-    Determine final SafetyEnforcementVerdict according to the SafetyPolicy.
-
-    Policy logic:
-        • If allow_generation = False → always BLOCK.
-        • If any high-severity finding contradicts policy.disallowed_categories → BLOCK.
-        • If PII is detected and policy.allow_pii = False → BLOCK.
-        • If only medium-severity → WARN.
-        • Otherwise → PASS.
-    """
+    """Applies safety policy rules to the findings to choose a pass, warn, or block verdict based on severity, disallowed categories, and PII handling."""
     if not getattr(policy, "allow_generation", True):
         return SafetyEnforcementVerdict(
             verdict="block",
@@ -143,18 +116,7 @@ def run_l5(
     policy: SafetyPolicy,
     ctx: Optional[ExecutionContext] = None,
 ) -> PolicyDecisionEvent:
-    """
-    Compute the final L5 enforcement decision:
-
-        INPUTS:
-            • SafetyResult  (model-based detection)
-            • CouncilVote   (heuristic QA-derived)
-            • SafetyPolicy  (Phase-3 policy registry)
-            • ctx           (ExecutionContext for telemetry)
-
-        OUTPUT:
-            • PolicyDecisionEvent
-    """
+    """Combines safety analysis, QA-derived risk signals, and organizational policy to decide whether a resume should be allowed, warned on, or blocked and records the reasons in a policy decision event."""
     span = start_span("l5.run", ctx=ctx.span_context() if ctx else None)
     try:
         findings = _combine_findings(safety_result, council_vote)
@@ -213,17 +175,16 @@ def run_l5(
 
 
 def safety_gate(safety_result: SafetyResult) -> bool:
-    """Backward-compatible helper returning a boolean safety verdict.
+    """Simplified pass/block check used by callers that only need a yes/no.
 
-    Tests expect safety_gate to inspect SafetyResult and return True when
-    the overall safety decision passes and False when it blocks.
+    This helper inspects the provided SafetyResult using a default, permissive
+    policy and a neutral council vote. It returns **True** when the safety
+    decision would pass and **False** when it would block.
 
-    We delegate to run_l5 using a default-allow policy and a neutral
-    CouncilVote, then interpret the PolicyDecisionEvent.verdict.
-
-    Internal error findings (category="internal") are treated as
-    non-blocking for purposes of this gate so that upstream layers can
-    still surface a best-effort result in failure scenarios.
+    Internal error-only findings are treated as non-blocking so the system can
+    still return a best-effort result in failure scenarios. In practice, this
+    gives a quick answer to "is this resume safe enough to show?" without
+    exposing the full policy machinery.
     """
 
     findings = list(getattr(safety_result, "findings", []) or [])

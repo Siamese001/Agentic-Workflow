@@ -1,18 +1,6 @@
 from __future__ import annotations
 
-"""Lightweight communication channel between workflow agents.
-
-This module defines a simple in-memory "bus" that lets different agents in
-the workflow pass messages to one another. In business terms, it is the
-handoff mechanism that keeps each step of the resume process informed about
-what the others have already done.
-
-By keeping these handoffs predictable and contained, the bus helps preserve
-important details about a candidate's experience as work moves from parsing to
-rewriting to quality checks. That coordination reduces the risk of losing key
-achievements or duplicating work, which in turn supports clearer, more
-coherent resumes for each job.
-"""
+"""Provides a lightweight in-memory channel for agents to share messages so resume steps stay coordinated and important context is not lost between planning, drafting, and review."""
 
 from dataclasses import dataclass, field
 from typing import Dict, List
@@ -22,19 +10,7 @@ from models import AgentMessage
 
 @dataclass
 class AgentBus:
-    """In-memory mailbox for agents collaborating on a resume.
-
-    The bus gives each agent its own queue of messages so that planning,
-    drafting, and review steps can exchange information in an organized way.
-    Because it runs entirely in memory and behaves predictably, it is safe for
-    tests and for small-scale orchestration while still mirroring how agents
-    would coordinate in production.
-
-    From a business perspective, this coordination channel helps ensure that
-    insights about a candidate's skills, gaps, and target role are shared
-    across steps. That way, later agents do not overlook important context and
-    the final resume remains consistent, focused, and aligned with the job.
-    """
+    """Acts as an in-memory mailbox so agents can pass results and insights, keeping later resume steps aware of earlier decisions and preserving a coherent story for the candidate."""
 
     _queues: Dict[str, List[AgentMessage]] = field(default_factory=dict)
 

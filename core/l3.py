@@ -1,10 +1,18 @@
 from __future__ import annotations
 
-"""Core L3 orchestration shim for v10_10 tests.
+"""Entry point for the orchestration layer that runs the workflow.
 
-Re-exports the snapshot-local ``l3`` module so imports like
-``from core.l3 import run_dag`` work when tests are run with
-rootdir=Agentic-Workflow-10_10.
+This file exists so that higher-level code can call orchestration helpers
+through a consistent ``core.l3`` path, even as the underlying implementation
+lives in a snapshot-specific ``l3`` module. In business terms, it is the
+stable doorway into the part of the system that actually runs the sequence of
+steps which improve a resume.
+
+By keeping this entry point stable, teams can evolve how the workflow is
+scheduled and executed without breaking existing integrations. That makes it
+safer to refine the orchestration that decides the order of planning,
+retrieval, drafting, and review, which directly impacts how thorough and
+well-structured the final resume is.
 """
 
 from l3 import *  # noqa: F401,F403

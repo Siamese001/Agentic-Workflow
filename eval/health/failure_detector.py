@@ -1,10 +1,6 @@
 from __future__ import annotations
 
-"""Agent Immune System (AIS) failure detection primitives.
-
-This module exposes small, pure helpers that inspect telemetry- or
-result-like records and emit coarse-grained health signals.
-"""
+"""Implements simple failure-detection helpers that turn raw telemetry into health signals so recurring problems can be fixed before they degrade resume quality."""
 
 from dataclasses import dataclass
 from typing import Any, Dict, List
@@ -12,14 +8,7 @@ from typing import Any, Dict, List
 
 @dataclass
 class FailureSignal:
-    """Coarse-grained failure signal for AIS policies.
-
-    Fields:
-        code: Machine-readable identifier for the failure pattern.
-        message: Human-readable explanation.
-        severity: "low" | "medium" | "high".
-        metadata: Arbitrary structured details.
-    """
+    """Represents a coarse failure signal used by health policies to judge how serious repeated issues are for resume runs."""
 
     code: str
     message: str
@@ -28,12 +17,7 @@ class FailureSignal:
 
 
 def detect_repeated_failures(events: List[Dict[str, Any]], threshold: int = 3) -> List[FailureSignal]:
-    """Detect simple repeated-failure patterns in a list of events.
-
-    Each event is expected to be a dict with an optional "event_type"
-    and "error_code" field. The detector counts repeated error_codes and
-    emits FailureSignal entries when a threshold is exceeded.
-    """
+    """Finds repeated error patterns in events so teams can spot unstable behavior that might lead to inconsistent or failed resume outputs."""
 
     counts: Dict[str, int] = {}
     for evt in events:

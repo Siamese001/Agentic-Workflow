@@ -6,18 +6,7 @@ from eval.golden_state.models import GoldenCase, GoldenOutput
 
 
 def evaluate_case_output(case: GoldenCase, output: GoldenOutput) -> GoldenOutput:
-    """Best-effort evaluator for a single GoldenCase/GoldenOutput pair.
-
-    This implementation is intentionally simple and fully deterministic so
-    tests do not depend on any external models. It checks that each
-    expected_keypoint appears in the produced_keypoints collection and
-    marks correctness_map accordingly. The final_verdict is derived from
-    the proportion of satisfied keypoints:
-
-        * >= 0.9  -> "pass"
-        * >= 0.5  -> "borderline"
-        * else    -> "fail"
-    """
+    """Compares expected keypoints to what the system produced so tests can see whether resumes captured the most important ideas or missed critical content."""
 
     produced_set = {k.strip().lower() for k in output.produced_keypoints}
     correctness_map: dict[str, bool] = {}

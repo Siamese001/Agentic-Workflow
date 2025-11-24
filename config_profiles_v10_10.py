@@ -1,32 +1,5 @@
 # FILE: 10_10/config_profiles_v10_10.py
-"""
-Execution Profiles (v10_10 · Phase 3)
-=====================================
-
-This module defines the **deterministic, hard execution profiles**
-used by the v10_10 stack.
-
-Profiles drive:
-
-    • Reasoning strategy (CoT, ToT, ReAct)
-    • RAG retrieval strategy (BM25, Hybrid, Dense) + HYDE + RRF
-    • Safety tier (strict, standard, debug)
-    • Context budgets
-    • Model tier selection (cheap / balanced / premium)
-    • Drafting depth / QA depth
-    • Async / DAG mode
-    • Phase-3 controls:
-        – qa_council_size
-        – enable_correction_loop, max_corrections
-        – rag_allow_hyde / hyde_model_tier
-        – routing_telemetry_mode
-
-Design notes:
-    • ExecutionProfileSpec is the *authoritative* profile schema.
-    • L1 consumes ExecutionProfileSpec and maps it into the simpler
-      ExecutionProfile model (in models.py) for planning.
-    • RetrievalConfig is Phase-3 aware (HYDE, RRF, council).
-"""
+"""Defines execution profiles that control how much reasoning, retrieval, cost, and safety the system applies when rewriting a resume for a given use case."""
 
 from __future__ import annotations
 
@@ -71,11 +44,7 @@ class ModelTier(str, Enum):
 
 
 class DAGMode(str, Enum):
-    """
-    Controls whether the workflow graph may run:
-        • sequential only
-        • parallel-capable
-    """
+    """Specifies whether the workflow runs steps strictly in order or can parallelize parts of the resume pipeline for speed."""
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
 
@@ -86,12 +55,7 @@ class DAGMode(str, Enum):
 
 
 class ExecutionProfileSpec(BaseModel):
-    """
-    Canonical representation of a workflow execution profile.
-
-    This type is stable and versioned at the config layer. L1
-    converts this into models.ExecutionProfile for planning.
-    """
+    """Canonical description of how aggressively to reason, retrieve, draft, and check safety so resume runs balance quality, speed, and cost for different scenarios."""
 
     id: str
     description: str

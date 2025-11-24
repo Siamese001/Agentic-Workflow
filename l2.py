@@ -1,27 +1,6 @@
+"""Executes the planned steps that actually rewrite and review the resume so content stays tailored to the job, clearly written, and checked for risks before it is shared."""
+
 # FILE: 10_10/l2.py
-"""
-Unified L2 Execution Layer (v10_10 · Phase 3)
-=============================================
-
-Responsibilities:
-    • Execute StrategyPlan, RAGPlan, DraftingPlan, QAPlan, SafetyPlan.
-    • Perform all LLM calls (via cognitive_agents), plus retrieval hooks.
-    • Produce structured outputs:
-          – StrategyResult
-          – RAGResult (evidence + Phase-3 RAG reasoning signal)
-          – DraftingResult
-          – QAResult
-          – SafetyResult
-    • Wrap all computation in deterministic observability spans.
-    • NO state mutation (L4 only).
-
-Layer constraints:
-    1) No direct provider SDK usage.
-       All LLM calls are delegated to cognitive_agents.
-    2) No state mutation (WorkflowStatePatch is applied in L4).
-    3) No RAG ranking logic (lives in retrieval.py / ranking.py).
-    4) No DAG orchestration (lives in workflow_graph.py).
-"""
 
 from __future__ import annotations
 
@@ -541,19 +520,22 @@ async def run_l2(
     plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
 ) -> L2ResultBundle:
-    """
-    Execute all L2 stages for the workflow:
+    """Carry out all execution steps needed to improve a resume.
 
-        • Strategy
-        • Retrieval
-        • RAG reasoning
-        • Drafting
-        • QA (+ council heuristic)
-        • Safety
+    Given a previously built workflow plan and an execution context, this
+    function runs the full L2 pipeline:
 
-    With concurrency:
-        • Strategy + Retrieval in parallel.
-        • RAG reasoning → Drafting → QA → Safety sequentially.
+    * **Strategy** – refines how the resume should be tailored.
+    * **Retrieval** – gathers job and resume evidence to ground the rewrite.
+    * **RAG reasoning** – reasons over that evidence to highlight what
+      matters most.
+    * **Drafting** – produces updated resume sections.
+    * **QA** – checks alignment, clarity, and potential issues.
+    * **Safety** – flags risky or out-of-policy content.
+
+    For a business user, this is the main "do the work" step: it turns the
+    plan into a concrete, high-signal resume draft plus a clear record of what
+    was checked along the way.
     """
     # Validate the input plan bundle schema version before execution.
     try:
@@ -684,10 +666,16 @@ def execute_workflow_plans(
     plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
 ) -> L2ResultBundle:
-    """Synchronous wrapper around run_l2 used by legacy tests/call sites.
+    """Run the full execution pipeline from synchronous code.
 
-    This helper simply runs the async run_l2 coroutine via asyncio.run
-    and returns the resulting L2ResultBundle.
+    This helper exists for callers that are not async-aware. It invokes
+    :func:`run_l2` under the hood and returns the same structured bundle of
+    results: updated strategy, retrieved evidence, drafted sections, QA
+    findings, and safety findings.
+
+    In business terms, it provides a simple, blocking way for other systems to
+    request a fully processed resume without needing to manage asynchronous
+    workflows themselves.
     """
 
     result = asyncio.run(run_l2(plans, ctx))

@@ -1,11 +1,4 @@
-"""Core orchestration and cognitive logic (L1–L5).
-
-This package provides the primary entrypoints for planning and execution
-layers when running tests with rootdir=Agentic-Workflow-10_10.
-
-Top-level modules (l1, l2, cognitive_agents, routing, workflow_graph) are maintained as
-shims for backward compatibility with the snapshot layout.
-"""
+"""Central engine that wires together planning, execution, agent reasoning, routing, and workflow graphs so resumes are improved in a consistent, high-quality way over time."""
 
 from . import l1  # noqa: F401
 from . import l2  # noqa: F401
