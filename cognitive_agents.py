@@ -20,6 +20,7 @@ from core.models.models import (
     SafetyFinding,
     Evidence,
     CouncilVote,
+    ExecutionContext,
 )
 from core.routing import RoutingPolicy
 from runtime.runtime_utils import invoke_model, SandboxConfig
@@ -43,14 +44,8 @@ from runtime.observability import (
     record_exception,
 )
 from meta_profile import MetaProfileSnapshot
-from prompt_builder import (
-    PromptInstance,
-    build_strategy_prompt,
-    build_drafting_prompt,
-    build_qa_prompt,
-    build_safety_prompt,
-    build_hyde_prompt,
-)
+from prompt_builder import PromptInstance
+import l1
 
 
 # =============================================================================
@@ -260,17 +255,24 @@ class StrategyLLMAgent(LLMBaseAgent):
         resume: Any,
         config: Any,
     ) -> StrategyResult:
-        ctx = _PromptContext(job=job, resume=resume, config=config)
-
-        prompt = build_strategy_prompt(
-            plan=strategy_plan,
-            ctx=ctx,
-            layer="L2",
-            agent="strategy",
-            model_tier="balanced",
+        ctx = ExecutionContext(
+            job=job,
+            resume=resume,
+            config=config,
+            routing_policy=self.routing_policy,
+            sandbox_config=self.sandbox,
+            meta_profile_snapshot=self.meta_profile,
         )
 
-        raw = self._call_llm(prompt)
+        l1_plan = l1.plan_strategy(
+            strategy_plan=strategy_plan,
+            ctx=ctx,
+            job=job,
+            resume=resume,
+            config=config,
+        )
+
+        raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
         # Try to parse structured strategy output; fallback to a simple branch.
@@ -339,19 +341,26 @@ class DraftingGuild(LLMBaseAgent):
         rag_result: RAGResult,
         config: Any,
     ) -> DraftingResult:
-        ctx = _PromptContext(job=job, resume=resume, config=config)
-
-        prompt = build_drafting_prompt(
-            plan=drafting_plan,
-            ctx=ctx,
-            strategy=strategy_result,
-            rag=rag_result,
-            layer="L2",
-            agent="drafting",
-            model_tier="balanced",
+        ctx = ExecutionContext(
+            job=job,
+            resume=resume,
+            config=config,
+            routing_policy=self.routing_policy,
+            sandbox_config=self.sandbox,
+            meta_profile_snapshot=self.meta_profile,
         )
 
-        raw = self._call_llm(prompt)
+        l1_plan = l1.plan_draft(
+            drafting_plan=drafting_plan,
+            ctx=ctx,
+            strategy_result=strategy_result,
+            rag_result=rag_result,
+            job=job,
+            resume=resume,
+            config=config,
+        )
+
+        raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
         # Try to parse as JSON list of sections.
@@ -426,19 +435,23 @@ class SemanticQAAgent(LLMBaseAgent):
         """
         Run QA over drafted resume + retrieval evidence.
         """
-        ctx = _PromptContext(job=job, resume=resume, config=config)
+        ctx = ExecutionContext(
+            job=job,
+            resume=resume,
+            config=config,
+            routing_policy=self.routing_policy,
+            sandbox_config=self.sandbox,
+            meta_profile_snapshot=self.meta_profile,
+        )
 
-        prompt = build_qa_prompt(
-            plan=qa_plan,
+        l1_plan = l1.plan_semantic_qa(
+            qa_plan=qa_plan,
             ctx=ctx,
             draft=draft,
             rag=rag,
-            layer="L2",
-            agent="qa",
-            model_tier="balanced",
         )
 
-        raw = self._call_llm(prompt)
+        raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
         findings = self._parse_qa_output(text, qa_plan)
@@ -565,20 +578,24 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
         """
         Run the constitutional safety review over all available evidence.
         """
-        ctx = _PromptContext(job=job, resume=resume, config=config)
+        ctx = ExecutionContext(
+            job=job,
+            resume=resume,
+            config=config,
+            routing_policy=self.routing_policy,
+            sandbox_config=self.sandbox,
+            meta_profile_snapshot=self.meta_profile,
+        )
 
-        prompt = build_safety_prompt(
-            plan=safety_plan,
+        l1_plan = l1.plan_safety_review(
+            safety_plan=safety_plan,
             ctx=ctx,
             draft=draft,
             rag=rag,
             qa=qa_result,
-            layer="L2",
-            agent="safety",
-            model_tier="balanced",
         )
 
-        raw = self._call_llm(prompt)
+        raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
         findings = self._parse_safety_output(text, safety_plan)
@@ -688,20 +705,17 @@ class HYDEQueryAgent(LLMBaseAgent):
         rag_plan: Any,  # RAGPlan; kept as Any to avoid circular typing issues.
         ctx: Any,  # ExecutionContext; passed through to prompt_builder.
     ) -> str:
-        prompt = build_hyde_prompt(
-            plan=rag_plan,
+        l1_plan = l1.plan_hyde_query(
+            hyde_plan=rag_plan,
             ctx=ctx,
-            layer="L2",
-            agent="rag",
-            model_tier="balanced",
         )
-        raw = self._call_llm(prompt)
+        raw = self._call_llm(l1_plan.prompt)
         text = (raw or "").strip()
 
         record_event(
             "hyde_query_completed",
             {
-                "prompt_id": prompt.prompt_id,
+                "prompt_id": l1_plan.prompt.prompt_id,
                 "text_len": len(text),
             },
         )
