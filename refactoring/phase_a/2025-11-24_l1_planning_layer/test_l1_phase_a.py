@@ -128,7 +128,7 @@ def test_l1_safety_planning_imports():
 def test_cognitive_agents_imports():
     """Verify cognitive agents import successfully."""
     try:
-        from core.cognitive_agents import (
+        from cognitive_agents import (
             StrategyLLMAgent,
             DraftingGuild,
             SemanticQAAgent,
@@ -171,7 +171,7 @@ def test_no_circular_dependencies():
         # Import in order: models -> l1 -> cognitive_agents -> l2
         from core.models import models  # noqa: F401
         import l1  # noqa: F401
-        from core import cognitive_agents  # noqa: F401
+        import cognitive_agents  # noqa: F401
         import l2  # noqa: F401
         
         print("✓ No circular dependencies detected")
