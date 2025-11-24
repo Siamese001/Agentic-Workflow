@@ -3,7 +3,7 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 import os
 from openai import OpenAI
-from ..providers.pinecone_client import PineconeClient, Vector
+from providers.pinecone_client import PineconeClient, Vector
 
 
 @dataclass
