@@ -209,6 +209,8 @@ def test_run_dag_builds_expected_final_state_patch(
 
     assert isinstance(patch["ais_error_events"], list)
     assert patch["ais_error_events"][0]["code"] == "E"
+    assert "safety_passed" in patch
+    assert isinstance(patch["safety_passed"], bool)
 
 
 @patch("l3.collect_error_events", side_effect=Exception("boom"))
@@ -232,6 +234,8 @@ def test_run_dag_tolerates_correction_and_ais_failures(
     # Even on failure paths, keys should be present with safe fallbacks.
     assert "correction_signals" in patch
     assert "ais_error_events" in patch
+    assert "safety_passed" in patch
+    assert isinstance(patch["safety_passed"], bool)
 
 
 @patch("l3.orchestrate_execution")
