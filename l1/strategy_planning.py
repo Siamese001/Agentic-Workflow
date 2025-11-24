@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, List, Optional
 
-import config_profiles_v10_10 as config_profiles
+from config import config_profiles_v10_10 as config_profiles
 from core.models.models import (
     DraftingPlan as WorkflowDraftingPlan,
     ExecutionContext,
@@ -175,4 +175,8 @@ def generate_latent_thinking_plan(
         depth=depth,
         trace=trace,
     )
+
+
+
+
 

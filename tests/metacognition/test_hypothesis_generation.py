@@ -29,3 +29,9 @@ def test_generate_initial_hypotheses_without_evidence():
     hs = generate_initial_hypotheses("task", rag, agent)
     assert len(hs) == 1
     assert hs[0].confidence <= 0.3
+
+
+
+
+
+

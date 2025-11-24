@@ -26,3 +26,9 @@ def test_evaluate_clamps_confidence_range():
 
     evaluated = evaluate_hypotheses([h])[0]
     assert 0.0 <= evaluated.confidence <= 1.0
+
+
+
+
+
+

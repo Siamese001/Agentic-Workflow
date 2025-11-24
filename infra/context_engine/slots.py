@@ -23,3 +23,6 @@ def assign_to_slot(slot: ContextSlot, texts: List[str]) -> List[str]:
     if slot.max_items <= 0:
         return []
     return texts[: slot.max_items]
+
+
+

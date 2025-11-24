@@ -45,3 +45,6 @@ class CostEvent(BaseModel):
     estimated_cost: float
     latency_ms: int
     metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+

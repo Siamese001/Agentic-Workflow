@@ -244,3 +244,6 @@ def run_rag_retrieval(
         hyde_query=hyde_query,
         council_vote=council_vote,
     )
+
+
+

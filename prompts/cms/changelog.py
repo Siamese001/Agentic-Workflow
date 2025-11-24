@@ -62,3 +62,6 @@ def record_prompt_change(prompt: PromptSchema, user: str, comment: str) -> None:
 
 def get_prompt_history(prompt_id: str) -> List[Dict[str, Any]]:
     return get_history(prompt_id)
+
+
+

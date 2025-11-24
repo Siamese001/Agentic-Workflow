@@ -76,3 +76,6 @@ def plan_vector_upsert(
         namespace=namespace,
         metadata=metadata
     )
+
+
+

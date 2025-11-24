@@ -19,3 +19,6 @@ def get_cached_choice(ctx: RoutingContext) -> ModelChoice | None:
 
 def set_cached_choice(ctx: RoutingContext, choice: ModelChoice) -> None:
     _CACHE[_key(ctx)] = choice
+
+
+

@@ -38,3 +38,6 @@ def score_relevance(query: str, items: List[ContextItem]) -> List[Tuple[ContextI
     # Sort by score descending, then id for determinism.
     scored.sort(key=lambda x: (-x[1], x[0].id))
     return scored
+
+
+

@@ -76,3 +76,9 @@ def test_vector_search_flow(mock_openai):
     assert results[0].id == "doc1"
     assert results[0].score == 0.95
     assert results[0].metadata["text"] == "test content"
+
+
+
+
+
+

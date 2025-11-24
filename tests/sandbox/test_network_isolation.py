@@ -13,3 +13,9 @@ def test_allowlist_allows_specific_host():
 
     assert is_destination_allowed(policy, "example.com") is True
     assert is_destination_allowed(policy, "other.com") is False
+
+
+
+
+
+

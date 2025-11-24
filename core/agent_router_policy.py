@@ -25,3 +25,6 @@ def choose_agents_for_task(task_type: str, registry: AgentRegistry) -> List[Agen
         return list(registry.agents.values())
     candidates = registry.find_agents_by_type(desired_type)
     return candidates or list(registry.agents.values())
+
+
+
