@@ -5,7 +5,8 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import Optional
+from typing import Any, Dict, List, Optional
+from uuid import uuid4
 
 from core.models.models import (
     WorkflowState,
@@ -71,6 +72,69 @@ def _apply_rollback(
     )
 
 
+def _prune_memory(state: WorkflowState) -> WorkflowState:
+    """Apply bounded in-memory retention to keep workflow state compact.
+
+    This helper enforces hard caps on message and retrieval history to prevent
+    unbounded growth in long-running workflows while staying strictly within
+    the L4 state/memory responsibilities.
+
+    It is fully schema-safe:
+      - If the state does not expose expected fields (e.g. messages or
+        rag_evidence / rag_history), the original state is returned.
+      - All access to optional attributes is guarded via getattr/hasattr.
+    """
+
+    # If there is nothing to prune, return the state unchanged to avoid
+    # coupling to specific model shapes.
+    has_messages = hasattr(state, "messages")
+    has_rag_evidence = hasattr(state, "rag_evidence")
+    has_rag_history = hasattr(state, "rag_history")
+
+    if not (has_messages or has_rag_evidence or has_rag_history):
+        return state
+
+    max_messages = 200
+    max_rag_items = 200
+
+    patch: Dict[str, Any] = {}
+
+    if has_messages:
+        try:
+            msgs: List[Any] = list(getattr(state, "messages", []) or [])
+        except Exception:  # noqa: BLE001
+            msgs = []
+        if len(msgs) > max_messages:
+            patch["messages"] = msgs[-max_messages:]
+
+    # Prefer rag_evidence if present; fall back to rag_history for legacy
+    # shapes. Both are treated as simple sequences for truncation.
+    if has_rag_evidence:
+        try:
+            rag_items: List[Any] = list(getattr(state, "rag_evidence", []) or [])
+        except Exception:  # noqa: BLE001
+            rag_items = []
+        if len(rag_items) > max_rag_items:
+            patch["rag_evidence"] = rag_items[-max_rag_items:]
+    elif has_rag_history:
+        try:
+            rag_hist: List[Any] = list(getattr(state, "rag_history", []) or [])
+        except Exception:  # noqa: BLE001
+            rag_hist = []
+        if len(rag_hist) > max_rag_items:
+            patch["rag_history"] = rag_hist[-max_rag_items:]
+
+    if not patch:
+        return state
+
+    try:
+        return replace(state, **patch)
+    except Exception:  # noqa: BLE001
+        # If the model shape does not allow these fields, fail closed by
+        # returning the original state.
+        return state
+
+
 # =============================================================================
 # Public API
 # =============================================================================
@@ -85,7 +149,7 @@ def apply_state_transition(
     span = start_span("l4.apply_state_transition", ctx=ctx.span_context() if ctx else None)
     try:
         new_state = _apply_patch(state, event)
-        return new_state
+        return _prune_memory(new_state)
     except Exception as exc:  # noqa: BLE001
         log_exception("l4.state_transition_error", exc)
         return state
@@ -158,3 +222,55 @@ def apply_state_patch(
 
     event = StateTransitionEvent(event_id="patch", patch=patch)
     return apply_state_transition(state, event, ctx)
+
+
+def record_correction_event(
+    state: WorkflowState,
+    surface: str,
+    message: str,
+    metadata: Optional[Dict[str, Any]] = None,
+    ctx: Optional[ExecutionContext] = None,
+) -> WorkflowState:
+    """Append a correction event to the workflow state's journal.
+
+    This helper restores the v10_8/v10_9 correction-journal behavior while
+    staying strictly within the L4 state/memory layer:
+
+      - No planning, execution, or safety decisions.
+      - No external tool or LLM calls.
+      - Purely appends structured entries to a journal field when present.
+    """
+
+    # If the underlying WorkflowState schema does not expose a
+    # correction_journal attribute, this becomes a no-op to avoid
+    # breaking existing callers.
+    if not hasattr(state, "correction_journal"):
+        return state
+
+    span = start_span("l4.record_correction_event", ctx=ctx.span_context() if ctx else None)
+    try:
+        try:
+            journal: List[Dict[str, Any]] = list(
+                getattr(state, "correction_journal", []) or []
+            )
+        except Exception:  # noqa: BLE001
+            journal = []
+
+        entry: Dict[str, Any] = {
+            "surface": str(surface),
+            "message": str(message),
+            "metadata": dict(metadata or {}),
+        }
+        journal.append(entry)
+
+        event = StateTransitionEvent(
+            event_id=f"cj_{uuid4().hex}",
+            patch={"correction_journal": journal},
+        )
+        return _apply_patch(state, event)
+    except Exception as exc:  # noqa: BLE001
+        log_exception("l4.correction_journal_error", exc)
+        return state
+    finally:
+        end_span(span)
+
