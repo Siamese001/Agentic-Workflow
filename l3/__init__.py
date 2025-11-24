@@ -6,7 +6,7 @@ No business logic, tool execution, or state management is allowed here.
 """
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callable
-from enum import Enum, auto
+from enum import Enum
 from dataclasses import dataclass, field
 
 T = TypeVar('T')
@@ -96,7 +96,9 @@ class DAGResult:
 async def run_dag(
     nodes: List[WorkflowNode],
     edges: List[Edge],
-    initial_context: Dict[str, Any]
+    initial_context: Dict[str, Any],
+    *,
+    max_retries: int = 0
 ) -> DAGResult:
     """Execute a DAG workflow.
     
