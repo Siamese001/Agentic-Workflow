@@ -26,6 +26,7 @@ from core.models.models import (
     SafetyCheck,
     SafetyPlan,
     WorkflowPlanBundle,
+    PromptMeta,
     ProfileInferenceResult,
     SeniorityClassifierResult,
     SkillClusterResult,
@@ -117,6 +118,56 @@ def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot
         "domain_label": meta_profile.domain_label,
         "skill_cluster_labels": list(meta_profile.skill_cluster_labels),
     }
+
+
+def _build_prompt_meta(
+    profile_spec: ExecutionProfileSpec,
+    meta_profile: Optional[MetaProfileSnapshot],
+) -> PromptMeta:
+    """Build L1 prompt-planning metadata from profile + meta-profile.
+
+    This helper is intentionally pure and limited to assembling a PromptMeta
+    structure. It does not render prompts, call tools, or touch state.
+    """
+
+    sections: List[Dict[str, Any]] = []
+
+    # High-level conceptual sections broadly aligned with Strategy/RAG/Drafting/QA/Safety.
+    sections.append({"id": "strategy", "role": "planner", "order": 0})
+    sections.append({"id": "rag", "role": "retriever", "order": 1})
+    sections.append({"id": "drafting", "role": "drafter", "order": 2})
+    sections.append({"id": "qa", "role": "qa", "order": 3})
+    sections.append({"id": "safety", "role": "safety", "order": 4})
+
+    injection_types: List[str] = [
+        "job_posting",
+        "candidate_resume",
+        "rag_evidence",
+        "profile_inference",
+        "safety_policies",
+    ]
+
+    taxonomy: Dict[str, Any] = {
+        "profile_id": profile_spec.id,
+        "safety_tier": getattr(profile_spec.safety_tier, "value", profile_spec.safety_tier),
+        "model_tier": getattr(profile_spec.model_tier, "value", profile_spec.model_tier),
+    }
+
+    meta_bias: Dict[str, Any] = {}
+    if meta_profile is not None:
+        meta_bias = {
+            "reasoning_mode_hint": meta_profile.reasoning_mode_hint,
+            "elevated_caution": meta_profile.elevated_caution,
+            "extra_qa_passes": meta_profile.extra_qa_passes,
+            "prefers_fast_models": meta_profile.prefers_fast_models,
+        }
+
+    return PromptMeta(
+        sections=sections,
+        injection_types=injection_types,
+        taxonomy=taxonomy,
+        meta_bias=meta_bias,
+    )
 
 
 # =============================================================================
@@ -728,6 +779,8 @@ def build_workflow_plan_bundle(
     qa_plan = _build_qa_plan(profile_spec, meta_profile, complexity)
     safety_plan = _build_safety_plan(profile_spec, meta_profile)
 
+    prompt_meta = _build_prompt_meta(profile_spec, meta_profile)
+
     routing_meta = _map_meta_profile_to_routing_hint(meta_profile)
     routing_meta["profile_inference"] = profile_inference.model_dump()
 
@@ -745,4 +798,5 @@ def build_workflow_plan_bundle(
         qa=qa_plan,
         safety=safety_plan,
         routing_hint=routing_hint,
+        prompt_meta=prompt_meta,
     )
