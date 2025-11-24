@@ -9,6 +9,9 @@ from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callab
 from enum import Enum
 from dataclasses import dataclass, field
 from l3.workflow_graph import run_workflow_graph  # Added import
+from core.di_container import inject_dependencies, get_service
+from l4.pinecone_adapter import PineconeAdapter
+from l5.policy import SafetyEngine
 
 T = TypeVar('T')
 
@@ -114,6 +117,9 @@ def run_dag(ctx, plans, *, max_retries: int = 0):
     Returns:
         DAGResult-like object with l2_results and other fields
     """
+    # Ensure dependencies are injected via DI container
+    ctx = inject_dependencies(ctx)
+    
     # Call orchestrate_execution directly (this is what tests mock)
     result = orchestrate_execution(plans, ctx)
     
