@@ -36,7 +36,7 @@ class InjectionPattern:
     pattern: str
     description: str
     severity: Severity
-    examples: List[str] = None
+    examples: Optional[List[str]] = None
 
 
 class InjectionDetector:
@@ -265,7 +265,7 @@ class InjectionDetector:
     
     def _detect_multistage_attacks(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
         """Detect multi-stage attack patterns combining multiple injection types."""
-        findings = []
+        findings: List[SafetyFinding] = []
         
         # Check for combinations of different attack patterns
         attack_indicators = {
@@ -335,7 +335,7 @@ class InjectionDetector:
     
     def _check_nested_structures(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
         """Check for nested structures that might hide injections."""
-        findings = []
+        findings: List[SafetyFinding] = []
         
         # Check for deeply nested JSON/markdown structures
         nesting_pattern = r'(\{[^{}]*\{[^{}]*\{)'
@@ -360,7 +360,7 @@ class InjectionDetector:
     
     def _check_command_sequences(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
         """Check for command sequences that might indicate tool injection."""
-        findings = []
+        findings: List[SafetyFinding] = []
         
         # Look for command-like sequences
         command_patterns = [

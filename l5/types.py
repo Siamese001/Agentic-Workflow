@@ -94,7 +94,7 @@ class SafetyFinding:
         """Convert to a dictionary for serialization."""
         return {
             'id': self.id,
-            'type': self.type.value,
+            'type': self.type.value if isinstance(self.type, FindingType) else self.type,
             'severity': self.severity.value,
             'message': self.message,
             'details': self.details,
