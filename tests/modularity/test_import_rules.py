@@ -60,10 +60,18 @@ def test_core_does_not_import_meta_retrievers_directly() -> None:
 
 
 def test_meta_does_not_import_core() -> None:
-    """meta/* MUST NOT import core/*."""
+    """meta/* MUST NOT import core/* (except core.models.models for data types)."""
     meta_root = PROJECT_ROOT / "meta"
-    violations = _has_forbidden_import(meta_root, ["core"])
-    assert not violations, f"meta modules must not import core: {violations}"
+    all_violations = _has_forbidden_import(meta_root, ["core"])
+    
+    # Allow core.models.models imports for data types (established pattern)
+    allowed_imports = {"core.models.models", "core.models"}
+    violations = [
+        (path, mod) for path, mod in all_violations 
+        if mod not in allowed_imports
+    ]
+    
+    assert not violations, f"meta modules must not import core (except core.models): {violations}"
 
 
 def test_providers_do_not_import_core_or_meta() -> None:

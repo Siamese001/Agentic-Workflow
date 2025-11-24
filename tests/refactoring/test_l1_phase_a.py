@@ -169,7 +169,7 @@ def test_no_circular_dependencies():
     """Verify no circular dependencies exist."""
     try:
         # Import in order: models -> l1 -> cognitive_agents -> l2
-        from core.models import core.models.models as models  # noqa: F401
+        import core.models.models as models  # noqa: F401
         import l1  # noqa: F401
         import cognitive_agents  # noqa: F401
         import l2  # noqa: F401
