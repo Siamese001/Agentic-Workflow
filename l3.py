@@ -10,8 +10,8 @@ from typing import Any, Dict, List
 
 from core.models.models import WorkflowPlanBundle, ExecutionContext, L2ResultBundle
 from runtime.observability import start_span, end_span, emit_node_event, log_exception
-from core.workflow_graph import run_workflow_graph
-from core.l5 import safety_gate
+from workflow_graph import run_workflow_graph
+from l5 import safety_gate
 from self_correction import evaluate_all_surfaces, aggregate_correction_signals
 from eval.health.adapter import collect_error_events
 
