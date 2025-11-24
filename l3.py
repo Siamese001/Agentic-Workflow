@@ -12,6 +12,8 @@ from core.models.models import WorkflowPlanBundle, ExecutionContext, L2ResultBun
 from runtime.observability import start_span, end_span, emit_node_event, log_exception
 from core.workflow_graph import run_workflow_graph
 from core.l5 import safety_gate
+from self_correction import evaluate_all_surfaces, aggregate_correction_signals
+from eval.health.adapter import collect_error_events
 
 
 # =============================================================================
@@ -28,6 +30,7 @@ class DAGResult:
     safety_passed: bool
     corrected: bool = False
     corrections: List[Any] = field(default_factory=list)
+    correction_signals: List[Any] = field(default_factory=list)
 
 
 async def orchestrate_execution(
@@ -70,6 +73,54 @@ def run_dag(
     """Runs the orchestrated workflow from synchronous code and returns a compact view of strategy, evidence, drafted sections, QA, and safety so resume runs are easy to review and compare."""
 
     l2_results = asyncio.run(orchestrate_execution(plans, ctx))
+
+    # ------------------------------------------------------------------
+    # Best-effort correction signal evaluation (META-only, no mutation).
+    # ------------------------------------------------------------------
+    correction_signals: List[Dict[str, Any]] = []
+    try:
+        signals = evaluate_all_surfaces(
+            strategy=l2_results.strategy,
+            rag=l2_results.rag,
+            drafting=l2_results.drafting,
+            qa=l2_results.qa,
+            safety=l2_results.safety,
+        )
+        # Attach all surface-level signals as plain dicts for schema safety.
+        for s in signals:
+            correction_signals.append(
+                {
+                    "surface": getattr(s, "surface", None),
+                    "severity": getattr(s, "severity", None),
+                    "reason": getattr(s, "reason", None),
+                    "recommended_action": getattr(s, "recommended_action", None),
+                }
+            )
+
+        # Optionally highlight the aggregate signal in the same structure.
+        best = aggregate_correction_signals(signals)
+        if best is not None and getattr(best, "needs_correction", False):
+            correction_signals.append(
+                {
+                    "surface": getattr(best, "surface", None),
+                    "severity": getattr(best, "severity", None),
+                    "reason": getattr(best, "reason", None),
+                    "recommended_action": getattr(best, "recommended_action", None),
+                    "aggregate": True,
+                }
+            )
+    except Exception as exc:  # noqa: BLE001
+        # Correction evaluation must never break synchronous callers.
+        log_exception("l3.run_dag.correction_signals_error", exc)
+
+    # ------------------------------------------------------------------
+    # AIS error telemetry snapshot (observation-only, no decisions here).
+    # ------------------------------------------------------------------
+    ais_error_events: List[Dict[str, Any]] = []
+    try:
+        ais_error_events = collect_error_events() or []
+    except Exception as exc:  # noqa: BLE001
+        log_exception("l3.run_dag.ais_collection_error", exc)
 
     # Derive a simple strategy_text from the chosen or first strategy branch.
     strategy_text = ""
@@ -156,7 +207,10 @@ def run_dag(
         "drafted_sections": drafted_sections,
         "qa_findings": qa_findings,
         "safety_findings": safety_findings,
-        "correction_signals": [],
+        # L3 attaches correction signals and AIS error telemetry as a compact
+        # view only; L4 state schema does not need to know about them.
+        "correction_signals": correction_signals,
+        "ais_error_events": ais_error_events,
         "safety_passed": safety_passed,
     }
 
@@ -166,4 +220,5 @@ def run_dag(
         safety_passed=safety_passed,
         corrected=False,
         corrections=[],
+        correction_signals=correction_signals,
     )

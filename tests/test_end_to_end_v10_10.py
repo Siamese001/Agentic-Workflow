@@ -77,6 +77,7 @@ GOLDEN_PATCH = {
         {"id": "pii_detection", "category": "none", "blocking": False, "reason": "Safe"}
     ],
     "correction_signals": [],
+    "ais_error_events": [],
     "safety_passed": True,
 }
 
@@ -152,6 +153,43 @@ def test_e2e_full_pipeline(mocked_llm, ctx):
 
     for key in GOLDEN_PATCH:
         assert key in patch
+
+
+@patch("runtime_utils.invoke_model", side_effect=mock_llm)
+def test_e2e_correction_signals_and_ais_snapshot(mocked_llm, ctx):
+    """L3 must expose correction signals and AIS error telemetry as a compact, read-only view.
+
+    This test only checks presence and basic shape so the contract stays
+    stable without overfitting to specific heuristics.
+    """
+
+    plans = build_workflow_plan_bundle(
+        job=ctx.job,
+        resume=ctx.resume,
+        config=ctx.config,
+        meta_profile=None,
+        routing_policy=ctx.routing_policy,
+        prompt_registry=ctx.prompt_registry,
+    )
+    dag_result = run_dag(ctx, plans)
+
+    # DAGResult field-level view.
+    assert isinstance(dag_result.correction_signals, list)
+
+    # final_state_patch compact view.
+    patch = dag_result.final_state_patch
+    assert "correction_signals" in patch
+    assert isinstance(patch["correction_signals"], list)
+    assert "ais_error_events" in patch
+    assert isinstance(patch["ais_error_events"], list)
+
+    # When signals are present, each entry should be a simple, JSON-safe dict.
+    for entry in patch["correction_signals"]:
+        assert isinstance(entry, dict)
+        assert "surface" in entry
+        assert "severity" in entry
+        assert "reason" in entry
+        assert "recommended_action" in entry
 
 
 @patch("runtime_utils.invoke_model", side_effect=mock_llm)
