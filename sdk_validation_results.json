@@ -1,0 +1,194 @@
+[
+  {
+    "sdk_name": "pydantic",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version check passed, schema validation working",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "numpy",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 2.3.5, operations working",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "pandas",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 2.3.3, DataFrame operations working",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "tenacity",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Retry decorator working",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "rich",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Console initialization successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "python-dotenv",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "httpx",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 0.28.1",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "openai",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 2.8.1, SDK import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "anthropic",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 0.74.1, SDK import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "google-generativeai",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "SDK import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "redis",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 7.1.0, SDK import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "chromadb",
+    "install_status": "FAILED",
+    "test_results": "FAIL",
+    "details": "",
+    "error": "unable to infer type for attribute \"chroma_server_nofile\"",
+    "follow_up": "Review error and reinstall if needed"
+  },
+  {
+    "sdk_name": "pinecone-client",
+    "install_status": "FAILED",
+    "test_results": "FAIL",
+    "details": "",
+    "error": "The official Pinecone python package has been renamed from `pinecone-client` to `pinecone`. Please remove `pinecone-client` from your project dependencies and add `pinecone` instead. See the README at https://github.com/pinecone-io/pinecone-python-client for more information on using the python SDK.",
+    "follow_up": "Review error and reinstall if needed"
+  },
+  {
+    "sdk_name": "faiss-cpu",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Index creation successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "scikit-learn",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 1.7.2",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "sentence-transformers",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "opentelemetry-api",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Trace API import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "opentelemetry-sdk",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "TracerProvider initialization successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "pytest",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Version: 9.0.1",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "pytest-asyncio",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "mcp",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "SDK import successful (version: unknown)",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "cache_redis (project)",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Project module import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "vector_store_chroma (project)",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "Project module import successful",
+    "error": "",
+    "follow_up": ""
+  },
+  {
+    "sdk_name": "providers (project)",
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "All provider modules import successful",
+    "error": "",
+    "follow_up": ""
+  }
+]
