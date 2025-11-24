@@ -121,6 +121,25 @@ def run_dag(
         ais_error_events = collect_error_events() or []
     except Exception as exc:  # noqa: BLE001
         log_exception("l3.run_dag.ais_collection_error", exc)
+    else:
+        # Normalize AIS error events into additional correction_signals entries so
+        # downstream consumers can see both self-correction signals and
+        # infrastructure-observed issues in one compact list. These remain
+        # observation-only and do not drive retries or re-planning at L3.
+        for evt in ais_error_events:
+            try:
+                correction_signals.append(
+                    {
+                        "surface": "ais.error",  # telemetry source
+                        "severity": evt.get("severity", "error"),
+                        "reason": evt.get("error_code") or evt.get("code"),
+                        "recommended_action": None,
+                        "message": evt.get("message"),
+                    }
+                )
+            except Exception:
+                # AIS normalization must never break run_dag; ignore bad events.
+                continue
 
     # Derive a simple strategy_text from the chosen or first strategy branch.
     strategy_text = ""
@@ -214,11 +233,16 @@ def run_dag(
         "safety_passed": safety_passed,
     }
 
+    # Mark the run as corrected if any correction signals (including AIS-derived)
+    # are present. This remains an observation-only flag; it does not trigger
+    # retries or re-planning at L3.
+    corrected = bool(correction_signals)
+
     return DAGResult(
         l2_results=l2_results,
         final_state_patch=final_state_patch,
         safety_passed=safety_passed,
-        corrected=False,
+        corrected=corrected,
         corrections=[],
         correction_signals=correction_signals,
     )
