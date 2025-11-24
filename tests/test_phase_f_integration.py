@@ -8,7 +8,7 @@ This module tests the full integration of:
 """
 
 import pytest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from unittest.mock import Mock, MagicMock, patch
 
 from l1.v6_prompt_adapter import (
@@ -245,7 +245,7 @@ class TestTemporalKG:
     
     def test_temporal_fact_creation(self):
         """Test temporal fact creation."""
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         fact = TemporalFact(
             id="fact_001",
             subject="user_123",
@@ -262,7 +262,7 @@ class TestTemporalKG:
     
     def test_temporal_fact_to_text(self):
         """Test fact to text conversion."""
-        now = datetime.utcnow()
+        now = datetime.now(UTC)
         fact = TemporalFact(
             id="fact_001",
             subject="user_123",

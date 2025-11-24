@@ -167,7 +167,7 @@ class InjectionDetector:
         Returns:
             List of safety findings for detected injections
         """
-        findings = []
+        findings: List[SafetyFinding] = []
         
         for pattern in self.all_patterns:
             matches = re.finditer(pattern.pattern, content, re.MULTILINE | re.DOTALL)
@@ -177,28 +177,133 @@ class InjectionDetector:
                     id=f"injection_{pattern.injection_type.value}_{len(findings)}",
                     type=pattern.injection_type.value,
                     severity=pattern.severity,
-                    message=f"{pattern.description}: '{match.group()[:100]}{'...' if len(match.group()) > 100 else ''}'",
+                    message=f"{pattern.description} detected",
                     details={
                         "pattern": pattern.pattern,
-                        "match": match.group(),
-                        "position": match.span(),
-                        "injection_type": pattern.injection_type.value,
-                        "examples": pattern.examples or []
+                        "match": match.group()[:100] + "..." if len(match.group()) > 100 else match.group(),
+                        "position": match.span()
                     },
                     location=f"{context.source}->{context.destination}"
                 )
                 findings.append(finding)
         
-        # Additional checks for specific attack vectors
-        findings.extend(self._check_base64_content(content, context))
-        findings.extend(self._check_nested_structures(content, context))
-        findings.extend(self._check_command_sequences(content, context))
+        # Detect sophisticated injection types
+        findings.extend(self._detect_sql_injection(content, context))
+        findings.extend(self._detect_markup_injection(content, context))
+        findings.extend(self._detect_multistage_attacks(content, context))
+        
+        return findings
+    
+    def _detect_sql_injection(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
+        """Detect SQL injection patterns."""
+        findings: List[SafetyFinding] = []
+        
+        # SQL injection patterns
+        sql_patterns = [
+            r"(?i)(union|select|insert|update|delete|drop|create|alter)\s+.*\s+(from|into|table)",
+            r"(?i)('|\"|`).*(\s*or\s+.*=.*|.*--|#|/\*|\*/).*('|\"|`)",
+            r"(?i)(exec|execute)\s*\(\s*@|xp_cmdshell|sp_executesql",
+            r"(?i)(waitfor|delay)\s+(delay|time)",
+            r"(?i)(benchmark|sleep)\s*\(",
+        ]
+        
+        for pattern in sql_patterns:
+            matches = re.finditer(pattern, content)
+            for match in matches:
+                finding = SafetyFinding(
+                    id=f"sql_injection_{len(findings)}",
+                    type="sql_injection",
+                    severity=Severity.CRITICAL,
+                    message="SQL injection pattern detected",
+                    details={
+                        "pattern": pattern,
+                        "match": match.group(),
+                        "position": match.span()
+                    },
+                    location=f"{context.source}->{context.destination}"
+                )
+                findings.append(finding)
+        
+        return findings
+    
+    def _detect_markup_injection(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
+        """Detect XML/HTML injection patterns."""
+        findings: List[SafetyFinding] = []
+        
+        # HTML/XML injection patterns
+        markup_patterns = [
+            r"<script[^>]*>.*?</script>",
+            r"<iframe[^>]*>.*?</iframe>",
+            r"<object[^>]*>.*?</object>",
+            r"<embed[^>]*>.*?</embed>",
+            r"<form[^>]*action=[^>]*>",
+            r"<input[^>]*value=[^>]*>",
+            r"javascript:\s*[^\\s]*",
+            r"on\w+\s*=\s*[\"'][^\"']*[\"']",
+            r"<!\[CDATA\[.*?\]\]>",
+            r"<\?xml.*?\?>",
+        ]
+        
+        for pattern in markup_patterns:
+            matches = re.finditer(pattern, content, re.IGNORECASE | re.DOTALL)
+            for match in matches:
+                finding = SafetyFinding(
+                    id=f"markup_injection_{len(findings)}",
+                    type="markup_injection",
+                    severity=Severity.HIGH,
+                    message="HTML/XML injection pattern detected",
+                    details={
+                        "pattern": pattern,
+                        "match": match.group()[:100] + "..." if len(match.group()) > 100 else match.group(),
+                        "position": match.span()
+                    },
+                    location=f"{context.source}->{context.destination}"
+                )
+                findings.append(finding)
+        
+        return findings
+    
+    def _detect_multistage_attacks(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
+        """Detect multi-stage attack patterns combining multiple injection types."""
+        findings = []
+        
+        # Check for combinations of different attack patterns
+        attack_indicators = {
+            "prompt_override": r"(?i)(ignore|forget|override).*(instructions|rules|prompt)",
+            "base64_content": r"[A-Za-z0-9+/]{40,}={0,2}",
+            "command_execution": r"(?i)(exec|run|call|system|shell)",
+            "sql_syntax": r"(?i)(union|select|insert|update|delete|drop)",
+            "markup_tags": r"<[^>]+>",
+        }
+        
+        detected_attacks = []
+        for attack_type, pattern in attack_indicators.items():
+            if re.search(pattern, content):
+                detected_attacks.append(attack_type)
+        
+        # If multiple attack types detected, escalate severity
+        if len(detected_attacks) >= 2:
+            severity = Severity.CRITICAL if len(detected_attacks) >= 3 else Severity.HIGH
+            
+            finding = SafetyFinding(
+                id=f"multistage_attack_{len(findings)}",
+                type="multistage_attack",
+                severity=severity,
+                message=f"Multi-stage attack detected: {', '.join(detected_attacks)}",
+                details={
+                    "attack_types": detected_attacks,
+                    "attack_count": len(detected_attacks),
+                    "content_preview": content[:200] + "..." if len(content) > 200 else content
+                },
+                location=f"{context.source}->{context.destination}"
+            )
+            findings.append(finding)
         
         return findings
     
     def _check_base64_content(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
         """Check for suspicious base64 content."""
-        findings = []
+        findings: List[SafetyFinding] = []
         
         # Look for base64 patterns that might hide commands
         base64_pattern = r'[A-Za-z0-9+/]{40,}={0,2}'

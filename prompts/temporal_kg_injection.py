@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, UTC, timedelta
 from enum import Enum
 
 from prompts.instructional_injection_v6 import InstructionalExtension, ExtensionContent
@@ -57,7 +57,7 @@ class TemporalFact:
 
 
 @dataclass
-class TemporalRelation:
+class TemporalFactRelation:
     """Relationship between temporal facts."""
     
     relation_id: str
@@ -123,7 +123,7 @@ class TemporalKnowledgeGraph:
     def get_temporal_context(self, query: str, current_time: Optional[datetime] = None) -> str:
         """Get temporal context formatted for prompts."""
         if current_time is None:
-            current_time = datetime.utcnow()
+            current_time = datetime.now(UTC)
         
         relevant_facts = self.search_facts(query, current_time)
         
