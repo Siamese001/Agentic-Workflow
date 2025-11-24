@@ -6,8 +6,8 @@ strict L1-L5 atomicity and prevent direct service imports.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, TypeVar, Generic, Protocol, runtime_checkable
-from dataclasses import dataclass
+from typing import Any, Dict, Optional, TypeVar, Protocol, runtime_checkable
+from dataclasses import dataclass, field
 import logging
 
 from l4.pinecone_adapter import PineconeAdapter
@@ -36,11 +36,7 @@ class DIContainer(Protocol):
 class SimpleDIContainer:
     """Simple dependency injection container."""
     
-    _services: Dict[type, Any] = None
-    
-    def __post_init__(self) -> None:
-        if self._services is None:
-            self._services = {}
+    _services: Dict[type, Any] = field(default_factory=dict)
     
     def get(self, service_type: type[T]) -> Optional[T]:
         """Get a service instance by type."""

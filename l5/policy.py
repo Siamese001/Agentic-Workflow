@@ -4,7 +4,7 @@ L5 - Safety/Policy Layer - Policy Interface and Engine
 Defines the policy interface and implements the safety engine.
 """
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Protocol, runtime_checkable, TypeVar, Generic, Type
+from typing import Any, Dict, List, Optional, TypeVar
 from dataclasses import dataclass, field
 import logging
 import uuid
@@ -16,13 +16,16 @@ from .types import (
     PolicyDecision,
     Verdict,
     Severity,
-    SafetyPolicy,
-    SafetyError,
-    PolicyEvaluationError,
-    PolicyConfigurationError
+    SafetyPolicy
 )
 
 logger = logging.getLogger(__name__)
+
+
+class PolicyConfigurationError(Exception):
+    """Raised when policy configuration is invalid."""
+    pass
+
 
 T = TypeVar('T')
 

@@ -5,7 +5,7 @@ This layer handles all safety checks and policy enforcement.
 No business logic, tool execution, or state management is allowed here.
 """
 from __future__ import annotations
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 # Re-export canonical types from l5.types
 from .types import (
