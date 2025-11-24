@@ -27,6 +27,9 @@ from .policy import (
     SafetyEngine,
 )
 
+# Alias for backward compatibility
+SafetySystem = SafetyEngine
+
 
 # =============================================================================
 # Adapter Functions for Legacy/Test Compatibility

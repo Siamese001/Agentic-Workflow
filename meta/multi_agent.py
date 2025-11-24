@@ -27,7 +27,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List
 
-from models import (  # type: ignore[attr-defined]
+from core.models.models import (  # type: ignore[attr-defined]
     AgentMessage,
     MultiAgentVote,
     MultiAgentCouncilResult,

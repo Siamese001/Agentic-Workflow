@@ -17,7 +17,7 @@ from infra.reasoning.cot import expand_chain_of_thought
 from infra.reasoning.react import run_react_loop
 from infra.reasoning.reflexion import apply_reflexion
 from infra.reasoning.tot import tree_search
-from prompt_builder import (
+from meta.prompt_builder import (
     PromptInstance,
     build_drafting_prompt,
     build_strategy_prompt,

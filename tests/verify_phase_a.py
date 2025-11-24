@@ -74,7 +74,7 @@ def verify_phase_a():
     
     # Check 5: No circular dependencies
     try:
-        from core.models import models
+        from core.models import core.models.models as models
         import l1
         import cognitive_agents
         import l2

@@ -3,7 +3,7 @@ from __future__ import annotations
 # In this codebase, event dataclasses live in models.py. This module exists
 # primarily as a semantic home for event types at the observability layer.
 
-from models import (
+from core.models.models import (
     TelemetryEvent,
     RetrievalAttemptEvent,
     RetrievalSuccessEvent,

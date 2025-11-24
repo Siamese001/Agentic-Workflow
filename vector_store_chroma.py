@@ -108,6 +108,29 @@ def chroma_hybrid_search(
         raise ChromaClientError(f"Chroma query failed: {exc}") from exc
 
 
+def chroma_semantic_cache_lookup(
+    collection,
+    query_texts: Sequence[str],
+    *,
+    n_results: int = 1,
+    where: Optional[Dict[str, Any]] = None,
+) -> Dict[str, Any]:
+    """Look up cached results from a Chroma collection.
+
+    This is a thin wrapper around ``collection.query`` for semantic cache lookups.
+    Returns the raw Chroma response.
+    """
+
+    try:
+        return collection.query(
+            query_texts=list(query_texts),
+            n_results=n_results,
+            where=where,
+        )
+    except Exception as exc:  # pragma: no cover - network/dependency dependent
+        raise ChromaClientError(f"Chroma cache lookup failed: {exc}") from exc
+
+
 def chroma_semantic_cache_upsert(
     collection,
     ids: Sequence[str],

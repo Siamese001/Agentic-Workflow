@@ -9,7 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Awaitable, Callable, Dict, List, Optional, TypeVar
 
-from l5.integration import SafetySystem
+from l5 import SafetySystem
 
 from .integration import WorkflowExecutionConfig, execute_workflow
 from .models.dag_models import DAGResult

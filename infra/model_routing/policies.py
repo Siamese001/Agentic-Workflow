@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Optional
 
-from models import ExecutionProfile
+from core.models.models import ExecutionProfile
 
 from .models import ModelChoice, RoutingContext
 

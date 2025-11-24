@@ -34,7 +34,7 @@ from typing import Any, Dict, Optional, Tuple, Callable, Awaitable
 from orchestration.model_routing import RoutingContext, select_model
 from runtime.observability.agentic_events import CostEvent
 from runtime.observability.agentic_collectors import append_event as append_agentic_event
-from models import (
+from core.models.models import (
     ResilienceError,
     TransientError,
     PermanentError,

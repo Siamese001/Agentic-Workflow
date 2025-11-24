@@ -25,7 +25,7 @@ Strict L3 constraints:
 - No safety evaluation
 """
 
-# FILE: workflow_graph.py
+# FILE: l3/workflow_graph.py
 
 from __future__ import annotations
 
@@ -61,7 +61,7 @@ from l2.execution import (
 from core.routing import route_task_to_agent
 
 # Self-correction surfaces (meta-layer, no L1–L5 violations)
-from self_correction import (
+from meta.self_correction import (
     evaluate_all_surfaces,
     aggregate_correction_signals,
 )

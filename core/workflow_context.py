@@ -8,7 +8,7 @@ from typing import Any, Awaitable, Callable, Dict, Optional, Type, TypeVar, Gene
 
 from l4.manager import StateManager
 from l4.types import StateSnapshot
-from l5.integration import SafetySystem
+from l5 import SafetySystem
 from l5.types import PolicyDecision, SafetyContext, Verdict
 
 from .errors import (
