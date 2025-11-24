@@ -8,8 +8,7 @@ from __future__ import annotations
 
 import re
 import base64
-import json
-from typing import Any, List, Optional
+from typing import List, Optional
 from dataclasses import dataclass
 from enum import Enum
 import logging
@@ -242,7 +241,7 @@ class InjectionDetector:
                 id=f"nested_injection_{len(findings)}",
                 type="nested_structure_injection",
                 severity=Severity.MEDIUM,
-                message=f"Deeply nested structure detected: potential injection vector",
+                message="Deeply nested structure detected: potential injection vector",
                 details={
                     "structure": match.group(),
                     "position": match.span(),
@@ -272,7 +271,7 @@ class InjectionDetector:
                     id=f"command_injection_{len(findings)}",
                     type="command_injection",
                     severity=Severity.HIGH,
-                    message=f"Command sequence detected: potential tool injection",
+                    message="Command sequence detected: potential tool injection",
                     details={
                         "command": match.group(),
                         "position": match.span(),

@@ -4,11 +4,10 @@ L5 - Safety/Policy Layer - Core Types
 Defines the fundamental types for safety and policy enforcement.
 """
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, TypeVar, Generic, Callable, Union
+from typing import Any, Dict, List, Optional, TypeVar
 from dataclasses import dataclass, field
 from datetime import datetime
-from enum import Enum, auto
-import json
+from enum import Enum
 from typing_extensions import Protocol, runtime_checkable
 
 T = TypeVar('T')
