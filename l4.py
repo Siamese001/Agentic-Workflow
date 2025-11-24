@@ -1,28 +1,6 @@
+"""Manages workflow state, checkpoints, and rollbacks so each resume run can move forward safely, be traced over time, and be restored cleanly if something goes wrong."""
+
 # FILE: 10_10/l4.py
-"""
-State Adapter · L4 Mutation Layer (v10_10 · Phase 3)
-====================================================
-
-Responsibilities:
-    • Sole legal mutation surface for WorkflowState.
-    • Apply StateTransitionEvent → updated WorkflowState.
-    • Implement checkpoint + rollback hooks (G34–G36).
-    • Emit state-transition telemetry (G15).
-    • Must not:
-          – call LLMs,
-          – retrieve/rank,
-          – plan,
-          – enforce safety,
-          – orchestrate DAG.
-
-Inputs:
-    • WorkflowState
-    • StateTransitionEvent  (typed, atomic)
-    • ExecutionContext      (read-only for telemetry/span)
-
-Output:
-    • New WorkflowState (pure functional update)
-"""
 
 from __future__ import annotations
 
@@ -49,15 +27,7 @@ def _apply_patch(
     state: WorkflowState,
     event: StateTransitionEvent,
 ) -> WorkflowState:
-    """
-    Core patch application.
-
-    Requirements:
-        • Deterministic, type-safe update.
-        • No side effects.
-        • No LLM calls.
-        • No orchestration.
-    """
+    """Applies a state patch described by an event so workflow progress for a resume is updated in a controlled, reversible way."""
     # event.patch may be a dict or a typed patch object depending on
     # Phase-0/Phase-1 canonical models. We assume Phase-0 canonical structure.
     patch = getattr(event, "patch", None)
@@ -76,9 +46,7 @@ def _apply_patch(
 
 
 def _make_checkpoint(state: WorkflowState) -> Checkpoint:
-    """
-    Create a new immutable checkpoint snapshot of the WorkflowState.
-    """
+    """Creates an immutable snapshot of the workflow state so a resume run can be safely restored to this point later."""
     return Checkpoint(snapshot=state)
 
 
@@ -86,9 +54,7 @@ def _apply_rollback(
     state: WorkflowState,
     request: RollbackRequest,
 ) -> RollbackResult:
-    """
-    Roll back to the specified checkpoint, returning the new state and localized result.
-    """
+    """Rolls back to a given checkpoint and reports whether the resume state was successfully restored."""
     checkpoint = getattr(request, "checkpoint", None)
     if checkpoint is None or getattr(checkpoint, "snapshot", None) is None:
         return RollbackResult(
@@ -115,11 +81,7 @@ def apply_state_transition(
     event: StateTransitionEvent,
     ctx: Optional[ExecutionContext] = None,
 ) -> WorkflowState:
-    """
-    Apply a single typed StateTransitionEvent to the WorkflowState.
-
-    Emits L4-layer state-transition telemetry.
-    """
+    """Applies a single, well-defined change to workflow state so the system has a reliable, auditable view of where each resume is in the process."""
     span = start_span("l4.apply_state_transition", ctx=ctx.span_context() if ctx else None)
     try:
         new_state = _apply_patch(state, event)
@@ -135,11 +97,7 @@ def commit_checkpoint(
     state: WorkflowState,
     ctx: Optional[ExecutionContext] = None,
 ) -> Checkpoint:
-    """
-    Create a deterministic checkpoint (G34).
-
-    Does not mutate state; returns a new Checkpoint object.
-    """
+    """Creates a checkpoint of the current workflow state so a resume run can be rolled back to a clean, known-good position if needed."""
     span = start_span("l4.commit_checkpoint", ctx=ctx.span_context() if ctx else None)
     try:
         return _make_checkpoint(state)
@@ -155,13 +113,16 @@ def rollback_state(
     request: RollbackRequest,
     ctx: Optional[ExecutionContext] = None,
 ) -> RollbackResult:
-    """
-    Apply rollback based on the provided RollbackRequest (G35–G36).
+    """Return to a previously saved checkpoint if something goes wrong.
 
-    The returned RollbackResult includes:
-        • ok: bool
-        • reason: str
-        • state_after: WorkflowState
+    Using a :class:`RollbackRequest` that points at a specific checkpoint,
+    this function restores the workflow state to that earlier snapshot and
+    reports whether the rollback was successful.
+
+    This ability to roll back is important when an error or bad output is
+    detected later in the process. It lets operators undo problematic steps
+    without corrupting the overall workflow or losing the history of what
+    happened.
     """
     span = start_span("l4.rollback_state", ctx=ctx.span_context() if ctx else None)
     try:
@@ -183,10 +144,16 @@ def apply_state_patch(
     patch,
     ctx: Optional[ExecutionContext] = None,
 ) -> WorkflowState:
-    """Compatibility shim for older call sites expecting apply_state_patch.
+    """Compatibility helper that adapts older patch-style updates.
 
-    Wraps the provided patch object into a StateTransitionEvent and
-    delegates to apply_state_transition, which owns all mutation logic.
+    Some older parts of the system still expect to provide a loose "patch"
+    object instead of a fully-typed event. This function wraps that patch into
+    a :class:`StateTransitionEvent` and forwards the work to
+    :func:`apply_state_transition`, so all real mutation still flows through
+    the same safe path.
+
+    For business purposes, this preserves existing integrations while ensuring
+    that state changes remain controlled and traceable.
     """
 
     event = StateTransitionEvent(event_id="patch", patch=patch)

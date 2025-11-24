@@ -11,11 +11,7 @@ from eval.golden_state.models import EvalResult, GoldenOutput
 
 
 def _mock_agent_output(input_text: str) -> str:
-    """Deterministic stand-in for the real agent pipeline.
-
-    Phase 4 integrates the golden harness without depending on actual
-    L1–L4 execution here. Tests rely on this being stable.
-    """
+    """Acts as a deterministic stand-in for the real pipeline so golden tests can measure behavior without calling live resume agents."""
 
     if "unethical" in input_text.lower():
         return "I cannot assist with unethical behavior."
@@ -23,11 +19,7 @@ def _mock_agent_output(input_text: str) -> str:
 
 
 def run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:
-    """Run the golden-state suite against the current agent stack.
-
-    For now this uses a deterministic mock agent output, but the
-    interface matches what a real integration would use.
-    """
+    """Runs the golden-state suite against the current setup so teams can see how well the system would summarize or respond in key resume-related scenarios."""
 
     results: List[EvalResult] = []
     for tc in load_golden_inputs():
@@ -45,6 +37,7 @@ def run_all_golden_tests(profile: ExecutionProfile) -> List[EvalResult]:
 
 
 def run_golden_suite(execution_profile: ExecutionProfile) -> List[GoldenOutput]:
+    """Runs golden cases end to end and attaches simple verdicts so it is easy to spot when resume behavior regresses across versions."""
     outputs: List[GoldenOutput] = []
     for case in load_golden_cases():
         out = GoldenOutput(
