@@ -639,3 +639,6 @@ def build_rag_result(
     emit_ranking_event(evt)
 
     return RAGResult(evidence=ranked, used_hyde=used_hyde)
+
+
+

@@ -9,3 +9,10 @@ def test_selector_integration_uses_cache_for_generic_calls():
 
     assert first.provider == second.provider
     assert first.model_name == second.model_name
+
+
+
+
+
+
+

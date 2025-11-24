@@ -17,3 +17,10 @@ def test_policy_selection_defaults_when_no_model():
 
     assert choice.model_name
     assert choice.provider in {"openai", "anthropic", "google"}
+
+
+
+
+
+
+

@@ -409,3 +409,6 @@ def create_application_fact(
         timestamp=timestamp,
         metadata={"status": status},
     )
+
+
+

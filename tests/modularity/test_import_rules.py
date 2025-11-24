@@ -79,3 +79,9 @@ def test_providers_do_not_import_core_or_meta() -> None:
     providers_root = PROJECT_ROOT / "providers"
     violations = _has_forbidden_import(providers_root, ["core", "meta"])
     assert not violations, f"providers must not import core/meta: {violations}"
+
+
+
+
+
+

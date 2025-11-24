@@ -48,3 +48,6 @@ def run_scenario(scenario: SimScenario) -> SimOutcome:
         safety_incidents=safety_incidents,
         agent_conflict_count=conflict_count,
     )
+
+
+

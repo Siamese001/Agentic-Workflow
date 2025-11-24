@@ -30,7 +30,7 @@ from core.models.models import (  # type: ignore[attr-defined]
     MultiAgentCouncilResult,
     RoutingDecisionEvent,
 )
-from meta_profile import MetaProfileSnapshot
+from config.meta_profile import MetaProfileSnapshot
 from meta.multi_agent import (
     MultiAgentCoordinator,
     build_council,
@@ -520,3 +520,7 @@ def classify_complexity(
     if score < 1.8:
         return ComplexityLevel.MEDIUM
     return ComplexityLevel.HIGH
+
+
+
+

@@ -20,3 +20,6 @@ def is_destination_allowed(policy: Dict[str, object], host: str) -> bool:
         return False
     allowlist: List[str] = list(policy.get("allowlist", []) or [])
     return host in allowlist
+
+
+

@@ -42,3 +42,6 @@ def can_edit(role: Role, prompt: object) -> bool:  # pragma: no cover - thin wra
 
 def can_approve(role: Role, prompt: object) -> bool:  # pragma: no cover - thin wrapper
     return check_access(role, "approve")
+
+
+

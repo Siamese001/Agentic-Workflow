@@ -38,3 +38,6 @@ def tree_search(seed: str, max_depth: int = 2, branching: int = 2) -> Tuple[List
 
     best = max(explored, key=lambda n: n.score)
     return [best], explored
+
+
+

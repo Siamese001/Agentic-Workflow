@@ -364,3 +364,10 @@ def test_multi_scenario_e2e(mock_llm, scenario):
     assert dag.l2_results.strategy
     assert dag.final_state_patch
     assert isinstance(dag.safety_passed, bool)
+
+
+
+
+
+
+

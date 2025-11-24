@@ -32,3 +32,6 @@ def run_react_loop(task: str, max_steps: int = 3) -> List[ReActStep]:
         observation = "no external tools invoked (placeholder)"
         steps.append(ReActStep(thought=thought, action=action, observation=observation))
     return steps
+
+
+

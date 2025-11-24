@@ -4,7 +4,7 @@ import asyncio
 import types
 
 import l2
-from config_profiles_v10_10 import get_profile
+from config.config_profiles_v10_10 import get_profile
 from core.models.models import (
     Evidence,
     ExecutionContext,
@@ -142,3 +142,9 @@ def test_execute_retrieval_uses_fast_profile_without_hyde(monkeypatch) -> None:
     # HYDE should not be used for RESUME_FAST profile; in this test, we only assert
     # that the orchestrator returns a result with used_hyde=False.
     assert rag_result.used_hyde is False
+
+
+
+
+
+

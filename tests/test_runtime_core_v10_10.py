@@ -273,3 +273,10 @@ def test_architecture_layer_purity():
 
     l5_src = inspect.getsource(l5)
     assert "invoke_model" not in l5_src
+
+
+
+
+
+
+

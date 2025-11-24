@@ -18,3 +18,6 @@ class SimOutcome(BaseModel):
     average_scores: Dict[str, float]
     safety_incidents: int
     agent_conflict_count: int
+
+
+

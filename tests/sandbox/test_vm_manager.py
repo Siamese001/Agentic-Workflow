@@ -9,3 +9,9 @@ def test_run_in_ephemeral_vm_basic():
     assert result.success is True
     assert result.exit_code == 0
     assert "TOOL echo" in result.stdout
+
+
+
+
+
+

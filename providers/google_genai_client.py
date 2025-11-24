@@ -36,3 +36,6 @@ def run_llm_google(
     # those are left to higher-level routing and not enforced here.
     resp: Any = model_client.generate_content(prompt)
     return str(getattr(resp, "text", "") or "")
+
+
+
