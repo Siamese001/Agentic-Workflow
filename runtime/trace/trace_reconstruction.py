@@ -36,3 +36,6 @@ def get_routing_trace() -> List[Dict[str, Any]]:
         pass
 
     return trace
+
+
+

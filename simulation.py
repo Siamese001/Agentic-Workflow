@@ -32,12 +32,12 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
-from main_v10_10 import (
+from cli.main_v10_10 import (
     run_workflow,
     RRFStrategy,
     TelemetryRoutingMode,
 )
-from run_batch_v10_10 import run_batch, BatchJobResult, BatchTelemetrySummary
+from cli.run_batch_v10_10 import run_batch, BatchJobResult, BatchTelemetrySummary
 from golden_eval import (
     GOLDEN_SCENARIOS,
     GoldenScenario,
@@ -730,3 +730,7 @@ def _cli() -> None:
 
 if __name__ == "__main__":  # pragma: no cover - CLI path
     _cli()
+
+
+
+

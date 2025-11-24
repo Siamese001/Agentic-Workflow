@@ -112,3 +112,9 @@ def test_record_correction_event_appends_entry_to_journal() -> None:
     assert entry["message"] == "bad_draft_detected"
     # Metadata should be materialized into a plain dict and preserved.
     assert entry["metadata"] == {"severity": 2, "kind": "test"}
+
+
+
+
+
+

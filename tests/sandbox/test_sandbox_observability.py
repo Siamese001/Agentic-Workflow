@@ -15,3 +15,9 @@ def test_sandbox_observability_events_include_vm_id():
     vm_ids = {e.attributes.get("vm_id") for e in events if isinstance(getattr(e, "attributes", None), dict)}
     # Some events may not carry vm_id; ensure at least one does.
     assert vm.id in vm_ids
+
+
+
+
+
+

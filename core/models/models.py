@@ -1023,3 +1023,6 @@ class RAGResult(BaseModel):
     schema_version: Literal["v1"] = "v1"
     evidence: List[Evidence]
     used_hyde: bool = False
+
+
+

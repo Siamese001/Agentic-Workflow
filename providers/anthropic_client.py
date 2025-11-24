@@ -44,3 +44,6 @@ def run_llm_anthropic(
         if getattr(block, "type", None) == "text":
             parts.append(getattr(block, "text", ""))
     return "\n".join(parts)
+
+
+

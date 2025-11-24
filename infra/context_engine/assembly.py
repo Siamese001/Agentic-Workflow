@@ -47,3 +47,6 @@ def assemble_context(
         result.extend(assigned)
 
     return result
+
+
+

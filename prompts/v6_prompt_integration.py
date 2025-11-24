@@ -411,3 +411,6 @@ def validate_v6_prompt(prompt: InstructionalPrompt) -> List[str]:
             issues.append("L2 executor missing ERROR_RECOVERY layer")
     
     return issues
+
+
+

@@ -346,3 +346,6 @@ class StateManager(Generic[T]):
             self._history = snapshots
             self._current = snapshots[-1]
             logger.info(f"Loaded {len(snapshots)} snapshots from disk")
+
+
+

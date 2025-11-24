@@ -97,3 +97,6 @@ class AgentRegistry:
         """
 
         return [a for a in self._agents.values() if capability in (a.capabilities or [])]
+
+
+

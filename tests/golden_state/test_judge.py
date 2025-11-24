@@ -19,3 +19,9 @@ def test_judge_detects_key_behavior():
     verdict = evaluate_output(tc, "This is a professional summary.")
     assert verdict.rating == "pass"
     assert verdict.score == 1.0
+
+
+
+
+
+

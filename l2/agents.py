@@ -46,7 +46,7 @@ from runtime.observability import (
     record_event,
     record_exception,
 )
-from meta_profile import MetaProfileSnapshot
+from config.meta_profile import MetaProfileSnapshot
 from meta.prompt_builder import PromptInstance
 
 
@@ -719,3 +719,8 @@ class QACouncilAgent(LLMBaseAgent):
                 ties=[],
                 reason="malformed_or_unparseable",
             )
+
+
+
+
+

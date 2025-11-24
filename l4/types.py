@@ -105,3 +105,6 @@ class StateValidationError(StateError):
 class StateRollbackError(StateError):
     """Raised when a rollback operation fails."""
     pass
+
+
+

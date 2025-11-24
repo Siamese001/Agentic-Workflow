@@ -15,3 +15,6 @@ def build_ephemeral_rootfs() -> Dict[str, object]:
         "restricted_paths": ["/", "/etc", "/var", "/home"],
         "writable_paths": ["/tmp", "/sandbox"],
     }
+
+
+

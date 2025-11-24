@@ -32,3 +32,6 @@ def select_model(
         set_cached_choice(ctx, final_choice)
 
     return final_choice
+
+
+

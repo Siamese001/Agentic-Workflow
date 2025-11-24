@@ -123,3 +123,6 @@ class PineconeClient:
             model="text-embedding-3-small"
         )
         return response.data[0].embedding
+
+
+

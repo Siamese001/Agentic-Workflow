@@ -30,3 +30,8 @@ def test_dag_executor_records_agent_assignments():
 
     assignments = result.get("_agent_assignments", {})
     assert assignments.get("n1") == "planner-1"
+
+
+
+
+
