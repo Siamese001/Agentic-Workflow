@@ -1,12 +1,19 @@
 from __future__ import annotations
 
-"""Core L2 execution shim.
+"""Business-facing entry point for the second execution layer.
 
-This module re-exports the historical top-level l2 functions so callers
-can import from core.l2 without breaking existing code.
+This file keeps older and newer parts of the system using the same "L2"
+execution logic, even if they import it in different ways. By acting as a
+stable front door, it protects existing workflows from breaking as the code
+evolves. This matters for resume quality because it ensures that the core
+steps which search for relevant evidence, draft content, run quality checks,
+and apply safety reviews keep behaving consistently across versions.
 
-It also explicitly exposes the internal ``_execute_*`` helpers required by
-``workflow_graph.py`` when importing from ``core.l2``.
+In practice, this layer coordinates how the system gathers supporting
+information about a candidate and a role, then passes that context into the
+drafting and review steps. That flow helps keep resumes tightly aligned to the
+job description while still being safe, accurate, and easy for recruiters to
+scan.
 """
 
 from typing import Optional
@@ -36,11 +43,20 @@ async def _execute_retrieval(
     plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
 ) -> RAGResult:
-    """Snapshot-local retrieval shim for tests and workflow_graph.
+    """Gather the most relevant evidence to guide resume rewriting.
 
-    This mirrors the Phase-3 l2._execute_retrieval semantics but resolves
-    helpers via the core.l2 namespace so that tests can monkeypatch
-    ``_maybe_run_hyde_query`` and ``run_rag_retrieval`` on core.l2.
+    This step decides what information the system should look at before it
+    rewrites or evaluates a resume: for example, job description details,
+    company context, and other supporting material. By carefully building and
+    running the right search queries, it increases the chances that the model
+    focuses on the skills, achievements, and requirements that matter most for
+    the role.
+
+    In business terms, this retrieval pass is what keeps the resume grounded
+    in the actual job, instead of producing a generic rewrite. When the
+    evidence is high-quality and on-topic, later drafting and quality checks
+    can produce resumes that feel tailored, relevant, and credible to a
+    recruiter.
     """
 
     span = start_span("l2.retrieval", ctx=ctx.span_context())
