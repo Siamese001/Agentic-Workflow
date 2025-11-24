@@ -37,11 +37,11 @@ from core.cognitive_agents import (
     ConstitutionalSafetyAgent,
 )
 
-from core.l1 import build_workflow_plan_bundle
-from core.l2 import execute_workflow_plans
-from core.l3 import run_dag
-from core.l4 import apply_state_patch
-from core.l5 import safety_gate
+from workflow_planning import build_workflow_plan_bundle
+from l2 import execute_workflow_plans
+from l3 import run_dag
+from l4 import apply_state_patch
+from l5 import safety_gate
 
 from self_correction import evaluate_all_surfaces, aggregate_correction_signals
 
@@ -261,9 +261,9 @@ def test_architecture_layer_purity():
       • L5 does NOT call invoke_model
     """
     import inspect
-    import core.l3 as l3
-    import core.l4 as l4
-    import core.l5 as l5
+    import l3
+    import l4
+    import l5
 
     l3_src = inspect.getsource(l3)
     assert "cognitive_agents" not in l3_src

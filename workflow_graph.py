@@ -51,7 +51,7 @@ from orchestration.dag_engine import Node as DagNode, Edge as DagEdge, Graph as 
 from core.agent_registry import AgentRegistry
 from profiles.agent_profile import AgentCard
 from core.agent_router_policy import choose_agents_for_task
-from core.l2 import (
+from l2 import (
     _execute_strategy,
     _execute_retrieval,
     _execute_drafting,
