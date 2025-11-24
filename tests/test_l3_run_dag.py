@@ -121,6 +121,10 @@ class _FakeCtx:
     """
 
     config: dict = field(default_factory=dict)
+    
+    def span_context(self):
+        """Return a fake span context for observability."""
+        return {}
 
 
 @pytest.fixture
