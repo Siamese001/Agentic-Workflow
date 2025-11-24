@@ -1,34 +1,6 @@
+"""Plans how the system should rewrite a resume so later steps stay aligned to the job, focus on high-value experience, and follow a clear, personalized workflow."""
+
 # FILE: 10_10/l1.py
-"""
-Unified L1 Planning Layer (v10_10 · Phase 3 — FINAL)
-====================================================
-
-Responsibilities (L1 only):
-
-    • Interpret workflow inputs (job, resume, workflow config).
-    • Look up the active execution profile (G1–G3) using the meta-profile.
-    • Choose complexity and reasoning mode hints for downstream layers.
-    • Construct typed plans:
-
-        – StrategyPlan
-        – RAGPlan
-        – DraftingPlan
-        – QAPlan
-        – SafetyPlan
-
-    • Construct a RoutingHint that carries ExecutionProfile + MetaProfile
-      into L2/L3 without doing any execution.
-
-Layering constraints:
-
-    • NO LLM calls (L2 only, via cognitive_agents).
-    • NO tool calls or side effects.
-    • NO state mutation (WorkflowState is L4-only).
-    • NO safety enforcement (L5-only).
-
-The result of this module is a WorkflowPlanBundle that fully describes
-what should happen in the workflow, but not how it is executed.
-"""
 
 from __future__ import annotations
 
@@ -714,17 +686,20 @@ def build_workflow_plan_bundle(
     routing_policy: Any | None = None,
     prompt_registry: Any | None = None,
 ) -> WorkflowPlanBundle:
-    """
-    Top-level L1 entrypoint.
+    """Design the full plan for how this resume will be improved.
 
-    Produces a WorkflowPlanBundle containing:
+    This function is the main entry point into the planning layer. It looks at
+    the job posting, the candidate's current resume, and configuration and
+    then builds a detailed plan for the rest of the workflow. The plan covers
+    strategy, what to retrieve, which sections to draft, what quality checks
+    to run, and which safety checks to apply.
 
-        • strategy: StrategyPlan
-        • rag:      RAGPlan
-        • drafting: DraftingPlan
-        • qa:       QAPlan
-        • safety:   SafetyPlan
-        • routing_hint: RoutingHint carrying ExecutionProfile + MetaProfile
+    For a business user, this means every resume is processed according to a
+    clear, pre-agreed playbook rather than ad hoc logic. That playbook helps
+    keep resumes tightly aligned to the job description, ensures important
+    sections like Summary, Experience, and Skills are always addressed, and
+    guarantees that quality and safety reviews are part of the process instead
+    of optional extras.
     """
     profile_spec: ExecutionProfileSpec = get_profile(config.profile_id)
     execution_profile: ExecutionProfile = _to_execution_profile(profile_spec)
