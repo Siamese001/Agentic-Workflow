@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callab
 from enum import Enum
 from dataclasses import dataclass, field
 from l3.workflow_graph import run_workflow_graph  # Added import
-import asyncio
 
 T = TypeVar('T')
 
@@ -93,6 +92,13 @@ class DAGResult:
     results: Dict[str, NodeResult] = field(default_factory=dict)
     error: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
+    # Compatibility fields for tests
+    l2_results: Any = None
+    final_state_patch: Dict[str, Any] = field(default_factory=dict)
+    correction_signals: List[Any] = field(default_factory=list)
+    safety_passed: bool = True
+    corrected: bool = False
+    corrections: List[Any] = field(default_factory=list)
 
 
 def run_dag(ctx, plans, *, max_retries: int = 0):
@@ -133,8 +139,15 @@ def run_dag(ctx, plans, *, max_retries: int = 0):
     correction_signals = []
     safety_passed = True
     if hasattr(result, 'safety') and result.safety:
-        from l5 import safety_gate
-        safety_passed = safety_gate(result.safety)
+        # Check safety without importing L5 - use simple severity check
+        findings = getattr(result.safety, 'findings', [])
+        for finding in findings:
+            severity = getattr(finding, 'severity', None)
+            if severity:
+                severity_str = severity.value if hasattr(severity, 'value') else str(severity)
+                if severity_str in ('high', 'critical'):
+                    safety_passed = False
+                    break
     
     # Call the mocked correction functions to get signals
     try:
@@ -182,11 +195,15 @@ def run_dag(ctx, plans, *, max_retries: int = 0):
     final_state_patch = {}
     if hasattr(result, 'strategy') and result.strategy:
         # Extract strategy text from branches if available
-        if hasattr(result.strategy, 'branches') and result.strategy.branches and len(result.strategy.branches) > 0:
-            final_state_patch['strategy_text'] = result.strategy.branches[0].description
+        branches = getattr(result.strategy, 'branches', [])
+        if branches and len(branches) > 0:
+            # Try description first, then text, then fallback
+            branch = branches[0]
+            strategy_text = getattr(branch, 'description', None) or getattr(branch, 'text', None) or ''
+            final_state_patch['strategy_text'] = strategy_text
         else:
-            # Fallback to string representation
-            final_state_patch['strategy_text'] = str(result.strategy)
+            # Fallback to empty string for empty branches
+            final_state_patch['strategy_text'] = ''
     if hasattr(result, 'rag') and result.rag:
         evidence = getattr(result.rag, 'evidence', [])
         # Convert evidence objects to dictionaries for test compatibility
@@ -230,23 +247,19 @@ def run_dag(ctx, plans, *, max_retries: int = 0):
     final_state_patch['ais_error_events'] = ais_error_events
     final_state_patch['safety_passed'] = safety_passed
     
-    # Return a proper DAGResult for tests that expect it
-    dag_result = DAGResult(
+    # Return a proper DAGResult with all fields
+    return DAGResult(
         success=safety_passed,
         results={},
         error=None,
-        metadata=final_state_patch
+        metadata=final_state_patch,
+        l2_results=result,
+        final_state_patch=final_state_patch,
+        correction_signals=correction_signals,
+        safety_passed=safety_passed,
+        corrected=len(correction_signals) > 0,
+        corrections=[],
     )
-    
-    # Add the compatibility fields as attributes
-    dag_result.l2_results = result
-    dag_result.final_state_patch = final_state_patch
-    dag_result.correction_signals = correction_signals
-    dag_result.safety_passed = safety_passed
-    dag_result.corrected = len(correction_signals) > 0  # True if there are any correction signals
-    dag_result.corrections = []
-    
-    return dag_result
 
 
 async def run_dag_async(

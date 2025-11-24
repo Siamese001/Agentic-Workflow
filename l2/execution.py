@@ -43,7 +43,7 @@ from core.models.models import (
 
 from runtime.observability import start_span, end_span, log_exception, emit_cost_snapshot, record_event
 from meta.schema_validation import validate_schema_version
-from meta.retrieval import run_rag_retrieval
+import meta.retrieval as _retrieval_module
 from .agents import (
     StrategyLLMAgent,
     DraftingGuild,
@@ -54,7 +54,9 @@ from .agents import (
 from eval.health.adapter import collect_error_events
 from eval.health.failure_detector import detect_repeated_failures
 from eval.health.repair_policies import propose_repairs
-import l1
+
+# Module-level reference for test patching compatibility
+run_rag_retrieval = _retrieval_module.run_rag_retrieval
 
 
 # =============================================================================
@@ -148,17 +150,20 @@ def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
 
 
 def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
-    """Emit a latent thinking trace event based on the execution profile."""
-
+    """Emit a latent thinking trace event based on the execution profile.
+    
+    Note: This is a no-op stub. Latent thinking planning should be done in L1
+    and passed as part of the WorkflowPlanBundle. L2 only executes plans.
+    """
+    # L2 does not call L1 - latent thinking plans should be pre-computed
+    # and passed via the plans bundle if needed.
     try:
-        l1_plan = l1.generate_latent_thinking_plan(result=result, ctx=ctx)
-        
         record_event(
             "l2.latent_thinking",
             {
-                "profile": l1_plan.profile_name,
-                "reasoning_mode": l1_plan.reasoning_mode,
-                "trace_length": len(l1_plan.trace),
+                "profile": getattr(ctx, "profile_name", "default"),
+                "reasoning_mode": "cot",
+                "trace_length": 0,
             },
         )
     except Exception:
@@ -264,9 +269,12 @@ async def _execute_retrieval(
         retrieval_cfg = ctx.retrieval or RetrievalConfig()
 
         query = _build_base_query(ctx)
-        hyde_query = await _maybe_run_hyde_query(rag_plan, ctx)
+        
+        # Import l2 package to use its functions (allows test patching via l2.*)
+        import l2 as _l2_pkg
+        hyde_query = await _l2_pkg._maybe_run_hyde_query(rag_plan, ctx)
 
-        evidence_list = run_rag_retrieval(
+        evidence_list = _l2_pkg.run_rag_retrieval(
             query=query,
             ctx=ctx,
             retrieval_cfg=retrieval_cfg,
@@ -296,13 +304,11 @@ async def _execute_rag_reasoning(
     """
     Phase-3 RAG reasoning step.
 
-    Runs between retrieval and drafting:
-
-        1. Call L1 to generate RAG reasoning plan.
-        2. Call SemanticQAAgent.run_rag_reasoning to reason over the retrieved
-           evidence (no additional retrieval).
-        3. Inject the reasoning as a synthetic Evidence item at the end of
-           the evidence list.
+    Runs between retrieval and drafting. Uses the RAG plan from the
+    WorkflowPlanBundle (pre-computed by L1) to reason over retrieved evidence.
+    
+    Note: L2 does not call L1 directly. All planning is done in L1 and passed
+    via the plans bundle.
     """
     span = start_span("l2.rag_reasoning", ctx=ctx.span_context())
     try:
@@ -313,11 +319,10 @@ async def _execute_rag_reasoning(
 
         rag_plan: Optional[RAGPlan] = getattr(plans, "rag", None)
 
-        l1_plan = l1.plan_rag_reasoning(
-            rag_plan=rag_plan,
-            ctx=ctx,
-            evidence=evidence_seq,
-        )
+        # Build a simple prompt from the RAG plan (no L1 call)
+        prompt = "Analyze the following evidence and provide reasoning:"
+        if rag_plan:
+            prompt = f"RAG strategy: {getattr(rag_plan, 'strategy', 'hybrid')}. {prompt}"
 
         agent = SemanticQAAgent(
             routing_policy=ctx.routing_policy,
@@ -325,7 +330,7 @@ async def _execute_rag_reasoning(
             meta_profile=ctx.meta_profile_snapshot,
         )
         reasoning_text = await agent.run_rag_reasoning(
-            prompt=l1_plan.prompt,
+            prompt=prompt,
             evidence=evidence_seq,
             job=ctx.job,
             resume=ctx.resume,
@@ -336,7 +341,6 @@ async def _execute_rag_reasoning(
             return rag_result
 
         synthetic = Evidence(
-            id="rag_reasoning",
             text=reasoning_text,
             score=1.0,
             source="rag_reasoning",
