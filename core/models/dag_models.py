@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, UTC
 from enum import Enum
 from typing import Any, Dict, List, Optional, TypeVar, Generic
 
@@ -73,7 +73,7 @@ class DAGResult:
 
     def __post_init__(self) -> None:
         if self.end_time is None:
-            self.end_time = datetime.utcnow()
+            self.end_time = datetime.now(UTC)
 
         if self.safety_decisions:
             if any(decision.verdict == Verdict.BLOCK for decision in self.safety_decisions.values()):

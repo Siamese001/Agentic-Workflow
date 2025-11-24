@@ -27,7 +27,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, UTC
 import hashlib
 import json
 
@@ -233,7 +233,7 @@ class TemporalKG:
                         subject=r.metadata.get("subject", ""),
                         predicate=r.metadata.get("predicate", ""),
                         object=r.metadata.get("object", ""),
-                        timestamp=datetime.fromisoformat(r.metadata.get("timestamp", datetime.utcnow().isoformat())),
+                        timestamp=datetime.fromisoformat(r.metadata.get("timestamp", datetime.now(UTC).isoformat())),
                         confidence=r.metadata.get("confidence", 1.0),
                         source=r.metadata.get("source", "system"),
                         metadata={k: v for k, v in r.metadata.items() if k not in ["subject", "predicate", "object", "timestamp", "confidence", "source", "text"]},
@@ -264,7 +264,7 @@ class TemporalKG:
         """
         from datetime import timedelta
         
-        end_time = datetime.utcnow()
+        end_time = datetime.now(UTC)
         start_time = end_time - timedelta(days=days)
         
         query = TemporalQuery(
@@ -347,7 +347,7 @@ def create_skill_fact(
 ) -> TemporalFact:
     """Create a skill fact."""
     if timestamp is None:
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(UTC)
     
     fact_id = hashlib.sha256(
         f"{user_id}_has_skill_{skill}_{timestamp.isoformat()}".encode()
@@ -371,7 +371,7 @@ def create_experience_fact(
 ) -> TemporalFact:
     """Create an experience fact."""
     if timestamp is None:
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(UTC)
     
     fact_id = hashlib.sha256(
         f"{user_id}_worked_at_{company}_{timestamp.isoformat()}".encode()
@@ -395,7 +395,7 @@ def create_application_fact(
 ) -> TemporalFact:
     """Create an application fact."""
     if timestamp is None:
-        timestamp = datetime.utcnow()
+        timestamp = datetime.now(UTC)
     
     fact_id = hashlib.sha256(
         f"{user_id}_applied_to_{job_id}_{timestamp.isoformat()}".encode()

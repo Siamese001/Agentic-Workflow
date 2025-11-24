@@ -6,7 +6,7 @@ Implements a journal for state changes with support for corrections and auditing
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, TypeVar, Generic, Callable
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, UTC
 import uuid
 import logging
 from enum import Enum
@@ -79,7 +79,7 @@ class StateJournal(Generic[T]):
             T
         ](
             entry_id=entry_id,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             transition=transition,
             snapshot_before=snapshot_before,
             snapshot_after=snapshot_after,
@@ -121,7 +121,7 @@ class StateJournal(Generic[T]):
             correction_id=correction_id,
             entry_id=entry_id,
             correction_type=correction_type,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(UTC),
             reason=reason,
             metadata=metadata or {},
             correction_transition=correction_transition,

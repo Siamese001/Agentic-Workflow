@@ -4,7 +4,7 @@ L5 - Safety/Policy Layer - Core Types
 Defines the fundamental types for safety and policy enforcement.
 """
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, TypeVar
+from typing import Any, Dict, List, Optional, Union, TypeVar
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
@@ -83,7 +83,7 @@ class FindingType(str, Enum):
 class SafetyFinding:
     """An individual safety finding."""
     id: str
-    type: FindingType
+    type: Union[FindingType, str]
     severity: Severity
     message: str
     details: Dict[str, Any] = field(default_factory=dict)

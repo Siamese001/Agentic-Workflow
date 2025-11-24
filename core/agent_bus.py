@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-"""Provides a lightweight in-memory channel for agents to share messages so resume steps stay coordinated and important context is not lost between planning, drafting, and review."""
-
 from dataclasses import dataclass, field
 from typing import Dict, List
 
 from core.models.models import AgentMessage
+
+"""Provides a lightweight in-memory channel for agents to share messages so resume steps stay coordinated and important context is not lost between planning, drafting, and review."""
 
 
 @dataclass

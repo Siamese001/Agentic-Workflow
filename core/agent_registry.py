@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-"""Keeps a catalog of available agents so each resume step can be routed to the right specialist for planning, drafting, review, or safety checks."""
-
 from dataclasses import dataclass, field
 from typing import Dict, List
 
 from core.models.models import AgentCard, AgentRole
+
+"""Keeps a catalog of available agents so each resume step can be routed to the right specialist for planning, drafting, review, or safety checks."""
 
 
 @dataclass
