@@ -384,7 +384,8 @@ class RoutingHint(BaseModel):
 
 class StrategyBranch(BaseModel):
     id: str
-    description: str
+    description: str = ""
+    text: str = ""
     weight: float = 1.0
 
 
@@ -442,6 +443,11 @@ class SafetyFinding(BaseModel):
     severity: str
     message: str
     details: Dict[str, Any] = Field(default_factory=dict)
+
+    @property
+    def id(self) -> str:
+        """Compatibility alias for check_id used by some tests."""
+        return self.check_id
 
 
 class SafetyResult(BaseModel):
