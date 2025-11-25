@@ -13,7 +13,8 @@ temp_*/
 venv/
 env/
 
-# IDE and OS noise (temporarily removed .vscode/ to allow config updates)
+# IDE and OS noise
+.vscode/
 .idea/
 .DS_Store
 Thumbs.db
