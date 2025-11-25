@@ -1,17 +1,7 @@
-"""Redis Cache - Infrastructure Layer
+"""
+Provides Redis caching for résumé analysis results to improve processing speed and reduce costs.
 
-This module provides Redis-based caching for LLM outputs.
-
-Layer: Infrastructure/Meta
-Responsibilities:
-- Redis client initialization
-- Cache operations
-- Health checks
-- Error handling
-
-Non-responsibilities:
-- Business logic
-- Layer-specific operations
+Improves résumé processing efficiency by storing LLM outputs and analysis results for fast retrieval across similar job queries.
 """
 
 from __future__ import annotations
@@ -22,15 +12,27 @@ from typing import Any, Optional
 
 
 class RedisNotConfiguredError(RuntimeError):
-    """Signals that caching is unavailable so resume runs can fall back instead of failing silently."""
+    """
+    Indicates résumé caching is unavailable so analysis can continue without performance optimization.
+
+    Improves résumé processing reliability by gracefully handling cache unavailability without breaking analysis workflows.
+    """
 
 
 class RedisClientError(RuntimeError):
-    """Wraps low-level Redis issues so they can be surfaced cleanly in logs and monitoring."""
+    """
+    Wraps Redis connection issues to maintain résumé analysis stability during cache failures.
+
+    Improves résumé processing reliability by providing clear error handling for cache-related problems without disrupting workflows.
+    """
 
 
 def _import_redis():
-    """Imports the redis package lazily so the rest of the resume stack stays import-safe even when caching is disabled."""
+    """
+    Imports Redis package safely to maintain résumé analysis stability when caching is optional.
+
+    Improves résumé processing reliability by ensuring the analysis stack works even when Redis dependencies are unavailable.
+    """
 
     try:  # pragma: no cover - import path is environment dependent
         import redis  # type: ignore
@@ -40,7 +42,11 @@ def _import_redis():
 
 
 def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):
-    """Creates a Redis client for caching so repeated resume work can be served faster and more cheaply when configuration allows it."""
+    """
+    Creates Redis client for résumé analysis caching to speed up repeated job matching queries.
+
+    Improves résumé processing efficiency by enabling fast storage and retrieval of analysis results across similar job applications.
+    """
 
     url = url or os.getenv("REDIS_URL")
     if not url:
@@ -59,7 +65,11 @@ def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):
 
 
 def redis_healthcheck(client) -> bool:
-    """Checks whether the Redis cache is reachable so the system knows if it can safely rely on cached resume results."""
+    """
+    Checks Redis cache availability to ensure résumé analysis can rely on cached results for optimal performance.
+
+    Improves résumé processing reliability by verifying cache connectivity before attempting to store or retrieve analysis results.
+    """
 
     try:
         return bool(client.ping())
@@ -68,7 +78,11 @@ def redis_healthcheck(client) -> bool:
 
 
 def get_llm_cache(client, key: str) -> Optional[Any]:
-    """Fetches a cached LLM payload by key so repeated resume runs can reuse earlier reasoning or drafting instead of recomputing it."""
+    """
+    Retrieves cached résumé analysis results to speed up repeated job matching queries and reduce processing costs.
+
+    Improves résumé processing efficiency by reusing previous LLM reasoning and drafting results for similar job applications.
+    """
 
     try:
         raw = client.get(key)
@@ -92,7 +106,11 @@ def set_llm_cache(
     *,
     ttl_s: Optional[int] = 3600,
 ) -> None:
-    """Stores a cached LLM payload by key so future resume runs can avoid paying again for the same model call."""
+    """
+    Stores résumé analysis results in cache to speed up future job matching queries and reduce processing costs.
+
+    Improves résumé processing efficiency by saving LLM reasoning and drafting results for reuse across similar job applications.
+    """
 
     try:
         payload = json.dumps(value)

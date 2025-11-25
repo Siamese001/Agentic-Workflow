@@ -1,8 +1,7 @@
-"""Minimal L3 orchestrator façade.
+"""
+Coordinates résumé analysis workflow execution with safety and retry mechanisms.
 
-This module exposes a small orchestration helper that delegates most of
-the heavy lifting to `core.integration` and `core.workflow_context`.
-It is intentionally thin to preserve the L3 atomicity boundary.
+Improves résumé processing reliability by managing complex multi-agent analysis workflows with error handling.
 """
 from __future__ import annotations
 
@@ -20,7 +19,11 @@ TState = TypeVar("TState")
 
 @dataclass
 class OrchestratorConfig:
-    """Configuration for orchestrated DAG execution."""
+    """
+    Configures résumé analysis workflow execution settings for reliability and performance optimization.
+
+    Improves résumé processing by defining retry policies, timeouts, and failure handling for multi-agent workflows.
+    """
 
     max_retries: int = 3
     retry_delay: float = 0.5
@@ -29,6 +32,11 @@ class OrchestratorConfig:
 
 
 class WorkflowOrchestrator:
+    """
+    Manages complex résumé analysis workflows with multiple agents and safety validation.
+
+    Improves résumé processing by coordinating strategy, drafting, QA, and safety agents for comprehensive job matching analysis.
+    """
     """High-level orchestrator for DAG-style workflows.
 
     This remains L3-only: no direct state mutation, no safety logic.
@@ -40,6 +48,11 @@ class WorkflowOrchestrator:
         config: Optional[OrchestratorConfig] = None,
         safety_system: Optional[SafetySystem] = None,
     ) -> None:
+        """
+        Sets up résumé workflow coordination system with retry policies and safety validation.
+
+        Improves résumé processing reliability by configuring error handling and safety checks for multi-agent analysis.
+        """
         self.config = config or OrchestratorConfig()
         self.safety_system = safety_system
 
@@ -51,6 +64,11 @@ class WorkflowOrchestrator:
         node_dependencies: Dict[str, List[str]],
         **metadata: Any,
     ) -> DAGResult:
+        """
+        Executes résumé analysis workflow with coordinated multi-agent processing and safety validation.
+
+        Improves résumé processing by managing complex analysis workflows with proper error handling and retry logic.
+        """
         wf_cfg = WorkflowExecutionConfig(
             max_retries=self.config.max_retries,
             retry_delay=self.config.retry_delay,

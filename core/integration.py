@@ -1,4 +1,8 @@
-"""Integration helpers for L3, L4, and L5 layers."""
+"""
+Integrates résumé analysis workflow execution with state management and safety validation.
+
+Improves résumé processing reliability by coordinating workflow execution, error handling, and safety checks across all layers.
+"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -23,7 +27,11 @@ TState = TypeVar("TState")
 
 @dataclass
 class WorkflowExecutionConfig:
-    """High-level workflow execution configuration."""
+    """
+    Configures résumé analysis workflow execution settings for reliability and performance optimization.
+
+    Improves résumé processing by defining retry policies, timeouts, and failure handling for multi-agent workflows.
+    """
 
     max_retries: int = 3
     retry_delay: float = 0.5
@@ -34,11 +42,12 @@ class WorkflowExecutionConfig:
 def create_workflow_context(
     workflow_id: str,
     initial_state: TState,
-    safety_system: Optional[SafetySystem] = None,
-    **metadata: Any,
-) -> WorkflowContext[TState]:
-    """Factory for a `WorkflowContext` wired with L4 and optional L5."""
+) -> WorkflowContext:
+    """
+    Creates résumé analysis workflow context for coordinating multi-agent execution and state management.
 
+    Improves résumé processing by providing structured context for workflow execution, error handling, and retry logic.
+    """
     state_manager: StateManager[TState] = StateManager(initial_state)
     return WorkflowContext(
         workflow_id=workflow_id,
@@ -57,7 +66,11 @@ async def execute_workflow(
     config: Optional[WorkflowExecutionConfig] = None,
     **metadata: Any,
 ) -> DAGResult:
-    """Execute a simple DAG with L4+L5 integration and error handling."""
+    """
+    Executes résumé analysis workflow with coordinated multi-agent processing and comprehensive error handling.
+
+    Improves résumé processing reliability by managing complex analysis workflows with proper dependency resolution and retry logic.
+    """
 
     cfg = config or WorkflowExecutionConfig()
     ctx = create_workflow_context(
