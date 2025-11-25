@@ -25,11 +25,22 @@ All documentation is organized in the **`root_docs/`** folder according to the c
 - **[Refactoring History](root_docs/refactoring/)** - Migration and reorganization documentation
 - **[Testing Documentation](root_docs/testing/)** - Test results and validation reports
 
+## Environment
+
+### Python Version Update (2025-01)
+This project now targets:
+
+```text
+Python 3.12.x
+```
+
+Python 3.14 is not yet fully supported by Pydantic, FastAPI, Redis, or OpenAI SDKs, and causes runtime errors.
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.12+
 - Neo4j database (optional, for graph features)
 - Pinecone account (for vector storage)
 

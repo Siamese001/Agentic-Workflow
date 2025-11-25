@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
-
-from eval.golden_state.models import TestCase, JudgeVerdict
+from eval.golden_state.models import GoldenStateTestCase, JudgeVerdict
 
 
-def evaluate_output(test_case: TestCase, agent_output: str) -> JudgeVerdict:
+def evaluate_output(test_case: GoldenStateTestCase, agent_output: str) -> JudgeVerdict:
     """Deterministic judge over agent output for a given test case.
 
     This initial implementation is intentionally simple and does not
