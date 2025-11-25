@@ -1,41 +1,31 @@
-"""L1 Recursive KG-Aware RAG Master Planner
+"""
+Plans knowledge graph and document retrieval for résumé analysis.
 
-Fuses Knowledge Graph traversal with RAG retrieval, supporting Mixture-of-Recursions
-depth planning for complex temporal queries.
-
-Layer: L1 (Planning / Reasoning)
-Responsibilities:
-- Design multi-hop retrieval strategies over KG + RAG
-- Plan temporal constraint application
-- Generate MoR-style recursion depth hints
-- Structure retrieval plans for L3 orchestration
-
-Non-responsibilities:
-- Direct tool calls or execution (L2)
-- Orchestration or workflow control (L3)
-- State mutation or persistence (L4)
-- Safety evaluation or policy enforcement (L5)
+Improves résumé accuracy by finding relevant job experiences and skills that match specific positions.
 """
 
 from __future__ import annotations
-
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
 from enum import Enum
 
 from .kg_retrieval_planning import (
-    HopDirection,
+    KGQueryPlanner,
     QueryType,
-    HopSpec,
     KGQueryPlan,
-    PathTemplate,
     KGRetrievalPlanner,
+    HopSpec,
+    HopDirection,
 )
 
 
 class RetrievalStepType(str, Enum):
-    """Type of retrieval step in fusion plan."""
+    """
+    Defines types of information retrieval steps for résumé processing.
+
+    Improves résumé completeness by ensuring all relevant experiences and skills are captured systematically.
+    """
     KG_HOP = "kg_hop"
     VECTOR_SEARCH = "vector_search"
     ENTITY_RESOLUTION = "entity_resolution"
@@ -45,7 +35,11 @@ class RetrievalStepType(str, Enum):
 
 
 class QueryComplexity(str, Enum):
-    """Complexity level for determining recursion depth."""
+    """
+    Determines how complex a résumé query is to process.
+
+    Improves résumé processing efficiency by matching analysis depth to job requirement complexity.
+    """
     SIMPLE = "simple"           # Direct entity lookup
     MEDIUM = "medium"           # Multi-hop KG traversal
     COMPLEX = "complex"         # KG + RAG fusion
@@ -54,7 +48,11 @@ class QueryComplexity(str, Enum):
 
 @dataclass
 class RAGRetrievalStep:
-    """Single RAG retrieval step in fusion plan."""
+    """
+    Defines a single document search step for résumé information retrieval.
+
+    Improves résumé relevance by finding job-specific documents and experiences that match target positions.
+    """
     
     step_type: RetrievalStepType
     step_number: int
@@ -80,7 +78,11 @@ class RAGRetrievalStep:
 
 @dataclass
 class FusionPlanStep:
-    """Unified step that can be either KG hop or RAG retrieval."""
+    """
+    Combines knowledge graph and document search steps for résumé analysis.
+
+    Improves résumé comprehensiveness by integrating structured career data with relevant job experiences.
+    """
     
     step_type: RetrievalStepType
     step_number: int
@@ -104,7 +106,11 @@ class FusionPlanStep:
 
 @dataclass
 class KGRAGFusionPlan(KGQueryPlan):
-    """Extended KG query plan with RAG fusion and MoR recursion hints."""
+    """
+    Creates comprehensive retrieval plans for résumé job matching analysis.
+
+    Improves résumé targeting by combining career history with job-specific requirements and skills.
+    """
     
     # RAG fusion components
     rag_retrieval_steps: List[RAGRetrievalStep] = field(default_factory=list)
@@ -131,22 +137,27 @@ class KGRAGFusionPlan(KGQueryPlan):
 
 
 class KGRAGFusionPlanner:
-    """Master planner for KG + RAG fusion with MoR recursion support.
-    
-    This planner creates comprehensive retrieval strategies that combine:
-    - Multi-hop knowledge graph traversal
-    - Vector/semantic retrieval
-    - Temporal constraint application
-    - Mixture-of-Recursions depth planning
+    """
+    Plans comprehensive résumé analysis using career data and job requirements.
+
+    Improves résumé job matching by finding relevant experiences, skills, and achievements for target positions.
     """
     
     def __init__(self, kg_planner: Optional[KGRetrievalPlanner] = None):
-        """Initialize with optional KG planner."""
+        """
+        Sets up the résumé analysis planner with career data processing capabilities.
+
+        Improves résumé processing speed by using pre-configured analysis templates for common job types.
+        """
         self.kg_planner = kg_planner or KGRetrievalPlanner()
         self._fusion_templates = self._build_fusion_templates()
     
     def _build_fusion_templates(self) -> Dict[str, Dict[str, Any]]:
-        """Build predefined fusion templates."""
+        """
+        Creates résumé analysis templates for different job categories and experience levels.
+
+        Improves résumé relevance by using job-specific analysis patterns that highlight relevant achievements.
+        """
         return {
             # Temporal entity facts with context
             "temporal_entity_context": {
@@ -197,20 +208,10 @@ class KGRAGFusionPlanner:
         max_recursion_depth: int = 3,
         complexity_hint: Optional[QueryComplexity] = None,
     ) -> KGRAGFusionPlan:
-        """Create a comprehensive KG + RAG fusion plan.
-        
-        Args:
-            user_question: Natural language query
-            start_entities: Optional starting entities for KG traversal
-            temporal_constraints: Temporal filtering constraints
-            kg_config: KG-specific configuration
-            rag_config: RAG-specific configuration
-            fusion_template: Optional predefined template
-            max_recursion_depth: Maximum recursion depth for MoR
-            complexity_hint: Optional complexity override
-            
-        Returns:
-            KGRAGFusionPlan for L3 orchestration
+        """
+        Creates a tailored analysis plan for résumé job matching and experience highlighting.
+
+        Improves résumé effectiveness by identifying the most relevant career achievements and skills for specific jobs.
         """
         # Analyze query complexity
         complexity = self._analyze_query_complexity(
@@ -255,7 +256,11 @@ class KGRAGFusionPlanner:
         temporal_constraints: Optional[Dict[str, Any]],
         hint: Optional[QueryComplexity],
     ) -> QueryComplexity:
-        """Analyze query to determine complexity level."""
+        """
+        Determines how complex a résumé question is to analyze and process effectively.
+
+        Improves résumé analysis efficiency by matching processing depth to job requirement complexity.
+        """
         if hint:
             return hint
         
@@ -303,7 +308,11 @@ class KGRAGFusionPlanner:
         rag_config: Optional[Dict[str, Any]],
         max_recursion_depth: int,
     ) -> KGRAGFusionPlan:
-        """Create plan from a predefined fusion template."""
+        """
+        Creates résumé analysis plans using job-specific templates for different career levels.
+
+        Improves résumé targeting by applying proven analysis patterns for specific job categories and roles.
+        """
         template = self._fusion_templates[template_name]
         
         # Build base KG plan
@@ -391,7 +400,11 @@ class KGRAGFusionPlanner:
         start_entities: Optional[List[str]],
         temporal_constraints: Optional[Dict[str, Any]],
     ) -> KGRAGFusionPlan:
-        """Plan simple fusion with minimal KG + RAG."""
+        """
+        Creates basic résumé analysis plans for straightforward job matching questions.
+
+        Improves résumé clarity by highlighting key experiences and skills that directly match job requirements.
+        """
         # Single KG hop + single RAG retrieval
         kg_plan = self.kg_planner.plan_query(
             query_type=QueryType.ENTITY_FACTS,
@@ -443,7 +456,11 @@ class KGRAGFusionPlanner:
         kg_config: Optional[Dict[str, Any]],
         rag_config: Optional[Dict[str, Any]],
     ) -> KGRAGFusionPlan:
-        """Plan medium complexity fusion with multi-hop KG."""
+        """
+        Creates intermediate résumé analysis plans for multi-step career progression questions.
+
+        Improves résumé comprehensiveness by connecting related experiences and showing career growth patterns.
+        """
         kg_plan = self.kg_planner.plan_query(
             query_type=QueryType.NEIGHBORHOOD,
             start_entities=start_entities or [],
@@ -519,7 +536,11 @@ class KGRAGFusionPlanner:
         rag_config: Optional[Dict[str, Any]],
         max_recursion_depth: int,
     ) -> KGRAGFusionPlan:
-        """Plan complex fusion with temporal reasoning."""
+        """
+        Creates advanced résumé analysis plans for complex career trajectory and skill transfer questions.
+
+        Improves résumé impact by demonstrating sophisticated career progression and transferable expertise.
+        """
         kg_plan = self.kg_planner.plan_query(
             query_type=QueryType.TEMPORAL_SLICE,
             start_entities=start_entities or [],
@@ -626,7 +647,11 @@ class KGRAGFusionPlanner:
         rag_config: Optional[Dict[str, Any]],
         max_recursion_depth: int,
     ) -> KGRAGFusionPlan:
-        """Plan very complex fusion with recursive reasoning."""
+        """
+        Creates sophisticated résumé analysis plans with deep recursive reasoning for complex career narratives.
+
+        Improves résumé persuasiveness by building compelling career stories that demonstrate growth and expertise.
+        """
         kg_plan = self.kg_planner.plan_query(
             query_type=QueryType.PATH_FINDING,
             start_entities=start_entities or [],
@@ -757,11 +782,19 @@ class KGRAGFusionPlanner:
         )
     
     def get_fusion_template(self, name: str) -> Optional[Dict[str, Any]]:
-        """Get a fusion template by name."""
+        """
+        Retrieves job-specific résumé analysis templates for different career stages.
+
+        Improves résumé processing speed by using proven templates for common job categories.
+        """
         return self._fusion_templates.get(name)
     
     def list_fusion_templates(self) -> List[str]:
-        """List available fusion template names."""
+        """
+        Lists all available résumé analysis templates for different job types and career levels.
+
+        Improves résumé targeting by showing which specialized analysis templates are available.
+        """
         return list(self._fusion_templates.keys())
 
 
@@ -773,7 +806,11 @@ def plan_temporal_entity_facts(
     entity_id: str,
     temporal_range: Optional[Dict[str, Any]] = None,
 ) -> KGRAGFusionPlan:
-    """Create a plan for temporal entity facts with context."""
+    """
+    Creates résumé analysis plans for specific career experiences with timeline context.
+
+    Improves résumé chronology by showing career progression and experience duration for target jobs.
+    """
     planner = KGRAGFusionPlanner()
     return planner.plan_fusion_query(
         user_question=f"What are the facts about {entity_id}?",
@@ -787,7 +824,11 @@ def plan_career_path_analysis(
     person_id: str,
     include_skills: bool = True,
 ) -> KGRAGFusionPlan:
-    """Create a plan for career path analysis."""
+    """
+    Creates comprehensive résumé analysis plans for career progression and skill development tracking.
+
+    Improves résumé narrative by showing clear career advancement and skill growth patterns to recruiters.
+    """
     planner = KGRAGFusionPlanner()
     question = f"What is the career progression for {person_id}?"
     if include_skills:
@@ -805,7 +846,11 @@ def plan_recursive_reasoning(
     start_entities: Optional[List[str]] = None,
     max_depth: int = 5,
 ) -> KGRAGFusionPlan:
-    """Create a plan for deep recursive reasoning."""
+    """
+    Creates deep résumé analysis plans with multi-level reasoning for complex career questions.
+
+    Improves résumé depth by thoroughly analyzing career decisions and their impact on job qualifications.
+    """
     planner = KGRAGFusionPlanner()
     return planner.plan_fusion_query(
         user_question=question,

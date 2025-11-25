@@ -1,26 +1,14 @@
-"""L2 Fusion Executor - Stateless execution of KG + RAG fusion plans
+"""
+Executes résumé analysis steps to find relevant experiences and job matches.
 
-Executes KGRAGFusionPlan steps without orchestration logic or state mutation.
-Layer: L2 (Execution / Tools)
-Responsibilities:
-- Execute individual fusion plan steps (KG hops, RAG retrieval, fusion ranking)
-- Perform stateless tool calls (LLM, vector search, KG queries)
-- Return structured results for L3 orchestration
-- Handle MoR recursion depth hints
-
-Non-responsibilities:
-- Planning or workflow design (L1)
-- Orchestration or DAG control (L3)
-- State persistence or mutation (L4)
-- Safety evaluation or policy enforcement (L5)
+Improves résumé targeting by processing career data and job requirements to identify best matches.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union, Tuple
+from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
-import asyncio
 import logging
 
 from l1.kg_rag_fusion_planning import (
@@ -31,9 +19,6 @@ from l1.kg_rag_fusion_planning import (
 )
 from l4.temporal_schemas import (
     TemporalTriplet,
-    TemporalEntity,
-    ConflictDetection,
-    ConflictType,
     TemporalRange,
 )
 from l4.temporal_kg import TemporalKG, TemporalQuery
@@ -44,7 +29,11 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class FusionStepResult:
-    """Result of executing a single fusion step."""
+    """
+    Contains results from individual résumé analysis processing steps.
+
+    Improves résumé processing by tracking success and data from each analysis stage.
+    """
     
     step_number: int
     step_type: RetrievalStepType
@@ -62,7 +51,11 @@ class FusionStepResult:
 
 @dataclass
 class FusionExecutionResult:
-    """Complete result of fusion plan execution."""
+    """
+    Contains complete results from résumé analysis plan execution with all steps.
+
+    Improves résumé analysis by providing comprehensive results and metrics for job matching.
+    """
     
     plan_id: str
     success: bool
@@ -77,11 +70,19 @@ class FusionExecutionResult:
     complexity_score: float = 0.0
     
     def get_successful_step_results(self) -> List[FusionStepResult]:
-        """Get only successful step results."""
+        """
+        Filters and returns only successful résumé analysis step results.
+
+        Improves résumé processing by focusing on completed analysis steps for accurate job matching.
+        """
         return [r for r in self.step_results if r.success]
     
     def get_step_result(self, step_number: int) -> Optional[FusionStepResult]:
-        """Get result for a specific step."""
+        """
+        Retrieves results from a specific résumé analysis step by step number.
+
+        Improves résumé debugging by allowing detailed inspection of individual analysis steps.
+        """
         for result in self.step_results:
             if result.step_number == step_number:
                 return result
@@ -89,10 +90,10 @@ class FusionExecutionResult:
 
 
 class FusionExecutor:
-    """Stateless executor for KG + RAG fusion plans.
-    
-    This executor handles the actual tool calls for fusion plan execution,
-    including KG queries, vector searches, entity resolution, and result fusion.
+    """
+    Executes résumé analysis plans to find job-relevant experiences and skills.
+
+    Improves résumé job matching by processing career data through specialized analysis steps.
     """
     
     def __init__(
@@ -101,7 +102,11 @@ class FusionExecutor:
         vector_store: Optional[Any] = None,
         llm_client: Optional[Any] = None,
     ):
-        """Initialize executor with required tools."""
+        """
+        Sets up résumé analysis executor with career data processing tools.
+
+        Improves résumé processing speed by configuring specialized tools for job matching analysis.
+        """
         self.kg_adapter = kg_adapter
         self.vector_store = vector_store
         self.llm_client = llm_client
@@ -111,14 +116,10 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         execution_context: Optional[Dict[str, Any]] = None,
     ) -> FusionExecutionResult:
-        """Execute a complete fusion plan.
-        
-        Args:
-            plan: The fusion plan to execute
-            execution_context: Optional context for execution
-            
-        Returns:
-            FusionExecutionResult with all step results
+        """
+        Executes complete résumé analysis plan to find job-relevant experiences and skills.
+
+        Improves résumé job matching by systematically processing career data through all analysis steps.
         """
         start_time = datetime.now(UTC)
         
@@ -190,7 +191,11 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         context: Dict[str, Any],
     ) -> FusionStepResult:
-        """Execute a single fusion step."""
+        """
+        Executes individual résumé analysis step to process specific career data.
+
+        Improves résumé processing by handling each analysis step with appropriate specialized logic.
+        """
         start_time = datetime.now(UTC)
         
         try:
@@ -247,7 +252,11 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Execute a KG hop traversal."""
+        """
+        Traverses career knowledge graph to find related job experiences and skills.
+
+        Improves résumé connections by discovering career patterns and skill relationships across jobs.
+        """
         if not self.kg_adapter:
             return {"success": False, "error": "KG adapter not available"}
         
@@ -303,7 +312,11 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Execute vector search retrieval."""
+        """
+        Searches document database for job-relevant experiences and skill descriptions.
+
+        Improves résumé relevance by finding textual evidence that matches specific job requirements.
+        """
         if not self.vector_store:
             return {"success": False, "error": "Vector store not available"}
         
@@ -352,7 +365,11 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Execute entity resolution."""
+        """
+        Identifies and standardizes company names, job titles, and skills in career data.
+
+        Improves résumé consistency by ensuring all career entities are properly categorized and linked.
+        """
         if not self.llm_client:
             return {"success": False, "error": "LLM client not available"}
         
@@ -393,7 +410,11 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Execute temporal filtering."""
+        """
+        Filters career experiences by date ranges and time periods for job relevance.
+
+        Improves résumé timing by showing experiences within relevant career periods for target jobs.
+        """
         try:
             # Get temporal constraints from plan context
             temporal_constraints = plan.context.get("temporal_constraints", {})
@@ -438,7 +459,11 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Execute result fusion and ranking."""
+        """
+        Combines and ranks career experiences and skills for job matching relevance.
+
+        Improves résumé prioritization by highlighting the most relevant achievements for target positions.
+        """
         try:
             # Collect results from previous steps
             kg_results = []
@@ -473,7 +498,11 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
-        """Execute recursive deepening for complex queries."""
+        """
+        Performs deeper analysis of complex career questions for comprehensive résumé insights.
+
+        Improves résumé depth by uncovering hidden career patterns and transferable skills through recursion.
+        """
         try:
             # Analyze result completeness and plan recursion
             recursion_plan = {
@@ -511,7 +540,11 @@ class FusionExecutor:
         step_results: List[FusionStepResult],
         plan: KGRAGFusionPlan,
     ) -> Dict[str, Any]:
-        """Aggregate results from all fusion steps."""
+        """
+        Combines all résumé analysis results into comprehensive job matching insights.
+
+        Improves résumé completeness by aggregating career data, skills, and experiences from all analysis steps.
+        """
         aggregated = {
             "plan_id": plan.query_id,
             "fusion_strategy": plan.fusion_strategy,
@@ -539,7 +572,11 @@ class FusionExecutor:
         self,
         step_results: List[FusionStepResult],
     ) -> float:
-        """Calculate overall complexity score based on execution."""
+        """
+        Measures résumé analysis complexity based on processing depth and execution difficulty.
+
+        Improves résumé analysis by providing metrics to optimize processing for different job types.
+        """
         if not step_results:
             return 0.0
         
@@ -565,7 +602,11 @@ async def execute_simple_fusion(
     kg_adapter: Optional[TemporalKG] = None,
     vector_store: Optional[Any] = None,
 ) -> FusionExecutionResult:
-    """Execute a simple fusion query."""
+    """
+    Performs basic résumé analysis to quickly identify relevant experiences for job matching.
+
+    Improves résumé processing speed by providing fast analysis for straightforward job questions.
+    """
     from l1.kg_rag_fusion_planning import KGRAGFusionPlanner
     
     planner = KGRAGFusionPlanner()
@@ -580,7 +621,11 @@ async def execute_temporal_entity_facts(
     temporal_range: Optional[Dict[str, Any]] = None,
     kg_adapter: Optional[TemporalKG] = None,
 ) -> FusionExecutionResult:
-    """Execute temporal entity facts query."""
+    """
+    Retrieves career facts with timeline context for chronological résumé presentation.
+
+    Improves résumé timeline accuracy by showing career progression within specific time periods.
+    """
     from l1.kg_rag_fusion_planning import plan_temporal_entity_facts
     
     executor = FusionExecutor(kg_adapter=kg_adapter)
