@@ -214,11 +214,11 @@ def _extract_user_request(row: Mapping[str, Any]) -> Any:
     Extracts résumé improvement request from batch data row.
 
     Prioritizes user input fields for comprehensive résumé enhancement processing.
-    """
-    # Priority:
-    # - row["user_request"]
-    # - row["prompt"]
-    # - row["input"]
+    
+    Priority:
+    - row["user_request"]
+    - row["prompt"]
+    - row["input"]
     - otherwise: the full row object itself.
     """
     if "user_request" in row:
@@ -793,8 +793,7 @@ def _parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 
 def main(argv: Optional[Sequence[str]] = None) -> None:
-    """
-    CLI wrapper for running batch jobs.
+    """CLI wrapper for running batch jobs.
 
     For programmatic usage, prefer calling run_batch() directly.
     """
