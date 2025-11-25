@@ -1,4 +1,4 @@
-from core.agent_registry import AgentRegistry
+from orchestration.agent_registry import AgentRegistry
 from profiles.agent_profile import AgentCard
 from core.models.models import AgentRole  # normalized import
 

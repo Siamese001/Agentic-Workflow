@@ -7,12 +7,12 @@ callers can depend on a stable ``orchestration.model_routing``
 namespace without changing the underlying implementation.
 """
 
-from infra.model_routing.models import RoutingContext, ModelChoice  # noqa: F401
-from infra.model_routing.policies import (  # noqa: F401
+from infrastructure.model_routing.models import RoutingContext, ModelChoice  # noqa: F401
+from infrastructure.model_routing.policies import (  # noqa: F401
     choose_provider_and_model,
     enforce_budget,
 )
-from infra.model_routing.selector import select_model  # noqa: F401
+from infrastructure.model_routing.selector import select_model  # noqa: F401
 
 __all__ = [
     "RoutingContext",

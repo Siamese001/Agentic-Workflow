@@ -4,7 +4,7 @@ import asyncio
 from typing import Any, Dict
 
 from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
-from core.agent_registry import AgentRegistry
+from orchestration.agent_registry import AgentRegistry
 from profiles.agent_profile import AgentCard
 from core.models.models import AgentRole
 

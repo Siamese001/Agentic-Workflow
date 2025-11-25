@@ -8,13 +8,13 @@ import pytest
 from unittest.mock import Mock, patch, AsyncMock
 from datetime import datetime
 
-from l5.injection_detection import (
+from safety.injection_detection import (
     InjectionDetector,
     InjectionType,
     InjectionSafetyPolicy,
     create_injection_safety_policy
 )
-from l5.types import SafetyContext, SafetyFinding, Severity, Verdict
+from safety.types import SafetyContext, SafetyFinding, Severity, Verdict
 
 
 class TestInjectionDetector:

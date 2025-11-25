@@ -1,5 +1,5 @@
-from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
-from infra.sandbox.models import ToolCallRequest
+from infrastructure.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
+from infrastructure.sandbox.models import ToolCallRequest
 from observability import clear_events, get_all_events
 
 

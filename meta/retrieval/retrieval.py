@@ -51,7 +51,7 @@ def _run_chroma(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidenc
     """
 
     try:  # pragma: no cover - optional Chroma wiring
-        from vector_store_chroma import (
+        from infrastructure.storage.vector_store_chroma import (
             ChromaConfig as _ChromaConfig,
             init_chroma_client as _init_chroma_client,
             chroma_hybrid_search as _chroma_hybrid_search,

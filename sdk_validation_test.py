@@ -233,14 +233,14 @@ def test_project_imports():
     
     try:
         # Test cache_redis
-        import cache_redis
+        import infrastructure.storage.cache_redis
         test_result("cache_redis (project)", "PASS", "Project module import successful")
     except Exception as e:
         test_result("cache_redis (project)", "FAIL", error=str(e))
     
     try:
         # Test vector_store_chroma
-        import vector_store_chroma
+        import infrastructure.storage.vector_store_chroma
         test_result("vector_store_chroma (project)", "PASS", "Project module import successful")
     except Exception as e:
         test_result("vector_store_chroma (project)", "FAIL", error=str(e))
