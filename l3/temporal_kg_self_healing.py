@@ -1,20 +1,7 @@
-"""L3 Temporal KG Self-Healing Controller
+"""
+Orchestrates automatic fixing of career timeline inconsistencies and job fact errors.
 
-Orchestrates self-healing workflows for temporal knowledge graph maintenance.
-Monitors KG inconsistencies and coordinates repair operations through L2 executors.
-
-Layer: L3 (Orchestration / DAGs)
-Responsibilities:
-- Monitor temporal KG for inconsistencies and conflicts
-- Orchestrate self-healing workflows using L2 executors
-- Coordinate conflict detection, resolution, and validation
-- Schedule periodic maintenance and repair cycles
-
-Non-responsibilities:
-- Planning or reasoning (L1)
-- Direct tool calls or execution (L2)
-- State mutation or persistence (L4)
-- Safety evaluation or policy enforcement (L5)
+Improves résumé accuracy by detecting and resolving conflicting dates, overlapping jobs, and career data issues.
 """
 
 from __future__ import annotations
@@ -42,7 +29,11 @@ logger = logging.getLogger(__name__)
 
 
 class HealingTrigger(str, Enum):
-    """Types of triggers for self-healing workflows."""
+    """
+    Defines events that trigger automatic résumé data consistency checks and repairs.
+
+    Improves résumé reliability by ensuring career data is continuously monitored and corrected.
+    """
     SCHEDULED = "scheduled"           # Periodic maintenance
     CONFLICT_DETECTED = "conflict_detected"  # Active conflict found
     STALE_DATA = "stale_data"         # Data freshness issues
