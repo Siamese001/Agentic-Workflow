@@ -1,9 +1,7 @@
-"""Top-level agentic workflow engine wiring L3, L4, and L5.
+"""
+Provides high-level résumé analysis workflow execution with coordinated multi-agent processing.
 
-This is a thin façade over the lower-level integration helpers in
-`core.integration` and `core.workflow_context`. It intentionally
-avoids pulling in L1/L2 concerns so that those layers can be
-composed by callers as needed.
+Improves résumé processing reliability by orchestrating complex analysis workflows with safety validation and error handling.
 """
 from __future__ import annotations
 
@@ -22,7 +20,11 @@ TState = TypeVar("TState")
 
 @dataclass
 class EngineConfig:
-    """High-level configuration for the workflow engine."""
+    """
+    Configures résumé analysis workflow engine settings for reliability and performance optimization.
+
+    Improves résumé processing by defining retry policies, timeouts, and failure handling for multi-agent workflows.
+    """
 
     max_retries: int = 3
     retry_delay: float = 0.5
@@ -31,13 +33,10 @@ class EngineConfig:
 
 
 class AgenticWorkflowEngine:
-    """Convenience wrapper for executing DAG-style workflows.
+    """
+    Manages résumé analysis workflow execution with coordinated multi-agent processing and safety validation.
 
-    Callers are expected to supply:
-    - an initial L4-managed state object
-    - a node-executor mapping
-    - a dependency mapping
-    - an optional L5 SafetySystem
+    Improves résumé processing by orchestrating complex analysis workflows with proper error handling and retry logic.
     """
 
     def __init__(
@@ -45,6 +44,11 @@ class AgenticWorkflowEngine:
         config: Optional[EngineConfig] = None,
         safety_system: Optional[SafetySystem] = None,
     ) -> None:
+        """
+        Sets up résumé workflow engine with retry policies and safety validation for reliable multi-agent processing.
+
+        Improves résumé processing reliability by configuring error handling and safety checks for complex analysis workflows.
+        """
         self.config = config or EngineConfig()
         self.safety_system = safety_system
 
@@ -56,7 +60,11 @@ class AgenticWorkflowEngine:
         node_dependencies: Dict[str, List[str]],
         **metadata: Any,
     ) -> DAGResult:
-        """Execute a DAG using the core L3–L4–L5 integration helpers."""
+        """
+        Executes résumé analysis workflow with coordinated multi-agent processing and comprehensive error handling.
+
+        Improves résumé processing reliability by managing complex analysis workflows with proper dependency resolution and retry logic.
+        """
 
         wf_cfg = WorkflowExecutionConfig(
             max_retries=self.config.max_retries,

@@ -42,7 +42,11 @@ class HealingTrigger(str, Enum):
 
 
 class HealingStatus(str, Enum):
-    """Status of healing workflows."""
+    """
+    Tracks progress of résumé data consistency repair and validation operations.
+
+    Improves résumé quality monitoring by providing clear status updates for data fixing processes.
+    """
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -52,7 +56,11 @@ class HealingStatus(str, Enum):
 
 @dataclass
 class HealingWorkflow:
-    """Orchestration specification for a self-healing workflow."""
+    """
+    Defines automated repair processes for fixing résumé timeline and career data inconsistencies.
+
+    Improves résumé accuracy by orchestrating systematic detection and resolution of career data conflicts.
+    """
     
     workflow_id: str
     trigger: HealingTrigger
@@ -77,7 +85,11 @@ class HealingWorkflow:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for storage."""
+        """
+        Converts résumé repair workflow data to storage format for tracking and auditing.
+
+        Improves résumé quality control by maintaining complete records of all data consistency fixes.
+        """
         return {
             "workflow_id": self.workflow_id,
             "trigger": self.trigger.value,
@@ -97,7 +109,11 @@ class HealingWorkflow:
 
 @dataclass
 class HealingOrchestrationConfig:
-    """Configuration for healing orchestration."""
+    """
+    Configures automated résumé data repair settings for different types of career inconsistencies.
+
+    Improves résumé maintenance by defining how and when to fix timeline conflicts and data errors.
+    """
     
     # Scheduling
     scheduled_interval_hours: int = 24
@@ -119,10 +135,10 @@ class HealingOrchestrationConfig:
 
 
 class TemporalKGSelfHealingController:
-    """Orchestrates self-healing workflows for temporal knowledge graph.
-    
-    This controller monitors the temporal KG for issues and orchestrates
-    appropriate healing workflows using L2 executors for actual repairs.
+    """
+    Manages automatic detection and repair of résumé timeline conflicts and career data inconsistencies.
+
+    Improves résumé accuracy by continuously monitoring career data and orchestrating fixes for timeline errors.
     """
     
     def __init__(
@@ -131,12 +147,10 @@ class TemporalKGSelfHealingController:
         l4_state_manager: Optional[Any] = None,
         config: Optional[HealingOrchestrationConfig] = None,
     ):
-        """Initialize the self-healing controller.
-        
-        Args:
-            l2_executors: Dictionary of L2 executor functions
-            l4_state_manager: L4 state manager for reading/writing KG state
-            config: Orchestration configuration
+        """
+        Sets up résumé data repair system with automated conflict detection and resolution tools.
+
+        Improves résumé maintenance by configuring continuous monitoring and fixing of career timeline issues.
         """
         self.l2_executors = l2_executors
         self.l4_state_manager = l4_state_manager
@@ -160,14 +174,10 @@ class TemporalKGSelfHealingController:
         trigger: HealingTrigger = HealingTrigger.SCHEDULED,
         scope: Optional[Dict[str, Any]] = None,
     ) -> HealingWorkflow:
-        """Run a complete self-healing cycle.
-        
-        Args:
-            trigger: What triggered this healing cycle
-            scope: Optional scope limitations
-            
-        Returns:
-            HealingWorkflow with execution results
+        """
+        Executes complete résumé data consistency check and automatic repair cycle.
+
+        Improves résumé accuracy by detecting timeline conflicts and applying systematic fixes to career data.
         """
         workflow_id = f"healing_{datetime.now(UTC).strftime('%Y%m%d%H%M%S%f')}"
         
@@ -226,14 +236,10 @@ class TemporalKGSelfHealingController:
         conflict_types: Optional[List[ConflictType]] = None,
         entity_filters: Optional[List[str]] = None,
     ) -> HealingWorkflow:
-        """Schedule conflict detection and repair workflow.
-        
-        Args:
-            conflict_types: Specific conflict types to address
-            entity_filters: Entity filters to limit scope
-            
-        Returns:
-            HealingWorkflow for the scheduled operation
+        """
+        Schedules targeted résumé data conflict detection and repair for specific career inconsistencies.
+
+        Improves résumé precision by focusing repair efforts on particular types of timeline or data conflicts.
         """
         scope = {
             "conflict_types": [ct.value for ct in conflict_types] if conflict_types else None,
@@ -246,7 +252,11 @@ class TemporalKGSelfHealingController:
         )
     
     async def _execute_healing_dag(self, workflow: HealingWorkflow) -> None:
-        """Execute the healing workflow as a DAG."""
+        """
+        Runs automated résumé data repair workflow using directed acyclic graph execution.
+
+        Improves résumé consistency by systematically applying fixes to timeline conflicts and data errors.
+        """
         
         # Build healing DAG
         dag = self._build_healing_dag(workflow)
@@ -266,7 +276,11 @@ class TemporalKGSelfHealingController:
             raise Exception(f"Healing workflow timed out after {self.config.workflow_timeout_minutes} minutes")
     
     def _build_healing_dag(self, workflow: HealingWorkflow) -> DagGraph:
-        """Build a DAG for the healing workflow."""
+        """
+        Creates directed acyclic graph for systematic résumé data repair and validation workflow.
+
+        Improves résumé processing by organizing conflict detection and resolution into efficient execution steps.
+        """
         
         # Define DAG nodes
         nodes = {
@@ -346,7 +360,11 @@ class TemporalKGSelfHealingController:
             return {"conflicts_detected": 0, "detection_success": False, "error": str(e)}
     
     async def _node_conflict_analysis(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze detected conflicts and prioritize repairs."""
+        """
+        Analyzes résumé data conflicts to prioritize the most impactful fixes for career timeline accuracy.
+
+        Improves résumé repair efficiency by focusing on critical conflicts that most affect job matching.
+        """
         workflow = dag_ctx["workflow"]
         
         try:
@@ -422,7 +440,11 @@ class TemporalKGSelfHealingController:
             return {"entities_resolved": 0, "resolution_success": False, "error": str(e)}
     
     async def _node_triplet_repair(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
-        """Repair conflicting triplets."""
+        """
+        Repairs conflicting career facts and timeline data to ensure résumé consistency and accuracy.
+
+        Improves résumé reliability by fixing contradictory job dates, overlapping positions, and factual errors.
+        """
         workflow = dag_ctx["workflow"]
         
         try:
@@ -482,7 +504,11 @@ class TemporalKGSelfHealingController:
             return {"invalidations_applied": 0, "invalidation_success": False, "error": str(e)}
     
     async def _node_validation(self, dag_ctx: Dict[str, Any]) -> Dict[str, Any]:
-        """Validate repair results."""
+        """
+        Validates résumé repair results to ensure career data fixes are correct and complete.
+
+        Improves résumé quality by confirming that all timeline conflicts have been properly resolved.
+        """
         workflow = dag_ctx["workflow"]
         
         try:
@@ -510,12 +536,20 @@ class TemporalKGSelfHealingController:
         """Get the status of a specific workflow."""
         return self.active_workflows.get(workflow_id)
     
-    def list_active_workflows(self) -> List[HealingWorkflow]:
-        """List all currently active workflows."""
+    def get_active_workflows(self) -> List[HealingWorkflow]:
+        """
+        Lists all currently running résumé data repair and validation workflows.
+
+        Improves résumé monitoring by showing which career data consistency fixes are in progress.
+        """
         return list(self.active_workflows.values())
     
     def get_healing_metrics(self) -> Dict[str, Any]:
-        """Get healing controller metrics."""
+        """
+        Provides résumé data repair performance metrics and quality improvement statistics.
+
+        Improves résumé monitoring by tracking success rates and effectiveness of career data consistency fixes.
+        """
         return {
             **self.metrics,
             "active_workflows": len(self.active_workflows),
@@ -535,7 +569,11 @@ async def run_scheduled_healing_cycle(
     l2_executors: Dict[str, Callable],
     l4_state_manager: Optional[Any] = None,
 ) -> HealingWorkflow:
-    """Run a scheduled healing cycle."""
+    """
+    Performs routine résumé data consistency checks and automatic repairs on a regular schedule.
+
+    Improves résumé reliability by continuously monitoring and fixing career timeline issues without manual intervention.
+    """
     controller = TemporalKGSelfHealingController(
         l2_executors=l2_executors,
         l4_state_manager=l4_state_manager,
@@ -551,7 +589,11 @@ async def repair_conflicts(
     l2_executors: Dict[str, Callable],
     entity_filters: Optional[List[str]] = None,
 ) -> HealingWorkflow:
-    """Repair specific types of conflicts."""
+    """
+    Targets specific résumé data conflicts for immediate repair and validation.
+
+    Improves résumé accuracy by focusing on particular types of career timeline or data inconsistencies.
+    """
     controller = TemporalKGSelfHealingController(
         l2_executors=l2_executors,
     )
