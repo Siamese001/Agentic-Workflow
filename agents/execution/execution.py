@@ -51,15 +51,17 @@ from eval.health.repair_policies import propose_repairs
 run_rag_retrieval = _retrieval_module.run_rag_retrieval
 
 
-# =============================================================================
-# Helpers
-# =============================================================================
+"""
+Provides helper functions for reliable résumé processing execution.
+
+Ensures robust operation and error handling for comprehensive résumé improvement workflows.
+"""
 
 
 def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
     """
     Safely accesses object attributes for reliable résumé processing.
-
+    
     Prevents errors that could interrupt comprehensive résumé improvement workflows.
     """
     try:
@@ -71,7 +73,7 @@ def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
 def _build_base_query(ctx: ExecutionContext) -> str:
     """
     Constructs search query from job and resume data.
-
+    
     Creates focused queries to find relevant evidence for résumé improvement.
     """
     job = _safe_getattr(ctx, "job", None)
@@ -103,7 +105,7 @@ def _build_base_query(ctx: ExecutionContext) -> str:
 def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
     """
     Derives quality assessment vote from QA findings.
-
+    
     Ensures consistent evaluation of résumé improvement quality and safety.
     """
     findings = list(getattr(qa_result, "findings", []) or [])
@@ -137,7 +139,7 @@ def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
 def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
     """
     Records thinking trace for résumé improvement analysis.
-
+    
     Maintains observability of decision processes for quality enhancement.
     """
     # L2 does not call L1 - latent thinking plans should be pre-computed
@@ -161,7 +163,7 @@ async def _maybe_run_hyde_query(
 ) -> Optional[str]:
     """
     Generates hypothetical document queries for better retrieval.
-
+    
     Creates enhanced search queries to find relevant résumé improvement evidence.
     """
     if rag_plan is None or not getattr(rag_plan, "allow_hyde", False):
@@ -185,9 +187,11 @@ async def _maybe_run_hyde_query(
         end_span(span)
 
 
-# =============================================================================
-# Strategy Execution
-# =============================================================================
+"""
+Executes résumé strategy planning with optimal model selection.
+
+Generates targeted improvement plans to enhance job description alignment.
+"""
 
 
 async def _execute_strategy(
@@ -196,7 +200,7 @@ async def _execute_strategy(
 ) -> StrategyResult:
     """
     Executes résumé strategy planning with optimal model selection.
-
+    
     Generates targeted improvement plans to enhance job description alignment.
     """
     span = start_span("l2.strategy", ctx=ctx.span_context())
@@ -227,9 +231,11 @@ async def _execute_strategy(
         end_span(span)
 
 
-# =============================================================================
-# Retrieval Execution (HYDE + Hybrid + RRF)
-# =============================================================================
+"""
+Executes comprehensive evidence retrieval for résumé improvement.
+
+Gathers relevant data using multiple search strategies to support résumé enhancement.
+"""
 
 
 async def _execute_retrieval(
@@ -238,7 +244,7 @@ async def _execute_retrieval(
 ) -> RAGResult:
     """
     Executes comprehensive evidence retrieval for résumé improvement.
-
+    
     Gathers relevant data using multiple search strategies to support résumé enhancement.
     """
     span = start_span("l2.retrieval", ctx=ctx.span_context())
@@ -273,9 +279,11 @@ async def _execute_retrieval(
         end_span(span)
 
 
-# =============================================================================
-# RAG Reasoning Execution (Phase 3)
-# =============================================================================
+"""
+Analyzes retrieved evidence for résumé improvement insights.
+
+Processes evidence to extract relevant information for résumé enhancement.
+"""
 
 
 async def _execute_rag_reasoning(
@@ -285,7 +293,7 @@ async def _execute_rag_reasoning(
 ) -> RAGResult:
     """
     Analyzes retrieved evidence for résumé improvement insights.
-
+    
     Processes evidence to extract relevant information for résumé enhancement.
     """
     span = start_span("l2.rag_reasoning", ctx=ctx.span_context())
@@ -337,9 +345,11 @@ async def _execute_rag_reasoning(
         end_span(span)
 
 
-# =============================================================================
-# Drafting Execution
-# =============================================================================
+"""
+Executes résumé content drafting with strategy and evidence.
+
+Generates compelling résumé sections using strategy guidance and retrieved evidence.
+"""
 
 
 async def _execute_drafting(
@@ -349,7 +359,9 @@ async def _execute_drafting(
     ctx: ExecutionContext,
 ) -> DraftingResult:
     """
-    Execute the drafting agent using StrategyResult + RAGResult.
+    Executes résumé content drafting with strategy and evidence.
+    
+    Generates compelling résumé sections using strategy guidance and retrieved evidence.
     """
     span = start_span("l2.drafting", ctx=ctx.span_context())
     try:
@@ -376,9 +388,11 @@ async def _execute_drafting(
         end_span(span)
 
 
-# =============================================================================
-# QA Execution + Council Heuristic
-# =============================================================================
+"""
+Executes quality assurance validation for résumé content.
+
+Ensures résumé accuracy and relevance through comprehensive QA analysis.
+"""
 
 
 async def _execute_qa(
@@ -388,11 +402,9 @@ async def _execute_qa(
     ctx: ExecutionContext,
 ) -> Tuple[QAResult, CouncilVote]:
     """
-    Execute the QA agent over the drafted content and evidence.
-
-    Returns both:
-        • QAResult  – structured QA findings
-        • CouncilVote – heuristic council summary derived from QAResult
+    Executes quality assurance validation for résumé content.
+    
+    Returns structured QA findings and council vote for résumé quality assessment.
     """
     span = start_span("l2.qa", ctx=ctx.span_context())
     try:
@@ -421,9 +433,11 @@ async def _execute_qa(
         end_span(span)
 
 
-# =============================================================================
-# Safety Execution (L2 cognition only; enforcement in L5)
-# =============================================================================
+"""
+Executes safety validation for résumé compliance and protection.
+
+Ensures résumé content meets safety standards to protect user data and credibility.
+"""
 
 
 async def _execute_safety(
@@ -434,10 +448,9 @@ async def _execute_safety(
     ctx: ExecutionContext,
 ) -> SafetyResult:
     """
-    Execute the constitutional safety agent.
-
-    This produces a SafetyResult that is later interpreted by L5; L2 does
-    not make enforcement decisions.
+    Executes safety validation for résumé compliance and protection.
+    
+    Produces safety assessment for résumé content without making enforcement decisions.
     """
     span = start_span("l2.safety", ctx=ctx.span_context())
     try:
@@ -487,31 +500,21 @@ async def _execute_safety(
         end_span(span)
 
 
-# =============================================================================
-# Public Entrypoint
-# =============================================================================
+"""
+Executes complete résumé improvement workflow pipeline.
+
+Coordinates strategy, retrieval, drafting, QA, and safety for comprehensive résumé enhancement.
+"""
 
 
 async def run_l2(
     plans: WorkflowPlanBundle,
     ctx: ExecutionContext,
 ) -> L2ResultBundle:
-    """Carry out all execution steps needed to improve a resume.
-
-    Given a previously built workflow plan and an execution context, this
-    function runs the full L2 pipeline:
-
-    * **Strategy** – refines how the resume should be tailored.
-    * **Retrieval** – gathers job and resume evidence to ground the rewrite.
-    * **RAG reasoning** – reasons over that evidence to highlight what
-      matters most.
-    * **Drafting** – produces updated resume sections.
-    * **QA** – checks alignment, clarity, and potential issues.
-    * **Safety** – flags risky or out-of-policy content.
-
-    For a business user, this is the main "do the work" step: it turns the
-    plan into a concrete, high-signal resume draft plus a clear record of what
-    was checked along the way.
+    """
+    Executes complete résumé improvement workflow pipeline.
+    
+    Coordinates all execution stages to deliver comprehensive résumé enhancement results.
     """
     # Validate the input plan bundle schema version before execution.
     try:

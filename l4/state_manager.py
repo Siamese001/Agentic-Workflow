@@ -1,4 +1,8 @@
-"""L4 State Manager - Pure state management only."""
+"""
+L4 state management for persistent résumé processing data.
+
+Ensures reliable storage and retrieval of workflow state for consistent résumé improvement.
+"""
 
 from typing import Any, Dict, Optional
 from dataclasses import dataclass, field
@@ -7,7 +11,11 @@ from pathlib import Path
 
 @dataclass
 class WorkflowState:
-    """Pure state data structure - no business logic."""
+    """
+    Stores résumé workflow state data for persistence.
+    
+    Maintains job, resume, and strategy data for reliable résumé processing continuity.
+    """
     job_data: Optional[Dict[str, Any]] = None
     resume_data: Optional[Dict[str, Any]] = None
     strategy_result: Optional[str] = None
@@ -15,14 +23,22 @@ class WorkflowState:
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 class StateManager:
-    """Pure state management - no orchestration, no execution logic."""
+    """
+    Manages persistent state storage for résumé workflows.
+    
+    Ensures data integrity and continuity for comprehensive résumé improvement processes.
+    """
     
     def __init__(self, storage_path: Path):
         self.storage_path = storage_path
         self._state: Optional[WorkflowState] = None
     
     def save_state(self, state: WorkflowState) -> None:
-        """Save state to storage - pure persistence only."""
+        """
+        Persists résumé workflow state to storage.
+        
+        Ensures data preservation for reliable résumé processing continuity.
+        """
         with open(self.storage_path, 'w') as f:
             json.dump({
                 'job_data': state.job_data,
@@ -34,7 +50,11 @@ class StateManager:
         self._state = state
     
     def load_state(self) -> Optional[WorkflowState]:
-        """Load state from storage - pure retrieval only."""
+        """
+        Retrieves résumé workflow state from storage.
+        
+        Restores previous processing state for consistent résumé improvement workflows.
+        """
         if not self.storage_path.exists():
             return None
         

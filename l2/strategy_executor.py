@@ -1,4 +1,8 @@
-"""L2 Strategy Executor - Pure execution only."""
+"""
+L2 strategy execution for résumé improvement workflows.
+
+Executes strategy generation using optimal models for comprehensive résumé enhancement planning.
+"""
 
 from typing import Optional
 from runtime.runtime_utils import invoke_model, SandboxConfig
@@ -8,7 +12,11 @@ from config.meta_profile import MetaProfileSnapshot
 from runtime.observability import record_event, record_exception
 
 class StrategyExecutor:
-    """Pure strategy execution - no planning logic."""
+    """
+    Executes résumé strategy generation with optimal model selection.
+    
+    Delivers targeted improvement plans to enhance résumé job alignment and effectiveness.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.routing_policy = routing_policy
@@ -16,7 +24,11 @@ class StrategyExecutor:
         self.meta_profile = meta_profile
     
     def execute_strategy(self, prompt: str) -> str:
-        """Execute LLM call only - no planning, no orchestration."""
+        """
+        Executes résumé strategy generation using LLM models.
+        
+        Produces comprehensive improvement strategies for optimal résumé job matching.
+        """
         try:
             model = self.routing_policy.select_model(
                 task="strategy_execution",
