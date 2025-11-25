@@ -3,7 +3,7 @@
 Provides dependency injection services for the atomic architecture.
 """
 
-from typing import Any, Dict, TypeVar, Callable
+from typing import Any, Dict, TypeVar, Callable, Optional
 import functools
 
 T = TypeVar('T')
