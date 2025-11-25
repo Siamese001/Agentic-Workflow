@@ -93,6 +93,13 @@ class TelemetryCollector:
         self.gauges: Dict[str, float] = {}
         self.histograms: Dict[str, List[float]] = {}
         self.timers: Dict[str, List[float]] = {}
+        
+        # Performance optimization: cache system metrics
+        self._cached_system_metrics: Optional[SystemMetrics] = None
+        self._metrics_count_at_cache: int = 0
+        
+        # Performance optimization: cache statistics
+        self._stats_cache: Dict[str, Dict[str, float]] = {}
     
     def record_metric(self, name: str, metric_type: MetricType, value: float, 
                      tags: Dict[str, str] = None, metadata: Dict[str, Any] = None):
@@ -159,10 +166,17 @@ class TelemetryCollector:
             self.timers[key].append(metric.value)
     
     def get_system_metrics(self) -> SystemMetrics:
-        """Calculate current system metrics."""
+        """Calculate current system metrics with caching."""
         with self.collection_lock:
+            current_metrics_count = len(self.test_metrics)
+            
+            # Return cached metrics if no new metrics were added
+            if (self._cached_system_metrics is not None and 
+                current_metrics_count == self._metrics_count_at_cache):
+                return self._cached_system_metrics
+            
             if not self.test_metrics:
-                return SystemMetrics(
+                system_metrics = SystemMetrics(
                     timestamp=datetime.now(),
                     total_tests_run=0,
                     success_rate=0.0,
@@ -172,89 +186,109 @@ class TelemetryCollector:
                     cpu_peak=0.0,
                     error_count=0
                 )
+            else:
+                total_tests = len(self.test_metrics)
+                successful_tests = sum(1 for tm in self.test_metrics if tm.success)
+                success_rate = successful_tests / total_tests if total_tests > 0 else 0.0
+                
+                # Local variables for performance optimization
+                execution_times = [tm.execution_time for tm in self.test_metrics]
+                average_execution_time = sum(execution_times) / len(execution_times) if execution_times else 0.0
+                total_execution_time = sum(execution_times)
+                
+                memory_usage = [tm.memory_usage for tm in self.test_metrics]
+                memory_peak = max(memory_usage) if memory_usage else 0.0
+                
+                cpu_usage = [tm.cpu_usage for tm in self.test_metrics]
+                cpu_peak = max(cpu_usage) if cpu_usage else 0.0
+                
+                error_count = total_tests - successful_tests
+                
+                system_metrics = SystemMetrics(
+                    timestamp=datetime.now(),
+                    total_tests_run=total_tests,
+                    success_rate=success_rate,
+                    average_execution_time=average_execution_time,
+                    total_execution_time=total_execution_time,
+                    memory_peak=memory_peak,
+                    cpu_peak=cpu_peak,
+                    error_count=error_count
+                )
             
-            total_tests = len(self.test_metrics)
-            successful_tests = sum(1 for tm in self.test_metrics if tm.success)
-            success_rate = successful_tests / total_tests if total_tests > 0 else 0.0
-            
-            execution_times = [tm.execution_time for tm in self.test_metrics]
-            average_execution_time = statistics.mean(execution_times) if execution_times else 0.0
-            total_execution_time = sum(execution_times)
-            
-            memory_usage = [tm.memory_usage for tm in self.test_metrics]
-            memory_peak = max(memory_usage) if memory_usage else 0.0
-            
-            cpu_usage = [tm.cpu_usage for tm in self.test_metrics]
-            cpu_peak = max(cpu_usage) if cpu_usage else 0.0
-            
-            error_count = total_tests - successful_tests
-            
-            system_metrics = SystemMetrics(
-                timestamp=datetime.now(),
-                total_tests_run=total_tests,
-                success_rate=success_rate,
-                average_execution_time=average_execution_time,
-                total_execution_time=total_execution_time,
-                memory_peak=memory_peak,
-                cpu_peak=cpu_peak,
-                error_count=error_count
-            )
-            
+            # Update cache
+            self._cached_system_metrics = system_metrics
+            self._metrics_count_at_cache = current_metrics_count
             self.system_metrics.append(system_metrics)
             return system_metrics
     
     def get_metric_statistics(self, metric_name: str, metric_type: MetricType, 
                             tags: Dict[str, str] = None) -> Dict[str, float]:
-        """Get statistical summary for a specific metric."""
+        """Get statistical summary for a specific metric with caching."""
         key = f"{metric_name}:{hash(tuple(sorted((tags or {}).items())))}"
+        
+        # Check cache first
+        if key in self._stats_cache:
+            return self._stats_cache[key]
+        
+        result = {}
         
         if metric_type == MetricType.HISTOGRAM and key in self.histograms:
             values = self.histograms[key]
-            if not values:
-                return {}
-            
-            return {
-                "count": len(values),
-                "sum": sum(values),
-                "mean": statistics.mean(values),
-                "median": statistics.median(values),
-                "min": min(values),
-                "max": max(values),
-                "std_dev": statistics.stdev(values) if len(values) > 1 else 0.0
-            }
+            if values:
+                # Local variables for performance optimization
+                values_len = len(values)
+                values_sum = sum(values)
+                values_sorted = sorted(values)
+                
+                result = {
+                    "count": values_len,
+                    "sum": values_sum,
+                    "mean": values_sum / values_len,
+                    "median": values_sorted[values_len // 2] if values_len % 2 == 1 else (values_sorted[values_len // 2 - 1] + values_sorted[values_len // 2]) / 2,
+                    "min": values_sorted[0],
+                    "max": values_sorted[-1],
+                    "std_dev": (sum((x - values_sum / values_len) ** 2 for x in values) / values_len) ** 0.5 if values_len > 1 else 0.0
+                }
         
         elif metric_type == MetricType.TIMER and key in self.timers:
             values = self.timers[key]
-            if not values:
-                return {}
-            
-            return {
-                "count": len(values),
-                "sum": sum(values),
-                "mean": statistics.mean(values),
-                "median": statistics.median(values),
-                "min": min(values),
-                "max": max(values),
-                "p95": self._percentile(values, 95),
-                "p99": self._percentile(values, 99)
-            }
+            if values:
+                # Local variables for performance optimization
+                values_len = len(values)
+                values_sum = sum(values)
+                values_sorted = sorted(values)
+                
+                result = {
+                    "count": values_len,
+                    "sum": values_sum,
+                    "mean": values_sum / values_len,
+                    "median": values_sorted[values_len // 2] if values_len % 2 == 1 else (values_sorted[values_len // 2 - 1] + values_sorted[values_len // 2]) / 2,
+                    "min": values_sorted[0],
+                    "max": values_sorted[-1],
+                    "p95": self._percentile_fast(values_sorted, 95),
+                    "p99": self._percentile_fast(values_sorted, 99)
+                }
         
-        return {}
+        # Cache the result
+        self._stats_cache[key] = result
+        return result
     
-    def _percentile(self, values: List[float], percentile: int) -> float:
-        """Calculate percentile of values."""
-        if not values:
+    def _percentile_fast(self, sorted_values: List[float], percentile: int) -> float:
+        """Fast percentile calculation for pre-sorted values."""
+        if not sorted_values:
             return 0.0
         
-        sorted_values = sorted(values)
-        index = (percentile / 100) * (len(sorted_values) - 1)
+        values_len = len(sorted_values)
+        index = (percentile / 100) * (values_len - 1)
         
         if index.is_integer():
             return sorted_values[int(index)]
         else:
-            lower = sorted_values[int(index)]
-            upper = sorted_values[int(index) + 1]
-            return lower + (upper - lower) * (index - int(index))
+            lower_index = int(index)
+            upper_index = lower_index + 1
+            lower_val = sorted_values[lower_index]
+            upper_val = sorted_values[upper_index]
+            return lower_val + (upper_val - lower_val) * (index - lower_index)
     
     def export_metrics(self) -> Dict[str, Any]:
         """Export all collected metrics for analysis."""
@@ -273,7 +307,7 @@ class TelemetryCollector:
             }
     
     def clear_metrics(self):
-        """Clear all collected metrics."""
+        """Clear all collected metrics and caches."""
         with self.collection_lock:
             self.metrics_buffer.clear()
             self.test_metrics.clear()
@@ -282,6 +316,10 @@ class TelemetryCollector:
             self.gauges.clear()
             self.histograms.clear()
             self.timers.clear()
+            # Clear caches
+            self._cached_system_metrics = None
+            self._metrics_count_at_cache = 0
+            self._stats_cache.clear()
 
 
 class TestTelemetryCollection:
