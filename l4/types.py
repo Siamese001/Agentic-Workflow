@@ -4,13 +4,12 @@ L4 State Management - Core Types
 Defines the fundamental types for state management with strict immutability.
 """
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, TypeVar, Generic, Callable, Union
-from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from typing import Any, Dict, Optional, TypeVar, Generic, Callable
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from enum import Enum
-import json
-from pathlib import Path
 import hashlib
+import json
 
 T = TypeVar('T')
 
@@ -55,7 +54,7 @@ class StateTransition(Generic[T]):
     value: Any = None
     condition: Optional[Callable[[T], bool]] = field(default=None, compare=False)
     metadata: Dict[str, Any] = field(default_factory=dict, compare=False)
-    timestamp: datetime = field(default_factory=datetime.utcnow, compare=False)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
     
     def with_metadata(self, **kwargs: Any) -> StateTransition[T]:
         """Create a new transition with updated metadata."""
@@ -75,7 +74,7 @@ class StateSnapshot(Generic[T]):
     data: T
     parent_id: Optional[str] = None
     transition: Optional[StateTransition[T]] = None
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def get_hash(self) -> str:
