@@ -22,17 +22,12 @@ class RedisClientError(RuntimeError):
 
 
 def _import_redis():
-    """Import the redis package lazily.
+    """Import the redis package using provider isolation.
 
-    This helper ensures the module can be imported even if `redis` is not
-    installed, while still providing a clear error at call time.
+    This helper ensures the module uses the provider layer instead of direct SDK imports.
     """
-
-    try:  # pragma: no cover - import path is environment dependent
-        import redis  # type: ignore
-    except ImportError as exc:  # pragma: no cover
-        raise RedisClientError("redis package not installed") from exc
-    return redis
+    from providers.redis_client import RedisClient
+    return RedisClient
 
 
 def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):
