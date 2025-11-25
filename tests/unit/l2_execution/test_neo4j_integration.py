@@ -167,7 +167,12 @@ class TestNeo4jIntegration:
 
     def test_requirements_includes_neo4j(self):
         """Test that requirements.txt includes Neo4j dependency."""
-        with open("requirements.txt", "r") as f:
+        import os
+        # Get the project root directory (3 levels up from test file)
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
+        requirements_path = os.path.join(project_root, "requirements.txt")
+        
+        with open(requirements_path, "r") as f:
             requirements = f.read()
         
         assert "neo4j>=5.22.0" in requirements
