@@ -234,7 +234,3 @@ class SafetyViolation:
     detected_content: str
     confidence: float
     metadata: Dict[str, Any]
-
-
-# Re-export SafetyResult from core.models for backward compatibility
-from core.models.models import SafetyResult
