@@ -1,7 +1,7 @@
 """L3 Strategy Orchestrator - Pure orchestration only."""
 
 from typing import Any
-from l1.strategy_planning import plan_strategy, StrategyPlan
+from l1.strategy_planning import plan_strategy
 from l2.strategy_executor import StrategyExecutor
 from runtime.observability import record_event
 

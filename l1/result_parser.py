@@ -1,6 +1,5 @@
 """L1 Result Parser - Pure result parsing logic only."""
 
-from typing import Any, Dict
 from dataclasses import dataclass
 
 @dataclass
