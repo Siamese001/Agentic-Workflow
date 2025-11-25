@@ -6,7 +6,7 @@ Defines the fundamental types for safety and policy enforcement.
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, Union, TypeVar
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing_extensions import Protocol, runtime_checkable
 
@@ -88,7 +88,7 @@ class SafetyFinding:
     message: str
     details: Dict[str, Any] = field(default_factory=dict)
     location: Optional[str] = None
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     
     def to_dict(self) -> Dict[str, Any]:
         """Convert to a dictionary for serialization."""
@@ -109,7 +109,7 @@ class PolicyDecision:
     verdict: Verdict
     findings: List[SafetyFinding]
     metadata: Dict[str, Any] = field(default_factory=dict)
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     
     @property
     def has_blocking_findings(self) -> bool:

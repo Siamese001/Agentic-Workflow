@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, UTC
+from datetime import datetime, timezone, UTC
 from enum import Enum
 from typing import Any, Dict, List, Optional, TypeVar, Generic
 
@@ -58,7 +58,7 @@ class DAGResult:
 
     workflow_id: str
     status: str
-    start_time: datetime = field(default_factory=datetime.utcnow)
+    start_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     end_time: Optional[datetime] = None
     node_results: Dict[str, NodeExecutionResult[Any]] = field(default_factory=dict)
     metrics: Dict[str, Any] = field(default_factory=dict)

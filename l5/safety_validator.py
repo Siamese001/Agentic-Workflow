@@ -6,15 +6,66 @@ Centralizes all safety constraints, ethical guidelines, privacy rules, and bias 
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
+from typing import Dict, List, Optional, Callable
 from enum import Enum
 import logging
 
-from .interfaces import SafetyPolicy, SafetyResult, SafetyViolation, SafetyFinding
-from core.models.models import ExecutionContext
+from l5.interfaces import (
+    SafetyConstraint,
+    SafetyPolicy,
+    SafetyViolation,
+    PolicyDecision,
+    PolicyEvaluationError,
+    Severity,
+    Verdict,
+    ExecutionContext,
+    SafetyResult,
+    SafetyFinding
+)
+from l5.types import SafetyContext
 
 logger = logging.getLogger(__name__)
+
+
+class LayerSafetyPolicy(SafetyPolicy):
+    """Concrete implementation of SafetyPolicy for a specific layer."""
+    
+    def __init__(self, layer: str, constraints: List[SafetyConstraint], validation_callback: Callable[[str, SafetyConstraint], Optional[SafetyViolation]]):
+        """Initialize the layer safety policy."""
+        self.layer = layer
+        self.constraints = constraints
+        self.validation_callback = validation_callback
+    
+    @property
+    def policy_id(self) -> str:
+        """Unique identifier for this policy."""
+        return f"{self.layer}_safety_policy"
+    
+    @property
+    def description(self) -> str:
+        """Human-readable description of the policy."""
+        return f"Safety policy for {self.layer} layer with {len(self.constraints)} constraints"
+    
+    def evaluate(self, context: SafetyContext) -> PolicyDecision:
+        """Evaluate the given context against this policy."""
+        if not hasattr(context, 'content'):
+            raise PolicyEvaluationError(f"Context missing required 'content' attribute: {context}")
+        
+        content = str(context.content)
+        violations = []
+        
+        for constraint in self.constraints:
+            if self.layer in constraint.layer_applicability:
+                violation = self.validation_callback(content, constraint)
+                if violation:
+                    violations.append(violation)
+        
+        return PolicyDecision(
+            policy_id=self.policy_id,
+            verdict=Verdict.BLOCK if any(v.severity >= Severity.HIGH for v in violations) else Verdict.ALLOW,
+            findings=violations,
+            metadata={"layer": self.layer, "constraints_evaluated": len(self.constraints)}
+        )
 
 
 class SafetyConstraintType(str, Enum):
@@ -26,17 +77,6 @@ class SafetyConstraintType(str, Enum):
     BIAS_MITIGATION = "bias_mitigation"
     TEMPORAL_CONSTRAINTS = "temporal_constraints"
     AUDIENCE_SAFETY = "audience_safety"
-
-
-@dataclass
-class SafetyConstraint:
-    """Individual safety constraint with enforcement rules."""
-    
-    constraint_type: SafetyConstraintType
-    rule: str
-    severity: str  # "blocking", "warning", "info"
-    layer_applicability: List[str]  # ["L1", "L2", "L3", "L4"]
-    metadata: Dict[str, Any]
 
 
 class L5SafetyValidator:
@@ -204,8 +244,8 @@ class L5SafetyValidator:
     
     def _get_timestamp(self) -> str:
         """Get current timestamp for audit trail."""
-        from datetime import datetime
-        return datetime.utcnow().isoformat()
+        from datetime import datetime, timezone
+        return datetime.now(timezone.utc).isoformat()
     
     def get_safety_policy_for_layer(self, layer: str) -> SafetyPolicy:
         """
@@ -219,10 +259,10 @@ class L5SafetyValidator:
                 if layer in constraint.layer_applicability:
                     applicable_constraints.append(constraint)
         
-        return SafetyPolicy(
+        return LayerSafetyPolicy(
             layer=layer,
             constraints=applicable_constraints,
-            validation_callback=lambda content: self.validate_layer_input(layer, content)
+            validation_callback=self._check_constraint
         )
 
 
