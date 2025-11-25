@@ -1209,36 +1209,7 @@ class UncertaintyEstimate(BaseModel):
     metadata: Dict[str, Any] = Field(default_factory=dict)
 
 
-class DraftSection(BaseModel):
-    """Section of a drafted document."""
-    
-    title: str
-    content: str
-    section_type: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class QAFinding(BaseModel):
-    """Finding from QA analysis."""
-    
-    type: str
-    severity: str
-    description: str
-    recommendation: str
-    location: Optional[str] = None
-
-
-class SafetyFinding(BaseModel):
-    """Finding from safety analysis."""
-    
-    type: str
-    severity: str
-    description: str
-    recommendation: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-
-
-class CouncilVote(BaseModel):
+class AgentCouncilVote(BaseModel):
     """Vote from multi-agent council."""
     
     agent_id: str
@@ -1254,16 +1225,6 @@ class MetaProfileSnapshot(BaseModel):
     profile_id: str
     preferences: Dict[str, Any] = Field(default_factory=dict)
     constraints: Dict[str, Any] = Field(default_factory=dict)
-    timestamp: datetime = Field(default_factory=datetime.now)
-
-
-class RoutingDecisionEvent(BaseModel):
-    """Event representing a routing decision."""
-    
-    task_id: str
-    selected_agent: str
-    routing_factors: List[str] = Field(default_factory=list)
-    confidence: float = 0.0
     timestamp: datetime = Field(default_factory=datetime.now)
 
 
