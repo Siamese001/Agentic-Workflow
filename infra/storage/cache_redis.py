@@ -7,10 +7,7 @@ Improves résumé processing efficiency by storing LLM outputs and analysis resu
 from __future__ import annotations
 
 import json
-import os
 from typing import Any, Optional
-
-from providers.redis_client import RedisClient, init_redis_client
 
 
 class RedisNotConfiguredError(RuntimeError):
@@ -29,7 +26,7 @@ class RedisClientError(RuntimeError):
     """
 
 
-def init_redis_client(url: Optional[str] = None, *, timeout_s: float = 1.0):
+def init_redis_client_infra(url: Optional[str] = None, *, timeout_s: float = 1.0):
     """
     Creates Redis client for résumé analysis caching to speed up repeated job matching queries.
 

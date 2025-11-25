@@ -8,8 +8,7 @@ and provides a clean interface for vector store operations.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any, Union
-import warnings
+from typing import Optional, List, Dict, Any
 
 try:
     import chromadb  # type: ignore
