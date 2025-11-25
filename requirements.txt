@@ -1,7 +1,7 @@
 # Stable + production-safe Python 3.12 environment
 annotated-types==0.6.0
 pydantic==2.7.4
-pydantic-core==2.18.3
+pydantic-core==2.18.4
 
 fastapi==0.110.0
 redis==5.0.1
@@ -9,3 +9,21 @@ openai==1.43.0
 
 # Optional but recommended for L1–L5 agentic stack
 uvicorn==0.27.1
+
+# Testing dependencies
+pytest==9.0.1
+pytest-asyncio==0.24.0
+httpx
+requests
+python-dotenv
+rich
+numpy
+pandas
+tqdm
+scikit-learn
+sentence-transformers
+neo4j>=5.22.0
+faiss-cpu
+opentelemetry-api
+opentelemetry-sdk
+tenacity
