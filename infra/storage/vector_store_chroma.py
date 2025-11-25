@@ -19,9 +19,7 @@ Non-responsibilities:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, List, Dict, Any
-
-from providers.chromadb_client import ChromaClient, ChromaConfig as ProviderChromaConfig, init_chroma_client
+from typing import Optional, List, Dict, Any, Sequence
 
 
 class ChromaNotConfiguredError(RuntimeError):
@@ -47,7 +45,7 @@ def _import_chromadb():
     return ChromaClient
 
 
-def init_chroma_client(cfg: ChromaConfig):
+def init_chroma_client_infra(cfg: ChromaConfig):
     """Initialise a Chroma client and return (client, collection)."""
 
     if not cfg.collection_name:
