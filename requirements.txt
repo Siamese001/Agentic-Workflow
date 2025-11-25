@@ -26,3 +26,6 @@ opentelemetry-sdk
 
 # For runtime utilities
 tenacity
+
+# For Neo4j graph database support
+neo4j>=5.22.0
