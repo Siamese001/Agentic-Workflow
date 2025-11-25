@@ -261,10 +261,9 @@ class TelemetryCollector:
                     error_count=error_count,
                 )
 
-            # Update cache and snapshot history only when recomputing
+            # Update cache only
             self._cached_system_metrics = system_metrics
             self._metrics_count_at_cache = current_metrics_count
-            self.system_metrics.append(system_metrics)
             return system_metrics
 
     def get_metric_statistics(
