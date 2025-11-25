@@ -55,4 +55,36 @@ def plan_safety_review(
     return SafetyPlan(prompt=prompt)
 
 
+def plan_safety(
+    content: str,
+    *,
+    ctx: ExecutionContext,
+    model_tier: str = "balanced",
+) -> SafetyPlan:
+    """
+    Plan safety validation for the given content.
+    
+    Args:
+        content: Content to validate for safety
+        ctx: Execution context
+        model_tier: Model tier to use
+        
+    Returns:
+        Safety plan with validation checks
+    """
+    # Create a basic safety plan
+    safety_plan = SafetyPlan(
+        content=content,
+        validation_level="standard",
+        checks=["content_safety", "privacy", "bias_detection"]
+    )
+    
+    return plan_safety_review(
+        safety_plan=safety_plan,
+        ctx=ctx,
+        drafting=None,
+        qa=None,
+    )
+
+
 
