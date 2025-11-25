@@ -6,20 +6,20 @@ Routing Policy for Agentic Workflow v10_10
 This is the v10_10 refactor of the v10_9 routing layer.
 
 It removes:
-    G求 PlanObject-dependent logic
-    G求 L5.ModelRouter
-    G求 PromptEnvelope construction
-    G求 META-only routing criteria classes
-    G求 direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)
-    G求 simulated model invocation stubs
+    - PlanObject-dependent logic
+    - L5.ModelRouter
+    - PromptEnvelope construction
+    - META-only routing criteria classes
+    - direct meta_profile accessors (get_routing_bias, get_planning_bias, etc.)
+    - simulated model invocation stubs
 
 and replaces them with a **minimal, deterministic RoutingPolicy** that:
 
-    G求 Selects models based on task + ComplexityLevel.
-    G求 Is influenced by a MetaProfileSnapshot (read-only).
-    G求 Provides ToT branch counts for StrategyLLMAgent.
-    G求 Contains NO provider SDK calls.
-    G求 Contains NO L1/L2/L3/L4/L5 logic.
+    - Selects models based on task + ComplexityLevel.
+    - Is influenced by a MetaProfileSnapshot (read-only).
+    - Provides ToT branch counts for StrategyLLMAgent.
+    - Contains NO provider SDK calls.
+    - Contains NO L1/L2/L3/L4/L5 logic.
 
 This module is used only by L2 cognitive agents and L1 complexity
 classification. It is **pure decision logic**.
@@ -30,7 +30,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional, Any, List, Dict
 
-from models import (
+from core.models.models import (
     ComplexityLevel,
     SkillClassifierResult,
     DomainClassifierResult,
@@ -38,8 +38,7 @@ from models import (
     RoutingDecisionEvent,
 )
 from config.meta_profile import MetaProfileSnapshot
-from multi_agent import MultiAgentCoordinator, build_council, AgentRole
-from observability import get_all_events, record_event
+from observability import record_event
 
 
 # =============================================================================
@@ -48,258 +47,165 @@ from observability import get_all_events, record_event
 
 # "Light" models: fast, cheap, shallow reasoning
 LIGHT_MODELS = {
-    "openai": "gpt-4.1-mini",
-    "anthropic": "claude-3-haiku",
+    "gpt-4o-mini",
+    "gpt-3.5-turbo",
+    "claude-3-haiku-20240307",
 }
 
-# "Medium" models: balanced cost vs reasoning depth
-MEDIUM_MODELS = {
-    "openai": "gpt-5.1",
-    "anthropic": "claude-3.5-sonnet",
+# "Standard" models: default production models
+STANDARD_MODELS = {
+    "gpt-4o",
+    "gpt-4-turbo",
+    "claude-3-sonnet-20240229",
+    "claude-3-5-sonnet-20240620",
 }
 
-# "Heavy" models: deep reasoning, longer outputs
+# "Heavy" models: expensive, strong reasoning
 HEAVY_MODELS = {
-    "openai": "gpt-5.1-codex",
-    "anthropic": "claude-3.5-opus",
-}
-
-# Specialized drafting models
-DRAFTING_MODELS = {
-    "openai": "gpt-5.1-codex",
-    "anthropic": "claude-3.5-opus",
-}
-
-# Specialized QA/Safety models
-QA_SAFETY_MODELS = {
-    "openai": "gpt-4.1",
-    "anthropic": "claude-3.5-sonnet",
+    "gpt-4-turbo-preview",
+    "claude-3-opus-20240229",
+    "o1-preview",
+    "o1-mini",
 }
 
 
 # =============================================================================
-# Routing Policy
+# Routing Policy Dataclass
 # =============================================================================
 
 @dataclass
 class RoutingPolicy:
     """
-    v10_10 RoutingPolicy: pure model-selection logic.
+    Minimal routing policy used by L2 cognitive agents.
 
     Fields:
-        prefer_anthropic: Prefer Anthropic models if True.
-        prefer_openai:    Prefer OpenAI models if True.
-        allow_heavy:      Allow heavy models (deep reasoning).
-        enforce_low_cost: Prefer light models when possible.
-
-    Notes:
-        - MetaProfileSnapshot can override provider preference based on
-          recent QA / correction rates.
+        default_model: fallback model for unspecified tasks.
+        strategy_model: model used for strategy generation.
+        drafting_model: model used for draft generation.
+        qa_model: model used for QA checks.
+        safety_model: model used for safety evaluation.
+        tot_branch_count: Tree-of-Thought branching factor.
     """
 
-    prefer_anthropic: bool = False
-    prefer_openai: bool = True
-    allow_heavy: bool = True
-    enforce_low_cost: bool = False
+    default_model: str = "gpt-4o"
+    strategy_model: str = "gpt-4o"
+    drafting_model: str = "gpt-4o"
+    qa_model: str = "gpt-4o-mini"
+    safety_model: str = "gpt-4o-mini"
+    tot_branch_count: int = 3
 
-    # ---------------------------------------------------------------------
-    # Provider selection
-    # ---------------------------------------------------------------------
-    def _choose_provider(self, meta_profile: Optional[MetaProfileSnapshot]) -> str:
-        provider = "openai"
 
-        if self.prefer_anthropic:
-            provider = "anthropic"
-        if self.prefer_openai:
-            provider = "openai"
+# =============================================================================
+# Policy Factory
+# =============================================================================
 
-        # Let meta-profile override user-configured bias
-        if meta_profile is not None:
-            if meta_profile.prefers_anthropic:
-                provider = "anthropic"
-            if meta_profile.prefers_openai:
-                provider = "openai"
+def build_routing_policy(
+    complexity: ComplexityLevel,
+    meta_profile: Optional[MetaProfileSnapshot] = None,
+) -> RoutingPolicy:
+    """
+    Construct a RoutingPolicy based on ComplexityLevel and optional meta_profile.
 
-        # Telemetry-aware adjustment: if recent exception volume is high,
-        # bias toward the default provider ("openai") to stabilize behavior.
+    Rules:
+        LOW complexity -> light models, 2 branches.
+        MEDIUM complexity -> standard models, 3 branches.
+        HIGH complexity -> heavy models, 5 branches.
+
+    If meta_profile contains bias overrides, they are applied here.
+    """
+    if complexity == ComplexityLevel.LOW:
+        policy = RoutingPolicy(
+            default_model="gpt-4o-mini",
+            strategy_model="gpt-4o-mini",
+            drafting_model="gpt-4o-mini",
+            qa_model="gpt-4o-mini",
+            safety_model="gpt-4o-mini",
+            tot_branch_count=2,
+        )
+    elif complexity == ComplexityLevel.MEDIUM:
+        policy = RoutingPolicy(
+            default_model="gpt-4o",
+            strategy_model="gpt-4o",
+            drafting_model="gpt-4o",
+            qa_model="gpt-4o-mini",
+            safety_model="gpt-4o-mini",
+            tot_branch_count=3,
+        )
+    else:
+        policy = RoutingPolicy(
+            default_model="gpt-4-turbo-preview",
+            strategy_model="gpt-4-turbo-preview",
+            drafting_model="gpt-4o",
+            qa_model="gpt-4o",
+            safety_model="gpt-4o",
+            tot_branch_count=5,
+        )
+
+    # Apply meta_profile biases if present
+    if meta_profile is not None:
         try:
-            events = get_all_events()
-            exception_count = 0
-            for evt in events:
-                attrs = getattr(evt, "attributes", {}) or {}
-                if attrs.get("event_type") == "exception":
-                    exception_count += 1
-            # If there are many recent exceptions and the current provider
-            # is not the default, flip back to "openai".
-            if exception_count > 20 and provider != "openai":
-                provider = "openai"
+            if hasattr(meta_profile, "preferred_strategy_model") and meta_profile.preferred_strategy_model:
+                policy.strategy_model = meta_profile.preferred_strategy_model
+            if hasattr(meta_profile, "preferred_drafting_model") and meta_profile.preferred_drafting_model:
+                policy.drafting_model = meta_profile.preferred_drafting_model
         except Exception:
-            # Telemetry must never break routing.
             pass
 
-        return provider
-
-    # ---------------------------------------------------------------------
-    # ToT branch count for Strategy agent
-    # ---------------------------------------------------------------------
-    def strategy_branches_for(self, complexity: ComplexityLevel) -> int:
-        """
-        Number of branches StrategyLLMAgent should explore.
-        """
-        if complexity == ComplexityLevel.LOW:
-            return 1
-        if complexity == ComplexityLevel.MEDIUM:
-            return 3
-        return 4  # HIGH complexity G迤 deeper exploration
-
-    # ---------------------------------------------------------------------
-    # Main model-selection entrypoint
-    # ---------------------------------------------------------------------
-    def select_model(
-        self,
-        task: str,
-        complexity: Optional[ComplexityLevel],
-        meta_profile: Optional[MetaProfileSnapshot],
-    ) -> str:
-        """
-        Select the appropriate model for a given task and complexity.
-
-        task:
-            A string identifier describing the logical task, e.g.:
-                - "strategy_generate_branch"
-                - "strategy_select_branch"
-                - "drafting_structure"
-                - "drafting_narrative"
-                - "drafting_compliance"
-                - "qa_semantic_check"
-                - "safety_check"
-
-        complexity:
-            L1-estimated ComplexityLevel for the workload.
-
-        meta_profile:
-            Optional MetaProfileSnapshot influencing provider choice.
-        """
-        provider = self._choose_provider(meta_profile)
-
-        # Task-specific overrides
-        if task.startswith("drafting_"):
-            return DRAFTING_MODELS[provider]
-
-        if task.startswith("qa_") or task.startswith("safety_"):
-            return QA_SAFETY_MODELS[provider]
-
-        if task in ("strategy_generate_branch", "strategy_select_branch"):
-            if self.allow_heavy:
-                return HEAVY_MODELS[provider]
-            return MEDIUM_MODELS[provider]
-
-        # Complexity-based routing
-        if complexity == ComplexityLevel.LOW:
-            # If low cost is enforced, always pick light models
-            if self.enforce_low_cost:
-                return LIGHT_MODELS[provider]
-            return MEDIUM_MODELS[provider]
-
-        if complexity == ComplexityLevel.MEDIUM:
-            return MEDIUM_MODELS[provider]
-
-        # HIGH complexity
-        if self.allow_heavy:
-            return HEAVY_MODELS[provider]
-        return MEDIUM_MODELS[provider]
+    return policy
 
 
 # =============================================================================
-# Multi-Agent Routing Helpers (META-only, v10_9-compatible semantics)
+# Model Selection Helper
 # =============================================================================
 
-
-def _choose_agent_role(task: str) -> str:
-    """Map logical task identifiers to canonical AgentRole values.
-
-    This mirrors the v10_9 agent role mapping while using the v10_10
-    AgentRole enum defined in multi_agent.py.
-    """
-
-    if task.startswith("strategy_"):
-        return AgentRole.PLANNER.value
-    if task.startswith("rag_"):
-        return AgentRole.RETRIEVER.value
-    if task.startswith("drafting_"):
-        return AgentRole.DRAFTER.value
-    if task.startswith("qa_council"):
-        return AgentRole.QA.value
-    if task.startswith("qa_"):
-        return AgentRole.QA.value
-    if task.startswith("safety_"):
-        return AgentRole.SAFETY.value
-    return AgentRole.META.value
-
-
-def route_task_to_agent(
+def select_model_for_task(
     task: str,
-    complexity: Optional[ComplexityLevel],
-    meta_profile: Optional[MetaProfileSnapshot],
-    council_candidates: Optional[List[Dict[str, Any]]] = None,
-) -> Dict[str, Any]:
-    """META-layer helper to select agent role + optional QA council.
-
-    This does **not** call any LLMs or mutate state. It is intended to be
-    used by L2/L3 orchestration to decide which concrete agent / council
-    to invoke, and to emit a typed RoutingDecisionEvent for observability.
+    policy: RoutingPolicy,
+    council: Optional[MultiAgentCouncilResult] = None,
+) -> str:
     """
+    Return the model name for a given task using the policy.
 
-    agent_role = _choose_agent_role(task)
-    council: Optional[MultiAgentCouncilResult] = None
+    Tasks: "strategy", "drafting", "qa", "safety", or fallback to default.
 
-    # QA council routing (multi-agent surface restored from v10_9).
-    if agent_role == AgentRole.QA.value and task.startswith("qa_council"):
-        size = len(council_candidates) if council_candidates else 3
-        graph = build_council(role=AgentRole.QA.value, size=size)
-        coordinator = MultiAgentCoordinator(graph=graph)
-        result = coordinator.run_council(
-            role=AgentRole.QA.value,
-            candidates=council_candidates or [],
-        )
-        typed_dict = result.get("typed") or {}
-        try:
-            council = MultiAgentCouncilResult(**typed_dict)
-        except Exception:
-            council = None
+    If a council vote is provided and has a model override, use it.
+    """
+    if council is not None and hasattr(council, "metadata"):
+        override = council.metadata.get("model_override")
+        if override:
+            return str(override)
 
-    # Deterministic reason strings (inspection-friendly).
-    if task.startswith("qa_council"):
-        reason = "qa_council_multi_agent_routing"
-    elif task.startswith("qa_"):
-        reason = "qa_single_agent_routing"
-    elif task.startswith("strategy_"):
-        reason = "strategy_single_agent_routing"
-    elif task.startswith("drafting_"):
-        reason = "drafting_single_agent_routing"
-    elif task.startswith("safety_"):
-        reason = "safety_single_agent_routing"
-    elif task.startswith("rag_"):
-        reason = "rag_single_agent_routing"
-    else:
-        reason = "meta_single_agent_routing"
+    task_lower = task.lower()
+    if task_lower == "strategy":
+        return policy.strategy_model
+    if task_lower == "drafting":
+        return policy.drafting_model
+    if task_lower == "qa":
+        return policy.qa_model
+    if task_lower == "safety":
+        return policy.safety_model
+    return policy.default_model
 
-    decision: Dict[str, Any] = {
-        "task": task,
-        "agent_role": agent_role,
-        "reason": reason,
-        "has_council": council is not None,
-    }
 
-    if council is not None:
-        decision["council"] = council.dict()
+# =============================================================================
+# Routing Decision Recording
+# =============================================================================
 
-    # Emit a typed RoutingDecisionEvent for observability.
+def record_routing_decision(
+    agent_role: str,
+    decision: str,
+    reason: str,
+    council: Optional[MultiAgentCouncilResult] = None,
+) -> str:
+    """
+    Record a routing decision event for observability.
+
+    Returns the decision string unchanged.
+    """
     attrs: Dict[str, Any] = {
-        "task": task,
         "agent_role": agent_role,
+        "decision": decision,
         "reason": reason,
-        "has_council": council is not None,
     }
 
     if council is not None:
@@ -431,10 +337,10 @@ def classify_complexity(
     """Heuristic classifier used by L1 to estimate ComplexityLevel.
 
     This version incorporates:
-        G求 Job seniority / requirements
-        G求 Resume length
-        G求 QA / correction rates from meta_profile
-        G求 Deterministic skill and domain classifiers (non-LLM)
+        - Job seniority / requirements
+        - Resume length
+        - QA / correction rates from meta_profile
+        - Deterministic skill and domain classifiers (non-LLM)
 
     All logic is deterministic and side-effect free.
     """
@@ -450,7 +356,7 @@ def classify_complexity(
         skill_profile = None
         domain_profile = None
 
-    # Senior roles G迤 more complexity
+    # Senior roles -> more complexity
     seniority = str(getattr(job, "seniority", "")).lower()
     title = str(getattr(job, "title", "")).lower()
     if seniority in ("director", "vp", "svp", "c-level", "chief") or any(
@@ -458,7 +364,7 @@ def classify_complexity(
     ):
         score += 0.5
 
-    # Many requirements G迤 more alignment complexity
+    # Many requirements -> more alignment complexity
     try:
         reqs = getattr(job, "requirements", []) or []
         if len(reqs) > 8:
@@ -468,7 +374,7 @@ def classify_complexity(
     except Exception:
         pass
 
-    # Long experience G迤 more data to integrate
+    # Long experience -> more data to integrate
     try:
         exp_sections = getattr(resume, "experience_sections", []) or []
         if len(exp_sections) > 6:
@@ -498,7 +404,7 @@ def classify_complexity(
         except Exception:
             pass
 
-    # Map score G迤 ComplexityLevel
+    # Map score -> ComplexityLevel
     if score < 1.2:
         return ComplexityLevel.LOW
     if score < 1.8:
@@ -506,5 +412,19 @@ def classify_complexity(
     return ComplexityLevel.HIGH
 
 
+# =============================================================================
+# Exports
+# =============================================================================
 
-
+__all__ = [
+    "LIGHT_MODELS",
+    "STANDARD_MODELS",
+    "HEAVY_MODELS",
+    "RoutingPolicy",
+    "build_routing_policy",
+    "select_model_for_task",
+    "record_routing_decision",
+    "classify_skill_profile",
+    "classify_domain_profile",
+    "classify_complexity",
+]
