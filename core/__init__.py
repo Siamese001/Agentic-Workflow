@@ -5,7 +5,7 @@ are now imported directly from the root level, not from core.
 
 Example:
     import l1
-    from agents.execution.agents import StrategyLLMAgent
+    from l2.agents import StrategyLLMAgent
     from orchestration.workflow_graph import run_workflow_graph
 """
 

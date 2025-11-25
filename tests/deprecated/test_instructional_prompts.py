@@ -8,7 +8,7 @@ This module validates:
 """
 
 import pytest
-from prompts.instructional_injection_v6 import (
+from l1.instructional_injection_v6 import (
     InstructionalPrompt,
     InstructionalLayer,
     InstructionalExtension,
@@ -19,14 +19,14 @@ from prompts.instructional_injection_v6 import (
     add_rag_extension,
     add_cot_extension,
 )
-from prompts.many_shot_examples import (
+from l1.many_shot_examples import (
     ExampleType,
     get_examples,
     format_examples_for_prompt,
     STRATEGY_PLANNING_EXAMPLES,
     RAG_PLANNING_EXAMPLES,
 )
-from prompts.v6_prompt_integration import (
+from l1.v6_prompt_integration import (
     create_strategy_planner_prompt,
     create_rag_planner_prompt,
     create_qa_planner_prompt,

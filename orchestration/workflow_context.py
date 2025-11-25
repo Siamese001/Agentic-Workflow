@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from datetime import datetime, UTC
 from typing import Any, Awaitable, Callable, Dict, Optional, Type, TypeVar, Generic
 
-from state.manager import StateManager
-from state.types import StateSnapshot
+from l4.manager import StateManager
+from l4.types import StateSnapshot
 from l5 import SafetySystem
-from safety.types import PolicyDecision, SafetyContext, Verdict
+from l5.types import PolicyDecision, SafetyContext, Verdict
 
 from .errors import (
     ErrorSeverity,

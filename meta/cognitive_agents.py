@@ -6,7 +6,7 @@ Improves résumé quality by coordinating strategy, drafting, QA, and safety age
 
 from __future__ import annotations
 
-from agents.execution.agents import (
+from l2.agents import (
     LLMBaseAgent,
     StrategyLLMAgent,
     DraftingGuild,

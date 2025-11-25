@@ -1,21 +1,58 @@
-"""L1 Safety Planning - Pure reasoning only."""
+"""
+Safety planning for résumé improvement validation.
+
+Creates structured plans to ensure professional standards and compliance in résumé enhancement.
+"""
+
+from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any
 
-@dataclass
+from core.models.models import (
+    ExecutionContext,
+    DraftingResult,
+    RAGResult,
+    QAResult,
+)
+from l1.builders.prompt_builder import PromptInstance, build_safety_prompt
+
+
+@dataclass(frozen=True)
 class SafetyPlan:
-    """Pure safety planning data structure."""
-    policy_rules: List[str]
-    risk_factors: List[str]
-    validation_steps: List[str]
-    reasoning: str
+    """
+    Defines safety validation structure for résumé content.
 
-def plan_safety(draft: Any, job: Any, resume: Any) -> SafetyPlan:
-    """Pure safety planning function - no execution, no I/O."""
-    return SafetyPlan(
-        policy_rules=["no_personal_info", "no_prohibited_content", "max_length"],
-        risk_factors=["pii_leakage", "inappropriate_content", "format_violations"],
-        validation_steps=["content_scan", "format_check", "policy_compliance"],
-        reasoning="Ensure content meets safety and policy requirements"
+    Ensures professional standards and compliance in résumé improvement recommendations.
+    """
+
+    prompt: PromptInstance
+
+
+def plan_safety_review(
+    safety_plan: Any,
+    *,
+    ctx: ExecutionContext,
+    draft: DraftingResult,
+    rag: RAGResult,
+    qa: QAResult,
+) -> SafetyPlan:
+    """
+    Creates comprehensive safety plan for résumé validation.
+
+    Structures evaluation approach to ensure professional résumé enhancement standards.
+    """
+    prompt = build_safety_prompt(
+        plan=safety_plan,
+        ctx=ctx,
+        drafting=draft,
+        qa=qa,
+        prompt_id="system.safety.agent",
+        layer="L2",
+        agent="safety",
+        model_tier="balanced",
     )
+    return SafetyPlan(prompt=prompt)
+
+
+

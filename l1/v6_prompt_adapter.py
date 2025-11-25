@@ -23,7 +23,7 @@ from typing import Any, Dict, Optional
 from dataclasses import dataclass
 
 from core.models.models import ExecutionContext
-from prompts.v6_prompt_integration import (
+from l1.v6_prompt_integration import (
     create_strategy_planner_prompt,
     create_rag_planner_prompt,
     create_qa_planner_prompt,

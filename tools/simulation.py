@@ -32,12 +32,12 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
-from cli.main_v10_10 import (
+from tools.main_v10_10 import (
     run_workflow,
     RRFStrategy,
     TelemetryRoutingMode,
 )
-from cli.run_batch_v10_10 import run_batch, BatchJobResult, BatchTelemetrySummary
+from tools.run_batch_v10_10 import run_batch, BatchJobResult, BatchTelemetrySummary
 from tools.golden_eval import (
     GOLDEN_SCENARIOS,
     GoldenScenario,

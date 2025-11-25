@@ -31,7 +31,7 @@ from core.models.models import (  # type: ignore[attr-defined]
     RoutingDecisionEvent,
 )
 from config.meta_profile import MetaProfileSnapshot
-from agents.meta.multi_agent import (
+from meta.multi_agent import (
     MultiAgentCoordinator,
     build_council,
     AgentRole,
