@@ -67,7 +67,7 @@
     "sdk_name": "anthropic",
     "install_status": "SUCCESS",
     "test_results": "PASS",
-    "details": "Version: 0.74.1, SDK import successful",
+    "details": "Version: 0.75.0, SDK import successful",
     "error": "",
     "follow_up": ""
   },
@@ -90,18 +90,18 @@
   {
     "sdk_name": "chromadb",
     "install_status": "FAILED",
-    "test_results": "FAIL",
+    "test_results": "WARNING",
     "details": "",
-    "error": "unable to infer type for attribute \"chroma_server_nofile\"",
+    "error": "Unexpected error (Python 3.14+ compatibility?): unable to infer type for attribute \"chroma_server_nofile\"",
     "follow_up": "Review error and reinstall if needed"
   },
   {
     "sdk_name": "pinecone-client",
-    "install_status": "FAILED",
-    "test_results": "FAIL",
-    "details": "",
-    "error": "The official Pinecone python package has been renamed from `pinecone-client` to `pinecone`. Please remove `pinecone-client` from your project dependencies and add `pinecone` instead. See the README at https://github.com/pinecone-io/pinecone-python-client for more information on using the python SDK.",
-    "follow_up": "Review error and reinstall if needed"
+    "install_status": "SUCCESS",
+    "test_results": "PASS",
+    "details": "SDK import successful (legacy package)",
+    "error": "",
+    "follow_up": ""
   },
   {
     "sdk_name": "faiss-cpu",
