@@ -26,6 +26,24 @@ from .pinecone_adapter import (
     VectorRecord,
     VectorQueryResult,
 )
+from .triplet_store import (
+    TemporalType,
+    TripletStatus,
+    Triplet,
+    TripletQuery,
+    TripletStore,
+    create_triplet,
+    PREDICATES,
+)
+from .entity_resolution import (
+    EntityType,
+    CanonicalEntity,
+    EntityMention,
+    ResolutionResult,
+    EntityRegistry,
+    create_entity,
+    create_mention,
+)
 
 
 def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
@@ -149,6 +167,7 @@ def apply_state_patch(
 
 
 __all__ = [
+    # State types
     "StateOperation",
     "StateEventType",
     "StatePath",
@@ -158,10 +177,28 @@ __all__ = [
     "StateValidationError",
     "StateRollbackError",
     "StateManager",
+    # Pinecone
     "PineconeAdapter",
     "PineconeConfig",
     "VectorRecord",
     "VectorQueryResult",
+    # Triplet store
+    "TemporalType",
+    "TripletStatus",
+    "Triplet",
+    "TripletQuery",
+    "TripletStore",
+    "create_triplet",
+    "PREDICATES",
+    # Entity resolution
+    "EntityType",
+    "CanonicalEntity",
+    "EntityMention",
+    "ResolutionResult",
+    "EntityRegistry",
+    "create_entity",
+    "create_mention",
+    # Utilities
     "_prune_memory",
     "record_correction_event",
     "apply_state_patch",
