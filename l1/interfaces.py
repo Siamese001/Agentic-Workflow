@@ -20,14 +20,13 @@ Non-responsibilities:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
 from core.models.models import (
     WorkflowPlanBundle,
     ExecutionContext,
     ComplexityLevel,
-    PlanningResult,
     TaskDecomposition,
     UncertaintyEstimate,
 )
@@ -108,4 +107,63 @@ class L1SafetyPlannerInterface(L1PlannerInterface):
     @abstractmethod
     async def plan_safety(self, request: L1PlanRequest) -> L1PlanResult:
         """Plan safety evaluation workflow."""
+        pass
+
+
+# =============================================================================
+# Model Bias Injection Defense (ID 9) - L1 Pre-Check
+# =============================================================================
+
+@dataclass
+class BiasIndicator:
+    """Indicator of potential bias in planning inputs or outputs."""
+    
+    indicator_type: str
+    description: str
+    severity: str  # "high", "medium", "low"
+    source_field: str
+    confidence: float
+
+
+@dataclass
+class BiasPreCheckResult:
+    """Result of bias pre-check before planning execution."""
+    
+    has_bias_indicators: bool
+    indicators: List[BiasIndicator]
+    recommendation: str  # "proceed", "review", "reject"
+    confidence: float
+
+
+class L1BiasPreCheckInterface(ABC):
+    """
+    Interface for detecting potential bias before L1 planning execution.
+    
+    Defends against Model Bias Injection (ID 9) by flagging potential
+    bias indicators in planning inputs before execution proceeds.
+    """
+    
+    @abstractmethod
+    def check_input_bias(self, request: L1PlanRequest) -> BiasPreCheckResult:
+        """
+        Check planning request for potential bias indicators.
+        
+        Should be called before any L1 planning operation.
+        """
+        pass
+    
+    @abstractmethod
+    def check_output_bias(self, result: L1PlanResult) -> BiasPreCheckResult:
+        """
+        Check planning result for potential bias indicators.
+        
+        Should be called after L1 planning to validate output.
+        """
+        pass
+    
+    @abstractmethod
+    def get_bias_patterns(self) -> List[str]:
+        """
+        Get list of bias patterns being checked.
+        """
         pass
