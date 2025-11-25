@@ -1,7 +1,7 @@
 """L3 Draft Orchestrator - Pure orchestration only."""
 
 from typing import Any
-from l1.draft_planning import plan_drafting, DraftPlan
+from l1.draft_planning import plan_drafting
 from l2.draft_executor import DraftExecutor
 from runtime.observability import record_event
 
