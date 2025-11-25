@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 
 @dataclass
-class TestCase:
+class GoldenStateTestCase:
     """Single golden-state test case.
 
     `expected_behavior` is a free-form description used by judges.

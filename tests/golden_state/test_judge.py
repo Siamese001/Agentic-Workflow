@@ -1,16 +1,16 @@
-from eval.golden_state.models import TestCase
+from eval.golden_state.models import GoldenStateTestCase
 from eval.golden_state.judge import evaluate_output
 
 
 def test_judge_empty_output_fails():
-    tc = TestCase(id="t1", input_text="x", expected_behavior="", metadata={})
+    tc = GoldenStateTestCase(id="t1", input_text="x", expected_behavior="", metadata={})
     verdict = evaluate_output(tc, "")
     assert verdict.rating == "fail"
     assert verdict.score == 0.0
 
 
 def test_judge_detects_key_behavior():
-    tc = TestCase(
+    tc = GoldenStateTestCase(
         id="t2",
         input_text="x",
         expected_behavior="Summary should be professional",

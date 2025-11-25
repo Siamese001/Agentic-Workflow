@@ -1,34 +1,11 @@
-# Python environment requirements for Agentic-Workflow
-# Install all dependencies with:
-#    pip install -r requirements.txt
+# Stable + production-safe Python 3.12 environment
+annotated-types==0.6.0
+pydantic==2.7.4
+pydantic-core==2.18.3
 
-pydantic
-pytest
-pytest-asyncio
-httpx
-requests
-python-dotenv
-rich
-numpy
-pandas
-tqdm
+fastapi==0.110.0
+redis==5.0.1
+openai==1.43.0
 
-# Optional: only if your retrieval/ranking stack uses them
-scikit-learn
-sentence-transformers
-
-# Graph database
-neo4j>=5.22.0
-
-# Optional: only if Golden Eval or RAG hybrid uses them
-faiss-cpu
-
-# For observability & testing
-opentelemetry-api
-opentelemetry-sdk
-
-# For runtime utilities
-tenacity
-
-# For Neo4j graph database support
-neo4j>=5.22.0
+# Optional but recommended for L1–L5 agentic stack
+uvicorn==0.27.1
