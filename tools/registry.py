@@ -25,7 +25,7 @@ from dataclasses import dataclass
 from typing import Dict, Any
 
 from core.models.models import RetrievalConfig, PromptDefinition
-from prompts.prompt_system_v10_10 import PROMPT_REGISTRY
+from l1.prompt_system_v10_10 import PROMPT_REGISTRY
 
 
 # =============================================================================

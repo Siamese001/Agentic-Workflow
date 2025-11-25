@@ -11,7 +11,7 @@ import pytest
 from datetime import datetime, UTC
 
 # L4 Components
-from state.triplet_store import (
+from l4.triplet_store import (
     TripletStore,
     Triplet,
     TripletQuery,
@@ -20,7 +20,7 @@ from state.triplet_store import (
     create_triplet,
     PREDICATES,
 )
-from state.entity_resolution import (
+from l4.entity_resolution import (
     EntityRegistry,
     EntityType,
     CanonicalEntity,
@@ -30,7 +30,7 @@ from state.entity_resolution import (
 )
 
 # L1 Components
-from agents.planning.kg_retrieval_planning import (
+from l1.kg_retrieval_planning import (
     KGRetrievalPlanner,
     KGQueryPlan,
     QueryType,
@@ -39,17 +39,17 @@ from agents.planning.kg_retrieval_planning import (
 )
 
 # L2 Components
-from agents.execution.kg_retrieval_executor import (
+from l2.kg_retrieval_executor import (
     KGRetrievalExecutor,
     KGRetrievalResult,
     execute_entity_query,
 )
-from agents.execution.triplet_extraction_executor import (
+from l2.triplet_extraction_executor import (
     TripletExtractionExecutor,
     ExtractionPlan,
     create_extraction_plan,
 )
-from agents.execution.invalidation_executor import (
+from l2.invalidation_executor import (
     InvalidationExecutor,
     InvalidationPlan,
     InvalidationReason,
@@ -252,7 +252,7 @@ class TestKGRetrievalExecutor:
         store.add_triplet(create_triplet("user_1", "has_skill", "Python"))
         store.add_triplet(create_triplet("job_1", "requires_skill", "Python"))
         
-        from agents.execution.kg_retrieval_executor import execute_multi_hop_query
+        from l2.kg_retrieval_executor import execute_multi_hop_query
         
         result = execute_multi_hop_query(
             store,

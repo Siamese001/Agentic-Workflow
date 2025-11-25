@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from profiles.agent_profile import AgentCard
+from config.agent_profile import AgentCard
 from orchestration.agent_registry import AgentRegistry
 
 """Defines simple routing rules that pick which specialist agents handle planning, drafting, review, and safety so each resume step is done by the right expertise."""

@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callab
 from enum import Enum
 from dataclasses import dataclass, field
 from orchestration.workflow_graph import run_workflow_graph  # Added import
-from infrastructure.di_container import inject_dependencies
+from infra.di_container import inject_dependencies
 
 T = TypeVar('T')
 
@@ -312,7 +312,7 @@ def orchestrate_execution(plans, ctx):
     This function bridges L3 orchestration to L2 execution,
     following the layer separation principle.
     """
-    from agents.execution.execution import execute_workflow_plans
+    from l2.execution import execute_workflow_plans
     return execute_workflow_plans(plans, ctx)
 
 def collect_error_events():

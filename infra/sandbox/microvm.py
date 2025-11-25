@@ -7,8 +7,8 @@ from typing import Any, Dict
 
 from observability import record_event
 
-from infrastructure.sandbox.models import ToolCallRequest, ToolCallResult
-from infrastructure.sandbox.sandbox_errors import SandboxTimeoutError
+from infra.sandbox.models import ToolCallRequest, ToolCallResult
+from infra.sandbox.sandbox_errors import SandboxTimeoutError
 
 
 @dataclass

@@ -58,8 +58,8 @@ def verify_reorganization():
     
     # Check 4: No circular dependencies
     try:
-        from agents.execution.agents import StrategyLLMAgent
-        from agents.planning.strategy_planning import plan_strategy
+        from l2.agents import StrategyLLMAgent
+        from l1.strategy_planning import plan_strategy
         # Use imports to avoid unused warnings
         _ = [StrategyLLMAgent, plan_strategy]
         checks.append(("No Circular Dependencies", True, "Import order verified"))
@@ -68,7 +68,7 @@ def verify_reorganization():
     
     # Check 5: Execution agents available
     try:
-        from agents.execution.agents import (
+        from l2.agents import (
             StrategyLLMAgent,
             DraftingGuild,
             SemanticQAAgent,
@@ -82,8 +82,8 @@ def verify_reorganization():
     
     # Check 6: Planning agents available
     try:
-        from agents.planning.strategy_planning import plan_strategy
-        from agents.planning.drafting_planning import plan_drafting
+        from l1.strategy_planning import plan_strategy
+        from l1.drafting_planning import plan_drafting
         # Use imports to avoid unused warnings
         _ = [plan_strategy, plan_drafting]
         checks.append(("Planning Agents", True, "Planning functions available"))

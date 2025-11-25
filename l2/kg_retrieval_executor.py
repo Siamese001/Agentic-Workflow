@@ -24,13 +24,13 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 from datetime import datetime, UTC
 from collections import defaultdict
 
-from agents.planning.kg_retrieval_planning import (
+from l1.kg_retrieval_planning import (
     KGQueryPlan,
     HopSpec,
     HopDirection,
     QueryType,
 )
-from state.triplet_store import Triplet, TripletStore, TripletQuery
+from l4.triplet_store import Triplet, TripletStore, TripletQuery
 
 
 @dataclass
@@ -487,7 +487,7 @@ def execute_entity_query(
     Returns:
         KGRetrievalResult
     """
-    from agents.planning.kg_retrieval_planning import plan_entity_retrieval
+    from l1.kg_retrieval_planning import plan_entity_retrieval
     
     plan = plan_entity_retrieval(entity_id, predicates)
     executor = KGRetrievalExecutor(store)
@@ -511,7 +511,7 @@ def execute_multi_hop_query(
     Returns:
         KGRetrievalResult
     """
-    from agents.planning.kg_retrieval_planning import KGRetrievalPlanner, QueryType
+    from l1.kg_retrieval_planning import KGRetrievalPlanner, QueryType
     
     planner = KGRetrievalPlanner()
     plan = planner.plan_query(

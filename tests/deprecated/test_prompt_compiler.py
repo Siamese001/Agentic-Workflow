@@ -1,5 +1,5 @@
-from prompts.cms.schemas import PromptSchema
-from prompts.cms.compiler import compile_prompt
+from l1.cms.schemas import PromptSchema
+from l1.cms.compiler import compile_prompt
 
 
 def test_compile_prompt_produces_string():
