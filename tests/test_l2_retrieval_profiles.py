@@ -112,8 +112,6 @@ def test_execute_retrieval_uses_high_quality_profile_retrieval_cfg(monkeypatch) 
 def test_execute_retrieval_uses_fast_profile_without_hyde(monkeypatch) -> None:
     """FAST profile (BM25-only) should pass its RetrievalConfig and not use HYDE."""
 
-    import retrieval as retrieval_mod
-
     plans = _make_plans()
 
     ctx = _make_ctx()
@@ -132,7 +130,8 @@ def test_execute_retrieval_uses_fast_profile_without_hyde(monkeypatch) -> None:
         )
 
     monkeypatch.setattr(l2, "_maybe_run_hyde_query", _fake_maybe_run_hyde_query, raising=True)
-    monkeypatch.setattr(retrieval_mod, "run_rag_retrieval", _fake_run_rag_retrieval, raising=True)
+    # Patch the symbol that l2._execute_retrieval actually uses (via l2 package)
+    monkeypatch.setattr(l2, "run_rag_retrieval", _fake_run_rag_retrieval, raising=True)
     monkeypatch.setattr(l2, "start_span", lambda *a, **k: types.SimpleNamespace(), raising=True)
     monkeypatch.setattr(l2, "end_span", lambda *a, **k: None, raising=True)
 
