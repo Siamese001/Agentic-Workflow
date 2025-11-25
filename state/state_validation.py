@@ -7,7 +7,7 @@ Prevents injection attacks and ensures safe state management for reliable résum
 from __future__ import annotations
 
 import re
-from typing import Any, List, Optional
+from typing import Any, Callable, List, Optional
 from dataclasses import dataclass, is_dataclass
 from enum import Enum
 import logging
@@ -44,7 +44,7 @@ class ValidationRule:
     allowed_types: Optional[List[type]] = None
     forbidden_keys: Optional[List[str]] = None
     required_keys: Optional[List[str]] = None
-    custom_validator: Optional[callable] = None
+    custom_validator: Optional[Callable[..., Any]] = None
 
 
 class StateValidator:
