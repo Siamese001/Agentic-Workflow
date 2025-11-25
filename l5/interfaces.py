@@ -21,9 +21,10 @@ Non-responsibilities:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from enum import Enum
+from datetime import datetime
 
 from core.models.models import (
     ExecutionContext,
@@ -33,6 +34,7 @@ from core.models.models import (
     PolicyViolation,
     HitLRequest,
 )
+from .types import SafetyPolicy
 
 
 class PolicyType(Enum):
@@ -222,3 +224,17 @@ class L5AuditLoggerInterface(ABC):
     async def export_audit_trail(self, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Export audit trail data."""
         pass
+
+
+@dataclass
+class SafetyViolation:
+    """Represents a safety policy violation."""
+    constraint_type: str
+    rule: str
+    detected_content: str
+    confidence: float
+    metadata: Dict[str, Any]
+
+
+# Re-export SafetyResult from core.models for backward compatibility
+from core.models.models import SafetyResult
