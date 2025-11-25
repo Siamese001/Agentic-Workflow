@@ -1,7 +1,7 @@
 """L1 Strategy Planning - Pure reasoning only."""
 
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, List
 
 @dataclass
 class StrategyPlan:

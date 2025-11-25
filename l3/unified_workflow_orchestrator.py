@@ -29,13 +29,13 @@ class SafetyValidatorInterface(Protocol):
 class UnifiedWorkflowOrchestrator:
     """Pure orchestration - coordinates all atomic layers."""
     
-    def __init__(self, routing_policy: Any, sandbox: Any, state_manager: StateManagerInterface, safety_validator: SafetyValidatorInterface):
+    def __init__(self, routing_policy: Any, sandbox: Any, state_manager: StateManagerInterface, safety_validator: SafetyValidatorInterface, meta_profile: Any = None):
         # L2: Pure execution components
-        self.llm_caller = LLMCaller(routing_policy, sandbox)
-        self.strategy_executor = StrategyExecutor(routing_policy, sandbox)
-        self.draft_executor = DraftExecutor(routing_policy, sandbox)
-        self.qa_executor = QAExecutor(routing_policy, sandbox)
-        self.safety_executor = SafetyExecutor(routing_policy, sandbox)
+        self.llm_caller = LLMCaller(routing_policy, sandbox, meta_profile)
+        self.strategy_executor = StrategyExecutor(routing_policy, sandbox, meta_profile)
+        self.draft_executor = DraftExecutor(routing_policy, sandbox, meta_profile)
+        self.qa_executor = QAExecutor(routing_policy, sandbox, meta_profile)
+        self.safety_executor = SafetyExecutor(routing_policy, sandbox, meta_profile)
         
         # L3: Pure orchestration components
         self.strategy_orchestrator = StrategyOrchestrator(self.strategy_executor)

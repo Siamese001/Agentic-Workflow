@@ -1,6 +1,6 @@
 """L5 Safety Validator - Pure safety validation only."""
 
-from typing import Any, List, Dict
+from typing import List
 from dataclasses import dataclass
 import re
 
