@@ -45,7 +45,7 @@ def _import_chromadb():
     return ChromaClient
 
 
-def init_chroma_client_infra(cfg: ChromaConfig):
+def init_chroma_client(cfg: ChromaConfig):
     """Initialise a Chroma client and return (client, collection)."""
 
     if not cfg.collection_name:
