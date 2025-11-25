@@ -17,6 +17,9 @@ tqdm
 scikit-learn
 sentence-transformers
 
+# Graph database
+neo4j>=5.22.0
+
 # Optional: only if Golden Eval or RAG hybrid uses them
 faiss-cpu
 
