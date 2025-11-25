@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, Optional, Sequence
 
-from vector_store_chroma import (
+from infrastructure.storage.vector_store_chroma import (
     chroma_hybrid_search as _core_chroma_hybrid_search,
     chroma_semantic_cache_lookup as _core_chroma_semantic_cache_lookup,
     chroma_semantic_cache_upsert as _core_chroma_semantic_cache_upsert,

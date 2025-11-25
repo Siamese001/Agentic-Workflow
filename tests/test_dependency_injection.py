@@ -7,7 +7,7 @@ across all layers to maintain L1-L5 atomicity.
 import pytest
 from unittest.mock import Mock, patch
 
-from core.di_container import (
+from infrastructure.di_container import (
     SimpleDIContainer,
     get_container,
     register_service,
@@ -15,8 +15,8 @@ from core.di_container import (
     initialize_default_services,
     inject_dependencies
 )
-from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
-from l5.policy import SafetyEngine
+from state.pinecone_adapter import PineconeAdapter, PineconeConfig
+from safety.policy import SafetyEngine
 
 
 class TestSimpleDIContainer:
@@ -150,7 +150,7 @@ class TestLayerDIIntegration:
     
     def test_pinecone_adapter_di_interface(self):
         """Test that PineconeAdapter provides DI-compatible interface."""
-        from l4.pinecone_adapter import PineconeConfig
+        from state.pinecone_adapter import PineconeConfig
         
         config = PineconeConfig(
             api_key="test_key",
@@ -176,7 +176,7 @@ class TestDIAtomicityCompliance:
     
     def test_no_direct_imports_in_l2(self):
         """Test that L2 doesn't directly import services."""
-        import l2.execution
+        import agents.execution.agents.execution.execution
         
         # Should import from DI container, not direct services
         source_lines = []
@@ -190,7 +190,7 @@ class TestDIAtomicityCompliance:
         source = ''.join(source_lines)
         
         # Should contain DI imports
-        assert 'from core.di_container import' in source
+        assert 'from infrastructure.di_container import' in source
         
         # Should not contain direct Pinecone imports for business logic
         # (except for type hints)
@@ -217,7 +217,7 @@ class TestDIAtomicityCompliance:
             return
         
         source = ''.join(source_lines)
-        assert 'from core.di_container import' in source
+        assert 'from infrastructure.di_container import' in source
 
 
 if __name__ == "__main__":

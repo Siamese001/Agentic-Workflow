@@ -1,4 +1,4 @@
-from core.agent_bus import AgentBus
+from orchestration.agent_bus import AgentBus
 from core.models.models import AgentMessage  # normalized import
 
 

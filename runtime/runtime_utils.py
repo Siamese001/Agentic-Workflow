@@ -9,7 +9,7 @@ existing runtime_utils module at the snapshot root.
 """
 from __future__ import annotations
 
-from runtime_utils import (  # noqa: F401
+from tools.runtime_utils import (  # noqa: F401
     ValidationError,
     ToolExecutionError,
     ModelClientError,

@@ -8,8 +8,8 @@ executor so that callers can import from
 implementation.
 """
 
-from infra.dag_engine.models import Graph, Node, Edge  # noqa: F401
-from infra.dag_engine.executor import DAGExecutor  # noqa: F401
+from infrastructure.dag_engine.models import Graph, Node, Edge  # noqa: F401
+from infrastructure.dag_engine.executor import DAGExecutor  # noqa: F401
 
 __all__ = [
     "Graph",
