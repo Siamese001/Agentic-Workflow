@@ -37,7 +37,7 @@ from tools.main_v10_10 import (
     RRFStrategy,
     TelemetryRoutingMode,
 )
-from tools.run_batch_v10_10 import run_batch, BatchJobResult, BatchTelemetrySummary
+# from tools.run_batch_v10_10 import run_batch, BatchJobResult, BatchTelemetrySummary  # TEMPORARILY COMMENTED DUE TO SYNTAX ERROR
 from tools.golden_eval import (
     GOLDEN_SCENARIOS,
     GoldenScenario,
