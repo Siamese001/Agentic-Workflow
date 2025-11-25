@@ -20,7 +20,7 @@ Non-responsibilities:
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
 from core.models.models import (
@@ -142,4 +142,51 @@ class L2ToolExecutorInterface(L2ExecutorInterface):
     @abstractmethod
     async def list_available_tools(self) -> List[str]:
         """List all available tools for this executor."""
+        pass
+
+
+# =============================================================================
+# Tool Injection Defense (ID 7) - L2 Boundary Validation
+# =============================================================================
+
+@dataclass
+class ToolOutputValidationResult:
+    """Result of tool output validation for injection defense."""
+    
+    is_safe: bool
+    original_output: Any
+    sanitized_output: Optional[Any] = None
+    detected_threats: Optional[List[str]] = None
+    confidence: float = 1.0
+
+
+class L2ToolOutputValidatorInterface(ABC):
+    """
+    Interface for validating tool outputs at L2 execution boundary.
+    
+    Defends against Tool Injection (ID 7) by validating all tool outputs
+    before they propagate to L1 planning or L3 orchestration layers.
+    """
+    
+    @abstractmethod
+    def validate_tool_output(self, tool_name: str, output: Any) -> ToolOutputValidationResult:
+        """
+        Validate tool output for potential injection attacks.
+        
+        Must be called by all L2 executors before returning results.
+        """
+        pass
+    
+    @abstractmethod
+    def sanitize_output(self, output: Any) -> Any:
+        """
+        Sanitize tool output by removing or escaping potentially malicious content.
+        """
+        pass
+    
+    @abstractmethod
+    def detect_injection_patterns(self, content: str) -> List[str]:
+        """
+        Detect injection patterns in string content from tool outputs.
+        """
         pass
