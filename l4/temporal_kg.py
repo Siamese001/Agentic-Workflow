@@ -10,7 +10,16 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
 import hashlib
-import json
+import logging
+
+try:
+    from graph_store_neo4j import Neo4jGraphStore as _Neo4jGraphStore
+    _NEO4J_AVAILABLE = True
+except ImportError:
+    _Neo4jGraphStore = object  # type: ignore
+    _NEO4J_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -88,6 +97,15 @@ class TemporalKG:
         """
         self.adapter = pinecone_adapter
         self.namespace_prefix = "temporal_kg"
+        
+        # Initialize Neo4j graph store if available
+        self.neo4j = None
+        if _NEO4J_AVAILABLE:
+            try:
+                self.neo4j = _Neo4jGraphStore()
+            except Exception as e:
+                logger.warning(f"Failed to initialize Neo4j graph store: {e}")
+                self.neo4j = None
     
     def add_fact(
         self,
@@ -100,29 +118,59 @@ class TemporalKG:
         Improves résumé chronology by maintaining precise records of job changes, promotions, and skill acquisitions.
         """
         namespace = self._build_namespace(user_id)
+        fact_dict = fact.to_dict()
         
-        # Convert fact to text for embedding
-        fact_text = fact.to_text()
-        
-        # Build metadata
-        metadata = {
-            "subject": fact.subject,
-            "predicate": fact.predicate,
-            "object": fact.object,
-            "timestamp": fact.timestamp.isoformat(),
-            "confidence": fact.confidence,
-            "source": fact.source,
-            "text": fact_text,
-            **fact.metadata,
-        }
-        
-        # Upsert to Pinecone
+        # Store in primary datastore
         self.adapter.upsert_text_records(
-            texts=[fact_text],
+            texts=[fact.to_text()],
             namespace=namespace,
             ids=[fact.id],
-            metadata_list=[metadata],
+            metadata_list=[fact_dict],
         )
+        
+        # Mirror to Neo4j if available
+        if self.neo4j is not None:
+            try:
+                # Extract subject, predicate, object from fact
+                # This assumes the fact content follows "subject predicate object" format
+                parts = fact.to_text().split()
+                if len(parts) >= 3:
+                    subject = parts[0]
+                    predicate = parts[1]
+                    obj = ' '.join(parts[2:])
+                    
+                    # Upsert subject entity
+                    self.neo4j.upsert_entity(
+                        entity_id=f"{subject}_{user_id or 'global'}",
+                        etype="PERSON" if user_id else "ENTITY",
+                        name=subject,
+                        metadata={"source": "temporal_kg", "user_id": user_id or "global"}
+                    )
+                    
+                    # Upsert object entity
+                    self.neo4j.upsert_entity(
+                        entity_id=f"{obj}_{user_id or 'global'}",
+                        etype=predicate.upper() if predicate.upper() in ["SKILL", "COMPANY", "ROLE"] else "ENTITY",
+                        name=obj,
+                        metadata={"source": "temporal_kg", "user_id": user_id or "global"}
+                    )
+                    
+                    # Create relationship
+                    self.neo4j.upsert_relation(
+                        rel_id=fact.id,
+                        subject_id=f"{subject}_{user_id or 'global'}",
+                        predicate=predicate.upper(),
+                        object_id=f"{obj}_{user_id or 'global'}",
+                        valid_at=fact.timestamp.isoformat() if hasattr(fact, 'timestamp') else None,
+                        invalid_at=None,  # Will be set on invalidation
+                        attrs={
+                            "confidence": fact.confidence,
+                            "source": fact.source,
+                            **fact.metadata
+                        }
+                    )
+            except Exception as e:
+                logger.error(f"Failed to mirror fact to Neo4j: {e}", exc_info=True)
     
     def add_facts(
         self,
@@ -151,7 +199,7 @@ class TemporalKG:
                 "confidence": f.confidence,
                 "source": f.source,
                 "text": f.to_text(),
-                **f.metadata,
+                **f.metadata
             }
             for f in facts
         ]
@@ -163,6 +211,50 @@ class TemporalKG:
             ids=ids,
             metadata_list=metadata_list,
         )
+        
+        # Mirror to Neo4j if available
+        if self.neo4j is not None:
+            for fact in facts:
+                try:
+                    # Extract subject, predicate, object from fact
+                    parts = fact.to_text().split()
+                    if len(parts) >= 3:
+                        subject = parts[0]
+                        predicate = parts[1]
+                        obj = ' '.join(parts[2:])
+                        
+                        # Upsert subject entity
+                        self.neo4j.upsert_entity(
+                            entity_id=f"{subject}_{user_id or 'global'}",
+                            etype="PERSON" if user_id else "ENTITY",
+                            name=subject,
+                            metadata={"source": "temporal_kg", "user_id": user_id or "global"}
+                        )
+                        
+                        # Upsert object entity
+                        self.neo4j.upsert_entity(
+                            entity_id=f"{obj}_{user_id or 'global'}",
+                            etype=predicate.upper() if predicate.upper() in ["SKILL", "COMPANY", "ROLE"] else "ENTITY",
+                            name=obj,
+                            metadata={"source": "temporal_kg", "user_id": user_id or "global"}
+                        )
+                        
+                        # Create relationship
+                        self.neo4j.upsert_relation(
+                            rel_id=fact.id,
+                            subject_id=f"{subject}_{user_id or 'global'}",
+                            predicate=predicate.upper(),
+                            object_id=f"{obj}_{user_id or 'global'}",
+                            valid_at=fact.timestamp.isoformat() if hasattr(fact, 'timestamp') else None,
+                            invalid_at=None,  # Will be set on invalidation
+                            attrs={
+                                "confidence": fact.confidence,
+                                "source": fact.source,
+                                **fact.metadata
+                            }
+                        )
+                except Exception as e:
+                    logger.error(f"Failed to mirror fact to Neo4j: {e}", exc_info=True)
     
     def query_facts(
         self,
@@ -303,13 +395,23 @@ class TemporalKG:
         
         namespace = self._build_namespace(user_id)
         
-        try:
-            self.adapter.delete_records(
-                ids=fact_ids,
-                namespace=namespace,
-            )
-        except Exception:
-            pass
+        # Delete from primary datastore
+        self.adapter.delete_records(
+            ids=fact_ids,
+            namespace=namespace,
+        )
+        
+        # Mark as invalid in Neo4j if available
+        if self.neo4j is not None:
+            for fact_id in fact_ids:
+                try:
+                    self.neo4j.update_relation_invalidity(
+                        rel_id=fact_id,
+                        invalid_at=datetime.now(UTC).isoformat(),
+                        invalidated_by=f"user_{user_id or 'system'}"
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to invalidate fact in Neo4j: {e}", exc_info=True)
     
     def _build_namespace(self, user_id: Optional[str]) -> str:
         """Build namespace for temporal KG storage."""
