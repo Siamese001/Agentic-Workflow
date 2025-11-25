@@ -1,4 +1,4 @@
-from infra.sandbox.networking import default_network_policy, is_destination_allowed
+from infrastructure.sandbox.networking import default_network_policy, is_destination_allowed
 
 
 def test_default_network_policy_denies_all():

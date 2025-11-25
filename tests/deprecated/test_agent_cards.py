@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from l2.agents import (
+from agents.execution.agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,
@@ -12,7 +12,7 @@ from l2.agents import (
 )
 from core.models.models import AgentCard, AgentRole  # normalized import
 from core.routing import RoutingPolicy
-from runtime_utils import SandboxConfig
+from tools.runtime_utils import SandboxConfig
 
 
 def _make_agent(agent_cls, card: AgentCard | None = None):

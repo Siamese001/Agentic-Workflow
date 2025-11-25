@@ -112,7 +112,7 @@ class TestWorkflowOrchestration:
     @patch('l3.orchestrate_execution')
     def test_l3_dag_orchestration(self, mock_orchestrate):
         """Test L3 DAG orchestration."""
-        from l3.run_dag import run_dag
+        from orchestration.run_dag import run_dag
         from l2 import L2ResultBundle
         
         # Mock orchestrate execution

@@ -1,4 +1,4 @@
-from infra.sandbox.fs_template import build_ephemeral_rootfs
+from infrastructure.sandbox.fs_template import build_ephemeral_rootfs
 
 
 def test_build_ephemeral_rootfs_shape():
