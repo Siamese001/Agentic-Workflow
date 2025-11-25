@@ -22,15 +22,17 @@ def _core_models() -> Any:
 
     return core_models
 
-# =============================================================================
-# 1. INTERNAL HELPERS (DICT-BASED SCORING)
-# =============================================================================
+"""
+Provides keyword relevance scoring for résumé evidence.
+
+Prioritizes exact matches to ensure comprehensive résumé content coverage.
+"""
 
 
 def _bm25_score(item: Dict[str, Any]) -> float:
     """
     Calculates keyword relevance score for résumé evidence.
-
+    
     Prioritizes exact matches to ensure comprehensive résumé content coverage.
     """
     text = str(item.get("text") or item.get("evidence") or "").lower()
@@ -55,7 +57,7 @@ def _bm25_score(item: Dict[str, Any]) -> float:
 def _dense_score(item: Dict[str, Any]) -> float:
     """
     Calculates semantic similarity score for résumé content.
-
+    
     Finds conceptually relevant evidence to enhance résumé job alignment.
     """
     text = str(item.get("text") or item.get("evidence") or "").lower()
@@ -69,7 +71,7 @@ def _dense_score(item: Dict[str, Any]) -> float:
 def _hybrid_score(item: Dict[str, Any]) -> float:
     """
     Combines keyword and semantic scores for résumé ranking.
-
+    
     Balances exact matches with conceptual relevance for optimal résumé improvement.
     """
     b = _bm25_score(item)
@@ -77,25 +79,27 @@ def _hybrid_score(item: Dict[str, Any]) -> float:
     return float((b + d) / 2.0)
 
 
-# =============================================================================
-# 2. PUBLIC DICT-BASED RANKING API
-# =============================================================================
+"""
+Provides public ranking functions for résumé evidence evaluation.
+
+Delivers deterministic scoring to prioritize most relevant résumé improvement content.
+"""
 
 
 def bm25_score(item: Dict[str, Any]) -> float:
-    """Backward-compatible BM25 scoring helper.
-
-    Legacy tests import `bm25_score` from `meta.ranking`. This function
-    simply delegates to the internal `_bm25_score` implementation.
+    """
+    Provides backward-compatible BM25 scoring for résumé evidence.
+    
+    Maintains legacy interface while delivering keyword relevance scoring for résumé content.
     """
     return _bm25_score(item)
 
 
 def dense_score(item: Dict[str, Any]) -> float:
-    """Backward-compatible dense scoring helper.
-
-    Legacy tests import `dense_score` from `meta.ranking`. This function
-    delegates to the internal `_dense_score` implementation.
+    """
+    Provides backward-compatible semantic scoring for résumé evidence.
+    
+    Maintains legacy interface while delivering conceptual relevance scoring for résumé content.
     """
     return _dense_score(item)
 
@@ -121,7 +125,7 @@ def bm25(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Ranks résumé evidence by semantic similarity.
-
+    
     Finds conceptually relevant content to enhance résumé job alignment.
     """
     scored: List[Dict[str, Any]] = []
@@ -139,7 +143,7 @@ def dense(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 def hybrid(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Ranks résumé evidence by combined relevance scoring.
-
+    
     Balances exact matches with conceptual relevance for optimal résumé improvement.
     """
     scored: List[Dict[str, Any]] = []
@@ -161,7 +165,7 @@ def rank_documents(
 ) -> List[Dict[str, Any]]:
     """
     Ranks résumé documents using optimal scoring strategy.
-
+    
     Ensures relevant content is prioritized for comprehensive résumé enhancement.
     """
     strat = (strategy or "hybrid").lower()
@@ -172,9 +176,11 @@ def rank_documents(
     return hybrid(items)
 
 
-# =============================================================================
-# 3. FUSION / RRF SUPPORT (DICT-BASED)
-# =============================================================================
+"""
+Provides reciprocal rank fusion for résumé evidence ranking.
+
+Combines multiple ranking approaches for optimal résumé content prioritization.
+"""
 
 
 def _rrf_weights_from_config(
@@ -183,7 +189,7 @@ def _rrf_weights_from_config(
 ) -> List[float]:
     """
     Calculates weighted fusion scores for résumé evidence.
-
+    
     Optimizes ranking strategy to prioritize most relevant résumé improvement content.
     """
     if cfg is None or not getattr(cfg, "rrf_weights", None):
@@ -219,19 +225,9 @@ def fuse_ranked_groups(
     rrf_k: int = 60,
 ) -> List[Dict[str, Any]]:
     """
-    Fuse multiple pre-ranked lists into a single deterministic list.
-
-    If use_rrf is True:
-        • Apply weighted Reciprocal Rank Fusion:
-              score(doc) = Σ_i w_i / (rrf_k + rank_i)
-          where w_i are driven by RetrievalConfig.rrf_weights if provided.
-
-    If use_rrf is False:
-        • Fall back to minimal-rank fusion:
-            1. Flatten.
-            2. Deduplicate by (query, evidence).
-            3. Sort by minimal rank across groups, then alphabetical evidence.
-            4. Re-assign ranks.
+    Fuses multiple ranked lists for optimal résumé evidence prioritization.
+    
+    Combines retrieval strategies to ensure most relevant résumé content is ranked highest.
     """
     from typing import Tuple
 
@@ -325,9 +321,11 @@ def fuse_ranked_groups(
     return fused
 
 
-# =============================================================================
-# 4. HIGH-LEVEL DICT API (BACKWARD COMPATIBLE)
-# =============================================================================
+"""
+Provides backward-compatible ranking fusion for résumé evidence.
+
+Maintains legacy interface while delivering optimal résumé content prioritization.
+"""
 
 
 def fuse_ranked_groups_for_strategy(
@@ -337,27 +335,26 @@ def fuse_ranked_groups_for_strategy(
     cfg: Optional[Any] = None,
 ) -> List[Dict[str, Any]]:
     """
-    Convenience wrapper that applies the right ranking method to each group
-    and then fuses them.
-
-    Each group is expected to already contain a "rank" field. This function
-    is retained mainly for backward compatibility and non-RAG call sites.
+    Applies optimal ranking fusion for résumé evidence groups.
+    
+    Maintains backward compatibility while delivering comprehensive résumé content ranking.
     """
     use_rrf = True
     return fuse_ranked_groups(groups, use_rrf=use_rrf, cfg=cfg)
 
 
-# =============================================================================
-# 5. EVIDENCE-LEVEL RANKING / FUSION (RAG)
-# =============================================================================
+"""
+Provides evidence-level ranking for RAG résumé retrieval.
+
+Delivers optimized scoring to prioritize most relevant résumé improvement evidence.
+"""
 
 
 def _canonical_evidence_key(ev: Any) -> Tuple[str, str]:
     """
-    Canonical key for evidence deduplication.
-
-    We attempt to use a (source, doc_id) pair if present in metadata; if not,
-    we fall back to (source, text).
+    Creates canonical key for résumé evidence deduplication.
+    
+    Ensures unique identification to prevent duplicate résumé content in rankings.
     """
     src = str(ev.source)
     doc_id = str(ev.metadata.get("doc_id", "") if ev.metadata else "")
@@ -367,7 +364,11 @@ def _canonical_evidence_key(ev: Any) -> Tuple[str, str]:
 
 
 def normalize_evidence_scores(evidence: Sequence[Any]) -> List[Any]:
-    """Normalize scores across Evidence items to [0, 1]."""
+    """
+    Normalizes résumé evidence scores to consistent range.
+    
+    Ensures fair comparison and ranking of résumé improvement content across sources.
+    """
     if not evidence:
         return []
 
@@ -387,7 +388,11 @@ def normalize_evidence_scores(evidence: Sequence[Any]) -> List[Any]:
 
 
 def deduplicate_evidence(evidence: Sequence[Any]) -> List[Any]:
-    """Deduplicate Evidence items by canonical key, preserving first."""
+    """
+    Removes duplicate résumé evidence by canonical key.
+    
+    Ensures unique content to improve résumé ranking accuracy and avoid redundancy.
+    """
     seen: set[Tuple[str, str]] = set()
     out: List[Any] = []
     for ev in evidence or []:
@@ -400,21 +405,20 @@ def deduplicate_evidence(evidence: Sequence[Any]) -> List[Any]:
 
 
 def normalize_scores(evidence: Sequence[Any]) -> List[Any]:
-    """Backward-compatible wrapper for score normalization.
-
-    Legacy tests import `normalize_scores` from `meta.ranking` and expect
-    Evidence scores to be mapped into [0, 1] while preserving ordering.
-    This delegates to `normalize_evidence_scores`.
+    """
+    Provides backward-compatible score normalization for résumé evidence.
+    
+    Maintains legacy interface while delivering consistent scoring for résumé content ranking.
     """
 
     return normalize_evidence_scores(evidence)
 
 
 def merge_scores(evidence: Sequence[Any]) -> List[Any]:
-    """Backward-compatible wrapper for evidence deduplication.
-
-    Tests expect `merge_scores` to deduplicate by (source, text). The
-    canonical behavior is implemented by `deduplicate_evidence`.
+    """
+    Provides backward-compatible evidence merging for résumé rankings.
+    
+    Maintains legacy interface while delivering deduplication for résumé content optimization.
     """
 
     return deduplicate_evidence(evidence)

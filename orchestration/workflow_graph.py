@@ -46,8 +46,11 @@ from meta.self_correction import (
 )
 
 
-# ============================================================================
-#  WORKFLOW NODE ENUMERATION
+"""
+Defines workflow node types for résumé processing orchestration.
+
+Improves résumé coordination by mapping each improvement step to executable workflow stages.
+"""
 # ============================================================================
 
 
@@ -72,18 +75,33 @@ def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> Dag
     """
 
     async def _node_strategy(dag_ctx):
+        """
+        Executes strategy planning for résumé improvement.
+        
+        Generates job-aligned résumé strategy to ensure content matches target role requirements.
+        """
         dag_ctx = dict(dag_ctx or {})
         result = await _execute_strategy(plans, ctx)
         dag_ctx["strategy_result"] = result
         return dag_ctx
 
     async def _node_retrieval(dag_ctx):
+        """
+        Retrieves relevant job and resume information.
+        
+        Gathers targeted evidence to ensure résumé content aligns with specific job requirements.
+        """
         dag_ctx = dict(dag_ctx or {})
         result = await _execute_retrieval(plans, ctx)
         dag_ctx["rag_result"] = result
         return dag_ctx
 
     async def _node_drafting(dag_ctx):
+        """
+        Drafts improved résumé content based on strategy and evidence.
+        
+        Generates compelling résumé bullets that highlight relevant skills and achievements for the target role.
+        """
         dag_ctx = dict(dag_ctx or {})
         strategy_result = dag_ctx.get("strategy_result") or StrategyResult(branches=[])
         rag_result = dag_ctx.get("rag_result") or RAGResult(evidence=[], used_hyde=False)
@@ -92,6 +110,11 @@ def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> Dag
         return dag_ctx
 
     async def _node_qa(dag_ctx):
+        """
+        Validates résumé content for accuracy and relevance.
+        
+        Ensures résumé claims are truthful and properly supported by evidence to maintain credibility.
+        """
         dag_ctx = dict(dag_ctx or {})
         drafting_result = dag_ctx.get("drafting_result") or DraftingResult(sections=[])
         rag_result = dag_ctx.get("rag_result") or RAGResult(evidence=[], used_hyde=False)
@@ -100,6 +123,11 @@ def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> Dag
         return dag_ctx
 
     async def _node_safety(dag_ctx):
+        """
+        Ensures résumé content meets safety and compliance standards.
+        
+        Prevents inappropriate or misleading content that could harm hiring prospects.
+        """
         dag_ctx = dict(dag_ctx or {})
         drafting_result = dag_ctx.get("drafting_result") or DraftingResult(sections=[])
         rag_result = dag_ctx.get("rag_result") or RAGResult(evidence=[], used_hyde=False)
@@ -147,10 +175,10 @@ def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> Dag
 
 
 async def _run_single_pass_via_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> dict:
-    """Execute a single Strategy→Retrieval→Drafting→QA→Safety pass via DAG.
-
-    This is currently used as a sanity check alongside the imperative
-    orchestration path and does not alter the primary outputs.
+    """
+    Executes complete résumé improvement workflow via directed acyclic graph.
+    
+    Ensures systematic processing through all stages for consistent, high-quality résumé output.
     """
 
     graph = _build_workflow_dag(plans, ctx)
