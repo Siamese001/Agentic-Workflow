@@ -6,10 +6,9 @@ for enhanced context awareness and temporal planning.
 
 from __future__ import annotations
 
-import json
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
-from datetime import datetime, UTC, timedelta
+from datetime import datetime, timezone, UTC, timedelta
 from enum import Enum
 
 from l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent
@@ -153,8 +152,6 @@ class TemporalInjectionProvider:
     
     def _initialize_default_facts(self) -> None:
         """Initialize with some default temporal facts."""
-        current_time = datetime.utcnow()
-        
         # Add career-related temporal facts
         default_facts = [
             TemporalFact(
@@ -222,7 +219,7 @@ class TemporalInjectionProvider:
         Returns:
             List of relevant temporal facts
         """
-        current_time = datetime.utcnow()
+        current_time = datetime.now(timezone.utc)
         relevant_facts = self.kg.search_facts(query, current_time)
         
         # Store in context for downstream use

@@ -23,7 +23,7 @@ def evaluate_hypotheses(hypotheses: List[Hypothesis]) -> List[Hypothesis]:
         if not h.evidence_ids:
             conf *= 0.7
         conf = max(0.0, min(1.0, conf))
-        evaluated.append(h.copy(update={"confidence": conf}))
+        evaluated.append(h.model_copy(update={"confidence": conf}))
     return evaluated
 
 
