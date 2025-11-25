@@ -4,7 +4,7 @@ Provides retrieval, metacognition, and other META-only utilities.
 """
 
 # Re-export public META modules for convenience.
-from . import infrastructure.storage.retrieval as retrieval  # noqa: F401
+from .retrieval import retrieval  # noqa: F401
 from . import metacognition as metacognition  # noqa: F401
 
 __all__ = ["retrieval", "metacognition"]
