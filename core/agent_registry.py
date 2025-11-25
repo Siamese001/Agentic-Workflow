@@ -5,43 +5,47 @@ from typing import Dict, List
 
 from core.models.models import AgentCard, AgentRole
 
-"""Keeps a catalog of available agents so each resume step can be routed to the right specialist for planning, drafting, review, or safety checks."""
+"""
+Maintains catalog of specialized agents for résumé analysis workflow routing and coordination.
+
+Improves résumé processing by directing each analysis step to the appropriate specialist agent for optimal job matching results.
+"""
 
 
 @dataclass
 class AgentRegistry:
-    """Stores agent definitions so orchestration can assemble the right mix of planners, drafters, reviewers, and safety checkers to improve each resume."""
+    """
+    Stores specialized agent definitions for coordinating résumé analysis workflows with optimal specialist routing.
+
+    Improves résumé processing by assembling the right mix of planners, drafters, reviewers, and safety checkers for each job application.
+    """
 
     _agents: Dict[str, AgentCard] = field(default_factory=dict)
 
     @property
     def agents(self) -> Dict[str, AgentCard]:
-        """Public view of all known agents.
+        """
+        Provides access to all available résumé analysis agents for workflow routing and selection.
 
-        Other components use this mapping when they need to see the full set
-        of agents that can participate in a workflow. This supports routing
-        and selection logic that keeps each resume step handled by a suitable
-        specialist instead of a generic catch-all.
+        Improves résumé processing by enabling proper agent selection for each specialized analysis step in job matching workflows.
         """
 
         return self._agents
 
     def register_agent(self, agent_card: AgentCard) -> None:
-        """Add or update an agent so it can be used in workflows.
+        """
+        Adds specialized résumé analysis agent to the registry for workflow routing and coordination.
 
-        Registering an agent makes its capabilities available to the routing
-        policies. This is how new skills or behaviors are introduced into the
-        system so they can help produce better, more tailored resumes.
+        Improves résumé processing by introducing new analysis capabilities and skills for better job matching results.
         """
 
         self._agents[agent_card.agent_id] = agent_card
 
     def get_agent(self, agent_id: str) -> AgentCard:
-        """Look up a specific agent by its identifier.
+        """
+        Retrieves specific résumé analysis agent for targeted workflow execution and coordination.
 
-        This is used when orchestration needs to invoke a particular agent for
-        a well-defined role in the resume workflow, such as a dedicated
-        quality reviewer or a job-matching specialist.
+        Improves résumé processing by enabling precise agent selection for specialized roles like quality review and job matching.
         """
 
         if agent_id not in self._agents:
@@ -49,12 +53,10 @@ class AgentRegistry:
         return self._agents[agent_id]
 
     def find_agents_by_role(self, role: AgentRole | str) -> List[AgentCard]:
-        """Find agents that play a given role in the resume workflow.
+        """
+        Finds résumé analysis agents by specialized role for targeted workflow coordination and execution.
 
-        For example, callers can ask for all "planner" or all "drafter" agents
-        when they want to assemble a pipeline focused on strategy, rewriting,
-        or review. This supports flexible configurations without hard-coding
-        specific agent names.
+        Improves résumé processing by enabling selection of appropriate planners, drafters, reviewers, and safety checkers for specific analysis tasks.
         """
 
         role_value = role.value if isinstance(role, AgentRole) else str(role)

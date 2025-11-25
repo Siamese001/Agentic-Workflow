@@ -1,5 +1,8 @@
-# FILE: 10_10/config_profiles_v10_10.py
-"""Defines execution profiles that control how much reasoning, retrieval, cost, and safety the system applies when rewriting a resume for a given use case."""
+"""
+Configures résumé analysis execution profiles for optimizing reasoning, retrieval, cost, and safety parameters.
+
+Improves résumé processing by defining tailored analysis configurations for different job matching scenarios and use cases.
+"""
 
 from __future__ import annotations
 

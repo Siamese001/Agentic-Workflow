@@ -11,7 +11,6 @@ from datetime import datetime, UTC
 from enum import Enum
 
 from .kg_retrieval_planning import (
-    KGQueryPlanner,
     QueryType,
     KGQueryPlan,
     KGRetrievalPlanner,

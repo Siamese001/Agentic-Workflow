@@ -1,14 +1,7 @@
 """
-main_v10_10.py
+Command-line interface for résumé analysis and job matching optimization.
 
-Single-job entrypoint for the v10_10 agentic workflow stack.
-
-Responsibilities:
-- Construct an ExecutionContext using Phase-0 types and Phase-3 knobs.
-- Wire RoutingPolicy, SandboxConfig, ExecutionProfile, MetaProfileSnapshot, and workflow metadata.
-- Execute the L1→L2→L3→L4→L5 pipeline in the correct order.
-- Expose Phase-3 knobs (HYDE, RRF, council size, correction loop limit, telemetry routing mode).
-- Return a strongly-typed WorkflowOutput (or equivalent) result.
+Improves résumé quality by coordinating multi-agent workflow execution with configurable analysis parameters.
 """
 
 from __future__ import annotations
@@ -17,7 +10,7 @@ import argparse
 import uuid
 from dataclasses import dataclass, asdict
 from enum import Enum
-from typing import Any, Dict, Iterable, Mapping, MutableMapping, Optional, Sequence, Tuple, Callable, TypeVar, cast
+from typing import Any, Dict, Mapping, Sequence, Optional, Callable, TypeVar, cast
 
 # ---------------------------------------------------------------------------
 # Optional / dynamic imports of Phase-0 and Phase-3 modules
