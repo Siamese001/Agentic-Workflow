@@ -9,9 +9,7 @@ from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callab
 from enum import Enum
 from dataclasses import dataclass, field
 from l3.workflow_graph import run_workflow_graph  # Added import
-from core.di_container import inject_dependencies, get_service
-from l4.pinecone_adapter import PineconeAdapter
-from l5.policy import SafetyEngine
+from core.di_container import inject_dependencies
 
 T = TypeVar('T')
 
@@ -309,16 +307,13 @@ async def run_dag_async(
 
 # Add missing functions expected by tests
 def orchestrate_execution(plans, ctx):
-    """Orchestrate execution - stub for tests."""
-    # This will be mocked by tests, but provide a default implementation
-    from core.models.models import L2ResultBundle, StrategyResult, RAGResult, DraftingResult, QAResult, SafetyResult
-    return L2ResultBundle(
-        strategy=StrategyResult(branches=[], chosen_branch_id=None),
-        rag=RAGResult(evidence=[], used_hyde=False),
-        drafting=DraftingResult(sections=[]),
-        qa=QAResult(findings=[]),
-        safety=SafetyResult(findings=[])
-    )
+    """Orchestrate execution by delegating to L2.
+    
+    This function bridges L3 orchestration to L2 execution,
+    following the layer separation principle.
+    """
+    from l2 import execute_workflow_plans
+    return execute_workflow_plans(plans, ctx)
 
 def collect_error_events():
     """Collect error events - stub for tests."""

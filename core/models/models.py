@@ -314,6 +314,9 @@ class ExecutionContext(BaseModel):
     temporal_kg_facts: List[Any] = Field(default_factory=list)  # Temporal KG facts
     scene_context: Dict[str, Any] = Field(default_factory=dict)  # Assembled scene for planning
 
+    # PHASE C: L5 Safety Adapters
+    safety_engine: Any = None  # L5 SafetyEngine for policy enforcement
+
     # Telemetry / cost containers
     cost_snapshot: Optional["CostSnapshot"] = None
 
