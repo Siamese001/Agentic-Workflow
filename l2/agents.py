@@ -39,7 +39,7 @@ from core.models.models import (
     SafetyFinding,
     Evidence,
     CouncilVote,
-    ExecutionContext,
+    MetaProfileSnapshot,
 )
 from core.routing import RoutingPolicy
 from runtime.runtime_utils import invoke_model, SandboxConfig
@@ -47,7 +47,6 @@ from runtime.observability import (
     record_event,
     record_exception,
 )
-from config.meta_profile import MetaProfileSnapshot
 from meta.prompt_builder import PromptInstance
 
 
@@ -512,15 +511,16 @@ class ConstitutionalSafetyAgent(LLMBaseAgent):
         """
         Run the constitutional safety review over all available evidence.
         """
-        ctx = ExecutionContext(
-            job=job,
-            resume=resume,
-            config=config,
-            prompt_registry={},
-            routing_policy=self.routing_policy,
-            sandbox_config=self.sandbox,
-            meta_profile_snapshot=self.meta_profile,
-        )
+        # ExecutionContext created but not used in stub implementation
+        # ctx = ExecutionContext(
+        #     job=job,
+        #     resume=resume,
+        #     config=config,
+        #     prompt_registry={},
+        #     routing_policy=self.routing_policy,
+        #     sandbox_config=self.sandbox,
+        #     meta_profile_snapshot=self.meta_profile,
+        # )
 
         # Stub implementation - return safety result
         return SafetyResult(
