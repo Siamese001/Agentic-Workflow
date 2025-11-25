@@ -1,6 +1,24 @@
 """L4 Adapter - Wraps StateManager to implement L4StateManagerInterface
 
 This adapter provides backward compatibility while enforcing strict interface contracts.
+
+Injection Types Handled:
+- Context Injection (ID 3): Provides STRUCTURED contextual data (JD, resume, 
+  Pinecone RAG chunks, temporal KG) into prompts in a safe, layered way.
+  Context is canonicalized, validated, and ordered before injection.
+
+- Data Injection (ID 4): Passes RAW user data, retrieved chunks, or metadata
+  into the agent pipeline. Data flows from L4 to L1/L2/L3 without 
+  structural transformation.
+
+- State Injection Defense (ID 8): Validates all state writes to prevent
+  unsafe or unvalidated data from entering L4 memory that could re-enter
+  prompts and corrupt L1/L3 reasoning.
+
+- KG Injection (ID 11): Injects structured temporal or KG-derived information
+  into agent planning via TemporalContext and EpisodicMemory.
+
+Layer: L4 (Memory & State)
 """
 
 from __future__ import annotations
