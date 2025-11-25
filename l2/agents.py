@@ -40,6 +40,7 @@ from core.models.models import (
     Evidence,
     CouncilVote,
     MetaProfileSnapshot,
+    PromptInstance,
 )
 from core.routing import RoutingPolicy
 from runtime.runtime_utils import invoke_model, SandboxConfig
@@ -47,7 +48,6 @@ from runtime.observability import (
     record_event,
     record_exception,
 )
-from meta.prompt_builder import PromptInstance
 
 
 # =============================================================================
