@@ -33,6 +33,7 @@ from __future__ import annotations
 from enum import Enum
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Literal
+from datetime import datetime
 
 from pydantic import BaseModel, Field
 
@@ -76,6 +77,15 @@ class AgentRole(str, Enum):
     QA = "qa"
     SAFETY = "safety"
     META = "meta"
+
+
+class RiskLevel(str, Enum):
+    """Risk level for safety and policy assessments."""
+
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
 
 
 class AgentCard(BaseModel):
@@ -1026,6 +1036,270 @@ class RAGResult(BaseModel):
     schema_version: Literal["v1"] = "v1"
     evidence: List[Evidence]
     used_hyde: bool = False
+
+
+# =============================================================================
+# ADDITIONAL TYPES FOR L1-L5 ARCHITECTURE
+# =============================================================================
+
+class WorkflowStatus(str, Enum):
+    """Status of workflow execution."""
+    
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+
+class DAGNode(BaseModel):
+    """Node in a directed acyclic graph."""
+    
+    id: str
+    type: str
+    parameters: Dict[str, Any] = Field(default_factory=dict)
+    dependencies: List[str] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DAGEdge(BaseModel):
+    """Edge in a directed acyclic graph."""
+    
+    from_node: str
+    to_node: str
+    condition: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class NodeResult(BaseModel):
+    """Result of executing a single DAG node."""
+    
+    node_id: str
+    success: bool
+    data: Optional[Any] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    error: Optional[str] = None
+    execution_time: Optional[float] = None
+
+
+class StateSnapshot(BaseModel):
+    """Snapshot of execution state."""
+    
+    execution_id: str
+    timestamp: datetime
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    status: WorkflowStatus = WorkflowStatus.PENDING
+
+
+class MemoryFragment(BaseModel):
+    """Fragment of stored memory."""
+    
+    id: str
+    content: str
+    embedding: Optional[List[float]] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    created_at: datetime = Field(default_factory=datetime.now)
+    access_count: int = 0
+
+
+class Provenance(BaseModel):
+    """Provenance information for data."""
+    
+    source: str
+    operation: str
+    timestamp: datetime = Field(default_factory=datetime.now)
+    user_id: Optional[str] = None
+    parent_id: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class Entity(BaseModel):
+    """Entity in a knowledge graph."""
+    
+    id: str
+    name: str
+    type: str
+    properties: Dict[str, Any] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class Triplet(BaseModel):
+    """Triplet in a knowledge graph."""
+    
+    subject: str
+    predicate: str
+    object: str
+    confidence: Optional[float] = None
+    temporal_metadata: Optional[Dict[str, Any]] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class TemporalKG(BaseModel):
+    """Temporal knowledge graph."""
+    
+    entities: List[Entity] = Field(default_factory=list)
+    triplets: List[Triplet] = Field(default_factory=list)
+    timestamp: datetime = Field(default_factory=datetime.now)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class PolicyViolation(BaseModel):
+    """Policy violation record."""
+    
+    policy_type: str
+    severity: str
+    description: str
+    recommendation: str
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class HitLRequest(BaseModel):
+    """Human-in-the-loop request."""
+    
+    id: str
+    operation: str
+    data_summary: str
+    context: ExecutionContext
+    created_at: datetime = Field(default_factory=datetime.now)
+    status: str = "pending"
+    response: Optional[Dict[str, Any]] = None
+    processed_at: Optional[datetime] = None
+
+
+class LLMRequest(BaseModel):
+    """Request to LLM model."""
+    
+    prompt: str
+    model: str
+    temperature: Optional[float] = None
+    max_tokens: Optional[int] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class LLMResponse(BaseModel):
+    """Response from LLM model."""
+    
+    content: str
+    model: str
+    token_usage: Optional[Dict[str, int]] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class PlanningResult(BaseModel):
+    """Result from planning operations."""
+    
+    plan_id: str
+    steps: List[Dict[str, Any]] = Field(default_factory=list)
+    confidence: float = 0.0
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class TaskDecomposition(BaseModel):
+    """Task decomposition result."""
+    
+    main_task: str
+    subtasks: List[str] = Field(default_factory=list)
+    dependencies: Dict[str, List[str]] = Field(default_factory=dict)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class UncertaintyEstimate(BaseModel):
+    """Uncertainty estimation result."""
+    
+    uncertainty_score: float = 0.0
+    confidence_interval: Optional[tuple[float, float]] = None
+    factors: List[str] = Field(default_factory=list)
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class DraftSection(BaseModel):
+    """Section of a drafted document."""
+    
+    title: str
+    content: str
+    section_type: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class QAFinding(BaseModel):
+    """Finding from QA analysis."""
+    
+    type: str
+    severity: str
+    description: str
+    recommendation: str
+    location: Optional[str] = None
+
+
+class SafetyFinding(BaseModel):
+    """Finding from safety analysis."""
+    
+    type: str
+    severity: str
+    description: str
+    recommendation: str
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+
+class CouncilVote(BaseModel):
+    """Vote from multi-agent council."""
+    
+    agent_id: str
+    decision: str
+    confidence: float
+    reasoning: str
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class MetaProfileSnapshot(BaseModel):
+    """Snapshot of meta-profile configuration."""
+    
+    profile_id: str
+    preferences: Dict[str, Any] = Field(default_factory=dict)
+    constraints: Dict[str, Any] = Field(default_factory=dict)
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class RoutingDecisionEvent(BaseModel):
+    """Event representing a routing decision."""
+    
+    task_id: str
+    selected_agent: str
+    routing_factors: List[str] = Field(default_factory=list)
+    confidence: float = 0.0
+    timestamp: datetime = Field(default_factory=datetime.now)
+
+
+class PromptInstance:
+    """Concrete prompt ready for LLM invocation."""
+    
+    def __init__(
+        self,
+        prompt_id: str,
+        definition: "PromptDefinition",
+        version: "PromptVersion", 
+        role: str,
+        rendered: str,
+        envelope: Optional["PromptEnvelope"] = None
+    ):
+        self.prompt_id = prompt_id
+        self.definition = definition
+        self.version = version
+        self.role = role
+        self.rendered = rendered
+        self.envelope = envelope
+
+
+class PromptEnvelope:
+    """Envelope containing prompt metadata and context."""
+    
+    def __init__(
+        self,
+        context: Optional[Dict[str, Any]] = None,
+        metadata: Optional[Dict[str, Any]] = None
+    ):
+        self.context = context or {}
+        self.metadata = metadata or {}
 
 
 
