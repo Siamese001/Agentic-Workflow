@@ -1,6 +1,7 @@
-"""Infrastructure Dependency Injection Container.
+"""
+Infrastructure dependency injection for résumé processing workflows.
 
-Provides dependency injection services for the atomic architecture.
+Provides service management and dependency resolution for comprehensive résumé improvement operations.
 """
 
 from typing import Any, Dict, TypeVar, Callable
@@ -12,17 +13,29 @@ T = TypeVar('T')
 _services: Dict[str, Any] = {}
 
 def register_service(name: str, service: Any) -> None:
-    """Register a service in the container."""
+    """
+    Registers service for résumé processing dependency injection.
+
+    Enables modular service management for comprehensive résumé enhancement operations.
+    """
     _services[name] = service
 
 def get_service(name: str) -> Any:
-    """Get a service from the container."""
+    """
+    Retrieves registered service for résumé processing workflows.
+
+    Provides reliable dependency resolution for résumé improvement operations.
+    """
     if name not in _services:
         raise ValueError(f"Service '{name}' not registered")
     return _services[name]
 
 def inject_dependencies(**dependencies: Any) -> Callable:
-    """Decorator to inject dependencies into functions."""
+    """
+    Creates dependency injection decorator for résumé processing functions.
+
+    Enables automatic service resolution for modular résumé improvement workflows.
+    """
     def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
@@ -35,7 +48,11 @@ def inject_dependencies(**dependencies: Any) -> Callable:
     return decorator
 
 def initialize_default_services() -> None:
-    """Initialize default services for atomic architecture."""
+    """
+    Initializes default services for résumé processing architecture.
+
+    Sets up essential dependencies for comprehensive résumé improvement workflows.
+    """
     # Register default atomic services
     register_service("state_manager", None)  # Will be injected later
     register_service("safety_validator", None)  # Will be injected later

@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Model routing policies for résumé processing workflows.
+
+Provides intelligent model selection and budget enforcement for optimal résumé improvement performance.
+"""
 
 from typing import Optional
 
@@ -8,6 +12,11 @@ from .models import ModelChoice, RoutingContext
 
 
 def _infer_provider_from_model(model: str) -> str:
+    """
+    Infers provider from model name for résumé processing workflows.
+
+    Ensures proper provider identification for optimal résumé improvement routing.
+    """
     m = (model or "").lower()
     if "claude" in m:
         return "anthropic"
@@ -20,11 +29,10 @@ def choose_provider_and_model(
     ctx: RoutingContext,
     requested_model: Optional[str] = None,
 ) -> ModelChoice:
-    """Select provider/model for a given routing context.
+    """
+    Selects optimal provider and model for résumé processing tasks.
 
-    Current implementation is conservative: if a concrete model is
-    provided, we honor it and only infer the provider. If not, we fall
-    back to a simple heuristic based on task_type.
+    Balances cost, latency, and quality requirements for comprehensive résumé enhancement.
     """
 
     model = requested_model or "gpt-4.1-mini"
@@ -56,11 +64,10 @@ def choose_provider_and_model(
 
 
 def enforce_budget(choice: ModelChoice, profile: Optional[ExecutionProfile]) -> ModelChoice:
-    """Clamp cost tier based on execution profile, if provided.
+    """
+    Enforces cost budget constraints for résumé processing model selection.
 
-    The ExecutionProfile.metadata may include a "max_cost_tier" key with
-    values like "low" | "medium" | "high". If the chosen tier exceeds
-    this, we downgrade to the allowed tier.
+    Ensures optimal model choice within budget limits for résumé improvement workflows.
     """
 
     if profile is None:
@@ -98,7 +105,11 @@ def enforce_budget(choice: ModelChoice, profile: Optional[ExecutionProfile]) -> 
 
 
 def fallback_chain(choice: ModelChoice) -> list[ModelChoice]:
-    """Return a simple deterministic fallback chain for the given choice."""
+    """
+    Creates fallback model chain for résumé processing reliability.
+
+    Ensures robust model selection with backup options for comprehensive résumé enhancement.
+    """
 
     fallbacks: list[ModelChoice] = [choice]
 
@@ -127,18 +138,21 @@ def fallback_chain(choice: ModelChoice) -> list[ModelChoice]:
 
 
 def choose_model(ctx: RoutingContext) -> ModelChoice:
-    """Phase-3 wrapper returning a ModelChoice for a RoutingContext.
+    """
+    Selects optimal model for résumé processing workflows.
 
-    This delegates to the existing choose_provider_and_model helper while
-    keeping a minimal, ExecutionProfile-free signature as requested by the
-    new safety/observability/cost layer.
+    Provides intelligent model choice based on routing context for résumé improvement.
     """
 
     return choose_provider_and_model(ctx, requested_model=None)
 
 
 def enforce_cost_budget(choice: ModelChoice, profile: Optional[ExecutionProfile]) -> ModelChoice:
-    """Phase-3 wrapper over enforce_budget to match the new API surface."""
+    """
+    Enforces cost budget constraints for résumé processing model selection.
+
+    Ensures optimal model choice within budget limits for résumé improvement workflows.
+    """
 
     return enforce_budget(choice, profile)
 

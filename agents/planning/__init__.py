@@ -1,4 +1,8 @@
-"""Pure planning layer that exposes strategy/RAG/QA/safety planners."""
+"""
+Planning layer for comprehensive résumé processing workflow orchestration.
+
+Exposes strategy, RAG, QA, and safety planners for optimal résumé enhancement operations.
+"""
 
 from __future__ import annotations
 

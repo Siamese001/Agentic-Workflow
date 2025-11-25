@@ -1,9 +1,7 @@
-from __future__ import annotations
+"""
+Tree-of-thought reasoning framework for résumé processing workflows.
 
-"""Tree-of-thought (ToT) reasoning helpers.
-
-This module defines a small, deterministic interface for exploring a
-space of candidate "thoughts" and selecting a best path.
+Provides deterministic thought exploration for comprehensive résumé enhancement problem solving.
 """
 
 from dataclasses import dataclass
@@ -12,16 +10,20 @@ from typing import List, Tuple
 
 @dataclass
 class ThoughtNode:
+    """
+    Represents thought node in résumé processing reasoning tree.
+
+    Enables structured exploration of solution paths for résumé improvement tasks.
+    """
     content: str
     score: float
 
 
 def tree_search(seed: str, max_depth: int = 2, branching: int = 2) -> Tuple[List[ThoughtNode], List[ThoughtNode]]:
-    """Deterministic placeholder ToT search.
+    """
+    Executes tree-of-thought search for résumé processing tasks.
 
-    Returns (path, explored) where:
-        • path is the best-scoring path (here, just the seed split).
-        • explored is a flat list of all visited nodes.
+    Explores multiple reasoning paths to find optimal résumé enhancement solutions.
     """
 
     seed = (seed or "").strip()

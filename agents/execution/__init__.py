@@ -1,14 +1,14 @@
-"""L2 - Execution Layer
+"""
+Execution layer for résumé processing workflow orchestration.
 
-This layer provides the main execution functions that invoke cognitive agents
-and return structured results. It bridges L1 plans to actual LLM execution.
+Provides technical execution functions that bridge planning to actual LLM execution for résumé enhancement operations.
 
 Layer: L2 (Execution)
 Responsibilities:
-- Execute strategy, RAG, drafting, QA, safety tasks
-- Invoke cognitive agents with proper context
-- Handle execution errors and retries
-- Return structured L2 results
+- Execute strategy, RAG, drafting, QA, safety tasks for résumé processing
+- Invoke cognitive agents with proper context for résumé improvement
+- Handle execution errors and retries in résumé enhancement workflows
+- Return structured L2 results for comprehensive résumé operations
 
 Non-responsibilities:
 - Planning (L1)

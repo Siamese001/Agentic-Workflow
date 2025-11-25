@@ -1,10 +1,7 @@
-"""Legacy Agents Wrapper - Delegates to L1-L5 Atomic Layers.
+"""
+Legacy agents wrapper for résumé processing workflow execution.
 
-This file provides backward compatibility by delegating all operations
-to the new strict L1-L5 atomic architecture. All mixed responsibilities
-have been extracted to atomic modules in the l1/, l2/, l3/, l4/, l5/ directories.
-
-For new code, use atomic_integration_bridge.py directly.
+Provides backward compatibility by delegating operations to atomic L1-L5 architecture for résumé enhancement workflows.
 """
 
 from typing import Any, Optional
@@ -30,23 +27,43 @@ from atomic_integration_bridge import (
 
 # Legacy agent classes that delegate to atomic layers
 class StrategyLLMAgent(AtomicStrategyAgent):
-    """Legacy wrapper - delegates to atomic L1-L5 layers."""
+    """
+    Legacy strategy agent wrapper for résumé processing workflows.
+
+    Delegates to atomic L1-L5 layers for comprehensive résumé enhancement strategy execution.
+    """
     pass
 
 class DraftingGuild(AtomicDraftingAgent):
-    """Legacy wrapper - delegates to atomic L1-L5 layers."""
+    """
+    Legacy drafting agent wrapper for résumé processing workflows.
+
+    Delegates to atomic L1-L5 layers for comprehensive résumé content generation.
+    """
     pass
 
 class SemanticQAAgent(AtomicQAAgent):
-    """Legacy wrapper - delegates to atomic L1-L5 layers."""
+    """
+    Legacy QA agent wrapper for résumé processing workflows.
+
+    Delegates to atomic L1-L5 layers for comprehensive résumé analysis and validation.
+    """
     pass
 
 class ConstitutionalSafetyAgent(AtomicSafetyAgent):
-    """Legacy wrapper - delegates to atomic L1-L5 layers."""
+    """
+    Legacy safety agent wrapper for résumé processing workflows.
+
+    Delegates to atomic L1-L5 layers for comprehensive résumé content safety validation.
+    """
     pass
 
 class HYDEQueryAgent:
-    """Legacy HYDE agent - delegates to atomic L1-L5 layers."""
+    """
+    Legacy HYDE query agent for résumé processing retrieval enhancement.
+
+    Delegates to atomic L1-L5 layers for optimized résumé search query generation.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.routing_policy = routing_policy
@@ -54,7 +71,11 @@ class HYDEQueryAgent:
         self.meta_profile = meta_profile
     
     async def run_hyde_query(self, rag_plan: Any, ctx: Any) -> str:
-        """Legacy HYDE query - delegates to atomic execution."""
+        """
+        Generates HYDE queries for résumé processing retrieval enhancement.
+
+        Delegates to atomic execution for optimized résumé search query generation.
+        """
         # Delegate to L2 LLM caller for pure execution
         from l2.llm_caller import LLMCaller
         llm_caller = LLMCaller(self.routing_policy, self.sandbox)
@@ -80,12 +101,20 @@ class HYDEQueryAgent:
         return result.strip()
 
 class QACouncilAgent(AtomicQAAgent):
-    """Legacy wrapper - delegates to atomic L1-L5 layers."""
+    """
+    Legacy QA council agent wrapper for résumé processing workflows.
+
+    Delegates to atomic L1-L5 layers for comprehensive résumé quality assessment.
+    """
     pass
 
 # Legacy LLMBaseAgent for backward compatibility
 class LLMBaseAgent:
-    """Legacy base class - delegates to atomic architecture."""
+    """
+    Legacy base agent class for résumé processing workflow compatibility.
+
+    Delegates to atomic architecture for comprehensive résumé enhancement operations.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None, agent_card: Optional[AgentCard] = None):
         self.routing_policy = routing_policy
