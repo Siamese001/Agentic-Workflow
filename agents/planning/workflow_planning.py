@@ -40,15 +40,17 @@ from config.config_profiles_v10_10 import ExecutionProfileSpec, get_profile
 from config.meta_profile import MetaProfileSnapshot
 
 
-# =============================================================================
-# Helpers: text extraction
-# =============================================================================
+"""
+Extracts and normalizes text for résumé processing.
+
+Ensures consistent job and resume data formatting for accurate analysis and improvement.
+"""
 
 
 def _normalize_text(value: Optional[str]) -> str:
     """
-    Normalizes text input for consistent processing.
-
+    Normalizes text input for consistent résumé processing.
+    
     Ensures clean text data for accurate résumé analysis and planning.
     """
     if not value:
@@ -58,9 +60,9 @@ def _normalize_text(value: Optional[str]) -> str:
 
 def _extract_job_text(job: JobInput) -> str:
     """
-    Aggregates job description fields into analysis format.
-
-    Creates comprehensive job text for better résumé alignment planning.
+    Aggregates job description fields for résumé analysis.
+    
+    Combines job requirements to ensure résumé content aligns perfectly with target role needs.
     """
     parts: List[str] = []
     parts.append(_normalize_text(job.title))
@@ -79,9 +81,9 @@ def _extract_job_text(job: JobInput) -> str:
 
 def _extract_resume_text(resume: ResumeInput) -> str:
     """
-    Aggregates résumé content into analysis format.
-
-    Consolidates résumé sections for comprehensive job matching analysis.
+    Aggregates résumé content for job matching analysis.
+    
+    Consolidates all résumé sections to ensure comprehensive coverage of skills and experience.
     """
     parts: List[str] = []
     parts.append(_normalize_text(resume.summary))
@@ -104,15 +106,17 @@ def _extract_resume_text(resume: ResumeInput) -> str:
     return "\n".join(p for p in parts if p)
 
 
-# =============================================================================
-# Helpers: meta-profile mapping
-# =============================================================================
+"""
+Maps user preferences to optimal model routing for résumé processing.
+
+Ensures the best AI models are selected based on user profile for consistent résumé quality.
+"""
 
 
 def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot]) -> Dict[str, Any]:
     """
     Converts meta-profile into routing configuration.
-
+    
     Ensures optimal model selection based on user preferences and résumé requirements.
     """
     if meta_profile is None:
@@ -143,7 +147,7 @@ def _build_prompt_meta(
 ) -> PromptMeta:
     """
     Builds prompt metadata from execution profiles.
-
+    
     Creates structured prompt planning data for consistent résumé improvement workflows.
     """
 
@@ -187,15 +191,17 @@ def _build_prompt_meta(
     )
 
 
-# =============================================================================
-# Helpers: profile inference (restored from v10_9 semantics)
-# =============================================================================
+"""
+Infers career level from job and resume content.
+
+Determines experience level to tailor résumé improvements appropriately for seniority alignment.
+"""
 
 
 def _infer_seniority(job_text: str, resume_text: str) -> str:
     """
     Infers career seniority from job and resume content.
-
+    
     Determines experience level to tailor résumé improvements appropriately.
     """
 
@@ -219,7 +225,7 @@ def _infer_seniority(job_text: str, resume_text: str) -> str:
 def _infer_domains(job_text: str, resume_text: str) -> List[str]:
     """
     Identifies professional domains from job and resume content.
-
+    
     Ensures résumé improvements target specific industry requirements for better alignment.
     """
 
@@ -245,7 +251,7 @@ def _infer_domains(job_text: str, resume_text: str) -> List[str]:
 def _infer_skill_clusters(job_text: str, resume_text: str) -> List[str]:
     """
     Groups related skills from job and resume analysis.
-
+    
     Creates skill clusters to guide comprehensive résumé enhancement strategies.
     """
 
@@ -273,7 +279,7 @@ def _run_profile_inference(
 ) -> ProfileInferenceResult:
     """
     Analyzes career profile from job and resume content.
-
+    
     Generates comprehensive profile insights for targeted résumé optimization.
     """
 
@@ -305,9 +311,11 @@ def _run_profile_inference(
     )
 
 
-# =============================================================================
-# Helpers: complexity and reasoning mode
-# =============================================================================
+"""
+Determines processing complexity from content analysis.
+
+Ensures appropriate resource allocation for optimal résumé improvement quality.
+"""
 
 
 def _classify_complexity(
@@ -318,7 +326,7 @@ def _classify_complexity(
 ) -> ComplexityLevel:
     """
     Determines processing complexity from content analysis.
-
+    
     Ensures appropriate resource allocation for optimal résumé improvement quality.
     """
     total_tokens = len(job_text.split()) + len(resume_text.split())
@@ -353,7 +361,7 @@ def _choose_reasoning_mode(
 ) -> ReasoningMode:
     """
     Selects optimal reasoning approach for résumé analysis.
-
+    
     Adapts processing strategy based on user preferences and content complexity.
     """
     mode = profile_spec.reasoning_mode
@@ -373,7 +381,7 @@ def _choose_reasoning_mode(
 def _to_execution_profile(spec: ExecutionProfileSpec) -> ExecutionProfile:
     """
     Converts configuration spec into execution profile.
-
+    
     Creates structured workflow settings for consistent résumé improvement processing.
     """
     return ExecutionProfile(
@@ -395,9 +403,11 @@ def _to_execution_profile(spec: ExecutionProfileSpec) -> ExecutionProfile:
     )
 
 
-# =============================================================================
-# Strategy Plan
-# =============================================================================
+"""
+Creates comprehensive résumé improvement strategy plan.
+
+Outlines systematic approach to enhance résumé alignment with job requirements.
+"""
 
 
 def _build_strategy_plan(
@@ -407,7 +417,7 @@ def _build_strategy_plan(
 ) -> StrategyPlan:
     """
     Creates comprehensive résumé improvement strategy plan.
-
+    
     Outlines systematic approach to enhance résumé alignment with job requirements.
     """
     steps: List[StrategyStep] = []
@@ -467,9 +477,11 @@ def _build_strategy_plan(
     )
 
 
-# =============================================================================
-# RAG Plan
-# =============================================================================
+"""
+Builds retrieval plan for targeted job-relevant evidence.
+
+Gathers specific information to ensure résumé content aligns perfectly with job requirements.
+"""
 
 
 def _build_rag_plan(
@@ -481,7 +493,7 @@ def _build_rag_plan(
 ) -> RAGPlan:
     """
     Builds retrieval plan for evidence gathering.
-
+    
     Ensures comprehensive search strategy to support résumé improvement with relevant data.
     """
     max_hits = profile_spec.retrieval.max_hits
@@ -528,9 +540,11 @@ def _build_rag_plan(
     )
 
 
-# =============================================================================
-# Drafting Plan
-# =============================================================================
+"""
+Selects optimal drafting approach for résumé content.
+
+Chooses between bullet-heavy and narrative styles based on role seniority and complexity.
+"""
 
 
 def _select_drafting_mode(
@@ -540,6 +554,8 @@ def _select_drafting_mode(
 ) -> DraftingMode:
     """
     Choose drafting mode (e.g., bullet-heavy vs narrative).
+    
+    Ensures résumé format matches expectations for target seniority level.
     """
     seniority = (job.seniority or "").lower()
     if any(k in seniority for k in ("director", "vp", "chief", "head")):
@@ -558,7 +574,9 @@ def _build_drafting_plan(
     complexity: ComplexityLevel,
 ) -> DraftingPlan:
     """
-    Build a DraftingPlan describing which sections to generate.
+    Builds section-by-section résumé drafting plan.
+    
+    Organizes résumé structure to ensure comprehensive coverage of all key areas.
     """
     sections: List[DraftSectionPlan] = []
 
@@ -611,9 +629,11 @@ def _build_drafting_plan(
     )
 
 
-# =============================================================================
-# QA Plan
-# =============================================================================
+"""
+Builds quality assurance plan for résumé validation.
+
+Defines comprehensive checks to ensure résumé accuracy, relevance, and credibility.
+"""
 
 
 def _build_qa_plan(
@@ -622,7 +642,9 @@ def _build_qa_plan(
     complexity: ComplexityLevel,
 ) -> QAPlan:
     """
-    Build a QAPlan describing which checks to run.
+    Builds quality assurance plan for résumé validation.
+    
+    Defines comprehensive checks to ensure résumé accuracy, relevance, and credibility.
     """
     depth = profile_spec.qa_depth
     checks: List[QACheck] = []
@@ -685,9 +707,11 @@ def _build_qa_plan(
     return QAPlan(checks=checks, depth=depth)
 
 
-# =============================================================================
-# Safety Plan
-# =============================================================================
+"""
+Builds safety validation plan for résumé compliance.
+
+Ensures résumé content meets privacy and policy standards to protect user data and credibility.
+"""
 
 
 def _build_safety_plan(
@@ -695,7 +719,9 @@ def _build_safety_plan(
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> SafetyPlan:
     """
-    Build a SafetyPlan describing which safety checks to run.
+    Builds safety validation plan for résumé compliance.
+    
+    Ensures résumé content meets privacy and policy standards to protect user data and credibility.
     """
     checks: List[SafetyCheck] = []
 
@@ -742,9 +768,11 @@ def _build_safety_plan(
     return SafetyPlan(checks=checks, tier=profile_spec.safety_tier)
 
 
-# =============================================================================
-# Top-level entrypoint
-# =============================================================================
+"""
+Creates comprehensive workflow plan for résumé optimization.
+
+Main entry point that coordinates all planning stages for systematic résumé improvement.
+"""
 
 
 def build_workflow_plan_bundle(
@@ -755,20 +783,10 @@ def build_workflow_plan_bundle(
     routing_policy: Any | None = None,
     prompt_registry: Any | None = None,
 ) -> WorkflowPlanBundle:
-    """Design the full plan for how this resume will be improved.
-
-    This function is the main entry point into the planning layer. It looks at
-    the job posting, the candidate's current resume, and configuration and
-    then builds a detailed plan for the rest of the workflow. The plan covers
-    strategy, what to retrieve, which sections to draft, what quality checks
-    to run, and which safety checks to apply.
-
-    For a business user, this means every resume is processed according to a
-    clear, pre-agreed playbook rather than ad hoc logic. That playbook helps
-    keep resumes tightly aligned to the job description, ensures important
-    sections like Summary, Experience, and Skills are always addressed, and
-    guarantees that quality and safety reviews are part of the process instead
-    of optional extras.
+    """
+    Creates comprehensive workflow plan for résumé optimization.
+    
+    Coordinates strategy, retrieval, drafting, QA, and safety planning for systematic improvement.
     """
     profile_spec: ExecutionProfileSpec = get_profile(config.profile_id)
     execution_profile: ExecutionProfile = _to_execution_profile(profile_spec)

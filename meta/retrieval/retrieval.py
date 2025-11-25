@@ -48,8 +48,8 @@ def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]
 def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
     """
     Performs semantic search for résumé improvement.
-
-    Finds conceptually similar content to enhance résumé alignment with job requirements.
+    
+    Finds conceptually similar content to ensure comprehensive résumé alignment with job requirements.
     """
 
     from retrievers.dense import dense_search
@@ -60,7 +60,7 @@ def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence
 def _run_chroma(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
     """
     Executes hybrid vector search for résumé evidence.
-
+    
     Combines multiple search approaches for comprehensive résumé improvement data.
     """
 
@@ -121,7 +121,7 @@ def orchestrate_retrieval(
 ) -> RAGResult:
     """
     Coordinates comprehensive retrieval for résumé improvement.
-
+    
     Executes multiple search strategies to gather relevant evidence for résumé enhancement.
     """
 
@@ -247,7 +247,7 @@ def run_rag_retrieval(
 ) -> RAGResult:
     """
     Provides backward-compatible retrieval for résumé evidence.
-
+    
     Maintains existing interface while delivering comprehensive résumé improvement data.
     """
 

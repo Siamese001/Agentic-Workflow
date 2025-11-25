@@ -1,25 +1,28 @@
-"""State Validation for L4 Security
+"""
+State validation for secure résumé processing workflows.
 
-Adds validation and sanitization to prevent state injection attacks
-and ensure safe state writes in the L4 manager.
+Prevents injection attacks and ensures safe state management for reliable résumé improvement.
 """
 
 from __future__ import annotations
 
-import json
 import re
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any, List, Optional
 from dataclasses import dataclass, is_dataclass
 from enum import Enum
 import logging
 
-from .types import StateValidationError, StateOperation
+from .types import StateValidationError
 
 logger = logging.getLogger(__name__)
 
 
 class ValidationLevel(str, Enum):
-    """Levels of state validation."""
+    """
+    Defines security validation levels for résumé state data.
+    
+    Ensures appropriate protection based on résumé processing sensitivity requirements.
+    """
     
     NONE = "none"
     BASIC = "basic"
@@ -29,7 +32,11 @@ class ValidationLevel(str, Enum):
 
 @dataclass
 class ValidationRule:
-    """Rule for validating state data."""
+    """
+    Configures validation rules for résumé state security.
+    
+    Protects résumé data integrity through comprehensive validation patterns.
+    """
     
     name: str
     pattern: Optional[str] = None
@@ -41,7 +48,11 @@ class ValidationRule:
 
 
 class StateValidator:
-    """Validates state data to prevent injection attacks."""
+    """
+    Validates résumé state data to prevent security vulnerabilities.
+    
+    Ensures safe and reliable résumé processing through comprehensive validation checks.
+    """
     
     # Basic validation rules
     BASIC_RULES = [
@@ -93,12 +104,20 @@ class StateValidator:
     ]
     
     def __init__(self, validation_level: ValidationLevel = ValidationLevel.STRICT):
-        """Initialize state validator with security level."""
+        """
+        Initializes state validator for résumé security protection.
+        
+        Configures validation rules based on résumé processing security requirements.
+        """
         self.validation_level = validation_level
         self.rules = self._get_rules_for_level(validation_level)
     
     def _get_rules_for_level(self, level: ValidationLevel) -> List[ValidationRule]:
-        """Get validation rules for the specified level."""
+        """
+        Retrieves validation rules for résumé security level.
+        
+        Ensures appropriate protection based on résumé processing sensitivity requirements.
+        """
         if level == ValidationLevel.NONE:
             return []
         elif level == ValidationLevel.BASIC:
@@ -112,14 +131,9 @@ class StateValidator:
     
     def validate_state_write(self, key: str, value: Any) -> None:
         """
-        Validate a state write operation to prevent injection attacks.
+        Validates résumé state write operations for security protection.
         
-        Args:
-            key: State key being written
-            value: Value being written
-            
-        Raises:
-            StateValidationError: If validation fails
+        Prevents injection attacks to ensure safe résumé processing workflows.
         """
         # Check key validation
         self._validate_key(key)
@@ -135,7 +149,11 @@ class StateValidator:
             self._validate_dataclass(key, value)
     
     def _validate_key(self, key: str) -> None:
-        """Validate state key for injection attempts."""
+        """
+        Validates résumé state keys for injection security.
+        
+        Ensures safe key naming to prevent résumé processing vulnerabilities.
+        """
         # Check for forbidden characters in keys
         forbidden_chars = [';', '&', '|', '`', '$', '(', ')']
         for char in forbidden_chars:
@@ -158,7 +176,11 @@ class StateValidator:
                 )
     
     def _validate_value(self, key: str, value: Any) -> None:
-        """Validate state value for type and size constraints."""
+        """
+        Validates résumé state values for type and size constraints.
+        
+        Ensures data integrity and security for reliable résumé processing workflows.
+        """
         # Check value size
         if isinstance(value, str):
             for rule in self.rules:
@@ -184,7 +206,11 @@ class StateValidator:
                 self.validate_state_write(f"{key}[{i}]", item)
     
     def _check_patterns(self, key: str, value: Any) -> None:
-        """Check value against security patterns."""
+        """
+        Checks résumé state values against security patterns.
+        
+        Detects and blocks suspicious content to protect résumé processing integrity.
+        """
         if not isinstance(value, str):
             return
         
@@ -195,7 +221,11 @@ class StateValidator:
                 )
     
     def _validate_dataclass(self, key: str, value: Any) -> None:
-        """Validate dataclass fields for security."""
+        """
+        Validates résumé dataclass structures for security compliance.
+        
+        Ensures structured data integrity for reliable résumé processing workflows.
+        """
         if not is_dataclass(value):
             return
         
