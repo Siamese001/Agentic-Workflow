@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from agents.execution.agents import (
+from l2.agents import (
     StrategyLLMAgent,
     DraftingGuild,
     SemanticQAAgent,

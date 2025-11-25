@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional, Set
 from datetime import datetime, timedelta, UTC
 from enum import Enum
 
-from state.triplet_store import Triplet, TripletStore, TripletStatus, TripletQuery
+from l4.triplet_store import Triplet, TripletStore, TripletStatus, TripletQuery
 
 
 class InvalidationReason(str, Enum):

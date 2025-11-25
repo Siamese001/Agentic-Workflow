@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import logging
 
-from prompts.instructional_injection_v6 import InstructionalExtension, ExtensionContent
+from l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent
 
 
 class CorrectionType(str, Enum):

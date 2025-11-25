@@ -21,9 +21,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from prompts.cms.compiler import compile_prompt
-from prompts.cms.store import get_prompt_version
-from prompts.cms.schemas import validate_prompt
+from l1.cms.compiler import compile_prompt
+from l1.cms.store import get_prompt_version
+from l1.cms.schemas import validate_prompt
 from core.models.models import (
     ContextBudget,
     DraftingPlan,
@@ -43,11 +43,11 @@ from core.models.models import (
     PromptMeta,
     PromptVersion,
 )
-from prompts.prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
-from infrastructure.context_engine.assembly import assemble_context
-from infrastructure.context_engine.pinned import PinnedItem
-from infrastructure.context_engine.relevance import ContextItem
-from infrastructure.context_engine.slots import ContextSlot
+from l1.prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
+from infra.context_engine.assembly import assemble_context
+from infra.context_engine.pinned import PinnedItem
+from infra.context_engine.relevance import ContextItem
+from infra.context_engine.slots import ContextSlot
 
 
 # =============================================================================
