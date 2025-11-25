@@ -7,7 +7,7 @@ Creates structured plans to ensure comprehensive résumé enhancement quality an
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict, List, Optional
 
 from core.models.models import (
     ExecutionContext,
@@ -62,6 +62,26 @@ def plan_semantic_qa(
         model_tier="balanced",
     )
     return SemanticQAPlan(prompt=prompt)
+
+
+def plan_qa(
+    question: str,
+    context: Optional[str] = None,
+    *,
+    model_tier: str = "balanced",
+) -> SemanticQAPlan:
+    """
+    Plan a QA response for the given question and context.
+    
+    Args:
+        question: The question to answer
+        context: Optional context for the question
+        model_tier: Model tier to use
+        
+    Returns:
+        QA plan with semantic search and response generation
+    """
+    return plan_semantic_qa(question, context, model_tier=model_tier)
 
 
 def plan_council_review(
