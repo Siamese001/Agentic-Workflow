@@ -1,15 +1,15 @@
-"""Multi-Agent Coordination - Meta Layer
+"""
+Multi-agent coordination for résumé processing workflow orchestration.
 
-This module provides multi-agent coordination primitives.
-
+Provides coordination primitives for comprehensive résumé enhancement agent interactions.
 
 Layer: Meta
 Responsibilities:
-- Graph patterns (pipeline, star-hub, council, committee)
-- Deterministic delegation rules
-- Council voting
-- Agent message routing
-- Pure advisory logic
+- Graph patterns (pipeline, star-hub, council, committee) for résumé processing
+- Deterministic delegation rules for résumé enhancement workflows
+- Council voting for résumé quality assessment
+- Agent message routing for résumé improvement coordination
+- Pure advisory logic for résumé processing optimization
 
 Non-responsibilities:
 - L1 planning
@@ -45,10 +45,10 @@ from core.models.models import (  # type: ignore[attr-defined]
 
 @dataclass
 class AgentNode:
-    """Minimal agent node representation used by the META layer.
+    """
+    Minimal agent node representation for résumé processing META layer coordination.
 
-    This is a structural analog of the v10_9 AgentNode but stripped
-    down to only the fields needed for meta-layer coordination.
+    Structural analog of v10_9 AgentNode optimized for résumé enhancement workflow coordination.
     """
 
     role: str
@@ -57,11 +57,14 @@ class AgentNode:
 
 @dataclass
 class AgentGraph:
-    """Minimal agent graph representation.
+    """
+    Minimal agent graph representation for résumé processing workflows.
 
+    Coordinates agent interactions for comprehensive résumé enhancement operations.
+    
     nodes: mapping of node_id -> AgentNode
     edges: mapping of node_id -> list[node_id]
-    metadata: arbitrary graph-level metadata
+    metadata: arbitrary graph-level metadata for résumé processing
     """
 
     nodes: Dict[str, AgentNode] = field(default_factory=dict)
@@ -70,7 +73,11 @@ class AgentGraph:
 
 
 def summarize_graph(graph: AgentGraph) -> Dict[str, Any]:
-    """Return a lightweight, deterministic summary of an AgentGraph."""
+    """
+    Returns lightweight summary of résumé processing agent graph.
+
+    Provides deterministic summary for résumé enhancement workflow coordination.
+    """
 
     return {
         "nodes": {node_id: {"role": n.role, "config": dict(n.config)} for node_id, n in graph.nodes.items()},
@@ -80,7 +87,11 @@ def summarize_graph(graph: AgentGraph) -> Dict[str, Any]:
 
 
 class MultiAgentPattern(str, Enum):
-    """Conceptual patterns for multi-agent coordination graphs."""
+    """
+    Conceptual patterns for résumé processing multi-agent coordination graphs.
+
+    Defines standard interaction patterns for comprehensive résumé enhancement workflows.
+    """
 
     LINEAR_PIPELINE = "linear_pipeline"
     STAR_HUB = "star_hub"
@@ -94,7 +105,11 @@ class MultiAgentPattern(str, Enum):
 
 
 def build_linear_pipeline(roles: List[str]) -> AgentGraph:
-    """Build a linear pipeline: r0 → r1 → r2 → ..."""
+    """
+    Builds linear pipeline for résumé processing agent coordination.
+
+    Creates sequential agent flow: r0 → r1 → r2 → ... for résumé enhancement workflows.
+    """
 
     nodes = {str(r): AgentNode(role=str(r), config={}) for r in roles}
     edges: Dict[str, List[str]] = {}

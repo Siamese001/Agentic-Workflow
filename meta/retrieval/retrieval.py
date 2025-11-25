@@ -1,3 +1,9 @@
+"""
+Meta retrieval system for résumé evidence gathering.
+
+Coordinates multiple retrieval strategies to find relevant data for comprehensive résumé improvement.
+"""
+
 from __future__ import annotations
 
 from typing import List, Optional
@@ -23,7 +29,11 @@ from meta.retrieval.hybrid_ranker import fuse_and_rank
 
 
 def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    """Delegate to the existing BM25 retriever (lexical backend)."""
+    """
+    Performs keyword-based search for résumé evidence.
+
+    Finds exact matches to ensure comprehensive coverage of relevant résumé content.
+    """
 
     from retrievers.bm25 import bm25_search
 
@@ -36,7 +46,11 @@ def _run_bm25(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]
 
 
 def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    """Delegate to the existing dense retriever (vector backend)."""
+    """
+    Performs semantic search for résumé improvement.
+
+    Finds conceptually similar content to enhance résumé alignment with job requirements.
+    """
 
     from retrievers.dense import dense_search
 
@@ -44,10 +58,10 @@ def _run_dense(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence
 
 
 def _run_chroma(query: str, cfg: RetrievalConfig, max_hits: int) -> List[Evidence]:
-    """Optional Chroma-based dense/hybrid retrieval.
+    """
+    Executes hybrid vector search for résumé evidence.
 
-    This mirrors the previous retrieval.py implementation but lives in the
-    META retrieval namespace.
+    Combines multiple search approaches for comprehensive résumé improvement data.
     """
 
     try:  # pragma: no cover - optional Chroma wiring
@@ -105,10 +119,10 @@ def orchestrate_retrieval(
     hyde_query: Optional[str] = None,
     council_vote: Optional[CouncilVote] = None,
 ) -> RAGResult:
-    """Central META retrieval orchestrator.
+    """
+    Coordinates comprehensive retrieval for résumé improvement.
 
-    This function mirrors the previous retrieval.run_rag_retrieval behavior
-    but returns a typed RAGResult instead of a bare Evidence list.
+    Executes multiple search strategies to gather relevant evidence for résumé enhancement.
     """
 
     workflow_id = ctx.workflow_id
@@ -231,10 +245,10 @@ def run_rag_retrieval(
     hyde_query: Optional[str] = None,
     council_vote: Optional[CouncilVote] = None,
 ) -> RAGResult:
-    """Backward-compatible wrapper delegating to orchestrate_retrieval.
+    """
+    Provides backward-compatible retrieval for résumé evidence.
 
-    This preserves the legacy ``run_rag_retrieval`` entrypoint while routing
-    all behavior through the typed ``orchestrate_retrieval`` function.
+    Maintains existing interface while delivering comprehensive résumé improvement data.
     """
 
     return orchestrate_retrieval(

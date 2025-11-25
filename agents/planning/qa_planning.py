@@ -1,4 +1,8 @@
-"""QA planning module."""
+"""
+Quality assurance planning for résumé improvement validation.
+
+Creates structured plans to ensure comprehensive résumé enhancement quality and accuracy.
+"""
 
 from __future__ import annotations
 
@@ -15,14 +19,22 @@ from prompts.builders.prompt_builder import PromptInstance, build_qa_prompt
 
 @dataclass(frozen=True)
 class SemanticQAPlan:
-    """Pure planning artifact for semantic QA."""
+    """
+    Defines semantic quality assurance structure.
+
+    Ensures thorough evaluation of résumé improvement content for accuracy and relevance.
+    """
 
     prompt: PromptInstance
 
 
 @dataclass(frozen=True)
 class CouncilPlan:
-    """Pure planning artifact for council review aggregation."""
+    """
+    Structures council review planning approach.
+
+    Coordinates comprehensive evaluation of résumé enhancement recommendations.
+    """
 
     prompt: PromptInstance
 
@@ -34,7 +46,11 @@ def plan_semantic_qa(
     draft: DraftingResult,
     rag: RAGResult,
 ) -> SemanticQAPlan:
-    """Generate a pure semantic QA plan."""
+    """
+    Creates semantic quality assurance plan for résumé validation.
+
+    Structures evaluation approach to ensure comprehensive résumé improvement quality.
+    """
     prompt = build_qa_prompt(
         plan=qa_plan,
         ctx=ctx,
@@ -55,7 +71,11 @@ def plan_council_review(
     draft: DraftingResult,
     rag: RAGResult,
 ) -> CouncilPlan:
-    """Generate a pure council review plan."""
+    """
+    Plans council review for comprehensive résumé assessment.
+
+    Coordinates multi-perspective evaluation to ensure optimal résumé enhancement recommendations.
+    """
     prompt = build_qa_prompt(
         plan=council_plan,
         ctx=ctx,

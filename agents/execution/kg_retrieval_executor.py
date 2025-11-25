@@ -1,14 +1,14 @@
-"""KG Retrieval Executor - Multi-hop Knowledge Graph Traversal
+"""
+Knowledge graph retrieval executor for résumé processing workflows.
 
-This module implements L2 execution for multi-hop knowledge graph retrieval,
-performing graph traversal based on L1 query plans.
+Implements L2 execution for multi-hop knowledge graph traversal to support résumé enhancement operations.
 
 Layer: L2 (Execution)
 Responsibilities:
-- Execute multi-hop graph traversal
-- Apply filters and constraints per hop
-- Aggregate and deduplicate results
-- Return structured retrieval results
+- Execute multi-hop graph traversal for résumé data extraction
+- Apply filters and constraints per hop in résumé knowledge graphs
+- Aggregate and deduplicate results for résumé processing
+- Return structured retrieval results for workflow coordination
 
 Non-responsibilities:
 - Query planning (L1)
@@ -35,21 +35,26 @@ from state.triplet_store import Triplet, TripletStore, TripletQuery
 
 @dataclass
 class TraversalPath:
-    """A path through the knowledge graph."""
+    """
+    Represents a path through the résumé processing knowledge graph.
+
+    Enables systematic traversal of résumé enhancement data relationships.
+    """
     
     entities: List[str]
     triplets: List[Triplet]
     total_confidence: float = 1.0
     
     def add_hop(self, triplet: Triplet, next_entity: str) -> "TraversalPath":
-        """Add a hop to the path.
+        """
+        Adds a hop to the résumé processing knowledge graph path.
         
         Args:
-            triplet: Triplet traversed
-            next_entity: Next entity in path
+            triplet: Triplet traversed in résumé data graph
+            next_entity: Next entity in résumé processing path
             
         Returns:
-            New TraversalPath with added hop
+            New TraversalPath with added hop for résumé enhancement
         """
         return TraversalPath(
             entities=self.entities + [next_entity],
@@ -60,7 +65,11 @@ class TraversalPath:
 
 @dataclass
 class KGRetrievalResult:
-    """Result of KG retrieval execution."""
+    """
+    Result of knowledge graph retrieval execution for résumé processing.
+    
+    Provides structured data extraction results for résumé enhancement workflows.
+    """
     
     query_id: str
     query_type: QueryType
@@ -84,17 +93,18 @@ class KGRetrievalResult:
 
 
 class KGRetrievalExecutor:
-    """Executor for multi-hop knowledge graph retrieval.
+    """
+    Executor for multi-hop knowledge graph retrieval in résumé processing workflows.
     
-    This executor traverses the knowledge graph according to
-    query plans created by L1.
+    Traverses the knowledge graph according to query plans created by L1 for résumé enhancement.
     """
     
     def __init__(self, triplet_store: TripletStore):
-        """Initialize with triplet store.
+        """
+        Initializes knowledge graph retrieval executor for résumé processing.
         
         Args:
-            triplet_store: L4 TripletStore instance
+            triplet_store: L4 TripletStore instance for résumé workflow coordination
         """
         self.store = triplet_store
     

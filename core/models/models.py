@@ -1,29 +1,7 @@
-"""Core Models - Data Layer
+"""
+Core data models for résumé improvement workflow.
 
-This module defines all structured dataclasses and types used across layers.
-
-Layer: Core/Data
-Responsibilities:
-- Define all dataclasses and types
-- Provide cross-layer contracts
-- Ensure type safety
-
-Non-responsibilities:
-- Business logic
-- I/O operations
-- Layer-specific logic
-
-Contents:
-- Core workflow dataclasses
-- Plans / Results (Strategy, RAG, Drafting, QA, Safety)
-- RetrievalConfig
-- PromptDefinition / PromptVersion
-- ExecutionProfile
-- Telemetry models
-- CostSnapshot
-- PolicyDecisionEvent
-- Skill / Domain classifier results
-- CouncilVote + CorrectionLoopState
+Defines structured types to ensure consistent data flow across all résumé enhancement layers.
 """
 
 # FILE: models.py
@@ -44,7 +22,11 @@ from pydantic import BaseModel, Field
 
 
 class ComplexityLevel(str, Enum):
-    """Coarse-grained complexity buckets for planning/routing."""
+    """
+    Defines processing complexity for résumé improvement tasks.
+
+    Ensures appropriate resource allocation for optimal résumé enhancement quality.
+    """
 
     LOW = "low"
     MEDIUM = "medium"
@@ -52,7 +34,11 @@ class ComplexityLevel(str, Enum):
 
 
 class DraftingMode(str, Enum):
-    """Drafting style for downstream drafting agents."""
+    """
+    Specifies résumé content formatting style.
+
+    Controls presentation approach for professional résumé improvement.
+    """
 
     BULLET_HEAVY = "bullet_heavy"
     BALANCED = "balanced"
@@ -60,7 +46,11 @@ class DraftingMode(str, Enum):
 
 
 class ReasoningMode(str, Enum):
-    """Reasoning mode hint for L2 cognitive agents."""
+    """
+    Defines cognitive processing approach for résumé analysis.
+
+    Selects optimal thinking strategy for comprehensive résumé improvement.
+    """
 
     # Historical/short name kept for compatibility with config profiles.
     COT = "cot"
@@ -70,7 +60,11 @@ class ReasoningMode(str, Enum):
 
 
 class AgentRole(str, Enum):
-    """Logical role of an agent across L1–L5 and META."""
+    """
+    Categorizes agent functions in résumé workflow.
+
+    Ensures proper coordination of résumé improvement tasks across all layers.
+    """
 
     PLANNER = "planner"
     EXECUTION = "execution"
@@ -80,7 +74,11 @@ class AgentRole(str, Enum):
 
 
 class RiskLevel(str, Enum):
-    """Risk level for safety and policy assessments."""
+    """
+    Assesses risk levels for résumé content safety.
+
+    Ensures professional standards in résumé improvement recommendations.
+    """
 
     LOW = "low"
     MEDIUM = "medium"
@@ -89,11 +87,10 @@ class RiskLevel(str, Enum):
 
 
 class AgentCard(BaseModel):
-    """Typed description of a micro-agent's capabilities and scope.
+    """
+    Describes agent capabilities for résumé processing.
 
-    This model is the single source of truth for agent metadata across the
-    runtime and is intentionally richer than earlier versions. New fields are
-    optional / defaulted to preserve backward compatibility.
+    Provides metadata to coordinate specialized résumé improvement functions.
     """
 
     agent_id: str

@@ -1,20 +1,7 @@
-"""L1 - Planning Layer
+"""
+L1 planning layer for résumé workflow orchestration.
 
-This module provides high-level workflow planning functions that analyze
-job and resume inputs to produce execution plans.
-
-Layer: L1 (Planning/Cognition)
-Responsibilities:
-- Analyze job and resume complexity
-- Generate workflow plans (strategy, RAG, drafting, QA, safety)
-- Determine execution profiles
-- Produce pure, stateless plans
-
-Non-responsibilities:
-- Execution (L2)
-- Orchestration (L3)
-- State management (L4)
-- Policy enforcement (L5)
+Analyzes job requirements to create comprehensive improvement plans for résumé optimization.
 """
 
 # FILE: l1/workflow_planning.py
@@ -59,6 +46,11 @@ from config.meta_profile import MetaProfileSnapshot
 
 
 def _normalize_text(value: Optional[str]) -> str:
+    """
+    Normalizes text input for consistent processing.
+
+    Ensures clean text data for accurate résumé analysis and planning.
+    """
     if not value:
         return ""
     return str(value).strip()
@@ -66,7 +58,9 @@ def _normalize_text(value: Optional[str]) -> str:
 
 def _extract_job_text(job: JobInput) -> str:
     """
-    Aggregate job fields into a single planning surface.
+    Aggregates job description fields into analysis format.
+
+    Creates comprehensive job text for better résumé alignment planning.
     """
     parts: List[str] = []
     parts.append(_normalize_text(job.title))
@@ -85,7 +79,9 @@ def _extract_job_text(job: JobInput) -> str:
 
 def _extract_resume_text(resume: ResumeInput) -> str:
     """
-    Aggregate resume fields into a single planning surface.
+    Aggregates résumé content into analysis format.
+
+    Consolidates résumé sections for comprehensive job matching analysis.
     """
     parts: List[str] = []
     parts.append(_normalize_text(resume.summary))
@@ -98,9 +94,11 @@ def _extract_resume_text(resume: ResumeInput) -> str:
     if resume.skills:
         parts.append(" ".join(str(s) for s in resume.skills))
 
-    if resume.projects:
-        for proj in resume.projects:
-            parts.append(_normalize_text(proj.get("summary")))
+    for proj in resume.projects or []:
+        for key in ("summary", "description", "details"):
+            if key in proj and proj[key]:
+                parts.append(str(proj[key]))
+        if "details" in proj:
             parts.append(_normalize_text(proj.get("details")))
 
     return "\n".join(p for p in parts if p)
@@ -113,7 +111,9 @@ def _extract_resume_text(resume: ResumeInput) -> str:
 
 def _map_meta_profile_to_routing_hint(meta_profile: Optional[MetaProfileSnapshot]) -> Dict[str, Any]:
     """
-    Convert MetaProfileSnapshot into a simple dict used as RoutingHint.metadata.
+    Converts meta-profile into routing configuration.
+
+    Ensures optimal model selection based on user preferences and résumé requirements.
     """
     if meta_profile is None:
         return {}
@@ -141,10 +141,10 @@ def _build_prompt_meta(
     profile_spec: ExecutionProfileSpec,
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> PromptMeta:
-    """Build L1 prompt-planning metadata from profile + meta-profile.
+    """
+    Builds prompt metadata from execution profiles.
 
-    This helper is intentionally pure and limited to assembling a PromptMeta
-    structure. It does not render prompts, call tools, or touch state.
+    Creates structured prompt planning data for consistent résumé improvement workflows.
     """
 
     sections: List[Dict[str, Any]] = []
@@ -193,10 +193,10 @@ def _build_prompt_meta(
 
 
 def _infer_seniority(job_text: str, resume_text: str) -> str:
-    """Very small heuristic seniority inference (v10_9-compatible).
+    """
+    Infers career seniority from job and resume content.
 
-    This mirrors the v10_9 behavior where seniority was derived from
-    combined job + resume text using simple keyword families.
+    Determines experience level to tailor résumé improvements appropriately.
     """
 
     combined = f"{job_text} {resume_text}".lower()
@@ -217,7 +217,11 @@ def _infer_seniority(job_text: str, resume_text: str) -> str:
 
 
 def _infer_domains(job_text: str, resume_text: str) -> List[str]:
-    """Heuristic domain tagging from job/resume content (v10_9-compatible)."""
+    """
+    Identifies professional domains from job and resume content.
+
+    Ensures résumé improvements target specific industry requirements for better alignment.
+    """
 
     text = f"{job_text} {resume_text}".lower()
     domains: List[str] = []
@@ -239,7 +243,11 @@ def _infer_domains(job_text: str, resume_text: str) -> List[str]:
 
 
 def _infer_skill_clusters(job_text: str, resume_text: str) -> List[str]:
-    """Rough skill clustering based on keyword families (v10_9-compatible)."""
+    """
+    Groups related skills from job and resume analysis.
+
+    Creates skill clusters to guide comprehensive résumé enhancement strategies.
+    """
 
     text = f"{job_text} {resume_text}".lower()
     clusters: List[str] = []
@@ -263,11 +271,10 @@ def _run_profile_inference(
     resume_text: str,
     complexity: ComplexityLevel,
 ) -> ProfileInferenceResult:
-    """Unified profile inference wrapper for L1.
+    """
+    Analyzes career profile from job and resume content.
 
-    Returns a ProfileInferenceResult containing seniority/domain/skills
-    plus the already-estimated ComplexityLevel. This is intentionally
-    deterministic and mirrors the v10_9 heuristic behavior.
+    Generates comprehensive profile insights for targeted résumé optimization.
     """
 
     seniority_label = _infer_seniority(job_text, resume_text)
@@ -310,7 +317,9 @@ def _classify_complexity(
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> ComplexityLevel:
     """
-    Map the combined text + profile + meta-profile signals into LOW/MEDIUM/HIGH.
+    Determines processing complexity from content analysis.
+
+    Ensures appropriate resource allocation for optimal résumé improvement quality.
     """
     total_tokens = len(job_text.split()) + len(resume_text.split())
 
@@ -343,7 +352,9 @@ def _choose_reasoning_mode(
     meta_profile: Optional[MetaProfileSnapshot],
 ) -> ReasoningMode:
     """
-    Choose the reasoning mode for this workflow.
+    Selects optimal reasoning approach for résumé analysis.
+
+    Adapts processing strategy based on user preferences and content complexity.
     """
     mode = profile_spec.reasoning_mode
 
@@ -361,16 +372,9 @@ def _choose_reasoning_mode(
 
 def _to_execution_profile(spec: ExecutionProfileSpec) -> ExecutionProfile:
     """
-    Map an ExecutionProfileSpec (config) into the simpler ExecutionProfile
-    model used at L1 planning time.
+    Converts configuration spec into execution profile.
 
-    This object (ExecutionProfile) is what gets carried inside RoutingHint,
-    and is the primary top-level knob carrier for Phase-3 features like:
-        • HYDE (rag_allow_hyde)
-        • RRF strategy
-        • QA council size
-        • Correction loop configuration
-        • Telemetry routing mode
+    Creates structured workflow settings for consistent résumé improvement processing.
     """
     return ExecutionProfile(
         name=spec.id,
@@ -402,7 +406,9 @@ def _build_strategy_plan(
     complexity: ComplexityLevel,
 ) -> StrategyPlan:
     """
-    Build a simple, interpretable strategy plan.
+    Creates comprehensive résumé improvement strategy plan.
+
+    Outlines systematic approach to enhance résumé alignment with job requirements.
     """
     steps: List[StrategyStep] = []
     order = 1
@@ -474,14 +480,9 @@ def _build_rag_plan(
     complexity: ComplexityLevel,
 ) -> RAGPlan:
     """
-    Build a RAGPlan describing which retrieval surfaces to use.
+    Builds retrieval plan for evidence gathering.
 
-    Phase-3 invariants:
-        • HYDE is controlled by config/profile flags (rag_allow_hyde).
-        • Hybrid vs non-hybrid is determined by RetrievalConfig.strategy.
-        • Hints describe job / resume / hybrid focus surfaces.
-        • strategy_hint links to the configured retrieval strategy, which
-          downstream retrieval/ranking can use.
+    Ensures comprehensive search strategy to support résumé improvement with relevant data.
     """
     max_hits = profile_spec.retrieval.max_hits
 

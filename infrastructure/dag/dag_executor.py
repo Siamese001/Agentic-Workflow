@@ -1,8 +1,7 @@
-from __future__ import annotations
+"""
+DAG executor for résumé processing workflow orchestration.
 
-"""DAG executor implementation (flat module).
-
-Provides DAGExecutor compatible with the original infra.dag_engine.DAGExecutor.
+Provides async execution engine for comprehensive résumé enhancement directed acyclic graphs.
 """
 
 from typing import Any, Dict, Iterable, Optional, Set, List
@@ -11,6 +10,11 @@ from .dag_models import Graph
 
 
 class DAGExecutor:
+    """
+    Executes directed acyclic graphs for résumé processing workflows.
+
+    Orchestrates node execution with proper dependency resolution for résumé enhancement.
+    """
     def __init__(self, graph: Graph) -> None:
         self._graph = graph
 
@@ -19,6 +23,11 @@ class DAGExecutor:
         start_nodes: Optional[Iterable[str]] = None,
         ctx: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
+        """
+        Executes résumé processing DAG with proper dependency resolution.
+
+        Ensures comprehensive workflow orchestration for résumé improvement operations.
+        """
         if ctx is None:
             ctx = {}
 

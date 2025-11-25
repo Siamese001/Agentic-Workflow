@@ -1,7 +1,7 @@
-"""L1 Vector search planning layer.
+"""
+Vector search planning for résumé evidence retrieval.
 
-This module contains pure planning functions that generate typed plans for
-vector search operations. No actual vector operations are performed here.
+Creates structured plans to support comprehensive résumé improvement through semantic search.
 """
 from dataclasses import dataclass
 from typing import Dict, Any, Optional
@@ -9,7 +9,11 @@ from typing import Dict, Any, Optional
 
 @dataclass
 class VectorSearchPlan:
-    """Plan for executing a vector search operation."""
+    """
+    Defines vector search structure for résumé evidence gathering.
+
+    Ensures systematic retrieval of relevant data for comprehensive résumé enhancement.
+    """
     query_text: str
     namespace: str
     top_k: int = 5
@@ -18,7 +22,11 @@ class VectorSearchPlan:
 
 @dataclass
 class VectorUpsertPlan:
-    """Plan for upserting a vector into the store."""
+    """
+    Structures vector storage planning for résumé data.
+
+    Guides efficient storage of résumé improvement evidence for future retrieval.
+    """
     id: str
     text: str
     namespace: str
@@ -31,16 +39,10 @@ def plan_vector_search(
     top_k: int = 5,
     metadata_filters: Optional[Dict[str, Any]] = None
 ) -> VectorSearchPlan:
-    """Create a plan for executing a vector search.
-    
-    Args:
-        query: The search query text
-        namespace: Namespace to search in (default: "default")
-        top_k: Number of results to return (default: 5)
-        metadata_filters: Optional filters to apply to the search
-        
-    Returns:
-        VectorSearchPlan containing the search parameters
+    """
+    Creates vector search plan for résumé evidence retrieval.
+
+    Structures semantic search approach to find relevant data for résumé improvement.
     """
     return VectorSearchPlan(
         query_text=query,
@@ -56,16 +58,10 @@ def plan_vector_upsert(
     namespace: str = "default",
     metadata: Optional[Dict[str, Any]] = None
 ) -> VectorUpsertPlan:
-    """Create a plan for upserting a vector.
-    
-    Args:
-        id: Unique identifier for the vector
-        text: Text content to embed and store
-        namespace: Namespace to store the vector in (default: "default")
-        metadata: Additional metadata to store with the vector
-        
-    Returns:
-        VectorUpsertPlan containing the upsert parameters
+    """
+    Plans vector storage for résumé improvement data.
+
+    Structures approach to efficiently store résumé evidence for future retrieval.
     """
     if metadata is None:
         metadata = {}
