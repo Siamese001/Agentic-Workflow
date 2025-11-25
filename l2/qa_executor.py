@@ -1,4 +1,8 @@
-"""L2 QA Executor - Pure execution only."""
+"""
+L2 quality assurance execution for résumé validation workflows.
+
+Executes comprehensive QA analysis to ensure résumé accuracy and job alignment.
+"""
 
 from typing import Optional
 from runtime.runtime_utils import invoke_model, SandboxConfig
@@ -8,7 +12,11 @@ from config.meta_profile import MetaProfileSnapshot
 from runtime.observability import record_event, record_exception
 
 class QAExecutor:
-    """Pure QA execution - no planning logic."""
+    """
+    Executes résumé quality assurance validation with optimal model selection.
+    
+    Ensures accuracy, relevance, and professional standards for comprehensive résumé improvement.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.routing_policy = routing_policy
@@ -16,7 +24,11 @@ class QAExecutor:
         self.meta_profile = meta_profile
     
     def execute_qa(self, prompt: str) -> str:
-        """Execute LLM call only - no planning, no orchestration."""
+        """
+        Executes résumé quality assurance analysis using LLM models.
+        
+        Validates résumé content for accuracy, clarity, and job alignment effectiveness.
+        """
         try:
             model = self.routing_policy.select_model(
                 task="qa_execution",
