@@ -22,6 +22,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
+from l5.types import Severity
 from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime
@@ -233,4 +234,5 @@ class SafetyViolation:
     rule: str
     detected_content: str
     confidence: float
+    severity: Severity
     metadata: Dict[str, Any]
