@@ -105,11 +105,10 @@ def test_l1_safety_planning_imports():
 
 
 
-@pytest.mark.skip(reason="cognitive_agents module not yet implemented")
 def test_cognitive_agents_imports():
     """Verify cognitive agents import successfully."""
     try:
-        from cognitive_agents import (  # type: ignore
+        from meta.cognitive_agents import (  # type: ignore
             StrategyLLMAgent,
             DraftingGuild,
             SemanticQAAgent,
