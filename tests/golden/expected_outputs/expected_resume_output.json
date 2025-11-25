@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "description": "Expected outputs for golden dataset samples",
+  "outputs": [
+    {
+      "sample_id": "sample_001",
+      "expected_summary_keywords": ["software", "engineer", "experience"],
+      "expected_skill_count": 5,
+      "expected_quality_score": 0.85
+    },
+    {
+      "sample_id": "sample_002",
+      "expected_summary_keywords": ["data", "scientist", "machine learning"],
+      "expected_skill_count": 7,
+      "expected_quality_score": 0.90
+    }
+  ]
+}
