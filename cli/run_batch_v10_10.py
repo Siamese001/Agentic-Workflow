@@ -1,16 +1,7 @@
 """
-run_batch_v10_10.py
+Batch processing interface for résumé analysis across multiple job applications and candidates.
 
-Batch entrypoint for the v10_10 agentic workflow stack.
-
-Responsibilities:
-- Batch ingestion (multiple jobs / resumes) from JSONL.
-- Construct per-row ExecutionContext indirectly via main_v10_10.run_workflow.
-- Propagate Phase‑3 knobs (HYDE, RRF, council size, correction loops, telemetry routing).
-- Ensure deterministic ordering and deterministic "golden mode".
-- Parallelization with safe concurrency limits.
-- Emit batch-level telemetry summary (G15–G18).
-- Emit JSONL / structured outputs for downstream evaluation.
+Improves résumé processing efficiency by coordinating parallel analysis workflows with consistent quality and telemetry.
 """
 
 from __future__ import annotations
@@ -24,7 +15,7 @@ import sys
 import time
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Dict, Iterable, List, Mapping, MutableMapping, Optional, Sequence, Tuple, cast
+from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, cast
 
 from cli.main_v10_10 import (
     run_workflow,

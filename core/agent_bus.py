@@ -5,7 +5,11 @@ from typing import Dict, List
 
 from core.models.models import AgentMessage
 
-"""Provides a lightweight in-memory channel for agents to share messages so resume steps stay coordinated and important context is not lost between planning, drafting, and review."""
+"""
+Provides in-memory messaging channel for résumé analysis agents to coordinate and share context.
+
+Improves résumé processing by maintaining coherent communication between planning, drafting, and review stages without losing important context.
+"""
 
 
 @dataclass
