@@ -13,7 +13,6 @@ project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 
-@pytest.mark.skip(reason="L1 module not yet implemented")
 def test_l1_imports():
     """Verify all L1 modules import successfully."""
     try:
@@ -26,7 +25,6 @@ def test_l1_imports():
         raise
 
 
-@pytest.mark.skip(reason="L1 strategy planning not yet implemented")
 def test_l1_strategy_planning_imports():
     """Verify strategy planning module imports."""
     try:
@@ -50,7 +48,7 @@ def test_l1_strategy_planning_imports():
         raise
 
 
-@pytest.mark.skip(reason="L1 RAG planning not yet implemented")
+
 def test_l1_rag_planning_imports():
     """Verify RAG planning module imports."""
     try:
@@ -70,7 +68,7 @@ def test_l1_rag_planning_imports():
         raise
 
 
-@pytest.mark.skip(reason="L1 QA planning not yet implemented")
+
 def test_l1_qa_planning_imports():
     """Verify QA planning module imports."""
     try:
@@ -90,7 +88,7 @@ def test_l1_qa_planning_imports():
         raise
 
 
-@pytest.mark.skip(reason="L1 safety planning not yet implemented")
+
 def test_l1_safety_planning_imports():
     """Verify safety planning module imports."""
     try:
@@ -106,7 +104,8 @@ def test_l1_safety_planning_imports():
         raise
 
 
-@pytest.mark.skip(reason="Cognitive agents module not yet implemented")
+
+@pytest.mark.skip(reason="cognitive_agents module not yet implemented")
 def test_cognitive_agents_imports():
     """Verify cognitive agents import successfully."""
     try:
@@ -130,7 +129,7 @@ def test_cognitive_agents_imports():
         raise
 
 
-@pytest.mark.skip(reason="L2 module not yet implemented")
+
 def test_l2_imports():
     """Verify L2 module imports successfully."""
     try:
@@ -146,7 +145,7 @@ def test_l2_imports():
         raise
 
 
-@pytest.mark.skip(reason="L1/L2 modules not yet implemented")
+
 def test_no_circular_dependencies():
     """Verify no circular dependencies exist."""
     try:
@@ -162,7 +161,7 @@ def test_no_circular_dependencies():
         raise
 
 
-@pytest.mark.skip(reason="L1 planning modules not yet implemented")
+
 def test_l1_planning_is_pure():
     """Verify L1 planning functions are pure (no execution)."""
     try:
