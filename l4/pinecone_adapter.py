@@ -14,13 +14,12 @@ Non-responsibilities:
 - Planning what to query (L1)
 - Executing business logic (L2)
 - Orchestration (L3)
-- Safety decisions (L5)
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Sequence
+import hashlib
+from typing import Any, List, Optional, Sequence
 from datetime import datetime, UTC
 import hashlib
 import os

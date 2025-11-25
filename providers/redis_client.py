@@ -7,8 +7,7 @@ and provides a clean interface for cache operations.
 
 from __future__ import annotations
 
-from typing import Optional, Any, Dict, List
-import warnings
+from typing import Optional
 
 try:
     import redis  # type: ignore
