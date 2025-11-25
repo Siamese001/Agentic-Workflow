@@ -176,7 +176,7 @@ class TestDIAtomicityCompliance:
     
     def test_no_direct_imports_in_l2(self):
         """Test that L2 doesn't directly import services."""
-        import l2.agents.execution.execution
+        import l2.execution
         
         # Should import from DI container, not direct services
         source_lines = []

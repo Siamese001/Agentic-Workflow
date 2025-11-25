@@ -24,10 +24,12 @@ class SimpleDIContainer:
     
     def register(self, name: str, service: Any) -> None:
         """
-        Registers service for résumé processing dependency injection.
+        Registers service for résumé processing workflows.
 
         Enables modular service management for comprehensive résumé enhancement operations.
         """
+        if name in self._services:
+            raise ValueError(f"Service '{name}' is already registered")
         self._services[name] = service
     
     def get(self, name: str) -> Any:
@@ -35,10 +37,9 @@ class SimpleDIContainer:
         Retrieves registered service for résumé processing workflows.
 
         Provides reliable dependency resolution for résumé improvement operations.
+        Returns None if service is not registered.
         """
-        if name not in self._services:
-            raise ValueError(f"Service '{name}' not registered")
-        return self._services[name]
+        return self._services.get(name)
     
     def has(self, name: str) -> bool:
         """
@@ -86,7 +87,50 @@ def get_service(name: str) -> Any:
     """
     return get_container().get(name)
 
-def inject_dependencies(**dependencies: Any) -> Callable:
+def inject_dependencies(context: Any) -> Any:
+    """
+    Injects dependencies into a context object for résumé processing workflows.
+    
+    Args:
+        context: The context object to inject services into
+        
+    Returns:
+        The context object with services injected
+    """
+    container = get_container()
+    
+    # Inject common services if they don't already exist
+    if not hasattr(context, 'pinecone_adapter'):
+        from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
+        adapter = container.get(PineconeAdapter)
+        if adapter is None:
+            config = PineconeConfig(
+                api_key="test_key",
+                index_name="test_index",
+                environment="test"
+            )
+            adapter = PineconeAdapter(config)
+            container.register(PineconeAdapter, adapter)
+        context.pinecone_adapter = adapter
+    
+    if not hasattr(context, 'safety_engine'):
+        from l5.policy import SafetyEngine
+        engine = container.get(SafetyEngine)
+        if engine is None:
+            engine = SafetyEngine()
+            container.register(SafetyEngine, engine)
+        context.safety_engine = engine
+    
+    if not hasattr(context, 'state_manager'):
+        # Add state manager if available
+        state_manager = container.get('state_manager')
+        if state_manager:
+            context.state_manager = state_manager
+    
+    return context
+
+
+def inject_dependencies_decorator(**dependencies: Any) -> Callable:
     """
     Creates dependency injection decorator for résumé processing functions.
 
@@ -109,6 +153,26 @@ def initialize_default_services() -> None:
 
     Sets up essential dependencies for comprehensive résumé improvement workflows.
     """
-    # Register default atomic services
-    register_service("state_manager", None)  # Will be injected later
-    register_service("safety_validator", None)  # Will be injected later
+    # Clear existing services to avoid duplicate registration
+    container = get_container()
+    container.clear()
+    
+    # Register PineconeAdapter with default config
+    from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
+    config = PineconeConfig(
+        api_key="test_key",
+        index_name="test_index"
+    )
+    adapter = PineconeAdapter(config)
+    register_service("pinecone_adapter", adapter)
+    register_service(PineconeAdapter, adapter)
+    
+    # Register SafetyEngine
+    from l5.policy import SafetyEngine
+    engine = SafetyEngine()
+    register_service("safety_engine", engine)
+    register_service(SafetyEngine, engine)
+    
+    # Register other default services
+    register_service("state_manager", None)
+    register_service("safety_validator", None)
