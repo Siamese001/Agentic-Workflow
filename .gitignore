@@ -8,3 +8,19 @@ __pycache__/
 # temp extraction folders
 temp_*/
 
+# virtual environments
+.venv/
+venv/
+env/
+
+# IDE and OS noise
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# logs and outputs
+*.log
+outputs/
+logs/
+
