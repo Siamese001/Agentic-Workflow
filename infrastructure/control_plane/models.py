@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Control plane models for résumé processing safety and policy management.
+
+Provides structured data models for comprehensive résumé improvement workflow control.
+"""
 
 from typing import Any, Dict, List, Optional, Literal
 
@@ -8,10 +12,10 @@ from core.models.models import ExecutionProfile
 
 
 class SafetyContext(BaseModel):
-    """Minimal safety context passed into the control plane.
+    """
+    Provides safety context for résumé processing control plane operations.
 
-    This is intentionally generic and avoids importing higher-level
-    orchestration layers. It can be constructed from L5 / DAG outputs.
+    Ensures secure and compliant execution of comprehensive résumé enhancement workflows.
     """
 
     workflow_id: Optional[str] = None
@@ -32,10 +36,10 @@ class SafetyContext(BaseModel):
 
 
 class PolicyRule(BaseModel):
-    """Deterministic policy rule inspected by the rules engine.
+    """
+    Defines policy rule for résumé processing safety enforcement.
 
-    Rules are intentionally simple and data-driven so they can be
-    selected by routing without importing core logic.
+    Enables systematic safety validation for comprehensive résumé improvement operations.
     """
 
     id: str
@@ -60,10 +64,10 @@ class PolicyRule(BaseModel):
 
 
 class PolicyDecision(BaseModel):
-    """Final safety control-plane decision.
+    """
+    Represents final safety decision for résumé processing workflows.
 
-    This is a lightweight sibling of models.PolicyDecisionEvent used
-    by L5 and routing layers.
+    Provides structured control-plane outcomes for comprehensive résumé enhancement operations.
     """
 
     action: Literal["allow", "deny", "revise", "escalate"]

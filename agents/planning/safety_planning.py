@@ -1,4 +1,8 @@
-"""Safety planning module."""
+"""
+Safety planning for résumé improvement validation.
+
+Creates structured plans to ensure professional standards and compliance in résumé enhancement.
+"""
 
 from __future__ import annotations
 
@@ -16,7 +20,11 @@ from prompts.builders.prompt_builder import PromptInstance, build_safety_prompt
 
 @dataclass(frozen=True)
 class SafetyPlan:
-    """Pure planning artifact for safety review."""
+    """
+    Defines safety validation structure for résumé content.
+
+    Ensures professional standards and compliance in résumé improvement recommendations.
+    """
 
     prompt: PromptInstance
 
@@ -29,7 +37,11 @@ def plan_safety_review(
     rag: RAGResult,
     qa: QAResult,
 ) -> SafetyPlan:
-    """Generate a pure safety review plan."""
+    """
+    Creates comprehensive safety plan for résumé validation.
+
+    Structures evaluation approach to ensure professional résumé enhancement standards.
+    """
     prompt = build_safety_prompt(
         plan=safety_plan,
         ctx=ctx,

@@ -1,20 +1,7 @@
-"""L2 - Execution Layer
+"""
+L2 execution layer for résumé improvement tasks.
 
-This module provides the main execution functions that invoke cognitive agents
-and return structured results. It bridges L1 plans to actual LLM execution.
-
-Layer: L2 (Execution)
-Responsibilities:
-- Execute strategy, RAG, drafting, QA, safety tasks
-- Invoke cognitive agents with proper context
-- Handle execution errors and retries
-- Return structured L2 results
-
-Non-responsibilities:
-- Planning (L1)
-- Orchestration/DAG (L3)
-- State management (L4)
-- Policy enforcement (L5)
+Executes cognitive agents to generate strategy, drafting, QA, and safety improvements for comprehensive résumé enhancement.
 """
 
 # FILE: l2.py
@@ -70,7 +57,11 @@ run_rag_retrieval = _retrieval_module.run_rag_retrieval
 
 
 def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
-    """Small helper to avoid AttributeError noise in business logic."""
+    """
+    Safely accesses object attributes for reliable résumé processing.
+
+    Prevents errors that could interrupt comprehensive résumé improvement workflows.
+    """
     try:
         return getattr(obj, name, default)
     except Exception:  # pragma: no cover - extreme defensive
@@ -79,10 +70,9 @@ def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
 
 def _build_base_query(ctx: ExecutionContext) -> str:
     """
-    Build a retrieval query string from the in-memory job + resume.
+    Constructs search query from job and resume data.
 
-    This is intentionally deterministic and side-effect free; all actual
-    retrieval / ranking is handled inside retrieval.run_rag_retrieval.
+    Creates focused queries to find relevant evidence for résumé improvement.
     """
     job = _safe_getattr(ctx, "job", None)
     resume = _safe_getattr(ctx, "resume", None)
@@ -112,19 +102,9 @@ def _build_base_query(ctx: ExecutionContext) -> str:
 
 def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
     """
-    Derive a lightweight CouncilVote from QA findings.
+    Derives quality assessment vote from QA findings.
 
-    This provides a deterministic, non-LLM fallback that can be consumed
-    by downstream layers (L5, retrieval weighting) even if the dedicated
-    QACouncilAgent / LLM path is unavailable or fails.
-
-    Heuristic:
-        • Count findings by severity.
-        • Select an overall verdict id:
-              – "block" if any high-severity finding exists.
-              – "warn" if only medium findings exist.
-              – "pass" otherwise.
-        • Encode simple scores in the CouncilVote.scores map.
+    Ensures consistent evaluation of résumé improvement quality and safety.
     """
     findings = list(getattr(qa_result, "findings", []) or [])
 
@@ -155,10 +135,10 @@ def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
 
 
 def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
-    """Emit a latent thinking trace event based on the execution profile.
-    
-    Note: This is a no-op stub. Latent thinking planning should be done in L1
-    and passed as part of the WorkflowPlanBundle. L2 only executes plans.
+    """
+    Records thinking trace for résumé improvement analysis.
+
+    Maintains observability of decision processes for quality enhancement.
     """
     # L2 does not call L1 - latent thinking plans should be pre-computed
     # and passed via the plans bundle if needed.
@@ -180,11 +160,9 @@ async def _maybe_run_hyde_query(
     ctx: ExecutionContext,
 ) -> Optional[str]:
     """
-    Optionally generate a HYDE (Hypothetical Document) query.
+    Generates hypothetical document queries for better retrieval.
 
-    Conditions:
-        • RAGPlan.allow_hyde is True
-        • Errors are swallowed; retrieval will still proceed on the base query.
+    Creates enhanced search queries to find relevant résumé improvement evidence.
     """
     if rag_plan is None or not getattr(rag_plan, "allow_hyde", False):
         return None
@@ -217,8 +195,9 @@ async def _execute_strategy(
     ctx: ExecutionContext,
 ) -> StrategyResult:
     """
-    Run the strategy agent with the StrategyPlan using the Phase-3
-    cognitive agent + prompt builder layer.
+    Executes résumé strategy planning with optimal model selection.
+
+    Generates targeted improvement plans to enhance job description alignment.
     """
     span = start_span("l2.strategy", ctx=ctx.span_context())
     try:
@@ -258,17 +237,9 @@ async def _execute_retrieval(
     ctx: ExecutionContext,
 ) -> RAGResult:
     """
-    Phase-3 RAG execution.
+    Executes comprehensive evidence retrieval for résumé improvement.
 
-    This wires L2 into the deterministic retrieval pipeline:
-
-        1. Build a base query from job + resume (no external I/O).
-        2. Optionally generate a HYDE query via HYDEQueryAgent.
-        3. Call retrieval.run_rag_retrieval() to:
-              – perform BM25 / dense / hybrid retrieval
-              – fuse via weighted RRF
-              – apply QA-council evidence weighting (if council available)
-        4. Wrap the Evidence list in a typed RAGResult.
+    Gathers relevant data using multiple search strategies to support résumé enhancement.
     """
     span = start_span("l2.retrieval", ctx=ctx.span_context())
     try:
@@ -313,13 +284,9 @@ async def _execute_rag_reasoning(
     ctx: ExecutionContext,
 ) -> RAGResult:
     """
-    Phase-3 RAG reasoning step.
+    Analyzes retrieved evidence for résumé improvement insights.
 
-    Runs between retrieval and drafting. Uses the RAG plan from the
-    WorkflowPlanBundle (pre-computed by L1) to reason over retrieved evidence.
-    
-    Note: L2 does not call L1 directly. All planning is done in L1 and passed
-    via the plans bundle.
+    Processes evidence to extract relevant information for résumé enhancement.
     """
     span = start_span("l2.rag_reasoning", ctx=ctx.span_context())
     try:

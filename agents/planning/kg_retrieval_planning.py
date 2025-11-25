@@ -1,14 +1,14 @@
-"""KG Retrieval Planning - Multi-hop Knowledge Graph Query Planning
+"""
+Knowledge graph retrieval planning for résumé processing workflows.
 
-This module implements L1 planning for multi-hop knowledge graph retrieval,
-creating execution plans for graph traversal and fact retrieval.
+Implements L1 planning for multi-hop knowledge graph retrieval to support comprehensive résumé enhancement operations.
 
 Layer: L1 (Planning)
 Responsibilities:
-- Plan multi-hop KG traversal paths
-- Decompose complex queries into traversal steps
-- Determine hop count and entity filters
-- Plan temporal constraint application
+- Plan multi-hop KG traversal paths for résumé data retrieval
+- Decompose complex résumé queries into traversal steps
+- Determine hop count and entity filters for résumé matching
+- Plan temporal constraint application for accurate résumé information
 
 Non-responsibilities:
 - Graph traversal execution (L2)
@@ -26,14 +26,14 @@ from enum import Enum
 
 
 class HopDirection(str, Enum):
-    """Direction of traversal in knowledge graph."""
+    """Direction of traversal in résumé processing knowledge graph."""
     OUTGOING = "outgoing"    # Subject -> Object
     INCOMING = "incoming"    # Object <- Subject
     BIDIRECTIONAL = "both"   # Both directions
 
 
 class QueryType(str, Enum):
-    """Type of KG query."""
+    """Type of résumé processing KG query."""
     ENTITY_FACTS = "entity_facts"           # All facts about an entity
     PATH_FINDING = "path_finding"           # Find path between entities
     NEIGHBORHOOD = "neighborhood"           # N-hop neighborhood
@@ -43,7 +43,7 @@ class QueryType(str, Enum):
 
 @dataclass
 class HopSpec:
-    """Specification for a single hop in multi-hop traversal."""
+    """Specification for a single hop in résumé processing multi-hop traversal."""
     
     hop_number: int
     direction: HopDirection
@@ -63,7 +63,7 @@ class HopSpec:
 
 @dataclass
 class KGQueryPlan:
-    """Plan for knowledge graph query execution."""
+    """Plan for résumé processing knowledge graph query execution."""
     
     query_id: str
     query_type: QueryType
@@ -95,7 +95,7 @@ class KGQueryPlan:
 
 @dataclass
 class PathTemplate:
-    """Template for a known traversal pattern."""
+    """Template for résumé processing known traversal pattern."""
     
     name: str
     description: str
@@ -107,10 +107,10 @@ class PathTemplate:
 
 
 class KGRetrievalPlanner:
-    """Planner for multi-hop knowledge graph retrieval.
+    """
+    Planner for résumé processing multi-hop knowledge graph retrieval.
     
-    This planner creates execution plans for KG queries,
-    decomposing complex queries into traversal steps.
+    Creates execution plans for KG queries in résumé enhancement workflows.
     """
     
     def __init__(self):
@@ -204,20 +204,20 @@ class KGRetrievalPlanner:
         template_name: Optional[str] = None,
         context: Optional[Dict[str, Any]] = None,
     ) -> KGQueryPlan:
-        """Create a query plan for KG retrieval.
+        """Create a query plan for résumé processing KG retrieval.
         
         Args:
-            query_type: Type of query
-            start_entities: Starting entities for traversal
-            target_entities: Target entities (for path finding)
-            predicates: Specific predicates to traverse
-            max_hops: Maximum number of hops
-            temporal_constraint: Optional temporal filter
-            template_name: Optional template to use
-            context: Additional context
+            query_type: Type of résumé processing query
+            start_entities: Starting entities for résumé data traversal
+            target_entities: Target entities for résumé path finding
+            predicates: Specific predicates to traverse for résumé matching
+            max_hops: Maximum number of hops for résumé data retrieval
+            temporal_constraint: Optional temporal filter for accurate résumé information
+            template_name: Optional template to use for résumé processing patterns
+            context: Additional context for résumé enhancement workflows
             
         Returns:
-            KGQueryPlan for execution
+            KGQueryPlan for résumé processing execution
         """
         # Generate query ID
         query_id = f"kg_query_{datetime.now(UTC).strftime('%Y%m%d%H%M%S%f')}"

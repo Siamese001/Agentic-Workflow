@@ -31,6 +31,11 @@ from cli.main_v10_10 import (
 
 @dataclass(frozen=True)
 class _GlobalDefaults:
+    """
+    Defines global configuration defaults for batch résumé processing.
+
+    Ensures consistent quality and parameters across multiple résumé improvement jobs.
+    """
     execution_profile_name: str
     routing_policy_name: str
     sandbox_profile_name: str
@@ -46,10 +51,9 @@ class _GlobalDefaults:
 @dataclass(frozen=True)
 class BatchJobConfig:
     """
-    Immutable configuration for a single batch job.
+    Configures individual batch job for résumé processing.
 
-    All Phase‑3 knobs are fully resolved per job so that downstream execution
-    can be done deterministically and independently.
+    Ensures deterministic and independent execution of each résumé improvement task.
     """
 
     batch_id: str
@@ -73,10 +77,9 @@ class BatchJobConfig:
 @dataclass
 class BatchJobResult:
     """
-    Result for a single batch job.
+    Captures results from individual résumé processing jobs.
 
-    The `output` field is whatever run_workflow returns (ideally a
-    models.WorkflowOutput), and is normalized for JSON when writing JSONL.
+    Provides comprehensive outcome tracking for batch résumé improvement workflows.
     """
 
     job_config: BatchJobConfig
@@ -89,10 +92,9 @@ class BatchJobResult:
 @dataclass
 class BatchTelemetrySummary:
     """
-    Aggregate telemetry summary for a batch (G15–G18).
+    Summarizes batch processing metrics for résumé workflows.
 
-    This captures simple but useful metrics that can be used for monitoring,
-    regression testing, and cost / performance analyses.
+    Enables monitoring and analysis of résumé improvement batch performance.
     """
 
     batch_id: str
@@ -113,6 +115,11 @@ class BatchTelemetrySummary:
 
 
 def _parse_rrf_weights(pairs: Optional[Sequence[str]]) -> Optional[Dict[str, float]]:
+    """
+    Parses RRF weight parameters for batch résumé processing.
+
+    Configures retrieval strategy weights for optimal batch résumé improvement results.
+    """
     if not pairs:
         return None
     weights: Dict[str, float] = {}
@@ -136,6 +143,11 @@ def _normalize_rrf_weights(
     value: Optional[Mapping[str, Any]],
     default: Optional[Mapping[str, float]],
 ) -> Optional[Dict[str, float]]:
+    """
+    Normalizes RRF weights for consistent batch résumé processing.
+
+    Ensures proper weight formatting across multiple résumé improvement jobs.
+    """
     if value is None:
         if default is None:
             return None
@@ -159,6 +171,11 @@ def _enum_from_row(
     enum_cls: Any,
     default_value: Any,
 ) -> Any:
+    """
+    Extracts enum values from batch processing data rows.
+
+    Ensures proper configuration parsing for résumé improvement batch jobs.
+    """
     if key not in row:
         return default_value
     raw = row[key]
@@ -171,6 +188,11 @@ def _enum_from_row(
 
 
 def _bool_from_row(row: Mapping[str, Any], key: str, default: bool) -> bool:
+    """
+    Extracts boolean values from batch processing data rows.
+
+    Provides robust parsing for résumé improvement batch configuration parameters.
+    """
     if key not in row:
         return default
     val = row[key]
@@ -189,12 +211,14 @@ def _bool_from_row(row: Mapping[str, Any], key: str, default: bool) -> bool:
 
 def _extract_user_request(row: Mapping[str, Any]) -> Any:
     """
-    Derive the user_request payload from a JSONL row.
+    Extracts résumé improvement request from batch data row.
 
-    Priority:
-    - row["user_request"]
-    - row["prompt"]
-    - row["input"]
+    Prioritizes user input fields for comprehensive résumé enhancement processing.
+    """
+    # Priority:
+    # - row["user_request"]
+    # - row["prompt"]
+    # - row["input"]
     - otherwise: the full row object itself.
     """
     if "user_request" in row:
@@ -208,10 +232,9 @@ def _extract_user_request(row: Mapping[str, Any]) -> Any:
 
 def _clamp_max_workers(requested: int, golden_mode: bool) -> int:
     """
-    Enforce safe concurrency limits and deterministic golden mode behavior.
+    Ensures safe concurrency limits for batch résumé processing.
 
-    - If golden_mode is True, we always return 1 worker.
-    - Otherwise, we clamp requested to a reasonable bound based on CPU.
+    Optimizes worker count for efficient and stable résumé improvement workflows.
     """
     if golden_mode:
         return 1
@@ -224,10 +247,9 @@ def _clamp_max_workers(requested: int, golden_mode: bool) -> int:
 
 def _read_jsonl(path: str) -> List[Mapping[str, Any]]:
     """
-    Read a JSONL file or stdin ("-") into a list of dict rows.
+    Reads batch job data from JSONL files for résumé processing.
 
-    Non-mapping rows are wrapped as {"value": row} to keep a stable schema.
-    Lines starting with "#" are treated as comments and ignored.
+    Loads and validates input data for comprehensive résumé improvement workflows.
     """
     if path in ("-", ""):
         stream = sys.stdin
@@ -261,8 +283,9 @@ def _read_jsonl(path: str) -> List[Mapping[str, Any]]:
 
 def _write_jsonl(path: str, rows: Iterable[Mapping[str, Any]]) -> None:
     """
-    Write an iterable of JSON-serializable rows to JSONL, using deterministic
-    formatting (sorted keys, compact separators).
+    Writes batch résumé processing results to JSONL format.
+
+    Ensures deterministic output formatting for consistent résumé improvement tracking.
     """
     if path in ("-", ""):
         out = sys.stdout
@@ -283,8 +306,9 @@ def _write_jsonl(path: str, rows: Iterable[Mapping[str, Any]]) -> None:
 
 def _write_json(path: Optional[str], obj: Mapping[str, Any]) -> None:
     """
-    Write a single JSON object to a path. If path is None, do nothing.
-    If path is "-", write to stdout.
+    Writes résumé processing summary data to JSON format.
+
+    Provides structured output for batch résumé improvement analysis and reporting.
     """
     if path is None:
         return
@@ -307,14 +331,9 @@ def _write_json(path: Optional[str], obj: Mapping[str, Any]) -> None:
 
 def _normalize_output(output: Any) -> Any:
     """
-    Convert a WorkflowOutput (or arbitrary Python object) into a JSON-safe
-    structure for JSONL emission.
+    Converts résumé processing output to JSON-safe format.
 
-    The preference order:
-    - output.to_dict() if available
-    - dataclasses.asdict(output) if dataclass
-    - mapping / sequence / primitive used as-is
-    - fallback to repr(output)
+    Ensures consistent data serialization for batch résumé improvement results.
     """
     if output is None:
         return None
@@ -357,8 +376,9 @@ def _build_job_config(
     defaults: _GlobalDefaults,
 ) -> BatchJobConfig:
     """
-    Construct per-job configuration, resolving overrides from the JSONL row
-    on top of the global defaults (G1–G3, G11–G14).
+    Builds job configuration for individual résumé processing tasks.
+
+    Resolves parameters from global defaults and job-specific overrides for optimal résumé improvement.
     """
     # Ensure we have a plain dict for stable behavior.
     row: Dict[str, Any] = dict(row_raw)
@@ -438,10 +458,9 @@ def _execute_job(
     golden_mode: bool,
 ) -> BatchJobResult:
     """
-    Execute a single job via main_v10_10.run_workflow.
+    Executes individual résumé processing job with comprehensive tracking.
 
-    The ExecutionContext is constructed inside run_workflow; we attach
-    per-job metadata (batch_id, job_id, etc.) via extra_workflow_metadata.
+    Runs the full workflow for each résumé improvement task with proper error handling and timing.
     """
     start = time.monotonic()
     try:
@@ -494,7 +513,9 @@ def _build_batch_summary(
     golden_mode: bool,
 ) -> BatchTelemetrySummary:
     """
-    Compute aggregate batch metrics (G15–G18).
+    Computes comprehensive batch metrics for résumé processing workflows.
+
+    Provides detailed performance and quality analytics for batch résumé improvement operations.
     """
     total_jobs = len(results)
     success_count = sum(1 for r in results if r.success)
@@ -550,35 +571,9 @@ def run_batch(
     base_workflow_id: Optional[str] = None,
 ) -> Tuple[Sequence[BatchJobResult], BatchTelemetrySummary]:
     """
-    Run a batch of jobs through the L1→L5 workflow via main_v10_10.run_workflow.
+    Executes comprehensive batch résumé processing workflows.
 
-    Parameters
-    ----------
-    jobs:
-        A sequence of JSON-like mapping rows representing jobs. Each row may
-        override Phase‑3 knobs and profiles using the same field names used
-        by main_v10_10.run_workflow (e.g. "execution_profile_name", etc.).
-
-    execution_profile_name, routing_policy_name, sandbox_profile_name,
-    meta_profile_name:
-        Global defaults for configuration profiles (G1, G2).
-
-    hyde_enabled, rrf_strategy, rrf_weights, council_size,
-    correction_loop_max_iterations, telemetry_routing_mode:
-        Global defaults for Phase‑3 knobs (G3–G10, G11–G14, G15–G18).
-
-    max_workers:
-        Upper bound on parallel workers (ThreadPoolExecutor). Actual worker
-        count is clamped for safety via _clamp_max_workers.
-
-    golden_mode:
-        If True, concurrency is forced to 1 to maximize determinism, and a
-        "golden_mode" flag is propagated in workflow metadata.
-
-    base_workflow_id:
-        Optional base ID used to derive per-job workflow IDs. If omitted,
-        a UUID4 is used as the batch_id and per-job workflow IDs are derived
-        from it.
+    Orchestrates multiple résumé improvement jobs with configurable parameters and performance tracking.
     """
     batch_id = base_workflow_id or str(uuid.uuid4())
 
@@ -679,6 +674,11 @@ def run_batch(
 
 
 def _parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    """
+    Parses command-line arguments for batch résumé processing workflows.
+
+    Configures batch execution parameters for comprehensive résumé improvement operations.
+    """
     parser = argparse.ArgumentParser(
         description="Run a batch of v10_10 workflows through the L1–L5 pipeline.",
     )

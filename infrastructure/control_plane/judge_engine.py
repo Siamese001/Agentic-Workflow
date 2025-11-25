@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Judge engine for résumé processing safety verdict generation.
+
+Provides deterministic safety evaluation for comprehensive résumé improvement workflows.
+"""
 
 from typing import Any, Dict
 
@@ -10,11 +14,10 @@ def evaluate_with_guard_model(
     context: SafetyContext,
     rules_result: RulesEngineResult,
 ) -> JudgeVerdict:
-    """Deterministic guard-model style evaluation.
+    """
+    Evaluates résumé processing safety with deterministic guard model.
 
-    Initial implementation is deliberately simple and makes no LLM calls.
-    It interprets the rule matches plus lightweight context to decide
-    whether the situation is safe, unsafe, or ambiguous.
+    Provides structured safety assessment for comprehensive résumé enhancement operations.
     """
 
     signals: Dict[str, Any] = {

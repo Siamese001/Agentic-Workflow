@@ -1,20 +1,20 @@
-"""L2 Vector search execution layer.
+"""
+Vector search execution layer for résumé processing workflows.
 
-REFACTORED: Now uses L4 PineconeAdapter instead of direct Pinecone access.
-This enforces proper layer boundaries (L2 execution should not directly
-access external services - that's L4's responsibility).
+Executes vector search operations to support comprehensive résumé enhancement through semantic retrieval.
 
 Layer: L2 (Execution)
 Responsibilities:
-- Execute vector search operations based on L1 plans
-- Transform L4 vector results into L2 execution results
-- Handle execution errors
+- Execute vector search operations based on L1 plans for résumé data retrieval
+- Transform L4 vector results into L2 execution results for résumé enhancement
+- Handle execution errors in résumé processing vector operations
 
 Non-responsibilities:
 - Planning queries (L1)
 - Managing vector store state (L4)
 - Orchestration (L3)
 """
+
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
@@ -23,24 +23,29 @@ from l4 import PineconeAdapter, VectorQueryResult
 
 @dataclass
 class SearchResult:
-    """Container for vector search results (L2 execution result)."""
+    """
+    Container for résumé processing vector search results (L2 execution result).
+
+    Provides structured data retrieval results for comprehensive résumé enhancement workflows.
+    """
     id: str
     score: float
     metadata: Dict[str, Any]
 
 
 class VectorSearchExecutor:
-    """L2 executor for vector search operations.
+    """
+    L2 executor for résumé processing vector search operations.
     
-    This executor receives search plans from L1 and executes them via L4's
-    PineconeAdapter. It does NOT directly access Pinecone or manage state.
+    Executes search plans from L1 via L4's PineconeAdapter for résumé enhancement workflows.
     """
     
     def __init__(self, pinecone_adapter: PineconeAdapter):
-        """Initialize with L4 Pinecone adapter.
+        """
+        Initializes vector search executor for résumé processing workflows.
         
         Args:
-            pinecone_adapter: L4 PineconeAdapter instance
+            pinecone_adapter: L4 PineconeAdapter instance for résumé data retrieval
         """
         self.adapter = pinecone_adapter
     
@@ -52,20 +57,20 @@ class VectorSearchExecutor:
         metadata_filter: Optional[Dict[str, Any]] = None,
         score_threshold: Optional[float] = None,
     ) -> List[SearchResult]:
-        """Execute a vector search operation.
+        """
+        Executes vector search operation for résumé processing data retrieval.
         
-        This is the main L2 execution method that takes a search plan
-        and executes it via L4.
+        Main L2 execution method that takes search plan and executes via L4 for résumé enhancement.
         
         Args:
-            namespace: Target namespace (from L1 plan)
-            query_text: Query text (from L1 plan)
-            top_k: Number of results (from L1 plan)
-            metadata_filter: Optional metadata filters (from L1 plan)
-            score_threshold: Optional score threshold (from L1 plan)
+            namespace: Target namespace for résumé data (from L1 plan)
+            query_text: Query text for résumé search (from L1 plan)
+            top_k: Number of results for résumé matching (from L1 plan)
+            metadata_filter: Optional metadata filters for résumé data (from L1 plan)
+            score_threshold: Optional score threshold for résumé relevance (from L1 plan)
             
         Returns:
-            List of SearchResult objects (L2 execution results)
+            List of SearchResult objects for résumé enhancement workflows (L2 execution results)
         """
         # Delegate to L4 adapter
         l4_results: List[VectorQueryResult] = self.adapter.query_by_text(
@@ -93,11 +98,14 @@ class VectorSearchExecutor:
         record_type: str = "doc",
         metadata_list: Optional[List[Dict[str, Any]]] = None,
     ) -> List[str]:
-        """Execute a vector upsert operation.
+        """
+        Executes vector upsert operation for résumé processing data storage.
         
         Args:
-            namespace: Target namespace
-            texts: Text content to upsert
+            namespace: Target namespace for résumé data storage
+            texts: Text content to upsert for résumé enhancement
+            record_type: Type of résumé processing records
+            metadata_list: Optional metadata for résumé data organization
             record_type: Type prefix for IDs
             metadata_list: Optional metadata for each text
             

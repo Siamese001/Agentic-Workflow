@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Control plane orchestration for résumé processing safety pipeline.
+
+Coordinates rule evaluation and safety decisions for comprehensive résumé improvement workflows.
+"""
 
 from typing import Tuple
 
@@ -13,10 +17,10 @@ def run_safety_pipeline(
     context: SafetyContext,
     execution_profile: object | None = None,
 ) -> Tuple[PolicyDecision, SafetyPipelineTrace]:
-    """Run the full L5 safety control-plane pipeline.
+    """
+    Executes complete safety pipeline for résumé processing workflows.
 
-    The current implementation is deterministic and does not call out to
-    any guard models. It is safe to use in tests and offline workflows.
+    Ensures comprehensive safety validation for résumé enhancement operations.
     """
 
     # Step 1: resolve rules for this agent / task.

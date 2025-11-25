@@ -105,9 +105,9 @@ class Phase3Knobs:
 
 def _resolve_execution_profile(name: str) -> ExecutionProfile:
     """
-    Resolve an ExecutionProfile by name using config_profiles_v10_10.
+    Resolves résumé processing profile by name.
 
-    Deterministic configuration is enforced via profile names (G1).
+    Ensures optimal configuration strategy for comprehensive résumé improvement scenarios.
     """
     if _config_profiles is None:
         raise RuntimeError("config_profiles_v10_10 module is required but missing")
@@ -125,7 +125,9 @@ def _resolve_execution_profile(name: str) -> ExecutionProfile:
 
 def _resolve_routing_policy(name: str) -> RoutingPolicy:
     """
-    Resolve a RoutingPolicy by name using config_profiles_v10_10 (G29–G33).
+    Resolves model routing strategy for résumé analysis.
+
+    Optimizes model selection for different résumé improvement requirements.
     """
     if _config_profiles is None:
         raise RuntimeError("config_profiles_v10_10 module is required but missing")
@@ -142,7 +144,9 @@ def _resolve_routing_policy(name: str) -> RoutingPolicy:
 
 def _resolve_sandbox_config(name: str) -> SandboxConfig:
     """
-    Resolve a SandboxConfig by name using config_profiles_v10_10.
+    Resolves execution sandbox configuration for résumé processing.
+
+    Ensures secure and controlled environment for résumé improvement operations.
     """
     if _config_profiles is None:
         raise RuntimeError("config_profiles_v10_10 module is required but missing")
@@ -159,7 +163,9 @@ def _resolve_sandbox_config(name: str) -> SandboxConfig:
 
 def _resolve_meta_profile_snapshot(name: str) -> MetaProfileSnapshot:
     """
-    Resolve MetaProfileSnapshot using meta_profile module (G2).
+    Resolves metadata profile for résumé analysis configuration.
+
+    Provides comprehensive context for optimal résumé enhancement processing.
     """
     if _meta_profile is None:
         raise RuntimeError("meta_profile module is required but missing")
@@ -189,10 +195,9 @@ def _build_workflow_metadata(
     extra: Optional[Mapping[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
-    Build a rich metadata envelope for the workflow (G24–G28).
+    Builds comprehensive metadata for résumé improvement workflow.
 
-    This metadata is attached to the ExecutionContext and should be treated
-    as the single source of truth for Phase‑3 knobs inside L1–L5.
+    Ensures proper configuration tracking for optimal résumé enhancement processing.
     """
     metadata: Dict[str, Any] = {
         "workflow_id": workflow_id,
@@ -213,10 +218,9 @@ def _build_workflow_metadata(
 
 def _summarize_user_request(user_request: Any) -> Any:
     """
-    Lightweight, non-lossy summary of the user request.
+    Creates lightweight summary of résumé improvement request.
 
-    We avoid heavy transformation here to keep determinism and make sure
-    this function is cheap enough to be always-on.
+    Preserves essential information while maintaining efficient metadata tracking.
     """
     if isinstance(user_request, str):
         # Truncate to a safe length for metadata; full text remains elsewhere.
@@ -251,11 +255,9 @@ def _build_execution_context(
     extra_workflow_metadata: Optional[Mapping[str, Any]] = None,
 ) -> ExecutionContext:
     """
-    Construct an ExecutionContext using Phase‑0 types (G1, G2, G27, G34).
+    Constructs execution context for résumé improvement workflow.
 
-    Prefers a canonical builder from runtime_utils if available; otherwise
-    falls back to a simple, well‑structured dict that is compatible with
-    typical usages in L1–L5.
+    Ensures proper configuration and metadata for comprehensive résumé enhancement processing.
     """
     routing_policy = _resolve_routing_policy(routing_policy_name)
     sandbox_config = _resolve_sandbox_config(sandbox_profile_name)
@@ -326,10 +328,9 @@ def _build_execution_context(
 
 def _discover_layer_fn(module: Any, candidates: Sequence[str]) -> Callable[..., Any]:
     """
-    Find the first callable in `module` whose name appears in `candidates`.
+    Discovers appropriate layer function for résumé processing workflow.
 
-    This allows the entrypoint to be robust to minor naming differences
-    while still enforcing the L1–L5 sequencing contract.
+    Ensures robust layer coordination across the résumé improvement pipeline.
     """
     if module is None:
         raise RuntimeError("Layer module is missing")
@@ -369,31 +370,9 @@ def run_workflow(
     extra_workflow_metadata: Optional[Mapping[str, Any]] = None,
 ) -> WorkflowOutput:
     """
-    Execute a single workflow through the L1→L2→L3→L4→L5 stack and return a
-    strongly typed WorkflowOutput (or equivalent object produced by L5).
+    Executes comprehensive résumé improvement workflow.
 
-    Parameters
-    ----------
-    user_request:
-        Arbitrary input payload representing the user's request. Downstream
-        layers may interpret this as a prompt, conversation turn, etc.
-
-    execution_profile_name, routing_policy_name, sandbox_profile_name, meta_profile_name:
-        Deterministic handles referencing configuration profiles (G1, G2, G27).
-
-    hyde_enabled, rrf_strategy, rrf_weights, council_size,
-    correction_loop_max_iterations, telemetry_routing_mode:
-        Phase‑3 knobs (G3–G10, G11–G14, G15–G18). These are persisted into the
-        ExecutionContext metadata so all layers can consult them.
-
-    workflow_id:
-        Optional external identifier. If not provided, a UUID4 is generated.
-
-    telemetry_client:
-        Optional telemetry sink; if omitted, layers fall back to their defaults.
-
-    extra_workflow_metadata:
-        Optional extra key-value pairs injected into workflow metadata.
+    Orchestrates all processing layers to deliver optimal résumé enhancement results.
     """
     knobs = Phase3Knobs(
         hyde_enabled=hyde_enabled,
@@ -484,6 +463,11 @@ def run_workflow(
 # ---------------------------------------------------------------------------
 
 def _parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
+    """
+    Parses command-line arguments for résumé improvement workflow.
+
+    Configures processing parameters for optimal résumé enhancement execution.
+    """
     parser = argparse.ArgumentParser(
         description="Run a single v10_10 workflow job through the L1–L5 pipeline.",
     )
@@ -571,6 +555,11 @@ def _parse_args(argv: Optional[Sequence[str]] = None) -> argparse.Namespace:
 
 
 def _parse_rrf_weights(pairs: Optional[Sequence[str]]) -> Optional[Dict[str, float]]:
+    """
+    Parses RRF weight parameters for résumé evidence fusion.
+
+    Configures retrieval strategy weights for optimal résumé improvement results.
+    """
     if not pairs:
         return None
     weights: Dict[str, float] = {}
@@ -592,9 +581,9 @@ def _parse_rrf_weights(pairs: Optional[Sequence[str]]) -> Optional[Dict[str, flo
 
 def main(argv: Optional[Sequence[str]] = None) -> None:
     """
-    CLI wrapper intended for manual experiments and golden runs.
+    Command-line interface for résumé improvement workflow execution.
 
-    For programmatic usage, prefer calling run_workflow() directly.
+    Provides accessible entry point for comprehensive résumé enhancement processing.
     """
     args = _parse_args(argv)
     rrf_weights = _parse_rrf_weights(args.rrf_weight)

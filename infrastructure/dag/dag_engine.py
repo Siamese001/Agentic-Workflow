@@ -1,9 +1,7 @@
-from __future__ import annotations
+"""
+DAG engine compatibility shim for résumé processing workflows.
 
-"""Backward-compatible DAG engine shim.
-
-This module preserves the original infra.dag_engine surface by
-re-exporting the new flat dag_models and dag_executor modules.
+Preserves backward compatibility while supporting comprehensive résumé enhancement operations.
 """
 
 from .dag_models import Node, Edge, Graph  # noqa: F401

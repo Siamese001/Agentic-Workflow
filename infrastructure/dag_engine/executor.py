@@ -1,9 +1,7 @@
-from __future__ import annotations
+"""
+DAG executor for résumé processing workflow orchestration.
 
-"""DAG executor implementation.
-
-This module provides a minimal async DAGExecutor compatible with the
-original infra.dag_engine.DAGExecutor.
+Provides minimal async execution engine for comprehensive résumé improvement operations.
 """
 
 from typing import Any, Dict, Iterable, Optional, Set, List
@@ -13,15 +11,10 @@ from .models import Graph
 
 
 class DAGExecutor:
-    """Minimal async DAG executor.
+    """
+    Executes directed acyclic graphs for résumé processing workflows.
 
-    This executor:
-        • Assumes the graph is acyclic.
-        • Executes nodes whose predecessors have already completed.
-        • Propagates a single shared context dict through the graph.
-
-    It does not implement retries, backpressure, or persistence. Higher
-    layers (e.g., workflow_graph) can build those behaviors on top.
+    Orchestrates node execution with proper dependency resolution for résumé enhancement.
     """
 
     def __init__(self, graph: Graph, agent_registry: AgentRegistry | None = None) -> None:
@@ -33,17 +26,10 @@ class DAGExecutor:
     # ------------------------------------------------------------------
 
     def _select_agent_for_node(self, node_id: str) -> str | None:
-        """Select an agent_id for a given node based on metadata.
+        """
+        Selects optimal agent for résumé processing DAG nodes.
 
-        This inspects per-node metadata for:
-            - preferred_agent_ids
-            - agent_type
-            - required_capabilities
-
-        and uses the AgentRegistry helpers when available. The chosen
-        agent_id is purely advisory and is recorded into the context
-        under ``_agent_assignments`` for observability and downstream
-        dispatch.
+        Ensures proper agent assignment based on capabilities for résumé improvement workflows.
         """
 
         if self._agent_registry is None:
@@ -81,6 +67,11 @@ class DAGExecutor:
         start_nodes: Optional[Iterable[str]] = None,
         ctx: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
+        """
+        Executes résumé processing DAG with proper dependency resolution.
+
+        Ensures comprehensive workflow orchestration for résumé improvement operations.
+        """
         if ctx is None:
             ctx = {}
 

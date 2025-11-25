@@ -1,14 +1,14 @@
-"""Triplet Extraction Executor - Extract Knowledge Graph Triplets from Text
+"""
+Triplet extraction executor for résumé processing knowledge graphs.
 
-This module implements the L2 executor for triplet extraction,
-transforming unstructured text into structured knowledge graph triplets.
+Implements L2 executor for transforming unstructured text into structured knowledge graph triplets for résumé enhancement.
 
 Layer: L2 (Execution)
 Responsibilities:
-- Execute triplet extraction based on L1 plans
-- Parse LLM outputs into structured triplets
-- Perform entity linking on extracted entities
-- Return extraction results
+- Execute triplet extraction based on L1 plans for résumé data processing
+- Parse LLM outputs into structured triplets for résumé knowledge graphs
+- Perform entity linking on extracted entities for résumé enhancement
+- Return extraction results for workflow coordination
 
 Non-responsibilities:
 - Extraction planning (L1)
@@ -36,7 +36,11 @@ from state.entity_resolution import (
 
 @dataclass
 class ExtractionPlan:
-    """Plan for triplet extraction (from L1)."""
+    """
+    Plan for triplet extraction in résumé processing workflows (from L1).
+    
+    Defines extraction strategy for converting résumé text to knowledge graph data.
+    """
     
     source_text: str
     source_id: str
@@ -60,7 +64,11 @@ class ExtractionPlan:
 
 @dataclass
 class ExtractedStatement:
-    """A statement extracted from text before triplet conversion."""
+    """
+    Statement extracted from résumé processing text before triplet conversion.
+    
+    Represents intermediate extraction results for résumé knowledge graph construction.
+    """
     
     text: str
     statement_type: str  # skill, experience, education, relationship
@@ -71,7 +79,11 @@ class ExtractedStatement:
 
 @dataclass
 class ExtractionResult:
-    """Result of triplet extraction."""
+    """
+    Result of triplet extraction for résumé processing workflows.
+    
+    Provides structured knowledge graph data extracted from résumé enhancement text.
+    """
     
     source_id: str
     triplets: List[Triplet]
@@ -88,11 +100,11 @@ class ExtractionResult:
 
 
 class TripletExtractionExecutor:
-    """Executor for triplet extraction from text.
+    """
+    Executor for triplet extraction from résumé processing text.
     
-    This executor uses pattern matching and heuristics for extraction.
-    In production, this would integrate with an LLM for more sophisticated
-    extraction.
+    Uses pattern matching and heuristics for extraction in résumé enhancement workflows.
+    In production, this would integrate with an LLM for more sophisticated extraction.
     """
     
     def __init__(
