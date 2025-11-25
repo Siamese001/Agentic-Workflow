@@ -76,7 +76,7 @@ class TestPlanToExecutionHandoff:
         assert execution_context["workflow_id"] == "workflow_123"
         assert execution_context["parent_context"]["priority"] == "high"
     
-    @patch('l2.execution_engine.ExecutionEngine')
+    @patch('l2.execution.ExecutionEngine')
     def test_plan_execution_readiness_validation(self, mock_engine):
         """Test that plans are validated for execution readiness."""
         mock_engine.validate_plan.return_value = True
