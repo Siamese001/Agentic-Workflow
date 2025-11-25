@@ -57,7 +57,7 @@ class TestEndToEndWorkflow:
                 )
                 
                 # Execute workflow
-                from l3.run_dag import run_dag
+                from orchestration.run_dag import run_dag
                 plans = [Mock()]
                 result = run_dag(plans, ctx)
                 
@@ -106,7 +106,7 @@ class TestEndToEndWorkflow:
         with patch('l2.execute_workflow_plans') as mock_execute:
             mock_execute.side_effect = Exception("L2 execution failed")
             
-            from l3.run_dag import run_dag
+            from orchestration.run_dag import run_dag
             
             with pytest.raises(Exception):
                 plans = [Mock()]
@@ -179,7 +179,7 @@ class TestWorkflowPerformance:
             
             start_time = time.time()
             
-            from l3.run_dag import run_dag
+            from orchestration.run_dag import run_dag
             plans = [Mock()]
             result = run_dag(plans, ctx)
             

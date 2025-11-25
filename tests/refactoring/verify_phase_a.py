@@ -76,7 +76,7 @@ def verify_phase_a():
     try:
         from core.models import core.models.models as models
         import l1
-        import cognitive_agents
+        import agents.meta.cognitive_agents
         import l2
         checks.append(("No Circular Dependencies", True, "Import order verified"))
     except Exception as e:

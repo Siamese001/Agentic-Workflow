@@ -5,11 +5,11 @@ are now imported directly from the root level, not from core.
 
 Example:
     import l1
-    from l2.agents import StrategyLLMAgent
-    from l3.workflow_graph import run_workflow_graph
+    from agents.execution.agents import StrategyLLMAgent
+    from orchestration.workflow_graph import run_workflow_graph
 """
 
-from meta import routing  # noqa: F401
+from meta import orchestration.routing  # noqa: F401
 
 
 

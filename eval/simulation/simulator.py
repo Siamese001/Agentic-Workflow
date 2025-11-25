@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict, List
 
-from simulation import Engine  # existing Phase-3 simulation harness
+from tools.simulation import Engine  # existing Phase-3 simulation harness
 
 from .models import SimScenario, SimOutcome
 
