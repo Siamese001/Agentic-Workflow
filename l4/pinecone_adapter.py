@@ -77,16 +77,9 @@ class PineconeAdapter:
     def _ensure_client(self) -> Any:
         """Lazy initialization of Pinecone client."""
         if self._client is None:
-            try:
-                # Try new pinecone package first
-                from pinecone import Pinecone
-                pc = Pinecone(api_key=self.config.api_key)
-                self._index = pc.Index(self.config.index_name)
-                self._client = pc
-            except ImportError:
-                # Fallback to providers wrapper if available
-                from providers.pinecone_client import PineconeClient
-                client = PineconeClient(
+            # Always use provider client to maintain SDK isolation
+            from providers.pinecone_client import PineconeClient
+            client = PineconeClient(
                     api_key=self.config.api_key,
                     index_name=self.config.index_name
                 )
@@ -150,10 +143,10 @@ class PineconeAdapter:
         """
         # Placeholder implementation - in production would use OpenAI/embeddings
         # For now, return a deterministic hash-based vector for testing
-        import numpy as np
+        import random
         hash_val = int(hashlib.sha256(text.encode()).hexdigest()[:16], 16)
-        np.random.seed(hash_val % (2**32))
-        return [float(np.random.random()) for _ in range(self.config.dimension)]
+        random.seed(hash_val % (2**32))
+        return [float(random.random()) for _ in range(self.config.dimension)]
     
     async def retrieve_evidence(
         self,
