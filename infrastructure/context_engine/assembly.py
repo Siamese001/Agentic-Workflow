@@ -1,9 +1,7 @@
-from __future__ import annotations
+"""
+Context assembly and pruning for résumé processing workflows.
 
-"""Context assembly and pruning helpers.
-
-These functions orchestrate pinned items and relevance-scored items into
-ordered text blocks suitable for prompt_builder to consume.
+Orchestrates relevant information into structured text blocks for optimal résumé improvement prompts.
 """
 
 from typing import List
@@ -19,13 +17,10 @@ def assemble_context(
     candidates: List[ContextItem],
     slots: List[ContextSlot],
 ) -> List[str]:
-    """Assemble context strings for use in prompts.
+    """
+    Assembles context strings for résumé improvement prompt generation.
 
-    The algorithm is intentionally simple and deterministic:
-        1. Select pinned items.
-        2. Score candidates by relevance to the query.
-        3. For each slot, fill with pinned items first (if any), then
-           top-scoring candidate texts.
+    Prioritizes relevant information to ensure comprehensive résumé enhancement processing.
     """
 
     result: List[str] = []

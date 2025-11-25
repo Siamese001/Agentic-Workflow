@@ -1,9 +1,9 @@
 """
-L4 - Pure State Management Layer
+State management layer for résumé processing workflow coordination.
 
-This layer handles all state management operations.
-No business logic, tool execution, or orchestration is allowed here.
+Handles all state management operations for comprehensive résumé enhancement workflows without business logic.
 """
+
 from __future__ import annotations
 
 from dataclasses import is_dataclass, replace
@@ -47,14 +47,10 @@ from .entity_resolution import (
 
 
 def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
-    """Bound message and RAG history retention without mutating the input.
+    """
+    Bounds memory retention for résumé processing workflow state.
 
-    Behavior (see tests/test_l4_state_adapter_v10_10.py):
-    - If the state has neither `messages` nor `rag_history`, return it as-is.
-    - If present and longer than `max_items`, truncate from the *front*,
-      keeping the most recent entries.
-    - For dataclass states, return a new instance with updated fields so the
-      original object is never mutated in-place.
+    Limits message and RAG history retention without mutating input state for efficient résumé enhancement.
     """
 
     has_messages = hasattr(state, "messages")
@@ -94,12 +90,10 @@ def record_correction_event(
     metadata: Optional[Dict[str, Any]] = None,
     ctx: Any = None,  # kept for signature compatibility; intentionally unused
 ) -> Any:
-    """Append a correction entry to `correction_journal` if present.
+    """
+    Records correction events for résumé processing workflow state.
 
-    Contract from tests/test_l4_state_adapter_v10_10.py:
-    - If the state has no `correction_journal` attribute, return it unchanged.
-    - Otherwise, append a dict with keys `surface`, `message`, `metadata`.
-    - Do not mutate the original instance; always inspect the returned one.
+    Appends correction entries to maintain audit trail for résumé enhancement operations.
     """
 
     if not hasattr(state, "correction_journal"):
@@ -139,19 +133,19 @@ def apply_state_patch(
     *,
     safety_passed: bool = True
 ) -> Dict[str, Any]:
-    """Apply L2 results as a state patch.
+    """
+    Applies L2 results as state patch for résumé processing workflows.
     
-    This is a compatibility function for tests. It converts L2 execution
-    results into a state patch dictionary.
+    Compatibility function that converts L2 execution results into state patch for résumé enhancement.
     
     Args:
-        l2_results: L2ResultBundle with execution results
-        corrections: List of corrections to apply
-        ctx: Execution context
-        safety_passed: Whether safety checks passed
+        l2_results: L2ResultBundle with résumé processing execution results
+        corrections: List of corrections to apply for résumé enhancement
+        ctx: Execution context for résumé workflows
+        safety_passed: Whether résumé enhancement safety checks passed
         
     Returns:
-        dict: State patch with results
+        dict: State patch with résumé processing results
     """
     # Simple deterministic patch generation for testing
     patch = {

@@ -34,6 +34,11 @@ from profiles.budget_profile import BudgetProfile
 
 
 class SafetyTier(str, Enum):
+    """
+    Defines safety validation levels for résumé processing.
+
+    Ensures appropriate security measures for professional résumé improvement standards.
+    """
     STANDARD = "standard"
     STRICT = "strict"
     RELAXED = "relaxed"
@@ -41,13 +46,22 @@ class SafetyTier(str, Enum):
 
 
 class ModelTier(str, Enum):
+    """
+    Specifies model performance tiers for résumé analysis.
+
+    Balances cost and quality for optimal résumé enhancement processing.
+    """
     CHEAP = "cheap"
     BALANCED = "balanced"
     PREMIUM = "premium"
 
 
 class DAGMode(str, Enum):
-    """Specifies whether the workflow runs steps strictly in order or can parallelize parts of the resume pipeline for speed."""
+    """
+    Controls résumé processing workflow execution strategy.
+
+    Optimizes speed and resource usage for comprehensive résumé improvement.
+    """
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
 
@@ -58,7 +72,11 @@ class DAGMode(str, Enum):
 
 
 class ExecutionProfileSpec(BaseModel):
-    """Canonical description of how aggressively to reason, retrieve, draft, and check safety so resume runs balance quality, speed, and cost for different scenarios."""
+    """
+    Configures comprehensive résumé analysis execution parameters.
+
+    Optimizes processing strategy for different résumé improvement scenarios and requirements.
+    """
 
     id: str
     description: str
@@ -116,10 +134,10 @@ class ExecutionProfileSpec(BaseModel):
 
 
 class ExecutionProfileV2(BaseModel):
-    """Aggregator profile composed of dedicated sub-profiles.
+    """
+    Aggregates specialized profiles for comprehensive résumé processing.
 
-    This does not replace ExecutionProfileSpec for existing callers but
-    provides a structured view for future integrations.
+    Combines LLM, retrieval, safety, context, and budget configurations for optimal résumé improvement.
     """
 
     llm: LLMProfile
@@ -130,10 +148,10 @@ class ExecutionProfileV2(BaseModel):
 
 
 def build_execution_profile_v2(spec: ExecutionProfileSpec) -> ExecutionProfileV2:
-    """Build an ExecutionProfileV2 from an existing ExecutionProfileSpec.
+    """
+    Builds comprehensive résumé processing profile from specifications.
 
-    This helper is backwards-compatible and side-effect free; it does
-    not change how EXECUTION_PROFILES are defined or consumed today.
+    Creates optimized configuration for different résumé improvement scenarios and requirements.
     """
 
     llm = LLMProfile(
@@ -174,9 +192,9 @@ def _balanced_hybrid_retrieval(
     qa_council_size: int,
 ) -> RetrievalConfig:
     """
-    Balanced hybrid RAG configuration with optional HYDE and RRF.
+    Creates balanced retrieval configuration for résumé evidence gathering.
 
-    Used by high-quality profiles.
+    Optimizes search strategy to find relevant data for comprehensive résumé improvement.
     """
     return RetrievalConfig(
         strategy="hybrid",
@@ -199,7 +217,9 @@ def _balanced_hybrid_retrieval(
 
 def _cheap_bm25_retrieval() -> RetrievalConfig:
     """
-    Cheap, BM25-only retrieval; no HYDE, no RRF, small hit cap.
+    Creates cost-effective retrieval configuration for résumé processing.
+
+    Provides efficient keyword-based search for budget-conscious résumé improvement.
     """
     return RetrievalConfig(
         strategy="bm25",
@@ -224,7 +244,9 @@ def _premium_dense_retrieval(
     qa_council_size: int = 1,
 ) -> RetrievalConfig:
     """
-    Dense-oriented retrieval; Phase-3 capable via HYDE/council flags.
+    Creates high-quality semantic retrieval for résumé enhancement.
+
+    Optimizes conceptual search to find relevant evidence for comprehensive résumé improvement.
     """
     return RetrievalConfig(
         strategy="dense",

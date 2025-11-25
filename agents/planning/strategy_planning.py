@@ -1,4 +1,8 @@
-"""Strategy planning module with V6 prompt integration and security validation."""
+"""
+Strategy planning for comprehensive résumé improvement.
+
+Creates targeted plans to enhance résumé alignment with job requirements.
+"""
 
 from __future__ import annotations
 
@@ -29,21 +33,33 @@ from safety.policy import SafetyEngine
 
 @dataclass(frozen=True)
 class StrategyPlan:
-    """Pure planning artifact for the strategy agent."""
+    """
+    Defines résumé strategy planning structure.
+
+    Ensures systematic approach to comprehensive résumé improvement.
+    """
 
     prompt: PromptInstance
 
 
 @dataclass(frozen=True)
 class DraftPlan:
-    """Pure planning artifact for the drafting agent."""
+    """
+    Structures résumé drafting planning approach.
+
+    Guides content creation for professional résumé enhancement.
+    """
 
     prompt: PromptInstance
 
 
 @dataclass(frozen=True)
 class LatentThinkingPlan:
-    """Latent thinking instructions derived from profile + draft text."""
+    """
+    Coordinates cognitive processing for résumé analysis.
+
+    Optimizes reasoning strategy for effective résumé improvement.
+    """
 
     profile_name: str
     reasoning_mode: str
@@ -60,7 +76,11 @@ def plan_strategy(
     config: Any,
     v6_config: Optional[V6PromptConfig] = None,
 ) -> StrategyPlan:
-    """Plan strategy using V6 prompt system with security validation."""
+    """
+    Creates comprehensive résumé improvement strategy plan.
+
+    Generates targeted approach to enhance résumé job alignment.
+    """
     
     if v6_config is None:
         v6_config = V6PromptConfig(
@@ -113,6 +133,11 @@ def plan_draft(
     resume: Any,
     config: Any,
 ) -> DraftPlan:
+    """
+    Creates comprehensive résumé drafting plan.
+
+    Structures approach for generating professional résumé content aligned with job requirements.
+    """
     prompt = build_drafting_prompt(
         plan=drafting_plan,
         ctx=ctx,
@@ -131,6 +156,11 @@ def generate_latent_thinking_plan(
     result: Any,
     ctx: ExecutionContext,
 ) -> LatentThinkingPlan:
+    """
+    Generates cognitive processing plan for résumé analysis.
+
+    Optimizes reasoning strategy to enhance résumé improvement quality.
+    """
     profile_name = getattr(ctx, "profile_name", None) or getattr(ctx.config, "profile_id", "default")
     reasoning_mode = "cot"
     depth = 1

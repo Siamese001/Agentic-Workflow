@@ -1,11 +1,7 @@
-from __future__ import annotations
+"""
+DAG engine orchestration for résumé processing workflows.
 
-"""Public DAG engine surface for v10_10.
-
-This module re-exports the minimal DAG models and executor so that tests
-and orchestration code can import:
-
-    from infrastructure.dag_engine import Graph, Node, Edge, DAGExecutor
+Provides directed acyclic graph execution for comprehensive résumé improvement operations.
 """
 
 from .models import Graph, Node, Edge  # noqa: F401

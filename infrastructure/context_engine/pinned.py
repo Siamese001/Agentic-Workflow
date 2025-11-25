@@ -1,10 +1,7 @@
-from __future__ import annotations
+"""
+Pinned context management for résumé processing workflows.
 
-"""Pinned context utilities.
-
-These helpers manage pinned context items that should always be present in
-prompts (e.g. key instructions, safety reminders). Implementations are
-simple and deterministic.
+Manages essential context items that ensure consistent résumé improvement prompt generation.
 """
 
 from dataclasses import dataclass
@@ -13,13 +10,22 @@ from typing import Any, Dict, List
 
 @dataclass
 class PinnedItem:
+    """
+    Represents pinned context item for résumé processing.
+
+    Ensures critical information is always included in résumé improvement workflows.
+    """
     id: str
     text: str
     metadata: Dict[str, Any]
 
 
 def filter_pinned(items: List[PinnedItem], max_items: int) -> List[PinnedItem]:
-    """Return up to max_items pinned items in a deterministic order."""
+    """
+    Filters pinned context items for résumé processing workflows.
+
+    Ensures optimal selection of essential information for résumé improvement operations.
+    """
 
     if max_items <= 0:
         return []

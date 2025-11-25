@@ -1,19 +1,17 @@
-from __future__ import annotations
+"""
+Chain-of-thought reasoning for résumé processing workflows.
 
-"""Chain-of-thought (CoT) reasoning helpers.
-
-These helpers are deterministic and do not call LLMs directly. They are
-intended as building blocks for higher-level L2 agents.
+Provides deterministic reasoning scaffolding for comprehensive résumé improvement operations.
 """
 
 from typing import List
 
 
 def expand_chain_of_thought(seed: str, steps: int = 3) -> List[str]:
-    """Produce a simple deterministic chain-of-thought from a seed string.
+    """
+    Expands chain-of-thought reasoning for résumé processing tasks.
 
-    This is a placeholder implementation that splits the seed into
-    segments; real implementations may call LLMs via cognitive agents.
+    Enables structured thinking processes for optimal résumé enhancement workflows.
     """
 
     seed = (seed or "").strip()

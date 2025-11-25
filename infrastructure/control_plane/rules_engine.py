@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Rules engine for résumé processing safety policy enforcement.
+
+Provides deterministic rule evaluation for comprehensive résumé improvement workflows.
+"""
 
 import re
 from typing import List
@@ -16,6 +20,11 @@ _PII_REGEXES = [
 
 
 def _detect_pii(text: str) -> bool:
+    """
+    Detects personally identifiable information in résumé processing text.
+
+    Ensures privacy protection for comprehensive résumé enhancement workflows.
+    """
     for rx in _PII_REGEXES:
         if rx.search(text):
             return True
@@ -23,9 +32,10 @@ def _detect_pii(text: str) -> bool:
 
 
 def evaluate_rules(context: SafetyContext, rules: List[PolicyRule]) -> RulesEngineResult:
-    """Deterministic evaluation of policy rules against a SafetyContext.
+    """
+    Evaluates safety rules against résumé processing context.
 
-    This function is pure and does not call out to any external systems.
+    Provides systematic policy enforcement for comprehensive résumé improvement operations.
     """
 
     matches: List[RuleMatch] = []

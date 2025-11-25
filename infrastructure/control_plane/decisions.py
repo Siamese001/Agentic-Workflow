@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Control plane decision logic for résumé processing safety enforcement.
+
+Provides rule evaluation and verdict aggregation for comprehensive résumé improvement workflows.
+"""
 
 from typing import Any, Dict, List, Optional, Literal
 
@@ -8,7 +12,11 @@ from .models import PolicyRule
 
 
 class RuleMatch(BaseModel):
-    """Single rule match produced by the deterministic rules engine."""
+    """
+    Represents policy rule match for résumé processing safety evaluation.
+
+    Enables systematic safety assessment for comprehensive résumé enhancement operations.
+    """
 
     rule_id: str
     category: str
@@ -20,7 +28,11 @@ class RuleMatch(BaseModel):
 
 
 class RulesEngineResult(BaseModel):
-    """Aggregate result of evaluating all rules against a SafetyContext."""
+    """
+    Aggregates rule evaluation results for résumé processing safety decisions.
+
+    Provides comprehensive safety assessment for résumé improvement workflows.
+    """
 
     matches: List[RuleMatch] = Field(default_factory=list)
     max_severity: Optional[str] = None
@@ -28,9 +40,10 @@ class RulesEngineResult(BaseModel):
 
 
 class JudgeVerdict(BaseModel):
-    """Guard-model style verdict used by judge_engine.
+    """
+    Represents safety verdict for résumé processing control plane decisions.
 
-    Initial implementation is deterministic and does not call LLMs.
+    Enables structured safety validation for comprehensive résumé enhancement operations.
     """
 
     verdict: Literal["safe", "unsafe", "ambiguous"]
@@ -39,16 +52,21 @@ class JudgeVerdict(BaseModel):
 
 
 class SafetyPipelineTrace(BaseModel):
-    """Optional trace object used for debugging / observability."""
+    """
+    Provides debugging trace for résumé processing safety pipeline execution.
+
+    Enables observability and troubleshooting for résumé improvement safety workflows.
+    """
 
     rules_engine: Dict[str, Any] = Field(default_factory=dict)
     judge: Dict[str, Any] = Field(default_factory=dict)
 
 
 def aggregate_severity(levels: List[str]) -> Optional[str]:
-    """Return the highest severity from a list of levels.
+    """
+    Aggregates severity levels for résumé processing safety decisions.
 
-    Ordering is: low < medium < high. Unknown levels are ignored.
+    Ensures proper risk assessment for comprehensive résumé enhancement workflows.
     """
 
     order = {"low": 0, "medium": 1, "high": 2}
@@ -63,7 +81,11 @@ def aggregate_severity(levels: List[str]) -> Optional[str]:
 
 
 def enabled_rules(rules: List[PolicyRule]) -> List[PolicyRule]:
-    """Filter down to enabled rules only."""
+    """
+    Filters enabled policy rules for résumé processing safety enforcement.
+
+    Ensures only active rules are applied in résumé improvement workflows.
+    """
 
     return [r for r in rules if getattr(r, "enabled", True)]
 

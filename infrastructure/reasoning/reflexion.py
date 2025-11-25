@@ -1,10 +1,7 @@
-from __future__ import annotations
+"""
+Reflexion self-critique framework for résumé processing workflows.
 
-"""Reflexion-style self-critique and revision helpers.
-
-These utilities provide a simple interface for critiquing and revising
-model outputs. The default implementation is deterministic and does not
-call LLMs.
+Provides deterministic output evaluation and revision for comprehensive résumé enhancement.
 """
 
 from dataclasses import dataclass
@@ -13,12 +10,21 @@ from typing import List, Tuple
 
 @dataclass
 class Critique:
+    """
+    Represents critique result for résumé processing output evaluation.
+
+    Enables systematic quality assessment for résumé improvement workflows.
+    """
     message: str
     severity: str  # e.g. "info", "warning", "error"
 
 
 def critique_output(output: str) -> List[Critique]:
-    """Return deterministic critiques of an output string."""
+    """
+    Evaluates résumé processing output for quality improvements.
+
+    Identifies areas for enhancement in comprehensive résumé analysis results.
+    """
 
     output = (output or "").strip()
     if not output:
@@ -33,9 +39,10 @@ def critique_output(output: str) -> List[Critique]:
 
 
 def apply_reflexion(output: str) -> Tuple[str, List[Critique]]:
-    """Apply a simple reflexion pass over an output.
+    """
+    Applies reflexion revision process to résumé processing outputs.
 
-    Returns (revised_output, critiques).
+    Ensures quality enhancement through systematic critique and revision.
     """
 
     critiques = critique_output(output)

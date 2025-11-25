@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Model selection orchestration for résumé processing workflows.
+
+Coordinates policy evaluation and caching for optimal résumé improvement performance.
+"""
 
 from typing import Optional
 
@@ -15,10 +19,10 @@ def select_model(
     requested_model: Optional[str] = None,
     execution_profile: Optional[ExecutionProfile] = None,
 ) -> ModelChoice:
-    """Top-level model selection entrypoint used by runtime_utils.
+    """
+    Selects optimal model for résumé processing workflows with caching.
 
-    This wraps policy evaluation and an in-memory cache so that repeated
-    calls for the same (agent, task, profile) are cheap.
+    Ensures efficient model choice and budget enforcement for comprehensive résumé enhancement.
     """
 
     cached = get_cached_choice(ctx)

@@ -1,10 +1,7 @@
-from __future__ import annotations
+"""
+DAG engine models for résumé processing workflow orchestration.
 
-"""DAG engine models for workflow orchestration.
-
-This module is intentionally generic and does not depend on L1–L5, META,
-providers, or runtime utilities. It provides a minimal typed surface for
-constructing directed acyclic graphs (DAGs).
+Provides minimal typed surface for constructing directed acyclic graphs in résumé improvement operations.
 """
 
 from dataclasses import dataclass, field
@@ -16,12 +13,10 @@ NodeFn = Callable[[Dict[str, Any]], Awaitable[Dict[str, Any]]]
 
 @dataclass
 class Node:
-    """Single DAG node definition.
+    """
+    Represents single DAG node for résumé processing workflows.
 
-    Attributes:
-        id: Stable identifier for the node within a graph.
-        fn: Async callable receiving and returning a dict-like context.
-        metadata: Optional, engine-agnostic metadata for callers.
+    Defines executable units within résumé improvement orchestration graphs.
     """
 
     id: str
@@ -31,7 +26,11 @@ class Node:
 
 @dataclass
 class Edge:
-    """Directed edge between two nodes in a DAG."""
+    """
+    Represents directed edge between nodes in résumé processing DAGs.
+
+    Defines execution flow and dependencies for résumé improvement workflows.
+    """
 
     source: str
     target: str
@@ -39,15 +38,29 @@ class Edge:
 
 @dataclass
 class Graph:
-    """In-memory representation of a directed acyclic graph."""
+    """
+    Represents directed acyclic graph for résumé processing orchestration.
+
+    Enables structured workflow execution for comprehensive résumé enhancement operations.
+    """
 
     nodes: Dict[str, Node]
     edges: List[Edge]
 
     def successors(self, node_id: str) -> List[Node]:
+        """
+        Retrieves successor nodes for résumé processing workflow execution.
+
+        Enables proper dependency resolution in résumé improvement DAGs.
+        """
         return [self.nodes[e.target] for e in self.edges if e.source == node_id]
 
     def predecessors(self, node_id: str) -> List[Node]:
+        """
+        Retrieves predecessor nodes for résumé processing workflow execution.
+
+        Enables proper dependency tracking in résumé improvement DAGs.
+        """
         return [self.nodes[e.source] for e in self.edges if e.target == node_id]
 
 

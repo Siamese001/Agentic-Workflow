@@ -1,14 +1,14 @@
-"""Invalidation Executor - Temporal Fact Invalidation
+"""
+Temporal fact invalidation executor for résumé processing workflows.
 
-This module implements the L2 executor for fact invalidation,
-handling the detection and marking of outdated or contradictory facts.
+Implements L2 executor for detecting and marking outdated or contradictory facts in résumé enhancement operations.
 
 Layer: L2 (Execution)
 Responsibilities:
-- Execute invalidation checks based on L1 plans
-- Detect contradictory facts
-- Mark facts as invalidated
-- Return invalidation results
+- Execute invalidation checks based on L1 plans for résumé fact management
+- Detect contradictory facts in résumé processing data
+- Mark facts as invalidated for accurate résumé enhancement
+- Return invalidation results for workflow coordination
 
 Non-responsibilities:
 - Invalidation planning (L1)
@@ -28,7 +28,7 @@ from state.triplet_store import Triplet, TripletStore, TripletStatus, TripletQue
 
 
 class InvalidationReason(str, Enum):
-    """Reasons for fact invalidation."""
+    """Reasons for fact invalidation in résumé processing workflows."""
     SUPERSEDED = "superseded"           # Replaced by newer fact
     CONTRADICTED = "contradicted"       # Contradicts another fact
     EXPIRED = "expired"                 # Temporal validity expired
@@ -39,7 +39,7 @@ class InvalidationReason(str, Enum):
 
 @dataclass
 class InvalidationRule:
-    """Rule for automatic invalidation."""
+    """Rule for automatic invalidation in résumé processing fact management."""
     
     id: str
     name: str
@@ -54,7 +54,11 @@ class InvalidationRule:
     reason: InvalidationReason = InvalidationReason.EXPIRED
     
     def matches_triplet(self, triplet: Triplet) -> bool:
-        """Check if rule applies to a triplet."""
+        """
+        Checks if invalidation rule applies to a résumé processing triplet.
+
+        Ensures proper fact validation for accurate résumé enhancement workflows.
+        """
         if self.predicate_pattern:
             if triplet.predicate != self.predicate_pattern:
                 return False
@@ -63,7 +67,7 @@ class InvalidationRule:
 
 @dataclass
 class InvalidationResult:
-    """Result of an invalidation check."""
+    """Result of invalidation check for résumé processing fact management."""
     
     triplet_id: str
     invalidated: bool
@@ -74,7 +78,7 @@ class InvalidationResult:
 
 @dataclass
 class InvalidationPlan:
-    """Plan for invalidation execution (from L1)."""
+    """Plan for invalidation execution in résumé processing workflows (from L1)."""
     
     target_subject: Optional[str] = None
     target_predicate: Optional[str] = None
@@ -86,17 +90,18 @@ class InvalidationPlan:
 
 
 class InvalidationExecutor:
-    """Executor for fact invalidation.
+    """
+    Executor for fact invalidation in résumé processing workflows.
     
-    This executor checks triplets against invalidation rules
-    and marks outdated or contradictory facts.
+    Checks triplets against invalidation rules and marks outdated or contradictory facts for accurate résumé enhancement.
     """
     
     def __init__(self, triplet_store: TripletStore):
-        """Initialize with triplet store.
+        """
+        Initializes invalidation executor for résumé processing fact management.
         
         Args:
-            triplet_store: L4 TripletStore instance
+            triplet_store: L4 TripletStore instance for résumé workflow coordination
         """
         self.store = triplet_store
         self._default_rules = self._build_default_rules()

@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Model routing data structures for résumé processing workflows.
+
+Defines lightweight model selection and routing context for optimal résumé improvement performance.
+"""
 
 from dataclasses import dataclass
 from typing import Optional
@@ -8,10 +12,10 @@ from core.models.models import ExecutionProfile
 
 @dataclass
 class ModelChoice:
-    """Concrete model selection for a given call.
+    """
+    Represents model selection choice for résumé processing workflows.
 
-    This is intentionally lightweight and provider-agnostic; it does not
-    import provider SDKs or perform any I/O.
+    Enables lightweight provider-agnostic model routing for comprehensive résumé enhancement.
     """
 
     provider: str
@@ -23,10 +27,10 @@ class ModelChoice:
 
 @dataclass
 class RoutingContext:
-    """Context used by dynamic model routing.
+    """
+    Provides routing context for résumé processing model selection.
 
-    This mirrors the minimal fields we need from the agent stack without
-    importing core orchestration modules.
+    Ensures optimal model choice based on agent and task requirements for résumé improvement.
     """
 
     agent_id: str

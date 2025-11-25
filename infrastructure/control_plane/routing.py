@@ -1,4 +1,8 @@
-from __future__ import annotations
+"""
+Control plane routing for résumé processing safety policy selection.
+
+Provides deterministic rule resolution for comprehensive résumé improvement workflows.
+"""
 
 from typing import List
 
@@ -6,10 +10,10 @@ from .models import PolicyRule, SafetyContext
 
 
 def default_rules_for(agent_id: str | None, task_type: str | None) -> List[PolicyRule]:
-    """Return a deterministic set of rules for the given agent/task.
+    """
+    Returns default safety rules for résumé processing agent and task combinations.
 
-    This is intentionally minimal; callers can extend/replace this
-    registry without importing core orchestration code.
+    Ensures appropriate policy enforcement for comprehensive résumé enhancement operations.
     """
 
     rules: List[PolicyRule] = []
@@ -56,7 +60,11 @@ def default_rules_for(agent_id: str | None, task_type: str | None) -> List[Polic
 
 
 def resolve_rules_for_context(ctx: SafetyContext) -> List[PolicyRule]:
-    """Convenience wrapper for callers that only have a SafetyContext."""
+    """
+    Resolves safety rules for résumé processing context.
+
+    Provides appropriate policy selection for comprehensive résumé enhancement workflows.
+    """
 
     return default_rules_for(ctx.agent_id, ctx.task_type)
 

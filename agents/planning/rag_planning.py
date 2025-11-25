@@ -1,4 +1,8 @@
-"""RAG planning module."""
+"""
+RAG planning for comprehensive résumé evidence gathering.
+
+Creates structured plans to retrieve relevant data for optimal résumé improvement.
+"""
 
 from __future__ import annotations
 
@@ -11,14 +15,22 @@ from prompts.builders.prompt_builder import PromptInstance, build_rag_prompt, bu
 
 @dataclass(frozen=True)
 class RAGReasoningPlan:
-    """Pure planning artifact for RAG reasoning."""
+    """
+    Defines evidence analysis structure for résumé improvement.
+
+    Ensures systematic processing of retrieved data for comprehensive résumé enhancement.
+    """
 
     prompt: PromptInstance
 
 
 @dataclass(frozen=True)
 class HydePlan:
-    """Pure planning artifact for HYDE query generation."""
+    """
+    Structures hypothetical document query planning.
+
+    Creates enhanced search strategies for better résumé evidence retrieval.
+    """
 
     prompt: PromptInstance
 
@@ -29,7 +41,11 @@ def plan_rag_reasoning(
     ctx: ExecutionContext,
     evidence: Sequence[Evidence],
 ) -> RAGReasoningPlan:
-    """Generate a pure RAG reasoning plan."""
+    """
+    Creates evidence analysis plan for résumé improvement.
+
+    Structures approach to process retrieved data for comprehensive résumé enhancement.
+    """
     prompt = build_rag_prompt(
         plan=rag_plan,
         ctx=ctx,
@@ -47,7 +63,11 @@ def plan_hyde_query(
     *,
     ctx: ExecutionContext,
 ) -> HydePlan:
-    """Generate a pure HYDE query plan."""
+    """
+    Plans enhanced query generation for résumé evidence retrieval.
+
+    Creates hypothetical documents to improve search relevance for résumé improvement.
+    """
     prompt = build_hyde_prompt(
         plan=hyde_plan,
         ctx=ctx,

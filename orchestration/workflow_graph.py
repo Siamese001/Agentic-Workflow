@@ -1,28 +1,7 @@
-"""L3 - Orchestration Layer
+"""
+L3 orchestration layer for résumé workflow coordination.
 
-This module provides the main workflow graph orchestration with correction loops.
-
-Layer: L3 (Orchestration)
-Responsibilities:
-- DAG construction and execution
-- Concurrency control
-- Typed node definitions
-- Correction loop orchestration
-- Error propagation and recovery
-
-Non-responsibilities:
-- Planning (L1)
-- LLM execution (L2)
-- State mutation (L4)
-- Safety evaluation (L5)
-
-Strict L3 constraints:
-- No LLM calls
-- No retrieval logic
-- No ranking logic
-- No prompting
-- No state mutation
-- No safety evaluation
+Manages workflow execution and correction loops to ensure comprehensive résumé improvement.
 """
 
 # FILE: l3/workflow_graph.py
@@ -73,6 +52,11 @@ from meta.self_correction import (
 
 
 class Node:
+    """
+    Defines workflow processing stages.
+
+    Coordinates sequential résumé improvement steps for systematic enhancement.
+    """
     STRATEGY = "strategy"
     RETRIEVAL = "retrieval"
     DRAFTING = "drafting"
@@ -81,12 +65,10 @@ class Node:
 
 
 def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> DagGraph:
-    """Construct a DAG that mirrors the logical workflow stages.
+    """
+    Constructs directed acyclic graph for workflow execution.
 
-    This helper is a thin adapter between the L3 workflow and the generic
-    DAG engine. For now it only defines nodes and edges; run_workflow_graph
-    continues to orchestrate execution directly until we delegate to
-    DAGExecutor in a follow-up step.
+    Ensures proper sequencing of résumé improvement stages for optimal results.
     """
 
     async def _node_strategy(dag_ctx):
@@ -113,7 +95,7 @@ def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> Dag
         dag_ctx = dict(dag_ctx or {})
         drafting_result = dag_ctx.get("drafting_result") or DraftingResult(sections=[])
         rag_result = dag_ctx.get("rag_result") or RAGResult(evidence=[], used_hyde=False)
-        result, _council = await _execute_qa(plans, drafting_result, rag_result, ctx)
+        result = await _execute_qa(plans, drafting_result, rag_result, ctx)
         dag_ctx["qa_result"] = result
         return dag_ctx
 

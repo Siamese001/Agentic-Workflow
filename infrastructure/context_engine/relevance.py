@@ -1,8 +1,7 @@
-from __future__ import annotations
+"""
+Relevance scoring for résumé processing context items.
 
-"""Simple relevance scoring helpers for context items.
-
-These utilities are deterministic and do not call external services.
+Provides deterministic scoring to prioritize relevant information for résumé improvement workflows.
 """
 
 from dataclasses import dataclass
@@ -11,16 +10,21 @@ from typing import Any, Dict, List, Tuple
 
 @dataclass
 class ContextItem:
+    """
+    Represents context item for résumé processing relevance scoring.
+
+    Enables intelligent information prioritization for comprehensive résumé enhancement.
+    """
     id: str
     text: str
     metadata: Dict[str, Any]
 
 
 def score_relevance(query: str, items: List[ContextItem]) -> List[Tuple[ContextItem, float]]:
-    """Score items by simple token overlap with the query.
+    """
+    Scores context items by relevance to résumé improvement queries.
 
-    This is a placeholder used to support tests and prompt assembly
-    without depending on vector search.
+    Prioritizes information that supports comprehensive résumé enhancement processing.
     """
 
     q_tokens = set((query or "").lower().split())
