@@ -80,11 +80,11 @@ class PineconeAdapter:
             # Always use provider client to maintain SDK isolation
             from providers.pinecone_client import PineconeClient
             client = PineconeClient(
-                    api_key=self.config.api_key,
-                    index_name=self.config.index_name
-                )
-                self._client = client
-                self._index = client.index
+                api_key=self.config.api_key,
+                index_name=self.config.index_name
+            )
+            self._client = client
+            self._index = client.index
         return self._client
     
     def build_namespace(
