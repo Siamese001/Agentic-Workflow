@@ -1,17 +1,21 @@
 """Atomic Integration Layer - Bridges OpenAI structure to L1-L5 atomicity.
 
 This module provides the bridge between the OpenAI-style capability folders
-and the strict L1-L5 atomic layer enforcement.
+and the strict L1-L5 atomic layer enforcement using interface-based adapters.
 """
 
 from typing import Any, Dict, Optional
+from pathlib import Path
+
+# Import concrete implementations to be wrapped
 from l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator
 from l4.state_manager import StateManager
 from l5.safety_validator import SafetyValidator
+
+# Import core types and configurations
 from core.routing import RoutingPolicy
 from config.meta_profile import MetaProfileSnapshot
 from runtime.runtime_utils import SandboxConfig
-from pathlib import Path
 
 class AtomicWorkflowBridge:
     """Bridge layer that enforces L1-L5 atomicity within OpenAI structure."""

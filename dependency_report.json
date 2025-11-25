@@ -1,10 +1,26 @@
 {
   "summary": {
-    "total_modules": 248,
-    "total_dependencies": 384,
+    "total_modules": 274,
+    "total_dependencies": 467,
     "circular_dependencies": 0
   },
   "modules": {
+    "atomic_integration_bridge": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\atomic_integration_bridge.py",
+      "imports": [
+        "config.meta_profile",
+        "core.routing",
+        "l3.unified_workflow_orchestrator",
+        "l4.state_manager",
+        "l5.safety_validator",
+        "runtime.runtime_utils"
+      ],
+      "imported_by": [
+        "agents.execution.agents"
+      ],
+      "dependency_count": 6,
+      "reverse_dependency_count": 1
+    },
     "dependency_analyzer": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\dependency_analyzer.py",
       "imports": [],
@@ -65,6 +81,15 @@
       "dependency_count": 0,
       "reverse_dependency_count": 0
     },
+    "agents": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\agents\\__init__.py",
+      "imports": [],
+      "imported_by": [
+        "tests.refactoring.verify_phase_a"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 1
+    },
     "cli.main_v10_10": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\cli\\main_v10_10.py",
       "imports": [],
@@ -117,12 +142,17 @@
       "imported_by": [
         "agents.execution.agents",
         "agents.planning.workflow_planning",
-        "l2.agents",
+        "atomic_integration_bridge",
+        "l2.draft_executor",
+        "l2.llm_caller",
+        "l2.qa_executor",
+        "l2.safety_executor",
+        "l2.strategy_executor",
         "meta.routing",
         "orchestration.routing"
       ],
       "dependency_count": 1,
-      "reverse_dependency_count": 5
+      "reverse_dependency_count": 10
     },
     "config": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\config\\__init__.py",
@@ -158,10 +188,11 @@
       "imports": [
         "core.errors",
         "core.models.dag_models",
+        "l5",
         "state.manager"
       ],
       "imported_by": [],
-      "dependency_count": 3,
+      "dependency_count": 4,
       "reverse_dependency_count": 0
     },
     "core.routing": {
@@ -171,12 +202,18 @@
       ],
       "imported_by": [
         "agents.execution.agents",
+        "atomic_integration_bridge",
         "l2.agents",
+        "l2.draft_executor",
+        "l2.llm_caller",
+        "l2.qa_executor",
+        "l2.safety_executor",
+        "l2.strategy_executor",
         "orchestration.workflow_graph",
         "tests.deprecated.test_agent_cards"
       ],
       "dependency_count": 1,
-      "reverse_dependency_count": 4
+      "reverse_dependency_count": 10
     },
     "core": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\core\\__init__.py",
@@ -192,15 +229,109 @@
       "dependency_count": 0,
       "reverse_dependency_count": 0
     },
+    "infrastructure.di_container": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\infrastructure\\di_container.py",
+      "imports": [],
+      "imported_by": [
+        "agents.execution.execution",
+        "agents.planning.strategy_planning",
+        "l3",
+        "tests.deprecated.test_integration_security",
+        "tests.test_dependency_injection"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 5
+    },
     "infrastructure": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\infrastructure\\__init__.py",
       "imports": [],
-      "imported_by": [],
+      "imported_by": [
+        "tests.refactoring.verify_phase_a"
+      ],
       "dependency_count": 0,
-      "reverse_dependency_count": 0
+      "reverse_dependency_count": 1
+    },
+    "l1.draft_planning": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l1\\draft_planning.py",
+      "imports": [],
+      "imported_by": [
+        "l3.draft_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 2
+    },
+    "l1.prompt_builder": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l1\\prompt_builder.py",
+      "imports": [],
+      "imported_by": [
+        "agents.execution.agents"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 1
+    },
+    "l1.qa_planning": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l1\\qa_planning.py",
+      "imports": [],
+      "imported_by": [
+        "l3.qa_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 2
+    },
+    "l1.result_parser": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l1\\result_parser.py",
+      "imports": [],
+      "imported_by": [
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 1
+    },
+    "l1.safety_planning": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l1\\safety_planning.py",
+      "imports": [],
+      "imported_by": [
+        "l3.safety_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 2
+    },
+    "l1.strategy_planning": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l1\\strategy_planning.py",
+      "imports": [],
+      "imported_by": [
+        "l3.strategy_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 2
+    },
+    "l1": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l1\\__init__.py",
+      "imports": [],
+      "imported_by": [
+        "tests.refactoring.test_l1_phase_a"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 1
     },
     "l2.agents": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l2\\agents.py",
+      "imports": [
+        "core.models.models",
+        "core.routing",
+        "runtime.observability",
+        "runtime.runtime_utils"
+      ],
+      "imported_by": [],
+      "dependency_count": 4,
+      "reverse_dependency_count": 0
+    },
+    "l2.draft_executor": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l2\\draft_executor.py",
       "imports": [
         "config.meta_profile",
         "core.models.models",
@@ -208,21 +339,216 @@
         "runtime.observability",
         "runtime.runtime_utils"
       ],
-      "imported_by": [],
+      "imported_by": [
+        "l3.draft_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
       "dependency_count": 5,
-      "reverse_dependency_count": 0
+      "reverse_dependency_count": 2
+    },
+    "l2.llm_caller": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l2\\llm_caller.py",
+      "imports": [
+        "config.meta_profile",
+        "core.models.models",
+        "core.routing",
+        "runtime.observability",
+        "runtime.runtime_utils"
+      ],
+      "imported_by": [
+        "agents.execution.agents",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 5,
+      "reverse_dependency_count": 2
+    },
+    "l2.qa_executor": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l2\\qa_executor.py",
+      "imports": [
+        "config.meta_profile",
+        "core.models.models",
+        "core.routing",
+        "runtime.observability",
+        "runtime.runtime_utils"
+      ],
+      "imported_by": [
+        "l3.qa_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 5,
+      "reverse_dependency_count": 2
+    },
+    "l2.safety_executor": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l2\\safety_executor.py",
+      "imports": [
+        "config.meta_profile",
+        "core.models.models",
+        "core.routing",
+        "runtime.observability",
+        "runtime.runtime_utils"
+      ],
+      "imported_by": [
+        "l3.safety_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 5,
+      "reverse_dependency_count": 2
+    },
+    "l2.strategy_executor": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l2\\strategy_executor.py",
+      "imports": [
+        "config.meta_profile",
+        "core.models.models",
+        "core.routing",
+        "runtime.observability",
+        "runtime.runtime_utils"
+      ],
+      "imported_by": [
+        "l3.strategy_orchestrator",
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 5,
+      "reverse_dependency_count": 2
+    },
+    "l2": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l2\\__init__.py",
+      "imports": [],
+      "imported_by": [
+        "tests.deprecated.test_full_workflow",
+        "tests.deprecated.test_runtime_core",
+        "tests.refactoring.test_l1_phase_a"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 3
+    },
+    "l3.draft_orchestrator": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l3\\draft_orchestrator.py",
+      "imports": [
+        "l1.draft_planning",
+        "l2.draft_executor",
+        "runtime.observability"
+      ],
+      "imported_by": [
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 3,
+      "reverse_dependency_count": 1
+    },
+    "l3.qa_orchestrator": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l3\\qa_orchestrator.py",
+      "imports": [
+        "l1.qa_planning",
+        "l2.qa_executor",
+        "runtime.observability"
+      ],
+      "imported_by": [
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 3,
+      "reverse_dependency_count": 1
+    },
+    "l3.safety_orchestrator": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l3\\safety_orchestrator.py",
+      "imports": [
+        "l1.safety_planning",
+        "l2.safety_executor",
+        "runtime.observability"
+      ],
+      "imported_by": [
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 3,
+      "reverse_dependency_count": 1
+    },
+    "l3.strategy_orchestrator": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l3\\strategy_orchestrator.py",
+      "imports": [
+        "l1.strategy_planning",
+        "l2.strategy_executor",
+        "runtime.observability"
+      ],
+      "imported_by": [
+        "l3.unified_workflow_orchestrator"
+      ],
+      "dependency_count": 3,
+      "reverse_dependency_count": 1
+    },
+    "l3.unified_workflow_orchestrator": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l3\\unified_workflow_orchestrator.py",
+      "imports": [
+        "l1.draft_planning",
+        "l1.qa_planning",
+        "l1.result_parser",
+        "l1.safety_planning",
+        "l1.strategy_planning",
+        "l2.draft_executor",
+        "l2.llm_caller",
+        "l2.qa_executor",
+        "l2.safety_executor",
+        "l2.strategy_executor",
+        "l3.draft_orchestrator",
+        "l3.qa_orchestrator",
+        "l3.safety_orchestrator",
+        "l3.strategy_orchestrator",
+        "runtime.observability"
+      ],
+      "imported_by": [
+        "atomic_integration_bridge"
+      ],
+      "dependency_count": 15,
+      "reverse_dependency_count": 1
     },
     "l3": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l3\\__init__.py",
       "imports": [
         "agents.execution.execution",
+        "infrastructure.di_container",
         "orchestration.workflow_graph"
       ],
       "imported_by": [
         "tests.test_dependency_injection"
       ],
-      "dependency_count": 2,
+      "dependency_count": 3,
       "reverse_dependency_count": 1
+    },
+    "l4.state_manager": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l4\\state_manager.py",
+      "imports": [],
+      "imported_by": [
+        "atomic_integration_bridge"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 1
+    },
+    "l4": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l4\\__init__.py",
+      "imports": [],
+      "imported_by": [
+        "agents.execution.vector_search_executor"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 1
+    },
+    "l5.safety_validator": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l5\\safety_validator.py",
+      "imports": [],
+      "imported_by": [
+        "atomic_integration_bridge"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 1
+    },
+    "l5": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\l5\\__init__.py",
+      "imports": [],
+      "imported_by": [
+        "core.integration",
+        "orchestration.orchestrator",
+        "orchestration.workflow_context",
+        "orchestration.workflow_engine"
+      ],
+      "dependency_count": 0,
+      "reverse_dependency_count": 4
     },
     "meta.ranking": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\meta\\ranking.py",
@@ -273,9 +599,11 @@
     },
     "meta": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\meta\\__init__.py",
-      "imports": [],
+      "imports": [
+        "meta.retrieval"
+      ],
       "imported_by": [],
-      "dependency_count": 0,
+      "dependency_count": 1,
       "reverse_dependency_count": 0
     },
     "orchestration.agent_bus": {
@@ -355,9 +683,11 @@
     },
     "orchestration.orchestrator": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\orchestration\\orchestrator.py",
-      "imports": [],
+      "imports": [
+        "l5"
+      ],
       "imported_by": [],
-      "dependency_count": 0,
+      "dependency_count": 1,
       "reverse_dependency_count": 0
     },
     "orchestration.routing": {
@@ -385,19 +715,22 @@
     "orchestration.workflow_context": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\orchestration\\workflow_context.py",
       "imports": [
+        "l5",
         "safety.types",
         "state.manager",
         "state.types"
       ],
       "imported_by": [],
-      "dependency_count": 3,
+      "dependency_count": 4,
       "reverse_dependency_count": 0
     },
     "orchestration.workflow_engine": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\orchestration\\workflow_engine.py",
-      "imports": [],
+      "imports": [
+        "l5"
+      ],
       "imported_by": [],
-      "dependency_count": 0,
+      "dependency_count": 1,
       "reverse_dependency_count": 0
     },
     "orchestration.workflow_graph": {
@@ -421,9 +754,11 @@
     "orchestration": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\orchestration\\__init__.py",
       "imports": [],
-      "imported_by": [],
+      "imported_by": [
+        "tests.refactoring.verify_phase_a"
+      ],
       "dependency_count": 0,
-      "reverse_dependency_count": 0
+      "reverse_dependency_count": 1
     },
     "profiles.agent_profile": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\profiles\\agent_profile.py",
@@ -559,9 +894,11 @@
     "prompts": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\prompts\\__init__.py",
       "imports": [],
-      "imported_by": [],
+      "imported_by": [
+        "tests.refactoring.verify_phase_a"
+      ],
       "dependency_count": 0,
-      "reverse_dependency_count": 0
+      "reverse_dependency_count": 1
     },
     "providers.anthropic_client": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\providers\\anthropic_client.py",
@@ -623,11 +960,17 @@
       ],
       "imported_by": [
         "agents.execution.agents",
+        "atomic_integration_bridge",
         "l2.agents",
+        "l2.draft_executor",
+        "l2.llm_caller",
+        "l2.qa_executor",
+        "l2.safety_executor",
+        "l2.strategy_executor",
         "tests.deprecated.test_runtime_core"
       ],
       "dependency_count": 1,
-      "reverse_dependency_count": 3
+      "reverse_dependency_count": 9
     },
     "runtime": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\runtime\\__init__.py",
@@ -689,9 +1032,11 @@
         "safety.policy",
         "safety.types"
       ],
-      "imported_by": [],
+      "imported_by": [
+        "tests.refactoring.verify_phase_a"
+      ],
       "dependency_count": 2,
-      "reverse_dependency_count": 0
+      "reverse_dependency_count": 1
     },
     "state.entity_resolution": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\state\\entity_resolution.py",
@@ -819,19 +1164,22 @@
         "state.triplet_store",
         "state.types"
       ],
-      "imported_by": [],
+      "imported_by": [
+        "tests.refactoring.verify_phase_a"
+      ],
       "dependency_count": 5,
-      "reverse_dependency_count": 0
+      "reverse_dependency_count": 1
     },
     "tests.test_dependency_injection": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\tests\\test_dependency_injection.py",
       "imports": [
+        "infrastructure.di_container",
         "l3",
         "safety.policy",
         "state.pinecone_adapter"
       ],
       "imported_by": [],
-      "dependency_count": 3,
+      "dependency_count": 4,
       "reverse_dependency_count": 0
     },
     "tests.test_meta_hybrid_ranker": {
@@ -862,6 +1210,13 @@
       ],
       "imported_by": [],
       "dependency_count": 2,
+      "reverse_dependency_count": 0
+    },
+    "tests": {
+      "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\tests\\__init__.py",
+      "imports": [],
+      "imported_by": [],
+      "dependency_count": 0,
       "reverse_dependency_count": 0
     },
     "tools.golden_eval": {
@@ -1036,10 +1391,11 @@
     "tests.deprecated.test_full_workflow": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\tests\\deprecated\\test_full_workflow.py",
       "imports": [
-        "core.models.models"
+        "core.models.models",
+        "l2"
       ],
       "imported_by": [],
-      "dependency_count": 1,
+      "dependency_count": 2,
       "reverse_dependency_count": 0
     },
     "tests.deprecated.test_instructional_prompts": {
@@ -1056,12 +1412,13 @@
     "tests.deprecated.test_integration_security": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\tests\\deprecated\\test_integration_security.py",
       "imports": [
+        "infrastructure.di_container",
         "safety.injection_detection",
         "safety.policy",
         "safety.types"
       ],
       "imported_by": [],
-      "dependency_count": 3,
+      "dependency_count": 4,
       "reverse_dependency_count": 0
     },
     "tests.deprecated.test_kg_components": {
@@ -1093,10 +1450,11 @@
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\tests\\deprecated\\test_runtime_core.py",
       "imports": [
         "core.models.models",
+        "l2",
         "runtime.runtime_utils"
       ],
       "imported_by": [],
-      "dependency_count": 2,
+      "dependency_count": 3,
       "reverse_dependency_count": 0
     },
     "tests.deprecated.test_triplet_store_and_entities": {
@@ -1300,17 +1658,29 @@
         "agents.planning.rag_planning",
         "agents.planning.safety_planning",
         "agents.planning.strategy_planning",
-        "core.models.models"
+        "core.models.models",
+        "l1",
+        "l2"
       ],
       "imported_by": [],
-      "dependency_count": 6,
+      "dependency_count": 8,
       "reverse_dependency_count": 0
     },
     "tests.refactoring.verify_phase_a": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\tests\\refactoring\\verify_phase_a.py",
-      "imports": [],
+      "imports": [
+        "agents",
+        "agents.execution.agents",
+        "agents.planning.strategy_planning",
+        "core.models.models",
+        "infrastructure",
+        "orchestration",
+        "prompts",
+        "safety",
+        "state"
+      ],
       "imported_by": [],
-      "dependency_count": 0,
+      "dependency_count": 9,
       "reverse_dependency_count": 0
     },
     "tests.sandbox.test_fs_isolation": {
@@ -1523,9 +1893,18 @@
       ],
       "imported_by": [
         "agents.execution",
-        "agents.execution.agents",
         "agents.execution.execution",
         "l2.agents",
+        "l2.draft_executor",
+        "l2.llm_caller",
+        "l2.qa_executor",
+        "l2.safety_executor",
+        "l2.strategy_executor",
+        "l3.draft_orchestrator",
+        "l3.qa_orchestrator",
+        "l3.safety_orchestrator",
+        "l3.strategy_orchestrator",
+        "l3.unified_workflow_orchestrator",
         "meta.ranking",
         "meta.routing",
         "orchestration.fusion_governance",
@@ -1533,7 +1912,7 @@
         "orchestration.workflow_graph"
       ],
       "dependency_count": 4,
-      "reverse_dependency_count": 9
+      "reverse_dependency_count": 18
     },
     "runtime.trace.trace_reconstruction": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\runtime\\trace\\trace_reconstruction.py",
@@ -1841,10 +2220,11 @@
         "meta.retrieval.retrieval"
       ],
       "imported_by": [
-        "agents.execution.execution"
+        "agents.execution.execution",
+        "meta"
       ],
       "dependency_count": 2,
-      "reverse_dependency_count": 1
+      "reverse_dependency_count": 2
     },
     "meta.retrieval.retrievers.bm25": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\meta\\retrieval\\retrievers\\bm25.py",
@@ -2495,6 +2875,11 @@
         "infrastructure.model_routing.policies",
         "infrastructure.model_routing.selector",
         "l2.agents",
+        "l2.draft_executor",
+        "l2.llm_caller",
+        "l2.qa_executor",
+        "l2.safety_executor",
+        "l2.strategy_executor",
         "meta.retrieval.hybrid_ranker",
         "meta.retrieval.retrieval",
         "meta.retrieval.retrievers.bm25",
@@ -2527,6 +2912,7 @@
         "tests.golden_state.test_runner",
         "tests.model_routing.test_budget_enforcement",
         "tests.refactoring.test_l1_phase_a",
+        "tests.refactoring.verify_phase_a",
         "tests.test_meta_hybrid_ranker",
         "tests.test_meta_ranking",
         "tests.test_meta_retrieval_orchestrator",
@@ -2535,7 +2921,7 @@
         "tools.runtime_utils"
       ],
       "dependency_count": 0,
-      "reverse_dependency_count": 56
+      "reverse_dependency_count": 62
     },
     "core.models": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\core\\models\\__init__.py",
@@ -2551,20 +2937,23 @@
     "agents.execution.agents": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\agents\\execution\\agents.py",
       "imports": [
+        "atomic_integration_bridge",
         "config.meta_profile",
         "core.models.models",
         "core.routing",
-        "runtime.observability",
+        "l1.prompt_builder",
+        "l2.llm_caller",
         "runtime.runtime_utils"
       ],
       "imported_by": [
         "agents.execution",
         "agents.execution.execution",
         "agents.meta.cognitive_agents",
-        "tests.deprecated.test_agent_cards"
+        "tests.deprecated.test_agent_cards",
+        "tests.refactoring.verify_phase_a"
       ],
-      "dependency_count": 5,
-      "reverse_dependency_count": 4
+      "dependency_count": 7,
+      "reverse_dependency_count": 5
     },
     "agents.execution.execution": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\agents\\execution\\execution.py",
@@ -2574,6 +2963,7 @@
         "eval.health.adapter",
         "eval.health.failure_detector",
         "eval.health.repair_policies",
+        "infrastructure.di_container",
         "meta.retrieval",
         "meta.schema_validation",
         "runtime.observability",
@@ -2585,7 +2975,7 @@
         "l3",
         "orchestration.workflow_graph"
       ],
-      "dependency_count": 10,
+      "dependency_count": 11,
       "reverse_dependency_count": 3
     },
     "agents.execution.fusion_executor": {
@@ -2641,9 +3031,11 @@
     },
     "agents.execution.vector_search_executor": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\agents\\execution\\vector_search_executor.py",
-      "imports": [],
+      "imports": [
+        "l4"
+      ],
       "imported_by": [],
-      "dependency_count": 0,
+      "dependency_count": 1,
       "reverse_dependency_count": 0
     },
     "agents.execution": {
@@ -2749,6 +3141,7 @@
         "agents.planning.v6_prompt_adapter",
         "config",
         "core.models.models",
+        "infrastructure.di_container",
         "infrastructure.reasoning.cot",
         "infrastructure.reasoning.react",
         "infrastructure.reasoning.reflexion",
@@ -2759,10 +3152,11 @@
       ],
       "imported_by": [
         "agents.planning",
-        "tests.refactoring.test_l1_phase_a"
+        "tests.refactoring.test_l1_phase_a",
+        "tests.refactoring.verify_phase_a"
       ],
-      "dependency_count": 10,
-      "reverse_dependency_count": 2
+      "dependency_count": 11,
+      "reverse_dependency_count": 3
     },
     "agents.planning.v6_prompt_adapter": {
       "filepath": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic-Workflow-10_10\\agents\\planning\\v6_prompt_adapter.py",
@@ -2819,22 +3213,16 @@
     "cli",
     "core",
     "eval",
-    "infrastructure",
-    "meta",
-    "orchestration.orchestrator",
-    "orchestration.workflow_engine",
-    "orchestration",
-    "prompts",
     "retrieval",
     "runtime",
     "state.hybrid_search",
+    "tests",
     "tests.deprecated",
     "tests.modularity.test_import_rules",
     "tests.modularity.test_layer_boundaries",
     "tests.modularity.test_layer_imports",
     "tests.modularity.test_provider_isolation",
     "tests.modularity.test_retrieval_modularity",
-    "tests.refactoring.verify_phase_a",
     "tests.vector",
     "prompts.cms.acl",
     "prompts.cms",
@@ -2846,7 +3234,6 @@
     "infrastructure.sandbox",
     "eval.golden_state",
     "eval.health.health_metrics",
-    "agents.execution.vector_search_executor",
     "agents.planning.vector_search_planning"
   ],
   "root_modules": [
@@ -2854,17 +3241,28 @@
     "fix_imports",
     "import_check",
     "update_imports_reorganization",
+    "agents",
     "cli.main_v10_10",
     "cli",
     "config",
     "core.errors",
     "core",
     "eval",
+    "infrastructure.di_container",
     "infrastructure",
+    "l1.draft_planning",
+    "l1.prompt_builder",
+    "l1.qa_planning",
+    "l1.result_parser",
+    "l1.safety_planning",
+    "l1.strategy_planning",
+    "l1",
+    "l2",
+    "l4.state_manager",
+    "l4",
+    "l5.safety_validator",
+    "l5",
     "meta.schema_validation",
-    "meta",
-    "orchestration.orchestrator",
-    "orchestration.workflow_engine",
     "orchestration",
     "profiles.budget_profile",
     "profiles.safety_profile",
@@ -2883,13 +3281,13 @@
     "state.temporal_kg",
     "state.triplet_store",
     "state.types",
+    "tests",
     "tests.deprecated",
     "tests.modularity.test_import_rules",
     "tests.modularity.test_layer_boundaries",
     "tests.modularity.test_layer_imports",
     "tests.modularity.test_provider_isolation",
     "tests.modularity.test_retrieval_modularity",
-    "tests.refactoring.verify_phase_a",
     "tests.vector",
     "runtime.observability.agentic_collectors",
     "runtime.observability.agentic_events",
@@ -2929,7 +3327,6 @@
     "eval.simulation.metrics",
     "eval.simulation.models",
     "core.models.models",
-    "agents.execution.vector_search_executor",
     "agents.planning.kg_retrieval_planning",
     "agents.planning.vector_search_planning"
   ]
