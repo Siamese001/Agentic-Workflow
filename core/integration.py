@@ -19,7 +19,7 @@ from .errors import (
     WorkflowErrorCode,
 )
 from .models.dag_models import DAGResult, NodeExecutionResult, NodeStatus
-from .workflow_context import NodeExecutionConfig, RetryConfig, WorkflowContext
+from orchestration.workflow_context import NodeExecutionConfig, RetryConfig, WorkflowContext
 
 
 TState = TypeVar("TState")
