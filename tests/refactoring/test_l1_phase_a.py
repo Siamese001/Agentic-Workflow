@@ -48,7 +48,7 @@ def test_l1_imports():
 def test_l1_strategy_planning_imports():
     """Verify strategy planning module imports."""
     try:
-        from agents.planning.strategy_planning import (
+        from l1.strategy_planning import (
             StrategyPlan,
             DraftPlan,
             LatentThinkingPlan,
@@ -72,7 +72,7 @@ def test_l1_strategy_planning_imports():
 def test_l1_rag_planning_imports():
     """Verify RAG planning module imports."""
     try:
-        from agents.planning.rag_planning import (
+        from l1.rag_planning import (
             RAGReasoningPlan,
             HydePlan,
             plan_rag_reasoning,
@@ -92,7 +92,7 @@ def test_l1_rag_planning_imports():
 def test_l1_qa_planning_imports():
     """Verify QA planning module imports."""
     try:
-        from agents.planning.qa_planning import (
+        from l1.qa_planning import (
             SemanticQAPlan,
             CouncilPlan,
             plan_semantic_qa,
@@ -112,7 +112,7 @@ def test_l1_qa_planning_imports():
 def test_l1_safety_planning_imports():
     """Verify safety planning module imports."""
     try:
-        from agents.planning.safety_planning import (
+        from l1.safety_planning import (
             SafetyPlan,
             plan_safety_review,
         )
@@ -171,7 +171,7 @@ def test_no_circular_dependencies():
         # Import in order: models -> l1 -> cognitive_agents -> l2
         import core.models.models as models  # noqa: F401
         import l1  # noqa: F401
-        import agents.meta.cognitive_agents  # noqa: F401
+        import meta.cognitive_agents  # noqa: F401
         import l2  # noqa: F401
         
         print("✓ No circular dependencies detected")
@@ -185,10 +185,10 @@ def test_l1_planning_is_pure():
     """Verify L1 planning functions are pure (no execution)."""
     try:
         import l1  # noqa: F401
-        from agents.planning.strategy_planning import StrategyPlan, DraftPlan
-        from agents.planning.rag_planning import RAGReasoningPlan, HydePlan
-        from agents.planning.qa_planning import SemanticQAPlan, CouncilPlan
-        from agents.planning.safety_planning import SafetyPlan
+        from l1.strategy_planning import StrategyPlan, DraftPlan
+        from l1.rag_planning import RAGReasoningPlan, HydePlan
+        from l1.qa_planning import SemanticQAPlan, CouncilPlan
+        from l1.safety_planning import SafetyPlan
         
         # All L1 plan dataclasses should be frozen
         import dataclasses

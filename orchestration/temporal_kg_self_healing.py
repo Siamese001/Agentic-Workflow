@@ -13,7 +13,7 @@ from enum import Enum
 import asyncio
 import logging
 
-from state.temporal_schemas import (
+from l4.temporal_schemas import (
     TemporalTriplet,
     TemporalEntity,
     ConflictDetection,
@@ -21,8 +21,8 @@ from state.temporal_schemas import (
     TemporalKGState,
     TemporalEvent,
 )
-from infrastructure.dag_engine.models import Node as DagNode, Edge as DagEdge, Graph as DagGraph
-from infrastructure.dag_engine.executor import DAGExecutor
+from infra.dag_engine.models import Node as DagNode, Edge as DagEdge, Graph as DagGraph
+from infra.dag_engine.executor import DAGExecutor
 
 
 logger = logging.getLogger(__name__)

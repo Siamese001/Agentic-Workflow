@@ -1,150 +1,212 @@
 """
-L1 strategy planning for résumé improvement workflows.
+Strategy planning for comprehensive résumé improvement.
 
-Generates targeted improvement plans with explicit reasoning modes and uncertainty handling for enhanced résumé job alignment.
+Creates targeted plans to enhance résumé alignment with job requirements.
 """
 
-from typing import Dict, Any, Optional, List
-from dataclasses import dataclass, field
-from enum import Enum
+from __future__ import annotations
 
-class ReasoningMode(str, Enum):
-    """Explicit reasoning strategies for L1 planning."""
-    
-    ANALYTICAL = "analytical"  # Break down into components
-    CREATIVE = "creative"      # Generate novel approaches
-    DEDUCTIVE = "deductive"    # Apply general rules to specific cases
-    INDUCTIVE = "inductive"    # Infer patterns from examples
-    ABDUCTIVE = "abductive"    # Generate best explanations
+from dataclasses import dataclass
+from typing import Any, List, Optional
 
-class LogicFramework(str, Enum):
-    """Logic frameworks for structured reasoning."""
-    
-    CAUSAL_CHAINING = "causal_chaining"    # Cause-effect relationships
-    TEMPORAL_SEQUENCING = "temporal_sequencing"  # Time-based ordering
-    HIERARCHICAL_DECOMPOSITION = "hierarchical_decomposition"  # Top-down breakdown
-    CONSTRAINT_PROPAGATION = "constraint_propagation"  # Rule-based constraints
+from config import config_profiles_v10_10 as config_profiles
+from core.models.models import (
+    DraftingPlan as WorkflowDraftingPlan,
+    ExecutionContext,
+    RAGResult,
+    StrategyPlan as WorkflowStrategyPlan,
+    StrategyResult,
+)
+from infra.reasoning.cot import expand_chain_of_thought
+from infra.reasoning.react import run_react_loop
+from infra.reasoning.reflexion import apply_reflexion
+from infra.reasoning.tot import tree_search
+from l1.builders.prompt_builder import (
+    PromptInstance,
+    build_drafting_prompt,
+)
+from l1.v6_prompt_adapter import build_v6_strategy_prompt, V6PromptConfig
+from l5.injection_detection import InjectionDetector, SafetyContext
+from infra.di_container import get_service
+from l5.policy import SafetyEngine
 
-@dataclass
-class UncertaintyHandling:
-    """Manages uncertainty in planning decisions."""
-    
-    confidence_threshold: float = 0.7
-    ambiguity_markers: List[str] = field(default_factory=list)
-    fallback_strategies: Dict[str, str] = field(default_factory=dict)
-    
-    def __post_init__(self):
-        if not self.ambiguity_markers:
-            self.ambiguity_markers = ["unclear", "ambiguous", "uncertain", "depends on"]
-        if not self.fallback_strategies:
-            self.fallback_strategies = {
-                "low_confidence": "request_clarification",
-                "high_ambiguity": "generate_alternatives",
-                "missing_context": "defer_decision"
-            }
 
-@dataclass
+@dataclass(frozen=True)
 class StrategyPlan:
-    """Enhanced strategy planning data structure with reasoning modes."""
-    
-    target_role: str
-    key_points: List[str]
-    complexity: str
-    reasoning: str
-    reasoning_mode: ReasoningMode
-    logic_framework: LogicFramework
-    confidence_score: float
-    uncertainty_handling: UncertaintyHandling
-    temporal_context: Optional[Dict[str, Any]] = None
+    """
+    Defines résumé strategy planning structure.
+
+    Ensures systematic approach to comprehensive résumé improvement.
+    """
+
+    prompt: PromptInstance
+
+
+@dataclass(frozen=True)
+class DraftPlan:
+    """
+    Structures résumé drafting planning approach.
+
+    Guides content creation for professional résumé enhancement.
+    """
+
+    prompt: PromptInstance
+
+
+@dataclass(frozen=True)
+class LatentThinkingPlan:
+    """
+    Coordinates cognitive processing for résumé analysis.
+
+    Optimizes reasoning strategy for effective résumé improvement.
+    """
+
+    profile_name: str
+    reasoning_mode: str
+    depth: int
+    trace: List[str]
+
 
 def plan_strategy(
-    job: Any, 
-    resume: Any, 
+    strategy_plan: WorkflowStrategyPlan,
+    *,
+    ctx: ExecutionContext,
+    job: Any,
+    resume: Any,
     config: Any,
-    reasoning_mode: Optional[ReasoningMode] = None
+    v6_config: Optional[V6PromptConfig] = None,
 ) -> StrategyPlan:
     """
-    Pure strategy planning function with configurable reasoning modes.
-    
-    Uses explicit reasoning strategies and uncertainty handling for robust résumé improvement planning.
+    Creates comprehensive résumé improvement strategy plan.
+
+    Generates targeted approach to enhance résumé job alignment.
     """
-    mode = reasoning_mode or ReasoningMode.ANALYTICAL
     
-    # Apply reasoning mode specific logic
-    if mode == ReasoningMode.ANALYTICAL:
-        return _analytical_planning(job, resume, config)
-    elif mode == ReasoningMode.CREATIVE:
-        return _creative_planning(job, resume, config)
-    elif mode == ReasoningMode.DEDUCTIVE:
-        return _deductive_planning(job, resume, config)
-    elif mode == ReasoningMode.INDUCTIVE:
-        return _inductive_planning(job, resume, config)
-    elif mode == ReasoningMode.ABDUCTIVE:
-        return _abductive_planning(job, resume, config)
-    else:
-        return _analytical_planning(job, resume, config)
+    if v6_config is None:
+        v6_config = V6PromptConfig(
+            include_examples=True,
+            enable_cot=True,
+        )
+    
+    # Build V6 prompt with context
+    v6_prompt = build_v6_strategy_prompt(ctx, job, resume, config, v6_config)
+    
+    # Security validation before prompt creation
+    safety_engine = get_service(SafetyEngine)
+    if safety_engine:
+        safety_context = SafetyContext(
+            content_type="strategy_prompt",
+            source="l1_strategy_planning",
+            destination="l2_execution",
+            content=v6_prompt,
+            user_id=getattr(ctx, "user_id", "unknown"),
+            session_id=getattr(ctx, "session_id", "unknown"),
+            metadata={"agent": "strategy_planner", "v6_enabled": True}
+        )
+        policy_result = safety_engine.evaluate(safety_context)
+        if policy_result.blocking_findings:
+            # Log security violations but continue with fallback
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.warning(f"Security violations in strategy prompt: {[f.message for f in policy_result.blocking_findings]}")
+    
+    # Create prompt instance with V6 content
+    prompt = PromptInstance(
+        id="system.strategy.v6",
+        content=v6_prompt,
+        layer="L1",
+        agent="strategy",
+        model_tier="balanced",
+        metadata={"v6_prompt": True, "security_validated": safety_engine is not None}
+    )
+    
+    return StrategyPlan(prompt=prompt)
 
-def _analytical_planning(job: Any, resume: Any, config: Any) -> StrategyPlan:
-    """Analytical reasoning: break down into components and analyze systematically."""
-    return StrategyPlan(
-        target_role="analytical_role",
-        key_points=["component_analysis", "gap_identification", "sequential_improvement"],
-        complexity="medium",
-        reasoning="Systematic breakdown of requirements and resume gaps",
-        reasoning_mode=ReasoningMode.ANALYTICAL,
-        logic_framework=LogicFramework.HIERARCHICAL_DECOMPOSITION,
-        confidence_score=0.8,
-        uncertainty_handling=UncertaintyHandling()
+
+def plan_draft(
+    drafting_plan: WorkflowDraftingPlan,
+    *,
+    ctx: ExecutionContext,
+    strategy_result: StrategyResult,
+    rag_result: RAGResult,
+    job: Any,
+    resume: Any,
+    config: Any,
+) -> DraftPlan:
+    """
+    Creates comprehensive résumé drafting plan.
+
+    Structures approach for generating professional résumé content aligned with job requirements.
+    """
+    prompt = build_drafting_prompt(
+        plan=drafting_plan,
+        ctx=ctx,
+        strategy=strategy_result,
+        rag=rag_result,
+        job=job,
+        resume=resume,
+        layer="L2",
+        agent="drafting",
+        model_tier="balanced",
+    )
+    return DraftPlan(prompt=prompt)
+
+
+def generate_latent_thinking_plan(
+    result: Any,
+    ctx: ExecutionContext,
+) -> LatentThinkingPlan:
+    """
+    Generates cognitive processing plan for résumé analysis.
+
+    Optimizes reasoning strategy to enhance résumé improvement quality.
+    """
+    profile_name = getattr(ctx, "profile_name", None) or getattr(ctx.config, "profile_id", "default")
+    reasoning_mode = "cot"
+    depth = 1
+
+    try:
+        spec = config_profiles.get_profile(profile_name)
+        reasoning_mode = str(getattr(spec, "reasoning_mode", "cot") or "cot")
+        depth = int(getattr(spec, "drafting_depth", 1) or 1)
+    except Exception:
+        reasoning_mode = "cot"
+        depth = 1
+
+    sections: List[Any] = []
+    try:
+        drafting_result = getattr(result, "drafting", None)
+        sections = list(getattr(drafting_result, "sections", []) or [])
+    except Exception:
+        sections = []
+
+    trace: List[str] = []
+    if sections:
+        seed_text = (getattr(sections[0], "body", None) or "").strip()
+        if seed_text:
+            try:
+                mode = reasoning_mode.lower()
+                if "tot" in mode:
+                    path, _ = tree_search(seed_text, max_depth=2, branching=max(1, depth))
+                    trace = [node.content for node in path]
+                elif "react" in mode:
+                    steps = run_react_loop(seed_text, max_steps=max(1, depth))
+                    trace = [step.thought for step in steps]
+                elif "reflex" in mode:
+                    trace = apply_reflexion(seed_text)
+                else:
+                    trace = expand_chain_of_thought(seed_text, steps=max(1, depth))
+            except Exception:
+                trace = []
+
+    return LatentThinkingPlan(
+        profile_name=profile_name,
+        reasoning_mode=reasoning_mode,
+        depth=depth,
+        trace=trace,
     )
 
-def _creative_planning(job: Any, resume: Any, config: Any) -> StrategyPlan:
-    """Creative reasoning: generate novel approaches and alternative perspectives."""
-    return StrategyPlan(
-        target_role="creative_role",
-        key_points=["novel_framing", "alternative_perspectives", "innovative_solutions"],
-        complexity="high",
-        reasoning="Generate innovative approaches to resume enhancement",
-        reasoning_mode=ReasoningMode.CREATIVE,
-        logic_framework=LogicFramework.CAUSAL_CHAINING,
-        confidence_score=0.7,
-        uncertainty_handling=UncertaintyHandling()
-    )
 
-def _deductive_planning(job: Any, resume: Any, config: Any) -> StrategyPlan:
-    """Deductive reasoning: apply general rules to specific cases."""
-    return StrategyPlan(
-        target_role="deductive_role",
-        key_points=["rule_application", "logical_conclusions", "standards_compliance"],
-        complexity="medium",
-        reasoning="Apply established resume best practices to specific case",
-        reasoning_mode=ReasoningMode.DEDUCTIVE,
-        logic_framework=LogicFramework.CONSTRAINT_PROPAGATION,
-        confidence_score=0.85,
-        uncertainty_handling=UncertaintyHandling()
-    )
 
-def _inductive_planning(job: Any, resume: Any, config: Any) -> StrategyPlan:
-    """Inductive reasoning: infer patterns from examples and generalize."""
-    return StrategyPlan(
-        target_role="inductive_role",
-        key_points=["pattern_identification", "generalization", "trend_application"],
-        complexity="medium",
-        reasoning="Infer successful patterns from similar resume cases",
-        reasoning_mode=ReasoningMode.INDUCTIVE,
-        logic_framework=LogicFramework.TEMPORAL_SEQUENCING,
-        confidence_score=0.75,
-        uncertainty_handling=UncertaintyHandling()
-    )
 
-def _abductive_planning(job: Any, resume: Any, config: Any) -> StrategyPlan:
-    """Abductive reasoning: generate best explanations for gaps and mismatches."""
-    return StrategyPlan(
-        target_role="abductive_role",
-        key_points=["gap_explanation", "hypothesis_generation", "best_fit_solutions"],
-        complexity="high",
-        reasoning="Generate best explanations for resume-job mismatches",
-        reasoning_mode=ReasoningMode.ABDUCTIVE,
-        logic_framework=LogicFramework.CAUSAL_CHAINING,
-        confidence_score=0.7,
-        uncertainty_handling=UncertaintyHandling()
-    )
+

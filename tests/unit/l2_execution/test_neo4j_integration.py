@@ -14,7 +14,7 @@ import os
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from state.temporal_schemas import (
+from l4.temporal_schemas import (
     TemporalEntity,
     TemporalTriplet,
     TemporalEvent,

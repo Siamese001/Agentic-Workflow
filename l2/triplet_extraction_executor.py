@@ -25,8 +25,8 @@ from datetime import datetime, UTC
 import json
 import re
 
-from state.triplet_store import Triplet, TemporalType, create_triplet, PREDICATES
-from state.entity_resolution import (
+from l4.triplet_store import Triplet, TemporalType, create_triplet, PREDICATES
+from l4.entity_resolution import (
     EntityRegistry,
     EntityType,
     EntityMention,

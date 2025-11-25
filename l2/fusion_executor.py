@@ -11,17 +11,17 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
 import logging
 
-from agents.planning.kg_rag_fusion_planning import (
+from l1.kg_rag_fusion_planning import (
     RetrievalStepType,
     FusionPlanStep,
     KGRAGFusionPlan,
     RAGRetrievalStep,
 )
-from state.temporal_schemas import (
+from l4.temporal_schemas import (
     TemporalTriplet,
     TemporalRange,
 )
-from state.temporal_kg import TemporalKG, TemporalQuery
+from l4.temporal_kg import TemporalKG, TemporalQuery
 
 
 logger = logging.getLogger(__name__)
@@ -607,7 +607,7 @@ async def execute_simple_fusion(
 
     Improves résumé processing speed by providing fast analysis for straightforward job questions.
     """
-    from agents.planning.kg_rag_fusion_planning import KGRAGFusionPlanner
+    from l1.kg_rag_fusion_planning import KGRAGFusionPlanner
     
     planner = KGRAGFusionPlanner()
     executor = FusionExecutor(kg_adapter=kg_adapter, vector_store=vector_store)
@@ -626,7 +626,7 @@ async def execute_temporal_entity_facts(
 
     Improves résumé timeline accuracy by showing career progression within specific time periods.
     """
-    from agents.planning.kg_rag_fusion_planning import plan_temporal_entity_facts
+    from l1.kg_rag_fusion_planning import plan_temporal_entity_facts
     
     executor = FusionExecutor(kg_adapter=kg_adapter)
     plan = plan_temporal_entity_facts(entity_id, temporal_range)

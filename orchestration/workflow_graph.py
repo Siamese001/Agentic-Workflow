@@ -29,8 +29,8 @@ from runtime.observability import (
 )
 from orchestration.dag_engine import Node as DagNode, Edge as DagEdge, Graph as DagGraph, DAGExecutor
 from orchestration.agent_registry import AgentRegistry
-from profiles.agent_profile import AgentCard
-from agents.execution.execution import (
+from config.agent_profile import AgentCard
+from l2.execution import (
     _execute_strategy,
     _execute_retrieval,
     _execute_drafting,

@@ -10,9 +10,9 @@ from typing import Any, Dict, Optional, TypeVar, Protocol, runtime_checkable
 from dataclasses import dataclass, field
 import logging
 
-from state.pinecone_adapter import PineconeAdapter
-from state.manager import StateManager
-from safety.policy import SafetyEngine
+from l4.pinecone_adapter import PineconeAdapter
+from l4.manager import StateManager
+from l5.policy import SafetyEngine
 
 logger = logging.getLogger(__name__)
 
@@ -82,7 +82,7 @@ def initialize_default_services() -> None:
     
     # Register L4 services
     if not container.get(PineconeAdapter):
-        from state.pinecone_adapter import PineconeConfig
+        from l4.pinecone_adapter import PineconeConfig
         pinecone_config = PineconeConfig(
             api_key="dummy-key",
             index_name="test-index"

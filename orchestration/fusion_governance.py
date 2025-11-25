@@ -27,23 +27,23 @@ from enum import Enum
 import logging
 import uuid
 
-from agents.planning.kg_rag_fusion_planning import (
+from l1.kg_rag_fusion_planning import (
     KGRAGFusionPlanner,
     KGRAGFusionPlan,
 )
-from agents.execution.fusion_executor import (
+from l2.fusion_executor import (
     FusionExecutor,
     FusionExecutionResult,
 )
-from state.temporal_schemas import (
+from l4.temporal_schemas import (
     FusionSession,
 )
-from safety.policy import (
+from l5.policy import (
     SafetyEngine,
     SafetyContext,
     PolicyResult,
 )
-from safety.types import (
+from l5.types import (
     SafetyFinding,
     Verdict,
     Severity,

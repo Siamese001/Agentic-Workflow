@@ -6,8 +6,8 @@ from datetime import datetime, UTC
 from enum import Enum
 from typing import Any, Dict, List, Optional, TypeVar, Generic
 
-from state.types import StateSnapshot, StateTransition
-from safety.types import PolicyDecision, Verdict
+from l4.types import StateSnapshot, StateTransition
+from l5.types import PolicyDecision, Verdict
 
 
 T = TypeVar("T")

@@ -20,7 +20,7 @@ except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
 
-from state.temporal_schemas import (
+from l4.temporal_schemas import (
     TemporalEntity,
     TemporalTriplet,
     TemporalEvent,

@@ -14,10 +14,10 @@ def _can_import_pinecone() -> bool:
 def test_import_vector_modules():
     """Test that all vector search related modules can be imported."""
     # L1 Planning
-    import agents.execution.agents.planning.vector_search_planning  # noqa: F401
+    import l2.agents.planning.vector_search_planning  # noqa: F401
     
     # L2 Execution
-    import agents.execution.agents.execution.vector_search_executor  # noqa: F401
+    import l2.agents.execution.vector_search_executor  # noqa: F401
     
     # If we get here, core imports worked
     assert True

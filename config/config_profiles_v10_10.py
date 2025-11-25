@@ -21,11 +21,11 @@ from core.models.models import (
     BM25BackendConfig,
     ComplexityLevel,
 )
-from profiles.llm_profile import LLMProfile
-from profiles.retrieval_profile import RetrievalProfile
-from profiles.safety_profile import SafetyProfile
-from profiles.context_profile import ContextProfile
-from profiles.budget_profile import BudgetProfile
+from config.llm_profile import LLMProfile
+from config.retrieval_profile import RetrievalProfile
+from config.safety_profile import SafetyProfile
+from config.context_profile import ContextProfile
+from config.budget_profile import BudgetProfile
 
 
 # ======================================================================

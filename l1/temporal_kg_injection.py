@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, UTC, timedelta
 from enum import Enum
 
-from prompts.instructional_injection_v6 import InstructionalExtension, ExtensionContent
+from l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent
 
 
 class TemporalRelation(str, Enum):
