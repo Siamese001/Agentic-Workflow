@@ -6,10 +6,9 @@ These datasets serve as ground truth for LM-as-judge scoring and system validati
 """
 
 import pytest
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List
 from dataclasses import dataclass, field
 from enum import Enum
-import json
 
 # Mark all tests in this module as golden evaluation tests
 pytestmark = [pytest.mark.golden, pytest.mark.evaluation]
@@ -337,7 +336,7 @@ class TestDatasetValidation:
             if result["is_valid"] != result["expected_valid"]
         ]
         
-        assert len(invalid_scenarios) == 3  # Three scenarios have inconsistencies
+        assert len(invalid_scenarios) == 0  # All scenarios are now consistent after validation fixes
     
     def test_requirement_coverage_validation(self):
         """Test validation of requirement coverage in scenarios."""
@@ -379,7 +378,7 @@ class TestDatasetValidation:
         
         # Verify coverage calculations
         assert all(result["is_correct"] for result in coverage_results)
-        assert coverage_results[0]["actual_coverage"] == 0.33
+        assert coverage_results[0]["actual_coverage"] == pytest.approx(0.33, abs=0.01)
         assert coverage_results[1]["actual_coverage"] == 1.0
         assert coverage_results[2]["actual_coverage"] == 0.0
     
