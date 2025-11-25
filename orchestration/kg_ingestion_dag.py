@@ -30,10 +30,22 @@ import uuid
 
 from state.temporal_schemas import (
     IngestionBatch,
+    TemporalEntity,
+    TemporalTriplet,
+    TemporalEvent,
 )
 from infrastructure.dag_engine.models import Node as DagNode, Edge as DagEdge, Graph as DagGraph
 from infrastructure.dag_engine.executor import DAGExecutor
 from runtime.observability import emit_node_event
+
+# Import Neo4j mirroring functions
+from l2.kg_writer import (
+    insert_entity,
+    insert_triplet,
+    insert_event,
+    batch_process_invalidation,
+    ingest_transcript,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -264,7 +276,7 @@ class UnifiedKGIngestionDAG:
                 "executor": "kg_writer",
                 "critical": True,
                 "timeout_minutes": 20,
-                "description": "Write data to knowledge graph",
+                "description": "Write data to knowledge graph (SQLite + Neo4j mirror)",
             },
         }
     
@@ -464,6 +476,16 @@ class UnifiedKGIngestionDAG:
             stage_output = await self._execute_with_retry(
                 executor, stage_input, stage, result
             )
+            
+            # Mirror to Neo4j for specific stages
+            if stage == IngestionStage.ENTITY_EXTRACTION_RESOLUTION:
+                await self._mirror_entities_to_neo4j(stage_output)
+            elif stage == IngestionStage.TRIPLET_EXTRACTION:
+                await self._mirror_triplets_to_neo4j(stage_output)
+            elif stage == IngestionStage.INVALIDATION_CHECKS:
+                await self._mirror_invalidations_to_neo4j(stage_output)
+            elif stage == IngestionStage.KG_WRITES:
+                await self._mirror_complete_transcript_to_neo4j(stage_output)
             
             # Calculate execution time
             execution_time = int((datetime.now(UTC) - start_time).total_seconds() * 1000)
@@ -763,6 +785,79 @@ async def ingest_documents(
     
     source_data = {"documents": documents}
     return await dag.execute_ingestion_dag(batch, source_data)
+
+
+# =============================================================================
+# Neo4j Mirroring Helper Methods
+# =============================================================================
+
+async def _mirror_entities_to_neo4j(stage_output: Any) -> None:
+    """Mirror resolved entities to Neo4j."""
+    try:
+        if isinstance(stage_output, dict) and "entities" in stage_output:
+            entities = stage_output["entities"]
+            for entity in entities:
+                if isinstance(entity, TemporalEntity):
+                    await insert_entity(entity)
+    except Exception:
+        # Neo4j mirroring is optional - don't fail ingestion
+        pass
+
+
+async def _mirror_triplets_to_neo4j(stage_output: Any) -> None:
+    """Mirror extracted triplets to Neo4j."""
+    try:
+        if isinstance(stage_output, dict) and "triplets" in stage_output:
+            triplets = stage_output["triplets"]
+            for triplet in triplets:
+                if isinstance(triplet, TemporalTriplet):
+                    await insert_triplet(triplet)
+    except Exception:
+        # Neo4j mirroring is optional - don't fail ingestion
+        pass
+
+
+async def _mirror_invalidations_to_neo4j(stage_output: Any) -> None:
+    """Mirror invalidation updates to Neo4j."""
+    try:
+        if isinstance(stage_output, dict) and "events" in stage_output:
+            events = stage_output["events"]
+            invalidation_events = [
+                e for e in events 
+                if isinstance(e, TemporalEvent) and e.event_type in ["invalidation", "expiration"]
+            ]
+            await batch_process_invalidation(invalidation_events)
+    except Exception:
+        # Neo4j mirroring is optional - don't fail ingestion
+        pass
+
+
+async def _mirror_complete_transcript_to_neo4j(stage_output: Any) -> None:
+    """Mirror complete transcript data to Neo4j."""
+    try:
+        if isinstance(stage_output, dict):
+            transcript_id = stage_output.get("transcript_id", f"transcript_{uuid.uuid4().hex[:8]}")
+            
+            entities = stage_output.get("entities", [])
+            triplets = stage_output.get("triplets", [])
+            events = stage_output.get("events", [])
+            
+            # Filter for proper types
+            temporal_entities = [e for e in entities if isinstance(e, TemporalEntity)]
+            temporal_triplets = [t for t in triplets if isinstance(t, TemporalTriplet)]
+            temporal_events = [e for e in events if isinstance(e, TemporalEvent)]
+            
+            await ingest_transcript(transcript_id, temporal_entities, temporal_triplets, temporal_events)
+    except Exception:
+        # Neo4j mirroring is optional - don't fail ingestion
+        pass
+
+
+# Add helper methods to UnifiedKGIngestionDAG class
+UnifiedKGIngestionDAG._mirror_entities_to_neo4j = staticmethod(_mirror_entities_to_neo4j)
+UnifiedKGIngestionDAG._mirror_triplets_to_neo4j = staticmethod(_mirror_triplets_to_neo4j)
+UnifiedKGIngestionDAG._mirror_invalidations_to_neo4j = staticmethod(_mirror_invalidations_to_neo4j)
+UnifiedKGIngestionDAG._mirror_complete_transcript_to_neo4j = staticmethod(_mirror_complete_transcript_to_neo4j)
 
 
 __all__ = [
