@@ -11,34 +11,41 @@ All other layers (L1-L5, infra, meta, core) should delegate to provider clients 
 ## 📦 Available Providers
 
 ### Redis Client (`redis_client.py`)
+
 - **Purpose**: Redis caching operations
 - **Usage**: `from providers.redis_client import RedisClient, init_redis_client`
 - **Replaces**: Direct `import redis` in infra/storage layers
 
 ### ChromaDB Client (`chromadb_client.py`)
+
 - **Purpose**: Vector storage and retrieval
 - **Usage**: `from providers.chromadb_client import ChromaClient, ChromaConfig, init_chroma_client`
 - **Replaces**: Direct `import chromadb` in infra/storage layers
 
 ### OpenAI Client (`openai_client.py`)
+
 - **Purpose**: OpenAI API operations
 - **Usage**: `from providers.openai_client import OpenAIClient`
 
 ### Anthropic Client (`anthropic_client.py`)
+
 - **Purpose**: Anthropic Claude API operations
 - **Usage**: `from providers.anthropic_client import AnthropicClient`
 
 ### Google GenAI Client (`google_genai_client.py`)
+
 - **Purpose**: Google Generative AI API operations
 - **Usage**: `from providers.google_genai_client import GoogleGenAIClient`
 
 ### Pinecone Client (`pinecone_client/`)
+
 - **Purpose**: Pinecone vector database operations
 - **Usage**: `from providers.pinecone_client import PineconeClient`
 
 ## 🚫 Forbidden Patterns
 
 ❌ **Direct SDK imports outside providers**:
+
 ```python
 # WRONG - Violates isolation
 import redis
@@ -47,6 +54,7 @@ from pinecone import Pinecone
 ```
 
 ✅ **Provider delegation pattern**:
+
 ```python
 # CORRECT - Maintains isolation
 from providers.redis_client import RedisClient
@@ -56,6 +64,7 @@ from providers.chromadb_client import ChromaClient
 ## 🧪 Enforcement
 
 The provider isolation is automatically enforced by:
+
 ```bash
 pytest tests/modularity/test_provider_isolation.py::test_only_providers_contain_provider_sdks -v
 ```
