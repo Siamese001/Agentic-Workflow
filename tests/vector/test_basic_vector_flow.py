@@ -40,42 +40,42 @@ def test_plan_vector_upsert():
     assert plan.metadata == metadata
 
 
-@patch('l2.vector_search_executor.OpenAI')
-def test_vector_search_flow(mock_openai):
-    """Test the complete vector search flow with mocks."""
-    # Setup mocks
-    mock_client = MagicMock()
+def test_vector_search_flow():
+    """Test the complete vector search flow with mocks.
     
-    mock_embedding = [0.1, 0.2, 0.3]
-    mock_client.get_embedding.return_value = mock_embedding
+    REFACTORED: L2 VectorSearchExecutor now uses L4 PineconeAdapter,
+    so we mock at the adapter level instead of OpenAI directly.
+    """
+    from l2.vector_search_executor import VectorSearchExecutor, SearchResult
+    from l4 import VectorQueryResult
     
-    # Import after setting up mocks to avoid actual API calls
-    from l2.vector_search_executor import VectorSearchExecutor
+    # Setup mock L4 adapter
+    mock_adapter = MagicMock()
     
-    # Initialize executor
-    executor = VectorSearchExecutor(mock_client)
-    
-    # Test get_embedding
-    embedding = executor.get_embedding("test")
-    assert embedding == mock_embedding
-    mock_client.get_embedding.assert_called_once_with("test")
-    
-    # Reset mock for next test
-    mock_client.get_embedding.reset_mock()
-    
-    # Test upsert_text
-    executor.upsert_text("test-ns", "doc1", "test content", {"category": "test"})
-    mock_client.upsert.assert_called_once()
-    
-    # Test search
-    mock_client.query.return_value = [
-        {"id": "doc1", "score": 0.95, "metadata": {"text": "test content"}}
+    # Mock query results
+    mock_adapter.query_by_text.return_value = [
+        VectorQueryResult(id="doc1", score=0.95, metadata={"text": "test content"})
     ]
-    results = executor.search("test-ns", "test query", 1)
+    
+    # Initialize executor with mock adapter
+    executor = VectorSearchExecutor(mock_adapter)
+    
+    # Test execute_search
+    results = executor.execute_search("test-ns", "test query", 1)
     assert len(results) == 1
     assert results[0].id == "doc1"
     assert results[0].score == 0.95
     assert results[0].metadata["text"] == "test content"
+    mock_adapter.query_by_text.assert_called_once()
+    
+    # Reset mock for next test
+    mock_adapter.reset_mock()
+    
+    # Test execute_upsert
+    mock_adapter.upsert_text_records.return_value = ["doc_001"]
+    ids = executor.execute_upsert("test-ns", ["test content"], "doc", [{"category": "test"}])
+    assert ids == ["doc_001"]
+    mock_adapter.upsert_text_records.assert_called_once()
 
 
 

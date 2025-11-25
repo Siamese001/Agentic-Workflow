@@ -207,7 +207,8 @@ class TestHybridSearch:
         mock_sparse.return_value = []
         
         # Execute search
-        config = HybridSearchConfig(final_top_k=5, score_threshold=0.7)
+        # Note: RRF produces small scores (e.g., 0.7 / 61 ≈ 0.011), so use low threshold
+        config = HybridSearchConfig(final_top_k=5, score_threshold=0.001)
         results = executor.search(
             query="Python AWS",
             namespace="test_ns",
@@ -216,7 +217,7 @@ class TestHybridSearch:
         
         # Verify results
         assert len(results) > 0
-        assert all(r.fused_score >= 0.7 for r in results)
+        assert all(r.fused_score >= 0.001 for r in results)
         mock_dense.assert_called_once()
     
     def test_hybrid_search_with_metadata_filter(self):
@@ -334,8 +335,7 @@ class TestTemporalKG:
         assert query.end_time == end
         assert query.min_confidence == 0.8
     
-    @patch('l4.temporal_kg.TemporalKG.adapter')
-    def test_add_fact(self, mock_adapter):
+    def test_add_fact(self):
         """Test adding a fact to temporal KG."""
         mock_adapter = Mock()
         mock_adapter.upsert_text_records = Mock()
@@ -348,8 +348,7 @@ class TestTemporalKG:
         # Verify upsert was called
         mock_adapter.upsert_text_records.assert_called_once()
     
-    @patch('l4.temporal_kg.TemporalKG.adapter')
-    def test_add_facts_batch(self, mock_adapter):
+    def test_add_facts_batch(self):
         """Test adding multiple facts in batch."""
         mock_adapter = Mock()
         mock_adapter.upsert_text_records = Mock()
@@ -376,6 +375,8 @@ class TestEndToEndIntegration:
     def test_execution_context_with_l4_adapters(self):
         """Test ExecutionContext with L4 adapters."""
         mock_pinecone = Mock()
+        # Set up mock to return a proper namespace string
+        mock_pinecone.build_namespace = Mock(return_value="user_123_job_456")
         mock_state_manager = Mock()
         
         ctx = _create_test_context(

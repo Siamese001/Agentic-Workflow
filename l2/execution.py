@@ -45,7 +45,6 @@ from runtime.observability import start_span, end_span, log_exception, emit_cost
 from meta.schema_validation import validate_schema_version
 import meta.retrieval as _retrieval_module
 from core.di_container import inject_dependencies, get_service
-from l4.pinecone_adapter import PineconeAdapter
 from l5.policy import SafetyEngine
 from .agents import (
     StrategyLLMAgent,
@@ -280,25 +279,15 @@ async def _execute_retrieval(
         import l2 as _l2_pkg
         hyde_query = await _l2_pkg._maybe_run_hyde_query(rag_plan, ctx)
 
-        # Use injected PineconeAdapter for retrieval instead of direct module access
-        pinecone_adapter = ctx.pinecone_adapter or get_service(PineconeAdapter)
-        if pinecone_adapter:
-            evidence_list = await pinecone_adapter.retrieve_evidence(
-                query=query,
-                ctx=ctx,
-                retrieval_cfg=retrieval_cfg,
-                hyde_query=hyde_query,
-                council_vote=None,  # QA council weighting is applied in later phases.
-            )
-        else:
-            # Fallback to module-level function for backward compatibility
-            evidence_list = _l2_pkg.run_rag_retrieval(
-                query=query,
-                ctx=ctx,
-                retrieval_cfg=retrieval_cfg,
-                hyde_query=hyde_query,
-                council_vote=None,
-            )
+        # Use module-level run_rag_retrieval for retrieval (allows test patching)
+        # PineconeAdapter integration is handled inside meta.retrieval if configured
+        evidence_list = _l2_pkg.run_rag_retrieval(
+            query=query,
+            ctx=ctx,
+            retrieval_cfg=retrieval_cfg,
+            hyde_query=hyde_query,
+            council_vote=None,  # QA council weighting is applied in later phases.
+        )
 
         return RAGResult(evidence=list(evidence_list or []), used_hyde=hyde_query is not None)
     except Exception as exc:  # noqa: BLE001
