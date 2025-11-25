@@ -161,9 +161,9 @@ class StateValidator:
         """Validate state value for type and size constraints."""
         # Check value size
         if isinstance(value, str):
-            max_length = 50000  # Default max length
             for rule in self.rules:
-                if rule.max_length and len(value) > rule.max_length:
+                max_length = rule.max_length or 50000  # Default max length
+                if len(value) > max_length:
                     raise StateValidationError(
                         f"Value too long for key '{key}': {len(value)} > {rule.max_length}"
                     )
