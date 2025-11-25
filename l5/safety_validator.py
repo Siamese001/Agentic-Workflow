@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from enum import Enum
 import logging
 
-from .interfaces import SafetyPolicy, SafetyResult, SafetyViolation
+from .interfaces import SafetyPolicy, SafetyResult, SafetyViolation, SafetyFinding
 from core.models.models import ExecutionContext
 
 logger = logging.getLogger(__name__)
@@ -112,12 +112,23 @@ class L5SafetyValidator:
                     if violation:
                         violations.append(violation)
         
-        result = SafetyResult(
-            is_safe=len([v for v in violations if v.severity == "blocking"]) == 0,
-            violations=violations,
-            layer=layer,
-            timestamp=self._get_timestamp()
-        )
+        # Convert violations to SafetyFinding objects for SafetyResult
+        findings = []
+        for violation in violations:
+            finding = SafetyFinding(
+                check_id=violation.constraint_type,
+                category=violation.constraint_type,
+                severity="medium",  # Default severity since SafetyViolation doesn't have severity field
+                message=f"Rule violation: {violation.rule}",
+                details={
+                    "detected_content": violation.detected_content,
+                    "confidence": violation.confidence,
+                    "metadata": violation.metadata
+                }
+            )
+            findings.append(finding)
+        
+        result = SafetyResult(findings=findings)
         
         # Log violations for audit trail
         if violations:
@@ -213,3 +224,7 @@ class L5SafetyValidator:
             constraints=applicable_constraints,
             validation_callback=lambda content: self.validate_layer_input(layer, content)
         )
+
+
+# Alias for backward compatibility with existing imports
+SafetyValidator = L5SafetyValidator
