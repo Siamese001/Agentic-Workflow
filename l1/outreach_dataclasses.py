@@ -666,6 +666,33 @@ def expand_section_by_intensity(
             "For comprehensive discussion of strategic implications,",
             "To explore detailed integration pathways,"
         ])
+    elif section_name == "cta" and intensity == "high":
+        expansions.extend([
+            "For detailed business value discussion,",
+            "To explore specific collaboration opportunities,"
+        ])
+    
+    elif section_name == "subject" and intensity == "extreme":
+        expansions.extend([
+            "Strategic Partnership Discussion",
+            "High-Value Executive Collaboration",
+        ])
+    elif section_name == "subject" and intensity == "high":
+        expansions.extend([
+            "Strategic Business Opportunity",
+            "Executive Leadership Discussion",
+        ])
+    
+    elif section_name == "signature" and intensity == "extreme":
+        expansions.extend([
+            "Strategic Partnership Partner",
+            "Executive Collaboration Specialist",
+        ])
+    elif section_name == "signature" and intensity == "high":
+        expansions.extend([
+            "Strategic Business Partner",
+            "Executive Collaboration Advisor",
+        ])
     
     # Combine base content with expansions
     if expansions:

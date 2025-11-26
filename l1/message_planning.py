@@ -219,13 +219,19 @@ class MessagePlanner:
         content: MessageContent, 
         archetype_context: ArchetypeContext
     ) -> str:
-        """Plan subject line content."""
-        # Base subject structure
+        """Plan subject content with reasoning-intensity expansion."""
         subject_parts = []
+        executive_profile = archetype_context.executive_reasoning_profile
         
-        # Add value proposition
-        if content.value_proposition:
-            subject_parts.append(content.value_proposition[:30])  # Truncate for subject
+        # Base subject construction
+        if archetype_context.archetype == ArchetypeType.SENIOR_TA:
+            subject_parts.append("Technical Leadership Opportunity")
+        elif archetype_context.archetype == ArchetypeType.C_LEVEL:
+            subject_parts.append("Strategic Partnership Discussion")
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
+            subject_parts.append("Business Collaboration Opportunity")
+        elif archetype_context.archetype == ArchetypeType.RECRUITER:
+            subject_parts.append("Potential Opportunity")
         
         # Add personalization if available
         if content.personalization_elements and archetype_context.tone_params.personalization_level != "low":
@@ -236,13 +242,16 @@ class MessagePlanner:
         if archetype_context.archetype == ArchetypeType.C_LEVEL:
             subject_parts.append(f"{content.company_name}")
         
-        # Combine and format
+        # Combine base content
         if len(subject_parts) == 1:
-            return subject_parts[0]
+            base_content = subject_parts[0]
         elif len(subject_parts) == 2:
-            return f"{subject_parts[0]} | {subject_parts[1]}"
+            base_content = f"{subject_parts[0]} | {subject_parts[1]}"
         else:
-            return f"{subject_parts[0]}: {subject_parts[1]}"
+            base_content = f"{subject_parts[0]}: {subject_parts[1]}"
+        
+        # Apply reasoning-intensity expansion for EXECUTIVE/C_LEVEL
+        return expand_section_by_intensity(base_content, executive_profile, "subject")
     
     def _plan_hook(
         self, 
@@ -318,29 +327,38 @@ class MessagePlanner:
         content: MessageContent, 
         archetype_context: ArchetypeContext
     ) -> str:
-        """Plan call-to-action content."""
+        """Plan call-to-action content with reasoning-intensity expansion."""
+        executive_profile = archetype_context.executive_reasoning_profile
         cta_type = archetype_context.cta_params.cta_type
         
+        # Base CTA content
         if cta_type == "technical_discussion":
-            return "Would you be open to a brief technical discussion next week?"
+            base_content = "Would you be open to a brief technical discussion next week?"
         elif cta_type == "business_meeting":
-            return "I'd appreciate 15 minutes to discuss potential business value"
+            base_content = "I'd appreciate 15 minutes to discuss potential business value"
         elif cta_type == "interview_request":
-            return "Are you available for a brief call to discuss potential fit?"
+            base_content = "Are you available for a brief call to discuss potential fit?"
         elif cta_type == "collaboration_discussion":
-            return "Would you be interested in exploring collaboration opportunities?"
+            base_content = "Would you be interested in exploring collaboration opportunities?"
         else:
-            return "Would you be open to a brief conversation to learn more?"
+            base_content = "Would you be open to a brief conversation to learn more?"
+        
+        # Apply reasoning-intensity expansion for EXECUTIVE/C_LEVEL
+        return expand_section_by_intensity(base_content, executive_profile, "cta")
     
     def _plan_signature(
         self, 
         content: MessageContent, 
         archetype_context: ArchetypeContext
     ) -> str:
-        """Plan signature content."""
-        # This would typically be the sender's info
-        # For planning purposes, we'll create a template
-        return "[Sender Name] | [Title] | [Contact Information]"
+        """Plan signature content with reasoning-intensity expansion."""
+        executive_profile = archetype_context.executive_reasoning_profile
+        
+        # Base signature content
+        base_content = "[Sender Name] | [Title] | [Contact Information]"
+        
+        # Apply reasoning-intensity expansion for EXECUTIVE/C_LEVEL
+        return expand_section_by_intensity(base_content, executive_profile, "signature")
     
     def _calculate_temperature_schedule(
         self, 
