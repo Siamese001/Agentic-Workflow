@@ -19,7 +19,9 @@ from .outreach_dataclasses import (
     CtaParameters,
     ReasoningMode,
     OutreachMission as OutreachMissionDataclass,
-    ARCHETYPE_REGISTRY
+    ExecutiveReasoningProfile,
+    ARCHETYPE_REGISTRY,
+    EXECUTIVE_REASONING_PROFILES
 )
 
 
@@ -79,21 +81,21 @@ class OutreachArchetypePlanner:
             return ArchetypeType.SENIOR_TA
         
         # C-level patterns
-        if any(keyword in title for keyword in ["ceo", "cto", "cfo", "chief", "president", "vp", "vice president"]) or \
+        if any(keyword in title for keyword in ["ceo", "cto", "cfo", "chief", "president"]) or \
            any(keyword in seniority for keyword in ["executive", "c-level", "c_suite"]):
             return ArchetypeType.C_LEVEL
         
-        # Hiring Manager patterns (default for management roles)
-        if any(keyword in title for keyword in ["manager", "director", "head", "supervisor"]) and \
-           any(keyword in department for keyword in ["engineering", "technology", "software", "product", "technical"]):
-            return ArchetypeType.HIRING_MANAGER
+        # Executive patterns (manager/director level)
+        if any(keyword in title for keyword in ["manager", "director", "head", "supervisor", "vp", "vice president"]) and \
+           any(keyword in department for keyword in ["engineering", "technology", "software", "product", "technical", "business"]):
+            return ArchetypeType.EXECUTIVE
         
         # Default fallback based on seniority
         if any(keyword in seniority for keyword in ["senior", "principal", "staff", "lead"]) and \
            "manager" not in title:
             return ArchetypeType.SENIOR_TA
         elif any(keyword in seniority for keyword in ["manager", "director", "vp", "executive"]):
-            return ArchetypeType.HIRING_MANAGER
+            return ArchetypeType.EXECUTIVE
         else:
             return ArchetypeType.RECRUITER
     
@@ -103,7 +105,7 @@ class OutreachArchetypePlanner:
         mission: OutreachMission
     ) -> ArchetypeContext:
         """
-        Build archetype context using corrected 4-archetype registry.
+        Build archetype context using corrected 4-archetype registry and executive reasoning profiles.
         """
         # Classify archetype using corrected logic
         archetype = self._classify_archetype(recipient, mission)
@@ -117,7 +119,10 @@ class OutreachArchetypePlanner:
         
         reasoning = f"Classified as {archetype} based on title '{recipient.title}' and department '{recipient.department}'"
         
-        # Build context with parameters from registry
+        # Get executive reasoning profile for this archetype
+        executive_profile = EXECUTIVE_REASONING_PROFILES[archetype_type]
+        
+        # Build context with parameters from registry and executive reasoning profile
         context = ArchetypeContext(
             archetype=archetype,
             confidence=confidence,
@@ -128,11 +133,14 @@ class OutreachArchetypePlanner:
             constraint_params=definition.constraint_params,
             tone_params=definition.tone_params,
             cta_params=definition.cta_params,
+            executive_reasoning_profile=executive_profile,
             metadata={
                 "recipient_title": recipient.title,
                 "recipient_industry": recipient.industry,
                 "mission_objective": mission.objective,
-                "classification_score": confidence
+                "classification_score": confidence,
+                "reasoning_intensity": executive_profile.reasoning_intensity,
+                "available_reasoning_modes": [mode.value for mode in executive_profile.available_reasoning_modes]
             }
         )
         
@@ -155,104 +163,6 @@ class OutreachArchetypePlanner:
         
         return min(base_confidence, 1.0)
     
-    def classify_archetype(
-        self, 
-        recipient: RecipientProfile, 
-        mission: OutreachMission
-    ) -> tuple[str, float, str]:
-        """
-        Pure computational archetype classification.
-        
-        Returns: (archetype, confidence, reasoning)
-        """
-        scores = {}
-        
-        # Score each archetype based on keyword matching
-        for archetype, config in self._archetype_registry.items():
-            score = 0.0
-            matches = []
-            
-            # Title keyword matching
-            title_lower = recipient.title.lower()
-            for keyword in config["keywords"]:
-                if keyword in title_lower:
-                    score += 2.0
-                    matches.append(f"title contains '{keyword}'")
-            
-            # Industry matching
-            if recipient.industry.lower() in [ind.lower() for ind in config["industries"]]:
-                score += 1.0
-                matches.append(f"industry match: {recipient.industry}")
-            
-            # Seniority matching
-            if archetype in ["technical_leader", "business_executive"] and recipient.seniority in ["executive", "senior", "vp", "director"]:
-                score += 1.0
-                matches.append(f"seniority match: {recipient.seniority}")
-            
-            # Skills matching
-            if archetype == "technical_leader" and any(skill in ["architecture", "leadership", "strategy"] for skill in recipient.skills):
-                score += 1.0
-                matches.append("leadership skills detected")
-            elif archetype == "individual_contributor" and any(skill in ["programming", "development", "analysis"] for skill in recipient.skills):
-                score += 1.0
-                matches.append("technical skills detected")
-            
-            # Mission alignment
-            mission_lower = mission.objective.lower()
-            if archetype == "technical_leader" and any(term in mission_lower for term in ["technology", "architecture", "engineering"]):
-                score += 0.5
-                matches.append("mission alignment")
-            elif archetype == "business_executive" and any(term in mission_lower for term in ["business", "revenue", "growth"]):
-                score += 0.5
-                matches.append("business mission alignment")
-            
-            scores[archetype] = (score, matches)
-        
-        # Find best archetype
-        best_archetype = max(scores.keys(), key=lambda k: scores[k][0])
-        best_score, best_matches = scores[best_archetype]
-        
-        # Normalize confidence (max possible score is around 5-6)
-        confidence = min(best_score / 5.0, 1.0)
-        reasoning = f"Selected based on: {', '.join(best_matches)}" if best_matches else "Default selection"
-        
-        return best_archetype, confidence, reasoning
-    
-    def build_archetype_context(
-        self, 
-        recipient: RecipientProfile, 
-        mission: OutreachMission
-    ) -> ArchetypeContext:
-        """
-        Build complete archetype context using pure computation.
-        """
-        # Classify archetype
-        archetype, confidence, reasoning = self.classify_archetype(recipient, mission)
-        
-        # Get archetype configuration
-        config = self._archetype_registry.get(archetype, self._archetype_registry["individual_contributor"])
-        
-        # Build context with cross-cutting parameters
-        context = ArchetypeContext(
-            archetype=archetype,
-            confidence=confidence,
-            reasoning=reasoning,
-            rag_params=config["rag_params"],
-            reasoning_params=config["reasoning_params"],
-            signal_params=config["signal_params"],
-            constraint_params=config["constraint_params"],
-            tone_params=config["tone_params"],
-            cta_params=config["cta_params"],
-            metadata={
-                "recipient_title": recipient.title,
-                "recipient_industry": recipient.industry,
-                "mission_objective": mission.objective,
-                "classification_score": confidence
-            }
-        )
-        
-        return context
-    
     def analyze_archetype_fit(
         self, 
         context: ArchetypeContext, 
@@ -272,7 +182,9 @@ class OutreachArchetypePlanner:
                     constraint_alignment += 0.2
                 elif constraint_lower in ["business", "revenue", "strategic"] and context.archetype == ArchetypeType.C_LEVEL:
                     constraint_alignment += 0.2
-                elif constraint_lower in ["hiring", "recruitment", "team"] and context.archetype == ArchetypeType.HIRING_MANAGER:
+                elif constraint_lower in ["business", "revenue", "strategic"] and context.archetype == ArchetypeType.EXECUTIVE:
+                    constraint_alignment += 0.2
+                elif constraint_lower in ["hiring", "recruitment", "team"] and context.archetype == ArchetypeType.EXECUTIVE:
                     constraint_alignment += 0.2
                 elif constraint_lower in ["screening", "job_fit"] and context.archetype == ArchetypeType.RECRUITER:
                     constraint_alignment += 0.2
@@ -291,8 +203,8 @@ class OutreachArchetypePlanner:
         approaches = {
             ArchetypeType.RECRUITER: "Focus on job fit and screening efficiency",
             ArchetypeType.SENIOR_TA: "Emphasize technical depth and company specificity",
-            ArchetypeType.HIRING_MANAGER: "Highlight team impact and pain point resolution",
-            ArchetypeType.C_LEVEL: "Emphasize strategic alignment and business outcomes"
+            ArchetypeType.EXECUTIVE: "Highlight business impact and strategic alignment",
+            ArchetypeType.C_LEVEL: "Emphasize strategic outcomes and high signal density"
         }
         return approaches.get(context.archetype, "Professional and value-focused approach")
     
@@ -304,10 +216,10 @@ class OutreachArchetypePlanner:
             levers.extend(["job fit", "screening efficiency", "candidate quality"])
         elif context.archetype == ArchetypeType.SENIOR_TA:
             levers.extend(["technical depth", "company specificity", "innovation potential"])
-        elif context.archetype == ArchetypeType.HIRING_MANAGER:
-            levers.extend(["team impact", "pain point resolution", "hiring efficiency"])
+        elif context.archetype == ArchetypeType.EXECUTIVE:
+            levers.extend(["business impact", "strategic alignment", "team outcomes"])
         elif context.archetype == ArchetypeType.C_LEVEL:
-            levers.extend(["strategic alignment", "business outcomes", "competitive advantage"])
+            levers.extend(["strategic outcomes", "competitive advantage", "business value"])
         
         return levers
     
@@ -324,8 +236,11 @@ class OutreachArchetypePlanner:
         if context.archetype == ArchetypeType.SENIOR_TA and mission.urgency == "high":
             risks.append("Senior technical authorities may require longer consideration cycles")
         
+        if context.archetype == ArchetypeType.EXECUTIVE and len(mission.value_proposition) < 50:
+            risks.append("Executive outreach requires strong business value proposition")
+        
         if context.archetype == ArchetypeType.C_LEVEL and len(mission.value_proposition) < 50:
-            risks.append("C-level outreach requires strong, concise value proposition")
+            risks.append("C-level outreach requires strong, concise strategic value proposition")
         
         return risks
     
@@ -335,14 +250,15 @@ class OutreachArchetypePlanner:
         reasoning_mode: ReasoningMode = ReasoningMode.COT
     ) -> ArchetypeContext:
         """
-        Plan archetype influence for a given mission.
+        Plan archetype influence for a given mission with executive reasoning profiles.
         
         This is the primary entry point for archetype planning that returns
-        an ArchetypeContext with all cross-cutting parameters configured.
+        an ArchetypeContext with all cross-cutting parameters configured and
+        available reasoning modes from the ExecutiveReasoningProfile.
         
         Args:
             mission: The outreach mission to plan for
-            reasoning_mode: The reasoning mode to use (cot, tot, react)
+            reasoning_mode: The reasoning mode to use (cot, tot, react, reflexion, sc_k)
             
         Returns:
             ArchetypeContext with configured parameters for research and message planning
@@ -371,11 +287,15 @@ class OutreachArchetypePlanner:
             metadata=mission.metadata
         )
         
-        # Build archetype context
+        # Build archetype context with executive reasoning profile
         context = self.build_archetype_context(recipient, local_mission)
         
-        # Update reasoning mode in context
-        context.reasoning_params.reasoning_mode = reasoning_mode
+        # Update reasoning mode in context if available in executive profile
+        if reasoning_mode in context.executive_reasoning_profile.available_reasoning_modes:
+            context.reasoning_params.reasoning_mode = reasoning_mode
+        else:
+            # Use first available reasoning mode from profile
+            context.reasoning_params.reasoning_mode = context.executive_reasoning_profile.available_reasoning_modes[0]
         
         return context
     

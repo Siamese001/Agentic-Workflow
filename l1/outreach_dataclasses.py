@@ -6,7 +6,7 @@ infrastructure dependencies or execution logic.
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Literal
 from enum import Enum
 
 
@@ -20,7 +20,7 @@ class ArchetypeType(str, Enum):
     """The FOUR AND ONLY FOUR correct outreach archetypes."""
     RECRUITER = "recruiter"
     SENIOR_TA = "senior_ta"
-    HIRING_MANAGER = "hiring_manager"
+    EXECUTIVE = "executive"
     C_LEVEL = "c_level"
 
 
@@ -29,6 +29,8 @@ class ReasoningMode(str, Enum):
     COT = "cot"      # Chain of Thought
     TOT = "tot"      # Tree of Thought
     REACT = "react"  # ReAct reasoning
+    REFLEXION = "reflexion"  # Reflexion reasoning
+    SC_K = "sc_k"    # Self-Consistency with K samples
 
 
 @dataclass
@@ -110,6 +112,28 @@ class ConstraintParameters:
 
 
 @dataclass
+class ExecutiveReasoningProfile:
+    """Executive reasoning profile for extreme reasoning intensity."""
+    schema_version: str = "v1"
+    model_name: str = "ExecutiveReasoningProfile"
+    
+    # Reasoning depth parameters
+    cot_depth: int = 2
+    tot_branches: int = 2
+    tot_recursion_depth: int = 1
+    reflexion_passes: int = 0
+    sc_k: int = 2
+    
+    # Reasoning intensity and cognitive axes
+    reasoning_intensity: Literal["low", "medium", "high", "extreme"] = "low"
+    cognitive_axes: List[str] = field(default_factory=list)
+    require_deep_research: bool = False
+    
+    # Available reasoning modes
+    available_reasoning_modes: List[ReasoningMode] = field(default_factory=lambda: [ReasoningMode.COT])
+
+
+@dataclass
 class ArchetypeDefinition:
     """Definition for a specific outreach archetype with parameters."""
     schema_version: str = "v1"
@@ -122,6 +146,7 @@ class ArchetypeDefinition:
     rag_params: RagParameters = field(default_factory=RagParameters)
     reasoning_params: ReasoningParameters = field(default_factory=ReasoningParameters)
     constraint_params: ConstraintParameters = field(default_factory=ConstraintParameters)
+    executive_reasoning_profile: ExecutiveReasoningProfile = field(default_factory=ExecutiveReasoningProfile)
     temperature_schedule: Dict[str, float] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
@@ -146,6 +171,9 @@ class ArchetypeContext:
     constraint_params: ConstraintParameters = field(default_factory=ConstraintParameters)
     tone_params: ToneParameters = field(default_factory=ToneParameters)
     cta_params: CtaParameters = field(default_factory=CtaParameters)
+    
+    # Executive reasoning profile for extreme reasoning intensity
+    executive_reasoning_profile: ExecutiveReasoningProfile = field(default_factory=ExecutiveReasoningProfile)
     
     # Metadata
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -176,6 +204,55 @@ class RefinementPlan:
     target_agent: Optional[AgentType] = None
     confidence: float = 0.0
     reasoning: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class MultiAxisReasoningPlan:
+    """Multi-axis research planning for cognitive axes expansion."""
+    schema_version: str = "v1"
+    model_name: str = "MultiAxisReasoningPlan"
+    
+    # Multi-axis query expansion
+    base_query: str = ""
+    cognitive_axes_queries: Dict[str, List[str]] = field(default_factory=dict)
+    total_query_count: int = 0
+    
+    # Reasoning depth multipliers
+    cot_depth_multiplier: int = 1
+    tot_recursion_multiplier: int = 1
+    expanded_subqueries: List[str] = field(default_factory=list)
+    
+    # Research parameters
+    require_deep_research: bool = False
+    sc_k: int = 2
+    target_sources: List[str] = field(default_factory=list)
+    
+    # Planning metadata
+    cognitive_axes: List[str] = field(default_factory=list)
+    reasoning_intensity: str = "low"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ReflexionPlan:
+    """Reflexion planning for critique and refinement cycles."""
+    schema_version: str = "v1"
+    model_name: str = "ReflexionPlan"
+    
+    # Reflexion parameters
+    reflexion_passes: int = 0
+    critique_questions: List[str] = field(default_factory=list)
+    refinement_strategies: List[str] = field(default_factory=list)
+    
+    # Quality gates
+    confidence_threshold: float = 0.7
+    completion_criteria: List[str] = field(default_factory=list)
+    
+    # Planning metadata
+    current_pass: int = 0
+    max_passes: int = 0
+    reasoning_intensity: str = "low"
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -242,11 +319,63 @@ class OutreachMessagePlan:
 
 # Temperature schedule constants for message planning
 SECTION_TEMPERATURE_SCHEDULE = {
-    "subject": 0.7,
-    "hook": 0.9,
-    "body": 0.8,
-    "cta": 0.6,
-    "signature": 0.3
+    "subject": 0.65,
+    "hook": 0.80,
+    "value": 0.55,
+    "cta": 0.70,
+    "signature": 0.45
+}
+
+
+# Executive reasoning profiles for each archetype
+EXECUTIVE_REASONING_PROFILES = {
+    ArchetypeType.RECRUITER: ExecutiveReasoningProfile(
+        cot_depth=2,
+        tot_branches=2,
+        tot_recursion_depth=1,
+        reflexion_passes=0,
+        sc_k=2,
+        reasoning_intensity="low",
+        cognitive_axes=["role_fit"],
+        require_deep_research=False,
+        available_reasoning_modes=[ReasoningMode.COT]
+    ),
+    
+    ArchetypeType.SENIOR_TA: ExecutiveReasoningProfile(
+        cot_depth=4,
+        tot_branches=3,
+        tot_recursion_depth=2,
+        reflexion_passes=1,
+        sc_k=3,
+        reasoning_intensity="medium",
+        cognitive_axes=["technical", "product", "competitive"],
+        require_deep_research=False,
+        available_reasoning_modes=[ReasoningMode.COT, ReasoningMode.TOT, ReasoningMode.REFLEXION]
+    ),
+    
+    ArchetypeType.EXECUTIVE: ExecutiveReasoningProfile(
+        cot_depth=8,
+        tot_branches=6,
+        tot_recursion_depth=3,
+        reflexion_passes=2,
+        sc_k=6,
+        reasoning_intensity="high",
+        cognitive_axes=["strategic", "financial", "technical", "competitive", "product", "operational", "risk", "psychographic"],
+        require_deep_research=True,
+        available_reasoning_modes=[ReasoningMode.COT, ReasoningMode.TOT, ReasoningMode.REFLEXION, ReasoningMode.SC_K]
+    ),
+    
+    ArchetypeType.C_LEVEL: ExecutiveReasoningProfile(
+        cot_depth=12,
+        tot_branches=10,
+        tot_recursion_depth=4,
+        reflexion_passes=3,
+        sc_k=10,
+        reasoning_intensity="extreme",
+        cognitive_axes=["strategic", "financial", "technical", "competitive", "product", "operational", "risk", "psychographic"],
+        require_deep_research=True,
+        available_reasoning_modes=[ReasoningMode.COT, ReasoningMode.TOT, ReasoningMode.REFLEXION, ReasoningMode.SC_K]
+    )
 }
 
 
@@ -295,7 +424,8 @@ ARCHETYPE_REGISTRY = {
             soft_constraints=["tone_professional_and_short"],
             constraint_weights={"brevity_required": 2.0, "job_fit_focus": 1.5}
         ),
-        temperature_schedule={"subject": 0.6, "hook": 0.8, "body": 0.7, "cta": 0.5, "signature": 0.3}
+        executive_reasoning_profile=EXECUTIVE_REASONING_PROFILES[ArchetypeType.RECRUITER],
+        temperature_schedule=SECTION_TEMPERATURE_SCHEDULE
     ),
     
     ArchetypeType.SENIOR_TA: ArchetypeDefinition(
@@ -341,53 +471,55 @@ ARCHETYPE_REGISTRY = {
             soft_constraints=["must_include_company_specificity"],
             constraint_weights={"role_alignment_required": 2.0, "technical_depth": 1.5}
         ),
-        temperature_schedule={"subject": 0.7, "hook": 0.9, "body": 0.8, "cta": 0.6, "signature": 0.3}
+        executive_reasoning_profile=EXECUTIVE_REASONING_PROFILES[ArchetypeType.SENIOR_TA],
+        temperature_schedule=SECTION_TEMPERATURE_SCHEDULE
     ),
     
-    ArchetypeType.HIRING_MANAGER: ArchetypeDefinition(
-        archetype=ArchetypeType.HIRING_MANAGER,
-        description="Team pain point owner - focuses on business impact and team dynamics",
+    ArchetypeType.EXECUTIVE: ArchetypeDefinition(
+        archetype=ArchetypeType.EXECUTIVE,
+        description="Business stakeholder - focuses on strategic impact and business outcomes",
         tone_params=ToneParameters(
-            formality_level="professional",
-            enthusiasm_level="moderate",
-            confidence_level="high",
+            formality_level="executive",
+            enthusiasm_level="high",
+            confidence_level="very_high",
             personalization_level="high",
             industry_specific=True
         ),
         cta_params=CtaParameters(
-            cta_type="team_impact_discussion",
+            cta_type="strategic_discussion",
             urgency_level="medium",
-            value_proposition_focus="team_benefit",
+            value_proposition_focus="business_outcome",
             friction_reduction=True,
             follow_up_enabled=True
         ),
         signal_params=SignalParameters(
             min_signal_score=0.75,
             signal_types=["strategic", "quantitative"],
-            max_age_days=270,
-            weight_recent=1.2,
-            weight_quantitative=1.6
+            max_age_days=180,
+            weight_recent=1.3,
+            weight_quantitative=1.8
         ),
         rag_params=RagParameters(
-            top_k=10,
-            score_threshold=0.72,
+            top_k=15,
+            score_threshold=0.75,
             include_metadata=True,
-            source_weights={"company_news": 1.4, "team_blog": 1.6, "management_insights": 1.3}
+            source_weights={"executive_insights": 1.8, "market_analysis": 1.6, "business_news": 1.4}
         ),
         reasoning_params=ReasoningParameters(
-            reasoning_style="practical",
-            reasoning_mode=ReasoningMode.REACT,
-            confidence_threshold=0.75,
-            max_reasoning_depth=3,
+            reasoning_style="strategic",
+            reasoning_mode=ReasoningMode.TOT,
+            confidence_threshold=0.8,
+            max_reasoning_depth=5,
             use_analogical=True,
             use_causal=True
         ),
         constraint_params=ConstraintParameters(
-            strict_constraints=["pain_point_relevance_required", "team_impact_required", "no_buzzwords"],
-            soft_constraints=["specific_metrics_required"],
-            constraint_weights={"pain_point_relevance_required": 2.0, "team_impact": 1.8}
+            strict_constraints=["strategic_alignment_required", "business_impact_required", "no_filler_language"],
+            soft_constraints=["executive_summary_required"],
+            constraint_weights={"strategic_alignment_required": 2.0, "business_impact": 1.8}
         ),
-        temperature_schedule={"subject": 0.7, "hook": 0.8, "body": 0.8, "cta": 0.6, "signature": 0.3}
+        executive_reasoning_profile=EXECUTIVE_REASONING_PROFILES[ArchetypeType.EXECUTIVE],
+        temperature_schedule=SECTION_TEMPERATURE_SCHEDULE
     ),
     
     ArchetypeType.C_LEVEL: ArchetypeDefinition(
@@ -424,7 +556,7 @@ ARCHETYPE_REGISTRY = {
             reasoning_style="strategic",
             reasoning_mode=ReasoningMode.TOT,
             confidence_threshold=0.85,
-            max_reasoning_depth=4,
+            max_reasoning_depth=6,
             use_analogical=True,
             use_causal=True
         ),
@@ -433,6 +565,7 @@ ARCHETYPE_REGISTRY = {
             soft_constraints=["high_signal_density_required"],
             constraint_weights={"strategic_alignment_required": 2.5, "quantifiable_outcomes": 2.0}
         ),
-        temperature_schedule={"subject": 0.8, "hook": 0.9, "body": 0.9, "cta": 0.7, "signature": 0.4}
+        executive_reasoning_profile=EXECUTIVE_REASONING_PROFILES[ArchetypeType.C_LEVEL],
+        temperature_schedule=SECTION_TEMPERATURE_SCHEDULE
     )
 }
