@@ -1,5 +1,4 @@
 """L1 Planning Layer Integration Tests."""
-import pytest
 
 class TestL1PlanningIntegration:
     """Integration tests for L1 planning layer."""
