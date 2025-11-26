@@ -21,7 +21,7 @@ from l1.outreach_dataclasses import ArchetypeType
 
 KG_FALLBACK_ARCHETYPES: Set[ArchetypeType] = {
     ArchetypeType.C_LEVEL,
-    ArchetypeType.HIRING_MANAGER,
+    ArchetypeType.EXECUTIVE,
     ArchetypeType.SENIOR_TA,
     ArchetypeType.RECRUITER
 }

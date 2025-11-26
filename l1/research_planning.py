@@ -398,7 +398,7 @@ class ResearchRefinementPlanner:
             return AgentType.COMPANY
         else:
             # Default based on archetype
-            if archetype_context.archetype in [ArchetypeType.SENIOR_TA, ArchetypeType.HIRING_MANAGER]:
+            if archetype_context.archetype in [ArchetypeType.SENIOR_TA, ArchetypeType.RECRUITER]:
                 return AgentType.CONTACT
             else:
                 return AgentType.COMPANY
@@ -779,7 +779,7 @@ class ResearchRefinementPlanner:
             ]
         }
         
-        return source_mapping.get(archetype, ["general_web_search"])
+        return source_mapping.get(str(archetype), ["general_web_search"])
     
     def plan_research_refinement(
         self,
