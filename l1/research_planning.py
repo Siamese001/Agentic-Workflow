@@ -437,3 +437,32 @@ class ResearchRefinementPlanner:
             reasoning_parts.append(f"Iteration {iteration} refinement")
         
         return "; ".join(reasoning_parts)
+    
+    def plan_research_refinement(
+        self,
+        current_results: ResearchResult,
+        archetype_context: ArchetypeContext,
+        iteration: int = 1,
+        failure_context: Optional[FailureContext] = None
+    ) -> RefinementPlan:
+        """
+        Plan research refinement based on current results and archetype context.
+        
+        This is the primary entry point for research refinement planning that
+        produces a RefinementPlan with tasks mapped to contact or company agents.
+        
+        Args:
+            current_results: Current research results to analyze
+            archetype_context: Archetype context from archetype planning
+            iteration: Current iteration number
+            failure_context: Optional failure context from L5 validation
+            
+        Returns:
+            RefinementPlan with refinement tasks and target agent
+        """
+        return self.determine_refinement_needs(
+            current_results=current_results,
+            archetype_context=archetype_context,
+            iteration=iteration,
+            failure_context=failure_context
+        )
