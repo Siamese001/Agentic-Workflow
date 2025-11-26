@@ -45,6 +45,7 @@ class Triplet:
     valid_until: Optional[datetime] = None
     status: TripletStatus = TripletStatus.ACTIVE
     metadata: Optional[Dict[str, Any]] = None
+    extracted_at: Optional[datetime] = None
     
     def to_natural_language(self) -> str:
         """Converts resume workflow triplet to natural language for display."""
@@ -94,6 +95,8 @@ class TripletQuery:
     status: TripletStatus = TripletStatus.ACTIVE
     valid_at: Optional[datetime] = None
     metadata_filter: Optional[Dict[str, Any]] = None
+    include_invalidated: bool = False
+    min_confidence: float = 0.0
 
 
 class TripletStore:
@@ -160,7 +163,20 @@ class TripletStore:
         results = []
         for triplet_id in candidates:
             triplet = self._triplets.get(triplet_id)
-            if triplet and triplet.status == query.status:
+            if triplet:
+                # Handle include_invalidated
+                if query.include_invalidated:
+                    # When include_invalidated=True, accept all statuses
+                    pass
+                else:
+                    # When include_invalidated=False, only accept specified status
+                    if triplet.status != query.status:
+                        continue
+                
+                # Handle min_confidence
+                if triplet.confidence < query.min_confidence:
+                    continue
+                    
                 if query.temporal_type and triplet.temporal_type != query.temporal_type:
                     continue
                 if query.valid_at and not self._is_valid_at(triplet, query.valid_at):
@@ -184,18 +200,21 @@ class TripletStore:
                 subjects.append(subject)
         return subjects
     
-    def invalidate_triplet(self, triplet_id: str) -> bool:
+    def invalidate_triplet(self, triplet_id: str, reason: str) -> bool:
         """Marks resume workflow triplet as invalidated for enhancement processing."""
         triplet = self._triplets.get(triplet_id)
         if triplet:
             triplet.status = TripletStatus.INVALIDATED
+            if triplet.metadata is None:
+                triplet.metadata = {}
+            triplet.metadata["invalidation_reason"] = reason
             return True
         return False
     
     def replace_triplet(self, old_triplet_id: str, new_triplet: Triplet) -> Optional[str]:
         """Replaces old resume workflow triplet with new one for enhancement processing."""
         if old_triplet_id in self._triplets:
-            self.invalidate_triplet(old_triplet_id)
+            self.invalidate_triplet(old_triplet_id, "replaced")
             return self.add_triplet(new_triplet)
         return None
     
@@ -210,6 +229,10 @@ class TripletStore:
             for tid in triplet_ids
             if tid in self._triplets and self._triplets[tid].status == TripletStatus.ACTIVE
         ]
+    
+    def get_entity_triplets(self, entity: str) -> List[Triplet]:
+        """Return all triplets where entity is the subject or object."""
+        return self.get_triplets_for_entity(entity)
     
     def count(self, include_invalidated: bool = False) -> int:
         """Gets count of resume workflow triplets in store for enhancement."""
@@ -268,6 +291,7 @@ def create_triplet(
         source=source,
         valid_from=valid_from or datetime.now(UTC),
         metadata=metadata,
+        extracted_at=valid_from or datetime.now(UTC),
     )
 
 
