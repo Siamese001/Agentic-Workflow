@@ -41,7 +41,7 @@ class ResearchRefinementPlanner:
     
     def __init__(self):
         """Initializes planner with quality thresholds for executive-grade research evidence."""
-        # HSON: Sets high quality thresholds to ensure executive-grade evidence → increases message credibility
+        # HSON: Sets high quality thresholds to ensure executive-grade evidence -> increases message credibility
         self._refinement_thresholds = {
             "min_confidence": 0.7,
             "min_results": 5,
@@ -800,10 +800,10 @@ class ResearchRefinementPlanner:
         )
 
 
-"""
-=== Learning Trace Map ===
-LAYER: L1
-ROLE: Plans research refinement to ensure executive-grade evidence quality for message credibility
-IMPACT: Strengthens message evidence through quality thresholds → increases executive trust by 25%
-FLOW: apps/lic_outreach/lic_workflow_entry.py → L2 research executors → ResearchRefinementPlanner.analyze_research_quality() → L4 retrieval refinement
-"""
+#
+# === Learning Trace Map ===
+# LAYER: L1
+# ROLE: Plans research refinement to ensure executive-grade evidence quality for message credibility
+# IMPACT: Strengthens message evidence through quality thresholds -> increases executive trust by 25%
+# FLOW: apps/lic_outreach/lic_workflow_entry.py -> L2 research executors -> ResearchRefinementPlanner.analyze_research_quality() -> L4 retrieval refinement
+#

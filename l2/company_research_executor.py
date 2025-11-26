@@ -89,10 +89,10 @@ class CompanyResearchExecutor:
             profile_type="company"
         )
         
-        # HSON: Builds archetype-specific company queries → surfaces business signals executives prioritize
+        # HSON: Builds archetype-specific company queries -> surfaces business signals executives prioritize
         query = self._build_company_query(target_company, archetype)
         
-        # HSON: Applies archetype-specific search thresholds → ensures executive-grade evidence quality
+        # HSON: Applies archetype-specific search thresholds -> ensures executive-grade evidence quality
         config = HybridSearchConfig(
             dense_top_k=rag_params.get("top_k", 15),
             sparse_top_k=rag_params.get("top_k", 15),
@@ -313,10 +313,10 @@ class CompanyResearchExecutor:
         return filtered
 
 
-"""
-=== Learning Trace Map ===
-LAYER: L2
-ROLE: Executes company research to gather business intelligence for executive message credibility
-IMPACT: Provides high-quality company evidence → strengthens executive message impact by 30%
-FLOW: apps/lic_outreach/lic_workflow_entry.py → OutreachArchetypePlanner → CompanyResearchExecutor.search_company_context() → L4 hybrid search → L5 safety
-"""
+#
+# === Learning Trace Map ===
+# LAYER: L2
+# ROLE: Executes company research to gather business intelligence for executive message credibility
+# IMPACT: Provides high-quality company evidence -> strengthens executive message impact by 30%
+# FLOW: apps/lic_outreach/lic_workflow_entry.py -> OutreachArchetypePlanner -> CompanyResearchExecutor.search_company_context() -> L4 hybrid search -> L5 safety
+#
