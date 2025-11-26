@@ -569,3 +569,125 @@ ARCHETYPE_REGISTRY = {
         temperature_schedule=SECTION_TEMPERATURE_SCHEDULE
     )
 }
+
+
+# ============================================================================
+# UNIFIED REASONING-INTENSITY HELPER FUNCTIONS
+# ============================================================================
+
+def compute_reasoning_multiplier(profile: ExecutiveReasoningProfile) -> int:
+    """
+    Compute unified reasoning multiplier from executive profile.
+    
+    Uses cot_depth * tot_branches for consistency across all planners.
+    This multiplier determines query expansion, section depth, and richness.
+    """
+    return profile.cot_depth * profile.tot_branches
+
+
+def adjust_temperature_by_intensity(
+    base_temp: float, 
+    profile: ExecutiveReasoningProfile, 
+    section_name: str
+) -> float:
+    """
+    Adjust temperature based on reasoning intensity and section type.
+    
+    Higher intensity increases creativity in engaging sections (hook, value)
+    while maintaining formality in structured sections (subject, signature).
+    """
+    intensity = profile.reasoning_intensity
+    adjusted_temp = base_temp
+    
+    # Intensity-based adjustments
+    if intensity == "extreme":
+        if section_name in ["hook", "value"]:
+            adjusted_temp += 0.15
+        elif section_name in ["subject", "signature"]:
+            adjusted_temp -= 0.05
+        else:  # cta
+            adjusted_temp += 0.05
+    elif intensity == "high":
+        if section_name in ["hook", "value"]:
+            adjusted_temp += 0.10
+        elif section_name in ["subject", "signature"]:
+            adjusted_temp -= 0.05
+        else:  # cta
+            adjusted_temp += 0.05
+    elif intensity == "medium":
+        if section_name in ["hook", "value"]:
+            adjusted_temp += 0.05
+    
+    # Clamp between 0.1 and 1.5
+    return max(0.1, min(1.5, adjusted_temp))
+
+
+def expand_section_by_intensity(
+    base_content: str, 
+    profile: ExecutiveReasoningProfile, 
+    section_name: str
+) -> str:
+    """
+    Expand section content based on reasoning intensity multiplier.
+    
+    Higher intensity archetypes (EXECUTIVE, C_LEVEL) get richer, more detailed
+    content with expanded arguments and increased sentence density.
+    """
+    multiplier = compute_reasoning_multiplier(profile)
+    intensity = profile.reasoning_intensity
+    
+    if intensity in ["low", "medium"]:
+        return base_content
+    
+    # Expand content for high/extreme intensity archetypes
+    expansions = []
+    
+    if section_name == "hook" and intensity in ["high", "extreme"]:
+        expansions.extend([
+            f"Given {profile.cognitive_axes[0] if profile.cognitive_axes else 'strategic'} priorities,",
+            "With deep consideration of your organizational context,"
+        ])
+    
+    elif section_name == "value" and intensity == "extreme":
+        expansions.extend([
+            f"Across {len(profile.cognitive_axes)} key dimensions including:",
+            "Strategic business impact with quantifiable outcomes,",
+            "Technical innovation aligned with market needs,",
+            "Operational excellence and scalability considerations,"
+        ])
+    elif section_name == "value" and intensity == "high":
+        expansions.extend([
+            "Key business value propositions:",
+            "Strategic alignment with your objectives,"
+        ])
+    
+    elif section_name == "cta" and intensity == "extreme":
+        expansions.extend([
+            "For comprehensive discussion of strategic implications,",
+            "To explore detailed integration pathways,"
+        ])
+    
+    # Combine base content with expansions
+    if expansions:
+        return f"{base_content} {' '.join(expansions)}"
+    
+    return base_content
+
+
+def reasoning_intensity_metadata(profile: ExecutiveReasoningProfile) -> Dict[str, Any]:
+    """
+    Generate complete reasoning-intensity metadata for L1→L2 propagation.
+    
+    Returns all fields needed by L2 executors to respect reasoning intensity.
+    """
+    return {
+        "reasoning_intensity": profile.reasoning_intensity,
+        "cot_depth": profile.cot_depth,
+        "tot_branches": profile.tot_branches,
+        "reasoning_multiplier": compute_reasoning_multiplier(profile),
+        "reflexion_passes": profile.reflexion_passes,
+        "sc_k": profile.sc_k,
+        "cognitive_axes": profile.cognitive_axes,
+        "require_deep_research": profile.require_deep_research,
+        "executive_profile": profile  # Full dataclass for advanced L2 processing
+    }
