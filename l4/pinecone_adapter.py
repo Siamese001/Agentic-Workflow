@@ -72,8 +72,10 @@ class PineconeAdapter:
         user_id: Optional[str] = None,
         job_id: Optional[str] = None,
         workflow_id: Optional[str] = None,
+        mission_id: Optional[str] = None,
+        profile_type: Optional[str] = None
     ) -> str:
-        """Builds namespace for resume workflow data separation."""
+        """Build namespacing for resume + outreach without breaking resume behavior."""
         parts = [self.config.namespace_prefix]
         if user_id:
             parts.append(f"user_{user_id}")
@@ -81,6 +83,10 @@ class PineconeAdapter:
             parts.append(f"job_{job_id}")
         if workflow_id:
             parts.append(f"wf_{workflow_id}")
+        if mission_id:
+            parts.append(f"mission_{mission_id}")
+        if profile_type:
+            parts.append(profile_type)
         return "_".join(parts)
     
     def build_id(
@@ -201,6 +207,9 @@ class PineconeAdapter:
         """Upserts resume workflow vector records to Pinecone."""
         self._ensure_client()
         
+        if self._index is None:
+            raise RuntimeError("Pinecone index not initialized")
+        
         # Convert to Pinecone format (tuples for new SDK)
         vectors = [
             (r.id, r.values, r.metadata)
@@ -229,6 +238,9 @@ class PineconeAdapter:
             List of query results with scores and metadata
         """
         self._ensure_client()
+        
+        if self._index is None:
+            raise RuntimeError("Pinecone index not initialized")
         
         # Build query kwargs
         query_kwargs: Dict[str, Any] = {}
@@ -339,6 +351,10 @@ class PineconeAdapter:
     ) -> None:
         """Deletes resume workflow vector records by ID."""
         self._ensure_client()
+        
+        if self._index is None:
+            raise RuntimeError("Pinecone index not initialized")
+            
         self._index.delete(ids=list(ids), namespace=namespace)
     
     def upsert_text_records(
