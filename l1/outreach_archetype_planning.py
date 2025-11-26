@@ -80,9 +80,9 @@ class OutreachArchetypePlanner:
            "manager" not in title and "director" not in title:
             return ArchetypeType.SENIOR_TA
         
-        # C-level patterns
+        # C-level patterns (more specific to avoid VP misclassification)
         if any(keyword in title for keyword in ["ceo", "cto", "cfo", "chief", "president"]) or \
-           any(keyword in seniority for keyword in ["executive", "c-level", "c_suite"]):
+           any(keyword in seniority for keyword in ["c-level", "c_suite"]):
             return ArchetypeType.C_LEVEL
         
         # Executive patterns (manager/director level)
