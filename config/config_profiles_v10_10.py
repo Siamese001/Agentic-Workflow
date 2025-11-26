@@ -211,7 +211,7 @@ def _balanced_hybrid_retrieval(
         # Google GenAI as an optional provider.
         redis_cache=RedisCacheConfig(enabled=True),
         chroma=ChromaVectorConfig(enabled=True, collection_name="resume_documents"),
-        google_genai=GoogleGenAIConfig(enabled=True, model="gemini-pro"),
+        google_genai=GoogleGenAIConfig(enabled=True, model="gemini-3-pro-preview"),
     )
 
 
@@ -263,7 +263,7 @@ def _premium_dense_retrieval(
         # Google GenAI available for experimentation.
         redis_cache=RedisCacheConfig(enabled=True),
         chroma=ChromaVectorConfig(enabled=True, collection_name="resume_documents"),
-        google_genai=GoogleGenAIConfig(enabled=True, model="gemini-pro"),
+        google_genai=GoogleGenAIConfig(enabled=True, model="gemini-3-pro-preview"),
     )
 
 
