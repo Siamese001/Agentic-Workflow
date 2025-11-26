@@ -1,0 +1,29 @@
+{
+  "version": "1.0",
+  "trace_id": "trace_002",
+  "workflow_id": "wf_002",
+  "spans": [
+    {
+      "span_id": "span_001",
+      "name": "draft_resume",
+      "start_time": 1700001000,
+      "end_time": 1700001500,
+      "status": "success",
+      "metadata": {
+        "sections_drafted": 4,
+        "tokens_used": 1500
+      }
+    },
+    {
+      "span_id": "span_002",
+      "name": "review_draft",
+      "start_time": 1700001500,
+      "end_time": 1700001800,
+      "status": "success",
+      "metadata": {
+        "issues_found": 2,
+        "issues_fixed": 2
+      }
+    }
+  ]
+}

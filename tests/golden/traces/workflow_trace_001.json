@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "trace_id": "trace_001",
+  "workflow_id": "wf_001",
+  "spans": [
+    {
+      "span_id": "span_001",
+      "name": "analyze_job",
+      "start_time": 1700000000,
+      "end_time": 1700000100,
+      "status": "success"
+    },
+    {
+      "span_id": "span_002",
+      "name": "plan_strategy",
+      "start_time": 1700000100,
+      "end_time": 1700000200,
+      "status": "success"
+    }
+  ]
+}
