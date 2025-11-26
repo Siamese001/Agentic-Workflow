@@ -110,7 +110,8 @@ class MessageGenerationExecutor:
             plan=subject_plan,
             temperature=temperature_schedule.get("subject", 0.7),
             ctx=ctx,
-            signal_context=signal_context
+            signal_context=signal_context,
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["subject"] = subject_section
         
@@ -120,7 +121,8 @@ class MessageGenerationExecutor:
             plan=hook_plan,
             temperature=temperature_schedule.get("hook", 0.9),
             ctx=ctx,
-            signal_context=signal_context
+            signal_context=signal_context,
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["hook"] = hook_section
         
@@ -128,9 +130,10 @@ class MessageGenerationExecutor:
         value_section = self._generate_section(
             section_name="value",
             plan=value_plan,
-            temperature=temperature_schedule.get("body", 0.8),
+            temperature=temperature_schedule.get("value", 0.8),
             ctx=ctx,
-            signal_context=signal_context
+            signal_context=signal_context,
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["value"] = value_section
         
@@ -140,7 +143,8 @@ class MessageGenerationExecutor:
             plan=cta_plan,
             temperature=temperature_schedule.get("cta", 0.6),
             ctx=ctx,
-            signal_context=signal_context
+            signal_context=signal_context,
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["cta"] = cta_section
         
@@ -150,7 +154,8 @@ class MessageGenerationExecutor:
             plan=signature_plan,
             temperature=temperature_schedule.get("signature", 0.3),
             ctx=ctx,
-            signal_context=""  # Signature doesn't need signals
+            signal_context="",  # Signature doesn't need signals
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["signature"] = signature_section
         
@@ -180,19 +185,24 @@ class MessageGenerationExecutor:
         plan: str,
         temperature: float,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> MessageSection:
         """
         Generate a single message section.
         
         Uses runtime LLM client with specified temperature.
         """
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
         # Build prompt for section
         prompt = self._build_section_prompt(
             section_name=section_name,
             plan=plan,
             ctx=ctx,
-            signal_context=signal_context
+            signal_context=signal_context,
+            reasoning_metadata=reasoning_metadata
         )
         
         # Call LLM with temperature
@@ -222,9 +232,13 @@ class MessageGenerationExecutor:
         section_name: str,
         plan: str,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> str:
         """Build prompt for section generation."""
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
         prompts = {
             "subject": self._build_subject_prompt,
             "hook": self._build_hook_prompt,
@@ -234,15 +248,75 @@ class MessageGenerationExecutor:
         }
         
         builder = prompts.get(section_name, self._build_generic_prompt)
-        return builder(plan, ctx, signal_context)
+        return builder(plan, ctx, signal_context, reasoning_metadata)
+    
+    def _build_reasoning_instructions(self, reasoning_metadata: Dict[str, Any], section_name: str) -> str:
+        """Build reasoning-intensity instructions based on metadata."""
+        reasoning_intensity = reasoning_metadata.get("reasoning_intensity", "low")
+        cot_depth = reasoning_metadata.get("cot_depth", 1)
+        tot_branches = reasoning_metadata.get("tot_branches", 1)
+        
+        # High-value sections get deeper reasoning instructions
+        if section_name in ["value", "hook"]:
+            if reasoning_intensity == "extreme":
+                return f"""
+REASONING INTENSITY: EXTREME
+- Use multi-step justification with explicit reasoning chains
+- Provide 3-4 distinct value dimensions with specific examples
+- Include strategic implications and business impact quantification
+- Apply Chain-of-Thought depth: {cot_depth} steps, Tree-of-Thought branches: {tot_branches}
+- Emphasize precision, specificity, and quantifiable outcomes"""
+            elif reasoning_intensity == "high":
+                return f"""
+REASONING INTENSITY: HIGH  
+- Use structured reasoning with clear justification steps
+- Provide 2-3 value dimensions with concrete examples
+- Include business impact and team outcomes
+- Apply Chain-of-Thought depth: {cot_depth} steps, Tree-of-Thought branches: {tot_branches}
+- Focus on strategic alignment and specific metrics"""
+            elif reasoning_intensity == "medium":
+                return f"""
+REASONING INTENSITY: MEDIUM
+- Use clear reasoning with some justification
+- Provide 1-2 key value points with brief examples
+- Apply Chain-of-Thought depth: {cot_depth} steps, Tree-of-Thought branches: {tot_branches}
+- Balance conciseness with informative content"""
+        
+        # Subject and CTA get lighter enhancements for extreme intensity only
+        elif section_name in ["subject", "cta"]:
+            if reasoning_intensity == "extreme":
+                return """
+REASONING INTENSITY: EXTREME
+- Use precise, strategic language that reflects executive-level thinking
+- Emphasize high-value partnership or strategic opportunity framing"""
+            elif reasoning_intensity == "high":
+                return """
+REASONING INTENSITY: HIGH
+- Use professional, benefit-oriented language
+- Emphasize business value and collaboration"""
+        
+        # Signature gets minimal enhancement
+        elif section_name == "signature":
+            if reasoning_intensity == "extreme":
+                return """
+REASONING INTENSITY: EXTREME
+- Include strategic partnership language in signature"""
+        
+        return ""  # No additional instructions for low intensity
     
     def _build_subject_prompt(
         self,
         plan: str,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> str:
         """Build prompt for subject line generation."""
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
+        reasoning_instructions = self._build_reasoning_instructions(reasoning_metadata, "subject")
+        
         return f"""Generate a compelling email subject line for outreach.
 
 Target: {ctx.target_role} at {ctx.target_company}
@@ -253,16 +327,23 @@ Planning guidance: {plan}
 
 {signal_context}
 
+{reasoning_instructions}
+
 Generate a concise, engaging subject line (max 60 characters):"""
     
     def _build_hook_prompt(
         self,
         plan: str,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> str:
         """Build prompt for hook/opening generation."""
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
         personalization = ", ".join(ctx.personalization_points) if ctx.personalization_points else "None specified"
+        reasoning_instructions = self._build_reasoning_instructions(reasoning_metadata, "hook")
         
         return f"""Generate an engaging opening hook for outreach email.
 
@@ -274,15 +355,23 @@ Planning guidance: {plan}
 
 {signal_context}
 
-Generate a personalized, attention-grabbing opening (2-3 sentences):"""
+{reasoning_instructions}
+
+Generate a compelling, personalized opening (2-3 sentences):"""
     
     def _build_value_prompt(
         self,
         plan: str,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> str:
         """Build prompt for value proposition body generation."""
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
+        reasoning_instructions = self._build_reasoning_instructions(reasoning_metadata, "value")
+        
         return f"""Generate the value proposition body for outreach email.
 
 Target: {ctx.target_role} at {ctx.target_company}
@@ -293,15 +382,23 @@ Planning guidance: {plan}
 
 {signal_context}
 
+{reasoning_instructions}
+
 Generate a compelling value proposition (2-4 sentences):"""
     
     def _build_cta_prompt(
         self,
         plan: str,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> str:
         """Build prompt for call-to-action generation."""
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
+        reasoning_instructions = self._build_reasoning_instructions(reasoning_metadata, "cta")
+        
         return f"""Generate a clear call-to-action for outreach email.
 
 Target: {ctx.target_role} at {ctx.target_company}
@@ -309,18 +406,28 @@ Archetype: {ctx.archetype}
 
 Planning guidance: {plan}
 
+{reasoning_instructions}
+
 Generate a low-friction, specific call-to-action (1-2 sentences):"""
     
     def _build_signature_prompt(
         self,
         plan: str,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> str:
         """Build prompt for signature generation."""
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
+        reasoning_instructions = self._build_reasoning_instructions(reasoning_metadata, "signature")
+        
         return f"""Generate a professional email signature.
 
 Planning guidance: {plan}
+
+{reasoning_instructions}
 
 Generate a clean, professional signature:"""
     
@@ -328,15 +435,23 @@ Generate a clean, professional signature:"""
         self,
         plan: str,
         ctx: GenerationContext,
-        signal_context: str
+        signal_context: str,
+        reasoning_metadata: Dict[str, Any] = None
     ) -> str:
         """Build generic prompt for unknown sections."""
+        if reasoning_metadata is None:
+            reasoning_metadata = {}
+            
+        reasoning_instructions = self._build_reasoning_instructions(reasoning_metadata, "generic")
+        
         return f"""Generate content for outreach email section.
 
 Target: {ctx.target_role} at {ctx.target_company}
 Planning guidance: {plan}
 
 {signal_context}
+
+{reasoning_instructions}
 
 Generate appropriate content:"""
     

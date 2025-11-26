@@ -14,7 +14,7 @@ from l1.outreach_dataclasses import (
     expand_section_by_intensity
 )
 from l1.message_planning import MessagePlanner, MessageContent
-from l1.outreach_archetype_planning import OutreachArchetypePlanner
+from l1.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
 
 
 class TestMessageReasoningIntensity:
@@ -153,12 +153,20 @@ class TestMessageReasoningIntensity:
         planner = MessagePlanner()
         archetype_planner = OutreachArchetypePlanner()
         
-        # Create C_LEVEL context
-        context = archetype_planner.build_archetype_context(
-            target_title="CEO",
-            target_company="TechCorp",
-            recipient_description="Chief Executive Officer"
+        # Create C_LEVEL context using RecipientProfile and OutreachMission
+        recipient = RecipientProfile(
+            name="John Doe", title="CEO", company="TechCorp", industry="Technology",
+            seniority="Executive", department="Executive", skills=["leadership"],
+            recent_activity=["funding"], metadata={}
         )
+        
+        mission = OutreachMission(
+            objective="Strategic partnership", target_role="CEO",
+            value_proposition="Strategic leadership", urgency="high",
+            personalization_points=["funding"], constraints=["formal"], metadata={}
+        )
+        
+        context = archetype_planner.build_archetype_context(recipient, mission)
         
         content = MessageContent(
             recipient_name="John Doe",
@@ -198,12 +206,24 @@ class TestMessageReasoningIntensity:
         planner = MessagePlanner()
         archetype_planner = OutreachArchetypePlanner()
         
-        # Create EXECUTIVE context
-        context = archetype_planner.build_archetype_context(
-            target_title="VP Engineering",
-            target_company="TechCorp",
-            recipient_description="Vice President of Engineering"
+        # Create EXECUTIVE context using RecipientProfile and OutreachMission
+        recipient = RecipientProfile(
+            name="Jane Smith", title="VP Engineering", company="TechCorp", industry="Technology",
+            seniority="Executive", department="Engineering", skills=["leadership", "technical"],
+            recent_activity=["product launch"], metadata={}
         )
+        
+        mission = OutreachMission(
+            objective="Technical leadership", target_role="VP Engineering",
+            value_proposition="Technical leadership", urgency="medium",
+            personalization_points=["product launch"], constraints=["technical depth"], metadata={}
+        )
+        
+        context = archetype_planner.build_archetype_context(recipient, mission)
+        
+        # Override tone parameters to neutral to isolate reasoning-intensity effects
+        context.tone_params.enthusiasm_level = "medium"
+        context.tone_params.formality_level = "professional"
         
         content = MessageContent(
             recipient_name="Jane Smith",
@@ -219,15 +239,92 @@ class TestMessageReasoningIntensity:
         # Generate message plan
         plan = planner.create_message_plan(content, context)
         
-        # Verify temperature adjustments match unified logic
+        # Verify temperature adjustments match unified logic (without tone adjustments)
         temps = plan.temperature_schedule
         
         # EXECUTIVE: hook +0.10, value +0.10, subject -0.05, signature -0.05, cta +0.05
-        assert temps["hook"] == 0.90  # 0.80 + 0.10
-        assert temps["value"] == 0.65  # 0.55 + 0.10
-        assert temps["subject"] == 0.60  # 0.65 - 0.05
-        assert temps["signature"] == 0.40  # 0.45 - 0.05
-        assert temps["cta"] == 0.75  # 0.70 + 0.05
+        assert temps["hook"] == pytest.approx(0.90)  # 0.80 + 0.10
+        assert temps["value"] == pytest.approx(0.65)  # 0.55 + 0.10
+        assert temps["subject"] == pytest.approx(0.60)  # 0.65 - 0.05
+        assert temps["signature"] == pytest.approx(0.40)  # 0.45 - 0.05
+        assert temps["cta"] == pytest.approx(0.75)  # 0.70 + 0.05
+
+    def test_signature_subtle_adjustment_for_executive(self):
+        """Test signature includes minor strategic language for high/extreme intensity."""
+        base_signature = "[Sender Name] | [Title] | [Contact Information]"
+        
+        # C_LEVEL extreme intensity - should add strategic language
+        c_level_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.C_LEVEL]
+        c_level_signature = expand_section_by_intensity(base_signature, c_level_profile, "signature")
+        
+        # Should include strategic partnership language for extreme intensity
+        assert "strategic" in c_level_signature.lower()
+        assert len(c_level_signature) > len(base_signature)
+        
+        # EXECUTIVE high intensity - should have minor enhancement
+        executive_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.EXECUTIVE]
+        executive_signature = expand_section_by_intensity(base_signature, executive_profile, "signature")
+        
+        # Should be enhanced but less than C_LEVEL
+        assert len(executive_signature) >= len(base_signature)
+        
+        # RECRUITER low intensity - should remain unchanged
+        recruiter_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.RECRUITER]
+        recruiter_signature = expand_section_by_intensity(base_signature, recruiter_profile, "signature")
+        
+        assert recruiter_signature == base_signature
+    
+    def test_subject_expands_for_executive_intensity(self):
+        """Test subject section expands for EXECUTIVE/C_LEVEL intensity."""
+        base_subject = "Business Collaboration Opportunity"
+        
+        # C_LEVEL extreme intensity - should add precision phrasing
+        c_level_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.C_LEVEL]
+        c_level_subject = expand_section_by_intensity(base_subject, c_level_profile, "subject")
+        
+        # Should be longer and more precise for extreme intensity
+        assert len(c_level_subject) > len(base_subject)
+        assert "strategic" in c_level_subject.lower() or "partnership" in c_level_subject.lower()
+        
+        # EXECUTIVE high intensity - should have moderate expansion
+        executive_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.EXECUTIVE]
+        executive_subject = expand_section_by_intensity(base_subject, executive_profile, "subject")
+        
+        # Should be enhanced but less than C_LEVEL
+        assert len(executive_subject) > len(base_subject)
+        assert len(executive_subject) < len(c_level_subject)
+        
+        # RECRUITER low intensity - should remain unchanged
+        recruiter_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.RECRUITER]
+        recruiter_subject = expand_section_by_intensity(base_subject, recruiter_profile, "subject")
+        
+        assert recruiter_subject == base_subject
+    
+    def test_cta_expands_for_executive_intensity(self):
+        """Test CTA section expands for EXECUTIVE/C_LEVEL intensity."""
+        base_cta = "Would you be open to a brief conversation to learn more?"
+        
+        # C_LEVEL extreme intensity - should add benefit justification
+        c_level_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.C_LEVEL]
+        c_level_cta = expand_section_by_intensity(base_cta, c_level_profile, "cta")
+        
+        # Should include additional benefit lines for extreme intensity
+        assert len(c_level_cta) > len(base_cta)
+        assert "strategic" in c_level_cta.lower() or "integration" in c_level_cta.lower()
+        
+        # EXECUTIVE high intensity - should have moderate expansion
+        executive_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.EXECUTIVE]
+        executive_cta = expand_section_by_intensity(base_cta, executive_profile, "cta")
+        
+        # Should be enhanced but less than C_LEVEL
+        assert len(executive_cta) > len(base_cta)
+        assert len(executive_cta) < len(c_level_cta)
+        
+        # RECRUITER low intensity - should remain unchanged
+        recruiter_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.RECRUITER]
+        recruiter_cta = expand_section_by_intensity(base_cta, recruiter_profile, "cta")
+        
+        assert recruiter_cta == base_cta
     
     def test_message_richness_increases_with_higher_intensity(self):
         """Test message richness increases with higher reasoning intensity."""
@@ -245,22 +342,33 @@ class TestMessageReasoningIntensity:
             metadata={}
         )
         
-        # Generate plans for different archetypes
-        recruiter_context = archetype_planner.build_archetype_context(
-            target_title="Recruiter",
-            target_company="TestCorp",
-            recipient_description="Technical Recruiter"
+        # Generate plans for different archetypes using RecipientProfile and OutreachMission
+        recruiter_recipient = RecipientProfile(
+            name="Recruiter", title="Technical Recruiter", company="TestCorp", industry="Technology",
+            seniority="Mid-level", department="HR", skills=["recruiting"],
+            recent_activity=[], metadata={}
         )
-        recruiter_context.archetype = ArchetypeType.RECRUITER
-        recruiter_context.executive_reasoning_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.RECRUITER]
         
-        c_level_context = archetype_planner.build_archetype_context(
-            target_title="CEO",
-            target_company="TestCorp",
-            recipient_description="Chief Executive Officer"
+        recruiter_mission = OutreachMission(
+            objective="Hiring", target_role="Technical Recruiter",
+            value_proposition="Candidate placement", urgency="medium",
+            personalization_points=[], constraints=["basic"], metadata={}
         )
-        c_level_context.archetype = ArchetypeType.C_LEVEL
-        c_level_context.executive_reasoning_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.C_LEVEL]
+        
+        c_level_recipient = RecipientProfile(
+            name="CEO", title="CEO", company="TestCorp", industry="Technology",
+            seniority="Executive", department="Executive", skills=["leadership"],
+            recent_activity=[], metadata={}
+        )
+        
+        c_level_mission = OutreachMission(
+            objective="Strategic partnership", target_role="CEO",
+            value_proposition="Strategic leadership", urgency="high",
+            personalization_points=[], constraints=["formal"], metadata={}
+        )
+        
+        recruiter_context = archetype_planner.build_archetype_context(recruiter_recipient, recruiter_mission)
+        c_level_context = archetype_planner.build_archetype_context(c_level_recipient, c_level_mission)
         
         recruiter_plan = planner.create_message_plan(content, recruiter_context)
         c_level_plan = planner.create_message_plan(content, c_level_context)

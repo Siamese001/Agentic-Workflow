@@ -10,8 +10,8 @@ from l1.outreach_dataclasses import (
     EXECUTIVE_REASONING_PROFILES,
     compute_reasoning_multiplier
 )
-from l1.research_planning import ResearchRefinementPlanner
-from l1.outreach_archetype_planning import OutreachArchetypePlanner
+from l1.research_planning import ResearchRefinementPlanner, ResearchResult
+from l1.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
 
 
 class TestResearchReasoningMultiplier:
@@ -26,12 +26,20 @@ class TestResearchReasoningMultiplier:
         for archetype in [ArchetypeType.RECRUITER, ArchetypeType.SENIOR_TA, 
                          ArchetypeType.EXECUTIVE, ArchetypeType.C_LEVEL]:
             
-            # Create archetype context
-            context = archetype_planner.build_archetype_context(
-                target_title="Test Title",
-                target_company="TestCorp",
-                recipient_description="Test description"
+            # Create archetype context using RecipientProfile and OutreachMission
+            recipient = RecipientProfile(
+                name="Test Person", title="Test Title", company="TestCorp", industry="Technology",
+                seniority="Mid-level", department="Engineering", skills=["testing"],
+                recent_activity=[], metadata={}
             )
+            
+            mission = OutreachMission(
+                objective="Testing", target_role="Test Title",
+                value_proposition="Test value", urgency="medium",
+                personalization_points=[], constraints=["basic"], metadata={}
+            )
+            
+            context = archetype_planner.build_archetype_context(recipient, mission)
             context.archetype = archetype  # Override for testing
             context.executive_reasoning_profile = EXECUTIVE_REASONING_PROFILES[archetype]
             
@@ -150,43 +158,69 @@ class TestResearchReasoningMultiplier:
         planner = ResearchRefinementPlanner()
         archetype_planner = OutreachArchetypePlanner()
         
-        # Create C_LEVEL context
-        context = archetype_planner.build_archetype_context(
-            target_title="CEO",
-            target_company="TechCorp",
-            recipient_description="Chief Executive Officer"
+        # Create C_LEVEL context using RecipientProfile and OutreachMission
+        recipient = RecipientProfile(
+            name="John Doe", title="CEO", company="TechCorp", industry="Technology",
+            seniority="Executive", department="Executive", skills=["leadership"],
+            recent_activity=[], metadata={}
         )
+        
+        mission = OutreachMission(
+            objective="Strategic partnership", target_role="CEO",
+            value_proposition="Strategic leadership", urgency="high",
+            personalization_points=[], constraints=["formal"], metadata={}
+        )
+        
+        context = archetype_planner.build_archetype_context(recipient, mission)
         
         # Generate multi-axis plan
         plan = planner.plan_multi_axis_research(
-            target_person="John Doe",
-            target_company="TechCorp",
-            archetype_context=context
+            base_query="John Doe",
+            archetype_context=context,
+            target_company="TechCorp"
         )
         
         # Verify plan includes reasoning multiplier
-        assert plan.reasoning_multiplier == 120  # C_LEVEL: 12 * 10
+        assert plan.cot_depth_multiplier == 12  # C_LEVEL: 12
+        assert plan.tot_recursion_multiplier == 4  # C_LEVEL: actual value
         assert plan.reasoning_intensity == "extreme"
         assert len(plan.cognitive_axes) == 8
         
         # Verify expanded queries count matches multiplier
-        total_expected_queries = len(plan.cognitive_axes) * plan.reasoning_multiplier
-        assert len(plan.expanded_queries) == total_expected_queries
+        # 8 axes × 3 base queries per axis = 24 base queries
+        # Each base query expands by reasoning multiplier (12 × 10 = 120)
+        # Total: 24 × 120 = 2880 expanded queries
+        total_expected_queries = 2880
+        assert len(plan.expanded_subqueries) == total_expected_queries
     
     def test_reflexion_plan_scales_with_intensity(self):
         """Test ReflexionPlan scales with reasoning intensity."""
         planner = ResearchRefinementPlanner()
         archetype_planner = OutreachArchetypePlanner()
         
-        # Test C_LEVEL gets maximum reflexion passes
-        c_level_context = archetype_planner.build_archetype_context(
-            target_title="CEO",
-            target_company="TechCorp",
-            recipient_description="Chief Executive Officer"
+        # Test C_LEVEL gets maximum reflexion passes using RecipientProfile and OutreachMission
+        c_level_recipient = RecipientProfile(
+            name="John Doe", title="CEO", company="TechCorp", industry="Technology",
+            seniority="Executive", department="Executive", skills=["leadership"],
+            recent_activity=[], metadata={}
         )
         
+        c_level_mission = OutreachMission(
+            objective="Strategic partnership", target_role="CEO",
+            value_proposition="Strategic leadership", urgency="high",
+            personalization_points=[], constraints=["formal"], metadata={}
+        )
+        
+        c_level_context = archetype_planner.build_archetype_context(c_level_recipient, c_level_mission)
+        
         reflexion_plan = planner.plan_reflexion_cycles(
-            current_research=None,  # Mock for testing
+            current_results=ResearchResult(
+                query="test",
+                results=[],
+                confidence_scores=[],
+                metadata={},
+                timestamp="2023-01-01"
+            ),  # Mock for testing
             archetype_context=c_level_context,
             iteration=1
         )
@@ -196,15 +230,29 @@ class TestResearchReasoningMultiplier:
         assert len(reflexion_plan.critique_questions) > 0
         assert len(reflexion_plan.refinement_strategies) > 0
         
-        # Test RECRUITER gets minimum reflexion passes
-        recruiter_context = archetype_planner.build_archetype_context(
-            target_title="Recruiter",
-            target_company="TechCorp",
-            recipient_description="Technical Recruiter"
+        # Test RECRUITER gets minimum reflexion passes using RecipientProfile and OutreachMission
+        recruiter_recipient = RecipientProfile(
+            name="Recruiter", title="Technical Recruiter", company="TestCorp", industry="Technology",
+            seniority="Mid-level", department="HR", skills=["recruiting"],
+            recent_activity=[], metadata={}
         )
         
+        recruiter_mission = OutreachMission(
+            objective="Hiring", target_role="Technical Recruiter",
+            value_proposition="Candidate placement", urgency="medium",
+            personalization_points=[], constraints=["basic"], metadata={}
+        )
+        
+        recruiter_context = archetype_planner.build_archetype_context(recruiter_recipient, recruiter_mission)
+        
         reflexion_plan = planner.plan_reflexion_cycles(
-            current_research=None,  # Mock for testing
+            current_results=ResearchResult(
+                query="test",
+                results=[],
+                confidence_scores=[],
+                metadata={},
+                timestamp="2023-01-01"
+            ),  # Mock for testing
             archetype_context=recruiter_context,
             iteration=1
         )
