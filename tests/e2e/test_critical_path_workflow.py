@@ -6,11 +6,10 @@ Uses working mocks from unit test foundation to validate layer contracts.
 """
 
 import pytest
-import asyncio
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass, field
+from typing import Dict, Any, List, Optional
+from dataclasses import dataclass
 from enum import Enum
-from unittest.mock import Mock, AsyncMock, patch
+from unittest.mock import Mock
 import time
 
 # Mark all tests as E2E workflow tests
@@ -281,7 +280,7 @@ class TestCriticalPathWorkflow:
                         f"Handled {len(failed_results)} failed tasks"
                     )
                 
-                coordination_result["coordination_time"] = time.time() - coordination_start
+                coordination_result["coordination_time"] = max(time.time() - coordination_start, 0.001)
                 
                 # Log coordination
                 self.coordination_log.append({
@@ -419,7 +418,7 @@ class TestCriticalPathWorkflow:
                     workflow_result["errors"].append(str(e))
                     workflow_result["success"] = False
                 
-                workflow_result["total_time"] = time.time() - pipeline_start
+                workflow_result["total_time"] = max(time.time() - pipeline_start, 0.001)
                 
                 # Log pipeline execution
                 self.pipeline_history.append({
