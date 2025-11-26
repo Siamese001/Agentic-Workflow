@@ -16,7 +16,8 @@ from .outreach_dataclasses import (
     AgentType,
     ExecutiveReasoningProfile,
     MultiAxisReasoningPlan,
-    ReflexionPlan
+    ReflexionPlan,
+    compute_reasoning_multiplier
 )
 
 
@@ -618,17 +619,17 @@ class ResearchRefinementPlanner:
         cognitive_axes_queries: Dict[str, List[str]], 
         executive_profile: ExecutiveReasoningProfile
     ) -> List[str]:
-        """Expand queries using reasoning depth multipliers."""
+        """Expand queries using unified reasoning multiplier."""
         expanded_queries = []
         
-        # Calculate expansion multiplier
-        depth_multiplier = executive_profile.cot_depth * executive_profile.tot_recursion_depth
+        # Calculate unified expansion multiplier using cot_depth * tot_branches
+        reasoning_multiplier = compute_reasoning_multiplier(executive_profile)
         
         for axis, queries in cognitive_axes_queries.items():
-            # Expand each query based on reasoning depth
+            # Expand each query based on reasoning multiplier
             for query in queries:
-                # Generate depth-specific variations
-                for depth in range(depth_multiplier):
+                # Generate multiplier-specific variations
+                for depth in range(reasoning_multiplier):
                     depth_query = f"{query} (depth {depth + 1})"
                     expanded_queries.append(depth_query)
         

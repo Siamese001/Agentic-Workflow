@@ -12,7 +12,11 @@ from .outreach_dataclasses import (
     ArchetypeContext,
     ArchetypeType,
     MessagePlan,
-    SECTION_TEMPERATURE_SCHEDULE
+    SECTION_TEMPERATURE_SCHEDULE,
+    compute_reasoning_multiplier,
+    adjust_temperature_by_intensity,
+    expand_section_by_intensity,
+    reasoning_intensity_metadata
 )
 
 
@@ -179,10 +183,9 @@ class MessagePlanner:
                 "target_company": content.company_name,
                 "planning_timestamp": self._get_current_timestamp(),
                 "complexity_score": self._calculate_complexity_score(sections, constraints),
-                "reasoning_intensity": archetype_context.executive_reasoning_profile.reasoning_intensity,
-                "sc_k": archetype_context.executive_reasoning_profile.sc_k,
-                "reflexion_passes": archetype_context.executive_reasoning_profile.reflexion_passes,
-                "reasoning_mode": str(archetype_context.reasoning_params.reasoning_mode)
+                "reasoning_mode": str(archetype_context.reasoning_params.reasoning_mode),
+                # Complete reasoning-intensity metadata for L1→L2 propagation
+                **reasoning_intensity_metadata(archetype_context.executive_reasoning_profile)
             }
         )
     
@@ -246,8 +249,9 @@ class MessagePlanner:
         content: MessageContent, 
         archetype_context: ArchetypeContext
     ) -> str:
-        """Plan hook content."""
+        """Plan hook content with reasoning-intensity expansion."""
         hook_parts = []
+        executive_profile = archetype_context.executive_reasoning_profile
         
         # Context establishment
         if archetype_context.archetype == ArchetypeType.SENIOR_TA:
@@ -266,15 +270,20 @@ class MessagePlanner:
         # Add relevance statement
         hook_parts.append("thought you might find this relevant")
         
-        return " ".join(hook_parts)
+        # Combine base content
+        base_content = " ".join(hook_parts)
+        
+        # Apply reasoning-intensity expansion for EXECUTIVE/C_LEVEL
+        return expand_section_by_intensity(base_content, executive_profile, "hook")
     
     def _plan_value(
         self, 
         content: MessageContent, 
         archetype_context: ArchetypeContext
     ) -> str:
-        """Plan value content structure."""
+        """Plan value content structure with reasoning-intensity expansion."""
         value_parts = []
+        executive_profile = archetype_context.executive_reasoning_profile
         
         # Opening based on archetype
         if archetype_context.archetype == ArchetypeType.SENIOR_TA:
@@ -298,7 +307,11 @@ class MessagePlanner:
         if archetype_context.archetype in [ArchetypeType.SENIOR_TA, ArchetypeType.C_LEVEL]:
             value_parts.append(f"Specific to {content.company_name}'s context")
         
-        return " ".join(value_parts)
+        # Combine base content
+        base_content = " ".join(value_parts)
+        
+        # Apply reasoning-intensity expansion for EXECUTIVE/C_LEVEL
+        return expand_section_by_intensity(base_content, executive_profile, "value")
     
     def _plan_cta(
         self, 
@@ -333,81 +346,34 @@ class MessagePlanner:
         self, 
         archetype_context: ArchetypeContext
     ) -> Dict[str, float]:
-        """Calculate temperature schedule based on archetype and reasoning intensity."""
+        """Calculate temperature schedule using unified reasoning-intensity logic."""
         base_schedule = SECTION_TEMPERATURE_SCHEDULE.copy()
+        executive_profile = archetype_context.executive_reasoning_profile
         
-        # Get archetype adjustments
-        adjustments = self._temperature_adjustments.get(
-            archetype_context.archetype, 
-            {}
-        )
-        
-        # Apply archetype adjustments
+        # Apply unified reasoning intensity adjustments
         final_schedule = {}
         for section, base_temp in base_schedule.items():
-            adjustment = adjustments.get(section, 0.0)
-            final_temp = max(0.1, min(1.5, base_temp + adjustment))  # Clamp between 0.1 and 1.5
-            final_schedule[section] = final_temp
-        
-        # Apply reasoning intensity adjustments
-        reasoning_intensity = archetype_context.executive_reasoning_profile.reasoning_intensity
-        intensity_adjustments = self._apply_reasoning_intensity_adjustments(
-            final_schedule, reasoning_intensity, archetype_context.archetype
-        )
+            adjusted_temp = adjust_temperature_by_intensity(
+                base_temp, executive_profile, section
+            )
+            final_schedule[section] = adjusted_temp
         
         # Apply tone parameter adjustments
         if archetype_context.tone_params.enthusiasm_level == "high":
-            intensity_adjustments["hook"] += 0.1
-            intensity_adjustments["cta"] += 0.1
+            final_schedule["hook"] += 0.1
+            final_schedule["cta"] += 0.1
         elif archetype_context.tone_params.enthusiasm_level == "low":
-            intensity_adjustments["hook"] -= 0.1
-            intensity_adjustments["cta"] -= 0.1
+            final_schedule["hook"] -= 0.1
+            final_schedule["cta"] -= 0.1
         
         if archetype_context.tone_params.formality_level == "executive":
-            intensity_adjustments["subject"] -= 0.1
-            intensity_adjustments["signature"] -= 0.1
+            final_schedule["subject"] -= 0.1
+            final_schedule["signature"] -= 0.1
         elif archetype_context.tone_params.formality_level == "casual":
-            intensity_adjustments["hook"] += 0.1
-            intensity_adjustments["signature"] += 0.1
+            final_schedule["hook"] += 0.1
+            final_schedule["signature"] += 0.1
         
-        return intensity_adjustments
-    
-    def _apply_reasoning_intensity_adjustments(
-        self, 
-        base_schedule: Dict[str, float], 
-        reasoning_intensity: str,
-        archetype: str
-    ) -> Dict[str, float]:
-        """Apply reasoning intensity-based temperature adjustments."""
-        adjusted_schedule = base_schedule.copy()
-        
-        # Reasoning intensity adjustments
-        if reasoning_intensity == "extreme":
-            # Higher temperatures for creative sections, lower for formal sections
-            adjusted_schedule["hook"] += 0.15
-            adjusted_schedule["value"] += 0.10
-            adjusted_schedule["cta"] += 0.05
-            # Lower temperatures for formal sections (C_LEVEL)
-            if archetype == ArchetypeType.C_LEVEL:
-                adjusted_schedule["subject"] -= 0.05
-                adjusted_schedule["signature"] -= 0.05
-        elif reasoning_intensity == "high":
-            # Moderate temperature increases
-            adjusted_schedule["hook"] += 0.10
-            adjusted_schedule["value"] += 0.05
-            # Slightly lower for executive archetypes
-            if archetype in [ArchetypeType.EXECUTIVE, ArchetypeType.C_LEVEL]:
-                adjusted_schedule["subject"] -= 0.05
-        elif reasoning_intensity == "medium":
-            # Small adjustments
-            adjusted_schedule["hook"] += 0.05
-        # "low" intensity uses base schedule without adjustments
-        
-        # Clamp all temperatures between 0.1 and 1.5
-        for section in adjusted_schedule:
-            adjusted_schedule[section] = max(0.1, min(1.5, adjusted_schedule[section]))
-        
-        return adjusted_schedule
+        return final_schedule
     
     def _determine_constraints(
         self, 
