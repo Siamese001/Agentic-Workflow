@@ -15,7 +15,9 @@ from .outreach_dataclasses import (
     ReasoningParameters,
     ConstraintParameters,
     ToneParameters,
-    CtaParameters
+    CtaParameters,
+    ReasoningMode,
+    OutreachMission as OutreachMissionDataclass
 )
 
 
@@ -33,6 +35,7 @@ class RecipientProfile:
     metadata: Dict[str, Any]
 
 
+# Keep local OutreachMission for backward compatibility
 @dataclass
 class OutreachMission:
     """Pure data structure for outreach mission definition."""
@@ -393,3 +396,74 @@ class OutreachArchetypePlanner:
             risks.append("Technical leaders may require longer consideration cycles")
         
         return risks
+    
+    def plan_archetype_influence(
+        self, 
+        mission: OutreachMissionDataclass,
+        reasoning_mode: ReasoningMode = ReasoningMode.COT
+    ) -> ArchetypeContext:
+        """
+        Plan archetype influence for a given mission.
+        
+        This is the primary entry point for archetype planning that returns
+        an ArchetypeContext with all cross-cutting parameters configured.
+        
+        Args:
+            mission: The outreach mission to plan for
+            reasoning_mode: The reasoning mode to use (cot, tot, react)
+            
+        Returns:
+            ArchetypeContext with configured parameters for research and message planning
+        """
+        # Create a minimal recipient profile from mission data
+        recipient = RecipientProfile(
+            name="",
+            title=mission.target_role,
+            company=mission.target_company,
+            industry="",
+            seniority=self._infer_seniority(mission.target_role),
+            department="",
+            skills=[],
+            recent_activity=[],
+            metadata=mission.metadata
+        )
+        
+        # Create local mission for internal processing
+        local_mission = OutreachMission(
+            objective=mission.objective,
+            target_role=mission.target_role,
+            value_proposition=mission.value_proposition,
+            urgency=mission.urgency,
+            personalization_points=mission.personalization_points,
+            constraints=mission.constraints,
+            metadata=mission.metadata
+        )
+        
+        # Build archetype context
+        context = self.build_archetype_context(recipient, local_mission)
+        
+        # Update reasoning mode in context
+        context.reasoning_params.reasoning_mode = reasoning_mode
+        
+        return context
+    
+    def _infer_seniority(self, title: str) -> str:
+        """Infer seniority level from job title."""
+        title_lower = title.lower()
+        if any(term in title_lower for term in ["cto", "ceo", "cfo", "chief", "president"]):
+            return "executive"
+        elif any(term in title_lower for term in ["vp", "vice president", "svp"]):
+            return "vp"
+        elif any(term in title_lower for term in ["director", "head of"]):
+            return "director"
+        elif any(term in title_lower for term in ["senior", "lead", "principal", "staff"]):
+            return "senior"
+        elif any(term in title_lower for term in ["manager"]):
+            return "manager"
+        else:
+            return "individual_contributor"
+    
+    @staticmethod
+    def get_reasoning_modes() -> List[ReasoningMode]:
+        """Get available reasoning modes for L1 planning."""
+        return [ReasoningMode.COT, ReasoningMode.TOT, ReasoningMode.REACT]
