@@ -159,6 +159,13 @@ class MessagePlanner:
         generation_strategy = self._determine_generation_strategy(archetype_context)
         
         return MessagePlan(
+            # Section-specific plans
+            subject_plan=sections.get("subject", ""),
+            hook_plan=sections.get("hook", ""),
+            value_plan=sections.get("body", ""),
+            cta_plan=sections.get("cta", ""),
+            signature_plan=sections.get("signature", ""),
+            # Legacy sections dict for backward compatibility
             sections=sections,
             temperature_schedule=temperature_schedule,
             constraints=constraints,
@@ -492,3 +499,23 @@ class MessagePlanner:
         analysis["quality_score"] = sum(quality_factors)
         
         return analysis
+    
+    def plan_message_structure(
+        self,
+        content: MessageContent,
+        archetype_context: ArchetypeContext
+    ) -> MessagePlan:
+        """
+        Plan message structure based on content and archetype context.
+        
+        This is the primary entry point for message structure planning that
+        produces a MessagePlan with section plans, temperature schedule, and constraints.
+        
+        Args:
+            content: Message content to plan for
+            archetype_context: Archetype context from archetype planning
+            
+        Returns:
+            MessagePlan with subject_plan, hook_plan, value_plan, cta_plan, and temperature_schedule
+        """
+        return self.create_message_plan(content, archetype_context)
