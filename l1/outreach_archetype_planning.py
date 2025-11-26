@@ -1,9 +1,4 @@
-"""
-L1 Outreach Archetype Planner - Pure computation for archetype classification.
-
-Implements pure reasoning to classify recipient archetypes and build
-cross-cutting parameter context without any execution logic or external calls.
-"""
+"""Defines core behaviors that drive high-signal executive outreach through archetype classification."""
 
 from dataclasses import dataclass
 from typing import Any, Dict, List
@@ -29,7 +24,7 @@ from l1.outreach_dataclasses import (
 
 @dataclass
 class RecipientProfile:
-    """Pure data structure for recipient profile analysis."""
+    """Captures recipient signals that drive personalized executive outreach strategies."""
     name: str
     title: str
     company: str
@@ -42,28 +37,24 @@ class RecipientProfile:
 
 
 class OutreachArchetypePlanner:
-    """
-    Pure L1 planner for outreach archetype classification and context building.
-    
-    Performs only computational reasoning on provided data without any
-    external calls, state writes, or execution logic.
-    """
+    """Classifies recipients to optimize message relevance and executive reply probability."""
     
     def __init__(self):
+        """Initializes planner with archetype registry for executive targeting logic."""
         # Use the corrected archetype registry from dataclasses
         self._archetype_registry = ARCHETYPE_REGISTRY
     
     def _classify_archetype(self, profile: RecipientProfile, mission: OutreachMission) -> str:
-        """Classify recipient archetype using only the 4 correct archetypes."""
+        """Maps recipient signals to archetype for targeted executive messaging."""
         title = profile.title.lower()
         department = profile.department.lower()
         seniority = profile.seniority.lower()
         
-        # Recruiter patterns
+        # HSON: Targets recruitment decision makers with hiring-focused messaging → increases reply probability
         if any(keyword in title for keyword in ["recruiter", "talent acquisition", "sourcer", "staffing"]):
             return ArchetypeType.RECRUITER
         
-        # Senior TA patterns (technical authority)
+        # HSON: Identifies technical influencers for peer-to-peer credibility messaging → boosts technical signal strength
         if any(keyword in title for keyword in ["senior", "principal", "staff", "lead"]) and \
            any(keyword in department for keyword in ["engineering", "technology", "software", "technical"]) and \
            "manager" not in title and "director" not in title:
@@ -74,7 +65,7 @@ class OutreachArchetypePlanner:
            any(keyword in seniority for keyword in ["c-level", "c_suite"]):
             return ArchetypeType.C_LEVEL
         
-        # Executive patterns (manager/director level)
+        # HSON: Targets business decision makers with strategic impact messaging → increases C-level reply probability
         if any(keyword in title for keyword in ["manager", "director", "head", "supervisor", "vp", "vice president"]) and \
            any(keyword in department for keyword in ["engineering", "technology", "software", "product", "technical", "business"]):
             return ArchetypeType.EXECUTIVE
@@ -93,9 +84,7 @@ class OutreachArchetypePlanner:
         recipient: RecipientProfile, 
         mission: OutreachMission
     ) -> ArchetypeContext:
-        """
-        Build archetype context using corrected 4-archetype registry and executive reasoning profiles.
-        """
+        """Builds executive-optimized context with reasoning parameters for high-signal messaging."""
         # Classify archetype using corrected logic
         archetype = self._classify_archetype(recipient, mission)
         
@@ -103,12 +92,12 @@ class OutreachArchetypePlanner:
         archetype_type = ArchetypeType(archetype)
         definition = self._archetype_registry[archetype_type]
         
-        # Calculate confidence based on title clarity
+        # HSON: Boosts confidence for clear executive titles → improves targeting precision
         confidence = self._calculate_classification_confidence(recipient, archetype)
         
         reasoning = f"Classified as {archetype} based on title '{recipient.title}' and department '{recipient.department}'"
         
-        # Get executive reasoning profile for this archetype
+        # HSON: Selects reasoning profile to match executive cognitive patterns → increases engagement
         executive_profile = EXECUTIVE_REASONING_PROFILES[archetype_type]
         
         # Build context with parameters from registry and executive reasoning profile
@@ -136,7 +125,7 @@ class OutreachArchetypePlanner:
         return context
     
     def _calculate_classification_confidence(self, recipient: RecipientProfile, archetype: str) -> float:
-        """Calculate confidence score for archetype classification."""
+        """Computes targeting confidence to ensure message relevance for executive audiences."""
         base_confidence = 0.8
         
         # Boost confidence for clear title patterns
