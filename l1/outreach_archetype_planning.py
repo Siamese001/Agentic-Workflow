@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 
 from .outreach_dataclasses import (
     ArchetypeContext,
+    ArchetypeType,
     SignalParameters,
     RagParameters,
     ReasoningParameters,
@@ -17,7 +18,8 @@ from .outreach_dataclasses import (
     ToneParameters,
     CtaParameters,
     ReasoningMode,
-    OutreachMission as OutreachMissionDataclass
+    OutreachMission as OutreachMissionDataclass,
+    ARCHETYPE_REGISTRY
 )
 
 
@@ -57,177 +59,101 @@ class OutreachArchetypePlanner:
     """
     
     def __init__(self):
-        # Pure archetype registry - no external loading
-        self._archetype_registry = self._build_archetype_registry()
+        # Use the corrected archetype registry from dataclasses
+        self._archetype_registry = ARCHETYPE_REGISTRY
     
-    def _build_archetype_registry(self) -> Dict[str, Dict[str, Any]]:
-        """Build pure in-memory archetype registry without external loading."""
-        return {
-            "technical_leader": {
-                "keywords": ["cto", "vp engineering", "chief technology", "head of engineering", "director of technology"],
-                "industries": ["software", "technology", "fintech", "healthcare it"],
-                "signal_params": SignalParameters(
-                    min_signal_score=0.8,
-                    signal_types=["quantitative", "strategic"],
-                    max_age_days=180,
-                    weight_recent=1.1,
-                    weight_quantitative=2.0
-                ),
-                "rag_params": RagParameters(
-                    top_k=15,
-                    score_threshold=0.75,
-                    source_weights={"technical": 1.5, "company": 1.2}
-                ),
-                "reasoning_params": ReasoningParameters(
-                    reasoning_style="analytical",
-                    confidence_threshold=0.85,
-                    max_reasoning_depth=4,
-                    use_analogical=True,
-                    use_causal=True
-                ),
-                "constraint_params": ConstraintParameters(
-                    strict_constraints=["technical_accuracy", "data_driven"],
-                    soft_constraints=["brevity", "formality"],
-                    constraint_weights={"technical_accuracy": 2.0}
-                ),
-                "tone_params": ToneParameters(
-                    formality_level="professional",
-                    enthusiasm_level="low",
-                    confidence_level="high",
-                    personalization_level="technical",
-                    industry_specific=True
-                ),
-                "cta_params": CtaParameters(
-                    cta_type="technical_discussion",
-                    urgency_level="medium",
-                    value_proposition_focus="technical_value",
-                    friction_reduction=True
-                )
-            },
-            "business_executive": {
-                "keywords": ["ceo", "president", "chief executive", "vp", "director", "business development"],
-                "industries": ["enterprise", "consulting", "finance", "healthcare"],
-                "signal_params": SignalParameters(
-                    min_signal_score=0.7,
-                    signal_types=["strategic", "recent_activity"],
-                    max_age_days=90,
-                    weight_recent=1.5,
-                    weight_quantitative=1.2
-                ),
-                "rag_params": RagParameters(
-                    top_k=10,
-                    score_threshold=0.7,
-                    source_weights={"business": 1.5, "financial": 1.3}
-                ),
-                "reasoning_params": ReasoningParameters(
-                    reasoning_style="strategic",
-                    confidence_threshold=0.8,
-                    max_reasoning_depth=3,
-                    use_analogical=True,
-                    use_causal=False
-                ),
-                "constraint_params": ConstraintParameters(
-                    strict_constraints=["business_value", "concise"],
-                    soft_constraints=["formality", "relationship_building"],
-                    constraint_weights={"business_value": 2.0}
-                ),
-                "tone_params": ToneParameters(
-                    formality_level="formal",
-                    enthusiasm_level="moderate",
-                    confidence_level="high",
-                    personalization_level="business",
-                    industry_specific=True
-                ),
-                "cta_params": CtaParameters(
-                    cta_type="business_meeting",
-                    urgency_level="low",
-                    value_proposition_focus="roi",
-                    friction_reduction=True
-                )
-            },
-            "hiring_manager": {
-                "keywords": ["hiring manager", "recruiter", "talent acquisition", "hr", "people"],
-                "industries": ["all"],
-                "signal_params": SignalParameters(
-                    min_signal_score=0.6,
-                    signal_types=["recent_activity", "quantitative"],
-                    max_age_days=60,
-                    weight_recent=1.8,
-                    weight_quantitative=1.0
-                ),
-                "rag_params": RagParameters(
-                    top_k=8,
-                    score_threshold=0.65,
-                    source_weights={"hiring": 1.5, "company": 1.0}
-                ),
-                "reasoning_params": ReasoningParameters(
-                    reasoning_style="practical",
-                    confidence_threshold=0.75,
-                    max_reasoning_depth=2,
-                    use_analogical=False,
-                    use_causal=True
-                ),
-                "constraint_params": ConstraintParameters(
-                    strict_constraints=["role_fit", "availability"],
-                    soft_constraints=["culture_fit", "enthusiasm"],
-                    constraint_weights={"role_fit": 1.8}
-                ),
-                "tone_params": ToneParameters(
-                    formality_level="professional",
-                    enthusiasm_level="moderate",
-                    confidence_level="confident",
-                    personalization_level="role_specific",
-                    industry_specific=False
-                ),
-                "cta_params": CtaParameters(
-                    cta_type="interview_request",
-                    urgency_level="medium",
-                    value_proposition_focus="candidate_value",
-                    friction_reduction=True
-                )
-            },
-            "individual_contributor": {
-                "keywords": ["engineer", "developer", "analyst", "specialist", "consultant"],
-                "industries": ["software", "technology", "data", "analytics"],
-                "signal_params": SignalParameters(
-                    min_signal_score=0.7,
-                    signal_types=["quantitative", "technical"],
-                    max_age_days=120,
-                    weight_recent=1.2,
-                    weight_quantitative=1.8
-                ),
-                "rag_params": RagParameters(
-                    top_k=12,
-                    score_threshold=0.7,
-                    source_weights={"technical": 1.8, "project": 1.3}
-                ),
-                "reasoning_params": ReasoningParameters(
-                    reasoning_style="analytical",
-                    confidence_threshold=0.8,
-                    max_reasoning_depth=3,
-                    use_analogical=False,
-                    use_causal=True
-                ),
-                "constraint_params": ConstraintParameters(
-                    strict_constraints=["technical_relevance", "skill_match"],
-                    soft_constraints=["innovation", "growth"],
-                    constraint_weights={"technical_relevance": 1.5}
-                ),
-                "tone_params": ToneParameters(
-                    formality_level="casual_professional",
-                    enthusiasm_level="moderate",
-                    confidence_level="confident",
-                    personalization_level="skill_based",
-                    industry_specific=True
-                ),
-                "cta_params": CtaParameters(
-                    cta_type="collaboration_discussion",
-                    urgency_level="low",
-                    value_proposition_focus="technical_growth",
-                    friction_reduction=False
-                )
+    def _classify_archetype(self, profile: RecipientProfile, mission: OutreachMission) -> str:
+        """Classify recipient archetype using only the 4 correct archetypes."""
+        title = profile.title.lower()
+        department = profile.department.lower()
+        seniority = profile.seniority.lower()
+        
+        # Recruiter patterns
+        if any(keyword in title for keyword in ["recruiter", "talent acquisition", "sourcer", "staffing"]):
+            return ArchetypeType.RECRUITER
+        
+        # Senior TA patterns (technical authority)
+        if any(keyword in title for keyword in ["senior", "principal", "staff", "lead"]) and \
+           any(keyword in department for keyword in ["engineering", "technology", "software", "technical"]) and \
+           "manager" not in title and "director" not in title:
+            return ArchetypeType.SENIOR_TA
+        
+        # C-level patterns
+        if any(keyword in title for keyword in ["ceo", "cto", "cfo", "chief", "president", "vp", "vice president"]) or \
+           any(keyword in seniority for keyword in ["executive", "c-level", "c_suite"]):
+            return ArchetypeType.C_LEVEL
+        
+        # Hiring Manager patterns (default for management roles)
+        if any(keyword in title for keyword in ["manager", "director", "head", "supervisor"]) and \
+           any(keyword in department for keyword in ["engineering", "technology", "software", "product", "technical"]):
+            return ArchetypeType.HIRING_MANAGER
+        
+        # Default fallback based on seniority
+        if any(keyword in seniority for keyword in ["senior", "principal", "staff", "lead"]) and \
+           "manager" not in title:
+            return ArchetypeType.SENIOR_TA
+        elif any(keyword in seniority for keyword in ["manager", "director", "vp", "executive"]):
+            return ArchetypeType.HIRING_MANAGER
+        else:
+            return ArchetypeType.RECRUITER
+    
+    def build_archetype_context(
+        self, 
+        recipient: RecipientProfile, 
+        mission: OutreachMission
+    ) -> ArchetypeContext:
+        """
+        Build archetype context using corrected 4-archetype registry.
+        """
+        # Classify archetype using corrected logic
+        archetype = self._classify_archetype(recipient, mission)
+        
+        # Get archetype definition from corrected registry
+        archetype_type = ArchetypeType(archetype)
+        definition = self._archetype_registry[archetype_type]
+        
+        # Calculate confidence based on title clarity
+        confidence = self._calculate_classification_confidence(recipient, archetype)
+        
+        reasoning = f"Classified as {archetype} based on title '{recipient.title}' and department '{recipient.department}'"
+        
+        # Build context with parameters from registry
+        context = ArchetypeContext(
+            archetype=archetype,
+            confidence=confidence,
+            reasoning=reasoning,
+            rag_params=definition.rag_params,
+            reasoning_params=definition.reasoning_params,
+            signal_params=definition.signal_params,
+            constraint_params=definition.constraint_params,
+            tone_params=definition.tone_params,
+            cta_params=definition.cta_params,
+            metadata={
+                "recipient_title": recipient.title,
+                "recipient_industry": recipient.industry,
+                "mission_objective": mission.objective,
+                "classification_score": confidence
             }
-        }
+        )
+        
+        return context
+    
+    def _calculate_classification_confidence(self, recipient: RecipientProfile, archetype: str) -> float:
+        """Calculate confidence score for archetype classification."""
+        base_confidence = 0.8
+        
+        # Boost confidence for clear title patterns
+        title = recipient.title.lower()
+        if any(keyword in title for keyword in ["recruiter", "talent acquisition"]):
+            base_confidence = 0.95
+        elif any(keyword in title for keyword in ["senior", "principal", "staff"]) and "manager" not in title:
+            base_confidence = 0.9
+        elif any(keyword in title for keyword in ["manager", "director"]) and "engineering" in recipient.department.lower():
+            base_confidence = 0.85
+        elif any(keyword in title for keyword in ["chief", "vp", "president"]):
+            base_confidence = 0.9
+        
+        return min(base_confidence, 1.0)
     
     def classify_archetype(
         self, 
@@ -333,19 +259,22 @@ class OutreachArchetypePlanner:
         mission: OutreachMission
     ) -> Dict[str, Any]:
         """
-        Pure computational analysis of archetype fit for mission.
+        Pure computational analysis of archetype fit for mission using correct archetypes.
         """
         fit_score = context.confidence
         
-        # Adjust based on mission constraints
+        # Adjust based on mission constraints using correct archetypes
         if mission.constraints:
             constraint_alignment = 0.0
             for constraint in mission.constraints:
-                if constraint.lower() in ["technical", "technology"] and context.archetype == "technical_leader":
+                constraint_lower = constraint.lower()
+                if constraint_lower in ["technical", "technology"] and context.archetype == ArchetypeType.SENIOR_TA:
                     constraint_alignment += 0.2
-                elif constraint.lower() in ["business", "revenue"] and context.archetype == "business_executive":
+                elif constraint_lower in ["business", "revenue", "strategic"] and context.archetype == ArchetypeType.C_LEVEL:
                     constraint_alignment += 0.2
-                elif constraint.lower() in ["hiring", "recruitment"] and context.archetype == "hiring_manager":
+                elif constraint_lower in ["hiring", "recruitment", "team"] and context.archetype == ArchetypeType.HIRING_MANAGER:
+                    constraint_alignment += 0.2
+                elif constraint_lower in ["screening", "job_fit"] and context.archetype == ArchetypeType.RECRUITER:
                     constraint_alignment += 0.2
             
             fit_score = min(fit_score + constraint_alignment, 1.0)
@@ -358,32 +287,32 @@ class OutreachArchetypePlanner:
         }
     
     def _get_recommended_approach(self, context: ArchetypeContext) -> str:
-        """Get recommended approach based on archetype."""
+        """Get recommended approach based on correct archetypes."""
         approaches = {
-            "technical_leader": "Focus on technical innovation and architectural impact",
-            "business_executive": "Emphasize business value and ROI",
-            "hiring_manager": "Highlight candidate fit and team value",
-            "individual_contributor": "Emphasize technical growth and collaboration"
+            ArchetypeType.RECRUITER: "Focus on job fit and screening efficiency",
+            ArchetypeType.SENIOR_TA: "Emphasize technical depth and company specificity",
+            ArchetypeType.HIRING_MANAGER: "Highlight team impact and pain point resolution",
+            ArchetypeType.C_LEVEL: "Emphasize strategic alignment and business outcomes"
         }
         return approaches.get(context.archetype, "Professional and value-focused approach")
     
     def _identify_key_levers(self, context: ArchetypeContext, mission: OutreachMission) -> List[str]:
-        """Identify key leverage points for outreach."""
+        """Identify key leverage points for outreach using correct archetypes."""
         levers = []
         
-        if context.archetype == "technical_leader":
-            levers.extend(["technical innovation", "scalability", "team leadership"])
-        elif context.archetype == "business_executive":
-            levers.extend(["business impact", "revenue growth", "competitive advantage"])
-        elif context.archetype == "hiring_manager":
-            levers.extend(["role fit", "team dynamics", "hiring efficiency"])
-        else:
-            levers.extend(["skill development", "project impact", "collaboration"])
+        if context.archetype == ArchetypeType.RECRUITER:
+            levers.extend(["job fit", "screening efficiency", "candidate quality"])
+        elif context.archetype == ArchetypeType.SENIOR_TA:
+            levers.extend(["technical depth", "company specificity", "innovation potential"])
+        elif context.archetype == ArchetypeType.HIRING_MANAGER:
+            levers.extend(["team impact", "pain point resolution", "hiring efficiency"])
+        elif context.archetype == ArchetypeType.C_LEVEL:
+            levers.extend(["strategic alignment", "business outcomes", "competitive advantage"])
         
         return levers
     
     def _identify_risk_factors(self, context: ArchetypeContext, mission: OutreachMission) -> List[str]:
-        """Identify potential risk factors in outreach."""
+        """Identify potential risk factors in outreach using correct archetypes."""
         risks = []
         
         if context.confidence < 0.7:
@@ -392,8 +321,11 @@ class OutreachArchetypePlanner:
         if len(mission.constraints) > 3:
             risks.append("Multiple constraints may limit message flexibility")
         
-        if context.archetype == "technical_leader" and mission.urgency == "high":
-            risks.append("Technical leaders may require longer consideration cycles")
+        if context.archetype == ArchetypeType.SENIOR_TA and mission.urgency == "high":
+            risks.append("Senior technical authorities may require longer consideration cycles")
+        
+        if context.archetype == ArchetypeType.C_LEVEL and len(mission.value_proposition) < 50:
+            risks.append("C-level outreach requires strong, concise value proposition")
         
         return risks
     

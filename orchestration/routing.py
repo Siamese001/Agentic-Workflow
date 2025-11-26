@@ -247,15 +247,15 @@ def classify_skill_profile(job: Any, resume: Any) -> SkillClassifierResult:
     desc = str(getattr(job, "description", "")).lower()
     resume_text = str(getattr(resume, "raw_text", "")).lower()
 
-    # Seniority
+    # Seniority - map to correct archetypes
     senior_tokens = ("vp", "vice president", "chief", "director", "head", "principal")
     mid_tokens = ("manager", "lead", "senior")
     if any(t in title for t in senior_tokens):
-        labels.append("senior_leadership")
+        labels.append("c_level")  # Map senior leadership to c_level
     elif any(t in title for t in mid_tokens):
-        labels.append("senior_individual_contributor")
+        labels.append("senior_ta")  # Map senior individual contributors to senior_ta
     else:
-        labels.append("individual_contributor")
+        labels.append("recruiter")  # Default to recruiter for entry-level
 
     # Technical focus
     if "machine learning" in desc or "ml" in desc or "data science" in desc:
