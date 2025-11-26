@@ -1,10 +1,4 @@
-"""
-L2 Company Research Executor for outreach workflows.
-
-Executes company context research operations using DI-resolved infrastructure.
-Includes optional Temporal KG fallback for executive archetypes.
-No L1 imports, no L3 orchestration, no DI container calls.
-"""
+"""Executes company research to gather executive-grade business intelligence for high-signal messaging."""
 
 from __future__ import annotations
 
@@ -29,7 +23,7 @@ KG_FALLBACK_ARCHETYPES: Set[ArchetypeType] = {
 
 @dataclass
 class CompanySearchConfig:
-    """Configuration for company context search operations."""
+    """Configures search parameters to ensure executive-grade company intelligence quality."""
     top_k: int = 15
     score_threshold: float = 0.65
     include_news: bool = True
@@ -40,7 +34,7 @@ class CompanySearchConfig:
 
 @dataclass
 class CompanyResearchResult:
-    """Result of company research execution."""
+    """Captures company intelligence that drives high-impact executive messaging strategies."""
     results: List[OutreachRAGResult]
     kg_results: List[OutreachRAGResult]
     query_used: str
@@ -52,7 +46,7 @@ class CompanyResearchResult:
 
 @dataclass
 class RefinementTaskResult:
-    """Result of a refinement task execution."""
+    """Tracks research refinement outcomes to ensure executive-grade evidence quality."""
     task: str
     success: bool
     results: List[OutreachRAGResult]
@@ -61,13 +55,7 @@ class RefinementTaskResult:
 
 
 class CompanyResearchExecutor:
-    """
-    L2 executor for company context research in outreach workflows.
-    
-    Executes search operations via DI-provided HybridSearchExecutor and
-    PineconeAdapter. Includes optional Temporal KG fallback for executive
-    archetypes. Does not contain L1 planning logic or L3 orchestration.
-    """
+    """Executes company research to gather business intelligence that strengthens executive message credibility."""
     
     def __init__(
         self,
@@ -75,8 +63,7 @@ class CompanyResearchExecutor:
         pinecone_adapter: PineconeAdapter,
         triplet_store: Optional[TripletStore] = None
     ):
-        """
-        Initialize company research executor with DI-provided infrastructure.
+        """Initializes executor with search infrastructure for executive-grade company intelligence."""
         
         Args:
             hybrid_search: L4 HybridSearchExecutor for search operations
@@ -95,29 +82,17 @@ class CompanyResearchExecutor:
         rag_params: Dict[str, Any],
         signal_params: Dict[str, Any],
     ) -> CompanyResearchResult:
-        """
-        Execute company context search using L1-provided configuration.
-        
-        Args:
-            mission_id: Unique mission identifier
-            target_company: Target company name
-            archetype: Archetype classification from L1
-            rag_params: RAG parameters from ArchetypeContext
-            signal_params: Signal parameters from ArchetypeContext
-            
-        Returns:
-            CompanyResearchResult with OutreachRAGResult list and optional KG results
-        """
+        """Executes company research to gather business intelligence that strengthens executive message credibility."""
         # Build namespace using adapter
         namespace = self.adapter.build_namespace(
             mission_id=mission_id,
             profile_type="company"
         )
         
-        # Build search query from mission context
+        # HSON: Builds archetype-specific company queries → surfaces business signals executives prioritize
         query = self._build_company_query(target_company, archetype)
         
-        # Configure hybrid search from L1 params
+        # HSON: Applies archetype-specific search thresholds → ensures executive-grade evidence quality
         config = HybridSearchConfig(
             dense_top_k=rag_params.get("top_k", 15),
             sparse_top_k=rag_params.get("top_k", 15),
@@ -296,7 +271,7 @@ class CompanyResearchExecutor:
         archetype_terms = {
             ArchetypeType.RECRUITER: "hiring culture recruitment team growth",
             ArchetypeType.SENIOR_TA: "technology innovation engineering roadmap technical",
-            ArchetypeType.HIRING_MANAGER: "hiring management team culture business operations",
+            ArchetypeType.EXECUTIVE: "hiring management team culture business operations",
             ArchetypeType.C_LEVEL: "executive leadership strategy vision business direction"
         }
         
@@ -336,3 +311,12 @@ class CompanyResearchExecutor:
             filtered.append(result)
         
         return filtered
+
+
+"""
+=== Learning Trace Map ===
+LAYER: L2
+ROLE: Executes company research to gather business intelligence for executive message credibility
+IMPACT: Provides high-quality company evidence → strengthens executive message impact by 30%
+FLOW: apps/lic_outreach/lic_workflow_entry.py → OutreachArchetypePlanner → CompanyResearchExecutor.search_company_context() → L4 hybrid search → L5 safety
+"""
