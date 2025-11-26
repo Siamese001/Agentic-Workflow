@@ -1,0 +1,182 @@
+{
+  "from": "LIC_10-02-2025_v5.2.json",
+  "to": "LIC_10-02-2025_v5.3.json",
+  "base_sha": "eb74b2f73b828e229bc47f490735f011fece9e8841a5bf46c1c9320a97c7cbe7",
+  "new_sha": "ccb2644a4ec2c8ffefdae80f86edc2721e41ce9dd5854f025bad46c0e7bc4908",
+  "change_count": 21,
+  "changes": [
+    {
+      "path": "3.context.routing_decision_tree.q3_prompting_condition",
+      "change": "ADDED",
+      "value": {
+        "logic": [
+          "IF Q1='NEW' THEN prompt Q3: 'INMAIL or CONNECTION_REQ?'",
+          "ELSE IF Q1='EXISTING' THEN SKIP Q3 and proceed to linkedin_input_collection"
+        ],
+        "enforcement": "BLOCK Q3 emission when Q1='EXISTING'"
+      }
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.preclassification_gate",
+      "change": "ADDED",
+      "value": {
+        "description": "If About section is missing or too short, force multi-hop RAG BEFORE message_type_classification.",
+        "trigger": {
+          "when": "linkedin_inputs.about is null OR len(about) < 20"
+        },
+        "action": {
+          "execute": "multi_hop_rag_research",
+          "before": "message_type_classification",
+          "agentic": true,
+          "min_retrievers_by_type": "Use Section 3 RAG retriever requirements for K.1",
+          "min_hops": 2
+        },
+        "audit": "Log evidence of tool calls and hop chaining prior to classification"
+      }
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.output_format",
+      "change": "ADDED",
+      "value": {
+        "mode": "multiline_block",
+        "template": "Regards,\\n{sender_name}\\n{email}\\n{phone}\\n{linkedin_url}",
+        "fields": [
+          "sender_name",
+          "email",
+          "phone",
+          "linkedin_url"
+        ],
+        "newline_char": "\\n"
+      }
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_compact",
+      "change": "LIST_CHANGED",
+      "from_len": 39,
+      "to_len": 40
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.signature_templates",
+      "change": "ADDED",
+      "value": {
+        "multiline_block": "Regards,\\n{sender_name}\\n{email}\\n{phone}\\n{linkedin_url}",
+        "note": "Explicit \\n newlines between each field; enforced in K.6 generation"
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.structure.signature",
+      "change": "MODIFIED",
+      "from": "{K.6_output}",
+      "to": "{K.6_output_multiline}"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.signature_templates",
+      "change": "ADDED",
+      "value": {
+        "multiline_block": "Regards,\\n{sender_name}\\n{email}\\n{phone}\\n{linkedin_url}",
+        "note": "Explicit \\n newlines between each field; enforced in K.6 generation"
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.structure.signature",
+      "change": "MODIFIED",
+      "from": "{K.6_output}",
+      "to": "{K.6_output_multiline}"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.signature_templates",
+      "change": "ADDED",
+      "value": {
+        "multiline_block": "Regards,\\n{sender_name}\\n{email}\\n{phone}\\n{linkedin_url}",
+        "note": "Explicit \\n newlines between each field; enforced in K.6 generation"
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.structure.signature",
+      "change": "MODIFIED",
+      "from": "{K.6_output}",
+      "to": "{K.6_output_multiline}"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.signature_templates",
+      "change": "ADDED",
+      "value": {
+        "multiline_block": "Regards,\\n{sender_name}\\n{email}\\n{phone}\\n{linkedin_url}",
+        "note": "Explicit \\n newlines between each field; enforced in K.6 generation"
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.structure.signature",
+      "change": "MODIFIED",
+      "from": "{K.6_output}",
+      "to": "{K.6_output_multiline}"
+    },
+    {
+      "path": "5.output.post_send_confirmation.app_schema_v4_mapping.date_mapping_policy",
+      "change": "ADDED",
+      "value": {
+        "description": "Populate historical communication dates from prior_message_context, append current date last. All dates formatted MM-DD-YYYY.",
+        "source": "prior_message_context.prior_message_content + runtime_context.current_date",
+        "parsing": {
+          "strategy": "extract all explicit dates using strict patterns and natural-language phrases (e.g., 'Sep 12, 2025', '9/12/25', 'yesterday')",
+          "normalize_to": "MM-DD-YYYY"
+        },
+        "population_rules": [
+          "If historical dates found: map in order as Date Communication Sent 1..N, then add current_date as next index",
+          "If none found: set Date Communication Sent 1 = current_date (MM-DD-YYYY)"
+        ]
+      }
+    },
+    {
+      "path": "5.output.post_send_confirmation.app_schema_v4_mapping.field_4.fixed_value",
+      "change": "MODIFIED",
+      "from": "2025-10-01",
+      "to": "10-02-2025"
+    },
+    {
+      "path": "5.output.post_send_confirmation.app_schema_v4_mapping.field_4.source",
+      "change": "MODIFIED",
+      "from": "current_date (YYYY-MM-DD format)",
+      "to": "current_date (MM-DD-YYYY format)"
+    },
+    {
+      "path": "5.output.post_send_confirmation.conditional_output.if_yes.format",
+      "change": "MODIFIED",
+      "from": "```json\n{\n  \"Recruiter / Contact 1 Name\": \"{recipient_name}\",\n  \"Recruiter / Contact 1 Title\": \"{recipient_title}\",\n  \"Recruiter / Contact 1 URL\": \"{recipient_profile_url}\",\n  \"Date Communication Sent 1\": \"{today_date_YYYY-MM-DD}\"\n}\n```",
+      "to": "```json\n{\n  \"Recruiter / Contact 1 Name\": \"{recipient_name}\",\n  \"Recruiter / Contact 1 Title\": \"{recipient_title}\",\n  \"Recruiter / Contact 1 URL\": \"{recipient_profile_url}\",\n  \"Date Communication Sent 1\": \"{date_1_MM_DD_YYYY}\"\n}\n```"
+    },
+    {
+      "path": "5.output.post_send_confirmation.integration_notes",
+      "change": "LIST_CHANGED",
+      "from_len": 5,
+      "to_len": 6
+    },
+    {
+      "path": "metadata.base_sha_for_v5_3",
+      "change": "ADDED",
+      "value": "eb74b2f73b828e229bc47f490735f011fece9e8841a5bf46c1c9320a97c7cbe7"
+    },
+    {
+      "path": "metadata.patches_applied_v5_3",
+      "change": "ADDED",
+      "value": [
+        "P011",
+        "P012",
+        "P013",
+        "P014",
+        "P015"
+      ]
+    },
+    {
+      "path": "metadata.sha256_v5_3",
+      "change": "ADDED",
+      "value": "ccb2644a4ec2c8ffefdae80f86edc2721e41ce9dd5854f025bad46c0e7bc4908"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED",
+      "from": "LIC_10-02-2025_v5.2",
+      "to": "LIC_10-02-2025_v5.3"
+    }
+  ]
+}

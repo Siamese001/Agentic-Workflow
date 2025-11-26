@@ -1,0 +1,61 @@
+--- LIC_10-02-2025_v6.5.json
++++ LIC_10-03-2025_v6.6.json
+@@ -2,7 +2,7 @@
+   "artifact": "LinkedIn Outreach Orchestrator (LIC)",
+   "version": "LIC_10-01-2025_v4",
+   "metadata": {
+-    "version": "LIC_10-02-2025_v6.5",
++    "version": "LIC_10-03-2025_v6.6",
+     "patches": [
+       "C001",
+       "C002",
+@@ -14,7 +14,8 @@
+       "C008",
+       "C009",
+       "C010",
+-      "C011"
++      "C011",
++      "C012"
+     ],
+     "changelog": "external://CHANGELOG.md",
+     "sha256": "70c43bc1a22ab5185efcb51683aab7d12f87e29509ec5268221cb3216b0f8a09",
+@@ -3247,6 +3248,39 @@
+         "top_p": 0.9,
+         "top_k": 50
+       }
++    },
++    "rag_execution_enforcement": {
++      "name": "RAG Execution Enforcement",
++      "version": "v1",
++      "pre_execution_tooling_check": {
++        "after_section": 3,
++        "tool": "web_search",
++        "block_on_unavailable": true,
++        "dummy_probe": "test"
++      },
++      "audit_trail_contract": {
++        "fields": [
++          "k_node",
++          "hop_number",
++          "timestamp",
++          "tool_name",
++          "query_sent",
++          "results_count",
++          "key_findings",
++          "recipient_specific",
++          "sources"
++        ],
++        "sequential_hops_required": true,
++        "final_hop_must_be_recipient_specific": true
++      },
++      "blocking_rules": [
++        "LIC-QA-024",
++        "LIC-QA-025",
++        "LIC-QA-027",
++        "LIC-QA-028",
++        "LIC-QA-029",
++        "LIC-QA-030"
++      ]
+     }
+   },
+   "5.output": {

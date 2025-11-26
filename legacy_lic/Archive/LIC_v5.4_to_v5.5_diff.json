@@ -1,0 +1,141 @@
+{
+  "from": "LIC_10-02-2025_v5.4.json",
+  "to": "LIC_10-02-2025_v5.5.json",
+  "base_sha": "6fd334f1f13d1333ba360f8a139357581b036fcd5012c2d14625751b9de258ce",
+  "new_sha": "70c14ed3081037572c422e24413ca3e0e276a4c073b810344e9ff0afcb1d79db",
+  "change_count": 32,
+  "changes": [
+    {
+      "path": "4.reasoning.ascii_sanitization",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.rag_source_prioritization.global_source_weighting.recency_example",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.rag_source_prioritization.global_source_weighting.recency_scoring_v2",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.CONNECTION_REQ_K.3_COMPRESSED.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.CONNECTION_REQ_K.5_MICRO.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.RAG_Mode_parameters",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.output_format.fields",
+      "change": "LIST_CHANGED",
+      "from_len": 4,
+      "to_len": 4
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.output_format.template",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_compact",
+      "change": "LIST_CHANGED",
+      "from_len": 42,
+      "to_len": 45
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-044",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-045",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed.LIC-QA-046",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.signature_templates.note",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.signature_templates.note",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.signature_templates.note",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.signature_templates.note",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "6.conditions.governance_blocking_requirements",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.base_sha_for_v5_5",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v5_5",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v5_5",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ]
+}

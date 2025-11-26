@@ -1,0 +1,18 @@
+LIC v6.9 → v7.0 Path Diff Summary
+============================================
+
+Path: 4.reasoning.emoji_usage_requirements
+- Before: <object keys: mandatory, categories, guidelines>
++ After : <object keys: mandatory, version, source, flow, categories, guidelines>
+
+Path: 4.reasoning.persona_mapping
+- Before: <object keys: general_analyst, specialist_analysts, integration_analyst, reflexion_reviewers>
++ After : <object keys: version, source, flow, stage_0_initialization, stage_1_cot_linear, stage_2_tot_branching...>
+
+Path: 4.reasoning.transformer_layer_visualization
+- Before: <object keys: enabled, mandatory, v17_rag_integration, layer_groupings, required_visualizations>
++ After : <object keys: enabled, mandatory, version, source, weight_matrix_analogy, stage_groupings...>
+
+Path: metadata
+- Before: <object keys: version, patches, changelog, sha256, optimization_date, optimizations_applied>
++ After : <object keys: version, patches, changelog, sha256, optimization_date, optimizations_applied>
