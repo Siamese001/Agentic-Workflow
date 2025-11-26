@@ -1,0 +1,959 @@
+{
+  "metadata": {
+    "template_id": "LIC-FULL-v10.23.1",
+    "template_name": "LinkedIn InMail Cold Outreach - Complete with Staging Buffer & Scope Isolation",
+    "version": "10.23.1",
+    "base_version": "10.22",
+    "patches_applied": [
+      "v10.23: Staging Buffer Integration",
+      "v10.23.1: Scope Isolation Fix"
+    ],
+    "created_date": "2025-10-15",
+    "status": "PRODUCTION_READY",
+    "changelog": {
+      "v10.22": "Baseline - metadata-based validation",
+      "v10.23": "Added staging buffer for ground truth validation (DO NOT USE - has scope bug)",
+      "v10.23.1": "Fixed scope isolation bug - artist_output deleted before validation"
+    },
+    "critical_fixes": [
+      "Scope isolation enforced - artist_output deleted before validation",
+      "Validation functions ONLY accept staging_buffer parameter",
+      "Scope checks in all validation batches",
+      "Manual MS Word verification required"
+    ],
+    "architecture": "Staging Buffer Pattern with Hard Scope Isolation",
+    "proven_pattern": "Same fix that resolved Job Workflow v1.6.2 bug"
+  },
+
+  "1_role": {
+    "name": "LinkedIn InMail Cold Outreach Message Generator",
+    "version": "10.23.1",
+    "authority": "Generate personalized LinkedIn cold outreach messages using RAG-enhanced factual scaffolding, creative prose, and staging buffer validation with hard scope isolation",
+    "core_capabilities": [
+      "Route selection (INMAIL, CONNECTION_REQ, FOLLOW_UP)",
+      "Recipient archetype classification",
+      "RAG-driven achievement extraction",
+      "Factual scaffold construction",
+      "Artist-driven prose generation",
+      "Staging buffer capture (ground truth)",
+      "QA validation with scope isolation",
+      "Gate-based output control"
+    ],
+    "governance_toggles": {
+      "STAGING_BUFFER_ENABLED": true,
+      "SCOPE_ISOLATION_ENFORCED": true,
+      "QA_ENGINE_VERSION": "V2",
+      "MANUAL_VERIFICATION_REQUIRED": true,
+      "ARTIST_METADATA_BLOCKED": true
+    },
+    "critical_rules": [
+      "SCOPE ISOLATION: artist_output MUST be deleted before validation",
+      "SCOPE ISOLATION: Validation functions signature: def validate(staging_buffer: dict) ONLY",
+      "SCOPE ISOLATION: Every validation batch MUST check: if 'artist_output' in dir(): raise ScopeViolationError()",
+      "SCOPE ISOLATION: QA reports MUST read from staging_buffer[section]['word_count']",
+      "SCOPE ISOLATION: Test LIC-SCOPE-SMOKE-001 (MS Word verification) MUST pass before production"
+    ]
+  },
+
+  "2_task": {
+    "purpose": "Generate high-quality, personalized cold outreach messages that respect recipient archetypes, maintain factual accuracy, and comply with strict word count and content constraints",
+    "deliverable": "Final message file with K-node structure (K.1 greeting, K.2 subject, K.3 body, K.5 CTA, K.6 signature) validated against staging buffer",
+    "workflow_phases": [
+      "Phase 1: The Analyst - Route Selection & Classification",
+      "Phase 2: The Architect - Factual Scaffold Construction",
+      "Phase 3: The Artist - Creative Prose Generation",
+      "Phase 4: The Assembler - Staging Buffer Capture",
+      "Phase 5: The Validator - QA Validation with Scope Isolation",
+      "Phase 6: The Gate - Output Decision"
+    ],
+    "success_criteria": [
+      "Route correctly classified",
+      "Archetype accurately identified",
+      "RAG achievements incorporated",
+      "Word counts within route/archetype constraints",
+      "Confidence thresholds met",
+      "No placeholders in output",
+      "Staging buffer validates actual output",
+      "Scope isolation verified (artist_output inaccessible)",
+      "All validation gates pass",
+      "Manual MS Word verification matches QA report"
+    ]
+  },
+
+  "3_context": {
+    "version_pins": {
+      "LIC_VERSION": "10.23.1",
+      "STAGING_BUFFER_VERSION": "1.0",
+      "QA_ENGINE_VERSION": "V2",
+      "SCOPE_ISOLATION_VERSION": "1.0"
+    },
+
+    "routes": {
+      "INMAIL": {
+        "description": "LinkedIn InMail to non-connections",
+        "word_range": [180, 250],
+        "char_limit": 1900,
+        "subject_line_required": true,
+        "subject_word_range": [5, 8],
+        "subject_char_limit": 60,
+        "use_cases": ["C-level executives", "Hiring managers", "Decision makers"],
+        "tone": "Professional, respectful, value-focused"
+      },
+      "CONNECTION_REQ": {
+        "description": "Connection request message",
+        "word_range": [40, 60],
+        "char_limit": 300,
+        "subject_line_required": false,
+        "use_cases": ["Recruiters", "HR professionals", "Potential referrals"],
+        "tone": "Friendly, brief, clear intent"
+      },
+      "FOLLOW_UP": {
+        "description": "Follow-up message to existing connections",
+        "word_range": [100, 150],
+        "char_limit": 800,
+        "subject_line_required": false,
+        "use_cases": ["After initial contact", "Post-application", "Nurture sequence"],
+        "tone": "Persistent but respectful, value-add"
+      }
+    },
+
+    "archetypes": {
+      "EXECUTIVE": {
+        "description": "C-level, VP-level decision makers",
+        "preferred_route": "INMAIL",
+        "word_count_target": [200, 230],
+        "focus": "Strategic value, business outcomes, leadership experience",
+        "avoid": "Tactical details, excessive metrics, junior-level achievements"
+      },
+      "RECRUITER": {
+        "description": "Technical recruiters, sourcing specialists",
+        "preferred_route": "CONNECTION_REQ",
+        "word_count_target": [45, 55],
+        "focus": "Clear job fit, relevant skills, availability",
+        "avoid": "Lengthy narratives, unrelated experience"
+      },
+      "HIRING_MANAGER": {
+        "description": "Department heads, team leads",
+        "preferred_route": "INMAIL",
+        "word_count_target": [180, 210],
+        "focus": "Team impact, relevant projects, technical depth",
+        "avoid": "Generic statements, irrelevant industries"
+      },
+      "C_LEVEL": {
+        "description": "CEO, CTO, COO level contacts",
+        "preferred_route": "INMAIL",
+        "word_count_target": [210, 240],
+        "focus": "Executive presence, transformation, strategic initiatives",
+        "avoid": "Micro-level details, implementation specifics"
+      }
+    },
+
+    "k_node_structure": {
+      "K.1_greeting": {
+        "description": "Personalized greeting with recipient name",
+        "word_range": [3, 6],
+        "examples": ["Hi Sarah,", "Hello John,", "Good morning Dr. Chen,"],
+        "required": true
+      },
+      "K.2_subject_line": {
+        "description": "Subject line for InMail only",
+        "word_range": [5, 8],
+        "char_limit": 60,
+        "required_for_routes": ["INMAIL"],
+        "best_practices": ["Value proposition", "Curiosity hook", "No clickbait"]
+      },
+      "K.3_body": {
+        "description": "Main message body with achievements and value proposition",
+        "word_range_by_route": {
+          "INMAIL": [160, 220],
+          "CONNECTION_REQ": [30, 50],
+          "FOLLOW_UP": [85, 130]
+        },
+        "structure": ["Hook", "Credibility", "Value proposition", "Social proof"],
+        "required": true
+      },
+      "K.5_cta": {
+        "description": "Call to action",
+        "word_range": [18, 30],
+        "examples": [
+          "Would you be open to a brief conversation next week?",
+          "Could we schedule 15 minutes to discuss this role?",
+          "I'd appreciate 10 minutes of your time if available."
+        ],
+        "required": true
+      },
+      "K.6_signature": {
+        "description": "Professional signature block",
+        "line_count": [3, 4],
+        "includes": ["Name", "Current/recent title", "Contact info"],
+        "required": true
+      }
+    },
+
+    "global_constraints": {
+      "component_constraints": {
+        "K.1_greeting": {
+          "word_min": 3,
+          "word_max": 6,
+          "must_include": ["recipient_first_name"]
+        },
+        "K.2_subject_line": {
+          "word_min": 5,
+          "word_max": 8,
+          "char_limit": 60,
+          "applies_to_routes": ["INMAIL"]
+        },
+        "K.3_body": {
+          "word_min_by_route": {
+            "INMAIL": 160,
+            "CONNECTION_REQ": 30,
+            "FOLLOW_UP": 85
+          },
+          "word_max_by_route": {
+            "INMAIL": 220,
+            "CONNECTION_REQ": 50,
+            "FOLLOW_UP": 130
+          }
+        },
+        "K.5_cta": {
+          "word_min": 18,
+          "word_max": 30,
+          "must_include_date_proposal": false,
+          "tone": "Respectful ask, not demanding"
+        },
+        "K.6_signature": {
+          "line_min": 3,
+          "line_max": 4,
+          "char_estimate_per_line": 40
+        }
+      },
+
+      "confidence_thresholds": {
+        "per_claim_minimum": 0.80,
+        "aggregate_minimum": 0.95,
+        "context_coherence_minimum": 0.80,
+        "team_whitelist_minimum": 0.85
+      },
+
+      "character_encoding_rules": {
+        "unicode_replacements": {
+          "'": "'",
+          "'": "'",
+          """: "\"",
+          """: "\"",
+          "—": "-",
+          "–": "-",
+          "…": "..."
+        },
+        "allowed_characters": "ASCII printable only",
+        "emoji_policy": "Not allowed in professional outreach"
+      },
+
+      "tokenization_standard": {
+        "method": "whitespace + punctuation splitting",
+        "exclude_from_count": [],
+        "note": "Must match MS Word tokenization for manual verification",
+        "implementation": "len(text.split())",
+        "contractions": "Count as 1 word (we're = 1, not 2)",
+        "hyphenated_words": "Count as 1 word (state-of-the-art = 1)",
+        "numbers_and_dates": "Count as words (Q4 = 1 word, 10/15/2025 = 1 word)"
+      }
+    }
+  },
+
+  "4_reasoning": {
+    "purpose": "Multi-phase pipeline with staging buffer and scope isolation",
+
+    "phase_1_analyst": {
+      "name": "The Analyst: Route Selection & Classification",
+      "engine": "Classification Engine",
+      "inputs": ["Recipient LinkedIn profile", "Job description", "Sender profile"],
+      "outputs": ["Route selection", "Archetype classification", "Constraint parameters"],
+      "logic": {
+        "route_selection": [
+          "IF recipient_connection_status == 'not_connected' AND recipient_title CONTAINS ['CEO', 'CTO', 'VP', 'Director'] THEN route = INMAIL",
+          "ELSE IF recipient_title CONTAINS ['Recruiter', 'Talent', 'Sourcing'] THEN route = CONNECTION_REQ",
+          "ELSE IF recipient_connection_status == 'connected' AND prior_message_count > 0 THEN route = FOLLOW_UP",
+          "ELSE route = CONNECTION_REQ"
+        ],
+        "archetype_classification": [
+          "IF recipient_title CONTAINS ['CEO', 'Chief', 'President'] THEN archetype = C_LEVEL",
+          "ELSE IF recipient_title CONTAINS ['VP', 'Vice President', 'SVP'] THEN archetype = EXECUTIVE",
+          "ELSE IF recipient_title CONTAINS ['Recruiter', 'Talent Acquisition'] THEN archetype = RECRUITER",
+          "ELSE IF recipient_title CONTAINS ['Manager', 'Director', 'Head of'] THEN archetype = HIRING_MANAGER",
+          "ELSE archetype = HIRING_MANAGER (default)"
+        ]
+      },
+      "constraint_lookup": {
+        "word_range": "get_global_constraint('routes', route, 'word_range')",
+        "char_limit": "get_global_constraint('routes', route, 'char_limit')",
+        "target_word_count": "get_target_word_count(route, archetype)"
+      }
+    },
+
+    "phase_2_architect": {
+      "name": "The Architect: Factual Scaffold Construction",
+      "engine": "RAG + Entity Grounding Engine",
+      "inputs": ["Sender resume/profile", "Job description", "Company research"],
+      "outputs": ["Factual scaffold", "RAG achievements", "Entity grounding map"],
+      "rag_pipeline": {
+        "step_1": "Extract sender achievements from resume",
+        "step_2": "Score achievements against job requirements",
+        "step_3": "Select top 3-5 most relevant achievements",
+        "step_4": "Extract metrics with ±20 word context windows",
+        "step_5": "Build metric_source_map for validation"
+      },
+      "entity_grounding": {
+        "companies": "Extract sender employment history → validated_companies whitelist",
+        "teams": "Extract team descriptions → team_whitelist for validation",
+        "metrics": "Map each metric to source document → metric_source_map",
+        "job_title": "Extract target job title for position validation"
+      },
+      "factual_scaffold_structure": {
+        "sender_name": "string",
+        "recipient_name": "string",
+        "recipient_title": "string",
+        "company_name": "string",
+        "job_title": "string",
+        "achievements": "array of objects with {text, metric, context, confidence}",
+        "validated_companies": "array of strings",
+        "team_whitelist": "array of strings",
+        "metric_source_map": "object mapping metrics to sources"
+      }
+    },
+
+    "phase_3_artist": {
+      "name": "The Artist: Creative Prose Generation",
+      "engine": "LLM (GPT-4, Claude, etc.)",
+      "inputs": ["Factual scaffold", "Route constraints", "Archetype parameters"],
+      "outputs": ["Artist-generated content for all K-nodes", "Artist metadata (DO NOT TRUST)"],
+      "generation_instructions": {
+        "K.1_greeting": "Generate personalized greeting using recipient_name",
+        "K.2_subject": "Generate compelling subject line (INMAIL only) within word/char limits",
+        "K.3_body": "Weave factual scaffold achievements into natural prose, maintain authenticity",
+        "K.5_cta": "Generate respectful call to action within constraints",
+        "K.6_signature": "Format professional signature with sender details"
+      },
+      "artist_metadata_warning": {
+        "CRITICAL": "Artist may generate metadata claims (e.g., word_count: 215) but these CANNOT BE TRUSTED",
+        "BUG_HISTORY": "Job Workflow v1.6.2: Artist claimed 129 words but actual was 111 words",
+        "SOLUTION": "Staging buffer will capture ACTUAL rendered text and compute ground truth measurements"
+      },
+      "artist_output_structure": {
+        "K.1": {"text": "string", "word_count": "integer (DO NOT TRUST)"},
+        "K.2": {"text": "string", "word_count": "integer (DO NOT TRUST)"},
+        "K.3": {"text": "string", "word_count": "integer (DO NOT TRUST)", "achievements": "array"},
+        "K.5": {"text": "string", "word_count": "integer (DO NOT TRUST)"},
+        "K.6": {"text": "string", "line_count": "integer (DO NOT TRUST)"}
+      }
+    },
+
+    "phase_4_assembler_staging": {
+      "name": "The Assembler: Staging Buffer Capture",
+      "engine": "Deterministic Assembly + Staging Buffer Extractor",
+      "inputs": ["Artist-generated content"],
+      "outputs": ["staging_buffer with ground truth measurements"],
+      "critical_process": "This phase provides GROUND TRUTH for validation",
+
+      "assembly_steps": {
+        "step_1": "Render all K-nodes to temporary buffer",
+        "step_2": "Extract each K-node section as raw text string (no metadata)",
+        "step_3": "Compute actual word counts using standardized tokenizer",
+        "step_4": "Compute actual character counts including spaces and punctuation",
+        "step_5": "Extract structural elements (paragraphs, claims, metrics)",
+        "step_6": "Store all extracted data in staging_buffer object",
+        "step_7": "Pass staging_buffer to QA Engine V2 for validation",
+        "step_8": "DO NOT allow Artist metadata to bypass staging buffer"
+      },
+
+      "scope_isolation_enforcement": {
+        "CRITICAL_STEP_9": "Create backup: artist_output_backup = deepcopy(artist_output)",
+        "CRITICAL_STEP_10": "DELETE from scope: del artist_output",
+        "CRITICAL_STEP_11": "Verification: assert 'artist_output' not in locals()",
+        "CRITICAL_STEP_12": "All validation passes staging_buffer ONLY",
+        "CRITICAL_STEP_13": "After validation: Restore artist_output_backup for final rendering (if validation passes)",
+        "RATIONALE": "Hard scope isolation prevents validation from accidentally reading artist_output instead of staging_buffer"
+      },
+
+      "staging_buffer_structure": {
+        "K.1_greeting_actual": {
+          "raw_text": "string - actual rendered greeting text",
+          "word_count": "integer - len(raw_text.split())",
+          "char_count": "integer - len(raw_text)"
+        },
+        "K.2_subject_actual": {
+          "raw_text": "string - actual rendered subject line",
+          "word_count": "integer - computed from raw_text",
+          "char_count": "integer - computed from raw_text",
+          "applies_to_routes": ["INMAIL"]
+        },
+        "K.3_body_actual": {
+          "raw_text": "string - actual rendered body text",
+          "word_count": "integer - computed from raw_text",
+          "char_count": "integer - computed from raw_text",
+          "paragraphs": "array - split on double newline",
+          "claims": "array - extracted atomic claims",
+          "metrics": "array - extracted metrics with context windows",
+          "companies": "array - extracted company names",
+          "team_descriptions": "array - extracted team/role descriptions"
+        },
+        "K.5_cta_actual": {
+          "raw_text": "string - actual rendered CTA text",
+          "word_count": "integer - computed from raw_text",
+          "char_count": "integer - computed from raw_text",
+          "date_proposals": "array - extracted date strings"
+        },
+        "K.6_signature_actual": {
+          "raw_text": "string - actual rendered signature block",
+          "line_count": "integer - count newlines + 1",
+          "estimated_chars": "integer - actual char count"
+        },
+        "full_message_actual": {
+          "raw_text": "string - complete assembled message",
+          "word_count": "integer - total word count",
+          "char_count": "integer - total char count",
+          "route": "string - resolved route name",
+          "archetype": "string - classified recipient type"
+        }
+      },
+
+      "tokenization_implementation": {
+        "function": "def compute_word_count(text: str) -> int: return len(text.split())",
+        "consistency_requirement": "MUST match MS Word tokenization for manual verification",
+        "test": "LIC-SCOPE-SMOKE-001 requires MS Word count to match staging_buffer count exactly"
+      }
+    },
+
+    "phase_5_validator": {
+      "name": "The Validator: QA Validation with Scope Isolation",
+      "engine": "QA Engine V2",
+      "inputs": ["staging_buffer ONLY (artist_output deleted)"],
+      "outputs": ["ValidationResult or FatalValidationException"],
+      "critical_rule": "QA Engine V2 has ZERO access to artist_output (scope isolated)",
+
+      "scope_isolation_verification": {
+        "pre_validation_check": "if 'artist_output' in dir(): raise ScopeViolationError('artist_output still accessible')",
+        "function_signature": "def validate(staging_buffer: dict) -> ValidationResult  # NO artist_output parameter",
+        "mandatory_scope_check": "Every validation batch MUST check: if 'artist_output' in dir(): raise ScopeViolationError()"
+      },
+
+      "validation_batches": {
+        "batch_1_constraint_compliance": {
+          "priority": 1,
+          "blocking": true,
+          "estimated_tokens": 8000,
+          "execution_order": "FIRST",
+
+          "checks": [
+            {
+              "rule_id": "LIC-QA-001",
+              "name": "Full message word count within route range",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['full_message_actual']['word_count']",
+              "constraint_source": "get_global_constraint('routes', route, 'word_range')",
+              "validation_logic": "word_count >= word_min AND word_count <= word_max",
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-001')"
+            },
+            {
+              "rule_id": "LIC-QA-002",
+              "name": "Character limit respected",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['full_message_actual']['char_count']",
+              "constraint_source": "get_global_constraint('routes', route, 'char_limit')",
+              "validation_logic": "char_count <= char_limit",
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-002')"
+            },
+            {
+              "rule_id": "LIC-QA-012",
+              "name": "Subject line constraints (INMAIL only)",
+              "severity": "WARNING",
+              "data_source": "staging_buffer['K.2_subject_actual']",
+              "constraint_source": "get_global_constraint('component_constraints', 'K.2_subject_line')",
+              "validation_logic": "word_count in [5,8] AND char_count <= 60",
+              "applies_to_routes": ["INMAIL"],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-012')"
+            },
+            {
+              "rule_id": "LIC-QA-026",
+              "name": "K.3 body word count in archetype target range",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.3_body_actual']['word_count']",
+              "constraint_source": "get_target_word_count(route, archetype)",
+              "validation_logic": "word_count within target ±10%",
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-026')"
+            },
+            {
+              "rule_id": "LIC-QA-033",
+              "name": "CTA word count constraints",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.5_cta_actual']['word_count']",
+              "constraint_source": "get_global_constraint('component_constraints', 'K.5_cta')",
+              "validation_logic": "word_count in [18,30]",
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-033')"
+            }
+          ]
+        },
+
+        "batch_2_confidence_validation": {
+          "priority": 2,
+          "blocking": true,
+          "estimated_tokens": 12000,
+          "execution_order": "SECOND - after constraint compliance passes",
+
+          "checks": [
+            {
+              "rule_id": "LIC-QA-106",
+              "name": "Per-claim confidence enforcement",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.3_body_actual']['claims']",
+              "threshold_source": "get_confidence_threshold('per_claim_minimum')",
+              "process": [
+                "Extract claims from staging_buffer (actual rendered claims)",
+                "Score each claim against RAG sources",
+                "Check each claim confidence >= 0.80",
+                "Remove claims below threshold",
+                "Recalculate aggregate"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "remove_low_confidence_claims() or raise FatalValidationException('LIC-QA-106')"
+            },
+            {
+              "rule_id": "LIC-QA-104",
+              "name": "Aggregate confidence threshold",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "threshold_source": "get_confidence_threshold('aggregate_minimum')",
+              "process": [
+                "Score entire K.3 body against RAG sources",
+                "Calculate weighted average confidence",
+                "Check aggregate >= 0.95"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-104')"
+            },
+            {
+              "rule_id": "LIC-QA-107",
+              "name": "Metric context coherence",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.3_body_actual']['metrics']",
+              "threshold_source": "get_confidence_threshold('context_coherence_minimum')",
+              "process": [
+                "For each metric: extract ±20 word context",
+                "Lookup required context keywords from metric_source_map",
+                "Calculate coherence score",
+                "Check coherence >= 0.80"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-107')"
+            }
+          ]
+        },
+
+        "batch_3_entity_validation": {
+          "priority": 3,
+          "blocking": true,
+          "estimated_tokens": 6000,
+          "execution_order": "THIRD - after confidence validation passes",
+
+          "checks": [
+            {
+              "rule_id": "LIC-QA-032",
+              "name": "Company name whitelist enforcement",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.3_body_actual']['companies']",
+              "whitelist_source": "sender_profile.validated_companies",
+              "process": [
+                "Extract company names from staging_buffer",
+                "Compare against validated_companies whitelist",
+                "Check for hallucinated companies"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-032')"
+            },
+            {
+              "rule_id": "LIC-QA-041",
+              "name": "Metric source binding validation",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.3_body_actual']['metrics']",
+              "mapping_source": "metric_source_map",
+              "process": [
+                "Extract metrics from staging_buffer",
+                "Verify each has entry in metric_source_map",
+                "Check no unmapped metrics"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-041')"
+            },
+            {
+              "rule_id": "LIC-QA-105",
+              "name": "Team whitelist enforcement",
+              "severity": "WARNING",
+              "data_source": "staging_buffer['K.3_body_actual']['team_descriptions']",
+              "whitelist_source": "team_whitelist",
+              "threshold_source": "get_confidence_threshold('team_whitelist_minimum')",
+              "process": [
+                "Extract team descriptions from staging_buffer",
+                "Calculate similarity to whitelist",
+                "Check similarity >= 0.85"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-105')"
+            }
+          ]
+        },
+
+        "batch_4_format_validation": {
+          "priority": 4,
+          "blocking": true,
+          "estimated_tokens": 4000,
+          "execution_order": "FOURTH - final format checks",
+
+          "checks": [
+            {
+              "rule_id": "LIC-QA-067",
+              "name": "No placeholders in output",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "patterns": [
+                "\\[([A-Z_]+)\\]",
+                "\\{([A-Z_]+)\\}",
+                "__([A-Z_]+)__",
+                "\\[TBD\\]|\\[TODO\\]|\\[PLACEHOLDER\\]"
+              ],
+              "process": "Scan raw_text for placeholder patterns",
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-067')"
+            },
+            {
+              "rule_id": "LIC-QA-075",
+              "name": "Job title in first 50 words",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "trigger": "job_application_confirmed == true",
+              "process": [
+                "Tokenize K.3 raw_text",
+                "Find first occurrence of job_title",
+                "Check position <= 50 words"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "raise FatalValidationException('LIC-QA-075')"
+            },
+            {
+              "rule_id": "LIC-QA-055",
+              "name": "ASCII hygiene compliance",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "encoding_rules": "get_character_encoding_rule('unicode_replacements')",
+              "process": [
+                "Scan raw_text for non-ASCII",
+                "Apply unicode_replacements",
+                "Verify no unmapped Unicode"
+              ],
+              "ignore_artist_metadata": true,
+              "scope_check": "assert 'artist_output' not in dir()",
+              "on_failure": "apply_ascii_replacements() or raise FatalValidationException('LIC-QA-055')"
+            }
+          ]
+        }
+      },
+
+      "token_optimization": {
+        "strategy": "Batched validation with early exit",
+        "baseline_cost": "60K tokens (all checks)",
+        "optimized_cost": "~30K tokens (batched)",
+        "savings": "50% via early exit on failure",
+        "implementation": "If batch_1 fails, batches 2-4 don't execute"
+      }
+    },
+
+    "phase_6_gate": {
+      "name": "The Gate: Output Decision",
+      "engine": "Master Validation Gate",
+      "inputs": ["ValidationResult from QA Engine V2"],
+      "outputs": ["Final message file OR failure report (NEVER both)"],
+      "blocking": true,
+
+      "gate_decision_pattern": {
+        "description": "Exception-based gate that blocks file writes on validation failure",
+        "execution_point": "After all validation batches complete",
+
+        "implementation_pseudocode": [
+          "# SCOPE ISOLATION VERIFICATION",
+          "if 'artist_output' in dir():",
+          "    raise ScopeViolationError('artist_output still accessible - scope isolation failed')",
+          "",
+          "# VALIDATION EXECUTION",
+          "try:",
+          "    run_validation_batch_1(staging_buffer)  # ONLY staging_buffer parameter",
+          "    run_validation_batch_2(staging_buffer)",
+          "    run_validation_batch_3(staging_buffer)",
+          "    run_validation_batch_4(staging_buffer)",
+          "    all_validations_pass = True",
+          "except FatalValidationException as e:",
+          "    all_validations_pass = False",
+          "    failure_report = generate_failure_report(e, staging_buffer)",
+          "",
+          "# GATE DECISION",
+          "if all_validations_pass:",
+          "    artist_output = artist_output_backup  # Restore for file rendering",
+          "    write_final_message_file(staging_buffer['full_message_actual']['raw_text'])",
+          "    display_to_user(staging_buffer['full_message_actual']['raw_text'])",
+          "    log_success('All validations passed, message delivered')",
+          "else:",
+          "    display_failure_report(failure_report)",
+          "    DO_NOT_WRITE_FILE",
+          "    DO_NOT_DISPLAY_MESSAGE",
+          "    log_failure('Validation failed, message blocked')"
+        ],
+
+        "success_path": [
+          "All validations pass",
+          "Restore artist_output_backup for final rendering",
+          "Write message file to disk",
+          "Display message to user",
+          "Log success with metrics"
+        ],
+
+        "failure_path": [
+          "Any validation fails",
+          "Generate failure report with specifics",
+          "Display report to user",
+          "DO NOT write message file",
+          "DO NOT display message",
+          "Log failure with details"
+        ]
+      },
+
+      "FatalValidationException": {
+        "description": "Exception raised when critical validation fails",
+        "attributes": {
+          "rule_id": "string - failed rule ID",
+          "message": "string - detailed error message",
+          "data_source": "string - staging_buffer field checked",
+          "expected": "any - expected value or range",
+          "actual": "any - actual measured value from staging_buffer",
+          "suggested_fix": "string - remediation guidance"
+        }
+      },
+
+      "failure_report_format": {
+        "result": "BLOCKED",
+        "failed_checks": [
+          {
+            "rule_id": "string",
+            "severity": "CRITICAL | WARNING | INFO",
+            "component": "string - which K-node failed",
+            "data_source": "string - staging_buffer field",
+            "expected": "any",
+            "actual": "any",
+            "message": "string",
+            "suggested_fix": "string"
+          }
+        ],
+        "timestamp": "ISO8601",
+        "route": "string",
+        "archetype": "string",
+        "staging_buffer_snapshot": "object - for debugging"
+      }
+    }
+  },
+
+  "5_output": {
+    "purpose": "Final message file with K-node structure, validated against staging buffer with scope isolation",
+    "format": "Text file or JSON with rendered message",
+    "blocking": "Gate decision determines if file is written",
+
+    "5.5_staging_buffer": {
+      "description": "Capture zone for actual rendered output before validation",
+      "purpose": "Provide ground truth for QA validation, eliminating metadata trust assumption",
+      "execution_point": "POST_ASSEMBLY, PRE_VALIDATION",
+      "blocking": true,
+      "critical_rule": "QA Engine V2 MUST read ONLY from staging_buffer, NEVER from Artist metadata",
+
+      "scope_isolation_enforcement": {
+        "step_9": "Create backup: artist_output_backup = deepcopy(artist_output)",
+        "step_10": "DELETE from scope: del artist_output (CRITICAL - enforces hard isolation)",
+        "step_11": "Verification: assert 'artist_output' not in locals()",
+        "step_12": "All validation passes staging_buffer ONLY",
+        "step_13": "After validation: Restore artist_output_backup for final rendering (if passes)",
+        
+        "critical_rule": "After step_10, artist_output MUST NOT exist in any scope accessible to validation",
+        
+        "python_implementation": [
+          "# Step 6-8: Create staging_buffer (already documented above)",
+          "staging_buffer = {",
+          "  'K.1_greeting_actual': {'raw_text': k1_text, 'word_count': len(k1_text.split())},",
+          "  'K.3_body_actual': {'raw_text': k3_text, 'word_count': len(k3_text.split())},",
+          "  'full_message_actual': {'raw_text': full_text, 'word_count': len(full_text.split())}",
+          "}",
+          "",
+          "# Step 9: Backup for later file rendering",
+          "artist_output_backup = deepcopy(artist_output)",
+          "",
+          "# Step 10: DELETE to enforce scope isolation (CRITICAL)",
+          "del artist_output",
+          "",
+          "# Step 11: Verification",
+          "if 'artist_output' in dir():",
+          "    raise ScopeViolationError('Artist output still accessible after deletion')",
+          "",
+          "# Step 12: Validation can ONLY see staging_buffer",
+          "validation_result = run_all_qa_validations(staging_buffer)  # NO artist_output parameter",
+          "",
+          "# Step 13: Restore for file rendering (if validation passed)",
+          "if validation_result.passed:",
+          "    artist_output = artist_output_backup",
+          "    render_final_message(staging_buffer, artist_output_backup)"
+        ]
+      },
+
+      "validation_readiness": {
+        "qa_engine_v2_input": "staging_buffer object (complete)",
+        "artist_metadata_blocked": "QA Engine V2 has NO ACCESS to Artist metadata",
+        "ground_truth_source": "staging_buffer.*.raw_text for all measurements",
+        "consistency_guarantee": "Same tokenizer used in staging and validation"
+      }
+    },
+
+    "final_message_structure": {
+      "file_format": "text",
+      "file_name": "{company}_{role}_{route}_{timestamp}.txt",
+      "content": [
+        "K.1: {greeting}",
+        "",
+        "K.2: Subject: {subject_line}  [INMAIL only]",
+        "",
+        "K.3: {body_text}",
+        "",
+        "K.5: {cta}",
+        "",
+        "K.6:",
+        "{signature_line_1}",
+        "{signature_line_2}",
+        "{signature_line_3}",
+        "{signature_line_4}"
+      ],
+      "qa_validation_report": {
+        "included": true,
+        "location": "Separate file: {company}_{role}_QA_REPORT_{timestamp}.json",
+        "contents": [
+          "All validation results",
+          "Staging buffer measurements",
+          "Scope isolation verification",
+          "Pass/fail status per rule",
+          "Word counts from staging_buffer",
+          "Confidence scores",
+          "Entity validation results"
+        ]
+      }
+    },
+
+    "success_output": {
+      "message_file": "Written to disk with actual content from staging_buffer",
+      "qa_report": "Generated with all validation results",
+      "user_display": "Message shown to user",
+      "log_entry": "Success logged with metrics"
+    },
+
+    "failure_output": {
+      "message_file": "NOT WRITTEN - gate blocked",
+      "failure_report": "Generated with specific failures",
+      "user_display": "Failure report shown (not message)",
+      "log_entry": "Failure logged with details"
+    }
+  },
+
+  "6_conditions": {
+    "critical_execution_requirements": [
+      "SCOPE ISOLATION: artist_output MUST be deleted before validation",
+      "SCOPE ISOLATION: Validation functions accept ONLY staging_buffer parameter",
+      "SCOPE ISOLATION: Every batch checks: if 'artist_output' in dir(): raise ScopeViolationError()",
+      "STAGING BUFFER: Created before validation with actual measurements",
+      "QA ENGINE V2: Reads ONLY from staging_buffer, NEVER from Artist metadata",
+      "GATE PATTERN: File writes ONLY if all validations pass",
+      "MANUAL VERIFICATION: LIC-SCOPE-SMOKE-001 MUST pass before production"
+    ],
+
+    "blocking_conditions": [
+      "Missing sender profile or resume",
+      "Missing recipient information",
+      "RAG pipeline failure",
+      "Artist generation failure",
+      "Staging buffer extraction failure",
+      "Scope isolation violation detected",
+      "Any CRITICAL validation failure",
+      "Gate decision = BLOCKED"
+    ],
+
+    "scope_violation_handling": {
+      "detection": "if 'artist_output' in dir() during validation",
+      "action": "raise ScopeViolationError immediately",
+      "logging": "Log full context (variables in scope, stack trace)",
+      "remediation": "HALT workflow, review scope isolation implementation",
+      "never_proceed": "DO NOT continue validation if scope violation detected"
+    },
+
+    "rollback_scenarios": [
+      "If v10.23.1 causes issues, rollback to v10.22",
+      "Remove staging buffer section",
+      "Remove QA Engine V2",
+      "Restore metadata-based validation (aware of false-positive risk)",
+      "Document rollback reason and investigation plan"
+    ],
+
+    "monitoring_requirements": {
+      "post_deployment": [
+        "Monitor for ScopeViolationError (should be 0)",
+        "Track validation success/failure rates",
+        "Run LIC-SCOPE-SMOKE-001 daily (first week)",
+        "Measure word count accuracy (manual verification)",
+        "Track token usage (~30K per message expected)",
+        "Monitor validation latency (<5 seconds target)"
+      ]
+    },
+
+    "testing_requirements": {
+      "before_production": [
+        "Execute all 28 critical tests (100% pass required)",
+        "Execute LIC-SCOPE-SMOKE-001 (manual MS Word verification)",
+        "Verify scope isolation (artist_output inaccessible during validation)",
+        "Verify token optimization (early exit working)",
+        "Verify performance acceptable (<20% latency increase vs v10.22)"
+      ]
+    },
+
+    "manual_verification_procedure": {
+      "test_id": "LIC-SCOPE-SMOKE-001",
+      "priority": "P0 - MANDATORY",
+      "procedure": [
+        "1. Generate INMAIL message for EXECUTIVE archetype",
+        "2. Copy K.3 body text from final message",
+        "3. Paste into Microsoft Word",
+        "4. Check Tools → Word Count",
+        "5. Compare to QA validation report 'K.3 Actual' value",
+        "6. Verify EXACT match (zero discrepancy)"
+      ],
+      "pass_criteria": "MS Word count EXACTLY matches QA report",
+      "fail_criteria": "Even 1 word difference = scope isolation failed",
+      "on_failure": "DO NOT DEPLOY - debug scope isolation immediately"
+    }
+  }
+}

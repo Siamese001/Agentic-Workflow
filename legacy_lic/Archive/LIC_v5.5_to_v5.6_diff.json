@@ -1,0 +1,349 @@
+{
+  "from": "LIC_10-02-2025_v5.5.json",
+  "to": "LIC_10-02-2025_v5.6.json",
+  "base_sha": "70c14ed3081037572c422e24413ca3e0e276a4c073b810344e9ff0afcb1d79db",
+  "new_sha": "21fe94a064b9d56e2e62d0350dfcd4c922a036c350aa5f8ee619cb15e338b737",
+  "change_count": 85,
+  "changes": [
+    {
+      "path": "4.reasoning._defs",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.ascii_sanitization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.ascii_tooling",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.global_pre_render_hooks",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.CONNECTION_REQ_K.3_COMPRESSED.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.CONNECTION_REQ_K.5_MICRO.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.execution_manifest.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.execution_manifest.ascii_tree_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.execution_manifest.emoji_usage_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.execution_manifest.mandatory_output_format",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.execution_manifest.pause_after_output",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.execution_manifest.transformer_layer_visualization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.1.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.execution_manifest.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.execution_manifest.ascii_tree_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.execution_manifest.emoji_usage_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.execution_manifest.mandatory_output_format",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.execution_manifest.pause_after_output",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.execution_manifest.transformer_layer_visualization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.2.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.execution_manifest.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.execution_manifest.ascii_tree_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.execution_manifest.emoji_usage_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.execution_manifest.mandatory_output_format",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.execution_manifest.pause_after_output",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.execution_manifest.transformer_layer_visualization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.3.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.execution_manifest.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.execution_manifest.ascii_tree_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.execution_manifest.emoji_usage_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.execution_manifest.mandatory_output_format",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.execution_manifest.pause_after_output",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.execution_manifest.transformer_layer_visualization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.4.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.execution_manifest.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.execution_manifest.ascii_tree_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.execution_manifest.emoji_usage_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.execution_manifest.mandatory_output_format",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.execution_manifest.pause_after_output",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.execution_manifest.transformer_layer_visualization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.ascii_tree_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.emoji_usage_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.mandatory_output_format",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.pause_after_output",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.execution_manifest.transformer_layer_visualization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.output_format.template",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.6.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.@inherit",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.ascii_tree_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.emoji_usage_required",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.mandatory_output_format",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.pause_after_output",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.execution_manifest.transformer_layer_visualization",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.7.pre_render_hooks",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output._defs",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.cta.defaults_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.cta.template",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.cta.template_deprecated",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.cta.template_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.cta.defaults_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.cta.template",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.cta.template_deprecated",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.cta.template_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.cta.defaults_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.cta.template",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.cta.template_deprecated",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.cta.template_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.cta.defaults_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.cta.template",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.cta.template_deprecated",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.cta.template_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.signature_templates.multiline_block",
+      "change": "MODIFIED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SHORT_NEW.cta.defaults_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SHORT_NEW.cta.template",
+      "change": "REMOVED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SHORT_NEW.cta.template_deprecated",
+      "change": "ADDED"
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SHORT_NEW.cta.template_ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.base_sha_for_v5_6",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v5_6",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v5_6",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ]
+}
