@@ -1,7 +1,8 @@
 """
-Strategy planning for comprehensive résumé improvement.
+Strategy planning for comprehensive resume improvement and job alignment.
 
-Creates targeted plans to enhance résumé alignment with job requirements.
+Creates targeted plans to enhance resume content and structure
+for optimal job application success.
 """
 
 from __future__ import annotations
@@ -34,9 +35,10 @@ from l5.policy import SafetyEngine
 @dataclass(frozen=True)
 class StrategyPlan:
     """
-    Defines résumé strategy planning structure.
+    Defines resume strategy planning structure.
 
-    Ensures systematic approach to comprehensive résumé improvement.
+    Ensures systematic approach to comprehensive resume
+    improvement and job alignment.
     """
 
     prompt: PromptInstance
@@ -45,9 +47,10 @@ class StrategyPlan:
 @dataclass(frozen=True)
 class DraftPlan:
     """
-    Structures résumé drafting planning approach.
+    Structures resume drafting planning approach.
 
-    Guides content creation for professional résumé enhancement.
+    Guides content creation for professional resume
+    enhancement and improved job alignment.
     """
 
     prompt: PromptInstance
@@ -56,9 +59,10 @@ class DraftPlan:
 @dataclass(frozen=True)
 class LatentThinkingPlan:
     """
-    Coordinates cognitive processing for résumé analysis.
+    Coordinates cognitive processing for resume analysis.
 
-    Optimizes reasoning strategy for effective résumé improvement.
+    Enhances reasoning capabilities for strategic resume
+    planning and improved job alignment.
     """
 
     profile_name: str
@@ -77,9 +81,10 @@ def plan_strategy(
     v6_config: Optional[V6PromptConfig] = None,
 ) -> StrategyPlan:
     """
-    Creates comprehensive résumé improvement strategy plan.
+    Creates comprehensive resume improvement strategy plan.
 
-    Generates targeted approach to enhance résumé job alignment.
+    Generates targeted approach to enhance resume job
+    alignment and application success.
     """
     
     if v6_config is None:
@@ -134,9 +139,10 @@ def plan_draft(
     config: Any,
 ) -> DraftPlan:
     """
-    Creates comprehensive résumé drafting plan.
+    Creates comprehensive resume drafting plan.
 
-    Structures approach for generating professional résumé content aligned with job requirements.
+    Structures approach for generating professional resume
+    content aligned with job requirements.
     """
     prompt = build_drafting_prompt(
         plan=drafting_plan,
@@ -157,9 +163,10 @@ def generate_latent_thinking_plan(
     ctx: ExecutionContext,
 ) -> LatentThinkingPlan:
     """
-    Generates cognitive processing plan for résumé analysis.
+    Generates cognitive processing plan for resume analysis.
 
-    Optimizes reasoning strategy to enhance résumé improvement quality.
+    Optimizes reasoning strategy to enhance resume
+    improvement quality and job alignment.
     """
     profile_name = getattr(ctx, "profile_name", None) or getattr(ctx.config, "profile_id", "default")
     reasoning_mode = "cot"

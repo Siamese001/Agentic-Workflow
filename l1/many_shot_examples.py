@@ -1,25 +1,8 @@
-"""Many-Shot Examples for Agentic Workflow
+"""
+Many-Shot Examples for resume generation workflow guidance.
 
-This module provides high-quality examples for L1 planners, L2 executors,
-and L3 orchestrators. Each example demonstrates best practices and expected
-output formats.
-
-Phase E: Many-Shot Examples
-- 2-4 examples per L1 planner
-- 2-3 examples per L2 executor  
-- 2-4 examples per L3 orchestrator
-
-Layer: Meta
-Responsibilities:
-- Store example inputs and outputs
-- Provide example retrieval by agent type
-- Support few-shot and many-shot prompting
-
-Non-responsibilities:
-- LLM invocation
-- Planning
-- Execution
-- State management
+Provides high-quality examples for L1 planners and executors
+to improve resume quality and job alignment.
 """
 
 from __future__ import annotations
@@ -30,7 +13,11 @@ from enum import Enum
 
 
 class ExampleType(str, Enum):
-    """Type of example."""
+    """
+    Type of example for resume generation workflow.
+
+    Defines example categories for improved resume quality guidance.
+    """
     
     L1_STRATEGY_PLANNING = "l1_strategy_planning"
     L1_RAG_PLANNING = "l1_rag_planning"

@@ -1,11 +1,8 @@
 """
-L2 Tool Output Validator - Defends against Tool Injection (ID 7)
+L2 Tool Output Validator for resume processing security.
 
-Validates all tool outputs at the L2 execution boundary before they
-propagate to L1 planning or L3 orchestration layers.
-
-Layer: L2 (Execution)
-Injection Type: Tool Injection Defense (ID 7)
+Validates tool outputs at L2 execution boundary to protect
+resume improvement workflows from injection attacks.
 """
 
 from __future__ import annotations
@@ -19,10 +16,10 @@ from l2.interfaces import L2ToolOutputValidatorInterface, ToolOutputValidationRe
 
 class L2ToolOutputValidator(L2ToolOutputValidatorInterface):
     """
-    Concrete implementation of tool output validation for L2 layer.
-    
-    Defends against Tool Injection by detecting and sanitizing malicious
-    content in tool outputs before they reach L1/L3 layers.
+    Concrete tool output validation for resume processing L2 layer.
+
+    Defends against injection attacks by detecting and sanitizing
+    malicious content in resume processing tool outputs.
     """
     
     # Injection patterns to detect in tool outputs
@@ -56,11 +53,10 @@ class L2ToolOutputValidator(L2ToolOutputValidatorInterface):
     
     def __init__(self, strict_mode: bool = True):
         """
-        Initialize the tool output validator.
-        
+        Initializes resume processing tool output validator.
+
         Args:
-            strict_mode: If True, reject outputs with any detected threats.
-                        If False, sanitize and allow with warnings.
+            strict_mode: If True, reject outputs with detected threats.
         """
         self.strict_mode = strict_mode
         self._compiled_patterns = [
@@ -70,9 +66,9 @@ class L2ToolOutputValidator(L2ToolOutputValidatorInterface):
     
     def validate_tool_output(self, tool_name: str, output: Any) -> ToolOutputValidationResult:
         """
-        Validate tool output for potential injection attacks.
-        
-        Must be called by all L2 executors before returning results.
+        Validates resume processing tool output for injection attacks.
+
+        Protects resume improvement workflows from security threats.
         """
         # Convert output to string for pattern matching
         output_str = self._to_string(output)
@@ -110,7 +106,9 @@ class L2ToolOutputValidator(L2ToolOutputValidatorInterface):
     
     def sanitize_output(self, output: Any) -> Any:
         """
-        Sanitize tool output by removing or escaping potentially malicious content.
+        Sanitizes resume processing tool output from malicious content.
+
+        Protects resume improvement workflows from security threats.
         """
         if isinstance(output, str):
             return self._sanitize_string(output)
@@ -123,7 +121,9 @@ class L2ToolOutputValidator(L2ToolOutputValidatorInterface):
     
     def detect_injection_patterns(self, content: str) -> List[str]:
         """
-        Detect injection patterns in string content from tool outputs.
+        Detects injection patterns in resume processing tool outputs.
+
+        Identifies security threats to protect resume workflows.
         """
         detected = []
         for compiled_pattern, threat_type in self._compiled_patterns:
@@ -132,7 +132,7 @@ class L2ToolOutputValidator(L2ToolOutputValidatorInterface):
         return detected
     
     def _to_string(self, output: Any) -> str:
-        """Convert any output to string for pattern matching."""
+        """Converts resume processing output to string for pattern matching."""
         if isinstance(output, str):
             return output
         elif isinstance(output, (dict, list)):
@@ -144,7 +144,7 @@ class L2ToolOutputValidator(L2ToolOutputValidatorInterface):
             return str(output)
     
     def _sanitize_string(self, content: str) -> str:
-        """Sanitize a string by escaping or removing dangerous patterns."""
+        """Sanitizes resume processing string by removing dangerous patterns."""
         sanitized = content
         
         # Escape potential injection markers

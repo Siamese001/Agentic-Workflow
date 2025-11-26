@@ -1,4 +1,7 @@
-"""L2 LLM Caller - Pure LLM execution only."""
+"""L2 LLM Caller for resume processing execution.
+
+Provides pure LLM execution for resume improvement workflows.
+"""
 
 from typing import Optional
 from runtime.runtime_utils import invoke_model, SandboxConfig
@@ -8,7 +11,12 @@ from config.meta_profile import MetaProfileSnapshot
 from runtime.observability import record_event, record_exception
 
 class LLMCaller:
-    """Pure LLM execution - no planning, no orchestration logic."""
+    """
+    Pure LLM execution for resume processing workflows.
+
+    Handles LLM calls without planning or orchestration logic
+    for resume improvement and job alignment.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.routing_policy = routing_policy
@@ -16,7 +24,7 @@ class LLMCaller:
         self.meta_profile = meta_profile
     
     def call_llm(self, prompt: str, task_type: str = "default") -> str:
-        """Pure LLM call execution."""
+        """Executes pure LLM call for resume processing workflows."""
         record_event("llm_call_start", {"task_type": task_type})
         
         try:

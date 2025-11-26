@@ -1,7 +1,7 @@
 """
-State management layer for résumé processing workflow coordination.
+L4 state management layer for resume job alignment workflows.
 
-Handles all state management operations for comprehensive résumé enhancement workflows without business logic.
+Handles state operations for resume enhancement coordination.
 """
 
 from __future__ import annotations
@@ -48,9 +48,9 @@ from .entity_resolution import (
 
 def _prune_memory(state: Any, *, max_items: int = 200) -> Any:
     """
-    Bounds memory retention for résumé processing workflow state.
+    Bounds memory retention for resume workflow state.
 
-    Limits message and RAG history retention without mutating input state for efficient résumé enhancement.
+    Limits history retention for efficient resume job alignment.
     """
 
     has_messages = hasattr(state, "messages")

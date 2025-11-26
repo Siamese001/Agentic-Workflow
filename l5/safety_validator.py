@@ -1,7 +1,7 @@
 """
-L5 safety validation for comprehensive résumé protection.
+L5 safety validation for resume job alignment workflows.
 
-Centralizes all safety constraints, ethical guidelines, privacy rules, and bias mitigation for secure processing.
+Centralizes safety constraints and ethical guidelines for resume enhancement.
 """
 
 from __future__ import annotations
@@ -28,26 +28,26 @@ logger = logging.getLogger(__name__)
 
 
 class LayerSafetyPolicy(SafetyPolicy):
-    """Concrete implementation of SafetyPolicy for a specific layer."""
+    """Concrete safety policy implementation for resume workflow layers."""
     
     def __init__(self, layer: str, constraints: List[SafetyConstraint], validation_callback: Callable[[str, SafetyConstraint], Optional[SafetyViolation]]):
-        """Initialize the layer safety policy."""
+        """Initializes safety policy for resume workflow layer."""
         self.layer = layer
         self.constraints = constraints
         self.validation_callback = validation_callback
     
     @property
     def policy_id(self) -> str:
-        """Unique identifier for this policy."""
+        """Unique identifier for resume workflow safety policy."""
         return f"{self.layer}_safety_policy"
     
     @property
     def description(self) -> str:
-        """Human-readable description of the policy."""
+        """Human-readable description of resume workflow safety policy."""
         return f"Safety policy for {self.layer} layer with {len(self.constraints)} constraints"
     
     def evaluate(self, context: SafetyContext) -> PolicyDecision:
-        """Evaluate the given context against this policy."""
+        """Evaluates resume workflow context against safety policy."""
         if not hasattr(context, 'content'):
             raise PolicyEvaluationError(f"Context missing required 'content' attribute: {context}")
         
@@ -81,9 +81,9 @@ class SafetyConstraintType(str, Enum):
 
 class L5SafetyValidator:
     """
-    Centralized L5 safety validation for all layers.
-    
-    Enforces safety constraints, ethical guidelines, privacy rules, and bias mitigation across the entire architecture.
+    Centralized L5 safety validation for resume job alignment workflows.
+
+    Enforces safety constraints and ethical guidelines for resume enhancement.
     """
     
     def __init__(self):
@@ -91,7 +91,7 @@ class L5SafetyValidator:
         self.violation_history: List[SafetyViolation] = []
     
     def _load_safety_constraints(self) -> Dict[SafetyConstraintType, List[SafetyConstraint]]:
-        """Load all safety constraints for centralized enforcement."""
+        """Loads safety constraints for resume workflow enforcement."""
         constraints = {
             SafetyConstraintType.CONTENT_SAFETY: [
                 SafetyConstraint(
@@ -183,7 +183,7 @@ class L5SafetyValidator:
         constraint: SafetyConstraint, 
         context: Optional[ExecutionContext] = None
     ) -> Optional[SafetyViolation]:
-        """Check if content violates a specific safety constraint."""
+        """Checks if resume workflow content violates safety constraint."""
         # Simplified constraint checking - in production would use sophisticated NLP
         if constraint.constraint_type == SafetyConstraintType.CONTENT_SAFETY:
             return self._check_content_safety(content, constraint)
@@ -195,7 +195,7 @@ class L5SafetyValidator:
         return None
     
     def _check_content_safety(self, content: str, constraint: SafetyConstraint) -> Optional[SafetyViolation]:
-        """Check content safety violations."""
+        """Checks content safety violations in resume workflow data."""
         # Simplified implementation - would use sophisticated content filtering
         harmful_patterns = ["harmful", "illegal", "dangerous"]
         for pattern in harmful_patterns:
@@ -211,7 +211,7 @@ class L5SafetyValidator:
         return None
     
     def _check_privacy_rules(self, content: str, constraint: SafetyConstraint) -> Optional[SafetyViolation]:
-        """Check privacy rule violations."""
+        """Checks privacy rule violations in resume workflow data."""
         # Simplified PII detection
         pii_patterns = ["ssn", "social security", "credit card"]
         for pattern in pii_patterns:
@@ -227,7 +227,7 @@ class L5SafetyValidator:
         return None
     
     def _check_bias(self, content: str, constraint: SafetyConstraint) -> Optional[SafetyViolation]:
-        """Check for biased content."""
+        """Checks for biased content in resume workflow data."""
         # Simplified bias detection
         bias_indicators = ["always", "never", "obviously"]
         for indicator in bias_indicators:
@@ -243,16 +243,12 @@ class L5SafetyValidator:
         return None
     
     def _get_timestamp(self) -> str:
-        """Get current timestamp for audit trail."""
+        """Gets timestamp for resume workflow audit trail."""
         from datetime import datetime, timezone
         return datetime.now(timezone.utc).isoformat()
     
     def get_safety_policy_for_layer(self, layer: str) -> SafetyPolicy:
-        """
-        Get safety policy applicable to a specific layer.
-        
-        Provides layers with their safety constraints without exposing implementation details.
-        """
+        """Gets safety policy for resume workflow layer enhancement."""
         applicable_constraints = []
         for constraint_type, constraint_list in self.constraints.items():
             for constraint in constraint_list:

@@ -1,7 +1,7 @@
 """
-L5 - Safety/Policy Layer - Policy Interface and Engine
+L5 safety and policy engine for resume job alignment workflows.
 
-Defines the policy interface and implements the safety engine.
+Defines policy interface and implements safety engine for resume enhancement.
 """
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, TypeVar
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class PolicyConfigurationError(Exception):
-    """Raised when policy configuration is invalid."""
+    """Raised when resume workflow policy configuration is invalid."""
     pass
 
 
@@ -31,13 +31,13 @@ T = TypeVar('T')
 
 @dataclass
 class PolicyResult:
-    """Result of evaluating multiple policies."""
+    """Result of evaluating resume workflow policies for enhancement."""
     decisions: List[PolicyDecision] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     @property
     def final_verdict(self) -> Verdict:
-        """Determine the overall verdict based on all policy decisions."""
+        """Determines overall verdict for resume workflow policy decisions."""
         if not self.decisions:
             return Verdict.ALLOW
             
@@ -59,11 +59,11 @@ class PolicyResult:
     
     @property
     def blocking_findings(self) -> List[SafetyFinding]:
-        """Get all findings that would cause a block."""
+        """Gets all findings that would block resume workflow operations."""
         return [f for f in self.all_findings if f.severity >= Severity.HIGH]
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to a dictionary for serialization."""
+        """Converts resume workflow policy result to dictionary format."""
         return {
             'verdict': self.final_verdict.value,
             'decisions': [d.to_dict() for d in self.decisions],
@@ -72,17 +72,13 @@ class PolicyResult:
 
 class SafetyEngine:
     """
-    Executes safety policies and aggregates their results.
-    
-    The safety engine is responsible for:
-    1. Managing a collection of safety policies
-    2. Evaluating content against all relevant policies
-    3. Aggregating and resolving policy decisions
-    4. Providing detailed feedback on policy violations
+    Executes safety policies for resume job alignment workflows.
+
+    Manages policies, evaluates content, and aggregates decisions for enhancement.
     """
     
     def __init__(self, policies: Optional[List[SafetyPolicy]] = None):
-        """Initialize the safety engine with optional initial policies."""
+        """Initializes safety engine for resume workflow policies."""
         self._policies: Dict[str, SafetyPolicy] = {}
         self._default_severity_threshold = Severity.HIGH
         
@@ -91,7 +87,7 @@ class SafetyEngine:
                 self.add_policy(policy)
     
     def add_policy(self, policy: SafetyPolicy) -> None:
-        """Add a policy to the engine."""
+        """Adds resume workflow safety policy to the engine."""
         if not isinstance(policy, SafetyPolicy):
             raise PolicyConfigurationError(
                 f"Policy {policy} does not implement SafetyPolicy protocol"
@@ -106,17 +102,17 @@ class SafetyEngine:
         logger.info(f"Added policy: {policy.policy_id} - {policy.description}")
     
     def remove_policy(self, policy_id: str) -> None:
-        """Remove a policy from the engine."""
+        """Removes resume workflow safety policy from the engine."""
         if policy_id in self._policies:
             del self._policies[policy_id]
             logger.info(f"Removed policy: {policy_id}")
     
     def get_policy(self, policy_id: str) -> Optional[SafetyPolicy]:
-        """Get a policy by ID."""
+        """Gets resume workflow safety policy by ID."""
         return self._policies.get(policy_id)
     
     def list_policies(self) -> List[SafetyPolicy]:
-        """Get all registered policies."""
+        """Gets all registered resume workflow safety policies."""
         return list(self._policies.values())
     
     def evaluate(
@@ -126,14 +122,12 @@ class SafetyEngine:
         severity_threshold: Optional[Severity] = None
     ) -> PolicyResult:
         """
-        Evaluate the given context against all relevant policies.
+        Evaluates resume workflow context against relevant safety policies.
         
         Args:
-            context: The safety context to evaluate
-            policy_ids: Optional list of policy IDs to evaluate against.
-                      If None, evaluates against all policies.
-            severity_threshold: Minimum severity level to consider for blocking.
-                             If None, uses the engine's default.
+            context: Safety context for resume enhancement evaluation
+            policy_ids: Optional policy IDs to evaluate against
+            severity_threshold: Minimum severity for blocking operations
         
         Returns:
             PolicyResult with the combined results of all policy evaluations
@@ -212,7 +206,7 @@ class SafetyEngine:
         self,
         policy_ids: Optional[List[str]] = None
     ) -> List[SafetyPolicy]:
-        """Get the list of policies to evaluate."""
+        """Gets list of resume workflow policies to evaluate."""
         if policy_ids is None:
             return list(self._policies.values())
         

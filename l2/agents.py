@@ -1,7 +1,8 @@
 """
-Legacy agents wrapper for résumé processing workflow execution.
+Legacy agents wrapper for resume processing workflow execution.
 
-Provides backward compatibility by delegating operations to atomic L1-L5 architecture for résumé enhancement workflows.
+Provides backward compatibility by delegating operations to atomic
+L1-L5 architecture for resume enhancement and job alignment.
 """
 
 from typing import Any, Optional, TYPE_CHECKING
@@ -15,7 +16,7 @@ from config.meta_profile import MetaProfileSnapshot
 
 # Placeholder for missing record_event function
 def record_event(event_name: str, data: dict) -> None:
-    """Placeholder function for record_event to resolve undefined name errors."""
+    """Placeholder function for resume processing event recording."""
     pass
 
 # Use TYPE_CHECKING to avoid circular imports
@@ -30,9 +31,10 @@ if TYPE_CHECKING:
 # Legacy agent classes that delegate to atomic layers
 class StrategyLLMAgent:
     """
-    Legacy strategy agent wrapper for résumé processing workflows.
+    Legacy strategy agent wrapper for resume processing workflows.
 
-    Delegates to atomic L1-L5 layers for comprehensive résumé enhancement strategy execution.
+    Delegates to atomic L1-L5 layers for comprehensive resume
+    enhancement strategy execution and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -41,14 +43,15 @@ class StrategyLLMAgent:
         self._atomic_agent = AtomicStrategyAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
-        """Delegate all method calls to the atomic agent."""
+        """Delegates method calls to atomic resume processing agent."""
         return getattr(self._atomic_agent, name)
 
 class DraftingGuild:
     """
-    Legacy drafting agent wrapper for résumé processing workflows.
+    Legacy drafting agent wrapper for resume processing workflows.
 
-    Delegates to atomic L1-L5 layers for comprehensive résumé content generation.
+    Delegates to atomic L1-L5 layers for comprehensive resume
+    content generation and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -57,14 +60,15 @@ class DraftingGuild:
         self._atomic_agent = AtomicDraftingAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
-        """Delegate all method calls to the atomic agent."""
+        """Delegates method calls to atomic resume processing agent."""
         return getattr(self._atomic_agent, name)
 
 class SemanticQAAgent:
     """
-    Legacy QA agent wrapper for résumé processing workflows.
+    Legacy QA agent wrapper for resume processing workflows.
 
-    Delegates to atomic L1-L5 layers for comprehensive résumé quality assurance.
+    Delegates to atomic L1-L5 layers for comprehensive resume
+    quality assurance and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -73,14 +77,15 @@ class SemanticQAAgent:
         self._atomic_agent = AtomicQAAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
-        """Delegate all method calls to the atomic agent."""
+        """Delegates method calls to atomic resume processing agent."""
         return getattr(self._atomic_agent, name)
 
 class ConstitutionalSafetyAgent:
     """
-    Legacy safety agent wrapper for résumé processing workflows.
+    Legacy safety agent wrapper for resume processing workflows.
 
-    Delegates to atomic L1-L5 layers for comprehensive résumé safety validation.
+    Delegates to atomic L1-L5 layers for comprehensive resume
+    safety validation and job alignment compliance.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -89,14 +94,15 @@ class ConstitutionalSafetyAgent:
         self._atomic_agent = AtomicSafetyAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
-        """Delegate all method calls to the atomic agent."""
+        """Delegates method calls to atomic resume processing agent."""
         return getattr(self._atomic_agent, name)
 
 class HYDEQueryAgent:
     """
-    Legacy HYDE query agent for résumé processing retrieval enhancement.
+    Legacy HYDE query agent for resume processing retrieval enhancement.
 
-    Delegates to atomic L1-L5 layers for optimized résumé search query generation.
+    Delegates to atomic L1-L5 layers for optimized resume
+    search query generation and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -106,9 +112,10 @@ class HYDEQueryAgent:
     
     async def run_hyde_query(self, rag_plan: Any, ctx: Any) -> str:
         """
-        Generates HYDE queries for résumé processing retrieval enhancement.
+        Generates HYDE queries for resume processing retrieval enhancement.
 
-        Delegates to atomic execution for optimized résumé search query generation.
+        Delegates to atomic execution for optimized resume search
+        query generation and job alignment.
         """
         # Delegate to L2 LLM caller for pure execution
         from l2.llm_caller import LLMCaller
@@ -134,9 +141,10 @@ class HYDEQueryAgent:
 
 class QACouncilAgent:
     """
-    Legacy QA council agent wrapper for résumé processing workflows.
+    Legacy QA council agent wrapper for resume processing workflows.
 
-    Delegates to atomic L1-L5 layers for comprehensive résumé quality assurance with council oversight.
+    Delegates to atomic L1-L5 layers for comprehensive resume
+    quality assurance with council oversight and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -145,15 +153,16 @@ class QACouncilAgent:
         self._atomic_agent = AtomicQAAgent(routing_policy, sandbox, meta_profile)
     
     def __getattr__(self, name):
-        """Delegate all method calls to the atomic agent."""
+        """Delegates method calls to atomic resume processing agent."""
         return getattr(self._atomic_agent, name)
 
 # Legacy LLMBaseAgent for backward compatibility
 class LLMBaseAgent:
     """
-    Legacy base agent class for résumé processing workflow compatibility.
+    Legacy base agent class for resume processing workflow compatibility.
 
-    Delegates to atomic architecture for comprehensive résumé enhancement operations.
+    Delegates to atomic architecture for comprehensive resume
+    enhancement operations and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None, agent_card: Optional[AgentCard] = None):
@@ -169,7 +178,7 @@ class LLMBaseAgent:
         )
     
     def _call_llm(self, prompt: Any) -> str:
-        """Legacy LLM call - delegates to atomic L2 execution."""
+        """Legacy LLM call for resume processing - delegates to atomic L2."""
         from l2.llm_caller import LLMCaller
         llm_caller = LLMCaller(self.routing_policy, self.sandbox)
         return llm_caller.call_llm(prompt, self.agent_card.role.value)

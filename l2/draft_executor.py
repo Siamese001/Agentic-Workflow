@@ -1,7 +1,8 @@
 """
-L2 execution layer for résumé draft generation.
+L2 execution layer for resume draft generation.
 
-Executes model calls to create compelling résumé content aligned with job requirements.
+Executes model calls to create compelling resume content
+aligned with job requirements for better applications.
 """
 
 from typing import Optional
@@ -13,9 +14,10 @@ from runtime.observability import record_event, record_exception
 
 class DraftExecutor:
     """
-    Executes résumé draft generation with optimal model selection.
+    Executes resume draft generation with optimal model selection.
 
-    Ensures consistent quality and proper formatting for professional résumé improvement.
+    Ensures consistent quality and proper formatting for professional
+    resume improvement and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -25,9 +27,10 @@ class DraftExecutor:
     
     def execute_draft(self, prompt: str) -> str:
         """
-        Generates résumé draft content using optimal model.
+        Generates resume draft content using optimal model.
 
-        Creates tailored résumé sections that emphasize relevant skills and accomplishments.
+        Creates tailored resume sections that emphasize relevant skills
+        and accomplishments for better job alignment.
         """
         record_event("draft_execution_start", {})
         

@@ -1,7 +1,8 @@
 """
-L2 execution layer for résumé improvement tasks.
+L2 execution layer for resume improvement tasks.
 
-Executes cognitive agents to generate strategy, drafting, QA, and safety improvements for comprehensive résumé enhancement.
+Executes cognitive agents for strategy, drafting, QA, and safety
+improvements to enhance resume job alignment.
 """
 
 # FILE: l2.py
@@ -52,17 +53,17 @@ run_rag_retrieval = _retrieval_module.run_rag_retrieval
 
 
 """
-Provides helper functions for reliable résumé processing execution.
+Provides helper functions for reliable resume processing execution.
 
-Ensures robust operation and error handling for comprehensive résumé improvement workflows.
+Ensures robust operation for resume job alignment workflows.
 """
 
 
 def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
     """
-    Safely accesses object attributes for reliable résumé processing.
-    
-    Prevents errors that could interrupt comprehensive résumé improvement workflows.
+    Safely accesses object attributes for reliable resume processing.
+
+    Prevents errors in resume job alignment workflows.
     """
     try:
         return getattr(obj, name, default)
@@ -73,8 +74,8 @@ def _safe_getattr(obj: Any, name: str, default: Any = "") -> Any:
 def _build_base_query(ctx: ExecutionContext) -> str:
     """
     Constructs search query from job and resume data.
-    
-    Creates focused queries to find relevant evidence for résumé improvement.
+
+    Creates focused queries for resume job alignment evidence.
     """
     job = _safe_getattr(ctx, "job", None)
     resume = _safe_getattr(ctx, "resume", None)
@@ -105,8 +106,8 @@ def _build_base_query(ctx: ExecutionContext) -> str:
 def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
     """
     Derives quality assessment vote from QA findings.
-    
-    Ensures consistent evaluation of résumé improvement quality and safety.
+
+    Ensures consistent evaluation of resume job alignment quality.
     """
     findings = list(getattr(qa_result, "findings", []) or [])
 
@@ -138,9 +139,9 @@ def _compute_council_vote_from_qa(qa_result: QAResult) -> CouncilVote:
 
 def _run_latent_thinking(result: L2ResultBundle, ctx: ExecutionContext) -> None:
     """
-    Records thinking trace for résumé improvement analysis.
-    
-    Maintains observability of decision processes for quality enhancement.
+    Records thinking trace for resume improvement analysis.
+
+    Maintains observability of resume job alignment decisions.
     """
     # L2 does not call L1 - latent thinking plans should be pre-computed
     # and passed via the plans bundle if needed.
@@ -163,8 +164,8 @@ async def _maybe_run_hyde_query(
 ) -> Optional[str]:
     """
     Generates hypothetical document queries for better retrieval.
-    
-    Creates enhanced search queries to find relevant résumé improvement evidence.
+
+    Creates enhanced search queries for resume job alignment evidence.
     """
     if rag_plan is None or not getattr(rag_plan, "allow_hyde", False):
         return None
@@ -188,9 +189,9 @@ async def _maybe_run_hyde_query(
 
 
 """
-Executes résumé strategy planning with optimal model selection.
+Executes resume strategy planning with optimal model selection.
 
-Generates targeted improvement plans to enhance job description alignment.
+Generates targeted improvement plans for resume job alignment.
 """
 
 
@@ -199,9 +200,9 @@ async def _execute_strategy(
     ctx: ExecutionContext,
 ) -> StrategyResult:
     """
-    Executes résumé strategy planning with optimal model selection.
-    
-    Generates targeted improvement plans to enhance job description alignment.
+    Executes resume strategy planning with optimal model selection.
+
+    Generates targeted improvement plans for resume job alignment.
     """
     span = start_span("l2.strategy", ctx=ctx.span_context())
     try:
@@ -232,9 +233,9 @@ async def _execute_strategy(
 
 
 """
-Executes comprehensive evidence retrieval for résumé improvement.
+Executes comprehensive evidence retrieval for resume improvement.
 
-Gathers relevant data using multiple search strategies to support résumé enhancement.
+Gathers relevant data using multiple search strategies for resume job alignment.
 """
 
 
@@ -243,9 +244,9 @@ async def _execute_retrieval(
     ctx: ExecutionContext,
 ) -> RAGResult:
     """
-    Executes comprehensive evidence retrieval for résumé improvement.
-    
-    Gathers relevant data using multiple search strategies to support résumé enhancement.
+    Executes comprehensive evidence retrieval for resume improvement.
+
+    Gathers relevant data using multiple search strategies for resume job alignment.
     """
     span = start_span("l2.retrieval", ctx=ctx.span_context())
     try:
@@ -280,9 +281,9 @@ async def _execute_retrieval(
 
 
 """
-Analyzes retrieved evidence for résumé improvement insights.
+Analyzes retrieved evidence for resume improvement insights.
 
-Processes evidence to extract relevant information for résumé enhancement.
+Processes evidence to extract relevant information for resume job alignment.
 """
 
 
@@ -292,9 +293,9 @@ async def _execute_rag_reasoning(
     ctx: ExecutionContext,
 ) -> RAGResult:
     """
-    Analyzes retrieved evidence for résumé improvement insights.
-    
-    Processes evidence to extract relevant information for résumé enhancement.
+    Analyzes retrieved evidence for resume improvement insights.
+
+    Processes evidence to extract relevant information for resume job alignment.
     """
     span = start_span("l2.rag_reasoning", ctx=ctx.span_context())
     try:
@@ -346,9 +347,9 @@ async def _execute_rag_reasoning(
 
 
 """
-Executes résumé content drafting with strategy and evidence.
+Executes resume content drafting with strategy and evidence.
 
-Generates compelling résumé sections using strategy guidance and retrieved evidence.
+Generates compelling resume sections for resume job alignment.
 """
 
 
@@ -359,9 +360,9 @@ async def _execute_drafting(
     ctx: ExecutionContext,
 ) -> DraftingResult:
     """
-    Executes résumé content drafting with strategy and evidence.
-    
-    Generates compelling résumé sections using strategy guidance and retrieved evidence.
+    Executes resume content drafting with strategy and evidence.
+
+    Generates compelling resume sections for resume job alignment.
     """
     span = start_span("l2.drafting", ctx=ctx.span_context())
     try:
@@ -389,9 +390,9 @@ async def _execute_drafting(
 
 
 """
-Executes quality assurance validation for résumé content.
+Executes quality assurance validation for resume content.
 
-Ensures résumé accuracy and relevance through comprehensive QA analysis.
+Ensures resume accuracy and relevance for job alignment.
 """
 
 
@@ -402,9 +403,9 @@ async def _execute_qa(
     ctx: ExecutionContext,
 ) -> Tuple[QAResult, CouncilVote]:
     """
-    Executes quality assurance validation for résumé content.
-    
-    Returns structured QA findings and council vote for résumé quality assessment.
+    Executes quality assurance validation for resume content.
+
+    Returns QA findings and council vote for resume job alignment quality.
     """
     span = start_span("l2.qa", ctx=ctx.span_context())
     try:
@@ -434,9 +435,9 @@ async def _execute_qa(
 
 
 """
-Executes safety validation for résumé compliance and protection.
+Executes safety validation for resume compliance and protection.
 
-Ensures résumé content meets safety standards to protect user data and credibility.
+Ensures resume content meets safety standards for job alignment workflows.
 """
 
 
@@ -448,9 +449,9 @@ async def _execute_safety(
     ctx: ExecutionContext,
 ) -> SafetyResult:
     """
-    Executes safety validation for résumé compliance and protection.
-    
-    Produces safety assessment for résumé content without making enforcement decisions.
+    Executes safety validation for resume compliance and protection.
+
+    Produces safety assessment for resume job alignment workflows.
     """
     span = start_span("l2.safety", ctx=ctx.span_context())
     try:
@@ -501,9 +502,9 @@ async def _execute_safety(
 
 
 """
-Executes complete résumé improvement workflow pipeline.
+Executes complete resume improvement workflow pipeline.
 
-Coordinates strategy, retrieval, drafting, QA, and safety for comprehensive résumé enhancement.
+Coordinates strategy, retrieval, drafting, QA, and safety for resume job alignment.
 """
 
 
@@ -512,9 +513,9 @@ async def run_l2(
     ctx: ExecutionContext,
 ) -> L2ResultBundle:
     """
-    Executes complete résumé improvement workflow pipeline.
-    
-    Coordinates all execution stages to deliver comprehensive résumé enhancement results.
+    Executes complete resume improvement workflow pipeline.
+
+    Coordinates strategy, retrieval, drafting, QA, and safety for resume job alignment.
     """
     # Validate the input plan bundle schema version before execution.
     try:

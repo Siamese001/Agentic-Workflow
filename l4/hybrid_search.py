@@ -1,26 +1,7 @@
-"""Hybrid Search - Dense + Sparse Vector Search with Metadata Filtering
+"""
+L4 hybrid search for resume job alignment workflows.
 
-This module implements hybrid search combining dense embeddings with sparse
-keyword search (BM25-style) and metadata filtering for Pinecone.
-
-Phase F: Full Pinecone Integration
-- Hybrid search (dense + sparse)
-- Metadata filtering
-- Temporal queries
-- Reranking
-
-Layer: L4 (State & Memory)
-Responsibilities:
-- Hybrid vector search (dense + sparse)
-- Metadata filtering and temporal queries
-- Result fusion and reranking
-- Namespace management
-
-Non-responsibilities:
-- Planning (L1)
-- Execution (L2)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Combines dense embeddings with sparse search for resume enhancement.
 """
 
 from __future__ import annotations
@@ -32,7 +13,7 @@ from datetime import datetime, UTC
 
 @dataclass
 class SearchFilter:
-    """Metadata filter for vector search."""
+    """Metadata filter for resume workflow vector search."""
     
     field: str
     operator: str  # "eq", "ne", "gt", "gte", "lt", "lte", "in", "nin"
@@ -41,7 +22,7 @@ class SearchFilter:
 
 @dataclass
 class TemporalFilter:
-    """Temporal filter for time-based queries."""
+    """Temporal filter for resume workflow time-based queries."""
     
     field: str = "timestamp"
     start_time: Optional[datetime] = None
@@ -52,7 +33,7 @@ class TemporalFilter:
 
 @dataclass
 class HybridSearchConfig:
-    """Configuration for hybrid search."""
+    """Configuration for resume workflow hybrid search."""
     
     # Dense search config
     dense_weight: float = 0.7
@@ -77,7 +58,7 @@ class HybridSearchConfig:
 
 @dataclass
 class SearchResult:
-    """Single search result with metadata."""
+    """Search result for resume workflow job alignment processing."""
     
     id: str
     score: float
@@ -89,10 +70,10 @@ class SearchResult:
 
 
 class HybridSearchExecutor:
-    """Execute hybrid search with dense + sparse vectors."""
+    """Executes hybrid search for resume job alignment workflows."""
     
     def __init__(self, pinecone_adapter: Any):
-        """Initialize with Pinecone adapter.
+        """Initializes resume workflow hybrid search executor.
         
         Args:
             pinecone_adapter: L4 PineconeAdapter instance
@@ -105,7 +86,7 @@ class HybridSearchExecutor:
         namespace: str,
         config: Optional[HybridSearchConfig] = None,
     ) -> List[SearchResult]:
-        """Execute hybrid search with dense + sparse vectors.
+        """Executes hybrid search for resume job alignment processing.
         
         Args:
             query: Search query text
@@ -169,7 +150,7 @@ class HybridSearchExecutor:
         temporal_filter: TemporalFilter,
         config: Optional[HybridSearchConfig] = None,
     ) -> List[SearchResult]:
-        """Execute temporal search with time-based filtering.
+        """Executes temporal search for resume job alignment processing.
         
         Args:
             query: Search query text
@@ -196,7 +177,7 @@ class HybridSearchExecutor:
         top_k: int,
         metadata_filter: Optional[Dict[str, Any]],
     ) -> List[SearchResult]:
-        """Execute dense vector search."""
+        """Performs dense vector search for resume job alignment."""
         try:
             # Use L4 adapter for dense search
             l4_results = self.adapter.query_by_text(
@@ -230,7 +211,7 @@ class HybridSearchExecutor:
         top_k: int,
         metadata_filter: Optional[Dict[str, Any]],
     ) -> List[SearchResult]:
-        """Execute sparse (BM25-style) search.
+        """Executes sparse search for resume job alignment processing.
         
         Note: This requires Pinecone sparse vectors support.
         For now, returns empty list as fallback.
@@ -246,7 +227,7 @@ class HybridSearchExecutor:
         dense_weight: float,
         sparse_weight: float,
     ) -> List[SearchResult]:
-        """Fuse dense and sparse results using weighted RRF.
+        """Fuses dense and sparse results for resume job alignment.
         
         Reciprocal Rank Fusion (RRF):
         score = sum(weight / (k + rank)) for each result list
@@ -294,7 +275,7 @@ class HybridSearchExecutor:
         results: List[SearchResult],
         model: str,
     ) -> List[SearchResult]:
-        """Rerank results using a reranking model.
+        """Reranks results for resume job alignment processing.
         
         Note: This requires Pinecone reranking API.
         For now, returns results unchanged as fallback.
@@ -310,7 +291,7 @@ class HybridSearchExecutor:
         self,
         config: HybridSearchConfig,
     ) -> Optional[Dict[str, Any]]:
-        """Build Pinecone metadata filter from config."""
+        """Builds Pinecone metadata filter for resume job alignment."""
         if not config.filters and not config.temporal_filter:
             return None
         
@@ -366,12 +347,12 @@ class HybridSearchExecutor:
 
 
 def create_category_filter(category: str) -> SearchFilter:
-    """Create a filter for document category."""
+    """Creates category filter for resume workflow documents."""
     return SearchFilter(field="category", operator="eq", value=category)
 
 
 def create_recent_filter(days: int = 90) -> TemporalFilter:
-    """Create a filter for recent documents."""
+    """Creates recent filter for resume workflow documents."""
     return TemporalFilter(recent_only=True, recent_days=days)
 
 
@@ -379,7 +360,7 @@ def create_date_range_filter(
     start: datetime,
     end: datetime,
 ) -> TemporalFilter:
-    """Create a filter for a specific date range."""
+    """Creates date range filter for resume workflow documents."""
     return TemporalFilter(start_time=start, end_time=end)
 
 
