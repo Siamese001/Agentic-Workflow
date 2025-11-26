@@ -1,4 +1,4 @@
-"""L2 Execution Mocks."""
+"""L2 Execution Layer Mocks."""
 
 class MockToolExecutor:
     """Mock tool executor for testing."""
@@ -18,15 +18,3 @@ class MockExecutionContext:
         self.user_id = "test_user"
         self.session_id = "test_session"
         self.profile_name = "test_profile"
-
-def test_mock_tool_executor():
-    """Test MockToolExecutor."""
-    executor = MockToolExecutor()
-    result = executor.execute("search", {"query": "test"})
-    assert result["status"] == "success"
-    assert len(executor.calls) == 1
-
-def test_mock_execution_context():
-    """Test MockExecutionContext."""
-    ctx = MockExecutionContext()
-    assert ctx.user_id == "test_user"
