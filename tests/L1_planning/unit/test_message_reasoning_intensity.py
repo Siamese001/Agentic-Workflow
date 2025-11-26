@@ -31,23 +31,23 @@ class TestMessageReasoningIntensity:
         
         # Hook should increase (+0.15)
         hook_temp = adjust_temperature_by_intensity(base_schedule["hook"], c_level_profile, "hook")
-        assert hook_temp == 0.95  # 0.80 + 0.15
+        assert hook_temp == pytest.approx(0.95)  # 0.80 + 0.15
         
         # Value should increase (+0.15)
         value_temp = adjust_temperature_by_intensity(base_schedule["value"], c_level_profile, "value")
-        assert value_temp == 0.70  # 0.55 + 0.15
+        assert value_temp == pytest.approx(0.70)  # 0.55 + 0.15
         
         # Subject should decrease (-0.05)
         subject_temp = adjust_temperature_by_intensity(base_schedule["subject"], c_level_profile, "subject")
-        assert subject_temp == 0.60  # 0.65 - 0.05
+        assert subject_temp == pytest.approx(0.60)  # 0.65 - 0.05
         
         # Signature should decrease (-0.05)
         signature_temp = adjust_temperature_by_intensity(base_schedule["signature"], c_level_profile, "signature")
-        assert signature_temp == 0.40  # 0.45 - 0.05
+        assert signature_temp == pytest.approx(0.40)  # 0.45 - 0.05
         
         # CTA should increase slightly (+0.05)
         cta_temp = adjust_temperature_by_intensity(base_schedule["cta"], c_level_profile, "cta")
-        assert cta_temp == 0.75  # 0.70 + 0.05
+        assert cta_temp == pytest.approx(0.75)  # 0.70 + 0.05
     
     def test_executive_high_intensity_temperature_adjustments(self):
         """Test EXECUTIVE high intensity temperature adjustments."""
@@ -56,15 +56,15 @@ class TestMessageReasoningIntensity:
         
         # Hook should increase (+0.10)
         hook_temp = adjust_temperature_by_intensity(base_schedule["hook"], executive_profile, "hook")
-        assert hook_temp == 0.90  # 0.80 + 0.10
+        assert hook_temp == pytest.approx(0.90)  # 0.80 + 0.10
         
         # Value should increase (+0.10)
         value_temp = adjust_temperature_by_intensity(base_schedule["value"], executive_profile, "value")
-        assert value_temp == 0.65  # 0.55 + 0.10
+        assert value_temp == pytest.approx(0.65)  # 0.55 + 0.10
         
         # Subject should decrease (-0.05)
         subject_temp = adjust_temperature_by_intensity(base_schedule["subject"], executive_profile, "subject")
-        assert subject_temp == 0.60  # 0.65 - 0.05
+        assert subject_temp == pytest.approx(0.60)  # 0.65 - 0.05
     
     def test_senior_ta_medium_intensity_temperature_adjustments(self):
         """Test SENIOR_TA medium intensity temperature adjustments."""
@@ -73,15 +73,15 @@ class TestMessageReasoningIntensity:
         
         # Hook should increase slightly (+0.05)
         hook_temp = adjust_temperature_by_intensity(base_schedule["hook"], senior_ta_profile, "hook")
-        assert hook_temp == 0.85  # 0.80 + 0.05
+        assert hook_temp == pytest.approx(0.85)  # 0.80 + 0.05
         
         # Value should increase slightly (+0.05)
         value_temp = adjust_temperature_by_intensity(base_schedule["value"], senior_ta_profile, "value")
-        assert value_temp == 0.60  # 0.55 + 0.05
+        assert value_temp == pytest.approx(0.60)  # 0.55 + 0.05
         
         # Other sections should remain unchanged
         subject_temp = adjust_temperature_by_intensity(base_schedule["subject"], senior_ta_profile, "subject")
-        assert subject_temp == 0.65  # No change for medium intensity
+        assert subject_temp == pytest.approx(0.65)  # No change for medium intensity
     
     def test_recruiter_low_intensity_no_temperature_adjustments(self):
         """Test RECRUITER low intensity has no temperature adjustments."""
