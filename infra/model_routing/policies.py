@@ -35,7 +35,7 @@ def choose_provider_and_model(
     Balances cost, latency, and quality requirements for comprehensive résumé enhancement.
     """
 
-    model = requested_model or "gpt-4.1-mini"
+    model = requested_model or "gpt-5.1-codex-mini"
     provider = _infer_provider_from_model(model)
 
     cost_tier = "medium"
