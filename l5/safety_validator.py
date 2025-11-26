@@ -77,6 +77,10 @@ class SafetyConstraintType(str, Enum):
     BIAS_MITIGATION = "bias_mitigation"
     TEMPORAL_CONSTRAINTS = "temporal_constraints"
     AUDIENCE_SAFETY = "audience_safety"
+    OUTREACH_CONSTRAINTS = "outreach_constraints"
+    MESSAGE_STYLE = "message_style"
+    ROUTE_REQUIREMENTS = "route_requirements"
+    ARCHETYPE_COMPLIANCE = "archetype_compliance"
 
 
 class L5SafetyValidator:
@@ -89,6 +93,15 @@ class L5SafetyValidator:
     def __init__(self):
         self.constraints = self._load_safety_constraints()
         self.violation_history: List[SafetyViolation] = []
+    
+    def _is_outreach_constraint(self, ctype):
+        """Check if constraint type is outreach-specific."""
+        return ctype in {
+            SafetyConstraintType.OUTREACH_CONSTRAINTS,
+            SafetyConstraintType.MESSAGE_STYLE,
+            SafetyConstraintType.ROUTE_REQUIREMENTS,
+            SafetyConstraintType.ARCHETYPE_COMPLIANCE
+        }
     
     def _load_safety_constraints(self) -> Dict[SafetyConstraintType, List[SafetyConstraint]]:
         """Loads safety constraints for resume workflow enforcement."""
@@ -129,6 +142,29 @@ class L5SafetyValidator:
                     metadata={"category": "bias"}
                 ),
             ],
+            SafetyConstraintType.OUTREACH_CONSTRAINTS: [
+                SafetyConstraint(
+                    constraint_type=SafetyConstraintType.OUTREACH_CONSTRAINTS,
+                    rule="No placeholders in message",
+                    severity="blocking",
+                    layer_applicability=["L2"],
+                    metadata={"lic_error_code": "LIC-E001"}
+                ),
+                SafetyConstraint(
+                    constraint_type=SafetyConstraintType.OUTREACH_CONSTRAINTS,
+                    rule="Per-claim confidence must be >= 0.70",
+                    severity="blocking",
+                    layer_applicability=["L2"],
+                    metadata={"lic_error_code": "LIC-E002"}
+                ),
+                SafetyConstraint(
+                    constraint_type=SafetyConstraintType.OUTREACH_CONSTRAINTS,
+                    rule="Message must contain job title in first 50 words",
+                    severity="warning",
+                    layer_applicability=["L2"],
+                    metadata={"lic_error_code": "LIC-E005"}
+                )
+            ],
         }
         return constraints
     
@@ -145,9 +181,14 @@ class L5SafetyValidator:
         """
         violations = []
         
+        domain = context.metadata.get("domain", "resume") if context else "resume"
+        
         for constraint_type, constraint_list in self.constraints.items():
             for constraint in constraint_list:
                 if layer in constraint.layer_applicability:
+                    # Skip outreach constraints unless domain is outreach
+                    if self._is_outreach_constraint(constraint_type) and domain != "outreach":
+                        continue
                     violation = self._check_constraint(content, constraint, context)
                     if violation:
                         violations.append(violation)
