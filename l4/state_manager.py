@@ -72,6 +72,21 @@ class ProceduralMemory:
         return self.procedures.get(name)
 
 @dataclass
+class OutreachWorkflowState:
+    """Isolated outreach state, never cross-contaminates resume state."""
+    mission_id: str
+    mission: Dict[str, Any]
+    research_context: Dict[str, Any]
+    message_result: Dict[str, Any]
+    validation_history: List[Dict[str, Any]]
+    signals_used: List[Dict[str, Any]] = field(default_factory=list)
+    signal_density_score: float = 0.0
+    archetype: str = ""
+    route: str = ""
+    temperature_schedule: Dict[str, float] = field(default_factory=dict)
+    meta_loop_iterations: int = 0
+
+@dataclass
 class WorkflowState:
     """
     Stores resume workflow state data for job alignment persistence.
@@ -86,6 +101,8 @@ class WorkflowState:
     episodic_memory: EpisodicMemory = field(default_factory=EpisodicMemory)
     procedural_memory: ProceduralMemory = field(default_factory=ProceduralMemory)
     metadata: Dict[str, Any] = field(default_factory=dict)
+    workflow_type: str = "resume"
+    outreach_state: Optional[OutreachWorkflowState] = None
 
 class StateManager:
     """
@@ -110,6 +127,8 @@ class StateManager:
             'resume_data': state.resume_data,
             'strategy_result': state.strategy_result,
             'draft_result': state.draft_result,
+            'workflow_type': state.workflow_type,
+            'outreach_state': state.outreach_state.__dict__ if state.outreach_state else None,
             'temporal_context': {
                 'current_time': state.temporal_context.current_time.isoformat(),
                 'processing_window': state.temporal_context.processing_window,
@@ -164,11 +183,31 @@ class StateManager:
             success_patterns=procedural_data.get('success_patterns', [])
         )
         
+        # Reconstruct outreach state if present
+        outreach_data = data.get('outreach_state')
+        outreach_state = None
+        if outreach_data:
+            outreach_state = OutreachWorkflowState(
+                mission_id=outreach_data.get('mission_id', ''),
+                mission=outreach_data.get('mission', {}),
+                research_context=outreach_data.get('research_context', {}),
+                message_result=outreach_data.get('message_result', {}),
+                validation_history=outreach_data.get('validation_history', []),
+                signals_used=outreach_data.get('signals_used', []),
+                signal_density_score=outreach_data.get('signal_density_score', 0.0),
+                archetype=outreach_data.get('archetype', ''),
+                route=outreach_data.get('route', ''),
+                temperature_schedule=outreach_data.get('temperature_schedule', {}),
+                meta_loop_iterations=outreach_data.get('meta_loop_iterations', 0)
+            )
+        
         self._state = WorkflowState(
             job_data=data.get('job_data'),
             resume_data=data.get('resume_data'),
             strategy_result=data.get('strategy_result'),
             draft_result=data.get('draft_result'),
+            workflow_type=data.get('workflow_type', 'resume'),
+            outreach_state=outreach_state,
             temporal_context=temporal_context,
             episodic_memory=episodic_memory,
             procedural_memory=procedural_memory,
@@ -201,3 +240,26 @@ class StateManager:
         if self._state is None:
             self._state = WorkflowState()
         return self._state.temporal_context
+
+    def save_outreach_state(
+        self,
+        mission_id: str,
+        outreach_state: OutreachWorkflowState,
+        link_to_resume_workflow: Optional[str] = None
+    ) -> None:
+        """Store outreach state without modifying resume workflow fields."""
+        state = self.load_state() or WorkflowState()
+        if link_to_resume_workflow and state.job_data:
+            state.workflow_type = "resume_outreach"
+            state.metadata["linked_resume_workflow"] = link_to_resume_workflow
+        else:
+            state.workflow_type = "outreach"
+        state.outreach_state = outreach_state
+        state.metadata["outreach_mission_id"] = mission_id
+        self.save_state(state)
+
+    def load_outreach_state(self, mission_id: str) -> Optional[OutreachWorkflowState]:
+        state = self.load_state()
+        if state and state.metadata.get("outreach_mission_id") == mission_id:
+            return state.outreach_state
+        return None

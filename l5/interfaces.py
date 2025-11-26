@@ -21,7 +21,6 @@ from core.models.models import (
     PolicyViolation,
     HitLRequest,
 )
-from .types import SafetyPolicy
 
 
 class PolicyType(Enum):
@@ -214,6 +213,16 @@ class L5AuditLoggerInterface(ABC):
 
 
 @dataclass
+class SafetyConstraint:
+    """Represents a safety constraint rule."""
+    constraint_type: str
+    rule: str
+    severity: str
+    layer_applicability: List[str]
+    metadata: Dict[str, Any]
+
+
+@dataclass
 class SafetyViolation:
     """Represents a safety policy violation."""
     constraint_type: str
@@ -222,3 +231,24 @@ class SafetyViolation:
     confidence: float
     severity: Severity
     metadata: Dict[str, Any]
+
+
+class Verdict(Enum):
+    """Policy evaluation verdict."""
+    ALLOW = "allow"
+    BLOCK = "block"
+    MODIFY = "modify"
+
+
+@dataclass
+class PolicyDecision:
+    """Represents a policy evaluation decision."""
+    policy_id: str
+    verdict: Verdict
+    findings: List[Any]
+    metadata: Dict[str, Any]
+
+
+class PolicyEvaluationError(Exception):
+    """Exception raised when policy evaluation fails."""
+    pass
