@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Any, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence
 from datetime import datetime, UTC
 
 
@@ -217,7 +217,10 @@ class PineconeAdapter:
         metadata_filter: Optional[Dict[str, Any]] = None,
         score_threshold: Optional[float] = None,
     ) -> List[VectorQueryResult]:
-        """Queries resume workflow vectors by similarity for job alignment."""
+        """Queries resume workflow vectors by similarity for job alignment.
+        
+        Args:
+            namespace: Namespace to query in
             top_k: Number of results to return
             metadata_filter: Optional metadata filters
             score_threshold: Optional minimum score threshold
@@ -298,7 +301,12 @@ class PineconeAdapter:
         top_k: int = 10,
         metadata_filter: Optional[Dict[str, Any]] = None,
     ) -> List[VectorQueryResult]:
-        """Queries resume workflow vectors with temporal constraints."""
+        """Queries resume workflow vectors with temporal constraints.
+        
+        Args:
+            query_vector: Query vector for similarity search
+            namespace: Namespace to query in
+            start_time: Optional start of time range
             end_time: Optional end of time range
             top_k: Number of results
             metadata_filter: Additional metadata filters
