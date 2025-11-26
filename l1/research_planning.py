@@ -11,6 +11,7 @@ import re
 
 from .outreach_dataclasses import (
     ArchetypeContext,
+    ArchetypeType,
     RefinementPlan,
     AgentType
 )
@@ -223,9 +224,9 @@ class ResearchRefinementPlanner:
             gaps.append("outdated_information")
         
         # Archetype-specific gaps
-        if archetype_context.archetype == "technical_leader" and quality_metrics["signal_density"] < 0.5:
+        if archetype_context.archetype == ArchetypeType.SENIOR_TA and quality_metrics["signal_density"] < 0.5:
             gaps.append("insufficient_technical_signals")
-        elif archetype_context.archetype == "business_executive" and quality_metrics["source_diversity"] < 0.8:
+        elif archetype_context.archetype == ArchetypeType.C_LEVEL and quality_metrics["source_diversity"] < 0.8:
             gaps.append("limited_business_perspective")
         
         return gaps
@@ -265,10 +266,14 @@ class ResearchRefinementPlanner:
         base_threshold = 0.7
         
         # Adjust based on archetype
-        if archetype_context.archetype == "technical_leader":
-            base_threshold = 0.8  # Higher bar for technical leaders
-        elif archetype_context.archetype == "business_executive":
+        if archetype_context.archetype == ArchetypeType.SENIOR_TA:
+            base_threshold = 0.8  # Higher bar for senior technical authorities
+        elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             base_threshold = 0.75  # Higher bar for executives
+        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
+            base_threshold = 0.7  # Standard bar for hiring managers
+        else:  # RECRUITER
+            base_threshold = 0.65  # Lower bar for recruiters
         
         return overall_score >= base_threshold
     
@@ -324,12 +329,14 @@ class ResearchRefinementPlanner:
                 needs.append(gap_to_need_mapping[gap])
         
         # Add archetype-specific needs
-        if archetype_context.archetype == "technical_leader":
+        if archetype_context.archetype == ArchetypeType.SENIOR_TA:
             needs.append("validate_technical_expertise")
-        elif archetype_context.archetype == "business_executive":
+        elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             needs.append("quantify_business_impact")
-        elif archetype_context.archetype == "hiring_manager":
+        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
             needs.append("assess_team_fit")
+        elif archetype_context.archetype == ArchetypeType.RECRUITER:
+            needs.append("verify_job_requirements")
         
         return list(set(needs))  # Remove duplicates
     
@@ -387,7 +394,7 @@ class ResearchRefinementPlanner:
             return AgentType.COMPANY
         else:
             # Default based on archetype
-            if archetype_context.archetype in ["technical_leader", "individual_contributor"]:
+            if archetype_context.archetype in [ArchetypeType.SENIOR_TA, ArchetypeType.HIRING_MANAGER]:
                 return AgentType.CONTACT
             else:
                 return AgentType.COMPANY

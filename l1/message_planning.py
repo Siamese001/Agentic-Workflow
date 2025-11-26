@@ -10,6 +10,7 @@ from typing import Any, Dict, List
 
 from .outreach_dataclasses import (
     ArchetypeContext,
+    ArchetypeType,
     MessagePlan,
     SECTION_TEMPERATURE_SCHEDULE
 )
@@ -40,65 +41,67 @@ class MessagePlanner:
         # Pure section templates - no external dependencies
         self._section_templates = self._build_section_templates()
         
-        # Pure temperature adjustments based on archetype
+        # Pure temperature adjustments based on correct archetypes
         self._temperature_adjustments = {
-            "technical_leader": {
+            ArchetypeType.RECRUITER: {
                 "subject": -0.1,  # More formal
-                "hook": -0.1,     # More analytical
+                "hook": 0.0,       # Standard
+                "body": -0.1,      # Concise
+                "cta": 0.0,        # Standard
+                "signature": 0.0   # Standard
+            },
+            ArchetypeType.SENIOR_TA: {
+                "subject": 0.0,   # Standard
+                "hook": 0.1,      # More engaging
                 "body": 0.0,      # Standard
                 "cta": -0.1,      # More formal
                 "signature": 0.0  # Standard
             },
-            "business_executive": {
-                "subject": -0.2,  # Very formal
-                "hook": -0.1,     # Strategic
-                "body": -0.1,     # Concise
-                "cta": -0.1,      # Professional
-                "signature": -0.1 # Formal
-            },
-            "hiring_manager": {
+            ArchetypeType.HIRING_MANAGER: {
                 "subject": 0.0,   # Standard
                 "hook": 0.1,      # More engaging
                 "body": 0.0,      # Standard
                 "cta": 0.1,       # More action-oriented
                 "signature": 0.1  # Warmer
             },
-            "individual_contributor": {
-                "subject": 0.1,   # More casual
-                "hook": 0.2,      # More creative
-                "body": 0.1,      # More conversational
-                "cta": 0.0,       # Standard
-                "signature": 0.2  # More personal
+            ArchetypeType.C_LEVEL: {
+                "subject": -0.2,  # Very formal
+                "hook": -0.1,     # Strategic
+                "body": -0.1,     # Concise
+                "cta": -0.1,      # Professional
+                "signature": -0.1 # Formal
             }
         }
         
         # Pure constraint mappings
         self._constraint_mappings = {
-            "technical_leader": [
-                "technical_accuracy_required",
-                "data_driven_claims",
-                "avoid_hype_language",
-                "include_specific_metrics"
+            ArchetypeType.RECRUITER: [
+                "brevity_required",
+                "no_unverified_claims",
+                "job_fit_focus",
+                "tone_professional_and_short"
             ],
-            "business_executive": [
-                "business_value_focus",
-                "concise_messaging",
-                "roi_claims_supported",
-                "executive_tone_maintained"
+            ArchetypeType.SENIOR_TA: [
+                "role_alignment_required",
+                "avoid_strategic_language",
+                "must_include_company_specificity"
             ],
-            "hiring_manager": [
-                "role_fit_emphasis",
-                "team_culture_alignment",
-                "availability_clarity",
-                "professional_enthusiasm"
+            ArchetypeType.HIRING_MANAGER: [
+                "pain_point_relevance_required",
+                "team_impact_required",
+                "no_buzzwords",
+                "specific_metrics_required"
             ],
-            "individual_contributor": [
-                "technical_relevance",
-                "skill_growth_opportunity",
-                "collaborative_benefits",
-                "authentic_tone"
+            ArchetypeType.C_LEVEL: [
+                "strategic_alignment_required",
+                "quantifiable_outcomes_required",
+                "no_filler_language",
+                "high_signal_density_required"
             ]
         }
+        
+        # Pure section templates
+        self._section_templates = self._build_section_templates()
     
     def _build_section_templates(self) -> Dict[str, Dict[str, Any]]:
         """Build pure section templates for message planning."""
@@ -223,7 +226,7 @@ class MessagePlanner:
             subject_parts.append(f"re: {personalization[:20]}")
         
         # Add company reference for executives
-        if archetype_context.archetype == "business_executive":
+        if archetype_context.archetype == ArchetypeType.C_LEVEL:
             subject_parts.append(f"{content.company_name}")
         
         # Combine and format
@@ -243,14 +246,14 @@ class MessagePlanner:
         hook_parts = []
         
         # Context establishment
-        if archetype_context.archetype == "technical_leader":
+        if archetype_context.archetype == ArchetypeType.SENIOR_TA:
             hook_parts.append(f"Noticed your work at {content.company_name}")
-        elif archetype_context.archetype == "business_executive":
-            hook_parts.append(f"Following {content.company_name}'s growth")
-        elif archetype_context.archetype == "hiring_manager":
-            hook_parts.append(f"Interested in your team at {content.company_name}")
-        else:
-            hook_parts.append(f"Connecting about {content.company_name}")
+        elif archetype_context.archetype == ArchetypeType.C_LEVEL:
+            hook_parts.append(f"Following {content.company_name}'s strategic direction")
+        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
+            hook_parts.append(f"Interested in your team's work at {content.company_name}")
+        elif archetype_context.archetype == ArchetypeType.RECRUITER:
+            hook_parts.append(f"Regarding opportunities at {content.company_name}")
         
         # Add personalization
         if content.personalization_elements:
@@ -270,14 +273,14 @@ class MessagePlanner:
         body_parts = []
         
         # Opening based on archetype
-        if archetype_context.archetype == "technical_leader":
+        if archetype_context.archetype == ArchetypeType.SENIOR_TA:
             body_parts.append("I'm reaching out regarding technical leadership opportunities")
-        elif archetype_context.archetype == "business_executive":
+        elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             body_parts.append("I'm writing to discuss potential business collaboration")
-        elif archetype_context.archetype == "hiring_manager":
+        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
             body_parts.append("I'm interested in exploring opportunities with your team")
-        else:
-            body_parts.append("I'm reaching out to connect about potential collaboration")
+        elif archetype_context.archetype == ArchetypeType.RECRUITER:
+            body_parts.append("I'm reaching out about potential opportunities")
         
         # Value proposition
         if content.value_proposition:
@@ -287,8 +290,8 @@ class MessagePlanner:
         for point in content.key_points[:3]:  # Limit to 3 key points
             body_parts.append(f"• {point}")
         
-        # Company-specific content
-        if archetype_context.archetype in ["technical_leader", "business_executive"]:
+        # Company-specific content for senior roles
+        if archetype_context.archetype in [ArchetypeType.SENIOR_TA, ArchetypeType.C_LEVEL]:
             body_parts.append(f"Specific to {content.company_name}'s context")
         
         return " ".join(body_parts)
@@ -416,12 +419,14 @@ class MessagePlanner:
     
     def _determine_generation_strategy(self, archetype_context: ArchetypeContext) -> str:
         """Determine optimal generation strategy based on archetype."""
-        if archetype_context.archetype == "technical_leader":
+        if archetype_context.archetype == ArchetypeType.SENIOR_TA:
             return "sequential_with_validation"
-        elif archetype_context.archetype == "business_executive":
+        elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             return "concise_priority"
-        elif archetype_context.archetype == "hiring_manager":
+        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
             return "balanced_approach"
+        elif archetype_context.archetype == ArchetypeType.RECRUITER:
+            return "sequential"
         else:
             return "sequential"
     
