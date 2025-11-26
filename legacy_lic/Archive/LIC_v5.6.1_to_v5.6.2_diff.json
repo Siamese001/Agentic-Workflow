@@ -1,0 +1,41 @@
+{
+  "from": "LIC_10-02-2025_v5.6.1.json",
+  "to": "LIC_10-02-2025_v5.6.2.json",
+  "base_sha": "7d966d6181037036e98396c3987f6e0c00962a7a24e729db1278a74a98703adf",
+  "new_sha": "c1dfb7dac804b61cdae2de5dd899572b9ba4f9048dc79426bbb59361d47fb83d",
+  "change_count": 8,
+  "changes": [
+    {
+      "path": "4.reasoning.rag_source_prioritization.global_source_weighting.recency_example.$ref",
+      "change": "ADDED"
+    },
+    {
+      "path": "4.reasoning.rag_source_prioritization.global_source_weighting.recency_example.10_month_source",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.rag_source_prioritization.global_source_weighting.recency_example.3_month_source",
+      "change": "REMOVED"
+    },
+    {
+      "path": "7.docs",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.base_sha_for_v5_6_2",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.patches_applied_v5_6_2",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.sha256_v5_6_2",
+      "change": "ADDED"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED"
+    }
+  ]
+}

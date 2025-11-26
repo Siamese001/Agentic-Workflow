@@ -1,0 +1,2702 @@
+{
+  "metadata": {
+    "analysis_id": "LIC-ENFORCEMENT-QA-GATE-MAPPING-v1.0",
+    "template_analyzed": "LIC_FULL_v10_23_1_COMPLETE.json",
+    "analysis_date": "2025-10-15",
+    "purpose": "Map every enforcement point to corresponding QA validation gate and identify gaps",
+    "methodology": "Granular line-by-line analysis of all constraints, requirements, rules, and enforcement points",
+    "findings_summary": {
+      "total_enforcement_points": 89,
+      "mapped_to_qa_gates": 47,
+      "missing_qa_validation": 42,
+      "critical_gaps": 18,
+      "recommendations": 12
+    }
+  },
+
+  "executive_summary": {
+    "key_findings": [
+      "47% of enforcement points lack explicit QA validation mapping",
+      "18 CRITICAL enforcement points have no corresponding validation rule",
+      "Scope isolation rules are well-enforced (5/5 mapped)",
+      "Route/archetype constraints partially enforced (12/18 mapped)",
+      "K-node structure rules weakly enforced (8/24 mapped)",
+      "Content quality rules moderately enforced (15/22 mapped)",
+      "Process enforcement rules completely missing validation (0/10 mapped)"
+    ],
+    "severity_distribution": {
+      "CRITICAL_gaps": 18,
+      "HIGH_gaps": 15,
+      "MEDIUM_gaps": 9,
+      "LOW_gaps": 0
+    },
+    "recommended_actions": [
+      "Add 12 new QA validation rules",
+      "Enhance 8 existing rules with explicit enforcement checks",
+      "Create validation batch 0 for pre-flight structural checks",
+      "Add validation batch 5 for post-gate monitoring checks",
+      "Implement runtime enforcement verification logger"
+    ]
+  },
+
+  "category_1_scope_isolation_enforcement": {
+    "category": "Scope Isolation & Security",
+    "total_enforcement_points": 5,
+    "mapped_to_qa": 5,
+    "coverage": "100%",
+    "status": "EXCELLENT",
+
+    "enforcement_points": [
+      {
+        "id": "ENF-SCOPE-001",
+        "location": "1_role.critical_rules[0]",
+        "line": 50,
+        "enforcement": "artist_output MUST be deleted before validation",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "Phase 4, Step 10 + All batches scope check",
+        "validation_rule": "del artist_output + if 'artist_output' in dir(): raise ScopeViolationError()",
+        "validation_timing": "PRE_VALIDATION + EVERY_BATCH",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-SCOPE-002",
+        "location": "1_role.critical_rules[1]",
+        "line": 51,
+        "enforcement": "Validation functions signature: def validate(staging_buffer: dict) ONLY",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "All validation batch function signatures",
+        "validation_rule": "Function signature enforcement (no artist_output parameter)",
+        "validation_timing": "COMPILE_TIME + RUNTIME",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-SCOPE-003",
+        "location": "1_role.critical_rules[2]",
+        "line": 52,
+        "enforcement": "Every validation batch MUST check: if 'artist_output' in dir(): raise ScopeViolationError()",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "Batch 1, 2, 3, 4 scope checks",
+        "validation_rule": "Explicit scope check at start of each batch",
+        "validation_timing": "START_OF_EACH_BATCH",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-SCOPE-004",
+        "location": "1_role.critical_rules[3]",
+        "line": 53,
+        "enforcement": "QA reports MUST read from staging_buffer[section]['word_count']",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "All word count validation rules",
+        "validation_rule": "data_source: staging_buffer['*_actual']['word_count']",
+        "validation_timing": "BATCH_1_CONSTRAINT_VALIDATION",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-SCOPE-005",
+        "location": "1_role.critical_rules[4]",
+        "line": 54,
+        "enforcement": "Test LIC-SCOPE-SMOKE-001 (MS Word verification) MUST pass before production",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "6_conditions.manual_verification_procedure",
+        "validation_rule": "Manual MS Word comparison test",
+        "validation_timing": "PRE_PRODUCTION",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      }
+    ]
+  },
+
+  "category_2_route_constraints": {
+    "category": "Route Selection & Constraints",
+    "total_enforcement_points": 18,
+    "mapped_to_qa": 12,
+    "coverage": "67%",
+    "status": "MODERATE - NEEDS HARDENING",
+
+    "enforcement_points": [
+      {
+        "id": "ENF-ROUTE-001",
+        "location": "3_context.routes.INMAIL.word_range",
+        "line": 94,
+        "enforcement": "INMAIL word_range: [180, 250]",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-001",
+        "validation_rule": "word_count >= 180 AND word_count <= 250",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-002",
+        "location": "3_context.routes.INMAIL.char_limit",
+        "line": 95,
+        "enforcement": "INMAIL char_limit: 1900",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-002",
+        "validation_rule": "char_count <= 1900",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-003",
+        "location": "3_context.routes.INMAIL.subject_line_required",
+        "line": 96,
+        "enforcement": "INMAIL subject_line_required: true",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_1",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-001",
+            "severity": "CRITICAL",
+            "description": "No validation checks K.2 subject line EXISTS for INMAIL route",
+            "current_state": "Batch 1 checks word/char counts IF subject exists, but doesn't verify presence",
+            "risk": "INMAIL message could be generated without subject line",
+            "recommended_fix": "Add LIC-QA-0XX: For route=INMAIL, assert staging_buffer['K.2_subject_actual'] is not None/empty",
+            "implementation": {
+              "rule_id": "LIC-QA-003",
+              "name": "Subject line presence for INMAIL",
+              "severity": "CRITICAL",
+              "data_source": "staging_buffer['K.2_subject_actual']",
+              "validation_logic": "if route == 'INMAIL': assert K.2_subject_actual is not None and len(raw_text) > 0",
+              "on_failure": "raise FatalValidationException('LIC-QA-003: INMAIL requires subject line')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-004",
+        "location": "3_context.routes.INMAIL.subject_word_range",
+        "line": 97,
+        "enforcement": "INMAIL subject_word_range: [5, 8]",
+        "severity": "WARNING",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-012",
+        "validation_rule": "word_count in [5,8]",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-005",
+        "location": "3_context.routes.INMAIL.subject_char_limit",
+        "line": 98,
+        "enforcement": "INMAIL subject_char_limit: 60",
+        "severity": "WARNING",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-012",
+        "validation_rule": "char_count <= 60",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-006",
+        "location": "3_context.routes.CONNECTION_REQ.word_range",
+        "line": 104,
+        "enforcement": "CONNECTION_REQ word_range: [40, 60]",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-001 (route-specific)",
+        "validation_rule": "word_count >= 40 AND word_count <= 60",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-007",
+        "location": "3_context.routes.CONNECTION_REQ.char_limit",
+        "line": 105,
+        "enforcement": "CONNECTION_REQ char_limit: 300",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-002 (route-specific)",
+        "validation_rule": "char_count <= 300",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-008",
+        "location": "3_context.routes.CONNECTION_REQ.subject_line_required",
+        "line": 106,
+        "enforcement": "CONNECTION_REQ subject_line_required: false",
+        "severity": "WARNING",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_1",
+        "status": "⚠️ PARTIALLY ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-002",
+            "severity": "MEDIUM",
+            "description": "No validation checks K.2 subject line DOES NOT exist for CONNECTION_REQ",
+            "current_state": "Subject line constraints only checked for INMAIL, but no enforcement that non-INMAIL routes exclude it",
+            "risk": "CONNECTION_REQ could accidentally include subject line",
+            "recommended_fix": "Add LIC-QA-0XX: For route != INMAIL, assert staging_buffer['K.2_subject_actual'] is None or empty",
+            "implementation": {
+              "rule_id": "LIC-QA-004",
+              "name": "Subject line exclusion for non-INMAIL",
+              "severity": "WARNING",
+              "data_source": "staging_buffer['K.2_subject_actual']",
+              "validation_logic": "if route in ['CONNECTION_REQ', 'FOLLOW_UP']: assert K.2_subject_actual is None or len(raw_text) == 0",
+              "on_failure": "raise FatalValidationException('LIC-QA-004: Non-INMAIL routes should not have subject line')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-009",
+        "location": "3_context.routes.FOLLOW_UP.word_range",
+        "line": 112,
+        "enforcement": "FOLLOW_UP word_range: [100, 150]",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-001 (route-specific)",
+        "validation_rule": "word_count >= 100 AND word_count <= 150",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-010",
+        "location": "3_context.routes.FOLLOW_UP.char_limit",
+        "line": 113,
+        "enforcement": "FOLLOW_UP char_limit: 800",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-002 (route-specific)",
+        "validation_rule": "char_count <= 800",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-011",
+        "location": "3_context.routes.*.tone",
+        "line": "100, 108, 116",
+        "enforcement": "Route-specific tone requirements (Professional, Friendly, Persistent)",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_2_OR_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-003",
+            "severity": "HIGH",
+            "description": "Tone requirements are descriptive but not validated",
+            "current_state": "Artist receives tone guidance, but no validation checks tone compliance",
+            "risk": "Message could violate tone requirements (e.g., overly casual for INMAIL to executives)",
+            "recommended_fix": "Add tone classification validation using sentiment analysis or keyword matching",
+            "implementation": {
+              "rule_id": "LIC-QA-110",
+              "name": "Route tone compliance",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Classify tone, compare to route.tone requirements",
+              "threshold": "Tone match confidence >= 0.70",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-012",
+        "location": "3_context.routes.*.use_cases",
+        "line": "99, 107, 115",
+        "enforcement": "Route-specific use case appropriateness",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_PHASE_1",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-004",
+            "severity": "MEDIUM",
+            "description": "Use case matching not validated",
+            "current_state": "Use cases listed as guidance, but no validation that selected route matches recipient",
+            "risk": "Wrong route selected for recipient (e.g., CONNECTION_REQ for C-level instead of INMAIL)",
+            "recommended_fix": "Phase 1 Analyst should validate route selection against recipient profile",
+            "implementation": {
+              "rule_id": "LIC-QA-201",
+              "name": "Route-recipient appropriateness",
+              "severity": "HIGH",
+              "phase": "PHASE_1",
+              "validation_logic": "Verify selected route matches recipient archetype",
+              "example": "If archetype=EXECUTIVE → route should be INMAIL",
+              "on_failure": "Raise warning, suggest route correction"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-013",
+        "location": "Implicit: Route selection must be valid",
+        "line": "N/A",
+        "enforcement": "Route must be one of: INMAIL, CONNECTION_REQ, FOLLOW_UP",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_PHASE_1_OR_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-005",
+            "severity": "CRITICAL",
+            "description": "No validation that route is from controlled enum",
+            "current_state": "Routes defined in context, but no explicit validation",
+            "risk": "Invalid route value could bypass all route-specific validations",
+            "recommended_fix": "Add pre-flight validation batch (Batch 0) for structural checks",
+            "implementation": {
+              "rule_id": "LIC-QA-000",
+              "name": "Route enum validation",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer['full_message_actual']['route']",
+              "validation_logic": "assert route in ['INMAIL', 'CONNECTION_REQ', 'FOLLOW_UP']",
+              "on_failure": "raise FatalValidationException('LIC-QA-000: Invalid route')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-014",
+        "location": "Implicit: Archetype must be valid",
+        "line": "N/A",
+        "enforcement": "Archetype must be one of: EXECUTIVE, RECRUITER, HIRING_MANAGER, C_LEVEL",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_PHASE_1_OR_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-006",
+            "severity": "CRITICAL",
+            "description": "No validation that archetype is from controlled enum",
+            "current_state": "Archetypes defined in context, but no explicit validation",
+            "risk": "Invalid archetype value could bypass archetype-specific word count targets",
+            "recommended_fix": "Add to pre-flight validation batch (Batch 0)",
+            "implementation": {
+              "rule_id": "LIC-QA-001",
+              "name": "Archetype enum validation",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer['full_message_actual']['archetype']",
+              "validation_logic": "assert archetype in ['EXECUTIVE', 'RECRUITER', 'HIRING_MANAGER', 'C_LEVEL']",
+              "on_failure": "raise FatalValidationException('LIC-QA-001: Invalid archetype')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-015",
+        "location": "3_context.archetypes.*.preferred_route",
+        "line": "123, 130, 137, 144",
+        "enforcement": "Archetype-route matching preference",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_PHASE_1",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-007",
+            "severity": "MEDIUM",
+            "description": "No validation that selected route matches archetype preference",
+            "current_state": "Preferred routes listed, but not enforced",
+            "risk": "Suboptimal route selection (e.g., CONNECTION_REQ for EXECUTIVE instead of preferred INMAIL)",
+            "recommended_fix": "Phase 1 should validate route matches archetype preference or document override reason",
+            "implementation": {
+              "rule_id": "LIC-QA-202",
+              "name": "Route-archetype preference match",
+              "severity": "MEDIUM",
+              "phase": "PHASE_1",
+              "validation_logic": "If route != archetype.preferred_route, log warning with reason",
+              "on_failure": "Warning only (non-blocking but logged)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-016",
+        "location": "3_context.archetypes.*.word_count_target",
+        "line": "124, 131, 138, 145",
+        "enforcement": "Archetype-specific word count targets",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-026",
+        "validation_rule": "word_count within target ±10%",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-ROUTE-017",
+        "location": "3_context.archetypes.*.focus",
+        "line": "125, 132, 139, 146",
+        "enforcement": "Archetype-specific content focus areas",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_2_OR_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-008",
+            "severity": "MEDIUM",
+            "description": "Focus areas are guidance only, not validated",
+            "current_state": "Artist receives focus guidance, no validation checks content matches focus",
+            "risk": "Message could miss key focus areas (e.g., executive message missing strategic value discussion)",
+            "recommended_fix": "Add content focus keyword validation",
+            "implementation": {
+              "rule_id": "LIC-QA-111",
+              "name": "Archetype content focus compliance",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "validation_logic": "Check for presence of focus keywords/themes",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-ROUTE-018",
+        "location": "3_context.archetypes.*.avoid",
+        "line": "126, 133, 140, 147",
+        "enforcement": "Archetype-specific content to avoid",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-ROUTE-009",
+            "severity": "MEDIUM",
+            "description": "Avoidance rules are guidance only, not validated",
+            "current_state": "Artist receives avoidance guidance, no validation checks content avoids these",
+            "risk": "Message could include inappropriate content (e.g., tactical details in executive message)",
+            "recommended_fix": "Add content avoidance keyword detection",
+            "implementation": {
+              "rule_id": "LIC-QA-112",
+              "name": "Archetype content avoidance compliance",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "validation_logic": "Check for absence of avoidance keywords/themes",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  "category_3_k_node_structure": {
+    "category": "K-Node Structure & Content",
+    "total_enforcement_points": 24,
+    "mapped_to_qa": 8,
+    "coverage": "33%",
+    "status": "WEAK - CRITICAL HARDENING NEEDED",
+
+    "enforcement_points": [
+      {
+        "id": "ENF-KNODE-001",
+        "location": "3_context.k_node_structure.K.1_greeting.word_range",
+        "line": 154,
+        "enforcement": "K.1 greeting word_range: [3, 6]",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_1",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-001",
+            "severity": "CRITICAL",
+            "description": "K.1 greeting word count not validated separately",
+            "current_state": "LIC-QA-001 validates full message, but K.1 component not checked individually",
+            "risk": "Greeting could be excessively long or too short (e.g., 20 words, 1 word)",
+            "recommended_fix": "Add component-level word count validation for K.1",
+            "implementation": {
+              "rule_id": "LIC-QA-010",
+              "name": "K.1 greeting word count",
+              "severity": "CRITICAL",
+              "batch": "BATCH_1",
+              "data_source": "staging_buffer['K.1_greeting_actual']['word_count']",
+              "validation_logic": "assert 3 <= word_count <= 6",
+              "on_failure": "raise FatalValidationException('LIC-QA-010: K.1 greeting word count out of range')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-002",
+        "location": "3_context.k_node_structure.K.1_greeting.required",
+        "line": 156,
+        "enforcement": "K.1 greeting required: true",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-002",
+            "severity": "CRITICAL",
+            "description": "K.1 greeting presence not validated",
+            "current_state": "No check that K.1_greeting_actual exists in staging_buffer",
+            "risk": "Message could be generated without greeting",
+            "recommended_fix": "Add to pre-flight validation batch",
+            "implementation": {
+              "rule_id": "LIC-QA-005",
+              "name": "K.1 greeting presence",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer['K.1_greeting_actual']",
+              "validation_logic": "assert K.1_greeting_actual is not None and len(raw_text) > 0",
+              "on_failure": "raise FatalValidationException('LIC-QA-005: K.1 greeting missing')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-003",
+        "location": "3_context.global_constraints.component_constraints.K.1_greeting.must_include",
+        "line": 198,
+        "enforcement": "K.1 must include recipient_first_name",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-003",
+            "severity": "CRITICAL",
+            "description": "Recipient name inclusion not validated in K.1",
+            "current_state": "No check that greeting contains recipient name",
+            "risk": "Impersonal greeting (e.g., 'Hi there,' instead of 'Hi Sarah,')",
+            "recommended_fix": "Add recipient name presence validation",
+            "implementation": {
+              "rule_id": "LIC-QA-068",
+              "name": "K.1 recipient name inclusion",
+              "severity": "CRITICAL",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.1_greeting_actual']['raw_text']",
+              "validation_logic": "Check if recipient_first_name appears in K.1 raw_text",
+              "on_failure": "raise FatalValidationException('LIC-QA-068: Greeting missing recipient name')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-004",
+        "location": "3_context.k_node_structure.K.2_subject_line.word_range",
+        "line": 160,
+        "enforcement": "K.2 subject_line word_range: [5, 8]",
+        "severity": "WARNING",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-012",
+        "validation_rule": "word_count in [5,8]",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-KNODE-005",
+        "location": "3_context.k_node_structure.K.2_subject_line.char_limit",
+        "line": 161,
+        "enforcement": "K.2 subject_line char_limit: 60",
+        "severity": "WARNING",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-012",
+        "validation_rule": "char_count <= 60",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-KNODE-006",
+        "location": "3_context.k_node_structure.K.2_subject_line.required_for_routes",
+        "line": 162,
+        "enforcement": "K.2 subject_line required_for_routes: ['INMAIL']",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE (see GAP-ROUTE-001)",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_1",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": ["Duplicate of GAP-ROUTE-001"]
+      },
+      {
+        "id": "ENF-KNODE-007",
+        "location": "3_context.k_node_structure.K.2_subject_line.best_practices",
+        "line": 163,
+        "enforcement": "Subject best practices: Value proposition, Curiosity hook, No clickbait",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-004",
+            "severity": "MEDIUM",
+            "description": "Subject line best practices not validated",
+            "current_state": "Best practices listed as guidance only",
+            "risk": "Poor-quality subject lines (e.g., clickbait like 'YOU WON'T BELIEVE THIS')",
+            "recommended_fix": "Add subject line quality scoring",
+            "implementation": {
+              "rule_id": "LIC-QA-113",
+              "name": "Subject line quality check",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.2_subject_actual']['raw_text']",
+              "validation_logic": "Check for clickbait patterns, all-caps, excessive punctuation",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-008",
+        "location": "3_context.k_node_structure.K.3_body.word_range_by_route",
+        "line": "167-171",
+        "enforcement": "K.3 body word ranges by route",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-026",
+        "validation_rule": "K.3 word count within archetype target",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-KNODE-009",
+        "location": "3_context.k_node_structure.K.3_body.structure",
+        "line": 172,
+        "enforcement": "K.3 structure: ['Hook', 'Credibility', 'Value proposition', 'Social proof']",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-005",
+            "severity": "MEDIUM",
+            "description": "K.3 structure requirements not validated",
+            "current_state": "Structure listed as guidance, but no validation checks for these elements",
+            "risk": "K.3 body missing critical elements (e.g., no hook, no credibility)",
+            "recommended_fix": "Add structural element detection",
+            "implementation": {
+              "rule_id": "LIC-QA-114",
+              "name": "K.3 body structure compliance",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "validation_logic": "NLP detection of hook, credibility, value prop, social proof elements",
+              "threshold": "At least 3/4 elements present",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-010",
+        "location": "3_context.k_node_structure.K.3_body.required",
+        "line": 173,
+        "enforcement": "K.3 body required: true",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-006",
+            "severity": "CRITICAL",
+            "description": "K.3 body presence not validated",
+            "current_state": "No check that K.3_body_actual exists in staging_buffer",
+            "risk": "Message could be generated without body (only greeting + CTA)",
+            "recommended_fix": "Add to pre-flight validation batch",
+            "implementation": {
+              "rule_id": "LIC-QA-006",
+              "name": "K.3 body presence",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer['K.3_body_actual']",
+              "validation_logic": "assert K.3_body_actual is not None and len(raw_text) > 0",
+              "on_failure": "raise FatalValidationException('LIC-QA-006: K.3 body missing')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-011",
+        "location": "3_context.k_node_structure.K.5_cta.word_range",
+        "line": 177,
+        "enforcement": "K.5 CTA word_range: [18, 30]",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 1: LIC-QA-033",
+        "validation_rule": "word_count in [18,30]",
+        "validation_timing": "BATCH_1",
+        "status": "✅ ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-KNODE-012",
+        "location": "3_context.k_node_structure.K.5_cta.required",
+        "line": 183,
+        "enforcement": "K.5 CTA required: true",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-007",
+            "severity": "CRITICAL",
+            "description": "K.5 CTA presence not validated",
+            "current_state": "No check that K.5_cta_actual exists in staging_buffer",
+            "risk": "Message could be generated without CTA (no ask)",
+            "recommended_fix": "Add to pre-flight validation batch",
+            "implementation": {
+              "rule_id": "LIC-QA-007",
+              "name": "K.5 CTA presence",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer['K.5_cta_actual']",
+              "validation_logic": "assert K.5_cta_actual is not None and len(raw_text) > 0",
+              "on_failure": "raise FatalValidationException('LIC-QA-007: K.5 CTA missing')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-013",
+        "location": "3_context.global_constraints.component_constraints.K.5_cta.must_include_date_proposal",
+        "line": "Implied from examples, not explicit",
+        "enforcement": "K.5 CTA should include timeframe or date proposal",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-008",
+            "severity": "MEDIUM",
+            "description": "CTA timeframe/date proposal not validated",
+            "current_state": "Examples show timeframes ('next week', '15 minutes') but not enforced",
+            "risk": "Vague CTA without timeframe (e.g., 'Let me know if interested')",
+            "recommended_fix": "Add timeframe presence detection",
+            "implementation": {
+              "rule_id": "LIC-QA-115",
+              "name": "CTA timeframe inclusion",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.5_cta_actual']['raw_text']",
+              "validation_logic": "Check for time-related phrases (week, minutes, schedule, available)",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-014",
+        "location": "3_context.global_constraints.component_constraints.K.5_cta.tone",
+        "line": "Implied: 'Respectful ask, not demanding'",
+        "enforcement": "CTA tone should be respectful, not demanding",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-009",
+            "severity": "MEDIUM",
+            "description": "CTA tone (respectful vs demanding) not validated",
+            "current_state": "Tone guidance provided, but no validation",
+            "risk": "Demanding CTA (e.g., 'You need to respond by tomorrow')",
+            "recommended_fix": "Add CTA tone sentiment analysis",
+            "implementation": {
+              "rule_id": "LIC-QA-116",
+              "name": "CTA tone appropriateness",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.5_cta_actual']['raw_text']",
+              "validation_logic": "Sentiment analysis + imperative phrase detection",
+              "patterns_to_flag": "['You must', 'You need to', 'Respond immediately']",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-015",
+        "location": "3_context.k_node_structure.K.6_signature.line_count",
+        "line": 187,
+        "enforcement": "K.6 signature line_count: [3, 4]",
+        "severity": "WARNING",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_1",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-010",
+            "severity": "HIGH",
+            "description": "K.6 signature line count not validated",
+            "current_state": "Line count specified but no validation rule",
+            "risk": "Signature too short (1 line) or too long (10 lines)",
+            "recommended_fix": "Add signature line count validation",
+            "implementation": {
+              "rule_id": "LIC-QA-011",
+              "name": "K.6 signature line count",
+              "severity": "WARNING",
+              "batch": "BATCH_1",
+              "data_source": "staging_buffer['K.6_signature_actual']['line_count']",
+              "validation_logic": "assert 3 <= line_count <= 4",
+              "on_failure": "raise FatalValidationException('LIC-QA-011: K.6 signature line count out of range')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-016",
+        "location": "3_context.k_node_structure.K.6_signature.includes",
+        "line": 188,
+        "enforcement": "K.6 must include: ['Name', 'Current/recent title', 'Contact info']",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-011",
+            "severity": "CRITICAL",
+            "description": "K.6 signature required elements not validated",
+            "current_state": "Required elements listed but not checked",
+            "risk": "Incomplete signature (e.g., missing contact info)",
+            "recommended_fix": "Add signature completeness validation",
+            "implementation": {
+              "rule_id": "LIC-QA-069",
+              "name": "K.6 signature completeness",
+              "severity": "CRITICAL",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.6_signature_actual']['raw_text']",
+              "validation_logic": "Check for presence of sender_name, sender_title, sender_contact_info",
+              "on_failure": "raise FatalValidationException('LIC-QA-069: Signature missing required elements')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-017",
+        "location": "3_context.k_node_structure.K.6_signature.required",
+        "line": 189,
+        "enforcement": "K.6 signature required: true",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-012",
+            "severity": "CRITICAL",
+            "description": "K.6 signature presence not validated",
+            "current_state": "No check that K.6_signature_actual exists in staging_buffer",
+            "risk": "Message could be generated without signature",
+            "recommended_fix": "Add to pre-flight validation batch",
+            "implementation": {
+              "rule_id": "LIC-QA-008",
+              "name": "K.6 signature presence",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer['K.6_signature_actual']",
+              "validation_logic": "assert K.6_signature_actual is not None and len(raw_text) > 0",
+              "on_failure": "raise FatalValidationException('LIC-QA-008: K.6 signature missing')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-018",
+        "location": "Implicit: K-node order must be correct",
+        "line": "N/A",
+        "enforcement": "K-nodes must appear in order: K.1, K.2 (if applicable), K.3, K.5, K.6",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-013",
+            "severity": "CRITICAL",
+            "description": "K-node ordering not validated",
+            "current_state": "No check that K-nodes appear in correct sequence",
+            "risk": "K-nodes out of order (e.g., CTA before body, signature before greeting)",
+            "recommended_fix": "Add structural sequence validation",
+            "implementation": {
+              "rule_id": "LIC-QA-009",
+              "name": "K-node sequence validation",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Verify K-node text appears in correct order within full message",
+              "on_failure": "raise FatalValidationException('LIC-QA-009: K-nodes out of sequence')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-019",
+        "location": "Implicit: No duplicate K-nodes",
+        "line": "N/A",
+        "enforcement": "Each K-node should appear exactly once",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_0",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-014",
+            "severity": "HIGH",
+            "description": "Duplicate K-nodes not detected",
+            "current_state": "No check for K-node duplication",
+            "risk": "Message could have duplicate sections (e.g., two CTAs, two signatures)",
+            "recommended_fix": "Add K-node uniqueness validation",
+            "implementation": {
+              "rule_id": "LIC-QA-013",
+              "name": "K-node uniqueness",
+              "severity": "HIGH",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "data_source": "staging_buffer keys",
+              "validation_logic": "Verify each K-node section appears exactly once",
+              "on_failure": "raise FatalValidationException('LIC-QA-013: Duplicate K-node detected')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-020",
+        "location": "Implicit: K-node separation/spacing",
+        "line": "N/A",
+        "enforcement": "K-nodes should be separated by blank lines for readability",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-015",
+            "severity": "MEDIUM",
+            "description": "K-node spacing/formatting not validated",
+            "current_state": "No check for proper spacing between sections",
+            "risk": "Poor readability (e.g., all K-nodes run together without breaks)",
+            "recommended_fix": "Add formatting validation",
+            "implementation": {
+              "rule_id": "LIC-QA-117",
+              "name": "K-node spacing validation",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Check for blank lines between K-nodes",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-021",
+        "location": "Implicit: K.3 paragraphs structure",
+        "line": "N/A",
+        "enforcement": "K.3 body should be broken into readable paragraphs",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-016",
+            "severity": "MEDIUM",
+            "description": "K.3 paragraph structure not validated",
+            "current_state": "staging_buffer extracts paragraphs but doesn't validate structure",
+            "risk": "Poor readability (e.g., single massive paragraph, or 20 one-sentence paragraphs)",
+            "recommended_fix": "Add paragraph count and length validation",
+            "implementation": {
+              "rule_id": "LIC-QA-118",
+              "name": "K.3 paragraph structure",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['paragraphs']",
+              "validation_logic": "Check paragraph count (2-5 typical), avg words per paragraph (30-80)",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-022",
+        "location": "Implicit: No K-node content overlap",
+        "line": "N/A",
+        "enforcement": "K-nodes should not repeat the same content",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-017",
+            "severity": "MEDIUM",
+            "description": "Content duplication across K-nodes not detected",
+            "current_state": "No check for repeated content between sections",
+            "risk": "Repetitive message (e.g., same achievement mentioned in K.3 body and K.5 CTA)",
+            "recommended_fix": "Add content overlap detection",
+            "implementation": {
+              "rule_id": "LIC-QA-119",
+              "name": "K-node content uniqueness",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer all K-node raw_text fields",
+              "validation_logic": "Calculate text similarity between K-nodes, flag >50% overlap",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-023",
+        "location": "Implicit: K.3 must contain achievements",
+        "line": "N/A",
+        "enforcement": "K.3 body should incorporate sender achievements from RAG",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "✅ Partially covered by Batch 2 confidence validation",
+        "validation_rule": "Batch 2 scores claims against RAG sources",
+        "validation_timing": "BATCH_2",
+        "status": "⚠️ PARTIALLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-018",
+            "severity": "MEDIUM",
+            "description": "No explicit check that achievements ARE present (only that IF present, they're accurate)",
+            "current_state": "Batch 2 validates accuracy of claims, but doesn't require minimum number",
+            "risk": "K.3 could pass validation with zero achievements (generic message)",
+            "recommended_fix": "Add minimum achievement count requirement",
+            "implementation": {
+              "rule_id": "LIC-QA-120",
+              "name": "Minimum achievement inclusion",
+              "severity": "HIGH",
+              "batch": "BATCH_2",
+              "data_source": "staging_buffer['K.3_body_actual']['claims']",
+              "validation_logic": "assert len(claims) >= 2 (minimum 2 achievements/claims)",
+              "on_failure": "raise FatalValidationException('LIC-QA-120: Insufficient achievements in K.3')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-KNODE-024",
+        "location": "Implicit: K.3 must be personalized",
+        "line": "N/A",
+        "enforcement": "K.3 body should reference recipient company/role",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "✅ Partially covered by Batch 4: LIC-QA-075",
+        "validation_rule": "Job title must appear in first 50 words",
+        "validation_timing": "BATCH_4",
+        "status": "⚠️ PARTIALLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": [
+          {
+            "gap_id": "GAP-KNODE-019",
+            "severity": "MEDIUM",
+            "description": "Job title position validated, but company name presence not checked",
+            "current_state": "LIC-QA-075 checks job title position, but no rule for company name",
+            "risk": "Message could be impersonal (no company name mention)",
+            "recommended_fix": "Add company name presence validation",
+            "implementation": {
+              "rule_id": "LIC-QA-076",
+              "name": "Company name inclusion in K.3",
+              "severity": "HIGH",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "validation_logic": "Check if recipient_company_name appears in K.3",
+              "on_failure": "raise FatalValidationException('LIC-QA-076: Company name not mentioned in body')"
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  "category_4_content_quality": {
+    "category": "Content Quality & Accuracy",
+    "total_enforcement_points": 22,
+    "mapped_to_qa": 15,
+    "coverage": "68%",
+    "status": "MODERATE - GOOD COVERAGE WITH SOME GAPS",
+
+    "enforcement_points": [
+      {
+        "id": "ENF-CONTENT-001",
+        "location": "Batch 2: LIC-QA-106",
+        "line": "Documented in validation_batches",
+        "enforcement": "Per-claim confidence >= 0.80",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 2: LIC-QA-106",
+        "validation_rule": "confidence_per_claim >= 0.80",
+        "validation_timing": "BATCH_2",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-002",
+        "location": "Batch 2: LIC-QA-104",
+        "line": "Documented in validation_batches",
+        "enforcement": "Aggregate confidence >= 0.95",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 2: LIC-QA-104",
+        "validation_rule": "aggregate_confidence >= 0.95",
+        "validation_timing": "BATCH_2",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-003",
+        "location": "Batch 2: LIC-QA-107",
+        "line": "Documented in validation_batches",
+        "enforcement": "Metric context coherence >= 0.80",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 2: LIC-QA-107",
+        "validation_rule": "context_coherence >= 0.80",
+        "validation_timing": "BATCH_2",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-004",
+        "location": "Batch 3: LIC-QA-032",
+        "line": "Documented in validation_batches",
+        "enforcement": "Company names must be in whitelist",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 3: LIC-QA-032",
+        "validation_rule": "companies IN validated_companies whitelist",
+        "validation_timing": "BATCH_3",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-005",
+        "location": "Batch 3: LIC-QA-041",
+        "line": "Documented in validation_batches",
+        "enforcement": "Metrics must have source binding",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 3: LIC-QA-041",
+        "validation_rule": "metrics IN metric_source_map",
+        "validation_timing": "BATCH_3",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-006",
+        "location": "Batch 3: LIC-QA-105",
+        "line": "Documented in validation_batches",
+        "enforcement": "Team descriptions similarity >= 0.85",
+        "severity": "WARNING",
+        "mapped_to_qa_gate": "✅ Batch 3: LIC-QA-105",
+        "validation_rule": "team_similarity >= 0.85",
+        "validation_timing": "BATCH_3",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-007",
+        "location": "Batch 4: LIC-QA-067",
+        "line": "Documented in validation_batches",
+        "enforcement": "No placeholders in output",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 4: LIC-QA-067",
+        "validation_rule": "No pattern matches for [PLACEHOLDER]",
+        "validation_timing": "BATCH_4",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-008",
+        "location": "Batch 4: LIC-QA-075",
+        "line": "Documented in validation_batches",
+        "enforcement": "Job title in first 50 words",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 4: LIC-QA-075",
+        "validation_rule": "job_title position <= 50 words",
+        "validation_timing": "BATCH_4",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-009",
+        "location": "Batch 4: LIC-QA-055",
+        "line": "Documented in validation_batches",
+        "enforcement": "ASCII hygiene compliance",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 4: LIC-QA-055",
+        "validation_rule": "Apply unicode_replacements, verify no unmapped Unicode",
+        "validation_timing": "BATCH_4",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-010",
+        "location": "3_context.global_constraints.character_encoding_rules",
+        "line": "221-232",
+        "enforcement": "Unicode replacement mapping",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Batch 4: LIC-QA-055",
+        "validation_rule": "Apply unicode_replacements",
+        "validation_timing": "BATCH_4",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-011",
+        "location": "3_context.global_constraints.character_encoding_rules.emoji_policy",
+        "line": 234,
+        "enforcement": "emoji_policy: Not allowed in professional outreach",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-001",
+            "severity": "MEDIUM",
+            "description": "Emoji presence not validated",
+            "current_state": "Policy states 'not allowed' but no validation checks for emojis",
+            "risk": "Message could contain emojis (e.g., 'Hi Sarah! 👋 I'm excited about this role!')",
+            "recommended_fix": "Add emoji detection validation",
+            "implementation": {
+              "rule_id": "LIC-QA-121",
+              "name": "Emoji detection",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Scan for Unicode emoji ranges, flag if found",
+              "on_failure": "raise FatalValidationException('LIC-QA-121: Emojis not allowed in professional outreach')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-012",
+        "location": "3_context.global_constraints.tokenization_standard",
+        "line": "236-244",
+        "enforcement": "Tokenization must match MS Word",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Staging buffer + Manual verification",
+        "validation_rule": "LIC-SCOPE-SMOKE-001 (MS Word comparison)",
+        "validation_timing": "POST_VALIDATION_MANUAL",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      },
+      {
+        "id": "ENF-CONTENT-013",
+        "location": "Implicit: No typos or grammatical errors",
+        "line": "N/A",
+        "enforcement": "Message should be free of typos and grammatical errors",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-002",
+            "severity": "MEDIUM",
+            "description": "Grammar and spelling not validated",
+            "current_state": "No grammar/spelling check in validation pipeline",
+            "risk": "Message could contain typos (e.g., 'I beleive', 'experiance')",
+            "recommended_fix": "Add grammar/spelling validation",
+            "implementation": {
+              "rule_id": "LIC-QA-122",
+              "name": "Grammar and spelling check",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Run spelling/grammar checker, flag errors",
+              "threshold": "Max 2 minor errors acceptable",
+              "on_failure": "Warning with error list (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-014",
+        "location": "Implicit: No excessive capitalization",
+        "line": "N/A",
+        "enforcement": "Avoid all-caps words or excessive capitalization",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-003",
+            "severity": "MEDIUM",
+            "description": "Excessive capitalization not detected",
+            "current_state": "No check for all-caps or shouting",
+            "risk": "Unprofessional message (e.g., 'I am VERY INTERESTED in this OPPORTUNITY')",
+            "recommended_fix": "Add capitalization pattern detection",
+            "implementation": {
+              "rule_id": "LIC-QA-123",
+              "name": "Capitalization appropriateness",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Count all-caps words (>3 consecutive), flag excessive use",
+              "threshold": "Max 2 all-caps words (e.g., 'CEO', 'AI') acceptable",
+              "on_failure": "Warning (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-015",
+        "location": "Implicit: No excessive punctuation",
+        "line": "N/A",
+        "enforcement": "Avoid excessive punctuation (!!!, ???, ...)",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-004",
+            "severity": "MEDIUM",
+            "description": "Excessive punctuation not detected",
+            "current_state": "No check for multiple punctuation marks",
+            "risk": "Unprofessional message (e.g., 'This is so exciting!!!')",
+            "recommended_fix": "Add punctuation pattern detection",
+            "implementation": {
+              "rule_id": "LIC-QA-124",
+              "name": "Punctuation appropriateness",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Detect patterns like !!!, ???, ..., flag if found",
+              "on_failure": "Warning (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-016",
+        "location": "Implicit: Professional language only",
+        "line": "N/A",
+        "enforcement": "Avoid slang, profanity, overly casual language",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-005",
+            "severity": "HIGH",
+            "description": "Language professionalism not validated",
+            "current_state": "No check for slang or inappropriate language",
+            "risk": "Unprofessional message (e.g., 'Hey bro, wanna chat about this gig?')",
+            "recommended_fix": "Add language professionalism scoring",
+            "implementation": {
+              "rule_id": "LIC-QA-125",
+              "name": "Professional language validation",
+              "severity": "HIGH",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Check against slang/profanity dictionary, flag matches",
+              "patterns_to_flag": "['bro', 'dude', 'wanna', 'gonna', 'gig']",
+              "on_failure": "raise FatalValidationException('LIC-QA-125: Inappropriate language detected')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-017",
+        "location": "Implicit: No misleading claims",
+        "line": "N/A",
+        "enforcement": "All claims must be verifiable and accurate",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Partially covered by Batch 2 confidence validation",
+        "validation_rule": "Confidence scoring validates factual accuracy",
+        "validation_timing": "BATCH_2",
+        "status": "⚠️ PARTIALLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-006",
+            "severity": "HIGH",
+            "description": "Confidence validates accuracy but not misleading framing",
+            "current_state": "Batch 2 checks factual accuracy, but not whether framing is misleading",
+            "risk": "Technically accurate but misleading (e.g., 'Led team of 50' when actually 'Was on team of 50')",
+            "recommended_fix": "Add claim ownership/attribution validation",
+            "implementation": {
+              "rule_id": "LIC-QA-108",
+              "name": "Claim attribution accuracy",
+              "severity": "HIGH",
+              "batch": "BATCH_2",
+              "data_source": "staging_buffer['K.3_body_actual']['claims']",
+              "validation_logic": "Check that claims properly attribute sender's role (led vs participated)",
+              "on_failure": "raise FatalValidationException('LIC-QA-108: Misleading claim attribution')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-018",
+        "location": "Implicit: No generic/templated language",
+        "line": "N/A",
+        "enforcement": "Message should feel personalized, not generic template",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-007",
+            "severity": "MEDIUM",
+            "description": "Generic template language not detected",
+            "current_state": "No check for overused phrases or template patterns",
+            "risk": "Generic message (e.g., 'I am writing to express my interest in the position')",
+            "recommended_fix": "Add template phrase detection",
+            "implementation": {
+              "rule_id": "LIC-QA-126",
+              "name": "Personalization quality check",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "validation_logic": "Check for generic phrases, calculate personalization score",
+              "patterns_to_flag": "['I am writing to express', 'I hope this message finds you well']",
+              "threshold": "Max 1 generic phrase acceptable",
+              "on_failure": "Warning (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-019",
+        "location": "Implicit: Consistent sender information",
+        "line": "N/A",
+        "enforcement": "Sender name/title/info must be consistent across message",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-008",
+            "severity": "HIGH",
+            "description": "Sender information consistency not validated",
+            "current_state": "No check that sender info matches across sections (K.3 vs K.6)",
+            "risk": "Inconsistent info (e.g., 'VP of Sales' in K.3, 'Director of Marketing' in K.6)",
+            "recommended_fix": "Add sender info consistency validation",
+            "implementation": {
+              "rule_id": "LIC-QA-127",
+              "name": "Sender information consistency",
+              "severity": "HIGH",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer K.3 + K.6 + factual_scaffold",
+              "validation_logic": "Verify sender_name, sender_title consistent across all mentions",
+              "on_failure": "raise FatalValidationException('LIC-QA-127: Inconsistent sender information')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-020",
+        "location": "Implicit: Metrics formatting consistency",
+        "line": "N/A",
+        "enforcement": "Metrics should follow consistent format (e.g., $1.5M not $1500000)",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-009",
+            "severity": "MEDIUM",
+            "description": "Metric formatting consistency not validated",
+            "current_state": "Metrics extracted but formatting not standardized",
+            "risk": "Inconsistent formats (e.g., '1500000' instead of '1.5M', '50%' in one place and 'fifty percent' in another)",
+            "recommended_fix": "Add metric formatting standardization",
+            "implementation": {
+              "rule_id": "LIC-QA-128",
+              "name": "Metric formatting consistency",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['metrics']",
+              "validation_logic": "Check metric formats follow style guide (e.g., M/B for millions/billions)",
+              "on_failure": "Warning with suggested corrections (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-021",
+        "location": "Implicit: Date formatting consistency",
+        "line": "N/A",
+        "enforcement": "Dates should follow consistent format",
+        "severity": "LOW",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-010",
+            "severity": "LOW",
+            "description": "Date formatting consistency not validated",
+            "current_state": "No check for consistent date formats",
+            "risk": "Inconsistent dates (e.g., 'Q4 2024' in one place, '2024 Q4' in another)",
+            "recommended_fix": "Add date formatting standardization",
+            "implementation": {
+              "rule_id": "LIC-QA-129",
+              "name": "Date formatting consistency",
+              "severity": "LOW",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['K.3_body_actual']['raw_text']",
+              "validation_logic": "Extract dates, verify consistent format",
+              "on_failure": "Warning only (non-blocking)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-CONTENT-022",
+        "location": "Implicit: No vague/weak language",
+        "line": "N/A",
+        "enforcement": "Avoid vague qualifiers (somewhat, pretty, kind of)",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SHOULD_BE_BATCH_4",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-CONTENT-011",
+            "severity": "MEDIUM",
+            "description": "Weak language detection not implemented",
+            "current_state": "No check for hedging or weak qualifiers",
+            "risk": "Weak message (e.g., 'I'm somewhat interested', 'pretty good at project management')",
+            "recommended_fix": "Add weak language pattern detection",
+            "implementation": {
+              "rule_id": "LIC-QA-130",
+              "name": "Strong language validation",
+              "severity": "MEDIUM",
+              "batch": "BATCH_4",
+              "data_source": "staging_buffer['full_message_actual']['raw_text']",
+              "validation_logic": "Check for weak qualifiers, calculate confidence language score",
+              "patterns_to_flag": "['somewhat', 'pretty', 'kind of', 'sort of', 'maybe']",
+              "threshold": "Max 1 weak phrase acceptable",
+              "on_failure": "Warning (non-blocking)"
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  "category_5_process_enforcement": {
+    "category": "Process & Workflow Enforcement",
+    "total_enforcement_points": 10,
+    "mapped_to_qa": 0,
+    "coverage": "0%",
+    "status": "CRITICAL - ZERO ENFORCEMENT",
+
+    "enforcement_points": [
+      {
+        "id": "ENF-PROCESS-001",
+        "location": "4_reasoning.phase_1_analyst",
+        "line": "247-277",
+        "enforcement": "Phase 1 must complete before Phase 2",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "RUNTIME_WORKFLOW",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-001",
+            "severity": "CRITICAL",
+            "description": "No enforcement of phase execution order",
+            "current_state": "Phases described sequentially but no runtime validation",
+            "risk": "Phases could execute out of order or skip phases",
+            "recommended_fix": "Add workflow state machine with phase completion gates",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-001",
+              "name": "Phase execution order validation",
+              "severity": "CRITICAL",
+              "validation_timing": "RUNTIME",
+              "validation_logic": "State machine: Phase N completion required before Phase N+1 starts",
+              "on_failure": "raise WorkflowViolationError('Phases executed out of order')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-002",
+        "location": "4_reasoning.phase_4_assembler_staging",
+        "line": "358-408",
+        "enforcement": "Staging buffer must be created before validation",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "PRE_VALIDATION",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-002",
+            "severity": "CRITICAL",
+            "description": "No verification that staging_buffer exists before validation starts",
+            "current_state": "Assumes staging_buffer created, but no explicit check",
+            "risk": "Validation could attempt to read non-existent staging_buffer",
+            "recommended_fix": "Add pre-validation staging buffer existence check",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-002",
+              "name": "Staging buffer presence validation",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "validation_logic": "assert staging_buffer is not None and isinstance(staging_buffer, dict)",
+              "on_failure": "raise WorkflowViolationError('Staging buffer not created before validation')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-003",
+        "location": "4_reasoning.phase_4_assembler_staging.scope_isolation_enforcement",
+        "line": "410-424",
+        "enforcement": "Steps 9-13 must execute in order",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Partially enforced by scope checks",
+        "validation_rule": "Step 11 checks artist_output deleted",
+        "validation_timing": "PRE_VALIDATION",
+        "status": "⚠️ PARTIALLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-003",
+            "severity": "HIGH",
+            "description": "Steps 9-10 (backup + delete) execution not verified",
+            "current_state": "Step 11 verifies deletion happened, but doesn't verify backup created first",
+            "risk": "Deletion without backup = data loss if validation fails",
+            "recommended_fix": "Add backup existence verification before deletion",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-003",
+              "name": "Backup creation verification",
+              "severity": "HIGH",
+              "validation_timing": "POST_STEP_9_PRE_STEP_10",
+              "validation_logic": "assert artist_output_backup is not None and len(artist_output_backup) > 0",
+              "on_failure": "raise WorkflowViolationError('Backup not created before artist_output deletion')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-004",
+        "location": "4_reasoning.phase_5_validator",
+        "line": "454-733",
+        "enforcement": "Validation batches must execute in order 1→2→3→4",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "RUNTIME",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-004",
+            "severity": "HIGH",
+            "description": "Batch execution order not enforced",
+            "current_state": "Batches described with priority 1-4 but no runtime enforcement",
+            "risk": "Batches could execute out of order (e.g., Batch 3 before Batch 1)",
+            "recommended_fix": "Add batch execution state tracking",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-004",
+              "name": "Batch execution order validation",
+              "severity": "HIGH",
+              "validation_timing": "START_OF_EACH_BATCH",
+              "validation_logic": "assert batch_N_complete before starting batch_N+1",
+              "on_failure": "raise WorkflowViolationError('Validation batches executed out of order')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-005",
+        "location": "4_reasoning.phase_5_validator.token_optimization",
+        "line": "730-736",
+        "enforcement": "Early exit on batch failure (token optimization)",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "ON_BATCH_FAILURE",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-005",
+            "severity": "HIGH",
+            "description": "Early exit behavior not verified",
+            "current_state": "Strategy described but no monitoring that it's working",
+            "risk": "Batches 2-4 could execute even after Batch 1 fails (wastes tokens)",
+            "recommended_fix": "Add token usage monitoring and early exit verification",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-005",
+              "name": "Early exit verification",
+              "severity": "HIGH",
+              "validation_timing": "POST_VALIDATION",
+              "validation_logic": "If batch_1 failed, verify batches 2-4 did NOT execute",
+              "metric": "tokens_used <= batch_1_tokens + overhead",
+              "on_failure": "Log warning (non-blocking but indicates optimization broken)"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-006",
+        "location": "4_reasoning.phase_6_gate",
+        "line": "738-776",
+        "enforcement": "Gate decision must be binary: write file XOR show error",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "POST_GATE",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-006",
+            "severity": "CRITICAL",
+            "description": "No verification that gate decision is enforced (file written XOR error shown)",
+            "current_state": "Gate logic described but no post-execution verification",
+            "risk": "Both actions could occur (file written AND error shown) or neither",
+            "recommended_fix": "Add post-gate state verification",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-006",
+              "name": "Gate decision enforcement verification",
+              "severity": "CRITICAL",
+              "validation_timing": "POST_GATE",
+              "validation_logic": "assert (file_written XOR error_displayed) == True",
+              "on_failure": "raise WorkflowViolationError('Gate decision not properly enforced')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-007",
+        "location": "4_reasoning.phase_6_gate.success_path",
+        "line": "757-763",
+        "enforcement": "On success: restore backup → write file → display → log",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "SUCCESS_PATH",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-007",
+            "severity": "HIGH",
+            "description": "Success path steps not verified",
+            "current_state": "Steps described but no verification they all complete",
+            "risk": "Backup restored but file not written, or file written but not logged",
+            "recommended_fix": "Add success path completion verification",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-007",
+              "name": "Success path completion verification",
+              "severity": "HIGH",
+              "validation_timing": "END_OF_SUCCESS_PATH",
+              "validation_logic": "Verify: backup_restored AND file_written AND user_displayed AND logged",
+              "on_failure": "raise WorkflowViolationError('Success path incomplete')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-008",
+        "location": "4_reasoning.phase_6_gate.failure_path",
+        "line": "765-770",
+        "enforcement": "On failure: generate report → display report → DO NOT write file → log",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "FAILURE_PATH",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-008",
+            "severity": "CRITICAL",
+            "description": "Failure path enforcement not verified",
+            "current_state": "Steps described including 'DO NOT write file' but no verification",
+            "risk": "File could be written even on validation failure",
+            "recommended_fix": "Add failure path verification",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-008",
+              "name": "Failure path enforcement verification",
+              "severity": "CRITICAL",
+              "validation_timing": "END_OF_FAILURE_PATH",
+              "validation_logic": "Verify: report_generated AND report_displayed AND file_NOT_written AND logged",
+              "on_failure": "raise WorkflowViolationError('Failure path violated - file may have been written')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-009",
+        "location": "6_conditions.blocking_conditions",
+        "line": "895-903",
+        "enforcement": "Blocking conditions must halt workflow",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "RUNTIME",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-PROCESS-009",
+            "severity": "CRITICAL",
+            "description": "Blocking conditions not explicitly checked",
+            "current_state": "Conditions listed but no pre-flight validation",
+            "risk": "Workflow could proceed with missing inputs or failed prerequisites",
+            "recommended_fix": "Add pre-flight blocking condition checks",
+            "implementation": {
+              "rule_id": "LIC-WORKFLOW-009",
+              "name": "Blocking condition validation",
+              "severity": "CRITICAL",
+              "batch": "BATCH_0_PRE_FLIGHT",
+              "validation_logic": "Check all blocking conditions before starting workflow",
+              "blocking_conditions": [
+                "sender_profile exists",
+                "recipient_info exists",
+                "RAG pipeline healthy",
+                "No prior scope violations"
+              ],
+              "on_failure": "raise WorkflowViolationError('Blocking condition not met')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-PROCESS-010",
+        "location": "6_conditions.scope_violation_handling",
+        "line": "906-911",
+        "enforcement": "Scope violations must halt workflow immediately",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "✅ Enforced by scope checks in each batch",
+        "validation_rule": "if 'artist_output' in dir(): raise ScopeViolationError()",
+        "validation_timing": "START_OF_EACH_BATCH",
+        "status": "✅ FULLY ENFORCED",
+        "implementation_verified": true,
+        "gaps": []
+      }
+    ]
+  },
+
+  "category_6_post_validation_monitoring": {
+    "category": "Post-Validation & Runtime Monitoring",
+    "total_enforcement_points": 10,
+    "mapped_to_qa": 0,
+    "coverage": "0%",
+    "status": "CRITICAL - ZERO ENFORCEMENT",
+
+    "enforcement_points": [
+      {
+        "id": "ENF-MONITOR-001",
+        "location": "6_conditions.monitoring_requirements.post_deployment",
+        "line": "923-930",
+        "enforcement": "Monitor for ScopeViolationError (should be 0)",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING - Monitoring requirement, not validation rule",
+        "validation_timing": "POST_DEPLOYMENT_CONTINUOUS",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-001",
+            "severity": "HIGH",
+            "description": "No automated monitoring for scope violations",
+            "current_state": "Monitoring listed as requirement but no implementation",
+            "risk": "Scope violations could occur in production without detection",
+            "recommended_fix": "Implement batch_5 post-validation monitoring",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-001",
+              "name": "Runtime scope violation monitoring",
+              "severity": "HIGH",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Query logs for ScopeViolationError, alert if count > 0",
+              "frequency": "Every message generation",
+              "on_detection": "Alert + log details + increment metric"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-002",
+        "location": "6_conditions.monitoring_requirements.post_deployment",
+        "line": "924",
+        "enforcement": "Track validation success/failure rates",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "POST_DEPLOYMENT_CONTINUOUS",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-002",
+            "severity": "HIGH",
+            "description": "No automated tracking of validation rates",
+            "current_state": "Tracking listed as requirement but no implementation",
+            "risk": "Cannot detect degradation in validation success rate",
+            "recommended_fix": "Implement validation rate tracking",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-002",
+              "name": "Validation rate tracking",
+              "severity": "HIGH",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Track validation_passed / total_attempts ratio",
+              "threshold": "Alert if success rate < 90%",
+              "frequency": "Hourly aggregation",
+              "on_threshold_breach": "Alert operations team"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-003",
+        "location": "6_conditions.monitoring_requirements.post_deployment",
+        "line": "925",
+        "enforcement": "Run LIC-SCOPE-SMOKE-001 daily (first week)",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "DAILY_POST_DEPLOYMENT",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-003",
+            "severity": "CRITICAL",
+            "description": "Manual verification not automated or scheduled",
+            "current_state": "Daily verification required but not automated",
+            "risk": "Manual test could be forgotten or skipped",
+            "recommended_fix": "Automate daily manual verification test",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-003",
+              "name": "Automated daily manual verification",
+              "severity": "CRITICAL",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Generate test message daily, auto-extract K.3, compare MS Word vs QA report",
+              "frequency": "Daily at 9AM (first week post-deployment)",
+              "on_failure": "Page on-call engineer + halt new generations"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-004",
+        "location": "6_conditions.monitoring_requirements.post_deployment",
+        "line": "926",
+        "enforcement": "Measure word count accuracy (manual verification)",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "CONTINUOUS",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-004",
+            "severity": "HIGH",
+            "description": "Word count accuracy not continuously monitored",
+            "current_state": "Accuracy measurement required but not implemented",
+            "risk": "Scope isolation degradation could go unnoticed",
+            "recommended_fix": "Implement continuous accuracy monitoring",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-004",
+              "name": "Word count accuracy monitoring",
+              "severity": "HIGH",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Sample 10% of messages, auto-compare staging_buffer vs expected tokenization",
+              "threshold": "Alert if >1% of samples show discrepancy",
+              "frequency": "Every 100 messages",
+              "on_threshold_breach": "Alert + investigate tokenization"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-005",
+        "location": "6_conditions.monitoring_requirements.post_deployment",
+        "line": "927",
+        "enforcement": "Track token usage (~30K per message expected)",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "CONTINUOUS",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-005",
+            "severity": "MEDIUM",
+            "description": "Token usage not monitored",
+            "current_state": "Usage tracking required but not implemented",
+            "risk": "Token optimization degradation could go unnoticed (cost impact)",
+            "recommended_fix": "Implement token usage monitoring",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-005",
+              "name": "Token usage monitoring",
+              "severity": "MEDIUM",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Track tokens_used per message, calculate rolling average",
+              "threshold": "Alert if avg > 33K (10% above expected 30K)",
+              "frequency": "Hourly aggregation",
+              "on_threshold_breach": "Alert + review early exit logic"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-006",
+        "location": "6_conditions.monitoring_requirements.post_deployment",
+        "line": "928",
+        "enforcement": "Monitor validation latency (<5 seconds target)",
+        "severity": "MEDIUM",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "CONTINUOUS",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-006",
+            "severity": "MEDIUM",
+            "description": "Validation latency not monitored",
+            "current_state": "Latency tracking required but not implemented",
+            "risk": "Performance degradation could go unnoticed (user experience impact)",
+            "recommended_fix": "Implement latency monitoring",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-006",
+              "name": "Validation latency monitoring",
+              "severity": "MEDIUM",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Track validation_time per message, calculate P50/P95/P99",
+              "threshold": "Alert if P95 > 7 seconds",
+              "frequency": "Real-time per message",
+              "on_threshold_breach": "Alert + profile slow validations"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-007",
+        "location": "Implicit: File write success rate",
+        "line": "N/A",
+        "enforcement": "Track successful file writes vs attempts",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "CONTINUOUS",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-007",
+            "severity": "HIGH",
+            "description": "File write success not tracked",
+            "current_state": "No monitoring of file write operations",
+            "risk": "File write failures could go unnoticed",
+            "recommended_fix": "Implement file write tracking",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-007",
+              "name": "File write success monitoring",
+              "severity": "HIGH",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Track file_write_success / file_write_attempts ratio",
+              "threshold": "Alert if success rate < 99%",
+              "frequency": "Real-time per message",
+              "on_threshold_breach": "Alert + check file system"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-008",
+        "location": "Implicit: QA report generation success",
+        "line": "N/A",
+        "enforcement": "QA validation report should be generated for every message",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "POST_VALIDATION",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-008",
+            "severity": "HIGH",
+            "description": "QA report generation not verified",
+            "current_state": "No check that QA report was successfully generated",
+            "risk": "Missing QA reports = no audit trail",
+            "recommended_fix": "Add QA report generation verification",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-008",
+              "name": "QA report generation verification",
+              "severity": "HIGH",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Verify QA report file exists after validation",
+              "on_failure": "Log error + generate alert"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-009",
+        "location": "Implicit: Backup restoration success",
+        "line": "N/A",
+        "enforcement": "On validation pass, artist_output_backup must be successfully restored",
+        "severity": "CRITICAL",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "POST_VALIDATION_SUCCESS",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-009",
+            "severity": "CRITICAL",
+            "description": "Backup restoration not verified",
+            "current_state": "Assumes restoration succeeds, no verification",
+            "risk": "File rendering could fail if backup restoration fails",
+            "recommended_fix": "Add backup restoration verification",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-009",
+              "name": "Backup restoration verification",
+              "severity": "CRITICAL",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "After restoration: verify artist_output == artist_output_backup",
+              "on_failure": "raise WorkflowViolationError('Backup restoration failed')"
+            }
+          }
+        ]
+      },
+      {
+        "id": "ENF-MONITOR-010",
+        "location": "Implicit: Error report quality",
+        "line": "N/A",
+        "enforcement": "On validation failure, error report must be complete and actionable",
+        "severity": "HIGH",
+        "mapped_to_qa_gate": "❌ NO VALIDATION RULE",
+        "validation_rule": "MISSING",
+        "validation_timing": "POST_VALIDATION_FAILURE",
+        "status": "❌ NOT ENFORCED",
+        "implementation_verified": false,
+        "gaps": [
+          {
+            "gap_id": "GAP-MONITOR-010",
+            "severity": "HIGH",
+            "description": "Error report completeness not validated",
+            "current_state": "Error report format defined but no validation it's complete",
+            "risk": "Incomplete error reports = difficult debugging",
+            "recommended_fix": "Add error report completeness validation",
+            "implementation": {
+              "rule_id": "LIC-MONITOR-010",
+              "name": "Error report completeness validation",
+              "severity": "HIGH",
+              "batch": "BATCH_5_POST_VALIDATION",
+              "validation_logic": "Verify error report contains: result, failed_checks, timestamp, staging_buffer_snapshot",
+              "on_failure": "Log warning + flag incomplete report"
+            }
+          }
+        ]
+      }
+    ]
+  },
+
+  "recommended_hardening_changes": {
+    "summary": "Add 12 new validation rules + create 2 new validation batches + enhance 8 existing rules",
+    
+    "priority_1_critical_additions": [
+      {
+        "batch_id": "BATCH_0_PRE_FLIGHT",
+        "name": "Structural Pre-Flight Validation",
+        "description": "Add new validation batch BEFORE Batch 1 for structural checks",
+        "priority": "P0_CRITICAL",
+        "execution_timing": "BEFORE_ALL_OTHER_BATCHES",
+        "estimated_tokens": 2000,
+        "blocking": true,
+        
+        "new_rules": [
+          "LIC-QA-000: Route enum validation (route in ['INMAIL', 'CONNECTION_REQ', 'FOLLOW_UP'])",
+          "LIC-QA-001: Archetype enum validation (archetype in ['EXECUTIVE', 'RECRUITER', 'HIRING_MANAGER', 'C_LEVEL'])",
+          "LIC-QA-003: Subject line presence for INMAIL",
+          "LIC-QA-004: Subject line exclusion for non-INMAIL",
+          "LIC-QA-005: K.1 greeting presence",
+          "LIC-QA-006: K.3 body presence",
+          "LIC-QA-007: K.5 CTA presence",
+          "LIC-QA-008: K.6 signature presence",
+          "LIC-QA-009: K-node sequence validation",
+          "LIC-QA-013: K-node uniqueness",
+          "LIC-WORKFLOW-002: Staging buffer presence validation",
+          "LIC-WORKFLOW-009: Blocking condition validation"
+        ],
+        
+        "rationale": "These are foundational structural checks that should happen BEFORE expensive content validation. Fast-fail on structural issues saves tokens.",
+        
+        "implementation_notes": [
+          "Execute before Batch 1",
+          "Should complete in <1 second",
+          "Low token cost (~2K tokens)",
+          "Blocks all subsequent batches on failure"
+        ]
+      },
+      {
+        "rule_id": "LIC-QA-010",
+        "name": "K.1 greeting word count",
+        "batch": "BATCH_1",
+        "priority": "P0_CRITICAL",
+        "rationale": "Component-level word count validation missing for K.1"
+      },
+      {
+        "rule_id": "LIC-QA-011",
+        "name": "K.6 signature line count",
+        "batch": "BATCH_1",
+        "priority": "P0_CRITICAL",
+        "rationale": "Signature line count specified but not validated"
+      },
+      {
+        "rule_id": "LIC-QA-068",
+        "name": "K.1 recipient name inclusion",
+        "batch": "BATCH_4",
+        "priority": "P0_CRITICAL",
+        "rationale": "Personalization requirement not enforced"
+      },
+      {
+        "rule_id": "LIC-QA-069",
+        "name": "K.6 signature completeness",
+        "batch": "BATCH_4",
+        "priority": "P0_CRITICAL",
+        "rationale": "Signature elements (name, title, contact) not verified"
+      },
+      {
+        "rule_id": "LIC-QA-076",
+        "name": "Company name inclusion in K.3",
+        "batch": "BATCH_4",
+        "priority": "P0_CRITICAL",
+        "rationale": "Personalization - company name presence not checked"
+      },
+      {
+        "rule_id": "LIC-QA-120",
+        "name": "Minimum achievement inclusion",
+        "batch": "BATCH_2",
+        "priority": "P0_CRITICAL",
+        "rationale": "K.3 could pass with zero achievements (generic message)"
+      },
+      {
+        "rule_id": "LIC-QA-125",
+        "name": "Professional language validation",
+        "batch": "BATCH_4",
+        "priority": "P0_CRITICAL",
+        "rationale": "No check for slang or inappropriate language"
+      },
+      {
+        "rule_id": "LIC-QA-127",
+        "name": "Sender information consistency",
+        "batch": "BATCH_4",
+        "priority": "P0_CRITICAL",
+        "rationale": "Sender info could be inconsistent across K.3 and K.6"
+      }
+    ],
+
+    "priority_2_high_additions": [
+      {
+        "batch_id": "BATCH_5_POST_VALIDATION",
+        "name": "Runtime Monitoring & Post-Validation Checks",
+        "description": "Add new validation batch AFTER gate decision for monitoring",
+        "priority": "P1_HIGH",
+        "execution_timing": "AFTER_GATE_DECISION",
+        "estimated_tokens": 1000,
+        "blocking": false,
+        
+        "new_rules": [
+          "LIC-MONITOR-001: Runtime scope violation monitoring",
+          "LIC-MONITOR-002: Validation rate tracking",
+          "LIC-MONITOR-003: Automated daily manual verification",
+          "LIC-MONITOR-004: Word count accuracy monitoring",
+          "LIC-MONITOR-005: Token usage monitoring",
+          "LIC-MONITOR-006: Validation latency monitoring",
+          "LIC-MONITOR-007: File write success monitoring",
+          "LIC-MONITOR-008: QA report generation verification",
+          "LIC-MONITOR-009: Backup restoration verification",
+          "LIC-MONITOR-010: Error report completeness validation"
+        ],
+        
+        "rationale": "Post-validation monitoring catches issues that slip through validation and provides operational visibility",
+        
+        "implementation_notes": [
+          "Execute after gate decision",
+          "Non-blocking (monitoring only)",
+          "Logs metrics for dashboards",
+          "Alerts on threshold breaches"
+        ]
+      },
+      {
+        "rule_id": "LIC-QA-108",
+        "name": "Claim attribution accuracy",
+        "batch": "BATCH_2",
+        "priority": "P1_HIGH",
+        "rationale": "Confidence validates accuracy but not misleading framing"
+      },
+      {
+        "rule_id": "LIC-QA-121",
+        "name": "Emoji detection",
+        "batch": "BATCH_4",
+        "priority": "P1_HIGH",
+        "rationale": "Policy states 'not allowed' but not enforced"
+      },
+      {
+        "rule_id": "LIC-WORKFLOW-001",
+        "name": "Phase execution order validation",
+        "priority": "P1_HIGH",
+        "rationale": "No enforcement of workflow phase order"
+      },
+      {
+        "rule_id": "LIC-WORKFLOW-003",
+        "name": "Backup creation verification",
+        "priority": "P1_HIGH",
+        "rationale": "Deletion verified but backup creation not verified first"
+      },
+      {
+        "rule_id": "LIC-WORKFLOW-004",
+        "name": "Batch execution order validation",
+        "priority": "P1_HIGH",
+        "rationale": "Batch priority specified but order not enforced"
+      },
+      {
+        "rule_id": "LIC-WORKFLOW-005",
+        "name": "Early exit verification",
+        "priority": "P1_HIGH",
+        "rationale": "Token optimization described but not verified working"
+      },
+      {
+        "rule_id": "LIC-WORKFLOW-006",
+        "name": "Gate decision enforcement verification",
+        "priority": "P1_HIGH",
+        "rationale": "No verification that gate decision properly enforced"
+      },
+      {
+        "rule_id": "LIC-WORKFLOW-007",
+        "name": "Success path completion verification",
+        "priority": "P1_HIGH",
+        "rationale": "Success steps not verified complete"
+      },
+      {
+        "rule_id": "LIC-WORKFLOW-008",
+        "name": "Failure path enforcement verification",
+        "priority": "P1_HIGH",
+        "rationale": "Critical - file write must not occur on failure"
+      }
+    ],
+
+    "priority_3_medium_enhancements": [
+      {
+        "rule_id": "LIC-QA-110",
+        "name": "Route tone compliance",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Tone requirements descriptive but not validated"
+      },
+      {
+        "rule_id": "LIC-QA-111",
+        "name": "Archetype content focus compliance",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Focus areas guidance only, not validated"
+      },
+      {
+        "rule_id": "LIC-QA-112",
+        "name": "Archetype content avoidance compliance",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Avoidance rules guidance only, not validated"
+      },
+      {
+        "rule_id": "LIC-QA-113",
+        "name": "Subject line quality check",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Best practices not enforced (clickbait detection)"
+      },
+      {
+        "rule_id": "LIC-QA-114",
+        "name": "K.3 body structure compliance",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Structure elements (hook, credibility, value prop) not validated"
+      },
+      {
+        "rule_id": "LIC-QA-115",
+        "name": "CTA timeframe inclusion",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Timeframe/date proposal not validated"
+      },
+      {
+        "rule_id": "LIC-QA-116",
+        "name": "CTA tone appropriateness",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Respectful vs demanding tone not validated"
+      },
+      {
+        "rule_id": "LIC-QA-117",
+        "name": "K-node spacing validation",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Readability - spacing between sections not checked"
+      },
+      {
+        "rule_id": "LIC-QA-118",
+        "name": "K.3 paragraph structure",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Paragraph count and length not validated"
+      },
+      {
+        "rule_id": "LIC-QA-119",
+        "name": "K-node content uniqueness",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Content duplication across K-nodes not detected"
+      },
+      {
+        "rule_id": "LIC-QA-122",
+        "name": "Grammar and spelling check",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "No grammar/spelling validation"
+      },
+      {
+        "rule_id": "LIC-QA-123",
+        "name": "Capitalization appropriateness",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Excessive caps not detected"
+      },
+      {
+        "rule_id": "LIC-QA-124",
+        "name": "Punctuation appropriateness",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Excessive punctuation (!!!, ???) not detected"
+      },
+      {
+        "rule_id": "LIC-QA-126",
+        "name": "Personalization quality check",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Generic template language not detected"
+      },
+      {
+        "rule_id": "LIC-QA-128",
+        "name": "Metric formatting consistency",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Metric formats not standardized"
+      },
+      {
+        "rule_id": "LIC-QA-130",
+        "name": "Strong language validation",
+        "batch": "BATCH_4",
+        "priority": "P2_MEDIUM",
+        "rationale": "Weak/hedging language not detected"
+      },
+      {
+        "rule_id": "LIC-QA-201",
+        "name": "Route-recipient appropriateness",
+        "phase": "PHASE_1",
+        "priority": "P2_MEDIUM",
+        "rationale": "Route selection not validated against recipient"
+      },
+      {
+        "rule_id": "LIC-QA-202",
+        "name": "Route-archetype preference match",
+        "phase": "PHASE_1",
+        "priority": "P2_MEDIUM",
+        "rationale": "Preferred route not enforced"
+      }
+    ]
+  },
+
+  "implementation_roadmap": {
+    "phase_1_immediate": {
+      "timeline": "Pre-production deployment",
+      "priority": "P0_BLOCKING",
+      "actions": [
+        "Implement BATCH_0_PRE_FLIGHT with 12 structural validation rules",
+        "Add 8 P0_CRITICAL rules to existing batches",
+        "Update validation function to call BATCH_0 before BATCH_1",
+        "Add scope check to BATCH_0",
+        "Test all P0 rules with comprehensive test suite"
+      ],
+      "estimated_effort": "2-3 days",
+      "blocking": "Cannot deploy to production without these"
+    },
+
+    "phase_2_high_priority": {
+      "timeline": "First week post-deployment",
+      "priority": "P1_HIGH",
+      "actions": [
+        "Implement BATCH_5_POST_VALIDATION with 10 monitoring rules",
+        "Add 9 P1_HIGH workflow validation rules",
+        "Set up monitoring dashboards",
+        "Configure alerting thresholds",
+        "Automate daily manual verification"
+      ],
+      "estimated_effort": "3-5 days",
+      "blocking": "Should deploy within first week"
+    },
+
+    "phase_3_medium_priority": {
+      "timeline": "First month post-deployment",
+      "priority": "P2_MEDIUM",
+      "actions": [
+        "Add 18 P2_MEDIUM content quality rules",
+        "Enhance BATCH_4 with additional checks",
+        "Tune validation thresholds based on production data",
+        "Review and refine based on user feedback"
+      ],
+      "estimated_effort": "1-2 weeks",
+      "blocking": "Nice-to-have, iterative improvement"
+    }
+  },
+
+  "validation_coverage_summary": {
+    "before_hardening": {
+      "total_enforcement_points": 89,
+      "mapped_to_qa": 47,
+      "coverage_percentage": "53%",
+      "critical_gaps": 18,
+      "status": "INSUFFICIENT"
+    },
+
+    "after_hardening": {
+      "total_enforcement_points": 89,
+      "mapped_to_qa": 89,
+      "coverage_percentage": "100%",
+      "critical_gaps": 0,
+      "status": "COMPREHENSIVE",
+      "new_validation_rules": 59,
+      "new_validation_batches": 2
+    },
+
+    "confidence_improvement": {
+      "scope_isolation": "Excellent → Excellent (maintained)",
+      "route_constraints": "Moderate (67%) → Excellent (100%)",
+      "k_node_structure": "Weak (33%) → Excellent (100%)",
+      "content_quality": "Moderate (68%) → Excellent (100%)",
+      "process_enforcement": "Critical (0%) → Excellent (100%)",
+      "monitoring": "Critical (0%) → Excellent (100%)"
+    }
+  }
+}

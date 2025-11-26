@@ -1,0 +1,309 @@
+{
+  "schema_version": "master_config_v10.7",
+  "description": "v10.7: Implements 15 new enhancements including Semantic Caching, Idempotency Validation, Concurrent Node Execution, Constitutional AI, and Agent-to-Agent (A2A) Comms.",
+  "version_notes": {
+    "v10_6_changes": [
+      "SCHEMA_VERSION: Updated to v10.6",
+      "FILE_PATHS: All logs/dbs updated to v10_7 versions.",
+      "FIX_5 (Concurrency): Architecture now supports concurrent node execution.",
+      "FIX_7 (Dynamic Tooling): Added ToolRegistry config (see meta_loop_config).",
+      "FIX_8 (UI Tools): Architecture supports UI control tools (logging only).",
+      "FIX_9 (Streaming): Architecture supports real-time streaming (via main).",
+      "FIX_10 (A2A Comms): Architecture supports A2A messaging via state.",
+      "FIX_13 (Semantic Caching): Added 'enable_semantic_caching' and 'semantic_cache_similarity_threshold' to caching_config.",
+      "FIX_14 (Smarter Pruning): Added 'summarizer_model' for agentic context pruning.",
+      "FIX_15 (Cost/Latency Routing): Added 'max_complex_model_latency_ms' to performance_config.",
+      "FIX_17 (Reflection): Architecture updated for metacognitive reflection in agents.",
+      "FIX_19 (Goal-State): Architecture supports global goal state injection.",
+      "FIX_20 (Cognitive Mode): Prompts refactored to use Cognitive Modes (e.g., 'MODE: ANALYTICAL').",
+      "FIX_24 (Failure Anticipation): Architecture injects top failures into prompts.",
+      "FIX_25 (Backpressure): Added 'max_batch_queue_size' to batch_config.",
+      "FIX_29 (Idempotency): Added 'enable_idempotency_validation' and 'idempotency_validation_sample_rate' to caching_config.",
+      "FIX_30 (Constitutional AI): Added 'enable_constitutional_review' and 'constitutional_review_model'."
+    ],
+    "v10_5_changes": [
+      "Inherits all v10.5 features: Dynamic Model Routing, Tool Caching, Node Timeouts, Tool Generation, Agent Metrics, Self-Consistency Voting, Curriculum Prompting, PI Detection, and Semantic Validation."
+    ],
+    "v10_7_changes": [
+      "SCHEMA_VERSION: Updated to v10.7",
+      "MCP_WRAPPER: Added wrap_mcp capability with configurable client registry.",
+      "MCP_DEFAULT: MCP wrapping enabled by default for orchestration and tools."
+    ]
+  },
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "log_file": "./logs/workflow_v10_7.log",
+    "metrics_log_path": "./logs/metrics_v10_7.jsonl",
+    "log_format": "json",
+    "correlation_ids": true
+  },
+  "redis_config": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "description": "Redis for LangGraph checkpoints, LLM caching, and Tool caching"
+  },
+  "chromadb_config": {
+    "host": "localhost",
+    "port": 8000,
+    "use_http_client": false,
+    "persistent_path": "./chroma_db_v10_7",
+    "default_collection_name": "resume_embeddings_v10_7",
+    "semantic_cache_collection": "llm_semantic_cache_v10_7",
+    "description": "v10.6: ChromaDB for RAG and Semantic LLM Caching"
+  },
+  "caching_config": {
+    "enable_llm_caching": true,
+    "enable_tool_caching": true,
+    "cache_ttl_seconds": 3600,
+    "cache_db": 1,
+    "enable_semantic_caching": true,
+    "semantic_cache_similarity_threshold": 0.95,
+    "enable_idempotency_validation": true,
+    "idempotency_validation_sample_rate": 0.1
+  },
+  "performance_config": {
+    "enable_async_llm": true,
+    "max_concurrent_llm_calls": 10,
+    "llm_timeout_seconds": 30,
+    "workflow_node_timeout_seconds": 60,
+    "default_token_limit": 8192,
+    "max_complex_model_latency_ms": 15000
+  },
+  "cost_config": {
+    "cost_ceiling_per_workflow": 5.0,
+    "enable_cost_tracking": true
+  },
+  "batch_config": {
+    "max_parallel_workers": 4,
+    "enable_circuit_breaker": true,
+    "circuit_breaker_failure_threshold": 3,
+    "max_batch_queue_size": 1000
+  },
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "max_meta_replan_loops": 3,
+    "feedback_log_path": "./logs/feedback_log.jsonl",
+    "preference_log_path": "./logs/preference_log.jsonl",
+    "proposed_rules_path": "./logs/proposed_rules.jsonl",
+    "generated_tools_path": "./generated_tools_v10_7",
+    "enable_hot_reloading": true
+  },
+  "feedback_config": {
+    "enable_feedback_aware_agents": true,
+    "feedback_cache_ttl_seconds": 60,
+    "feedback_lookback_entries": 100
+  },
+  "tracing_config": {
+    "langsmith_enabled": false,
+    "langsmith_api_key": null
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json"
+  },
+  "agent_stacks": {
+    "description": "v10.6: All stacks validated, resilient, and use centralized prompts.",
+    "safety_stack_enabled": true,
+    "bias_detection_threshold": 0.7,
+    "pii_detection_enabled": true,
+    "enable_prompt_injection_detection": true,
+    "enable_semantic_validation": true,
+    "enable_constitutional_review": true,
+    "strategy_tot_branching_factor": 3,
+    "strategy_tot_depth": 2,
+    "strategy_feedback_aware": true,
+    "prompt_llm_driven": true,
+    "prompt_feedback_aware": true,
+    "enable_local_retries": true,
+    "max_local_retries": 2,
+    "enable_react_conductors": true,
+    "conductor_max_steps": 10,
+    "conductor_temperature": 0.6,
+    "conductor_feedback_aware": true,
+    "enable_hil_stack": true,
+    "ambiguity_confidence_threshold": 0.8,
+    "enable_hyde": true,
+    "enable_reranking": true,
+    "reranking_top_k": 5,
+    "rag_feedback_aware": true
+  },
+  "model_config": {
+    "description": "v10.6: Added models for smarter pruning and constitutional review.",
+    "strategy_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.5
+    },
+    "strategy_model_simple": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.6
+    },
+    "strategy_model_complex": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.4
+    },
+    "prompt_engineer_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.7
+    },
+    "prompt_engineer_model_simple": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.7
+    },
+    "prompt_engineer_model_complex": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.6
+    },
+    "bullet_generator_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.7
+    },
+    "bullet_fact_check_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2
+    },
+    "critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2
+    },
+    "qa_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.3
+    },
+    "react_conductor_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.6
+    },
+    "react_conductor_model_simple": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.7
+    },
+    "react_conductor_model_complex": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.5
+    },
+    "hyde_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.6
+    },
+    "reranker_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2
+    },
+    "drafting_strategist_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.5
+    },
+    "drafting_redteam_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.6
+    },
+    "drafting_refiner_model": {
+      "provider": "openai",
+      "model_name": "gpt-5",
+      "temperature": 0.6
+    },
+    "drafting_metrics_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.4
+    },
+    "qa_adversarial_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.5
+    },
+    "qa_validator_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.3
+    },
+    "prompt_injection_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.1
+    },
+    "meta_tool_generator_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.4
+    },
+    "meta_tool_critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.2
+    },
+    "summarizer_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.3
+    },
+    "constitutional_review_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.1
+    }
+  },
+  "v10_6_improvements_summary": {
+    "version": "10.6.0-full-fix-list",
+    "techniques_applied": [
+      {
+        "technique": "Semantic Caching (Fix #13)",
+        "implementation": "Config now has 'enable_semantic_caching' flag. CacheManager will use ChromaDB."
+      },
+      {
+        "technique": "Smarter Context Pruning (Fix #14)",
+        "implementation": "Config now has 'summarizer_model'. ContextBudgetManager will be agentic."
+      },
+      {
+        "technique": "Cost/Latency-Based Routing (Fix #15)",
+        "implementation": "Config now has 'max_complex_model_latency_ms'. get_model_client will check metrics."
+      },
+      {
+        "technique": "Backpressure (Fix #25)",
+        "implementation": "Config now has 'max_batch_queue_size'. run_batch will halt if queue is too large."
+      },
+      {
+        "technique": "Idempotency Validation (Fix #29)",
+        "implementation": "Config now has 'enable_idempotency_validation'. LLM clients will run shadow calls."
+      },
+      {
+        "technique": "Constitutional AI (Fix #30)",
+        "implementation": "Config now has 'enable_constitutional_review' and its model."
+      }
+    ]
+  },
+  "mcp_config": {
+    "enabled": true,
+    "wrap_nodes_by_default": true,
+    "fallback_mode": "stub",
+    "clients": [
+      {
+        "name": "default_stub",
+        "provider": "stub",
+        "parameters": {
+          "note": "Default stub MCP client for testing"
+        },
+        "optional": false
+      }
+    ]
+  }
+}

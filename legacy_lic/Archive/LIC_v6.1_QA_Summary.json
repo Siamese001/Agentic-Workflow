@@ -1,0 +1,30 @@
+{
+  "version": "LIC_10-02-2025_v6.1",
+  "sha256_v6_1": "fe922471f7aca2a28409ca4858ec034843655ee9248ae0b643d9fb0ed5dc0eca",
+  "file_sizes_bytes": {
+    "before": 207800,
+    "after": 208575,
+    "delta": 775
+  },
+  "row1_docs_moved_keys": [
+    "K5.rag_v16_note",
+    "rag_anti_patterns.do_not_force_podcast_references",
+    "rag_anti_patterns.do_not_ignore_other_sources",
+    "rag_anti_patterns.do_not_over_weight_old_podcasts"
+  ],
+  "row2_rules_with_help": [
+    "LIC-QA-041",
+    "LIC-QA-042"
+  ],
+  "row3_manifest_common_keys_count": 1,
+  "row3_manifest_keys_moved_by_node": {
+    "K.1": 1,
+    "K.2": 1,
+    "K.3": 1,
+    "K.4": 1,
+    "K.5": 1,
+    "K.6": 1,
+    "K.7": 1
+  },
+  "size_deltas": []
+}

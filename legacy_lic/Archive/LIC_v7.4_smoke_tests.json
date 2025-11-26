@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "About optional gate present",
+      "pass": true
+    },
+    {
+      "name": "Rerank audit block exists",
+      "pass": true
+    },
+    {
+      "name": "HyDE section added",
+      "pass": true
+    },
+    {
+      "name": "Self-RAG triggers added",
+      "pass": true
+    },
+    {
+      "name": "Runtime toggles merged",
+      "pass": true
+    },
+    {
+      "name": "Metadata version updated",
+      "pass": true
+    }
+  ]
+}
