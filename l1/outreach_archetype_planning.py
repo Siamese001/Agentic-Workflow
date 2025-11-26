@@ -8,11 +8,11 @@ cross-cutting parameter context without any execution logic or external calls.
 from dataclasses import dataclass
 from typing import Any, Dict, List
 
-from .outreach_dataclasses import (
+from l1.outreach_dataclasses import (
+    OutreachMission,
     ArchetypeType,
     ArchetypeContext,
     ArchetypeDefinition,
-    compute_reasoning_multiplier,
     SignalParameters,
     RagParameters,
     ReasoningParameters,
@@ -20,10 +20,10 @@ from .outreach_dataclasses import (
     ToneParameters,
     CtaParameters,
     ReasoningMode,
-    OutreachMission as OutreachMissionDataclass,
     ExecutiveReasoningProfile,
     ARCHETYPE_REGISTRY,
-    EXECUTIVE_REASONING_PROFILES
+    EXECUTIVE_REASONING_PROFILES,
+    compute_reasoning_multiplier
 )
 
 
@@ -38,19 +38,6 @@ class RecipientProfile:
     department: str
     skills: List[str]
     recent_activity: List[str]
-    metadata: Dict[str, Any]
-
-
-# Keep local OutreachMission for backward compatibility
-@dataclass
-class OutreachMission:
-    """Pure data structure for outreach mission definition."""
-    objective: str
-    target_role: str
-    value_proposition: str
-    urgency: str
-    personalization_points: List[str]
-    constraints: List[str]
     metadata: Dict[str, Any]
 
 
