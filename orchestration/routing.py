@@ -49,15 +49,14 @@ from observability import record_event
 LIGHT_MODELS = {
     "gpt-4o-mini",
     "gpt-3.5-turbo",
-    "claude-3-haiku-20240307",
+    "claude-haiku-4-5-20251001",
 }
 
 # "Standard" models: default production models
 STANDARD_MODELS = {
     "gpt-4o",
     "gpt-4-turbo",
-    "claude-3-sonnet-20240229",
-    "claude-3-5-sonnet-20240620",
+    "claude-sonnet-4-5-20250929",
 }
 
 # "Heavy" models: expensive, strong reasoning

@@ -50,14 +50,14 @@ from runtime.observability import (
 
 # "Light" models: fast, cheap, shallow reasoning
 LIGHT_MODELS = {
-    "openai": "gpt-4.1-mini",
-    "anthropic": "claude-3-haiku",
+    "openai": "gpt-5.1-codex-mini",
+    "anthropic": "claude-haiku-4-5-20251001",
 }
 
 # "Medium" models: balanced cost vs reasoning depth
 MEDIUM_MODELS = {
     "openai": "gpt-5.1",
-    "anthropic": "claude-3.5-sonnet",
+    "anthropic": "claude-sonnet-4-5-20250929",
 }
 
 # "Heavy" models: deep reasoning, longer outputs
@@ -74,8 +74,8 @@ DRAFTING_MODELS = {
 
 # Specialized QA/Safety models
 QA_SAFETY_MODELS = {
-    "openai": "gpt-4.1",
-    "anthropic": "claude-3.5-sonnet",
+    "openai": "gpt-5.1",
+    "anthropic": "claude-sonnet-4-5-20250929",
 }
 
 
