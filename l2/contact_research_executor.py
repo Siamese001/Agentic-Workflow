@@ -266,7 +266,7 @@ class ContactResearchExecutor:
         archetype_terms = {
             ArchetypeType.RECRUITER: "recruiting talent acquisition screening",
             ArchetypeType.SENIOR_TA: "technical leadership engineering architecture",
-            ArchetypeType.HIRING_MANAGER: "hiring recruitment team building management",
+            ArchetypeType.EXECUTIVE: "executive leadership team building management",
             ArchetypeType.C_LEVEL: "executive leadership business strategy"
         }
         

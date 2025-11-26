@@ -12,17 +12,14 @@ import logging
 
 from l5.interfaces import (
     SafetyConstraint,
-    SafetyPolicy,
     SafetyViolation,
     PolicyDecision,
     PolicyEvaluationError,
     Severity,
-    Verdict,
-    ExecutionContext,
-    SafetyResult,
-    SafetyFinding
+    Verdict
 )
-from l5.types import SafetyContext
+from l5.types import SafetyPolicy, SafetyContext
+from core.models.models import SafetyResult, SafetyFinding, ExecutionContext
 
 logger = logging.getLogger(__name__)
 
