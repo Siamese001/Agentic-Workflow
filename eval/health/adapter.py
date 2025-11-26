@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 """Transforms low-level observability events into a simple format so health checks can spot patterns that might harm resume quality or reliability."""
+
+from __future__ import annotations
 
 from typing import Any, Dict, List
 
