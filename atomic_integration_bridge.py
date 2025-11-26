@@ -1,7 +1,7 @@
-"""Atomic Integration Layer - Bridges OpenAI structure to L1-L5 atomicity.
+"""Bridges OpenAI structure to atomic L1-L5 layers with strict boundaries.
 
-This module provides the bridge between the OpenAI-style capability folders
-and the strict L1-L5 atomic layer enforcement using interface-based adapters.
+Ensures resume generation follows a clean, maintainable architecture that improves
+output consistency and makes it easier to enhance resume quality over time.
 """
 
 from typing import Any, Dict, Optional
@@ -18,7 +18,11 @@ from config.meta_profile import MetaProfileSnapshot
 from runtime.runtime_utils import SandboxConfig
 
 class AtomicWorkflowBridge:
-    """Bridge layer that enforces L1-L5 atomicity within OpenAI structure."""
+    """Coordinates resume generation across specialized atomic layers.
+    
+    Ensures each resume section is processed with the right balance of
+    planning, execution, and safety checks for optimal job alignment.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         # Create L4/L5 components for dependency injection
@@ -31,12 +35,20 @@ class AtomicWorkflowBridge:
         )
     
     def execute_atomic_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, Any]:
-        """Execute workflow through strict L1-L5 atomic layers."""
+        """Orchestrates the resume generation workflow through atomic layers.
+        
+        Maintains clean separation of concerns while ensuring all resume sections
+        meet quality standards and job requirements.
+        """
         return self.unified_orchestrator.orchestrate_full_workflow(job, resume, config)
 
 # Backward compatibility agents that delegate to atomic layers
 class AtomicStrategyAgent:
-    """Strategy agent that delegates to atomic L1-L5 layers."""
+    """Handles strategic planning for resume content organization.
+    
+    Aligns resume structure with job requirements for maximum impact
+    and applicant tracking system (ATS) compatibility.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.bridge = AtomicWorkflowBridge(routing_policy, sandbox, meta_profile)
@@ -47,7 +59,11 @@ class AtomicStrategyAgent:
         return result["strategy"]
 
 class AtomicDraftingAgent:
-    """Drafting agent that delegates to atomic L1-L5 layers."""
+    """Manages the creation of initial resume drafts.
+    
+    Ensures content flows naturally while highlighting relevant
+    skills and experiences for the target position.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.bridge = AtomicWorkflowBridge(routing_policy, sandbox, meta_profile)
@@ -58,7 +74,11 @@ class AtomicDraftingAgent:
         return result["draft"]
 
 class AtomicQAAgent:
-    """QA agent that delegates to atomic L1-L5 layers."""
+    """Validates resume content quality and consistency.
+    
+    Checks for clarity, relevance, and alignment with job requirements
+    to ensure the resume makes a strong first impression.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.bridge = AtomicWorkflowBridge(routing_policy, sandbox, meta_profile)
@@ -69,7 +89,11 @@ class AtomicQAAgent:
         return result["qa"]
 
 class AtomicSafetyAgent:
-    """Safety agent that delegates to atomic L1-L5 layers."""
+    """Ensures resume content meets professional and ethical standards.
+    
+    Validates factual accuracy and prevents misleading claims while
+    maintaining a positive, professional tone throughout the resume.
+    """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
         self.bridge = AtomicWorkflowBridge(routing_policy, sandbox, meta_profile)
