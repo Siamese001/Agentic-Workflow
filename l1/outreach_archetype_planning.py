@@ -50,11 +50,11 @@ class OutreachArchetypePlanner:
         department = profile.department.lower()
         seniority = profile.seniority.lower()
         
-        # HSON: Targets recruitment decision makers with hiring-focused messaging → increases reply probability
+        # HSON: Targets recruitment decision makers with hiring-focused messaging -> increases reply probability
         if any(keyword in title for keyword in ["recruiter", "talent acquisition", "sourcer", "staffing"]):
             return ArchetypeType.RECRUITER
         
-        # HSON: Identifies technical influencers for peer-to-peer credibility messaging → boosts technical signal strength
+        # HSON: Identifies technical influencers for peer-to-peer credibility messaging -> boosts technical signal strength
         if any(keyword in title for keyword in ["senior", "principal", "staff", "lead"]) and \
            any(keyword in department for keyword in ["engineering", "technology", "software", "technical"]) and \
            "manager" not in title and "director" not in title:
@@ -65,7 +65,7 @@ class OutreachArchetypePlanner:
            any(keyword in seniority for keyword in ["c-level", "c_suite"]):
             return ArchetypeType.C_LEVEL
         
-        # HSON: Targets business decision makers with strategic impact messaging → increases C-level reply probability
+        # HSON: Targets business decision makers with strategic impact messaging -> increases C-level reply probability
         if any(keyword in title for keyword in ["manager", "director", "head", "supervisor", "vp", "vice president"]) and \
            any(keyword in department for keyword in ["engineering", "technology", "software", "product", "technical", "business"]):
             return ArchetypeType.EXECUTIVE
@@ -92,12 +92,12 @@ class OutreachArchetypePlanner:
         archetype_type = ArchetypeType(archetype)
         definition = self._archetype_registry[archetype_type]
         
-        # HSON: Boosts confidence for clear executive titles → improves targeting precision
+        # HSON: Boosts confidence for clear executive titles -> improves targeting precision
         confidence = self._calculate_classification_confidence(recipient, archetype)
         
         reasoning = f"Classified as {archetype} based on title '{recipient.title}' and department '{recipient.department}'"
         
-        # HSON: Selects reasoning profile to match executive cognitive patterns → increases engagement
+        # HSON: Selects reasoning profile to match executive cognitive patterns -> increases engagement
         executive_profile = EXECUTIVE_REASONING_PROFILES[archetype_type]
         
         # Build context with parameters from registry and executive reasoning profile

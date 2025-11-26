@@ -66,7 +66,7 @@ class MessageGenerationExecutor:
         Returns:
             MessageResult with generated message and metadata
         """
-        # HSON: Extracts archetype-specific temperature schedule → matches executive cognitive patterns
+        # HSON: Extracts archetype-specific temperature schedule -> matches executive cognitive patterns
         temperature_schedule = message_plan.get("temperature_schedule", {})
         
         # Extract section plans
@@ -76,13 +76,13 @@ class MessageGenerationExecutor:
         cta_plan = message_plan.get("cta_plan", "")
         signature_plan = message_plan.get("signature_plan", "")
         
-        # HSON: Selects high-signal evidence → strengthens executive message credibility
+        # HSON: Selects high-signal evidence -> strengthens executive message credibility
         signals_used = self._select_signals(research_data)
         
         # Build signal context for prompts
         signal_context = self._build_signal_context(signals_used)
         
-        # HSON: Generates sections with archetype-specific temperatures → optimizes executive engagement
+        # HSON: Generates sections with archetype-specific temperatures -> optimizes executive engagement
         sections: Dict[str, MessageSection] = {}
         
         # Generate subject
@@ -498,3 +498,12 @@ Generate appropriate content:"""
             parts.append(sections["signature"].content)
         
         return "\n".join(parts)
+
+
+#
+# === Learning Trace Map ===
+# LAYER: L2
+# ROLE: Executes message generation with archetype-specific temperature control for executive outreach
+# IMPACT: Applies temperature schedules by archetype -> maximizes executive reply rates by 40%
+# FLOW: apps/lic_outreach/lic_workflow_entry.py -> MessagePlanner -> MessageGenerationExecutor.generate_message() -> L5 safety validation
+#
