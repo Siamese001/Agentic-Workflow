@@ -1,0 +1,309 @@
+{
+  "from": "LIC_10-02-2025_v5.3.json",
+  "to": "LIC_10-02-2025_v5.4.json",
+  "base_sha": "ccb2644a4ec2c8ffefdae80f86edc2721e41ce9dd5854f025bad46c0e7bc4908",
+  "new_sha": "6fd334f1f13d1333ba360f8a139357581b036fcd5012c2d14625751b9de258ce",
+  "change_count": 27,
+  "changes": [
+    {
+      "path": "3.canonical_message_types.K5_CALL_TO_ACTION",
+      "change": "ADDED",
+      "value": {
+        "parameter_by_message_type": {
+          "C_LEVEL": {
+            "cta_template": "Would you have {duration} {time_frame} to discuss connecting with {company_name}'s leaders in {business_function}?",
+            "duration": "20-25 minutes",
+            "time_frame": "next week",
+            "word_limit": 25,
+            "company_name_required": true,
+            "temporal_frame_required": true
+          },
+          "EXECUTIVE": {
+            "cta_template": "Would you have {duration} {time_frame} to discuss connecting with {company_name}'s leaders in {business_function}?",
+            "duration": "15-20 minutes",
+            "time_frame": "next week",
+            "word_limit": 22,
+            "company_name_required": true,
+            "temporal_frame_required": true
+          },
+          "SENIOR_TA": {
+            "cta_template": "Would you have {duration} {time_frame} to discuss connecting with {company_name}'s leaders in {business_function}?",
+            "duration": "15-20 minutes",
+            "time_frame": "next week",
+            "word_limit": 22,
+            "company_name_required": true,
+            "temporal_frame_required": true,
+            "business_function_examples": [
+              "partnerships and product strategy",
+              "platform strategy",
+              "go-to-market initiatives"
+            ]
+          },
+          "RECRUITER": {
+            "cta_template": "Available for a {duration} call {time_frame}?",
+            "duration": "quick 10-minute",
+            "time_frame": "this week",
+            "word_limit": 15,
+            "company_name_required": false,
+            "temporal_frame_required": true
+          },
+          "SHORT_NEW": {
+            "cta_template": "{micro_cta}",
+            "examples": [
+              "Let's connect",
+              "Happy to chat"
+            ],
+            "word_limit": 5,
+            "company_name_required": false,
+            "temporal_frame_required": false
+          }
+        },
+        "category": "K5_CALL_TO_ACTION"
+      }
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.company_extraction",
+      "change": "ADDED",
+      "value": {
+        "function": "extract_company_name(linkedin_inputs)",
+        "extraction_logic": {
+          "from_title": {
+            "pattern": "@ ([A-Za-z0-9\\s]+)$",
+            "example": "Global VP, Recruitment @ Snowflake \u2192 'Snowflake'"
+          },
+          "from_url": {
+            "pattern": "linkedin\\.com/in/[^/]+",
+            "fallback": "Parse profile, look for current company in experience"
+          },
+          "validation": "Non-empty string, 2-50 characters"
+        },
+        "output_format": "{company_name}'s"
+      }
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.cta_generation_rules",
+      "change": "ADDED",
+      "value": {
+        "company_name_extraction": {
+          "source_priority": [
+            "runtime_context.linkedin_inputs.title (extract from '@ Company')",
+            "runtime_context.linkedin_inputs.profile_url (parse company slug)",
+            "user_manual_override"
+          ],
+          "formatting": "possessive form: {company_name}'s",
+          "enforcement": "REQUIRED for EXECUTIVE, SENIOR_TA, C_LEVEL"
+        },
+        "temporal_framing": {
+          "default": "next week",
+          "alternatives": [
+            "this week",
+            "in the coming days"
+          ],
+          "placement": "After duration, before 'to discuss'",
+          "enforcement": "REQUIRED for all meeting request CTAs"
+        },
+        "business_function_selection": {
+          "rule": "Match to recipient's domain and message type focus",
+          "TA_executive_override": "partnerships and product strategy | platform strategy | go-to-market",
+          "default": "your team's priorities | your initiatives"
+        }
+      }
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.edge_cases",
+      "change": "ADDED",
+      "value": {
+        "no_company_in_title": "Extract from profile URL or fallback to generic 'your organization's leaders'",
+        "multiple_at_symbols": "Use rightmost @ segment",
+        "company_special_chars": "Preserve formatting (e.g., 'Blue Yonder')",
+        "urgent_timeframe": "Allow user override to 'this week' instead of 'next week'"
+      }
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.SelfConsistencyRuns",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.TOT_MAX_BRANCHES",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.TOT_MIN_BRANCHES",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.TOT_MIN_DEPTH",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.ToT",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.cta_style",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.example",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.final_template",
+      "change": "ADDED",
+      "value": "Would you have {duration} {time_frame} to discuss connecting with {company_name}'s leaders in {business_function}?"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.temperature",
+      "change": "REMOVED"
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.template_variables",
+      "change": "ADDED",
+      "value": {
+        "duration": "15-20 minutes",
+        "time_frame": "next week",
+        "company_name": "EXTRACT_FROM_PROFILE",
+        "business_function": "partnerships and product strategy"
+      }
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.parameter_by_message_type.SENIOR_TA.word_limit",
+      "change": "MODIFIED",
+      "from": 20,
+      "to": 22
+    },
+    {
+      "path": "4.reasoning.runtime_overrides_by_k.K.5.testing_criteria",
+      "change": "ADDED",
+      "value": [
+        "Company name correctly extracted from title or URL",
+        "Possessive form correctly applied ({company_name}'s)",
+        "Time frame present in all meeting request CTAs",
+        "Word count within limits per message type",
+        "Grammar correct",
+        "Validation rules LIC-QA-041 and LIC-QA-042 trigger correctly",
+        "SHORT_NEW micro CTAs unaffected (no company/time required)"
+      ]
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_compact",
+      "change": "LIST_CHANGED",
+      "from_len": 40,
+      "to_len": 42
+    },
+    {
+      "path": "4.reasoning.validation_rule_schema.rules_detailed",
+      "change": "ADDED",
+      "value": {
+        "LIC-QA-041": {
+          "rule_id": "LIC-QA-041",
+          "name": "CTA company specificity",
+          "check": "IF message_type IN ['C_LEVEL', 'EXECUTIVE', 'SENIOR_TA'] THEN CTA MUST include {company_name}",
+          "severity": "WARNING",
+          "validation": "CONTAINS({company_name})",
+          "fix": "Insert \"{company_name}'s\" before 'leaders' or 'team'",
+          "example_fail": "connecting with leaders in partnerships",
+          "example_pass": "connecting with Snowflake's leaders in partnerships"
+        },
+        "LIC-QA-042": {
+          "rule_id": "LIC-QA-042",
+          "name": "CTA temporal framing",
+          "check": "Meeting request CTAs SHOULD include time frame",
+          "severity": "INFO",
+          "validation": "CONTAINS('next week' OR 'this week' OR 'in the coming days')",
+          "fix": "Add 'next week' after duration",
+          "example_fail": "Would you have 15 minutes to discuss...",
+          "example_pass": "Would you have 15 minutes next week to discuss..."
+        }
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.C_LEVEL.cta",
+      "change": "ADDED",
+      "value": {
+        "template": "Would you have {duration} {time_frame} to discuss connecting with {company_name}'s leaders in {business_function}?",
+        "word_limit": 25,
+        "defaults": {
+          "duration": "20-25 minutes",
+          "time_frame": "next week",
+          "business_function": "your team's priorities"
+        }
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.EXECUTIVE.cta",
+      "change": "ADDED",
+      "value": {
+        "template": "Would you have {duration} {time_frame} to discuss connecting with {company_name}'s leaders in {business_function}?",
+        "word_limit": 22,
+        "defaults": {
+          "duration": "15-20 minutes",
+          "time_frame": "next week",
+          "business_function": "your team's priorities"
+        }
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.RECRUITER.cta",
+      "change": "ADDED",
+      "value": {
+        "template": "Available for a {duration} call {time_frame}?",
+        "word_limit": 15,
+        "defaults": {
+          "duration": "quick 10-minute",
+          "time_frame": "this week"
+        }
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SENIOR_TA.cta",
+      "change": "ADDED",
+      "value": {
+        "template": "Would you have {duration} {time_frame} to discuss connecting with {company_name}'s leaders in {business_function}?",
+        "word_limit": 22,
+        "defaults": {
+          "duration": "15-20 minutes",
+          "time_frame": "next week",
+          "business_function": "partnerships and product strategy"
+        }
+      }
+    },
+    {
+      "path": "5.output.output_templates_by_message_type.SHORT_NEW.cta",
+      "change": "ADDED",
+      "value": {
+        "template": "{micro_cta}",
+        "word_limit": 5,
+        "defaults": {
+          "examples": [
+            "Let's connect",
+            "Happy to chat"
+          ]
+        }
+      }
+    },
+    {
+      "path": "metadata.base_sha_for_v5_4",
+      "change": "ADDED",
+      "value": "ccb2644a4ec2c8ffefdae80f86edc2721e41ce9dd5854f025bad46c0e7bc4908"
+    },
+    {
+      "path": "metadata.patches_applied_v5_4",
+      "change": "ADDED",
+      "value": [
+        "P016"
+      ]
+    },
+    {
+      "path": "metadata.sha256_v5_4",
+      "change": "ADDED",
+      "value": "6fd334f1f13d1333ba360f8a139357581b036fcd5012c2d14625751b9de258ce"
+    },
+    {
+      "path": "metadata.version",
+      "change": "MODIFIED",
+      "from": "LIC_10-02-2025_v5.3",
+      "to": "LIC_10-02-2025_v5.4"
+    }
+  ]
+}

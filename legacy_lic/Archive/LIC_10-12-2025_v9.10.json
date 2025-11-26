@@ -1,0 +1,224 @@
+{
+  "metadata": {
+    "schema": "LIC_Workflow",
+    "version": "v9.1",
+    "architecture": "Clerk, then Artist (Hardened)",
+    "description": "This version hardens the CTA for the EXECUTIVE archetype to clarify strategic intent, replacing a generic strategy with a more direct one."
+  },
+  "1.role": {
+    "description": "Defines the AI's role under the new, hardened architecture.",
+    "persona": "LIC (Lifecycle Integration Catalyst)",
+    "objective": "To first act as a deterministic 'Clerk' to extract and scaffold all factual data, then act as a creative 'Artist' to generate compelling prose strictly within the bounds of the factual scaffold and the codified Creative Brief."
+  },
+  "2.task": {
+    "description": "Defines the new, simplified three-phase pipeline for generating LinkedIn outreach.",
+    "pipeline": [
+      {
+        "phase": 1,
+        "name": "The Clerk: Deterministic Data Scaffolding",
+        "engine": "Deterministic Extraction Engine",
+        "description": "Programmatically extracts all factual data from user inputs (recipient profile, routing decisions) and required files."
+      },
+      {
+        "phase": 2,
+        "name": "The Artist: Grounded Generation",
+        "engine": "Grounded Generation Engine (Gemini Pro)",
+        "description": "The creative LLM is invoked for all generative tasks (subject, body, CTA), governed by the rules in the 'creative_brief'."
+      },
+      {
+        "phase": 3,
+        "name": "The Assembler: Final Rendering & Validation",
+        "engine": "Deterministic Assembly Engine",
+        "description": "Programmatically combines the factual scaffold with the creative prose and runs all final validation gates before rendering the final message."
+      }
+    ]
+  },
+  "3.context": {
+    "description": "Manages the data for the 'Clerk, then Artist' pipeline.",
+    "data_scaffolding_engine": {
+      "policy": "EXTRACT_ALL_REQUIRED_INPUTS",
+      "targets": [
+        "sender_profile",
+        "recipient_profile",
+        "routing_decision",
+        "job_context"
+      ],
+      "on_missing_data": "HALT_AND_PROMPT"
+    },
+    "pre_flight_file_manifest_check": {
+      "blocking": true,
+      "required_file_manifest": [
+        "SaaS Roles.json"
+      ]
+    }
+  },
+  "4.reasoning": {
+    "description": "The creative 'Artist' phase of the workflow, containing the complete Creative Brief and all AI tuning parameters.",
+    "creative_brief": {
+      "C_LEVEL": {
+        "subject_line": {
+          "word_count": [4, 7],
+          "tone": "peer",
+          "forbidden_phrases": [":", "!", "?"]
+        },
+        "message_body": {
+          "word_count": [190, 230],
+          "jargon_level": "strategic",
+          "focus": "ANALYST_LEVEL_PITCH"
+        },
+        "cta": {
+          "word_count": [15, 20],
+          "tone": "formal_neutral",
+          "strategy": "RELATIONAL_EXPLORATORY"
+        }
+      },
+      "EXECUTIVE": {
+        "subject_line": {
+          "word_count": [5, 8],
+          "tone": "direct"
+        },
+        "message_body": {
+          "word_count": [160, 220],
+          "jargon_level": "business",
+          "focus": "OPERATIONAL_PITCH"
+        },
+        "cta": {
+          "word_count": [15, 20],
+          "tone": "collaborative",
+          "strategy": "STRATEGIC_ALIGNMENT_EXPLORATION"
+        }
+      },
+      "SENIOR_TA": {
+        "subject_line": {
+          "word_count": [6, 9],
+          "tone": "practical"
+        },
+        "message_body": {
+          "word_count": [150, 190],
+          "jargon_level": "layman",
+          "focus": "EXECUTIVE_CANDIDATE_PITCH"
+        },
+        "cta": {
+          "word_count": [10, 15],
+          "tone": "professional_neutral"
+        }
+      },
+      "RECRUITER": {
+        "subject_line": {
+          "word_count": [6, 9],
+          "tone": "respectful"
+        },
+        "message_body": {
+          "word_count": [140, 170],
+          "jargon_level": "layman_with_metrics",
+          "focus": "SKILL_TO_ROLE_MAPPING"
+        },
+        "cta": {
+          "word_count": [10, 15],
+          "tone": "professional_neutral"
+        }
+      }
+    },
+    "hardcoded_config": {
+      "K.1": {
+        "description": "Agentic Recipient & Route Analysis.",
+        "temp": 0.1,
+        "rag_type": "Agentic",
+        "self_consistency": 8,
+        "reflexion": true
+      },
+      "K.2": {
+        "description": "Generates the Subject Line.",
+        "temp": 0.7,
+        "rag_type": "Hybrid",
+        "self_consistency": 6,
+        "reflexion": true
+      },
+      "K.3": {
+        "description": "Generates the Message Body.",
+        "temp": 0.6,
+        "rag_type": "Hybrid",
+        "self_consistency": 6,
+        "reflexion": true
+      },
+      "K.4": {
+        "description": "Generates the Call to Action (CTA).",
+        "temp": 0.5,
+        "rag_type": "Hybrid",
+        "self_consistency": 8,
+        "reflexion": true
+      },
+      "K.5": {
+        "description": "Generates the Signature.",
+        "temp": 0.0,
+        "rag_type": "Internal",
+        "self_consistency": 1,
+        "reflexion": false
+      }
+    }
+  },
+  "5.output": {
+    "description": "The 'Assembler' phase of the workflow.",
+    "assembly_engine": {
+      "policy": "ITERATE_ALL_VALIDATE_AND_RENDER",
+      "steps": [
+        "EXECUTE_K2_SUBJECT",
+        "GENERATE_GREETING",
+        "EXECUTE_K3_BODY",
+        "EXECUTE_K4_CTA",
+        "EXECUTE_K5_SIGNATURE"
+      ],
+      "validation_gates": [
+        {
+          "gate_id": "VG_HALLUCINATION_CHECK",
+          "policy": "VALIDATE_AGAINST_SOURCE_SCAFFOLD"
+        },
+        {
+          "gate_id": "VG_CHAR_LIMIT_CHECK",
+          "policy": "ENFORCE_ROUTE_SPECIFIC_LIMITS"
+        },
+        {
+          "gate_id": "VG_WORD_COUNT_CHECK",
+          "policy": "ENFORCE_ARCHETYPE_SPECIFIC_RANGES"
+        },
+        {
+          "gate_id": "VG_ASCII_HYGIENE",
+          "policy": "SANITIZE_ALL_NON_STANDARD_CHARACTERS"
+        },
+        {
+          "gate_id": "VG_QA_RULES_COMPLIANCE",
+          "policy": "VALIDATE_AGAINST_TOP_20_CRITICAL_QA_RULES"
+        }
+      ]
+    }
+  },
+  "6.conditions": {
+    "description": "The inviolable, hardcoded rules of the new LIC v9.0 architecture.",
+    "critical_rules": [
+      "The 'Artist' (LLM) is forbidden from generating any factual data not present in the scaffold.",
+      "The 'Artist' (LLM) MUST strictly adhere to all constraints defined in the '/4.reasoning/creative_brief' for the classified recipient archetype.",
+      "The workflow MUST halt if the 'Clerk' phase fails to extract a complete and structurally valid data scaffold (recipient profile and route decision)."
+    ],
+    "agentic_rag_hardening_policy": {
+      "name": "Multi-Stage Signal Quality Pipeline",
+      "stages": [
+        {
+          "stage": 1,
+          "name": "Relevance Filtering"
+        },
+        {
+          "stage": 2,
+          "name": "Source Authority Tiering"
+        },
+        {
+          "stage": 3,
+          "name": "Query Enhancement (Conditional)"
+        },
+        {
+          "stage": 4,
+          "name": "Self-Critique Guardrail"
+        }
+      ]
+    }
+  }
+}
