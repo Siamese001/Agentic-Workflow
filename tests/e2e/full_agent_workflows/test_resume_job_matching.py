@@ -6,10 +6,7 @@ All external systems are mocked to ensure deterministic, repeatable tests.
 """
 
 import pytest
-from typing import Dict, Any, List, Optional
-from unittest.mock import Mock, patch, AsyncMock
-import json
-import asyncio
+from unittest.mock import patch
 
 # Mark all tests in this module as end-to-end tests
 pytestmark = [pytest.mark.e2e, pytest.mark.integration]
@@ -21,7 +18,7 @@ class TestResumeJobMatchingWorkflow:
     @patch('l2.execution.execute_workflow_plans')
     @patch('l4.triplet_store.TripletStore')
     @patch('l5.policy.SafetyPolicy')
-    async def test_complete_resume_analysis_workflow(self, mock_safety, mock_memory, mock_execution):
+    async def test_complete_resume_analysis_workflow(self, mock_safety, mock_triplet_store, mock_execution):
         """Test complete workflow: Resume analysis for job matching."""
         
         # Mock L1 Planning output
@@ -61,17 +58,18 @@ class TestResumeJobMatchingWorkflow:
         ]
         
         # Mock L4 Memory operations
-        mock_memory.store_triplets.return_value = True
-        mock_memory.query_knowledge.return_value = {"relevant_skills": ["Python", "Cloud Computing"]}
+        mock_triplet_store.store_triplets.return_value = True
+        mock_triplet_store.query_knowledge.return_value = {"relevant_skills": ["Python", "Cloud Computing"]}
         
         # Mock L5 Safety validation
         mock_safety.validate_input.return_value = {"is_safe": True, "risk_level": "low"}
         mock_safety.validate_output.return_value = {"is_safe": True, "compliant": True}
         
-        # Execute workflow
-        workflow_input = {
-            "job_description": "Senior Software Engineer with Python, AWS, 5+ years experience",
-            "resume_content": "Software Developer with 3 years experience in Python and SQL"
+        # Execute workflow with mocked components
+        mock_execution.execute_step.return_value = {
+            "success": True,
+            "data": {"improved_resume": "Enhanced resume content..."},
+            "tokens": 300
         }
         
         # Simulate L3 orchestration
@@ -144,11 +142,11 @@ class TestResumeJobMatchingWorkflow:
     
     @patch('l2.execution.execute_workflow_plans')
     @patch('l4.triplet_store.TripletStore')
-    async def test_workflow_with_memory_integration(self, mock_memory, mock_execution):
+    async def test_workflow_with_memory_integration(self, mock_triplet_store, mock_execution):
         """Test workflow with L4 memory/knowledge graph integration."""
         
         # Mock memory providing context from previous analyses
-        mock_memory.query_knowledge.return_value = {
+        mock_triplet_store.query_knowledge.return_value = {
             "similar_positions": ["Software Engineer", "Senior Developer"],
             "common_requirements": ["Python", "Cloud Experience", "Problem Solving"],
             "industry_trends": ["Remote work", "Agile methodologies"]
@@ -168,7 +166,7 @@ class TestResumeJobMatchingWorkflow:
         workflow_input = {"job_title": "Software Engineer", "resume": "Resume content..."}
         
         # Query memory for context
-        memory_context = mock_memory.query_knowledge("job_analysis", workflow_input["job_title"])
+        memory_context = mock_triplet_store.query_knowledge("job_analysis", workflow_input["job_title"])
         
         # Execute analysis with memory context
         enhanced_parameters = {
@@ -181,7 +179,7 @@ class TestResumeJobMatchingWorkflow:
         
         # Verify memory integration
         assert result["success"] is True
-        mock_memory.query_knowledge.assert_called_once()
+        mock_triplet_store.query_knowledge.assert_called_once()
         assert "industry_trends" in memory_context
     
     async def test_workflow_error_recovery_and_retry(self):
@@ -216,7 +214,7 @@ class TestResumeJobMatchingWorkflow:
     @patch('l2.execution.execute_workflow_plans')
     @patch('l4.triplet_store.TripletStore')
     @patch('l5.policy.SafetyPolicy')
-    async def test_multi_job_batch_workflow(self, mock_safety, mock_memory, mock_execution):
+    async def test_multi_job_batch_workflow(self, mock_safety, mock_triplet_store, mock_execution):
         """Test workflow processing multiple jobs in batch."""
         
         # Mock batch input
@@ -235,7 +233,7 @@ class TestResumeJobMatchingWorkflow:
         
         # Mock safety and memory
         mock_safety.validate_input.return_value = {"is_safe": True, "risk_level": "low"}
-        mock_memory.store_triplets.return_value = True
+        mock_triplet_store.store_triplets.return_value = True
         
         # Execute batch workflow
         batch_results = []
@@ -251,12 +249,12 @@ class TestResumeJobMatchingWorkflow:
             batch_results.append(result)
             
             # Store results in memory
-            mock_memory.store_triplets(f"job_analysis_{job['job_id']}", result)
+            mock_triplet_store.store_triplets(f"job_analysis_{job['job_id']}", result)
         
         # Verify batch processing
         assert len(batch_results) == 3
         assert all(result["success"] for result in batch_results)
-        assert mock_memory.store_triplets.call_count == 3
+        assert mock_triplet_store.store_triplets.call_count == 3
         
         # Verify job isolation
         job_ids = [result["job_id"] for result in batch_results]
@@ -264,16 +262,6 @@ class TestResumeJobMatchingWorkflow:
     
     async def test_workflow_with_conditional_branching(self):
         """Test workflow with conditional branching based on analysis results."""
-        
-        # Mock workflow with conditional logic
-        workflow_definition = {
-            "steps": [
-                {"step_id": "analyze_experience", "condition": None},
-                {"step_id": "senior_path", "condition": "experience_years >= 5"},
-                {"step_id": "junior_path", "condition": "experience_years < 5"},
-                {"step_id": "generate_output", "condition": None}
-            ]
-        }
         
         # Test different experience levels
         test_cases = [
@@ -334,7 +322,6 @@ class TestWorkflowPerformanceAndScaling:
         
         # Verify timing tracking
         assert total_time > 0
-        total_expected = sum(layer_times.values())
         
         # Create performance report
         performance_report = {
