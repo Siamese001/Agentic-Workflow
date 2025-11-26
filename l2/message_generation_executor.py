@@ -1,10 +1,4 @@
-"""
-L2 Message Generation Executor for outreach workflows.
-
-Executes message generation operations using DI-resolved infrastructure.
-Applies temperature schedules from L1 MessagePlan.
-No L1 imports, no L3 orchestration, no DI container calls.
-"""
+"""Executes message generation to create high-impact executive outreach with archetype-specific temperature control."""
 
 from __future__ import annotations
 
@@ -16,7 +10,7 @@ from l4.schema.outreach_schema import OutreachRAGResult
 
 @dataclass
 class MessageSection:
-    """Generated message section with metadata."""
+    """Captures generated section with temperature control for executive message optimization."""
     name: str
     content: str
     temperature_used: float
@@ -26,7 +20,7 @@ class MessageSection:
 
 @dataclass
 class MessageResult:
-    """Result of message generation execution."""
+    """Contains generated executive message with temperature schedule and evidence sources."""
     message: str
     sections: Dict[str, MessageSection]
     temperature_schedule: Dict[str, float]
@@ -38,7 +32,7 @@ class MessageResult:
 
 @dataclass
 class GenerationContext:
-    """Context for message generation execution."""
+    """Provides generation context with archetype parameters for executive message optimization."""
     mission_id: str
     archetype: str
     target_role: str
@@ -50,22 +44,10 @@ class GenerationContext:
 
 
 class MessageGenerationExecutor:
-    """
-    L2 executor for message generation in outreach workflows.
-    
-    Executes message generation using runtime LLM client pattern.
-    Applies temperature schedules from L1 MessagePlan exactly.
-    Safety validation occurs AFTER generation via ctx.safety_engine.
-    Does not contain L1 planning logic or L3 orchestration.
-    """
+    """Executes message generation with archetype-specific temperature control to maximize executive reply rates."""
     
     def __init__(self, llm_caller: Any):
-        """
-        Initialize message generation executor with DI-provided LLM caller.
-        
-        Args:
-            llm_caller: Runtime LLM client (LLMCaller from l2.llm_caller)
-        """
+        """Initializes executor with LLM client for archetype-optimized message generation."""
         self.llm_caller = llm_caller
     
     def generate_message(
@@ -74,8 +56,7 @@ class MessageGenerationExecutor:
         ctx: GenerationContext,
         research_data: List[OutreachRAGResult]
     ) -> MessageResult:
-        """
-        Generate complete message from L1 MessagePlan.
+        """Generates high-impact executive message using archetype-specific temperature control."""
         
         Args:
             message_plan: MessagePlan dict with section plans and temperature schedule
@@ -85,7 +66,7 @@ class MessageGenerationExecutor:
         Returns:
             MessageResult with generated message and metadata
         """
-        # Extract temperature schedule from plan
+        # HSON: Extracts archetype-specific temperature schedule → matches executive cognitive patterns
         temperature_schedule = message_plan.get("temperature_schedule", {})
         
         # Extract section plans
@@ -95,13 +76,13 @@ class MessageGenerationExecutor:
         cta_plan = message_plan.get("cta_plan", "")
         signature_plan = message_plan.get("signature_plan", "")
         
-        # Select signals to use (top signal candidates)
+        # HSON: Selects high-signal evidence → strengthens executive message credibility
         signals_used = self._select_signals(research_data)
         
         # Build signal context for prompts
         signal_context = self._build_signal_context(signals_used)
         
-        # Generate each section with appropriate temperature
+        # HSON: Generates sections with archetype-specific temperatures → optimizes executive engagement
         sections: Dict[str, MessageSection] = {}
         
         # Generate subject
