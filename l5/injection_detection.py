@@ -1,7 +1,7 @@
-"""Security Injection Detection for L5 Safety Layer
+"""
+L5 injection detection for resume job alignment workflows.
 
-Extends L5 safety to detect and prevent prompt injection, indirection injection,
-tool injection, and state injection attacks.
+Detects and prevents injection attacks for resume enhancement processing.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 class InjectionType(str, Enum):
-    """Types of injection attacks to detect."""
+    """Types of injection attacks for resume workflow safety."""
     
     PROMPT_INJECTION = "prompt_injection"
     INDIRECTION_INJECTION = "indirection_injection"
@@ -30,7 +30,7 @@ class InjectionType(str, Enum):
 
 @dataclass
 class InjectionPattern:
-    """Pattern for detecting injection attacks."""
+    """Pattern for detecting resume workflow injection attacks."""
     
     injection_type: InjectionType
     pattern: str
@@ -40,7 +40,7 @@ class InjectionPattern:
 
 
 class InjectionDetector:
-    """Detects various types of injection attacks in prompts and data."""
+    """Detects injection attacks in resume workflow prompts and data."""
     
     # Prompt injection patterns
     PROMPT_INJECTION_PATTERNS = [
@@ -147,7 +147,7 @@ class InjectionDetector:
     ]
     
     def __init__(self):
-        """Initialize the injection detector."""
+        """Initializes resume workflow injection detector for enhancement."""
         self.all_patterns = (
             self.PROMPT_INJECTION_PATTERNS +
             self.INDIRECTION_PATTERNS +
@@ -157,16 +157,7 @@ class InjectionDetector:
         )
     
     def detect_injections(self, content: str, context: SafetyContext) -> List[SafetyFinding]:
-        """
-        Detect injection attacks in the provided content.
-        
-        Args:
-            content: Content to analyze
-            context: Safety context for the analysis
-            
-        Returns:
-            List of safety findings for detected injections
-        """
+        """Detects injection attacks in resume workflow content for enhancement."""
         findings: List[SafetyFinding] = []
         
         for pattern in self.all_patterns:

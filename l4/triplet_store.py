@@ -1,20 +1,7 @@
 """
-Triplet store for résumé processing knowledge graph management.
+L4 triplet store for resume job alignment workflows.
 
-Implements triplet (subject, predicate, object) storage for temporal knowledge graph systems supporting résumé enhancement workflows.
-
-Layer: L4 (State & Memory)
-Responsibilities:
-- Store and retrieve triplets for résumé processing data
-- Index triplets for efficient querying in résumé enhancement workflows
-- Support temporal validity ranges for accurate résumé information
-- Provide entity-centric views for résumé knowledge graph operations
-
-Non-responsibilities:
-- Triplet extraction from text (L2)
-- Query planning (L1)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Implements subject-predicate-object storage for resume enhancement processing.
 """
 
 from __future__ import annotations
@@ -27,14 +14,14 @@ import hashlib
 
 
 class TemporalType(str, Enum):
-    """Temporal classification of facts for résumé processing knowledge graphs."""
+    """Temporal classification of facts for resume job alignment workflows."""
     STATIC = "static"          # Unchanging facts (e.g., birthdate)
     DYNAMIC = "dynamic"        # Time-varying facts (e.g., current job)
     ATEMPORAL = "atemporal"    # Facts without temporal dimension
 
 
 class TripletStatus(str, Enum):
-    """Status of a triplet in résumé processing knowledge graph."""
+    """Status of triplet in resume job alignment workflow."""
     ACTIVE = "active"
     INVALIDATED = "invalidated"
     SUPERSEDED = "superseded"
@@ -44,9 +31,9 @@ class TripletStatus(str, Enum):
 @dataclass
 class Triplet:
     """
-    Knowledge graph triplet with temporal metadata for résumé processing.
+    Knowledge graph triplet for resume job alignment workflows.
     
-    Represents structured facts extracted from résumé enhancement workflows.
+    Represents structured facts for resume enhancement processing.
     """
     
     id: str
@@ -74,11 +61,11 @@ class Triplet:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_text(self) -> str:
-        """Convert résumé processing triplet to natural language for display."""
+        """Converts resume workflow triplet to natural language for display."""
         return f"{self.subject} {self.predicate} {self.object}"
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert résumé processing triplet to dictionary for persistent storage."""
+        """Converts resume workflow triplet to storage format for processing."""
         return {
             "id": self.id,
             "subject": self.subject,
@@ -99,7 +86,7 @@ class Triplet:
     
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Triplet":
-        """Create triplet from dictionary."""
+        """Creates resume workflow triplet from storage dictionary."""
         return cls(
             id=data["id"],
             subject=data["subject"],
@@ -121,7 +108,7 @@ class Triplet:
 
 @dataclass
 class TripletQuery:
-    """Query specification for résumé processing triplet retrieval."""
+    """Query specification for resume workflow triplet retrieval."""
     
     subject: Optional[str] = None
     predicate: Optional[str] = None
@@ -142,17 +129,13 @@ class TripletQuery:
 
 class TripletStore:
     """
-    In-memory triplet store with indexing for résumé processing workflows.
+    In-memory triplet store for resume job alignment workflows.
     
-    Maintains efficient indexes for résumé enhancement querying:
-    - Subject index: subject -> list of triplet IDs
-    - Predicate index: predicate -> list of triplet IDs
-    - Object index: object -> list of triplet IDs
-    - SPO index: (subject, predicate) -> list of objects
+    Maintains efficient indexes for resume enhancement querying.
     """
     
     def __init__(self):
-        """Initialize empty résumé processing triplet store."""
+        """Initializes empty resume workflow triplet store."""
         self._triplets: Dict[str, Triplet] = {}
         self._subject_index: Dict[str, Set[str]] = {}
         self._predicate_index: Dict[str, Set[str]] = {}
@@ -160,14 +143,7 @@ class TripletStore:
         self._spo_index: Dict[Tuple[str, str], Set[str]] = {}
     
     def add_triplet(self, triplet: Triplet) -> str:
-        """Add a résumé processing triplet to the store.
-        
-        Args:
-            triplet: Triplet to add for résumé enhancement workflows
-            
-        Returns:
-            Triplet ID for résumé processing reference
-        """
+        """Adds resume workflow triplet to the store for enhancement processing."""
         # Store triplet
         self._triplets[triplet.id] = triplet
         
@@ -184,36 +160,15 @@ class TripletStore:
         return triplet.id
     
     def add_triplets(self, triplets: List[Triplet]) -> List[str]:
-        """Add multiple résumé processing triplets in batch.
-        
-        Args:
-            triplets: List of triplets to add for résumé enhancement workflows
-            
-        Returns:
-            List of triplet IDs for résumé processing reference
-        """
+        """Adds multiple resume workflow triplets in batch for processing."""
         return [self.add_triplet(t) for t in triplets]
     
     def get_triplet(self, triplet_id: str) -> Optional[Triplet]:
-        """Get a résumé processing triplet by ID.
-        
-        Args:
-            triplet_id: Triplet ID for résumé processing reference
-            
-        Returns:
-            Triplet if found, None otherwise
-        """
+        """Gets resume workflow triplet by ID for enhancement processing."""
         return self._triplets.get(triplet_id)
     
     def query(self, query: TripletQuery) -> List[Triplet]:
-        """Query résumé processing triplets matching the specification.
-        
-        Args:
-            query: Query specification for résumé enhancement workflows
-            
-        Returns:
-            List of matching résumé processing triplets
-        """
+        """Queries resume workflow triplets matching specification for enhancement."""
         # Start with candidate set
         candidates: Optional[Set[str]] = None
         
@@ -268,15 +223,7 @@ class TripletStore:
         subject: str,
         predicate: str,
     ) -> Set[str]:
-        """Get all objects for résumé processing subject-predicate pair.
-        
-        Args:
-            subject: Subject entity for résumé enhancement workflows
-            predicate: Predicate/relation for résumé processing
-            
-        Returns:
-            Set of object values for résumé processing queries
-        """
+        """Gets all objects for resume workflow subject-predicate pair."""
         return self._spo_index.get((subject, predicate), set()).copy()
     
     def get_subjects_for_predicate_object(
@@ -284,15 +231,7 @@ class TripletStore:
         predicate: str,
         obj: str,
     ) -> List[str]:
-        """Get all subjects that have résumé processing predicate pointing to object.
-        
-        Args:
-            predicate: Predicate/relation for résumé enhancement workflows
-            obj: Object value for résumé processing queries
-            
-        Returns:
-            List of subject entities for résumé processing
-        """
+        """Gets all subjects with resume workflow predicate pointing to object."""
         results = []
         for triplet in self._triplets.values():
             if (triplet.predicate == predicate and 
@@ -307,16 +246,7 @@ class TripletStore:
         reason: str,
         invalidated_by: Optional[str] = None,
     ) -> bool:
-        """Mark a résumé processing triplet as invalidated.
-        
-        Args:
-            triplet_id: ID of résumé processing triplet to invalidate
-            reason: Reason for invalidation in résumé enhancement workflows
-            invalidated_by: ID of superseding triplet for résumé processing (if any)
-            
-        Returns:
-            True if résumé processing triplet was found and invalidated
-        """
+        """Marks resume workflow triplet as invalidated for enhancement processing."""
         triplet = self._triplets.get(triplet_id)
         if triplet is None:
             return False
@@ -334,16 +264,7 @@ class TripletStore:
         new_triplet: Triplet,
         reason: str = "updated",
     ) -> str:
-        """Replace an old triplet with a new one.
-        
-        Args:
-            old_triplet_id: ID of triplet to supersede
-            new_triplet: New triplet
-            reason: Reason for supersession
-            
-        Returns:
-            ID of new triplet
-        """
+        """Replaces old resume workflow triplet with new one for enhancement."""
         # Mark old triplet as superseded
         old_triplet = self._triplets.get(old_triplet_id)
         if old_triplet:
@@ -356,7 +277,7 @@ class TripletStore:
         return self.add_triplet(new_triplet)
     
     def get_entity_triplets(self, entity: str) -> List[Triplet]:
-        """Get all triplets involving an entity (as subject or object).
+        """Gets all resume workflow triplets involving entity for enhancement."""
         
         Args:
             entity: Entity identifier
@@ -375,21 +296,14 @@ class TripletStore:
         ]
     
     def count(self, include_invalidated: bool = False) -> int:
-        """Get count of triplets in store.
-        
-        Args:
-            include_invalidated: Whether to include invalidated triplets
-            
-        Returns:
-            Count of triplets
-        """
+        """Gets count of resume workflow triplets in store for enhancement."""
         if include_invalidated:
             return len(self._triplets)
         return sum(1 for t in self._triplets.values() if t.status == TripletStatus.ACTIVE)
     
     @staticmethod
     def _add_to_index(index: Dict[str, Set[str]], key: str, value: str) -> None:
-        """Add a value to an index."""
+        """Adds value to resume workflow index for enhancement processing."""
         if key not in index:
             index[key] = set()
         index[key].add(value)
@@ -409,21 +323,7 @@ def create_triplet(
     valid_from: Optional[datetime] = None,
     metadata: Optional[Dict[str, Any]] = None,
 ) -> Triplet:
-    """Create a new résumé processing triplet with auto-generated ID.
-    
-    Args:
-        subject: Subject entity for résumé enhancement workflows
-        predicate: Predicate/relation for résumé processing
-        obj: Object value for résumé processing queries
-        temporal_type: Temporal classification for résumé processing facts
-        confidence: Confidence score for résumé enhancement workflows
-        source: Source of résumé processing extraction
-        valid_from: Validity start time for accurate résumé information
-        metadata: Additional metadata for résumé processing context
-        
-    Returns:
-        Created résumé processing triplet with unique ID
-    """
+    """Creates new resume workflow triplet with auto-generated ID for enhancement."""
     # Generate deterministic ID
     id_input = f"{subject}|{predicate}|{obj}|{datetime.now(UTC).isoformat()}"
     triplet_id = hashlib.sha256(id_input.encode()).hexdigest()[:16]

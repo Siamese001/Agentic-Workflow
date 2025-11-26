@@ -1,20 +1,8 @@
 """
-Execution layer for résumé processing workflow orchestration.
+Execution layer for resume processing workflow orchestration.
 
-Provides technical execution functions that bridge planning to actual LLM execution for résumé enhancement operations.
-
-Layer: L2 (Execution)
-Responsibilities:
-- Execute strategy, RAG, drafting, QA, safety tasks for résumé processing
-- Invoke cognitive agents with proper context for résumé improvement
-- Handle execution errors and retries in résumé enhancement workflows
-- Return structured L2 results for comprehensive résumé operations
-
-Non-responsibilities:
-- Planning (L1)
-- Orchestration/DAG (L3)
-- State management (L4)
-- Policy enforcement (L5)
+Provides technical execution functions that bridge planning to actual
+LLM execution for resume enhancement and job alignment.
 """
 
 from __future__ import annotations

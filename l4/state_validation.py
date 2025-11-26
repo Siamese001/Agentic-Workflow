@@ -1,7 +1,7 @@
 """
-State validation for secure résumé processing workflows.
+L4 state validation for resume job alignment workflows.
 
-Prevents injection attacks and ensures safe state management for reliable résumé improvement.
+Prevents injection attacks for safe resume enhancement processing.
 """
 
 from __future__ import annotations
@@ -19,9 +19,9 @@ logger = logging.getLogger(__name__)
 
 class ValidationLevel(str, Enum):
     """
-    Defines security validation levels for résumé state data.
+    Security validation levels for resume workflow state data.
     
-    Ensures appropriate protection based on résumé processing sensitivity requirements.
+    Ensures appropriate protection for resume job alignment processing.
     """
     
     NONE = "none"
@@ -33,9 +33,9 @@ class ValidationLevel(str, Enum):
 @dataclass
 class ValidationRule:
     """
-    Configures validation rules for résumé state security.
+    Configures validation rules for resume workflow state security.
     
-    Protects résumé data integrity through comprehensive validation patterns.
+    Protects resume data integrity for job alignment processing.
     """
     
     name: str
@@ -49,9 +49,9 @@ class ValidationRule:
 
 class StateValidator:
     """
-    Validates résumé state data to prevent security vulnerabilities.
+    Validates resume workflow state data for job alignment security.
     
-    Ensures safe and reliable résumé processing through comprehensive validation checks.
+    Ensures safe resume enhancement processing through validation checks.
     """
     
     # Basic validation rules
@@ -104,20 +104,12 @@ class StateValidator:
     ]
     
     def __init__(self, validation_level: ValidationLevel = ValidationLevel.STRICT):
-        """
-        Initializes state validator for résumé security protection.
-        
-        Configures validation rules based on résumé processing security requirements.
-        """
+        """Initializes resume workflow state validator for job alignment."""
         self.validation_level = validation_level
         self.rules = self._get_rules_for_level(validation_level)
     
     def _get_rules_for_level(self, level: ValidationLevel) -> List[ValidationRule]:
-        """
-        Retrieves validation rules for résumé security level.
-        
-        Ensures appropriate protection based on résumé processing sensitivity requirements.
-        """
+        """Retrieves validation rules for resume workflow security level."""
         if level == ValidationLevel.NONE:
             return []
         elif level == ValidationLevel.BASIC:
@@ -129,12 +121,8 @@ class StateValidator:
         else:
             return self.BASIC_RULES
     
-    def validate_state_write(self, key: str, value: Any) -> None:
-        """
-        Validates résumé state write operations for security protection.
-        
-        Prevents injection attacks to ensure safe résumé processing workflows.
-        """
+    def validate_write(self, key: str, value: Any) -> None:
+        """Validates resume workflow state write operations for security."""
         # Check key validation
         self._validate_key(key)
         
@@ -149,11 +137,7 @@ class StateValidator:
             self._validate_dataclass(key, value)
     
     def _validate_key(self, key: str) -> None:
-        """
-        Validates résumé state keys for injection security.
-        
-        Ensures safe key naming to prevent résumé processing vulnerabilities.
-        """
+        """Validates resume workflow state keys for injection security."""
         # Check for forbidden characters in keys
         forbidden_chars = [';', '&', '|', '`', '$', '(', ')']
         for char in forbidden_chars:
@@ -176,11 +160,7 @@ class StateValidator:
                 )
     
     def _validate_value(self, key: str, value: Any) -> None:
-        """
-        Validates résumé state values for type and size constraints.
-        
-        Ensures data integrity and security for reliable résumé processing workflows.
-        """
+        """Validates resume workflow state values for type and size constraints."""
         # Check value size
         if isinstance(value, str):
             for rule in self.rules:
@@ -206,11 +186,7 @@ class StateValidator:
                 self.validate_state_write(f"{key}[{i}]", item)
     
     def _check_patterns(self, key: str, value: Any) -> None:
-        """
-        Checks résumé state values against security patterns.
-        
-        Detects and blocks suspicious content to protect résumé processing integrity.
-        """
+        """Checks resume workflow state values against security patterns."""
         if not isinstance(value, str):
             return
         
@@ -221,11 +197,7 @@ class StateValidator:
                 )
     
     def _validate_dataclass(self, key: str, value: Any) -> None:
-        """
-        Validates résumé dataclass structures for security compliance.
-        
-        Ensures structured data integrity for reliable résumé processing workflows.
-        """
+        """Validates resume workflow dataclass structures for security compliance."""
         if not is_dataclass(value):
             return
         
@@ -238,15 +210,7 @@ class StateValidator:
                 )
     
     def sanitize_input(self, value: Any) -> Any:
-        """
-        Sanitize input value to remove potentially harmful content.
-        
-        Args:
-            value: Value to sanitize
-            
-        Returns:
-            Sanitized value
-        """
+        """Sanitizes input value for resume workflow security processing."""
         if not isinstance(value, str):
             return value
         
@@ -272,7 +236,7 @@ class StateValidator:
 
 @dataclass
 class SecureStateManagerConfig:
-    """Configuration for secure state manager."""
+    """Configuration for resume workflow secure state manager."""
     
     validation_level: ValidationLevel = ValidationLevel.STRICT
     enable_sanitization: bool = True
@@ -281,7 +245,7 @@ class SecureStateManagerConfig:
 
 
 def create_state_validator(config: SecureStateManagerConfig) -> StateValidator:
-    """Create a state validator with the given configuration."""
+    """Creates resume workflow state validator with configuration."""
     return StateValidator(config.validation_level)
 
 

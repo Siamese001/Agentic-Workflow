@@ -1,20 +1,8 @@
 """
-Temporal fact invalidation executor for résumé processing workflows.
+Temporal fact invalidation executor for resume processing workflows.
 
-Implements L2 executor for detecting and marking outdated or contradictory facts in résumé enhancement operations.
-
-Layer: L2 (Execution)
-Responsibilities:
-- Execute invalidation checks based on L1 plans for résumé fact management
-- Detect contradictory facts in résumé processing data
-- Mark facts as invalidated for accurate résumé enhancement
-- Return invalidation results for workflow coordination
-
-Non-responsibilities:
-- Invalidation planning (L1)
-- State storage (L4)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Detects and marks outdated or contradictory facts in resume
+enhancement operations for accurate job alignment.
 """
 
 from __future__ import annotations
@@ -28,7 +16,7 @@ from l4.triplet_store import Triplet, TripletStore, TripletStatus, TripletQuery
 
 
 class InvalidationReason(str, Enum):
-    """Reasons for fact invalidation in résumé processing workflows."""
+    """Reasons for resume fact invalidation in job alignment workflows."""
     SUPERSEDED = "superseded"           # Replaced by newer fact
     CONTRADICTED = "contradicted"       # Contradicts another fact
     EXPIRED = "expired"                 # Temporal validity expired
@@ -39,7 +27,7 @@ class InvalidationReason(str, Enum):
 
 @dataclass
 class InvalidationRule:
-    """Rule for automatic invalidation in résumé processing fact management."""
+    """Rule for automatic resume fact invalidation in job alignment."""
     
     id: str
     name: str
@@ -67,7 +55,7 @@ class InvalidationRule:
 
 @dataclass
 class InvalidationResult:
-    """Result of invalidation check for résumé processing fact management."""
+    """Result of invalidation check for resume fact management."""
     
     triplet_id: str
     invalidated: bool
@@ -78,7 +66,7 @@ class InvalidationResult:
 
 @dataclass
 class InvalidationPlan:
-    """Plan for invalidation execution in résumé processing workflows (from L1)."""
+    """Plan for invalidation execution in resume processing workflows."""
     
     target_subject: Optional[str] = None
     target_predicate: Optional[str] = None
@@ -91,23 +79,23 @@ class InvalidationPlan:
 
 class InvalidationExecutor:
     """
-    Executor for fact invalidation in résumé processing workflows.
-    
-    Checks triplets against invalidation rules and marks outdated or contradictory facts for accurate résumé enhancement.
+    Executor for resume fact invalidation in job alignment workflows.
+
+    Checks and marks outdated or contradictory facts for accurate resume enhancement.
     """
     
     def __init__(self, triplet_store: TripletStore):
         """
-        Initializes invalidation executor for résumé processing fact management.
-        
+        Initializes resume fact invalidation executor for job alignment.
+
         Args:
-            triplet_store: L4 TripletStore instance for résumé workflow coordination
+            triplet_store: L4 TripletStore for resume workflow coordination
         """
         self.store = triplet_store
         self._default_rules = self._build_default_rules()
     
     def _build_default_rules(self) -> List[InvalidationRule]:
-        """Build default invalidation rules."""
+        """Builds default invalidation rules for resume fact management."""
         return [
             # Current employment supersedes past employment
             InvalidationRule(
@@ -143,13 +131,9 @@ class InvalidationExecutor:
         ]
     
     def execute(self, plan: InvalidationPlan) -> List[InvalidationResult]:
-        """Execute invalidation based on plan.
-        
-        Args:
-            plan: Invalidation plan from L1
-            
-        Returns:
-            List of invalidation results
+        """Executes resume fact invalidation based on plan.
+
+        Returns invalidation results for accurate resume job alignment.
         """
         results: List[InvalidationResult] = []
         
@@ -184,15 +168,9 @@ class InvalidationExecutor:
         rules: List[InvalidationRule],
         plan: InvalidationPlan,
     ) -> InvalidationResult:
-        """Check a single triplet for invalidation.
-        
-        Args:
-            triplet: Triplet to check
-            rules: Invalidation rules
-            plan: Invalidation plan
-            
-        Returns:
-            Invalidation result
+        """Checks single resume triplet for invalidation.
+
+        Returns invalidation result for resume job alignment accuracy.
         """
         # Check rule-based invalidation
         for rule in rules:
@@ -265,14 +243,9 @@ class InvalidationExecutor:
         triplet: Triplet,
         supersession_predicates: List[str],
     ) -> Optional[Triplet]:
-        """Find a triplet that supersedes the given triplet.
-        
-        Args:
-            triplet: Triplet to check
-            supersession_predicates: Predicates that would supersede
-            
-        Returns:
-            Superseding triplet or None
+        """Finds resume triplet that supersedes the given triplet.
+
+        Returns superseding triplet for resume job alignment accuracy.
         """
         for predicate in supersession_predicates:
             query = TripletQuery(
@@ -290,17 +263,9 @@ class InvalidationExecutor:
         return None
     
     def _find_contradiction(self, triplet: Triplet) -> Optional[Triplet]:
-        """Find a triplet that contradicts the given triplet.
-        
-        Contradiction detection is based on:
-        - Same subject and predicate but different object (for single-value predicates)
-        - Mutually exclusive predicates
-        
-        Args:
-            triplet: Triplet to check
-            
-        Returns:
-            Contradicting triplet or None
+        """Finds resume triplet that contradicts the given triplet.
+
+        Detects conflicts for resume job alignment accuracy.
         """
         # Single-value predicates (only one can be true at a time)
         single_value_predicates = {
@@ -360,15 +325,9 @@ class InvalidationExecutor:
         reason: InvalidationReason = InvalidationReason.MANUAL,
         details: Optional[Dict[str, Any]] = None,
     ) -> List[InvalidationResult]:
-        """Invalidate all triplets for a subject.
-        
-        Args:
-            subject: Subject entity
-            reason: Invalidation reason
-            details: Additional details
-            
-        Returns:
-            List of invalidation results
+        """Invalidates all resume triplets for a subject entity.
+
+        Returns invalidation results for resume job alignment cleanup.
         """
         query = TripletQuery(subject=subject, include_invalidated=False)
         triplets = self.store.query(query)
@@ -396,16 +355,9 @@ def create_invalidation_plan(
     max_age_days: int = 365,
     custom_rules: Optional[List[InvalidationRule]] = None,
 ) -> InvalidationPlan:
-    """Create an invalidation plan.
-    
-    Args:
-        target_subject: Optional subject filter
-        target_predicate: Optional predicate filter
-        max_age_days: Maximum age for facts
-        custom_rules: Additional custom rules
-        
-    Returns:
-        InvalidationPlan
+    """Creates invalidation plan for resume fact management.
+
+    Configures fact invalidation for resume job alignment accuracy.
     """
     return InvalidationPlan(
         target_subject=target_subject,

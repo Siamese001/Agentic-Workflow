@@ -1,4 +1,8 @@
-"""L3 QA Orchestrator - Pure orchestration only."""
+"""
+L3 QA orchestrator for resume job alignment workflows.
+
+Coordinates QA planning and execution for resume enhancement.
+"""
 
 from typing import Any
 from l1.qa_planning import plan_qa
@@ -6,13 +10,13 @@ from l2.qa_executor import QAExecutor
 from runtime.observability import record_event
 
 class QAOrchestrator:
-    """Pure orchestration - no planning, no execution logic."""
+    """Pure orchestration for resume QA job alignment workflows."""
     
     def __init__(self, qa_executor: QAExecutor):
         self.qa_executor = qa_executor
     
     def orchestrate_qa(self, draft: Any, job: Any, resume: Any) -> str:
-        """Orchestrate QA workflow - pure control flow only."""
+        """Orchestrates resume QA workflow for job alignment processing."""
         record_event("qa_orchestration_start", {})
         
         # L1: Pure planning

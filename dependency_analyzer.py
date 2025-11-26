@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-Dependency analyzer for Agentic Workflow reorganization.
-Builds a comprehensive import dependency graph to identify circular dependencies
- and plan safe migration phases.
+Analyzes code dependencies to maintain clean resume generation architecture.
+
+Ensures the resume generation system remains modular and maintainable,
+which improves code quality and enables easier enhancements to resume output.
 """
 
 import ast
@@ -14,7 +15,11 @@ import json
 
 
 class ImportVisitor(ast.NodeVisitor):
-    """AST visitor to extract import statements from Python files."""
+    """Extracts import statements from Python files using AST traversal.
+
+    Helps maintain clean module dependencies which ensures resume generation
+    code remains organized and easier to enhance over time.
+    """
     
     def __init__(self, filepath: Path, root_dir: Path):
         self.filepath = filepath
@@ -23,13 +28,21 @@ class ImportVisitor(ast.NodeVisitor):
         self.relative_imports = set()
         
     def visit_Import(self, node):
-        """Handle 'import module' statements."""
+        """Processes direct import statements for dependency tracking.
+
+        Ensures resume generation modules maintain clean import relationships
+        for better code organization and maintainability.
+        """
         for alias in node.names:
             self.imports.add(alias.name)
         self.generic_visit(node)
         
     def visit_ImportFrom(self, node):
-        """Handle 'from module import name' statements."""
+        """Processes from-import statements for dependency mapping.
+
+        Tracks module relationships to ensure resume generation code
+        maintains proper separation of concerns and clarity.
+        """
         if node.module:
             # Handle relative imports
             if node.level > 0:
@@ -46,7 +59,11 @@ class ImportVisitor(ast.NodeVisitor):
 
 
 class DependencyAnalyzer:
-    """Analyzes Python import dependencies across the codebase."""
+    """Analyzes import dependencies to maintain clean code architecture.
+
+    Ensures resume generation system remains modular and maintainable,
+    which improves code quality and enables easier enhancements.
+    """
     
     def __init__(self, root_dir: Path):
         self.root_dir = root_dir
@@ -57,7 +74,11 @@ class DependencyAnalyzer:
         self.circular_dependencies = []
         
     def get_module_name(self, filepath: Path) -> str:
-        """Convert filepath to module name."""
+        """Converts file paths to module names for dependency tracking.
+
+        Ensures resume generation modules can be properly identified
+        and analyzed for architectural improvements.
+        """
         relative_path = filepath.relative_to(self.root_dir)
         parts = list(relative_path.parts)
         if parts[-1] == '__init__.py':
@@ -67,7 +88,11 @@ class DependencyAnalyzer:
         return '.'.join(parts) if parts else ''
         
     def resolve_import_path(self, import_name: str, source_file: Path) -> Optional[str]:
-        """Resolve import name to actual module path in the codebase."""
+        """Resolves import names to actual module paths in the codebase.
+
+        Ensures resume generation modules maintain clean import relationships
+        for better code organization and easier maintenance.
+        """
         # Try direct resolution
         import_path_str = '/'.join(import_name.split('.'))
         potential_paths = [
@@ -96,7 +121,11 @@ class DependencyAnalyzer:
         return None
         
     def analyze_file(self, filepath: Path) -> List[str]:
-        """Analyze a single Python file for imports."""
+        """Analyzes a single Python file for import dependencies.
+
+        Ensures resume generation modules maintain clean architecture
+        for better code organization and easier enhancements.
+        """
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
@@ -125,7 +154,11 @@ class DependencyAnalyzer:
             return []
             
     def find_circular_dependencies(self) -> List[List[str]]:
-        """Find circular dependencies using DFS."""
+        """Finds circular dependencies using depth-first search traversal.
+
+        Identifies problematic import cycles that could affect resume
+        generation code maintainability and clarity.
+        """
         visited = set()
         rec_stack = set()
         cycles = []
@@ -157,7 +190,11 @@ class DependencyAnalyzer:
         return cycles
         
     def analyze(self) -> Dict:
-        """Analyze the entire codebase."""
+        """Analyzes the entire codebase for dependency relationships.
+
+        Ensures resume generation system maintains clean architecture
+        for improved code quality and easier maintenance.
+        """
         print("Analyzing Python files...")
         
         # Find all Python files
@@ -190,7 +227,11 @@ class DependencyAnalyzer:
         return self.generate_report()
         
     def generate_report(self) -> Dict:
-        """Generate a comprehensive dependency report."""
+        """Generates a comprehensive dependency report for code analysis.
+
+        Provides insights into module relationships to ensure resume
+        generation code remains organized and maintainable.
+        """
         report = {
             'summary': {
                 'total_modules': len(self.module_files),
@@ -229,13 +270,21 @@ class DependencyAnalyzer:
         return report
         
     def save_report(self, report: Dict, output_path: Path):
-        """Save the dependency report to a JSON file."""
+        """Saves the dependency report to a JSON file for analysis.
+
+        Preserves architectural insights to help maintain resume
+        generation code quality and organization over time.
+        """
         with open(output_path, 'w', encoding='utf-8') as f:
             json.dump(report, f, indent=2, default=str)
         print(f"Dependency report saved to {output_path}")
         
     def print_summary(self, report: Dict):
-        """Print a summary of the dependency analysis."""
+        """Prints a summary of the dependency analysis results.
+
+        Displays key insights about code architecture to help maintain
+        resume generation system organization and quality.
+        """
         summary = report['summary']
         print(f"\n=== DEPENDENCY ANALYSIS SUMMARY ===")
         print(f"Total modules: {summary['total_modules']}")
@@ -262,7 +311,11 @@ class DependencyAnalyzer:
 
 
 def main():
-    """Run the dependency analyzer."""
+    """Runs the dependency analyzer to ensure clean code architecture.
+
+    Maintains resume generation system organization for improved
+    code quality and easier future enhancements.
+    """
     root_dir = Path(__file__).parent
     analyzer = DependencyAnalyzer(root_dir)
     

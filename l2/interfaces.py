@@ -1,20 +1,7 @@
-"""L2 Interfaces - Execution Layer
+"""L2 Interfaces for resume processing execution layer.
 
-This module defines abstract interfaces for all L2 execution operations.
-All L2 implementations must inherit from these interfaces.
-
-Layer: L2 (Execution)
-Responsibilities:
-- Tool execution and API calls
-- LLM model invocation
-- Data retrieval and processing
-- External service interactions
-
-Non-responsibilities:
-- Planning (L1)
-- Orchestration (L3)
-- State management (L4)
-- Safety/policy decisions (L5)
+Defines abstract interfaces for L2 execution operations to ensure
+consistent resume improvement and job alignment workflows.
 """
 
 from __future__ import annotations
@@ -37,7 +24,11 @@ from core.models.models import (
 
 @dataclass
 class L2ExecutionRequest:
-    """Input request for L2 execution operations."""
+    """
+    Input request for L2 resume processing execution operations.
+
+    Ensures structured input for consistent resume improvement workflows.
+    """
     plan_id: str
     parameters: Dict[str, Any]
     context: Optional[Dict[str, Any]] = None
@@ -46,7 +37,11 @@ class L2ExecutionRequest:
 
 @dataclass
 class L2ExecutionResult:
-    """Output result from L2 execution operations."""
+    """
+    Output result from L2 resume processing execution operations.
+
+    Provides structured output for resume enhancement and job alignment.
+    """
     success: bool
     data: Any
     metadata: Dict[str, Any]
@@ -54,94 +49,126 @@ class L2ExecutionResult:
 
 
 class L2ExecutorInterface(ABC):
-    """Abstract interface for all L2 execution operations."""
+    """
+    Abstract interface for L2 resume processing execution operations.
+
+    Ensures consistent execution patterns for resume improvement workflows.
+    """
     
     @abstractmethod
     async def execute(self, request: L2ExecutionRequest) -> L2ExecutionResult:
-        """Execute a planned operation."""
+        """Executes planned resume processing operation."""
         pass
     
     @abstractmethod
     async def validate_request(self, request: L2ExecutionRequest) -> bool:
-        """Validate execution request before processing."""
+        """Validates resume processing execution request."""
         pass
 
 
 class L2LLMExecutorInterface(L2ExecutorInterface):
-    """Interface for LLM model execution operations."""
+    """
+    Interface for LLM model execution in resume processing.
+
+    Ensures consistent LLM invocation for resume improvement workflows.
+    """
     
     @abstractmethod
     async def invoke_llm(self, request: LLMRequest) -> LLMResponse:
-        """Invoke an LLM model with the given request."""
+        """Invokes LLM model for resume processing operations."""
         pass
     
     @abstractmethod
     async def validate_llm_request(self, request: LLMRequest) -> bool:
-        """Validate LLM request parameters."""
+        """Validates LLM request parameters for resume processing."""
         pass
 
 
 class L2StrategyExecutorInterface(L2LLMExecutorInterface):
-    """Interface for strategy execution operations."""
+    """
+    Interface for resume strategy execution operations.
+
+    Ensures consistent strategy execution for resume job alignment.
+    """
     
     @abstractmethod
     async def execute_strategy(self, request: L2ExecutionRequest) -> StrategyResult:
-        """Execute strategy planning result."""
+        """Executes resume strategy planning result for job alignment."""
         pass
 
 
 class L2DraftingExecutorInterface(L2LLMExecutorInterface):
-    """Interface for drafting execution operations."""
+    """
+    Interface for resume drafting execution operations.
+
+    Ensures consistent drafting for resume improvement workflows.
+    """
     
     @abstractmethod
     async def execute_drafting(self, request: L2ExecutionRequest) -> DraftingResult:
-        """Execute content drafting."""
+        """Executes resume content drafting for job alignment."""
         pass
 
 
 class L2QAExecutorInterface(L2LLMExecutorInterface):
-    """Interface for QA execution operations."""
+    """
+    Interface for resume QA execution operations.
+
+    Ensures consistent quality assurance for resume improvement.
+    """
     
     @abstractmethod
     async def execute_qa(self, request: L2ExecutionRequest) -> QAResult:
-        """Execute quality assurance evaluation."""
+        """Executes resume quality assurance evaluation for job alignment."""
         pass
 
 
 class L2SafetyExecutorInterface(L2LLMExecutorInterface):
-    """Interface for safety execution operations."""
+    """
+    Interface for resume safety execution operations.
+
+    Ensures consistent safety validation for resume processing workflows.
+    """
     
     @abstractmethod
     async def execute_safety(self, request: L2ExecutionRequest) -> SafetyResult:
-        """Execute safety evaluation."""
+        """Executes resume safety evaluation for job alignment compliance."""
         pass
 
 
 class L2RetrievalExecutorInterface(L2ExecutorInterface):
-    """Interface for retrieval operations."""
+    """
+    Interface for resume retrieval operations.
+
+    Ensures consistent data retrieval for resume improvement workflows.
+    """
     
     @abstractmethod
     async def retrieve(self, query: str, context: Dict[str, Any]) -> RAGResult:
-        """Retrieve relevant documents/information."""
+        """Retrieves relevant resume documents for job alignment."""
         pass
     
     @abstractmethod
     async def hybrid_search(self, query: str, filters: Dict[str, Any]) -> List[Evidence]:
-        """Perform hybrid vector + keyword search."""
+        """Performs hybrid search for resume enhancement data."""
         pass
 
 
 class L2ToolExecutorInterface(L2ExecutorInterface):
-    """Interface for generic tool execution operations."""
+    """
+    Interface for generic resume processing tool execution operations.
+
+    Ensures consistent tool execution for resume improvement workflows.
+    """
     
     @abstractmethod
     async def execute_tool(self, tool_name: str, parameters: Dict[str, Any]) -> L2ExecutionResult:
-        """Execute a specific tool with given parameters."""
+        """Executes resume processing tool with given parameters."""
         pass
     
     @abstractmethod
     async def list_available_tools(self) -> List[str]:
-        """List all available tools for this executor."""
+        """Lists all available resume processing tools."""
         pass
 
 
@@ -151,7 +178,11 @@ class L2ToolExecutorInterface(L2ExecutorInterface):
 
 @dataclass
 class ToolOutputValidationResult:
-    """Result of tool output validation for injection defense."""
+    """
+    Result of tool output validation for resume processing injection defense.
+
+    Ensures secure tool execution for resume improvement workflows.
+    """
     
     is_safe: bool
     original_output: Any
@@ -162,31 +193,35 @@ class ToolOutputValidationResult:
 
 class L2ToolOutputValidatorInterface(ABC):
     """
-    Interface for validating tool outputs at L2 execution boundary.
-    
-    Defends against Tool Injection (ID 7) by validating all tool outputs
-    before they propagate to L1 planning or L3 orchestration layers.
+    Interface for validating resume processing tool outputs at L2 boundary.
+
+    Defends against injection attacks by validating all tool outputs
+    for secure resume improvement workflows.
     """
     
     @abstractmethod
     def validate_tool_output(self, tool_name: str, output: Any) -> ToolOutputValidationResult:
         """
-        Validate tool output for potential injection attacks.
-        
-        Must be called by all L2 executors before returning results.
+        Validates resume processing tool output for injection attacks.
+
+        Ensures secure execution for resume improvement workflows.
         """
         pass
     
     @abstractmethod
     def sanitize_output(self, output: Any) -> Any:
         """
-        Sanitize tool output by removing or escaping potentially malicious content.
+        Sanitizes tool output by removing malicious content.
+
+        Protects resume processing workflows from security threats.
         """
         pass
     
     @abstractmethod
     def detect_injection_patterns(self, content: str) -> List[str]:
         """
-        Detect injection patterns in string content from tool outputs.
+        Detects injection patterns in resume processing tool outputs.
+
+        Identifies threats to protect resume improvement workflows.
         """
         pass

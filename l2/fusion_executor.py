@@ -1,7 +1,8 @@
 """
-Executes résumé analysis steps to find relevant experiences and job matches.
+Executes resume analysis steps for job matching and enhancement.
 
-Improves résumé targeting by processing career data and job requirements to identify best matches.
+Improves resume targeting by processing career data and job requirements
+to identify optimal job alignment opportunities.
 """
 
 from __future__ import annotations
@@ -30,9 +31,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class FusionStepResult:
     """
-    Contains results from individual résumé analysis processing steps.
+    Contains results from resume analysis processing steps.
 
-    Improves résumé processing by tracking success and data from each analysis stage.
+    Tracks success and data for resume enhancement and job alignment.
     """
     
     step_number: int
@@ -52,9 +53,9 @@ class FusionStepResult:
 @dataclass
 class FusionExecutionResult:
     """
-    Contains complete results from résumé analysis plan execution with all steps.
+    Contains complete results from resume analysis plan execution.
 
-    Improves résumé analysis by providing comprehensive results and metrics for job matching.
+    Provides comprehensive results and metrics for resume job alignment.
     """
     
     plan_id: str
@@ -71,17 +72,17 @@ class FusionExecutionResult:
     
     def get_successful_step_results(self) -> List[FusionStepResult]:
         """
-        Filters and returns only successful résumé analysis step results.
+        Filters and returns successful resume analysis step results.
 
-        Improves résumé processing by focusing on completed analysis steps for accurate job matching.
+        Focuses on completed analysis steps for accurate job alignment.
         """
         return [r for r in self.step_results if r.success]
     
     def get_step_result(self, step_number: int) -> Optional[FusionStepResult]:
         """
-        Retrieves results from a specific résumé analysis step by step number.
+        Retrieves results from specific resume analysis step by number.
 
-        Improves résumé debugging by allowing detailed inspection of individual analysis steps.
+        Enables detailed inspection of resume enhancement steps for debugging.
         """
         for result in self.step_results:
             if result.step_number == step_number:
@@ -91,9 +92,10 @@ class FusionExecutionResult:
 
 class FusionExecutor:
     """
-    Executes résumé analysis plans to find job-relevant experiences and skills.
+    Executes resume analysis plans to find job-relevant experiences.
 
-    Improves résumé job matching by processing career data through specialized analysis steps.
+    Improves resume job matching by processing career data through
+    specialized analysis steps for optimal alignment.
     """
     
     def __init__(
@@ -103,9 +105,9 @@ class FusionExecutor:
         llm_client: Optional[Any] = None,
     ):
         """
-        Sets up résumé analysis executor with career data processing tools.
+        Sets up resume analysis executor with career data processing tools.
 
-        Improves résumé processing speed by configuring specialized tools for job matching analysis.
+        Configures specialized tools for resume job matching analysis.
         """
         self.kg_adapter = kg_adapter
         self.vector_store = vector_store
@@ -117,9 +119,9 @@ class FusionExecutor:
         execution_context: Optional[Dict[str, Any]] = None,
     ) -> FusionExecutionResult:
         """
-        Executes complete résumé analysis plan to find job-relevant experiences and skills.
+        Executes complete resume analysis plan for job-relevant experiences.
 
-        Improves résumé job matching by systematically processing career data through all analysis steps.
+        Systematically processes career data for resume job alignment.
         """
         start_time = datetime.now(UTC)
         
@@ -192,9 +194,9 @@ class FusionExecutor:
         context: Dict[str, Any],
     ) -> FusionStepResult:
         """
-        Executes individual résumé analysis step to process specific career data.
+        Executes individual resume analysis step for career data processing.
 
-        Improves résumé processing by handling each analysis step with appropriate specialized logic.
+        Handles each analysis step with specialized logic for job alignment.
         """
         start_time = datetime.now(UTC)
         
@@ -253,9 +255,9 @@ class FusionExecutor:
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Traverses career knowledge graph to find related job experiences and skills.
+        Traverses career knowledge graph for resume job alignment.
 
-        Improves résumé connections by discovering career patterns and skill relationships across jobs.
+        Discovers career patterns and skill relationships across jobs.
         """
         if not self.kg_adapter:
             return {"success": False, "error": "KG adapter not available"}
@@ -313,9 +315,9 @@ class FusionExecutor:
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Searches document database for job-relevant experiences and skill descriptions.
+        Searches document database for resume job-relevant experiences.
 
-        Improves résumé relevance by finding textual evidence that matches specific job requirements.
+        Finds textual evidence matching job requirements for alignment.
         """
         if not self.vector_store:
             return {"success": False, "error": "Vector store not available"}
@@ -366,9 +368,9 @@ class FusionExecutor:
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Identifies and standardizes company names, job titles, and skills in career data.
+        Identifies and standardizes resume career entities and skills.
 
-        Improves résumé consistency by ensuring all career entities are properly categorized and linked.
+        Ensures proper categorization for resume job alignment consistency.
         """
         if not self.llm_client:
             return {"success": False, "error": "LLM client not available"}
@@ -411,9 +413,9 @@ class FusionExecutor:
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Filters career experiences by date ranges and time periods for job relevance.
+        Filters resume career experiences by date ranges for job relevance.
 
-        Improves résumé timing by showing experiences within relevant career periods for target jobs.
+        Shows experiences within relevant career periods for job alignment.
         """
         try:
             # Get temporal constraints from plan context
@@ -460,9 +462,9 @@ class FusionExecutor:
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Combines and ranks career experiences and skills for job matching relevance.
+        Combines and ranks resume experiences for job matching relevance.
 
-        Improves résumé prioritization by highlighting the most relevant achievements for target positions.
+        Prioritizes most relevant achievements for target job alignment.
         """
         try:
             # Collect results from previous steps
@@ -499,9 +501,9 @@ class FusionExecutor:
         context: Dict[str, Any],
     ) -> Dict[str, Any]:
         """
-        Performs deeper analysis of complex career questions for comprehensive résumé insights.
+        Performs deeper analysis of complex resume career questions.
 
-        Improves résumé depth by uncovering hidden career patterns and transferable skills through recursion.
+        Uncovers hidden career patterns and transferable skills for job alignment.
         """
         try:
             # Analyze result completeness and plan recursion
@@ -541,9 +543,9 @@ class FusionExecutor:
         plan: KGRAGFusionPlan,
     ) -> Dict[str, Any]:
         """
-        Combines all résumé analysis results into comprehensive job matching insights.
+        Combines all resume analysis results for comprehensive job matching.
 
-        Improves résumé completeness by aggregating career data, skills, and experiences from all analysis steps.
+        Aggregates career data, skills, and experiences for job alignment.
         """
         aggregated = {
             "plan_id": plan.query_id,
@@ -573,9 +575,9 @@ class FusionExecutor:
         step_results: List[FusionStepResult],
     ) -> float:
         """
-        Measures résumé analysis complexity based on processing depth and execution difficulty.
+        Measures resume analysis complexity for processing optimization.
 
-        Improves résumé analysis by providing metrics to optimize processing for different job types.
+        Provides metrics to optimize resume job alignment processing.
         """
         if not step_results:
             return 0.0
@@ -603,9 +605,9 @@ async def execute_simple_fusion(
     vector_store: Optional[Any] = None,
 ) -> FusionExecutionResult:
     """
-    Performs basic résumé analysis to quickly identify relevant experiences for job matching.
+    Performs basic resume analysis for quick job-relevant experience identification.
 
-    Improves résumé processing speed by providing fast analysis for straightforward job questions.
+    Provides fast analysis for straightforward resume job alignment questions.
     """
     from l1.kg_rag_fusion_planning import KGRAGFusionPlanner
     
@@ -622,9 +624,9 @@ async def execute_temporal_entity_facts(
     kg_adapter: Optional[TemporalKG] = None,
 ) -> FusionExecutionResult:
     """
-    Retrieves career facts with timeline context for chronological résumé presentation.
+    Retrieves career facts with timeline context for resume presentation.
 
-    Improves résumé timeline accuracy by showing career progression within specific time periods.
+    Shows career progression within specific time periods for job alignment.
     """
     from l1.kg_rag_fusion_planning import plan_temporal_entity_facts
     

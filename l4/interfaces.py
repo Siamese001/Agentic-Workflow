@@ -1,21 +1,7 @@
-"""L4 Interfaces - Memory & State Layer
+"""
+L4 interfaces for resume job alignment memory and state management.
 
-This module defines abstract interfaces for all L4 memory and state operations.
-All L4 implementations must inherit from these interfaces.
-
-Layer: L4 (Memory & State)
-Responsibilities:
-- State persistence and retrieval
-- Memory management
-- Data storage operations
-- Temporal knowledge graphs
-- Entity resolution
-
-Non-responsibilities:
-- Planning (L1)
-- Tool execution (L2)
-- Orchestration (L3)
-- Safety/policy decisions (L5)
+Defines abstract interfaces for resume enhancement state operations.
 """
 
 from __future__ import annotations
@@ -38,7 +24,7 @@ from core.models.models import (
 
 
 class StorageType(Enum):
-    """Types of storage backends."""
+    """Storage backend types for resume workflow job alignment."""
     VECTOR = "vector"
     GRAPH = "graph"
     DOCUMENT = "document"
@@ -48,7 +34,7 @@ class StorageType(Enum):
 
 @dataclass
 class L4StorageRequest:
-    """Input request for L4 storage operations."""
+    """Input request for resume job alignment storage operations."""
     operation: str
     data: Any
     storage_type: StorageType
@@ -58,7 +44,7 @@ class L4StorageRequest:
 
 @dataclass
 class L4StorageResult:
-    """Output result from L4 storage operations."""
+    """Output result from resume job alignment storage operations."""
     success: bool
     data: Any
     metadata: Dict[str, Any]
@@ -66,168 +52,168 @@ class L4StorageResult:
 
 
 class L4StateManagerInterface(ABC):
-    """Abstract interface for state management operations."""
+    """Abstract interface for resume job alignment state management."""
     
     @abstractmethod
     async def save_state(self, context: ExecutionContext, state: StateSnapshot) -> bool:
-        """Save execution state."""
+        """Saves resume workflow execution state for job alignment."""
         pass
     
     @abstractmethod
     async def load_state(self, context: ExecutionContext) -> Optional[StateSnapshot]:
-        """Load execution state."""
+        """Loads resume workflow execution state for job alignment."""
         pass
     
     @abstractmethod
     async def delete_state(self, context: ExecutionContext) -> bool:
-        """Delete execution state."""
+        """Deletes resume workflow execution state for job alignment."""
         pass
     
     @abstractmethod
     async def list_states(self, filters: Dict[str, Any]) -> List[StateSnapshot]:
-        """List states matching filters."""
+        """Lists resume workflow states matching job alignment filters."""
         pass
 
 
 class L4MemoryManagerInterface(ABC):
-    """Interface for memory management operations."""
+    """Interface for resume workflow memory management operations."""
     
     @abstractmethod
     async def store_memory(self, memory: MemoryFragment, context: ExecutionContext) -> bool:
-        """Store a memory fragment."""
+        """Stores resume workflow memory fragment for job alignment."""
         pass
     
     @abstractmethod
     async def retrieve_memory(self, query: str, context: ExecutionContext) -> List[MemoryFragment]:
-        """Retrieve relevant memory fragments."""
+        """Retrieves resume workflow memory fragments for job alignment."""
         pass
     
     @abstractmethod
     async def update_memory(self, memory_id: str, updates: Dict[str, Any]) -> bool:
-        """Update existing memory."""
+        """Updates existing resume workflow memory for job alignment."""
         pass
     
     @abstractmethod
     async def delete_memory(self, memory_id: str) -> bool:
-        """Delete memory fragment."""
+        """Deletes resume workflow memory fragment for job alignment."""
         pass
 
 
 class L4VectorStoreInterface(ABC):
-    """Interface for vector storage operations."""
+    """Interface for resume workflow vector storage operations."""
     
     @abstractmethod
     async def store_vectors(self, vectors: List[Dict[str, Any]], metadata: List[Dict[str, Any]]) -> bool:
-        """Store vectors with metadata."""
+        """Stores resume workflow vectors with job alignment metadata."""
         pass
     
     @abstractmethod
     async def search_vectors(self, query_vector: List[float], limit: int, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Search for similar vectors."""
+        """Searches resume workflow vectors for job alignment similarity."""
         pass
     
     @abstractmethod
     async def update_vectors(self, vector_ids: List[str], updates: List[Dict[str, Any]]) -> bool:
-        """Update existing vectors."""
+        """Updates existing resume workflow vectors for job alignment."""
         pass
     
     @abstractmethod
     async def delete_vectors(self, vector_ids: List[str]) -> bool:
-        """Delete vectors."""
+        """Deletes resume workflow vectors for job alignment processing."""
         pass
 
 
 class L4GraphStoreInterface(ABC):
-    """Interface for graph storage operations."""
+    """Interface for resume workflow graph storage operations."""
     
     @abstractmethod
     async def store_entities(self, entities: List[Entity]) -> bool:
-        """Store entities in the graph."""
+        """Stores resume workflow entities for job alignment graph."""
         pass
     
     @abstractmethod
     async def store_triplets(self, triplets: List[Triplet]) -> bool:
-        """Store triplets in the graph."""
+        """Stores resume workflow triplets for job alignment graph."""
         pass
     
     @abstractmethod
     async def query_graph(self, query: str, parameters: Dict[str, Any]) -> List[Union[Entity, Triplet]]:
-        """Query the knowledge graph."""
+        """Queries resume workflow knowledge graph for job alignment."""
         pass
     
     @abstractmethod
     async def resolve_entities(self, entity_names: List[str]) -> List[Entity]:
-        """Resolve entity names to canonical entities."""
+        """Resolves resume workflow entities for job alignment processing."""
         pass
 
 
 class L4TemporalKGInterface(ABC):
-    """Interface for temporal knowledge graph operations."""
+    """Interface for resume workflow temporal knowledge graph operations."""
     
     @abstractmethod
     async def store_temporal_triplet(self, triplet: Triplet, valid_from: datetime, valid_to: Optional[datetime]) -> bool:
-        """Store a temporal triplet."""
+        """Stores resume workflow temporal triplet for job alignment."""
         pass
     
     @abstractmethod
     async def query_temporal_graph(self, query: str, timestamp: datetime, parameters: Dict[str, Any]) -> List[Union[Entity, Triplet]]:
-        """Query the temporal knowledge graph at a specific time."""
+        """Queries resume workflow temporal graph for job alignment."""
         pass
     
     @abstractmethod
     async def get_entity_history(self, entity_id: str, from_time: datetime, to_time: datetime) -> List[Triplet]:
-        """Get entity history within time range."""
+        """Gets resume workflow entity history for job alignment."""
         pass
     
     @abstractmethod
     async def update_temporal_triplet(self, triplet_id: str, updates: Dict[str, Any]) -> bool:
-        """Update temporal triplet."""
+        """Updates resume workflow temporal triplet for job alignment."""
         pass
 
 
 class L4ProvenanceManagerInterface(ABC):
-    """Interface for provenance tracking operations."""
+    """Interface for resume workflow provenance tracking operations."""
     
     @abstractmethod
     async def record_provenance(self, data_id: str, provenance: Provenance) -> bool:
-        """Record provenance for data."""
+        """Records resume workflow provenance for job alignment data."""
         pass
     
     @abstractmethod
     async def get_provenance(self, data_id: str) -> Optional[Provenance]:
-        """Get provenance for data."""
+        """Gets resume workflow provenance for job alignment data."""
         pass
     
     @abstractmethod
     async def trace_lineage(self, data_id: str, depth: int) -> List[Provenance]:
-        """Trace data lineage."""
+        """Traces resume workflow data lineage for job alignment."""
         pass
     
     @abstractmethod
     async def validate_provenance(self, data_id: str, expected_provenance: Provenance) -> bool:
-        """Validate data provenance."""
+        """Validates resume workflow data provenance for job alignment."""
         pass
 
 
 class L4CacheInterface(ABC):
-    """Interface for caching operations."""
+    """Interface for resume workflow caching operations."""
     
     @abstractmethod
     async def get(self, key: str) -> Optional[Any]:
-        """Get value from cache."""
+        """Gets resume workflow value from cache for job alignment."""
         pass
     
     @abstractmethod
     async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
-        """Set value in cache with optional TTL."""
+        """Sets resume workflow value in cache for job alignment."""
         pass
     
     @abstractmethod
     async def delete(self, key: str) -> bool:
-        """Delete value from cache."""
+        """Deletes resume workflow value from cache for job alignment."""
         pass
     
     @abstractmethod
     async def clear(self, pattern: Optional[str] = None) -> bool:
-        """Clear cache values matching pattern."""
+        """Clears resume workflow cache values for job alignment."""
         pass

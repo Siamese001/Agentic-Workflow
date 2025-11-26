@@ -1,20 +1,7 @@
-"""Entity Resolution - Entity Linking and Disambiguation
+"""
+L4 entity resolution for resume job alignment workflows.
 
-This module implements entity resolution for the Temporal Knowledge Graph,
-handling entity linking, deduplication, and canonical form management.
-
-Layer: L4 (State & Memory)
-Responsibilities:
-- Maintain canonical entity registry
-- Link entity mentions to canonical forms
-- Track entity aliases and variants
-- Support entity merging and splitting
-
-Non-responsibilities:
-- Named Entity Recognition (L2)
-- Resolution planning (L1)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Implements entity linking and canonical form management for resume enhancement.
 """
 
 from __future__ import annotations
@@ -28,7 +15,7 @@ import re
 
 
 class EntityType(str, Enum):
-    """Types of entities in the knowledge graph."""
+    """Entity types for resume job alignment knowledge graph."""
     PERSON = "person"
     ORGANIZATION = "organization"
     SKILL = "skill"
@@ -42,7 +29,7 @@ class EntityType(str, Enum):
 
 @dataclass
 class CanonicalEntity:
-    """A canonical entity in the knowledge graph."""
+    """Canonical entity for resume job alignment knowledge graph."""
     
     id: str
     canonical_name: str
@@ -66,20 +53,20 @@ class CanonicalEntity:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def add_alias(self, alias: str) -> None:
-        """Add an alias for this entity."""
+        """Adds alias for resume workflow entity job alignment."""
         self.aliases.add(alias)
         self.normalized_forms.add(self._normalize(alias))
         self.updated_at = datetime.now(UTC)
     
     def matches(self, mention: str) -> bool:
-        """Check if a mention matches this entity."""
+        """Checks if mention matches resume workflow entity for job alignment."""
         normalized = self._normalize(mention)
         if normalized == self._normalize(self.canonical_name):
             return True
         return normalized in self.normalized_forms
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for storage."""
+        """Converts resume workflow entity to dictionary for storage."""
         return {
             "id": self.id,
             "canonical_name": self.canonical_name,
@@ -97,7 +84,7 @@ class CanonicalEntity:
     
     @staticmethod
     def _normalize(text: str) -> str:
-        """Normalize text for matching."""
+        """Normalizes text for resume workflow entity matching."""
         # Lowercase, remove punctuation, normalize whitespace
         text = text.lower()
         text = re.sub(r'[^\w\s]', '', text)
@@ -107,7 +94,7 @@ class CanonicalEntity:
 
 @dataclass
 class EntityMention:
-    """A mention of an entity in text."""
+    """Entity mention for resume job alignment text processing."""
     
     id: str
     text: str
@@ -131,7 +118,7 @@ class EntityMention:
 
 @dataclass
 class ResolutionResult:
-    """Result of entity resolution."""
+    """Entity resolution result for resume job alignment processing."""
     
     mention: EntityMention
     resolved_entity: Optional[CanonicalEntity]
@@ -141,10 +128,10 @@ class ResolutionResult:
 
 
 class EntityRegistry:
-    """Registry for canonical entities with resolution capabilities."""
+    """Registry for resume workflow canonical entities with resolution."""
     
     def __init__(self):
-        """Initialize empty entity registry."""
+        """Initializes empty resume workflow entity registry."""
         self._entities: Dict[str, CanonicalEntity] = {}
         self._name_index: Dict[str, Set[str]] = {}  # normalized_name -> entity_ids
         self._type_index: Dict[EntityType, Set[str]] = {}
@@ -153,7 +140,7 @@ class EntityRegistry:
         self._init_common_entities()
     
     def _init_common_entities(self) -> None:
-        """Initialize common entities (skills, technologies)."""
+        """Initializes common resume workflow entities for job alignment."""
         common_skills = [
             ("python", "Python", EntityType.SKILL),
             ("javascript", "JavaScript", EntityType.SKILL),
@@ -186,7 +173,7 @@ class EntityRegistry:
             self.register_entity(entity)
     
     def register_entity(self, entity: CanonicalEntity) -> str:
-        """Register a canonical entity.
+        """Registers resume workflow canonical entity for job alignment.
         
         Args:
             entity: Entity to register
@@ -213,7 +200,7 @@ class EntityRegistry:
         return entity.id
     
     def get_entity(self, entity_id: str) -> Optional[CanonicalEntity]:
-        """Get entity by ID.
+        """Gets resume workflow entity by ID for job alignment.
         
         Args:
             entity_id: Entity ID
@@ -228,7 +215,7 @@ class EntityRegistry:
         mention: EntityMention,
         threshold: float = 0.5,
     ) -> ResolutionResult:
-        """Resolve an entity mention to a canonical entity.
+        """Resolves entity mention to canonical for job alignment.
         
         Args:
             mention: Entity mention to resolve
@@ -281,7 +268,7 @@ class EntityRegistry:
         mention: EntityMention,
         threshold: float,
     ) -> List[Tuple[CanonicalEntity, float]]:
-        """Perform fuzzy matching for entity resolution.
+        """Performs fuzzy matching for resume workflow entity resolution.
         
         Args:
             mention: Entity mention
@@ -329,7 +316,7 @@ class EntityRegistry:
         secondary_id: str,
         reason: str = "duplicate",
     ) -> Optional[CanonicalEntity]:
-        """Merge two entities into one.
+        """Merges two resume workflow entities for job alignment.
         
         Args:
             primary_id: ID of entity to keep
@@ -372,7 +359,7 @@ class EntityRegistry:
         return primary
     
     def get_entities_by_type(self, entity_type: EntityType) -> List[CanonicalEntity]:
-        """Get all entities of a specific type.
+        """Gets resume workflow entities by type for job alignment.
         
         Args:
             entity_type: Type of entities to retrieve
@@ -389,7 +376,7 @@ class EntityRegistry:
         entity_type: Optional[EntityType] = None,
         limit: int = 10,
     ) -> List[Tuple[CanonicalEntity, float]]:
-        """Search for entities by name.
+        """Searches resume workflow entities by name for job alignment.
         
         Args:
             query: Search query
@@ -408,7 +395,7 @@ class EntityRegistry:
         return result.candidates[:limit]
     
     def _rebuild_indexes(self) -> None:
-        """Rebuild all indexes."""
+        """Rebuilds resume workflow entity indexes for job alignment."""
         self._name_index.clear()
         self._type_index.clear()
         
@@ -427,13 +414,13 @@ class EntityRegistry:
     
     @staticmethod
     def _add_to_index(index: Dict[str, Set[str]], key: str, value: str) -> None:
-        """Add value to index."""
+        """Adds value to resume workflow entity index."""
         if key not in index:
             index[key] = set()
         index[key].add(value)
     
     def count(self) -> int:
-        """Get count of registered entities."""
+        """Gets count of registered resume workflow entities."""
         return len(self._entities)
 
 

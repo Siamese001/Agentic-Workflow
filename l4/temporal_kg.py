@@ -1,7 +1,7 @@
 """
-Stores and retrieves time-stamped career facts for accurate résumé timeline presentation.
+L4 temporal knowledge graph for resume job alignment workflows.
 
-Improves résumé chronology by maintaining precise dates, job transitions, and career progression data.
+Stores time-stamped career facts for accurate resume timeline enhancement.
 """
 
 from __future__ import annotations
@@ -25,9 +25,9 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TemporalFact:
     """
-    Represents a time-stamped career fact like job changes, skill acquisitions, or promotions.
+    Represents time-stamped career fact for resume job alignment.
 
-    Improves résumé accuracy by storing precise career events with dates and confidence levels.
+    Improves resume accuracy by storing precise career events with dates.
     """
     
     id: str
@@ -48,11 +48,7 @@ class TemporalFact:
         return f"{self.subject} {self.predicate} {self.object} (at {self.timestamp.isoformat()})"
     
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts career fact data to storage format for database persistence and retrieval.
-
-        Improves résumé data management by enabling reliable storage of job achievements and career events.
-        """
+        """Converts career fact data to storage format for resume processing."""
         return {
             "id": self.id,
             "subject": self.subject,
@@ -68,9 +64,9 @@ class TemporalFact:
 @dataclass
 class TemporalQuery:
     """
-    Defines searches for career facts within specific time periods and date ranges.
+    Defines searches for career facts within time periods for resume alignment.
 
-    Improves résumé analysis by enabling precise retrieval of job experiences and skills from relevant career stages.
+    Enables precise retrieval of job experiences and skills for resume enhancement.
     """
     
     subject: Optional[str] = None
@@ -84,17 +80,13 @@ class TemporalQuery:
 
 class TemporalKG:
     """
-    Manages time-stamped career data storage and retrieval for accurate résumé timeline presentation.
+    Manages time-stamped career data for resume job alignment workflows.
 
-    Improves résumé chronology by maintaining precise dates, job transitions, and career progression information.
+    Improves resume chronology by maintaining precise career progression data.
     """
     
     def __init__(self, pinecone_adapter: Any):
-        """
-        Sets up career timeline storage system with time-stamped fact management capabilities.
-
-        Improves résumé data organization by configuring specialized storage for chronological career information.
-        """
+        """Sets up career timeline storage for resume job alignment processing."""
         self.adapter = pinecone_adapter
         self.namespace_prefix = "temporal_kg"
         
@@ -112,11 +104,7 @@ class TemporalKG:
         fact: TemporalFact,
         user_id: Optional[str] = None,
     ) -> None:
-        """
-        Stores career event with timestamp for accurate résumé timeline and job progression tracking.
-
-        Improves résumé chronology by maintaining precise records of job changes, promotions, and skill acquisitions.
-        """
+        """Stores career event with timestamp for resume timeline enhancement."""
         namespace = self._build_namespace(user_id)
         fact_dict = fact.to_dict()
         
@@ -177,11 +165,7 @@ class TemporalKG:
         facts: List[TemporalFact],
         user_id: Optional[str] = None,
     ) -> None:
-        """
-        Stores multiple career events efficiently for comprehensive résumé timeline management.
-
-        Improves résumé processing speed by batch-adding job changes, skills, and achievements with timestamps.
-        """
+        """Stores multiple career events efficiently for resume processing."""
         if not facts:
             return
         
@@ -261,11 +245,7 @@ class TemporalKG:
         query: TemporalQuery,
         user_id: Optional[str] = None,
     ) -> List[TemporalFact]:
-        """
-        Retrieves career events within specific time periods for targeted résumé analysis.
-
-        Improves résumé relevance by finding job experiences and skills from relevant career stages.
-        """
+        """Retrieves career events within time periods for resume analysis."""
         namespace = self._build_namespace(user_id)
         
         # Build search query text
@@ -339,11 +319,7 @@ class TemporalKG:
         days: int = 30,
         user_id: Optional[str] = None,
     ) -> List[TemporalFact]:
-        """
-        Retrieves recent career activities for current résumé relevance and job matching.
-
-        Improves résumé freshness by highlighting recent job experiences, skills, and career developments.
-        """
+        """Retrieves recent career activities for resume job alignment."""
         from datetime import timedelta
         
         end_time = datetime.now(UTC)
@@ -363,11 +339,7 @@ class TemporalKG:
         predicate: str,
         user_id: Optional[str] = None,
     ) -> List[TemporalFact]:
-        """
-        Retrieves chronological career progression for comprehensive résumé timeline presentation.
-
-        Improves résumé storytelling by showing skill development and career growth over time.
-        """
+        """Retrieves chronological career progression for resume timeline."""
         query = TemporalQuery(
             subject=subject,
             predicate=predicate,
@@ -385,11 +357,7 @@ class TemporalKG:
         fact_ids: List[str],
         user_id: Optional[str] = None,
     ) -> None:
-        """
-        Removes outdated career facts to maintain résumé accuracy and relevance.
-
-        Improves résumé quality by eliminating obsolete job information and keeping career data current.
-        """
+        """Removes outdated career facts to maintain resume accuracy."""
         if not fact_ids:
             return
         
@@ -414,7 +382,7 @@ class TemporalKG:
                     logger.error(f"Failed to invalidate fact in Neo4j: {e}", exc_info=True)
     
     def _build_namespace(self, user_id: Optional[str]) -> str:
-        """Build namespace for temporal KG storage."""
+        """Builds namespace for resume workflow temporal KG storage."""
         if user_id:
             return f"{self.namespace_prefix}_{user_id}"
         return self.namespace_prefix
@@ -431,11 +399,7 @@ def create_skill_fact(
     proficiency: str = "intermediate",
     timestamp: Optional[datetime] = None,
 ) -> TemporalFact:
-    """
-    Creates a time-stamped skill acquisition record for résumé skill presentation.
-
-    Improves résumé credibility by documenting when and at what level skills were acquired.
-    """
+    """Creates time-stamped skill acquisition record for resume enhancement."""
     if timestamp is None:
         timestamp = datetime.now(UTC)
     
@@ -459,11 +423,7 @@ def create_experience_fact(
     role: str,
     timestamp: Optional[datetime] = None,
 ) -> TemporalFact:
-    """
-    Creates a time-stamped work experience record for résumé job history presentation.
-
-    Improves résumé employment verification by documenting exact dates and roles for each company.
-    """
+    """Creates time-stamped work experience record for resume enhancement."""
     if timestamp is None:
         timestamp = datetime.now(UTC)
     
@@ -487,11 +447,7 @@ def create_application_fact(
     status: str = "applied",
     timestamp: Optional[datetime] = None,
 ) -> TemporalFact:
-    """
-    Creates a time-stamped job application record for résumé job seeking activity tracking.
-
-    Improves résumé job search documentation by maintaining accurate records of application timelines.
-    """
+    """Creates time-stamped job application record for resume enhancement."""
     if timestamp is None:
         timestamp = datetime.now(UTC)
     

@@ -1,7 +1,7 @@
 """
-L4 State Management - State Manager
+L4 state manager for resume job alignment workflows.
 
-Implements the core state management functionality with strict immutability.
+Implements core state management for resume enhancement coordination.
 """
 from __future__ import annotations
 from typing import Any, Dict, Generic, List, Optional, TypeVar, Callable, Type, cast
@@ -28,14 +28,9 @@ logger = logging.getLogger(__name__)
 
 class StateManager(Generic[T]):
     """
-    Manages application state with full history and rollback capabilities.
-    
-    Features:
-    - Immutable state snapshots
-    - Full audit trail of all changes
-    - Thread-safe operations
-    - Pluggable persistence
-    - Automatic garbage collection
+    Manages resume workflow state with history and rollback capabilities.
+
+    Ensures reliable resume job alignment state coordination.
     """
     
     def __init__(
@@ -45,7 +40,7 @@ class StateManager(Generic[T]):
         max_age_days: int = 7,
         persistence_path: Optional[Path] = None
     ):
-        """Initialize the state manager.
+        """Initializes resume workflow state manager for job alignment.
         
         Args:
             initial_state: The initial state of the application
@@ -77,16 +72,16 @@ class StateManager(Generic[T]):
     
     @property
     def current(self) -> StateSnapshot[T]:
-        """Get the current state snapshot."""
+        """Gets current resume workflow state for job alignment."""
         return self._current
     
     @property
     def history(self) -> List[StateSnapshot[T]]:
-        """Get the complete history of state changes."""
+        """Gets resume workflow state history for job alignment."""
         return self._history.copy()
     
     def get_history_since(self, timestamp: datetime) -> List[StateSnapshot[T]]:
-        """Get all state changes since the given timestamp."""
+        """Gets resume workflow state changes for job alignment."""
         return [
             s for s in self._history
             if s.timestamp > timestamp
@@ -94,7 +89,7 @@ class StateManager(Generic[T]):
     
     def apply_transition(self, transition: StateTransition[T]) -> StateSnapshot[T]:
         """
-        Apply a state transition and return the new snapshot.
+        Applies resume workflow state transition for job alignment.
         
         Args:
             transition: The state transition to apply
@@ -150,7 +145,7 @@ class StateManager(Generic[T]):
     
     def rollback(self, target_state_id: str) -> StateSnapshot[T]:
         """
-        Roll back to a previous state by its ID.
+        Rollbacks resume workflow state for job alignment recovery.
         
         Args:
             target_state_id: The ID of the target state to roll back to
@@ -196,7 +191,7 @@ class StateManager(Generic[T]):
         path: StatePath,
         value: Any
     ) -> Any:
-        """Apply a single operation to the current state."""
+        """Applies single operation to resume workflow state."""
         if not path.parts:
             # Root path
             if operation == StateOperation.CREATE:
@@ -250,7 +245,7 @@ class StateManager(Generic[T]):
         return current
     
     def _prune_history(self) -> None:
-        """Remove old snapshots based on retention policy."""
+        """Removes old resume workflow snapshots for job alignment."""
         now = datetime.now(UTC)
         min_timestamp = now - self._max_age
         
@@ -269,7 +264,7 @@ class StateManager(Generic[T]):
             self._history = self._history[keep_from:]
     
     def _persist_snapshot(self, snapshot: StateSnapshot[T]) -> None:
-        """Persist a snapshot to disk."""
+        """Persists resume workflow snapshot for job alignment."""
         if not self._persistence_path:
             return
             
@@ -296,7 +291,7 @@ class StateManager(Generic[T]):
             logger.error(f"Failed to persist snapshot {snapshot.state_id}: {e}")
     
     def _load_from_disk(self) -> None:
-        """Load snapshots from disk."""
+        """Loads resume workflow snapshots for job alignment."""
         if not self._persistence_path or not self._persistence_path.exists():
             return
             

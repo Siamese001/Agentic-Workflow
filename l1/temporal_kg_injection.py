@@ -1,7 +1,8 @@
-"""Temporal Knowledge Graph Injection for V6 System
+"""
+Temporal Knowledge Graph Injection for resume timeline analysis.
 
-Provides temporal reasoning and knowledge graph integration
-for enhanced context awareness and temporal planning.
+Provides temporal reasoning for enhanced resume context awareness
+and improved job alignment accuracy.
 """
 
 from __future__ import annotations
@@ -15,7 +16,11 @@ from l1.instructional_injection_v6 import InstructionalExtension, ExtensionConte
 
 
 class TemporalRelation(str, Enum):
-    """Types of temporal relationships between facts."""
+    """
+    Types of temporal relationships for resume timeline analysis.
+
+    Defines temporal patterns for accurate resume context understanding.
+    """
     
     BEFORE = "before"
     AFTER = "after"
@@ -28,7 +33,11 @@ class TemporalRelation(str, Enum):
 
 @dataclass
 class TemporalFact:
-    """A fact with temporal context."""
+    """
+    A fact with temporal context for resume timeline analysis.
+
+    Ensures accurate temporal reasoning for resume job alignment.
+    """
     
     fact_id: str
     content: str
@@ -38,13 +47,19 @@ class TemporalFact:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def is_valid_at(self, time: datetime) -> bool:
-        """Check if this fact is valid at the given time."""
+        """Checks if resume fact is valid at the given time.
+
+        Ensures temporal accuracy for resume job alignment analysis.
+        """
         # Simple validity check - facts are valid if not too old
         max_age = timedelta(days=365)  # 1 year default
         return (time - self.timestamp) <= max_age
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Converts temporal fact to dictionary for resume processing.
+
+        Enables structured data handling for resume timeline analysis.
+        """
         return {
             "fact_id": self.fact_id,
             "content": self.content,

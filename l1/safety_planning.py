@@ -1,7 +1,8 @@
 """
-Safety planning for résumé improvement validation.
+Safety planning for resume improvement validation and professional standards.
 
-Creates structured plans to ensure professional standards and compliance in résumé enhancement.
+Creates structured plans to ensure professional standards and compliance
+in resume enhancement for job applications.
 """
 
 from __future__ import annotations
@@ -21,9 +22,10 @@ from l1.builders.prompt_builder import PromptInstance, build_safety_prompt
 @dataclass(frozen=True)
 class SafetyPlan:
     """
-    Defines safety validation structure for résumé content.
+    Defines safety validation structure for resume content.
 
-    Ensures professional standards and compliance in résumé improvement recommendations.
+    Ensures professional standards and compliance in resume
+    improvement recommendations for job applications.
     """
 
     prompt: PromptInstance
@@ -38,9 +40,10 @@ def plan_safety_review(
     qa: QAResult,
 ) -> SafetyPlan:
     """
-    Creates comprehensive safety plan for résumé validation.
+    Creates comprehensive safety plan for resume validation.
 
-    Structures evaluation approach to ensure professional résumé enhancement standards.
+    Structures evaluation approach to ensure professional
+    resume enhancement standards for job applications.
     """
     prompt = build_safety_prompt(
         plan=safety_plan,
