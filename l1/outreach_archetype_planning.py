@@ -9,8 +9,10 @@ from dataclasses import dataclass
 from typing import Any, Dict, List
 
 from .outreach_dataclasses import (
-    ArchetypeContext,
     ArchetypeType,
+    ArchetypeContext,
+    ArchetypeDefinition,
+    compute_reasoning_multiplier,
     SignalParameters,
     RagParameters,
     ReasoningParameters,

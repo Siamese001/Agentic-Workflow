@@ -8,12 +8,10 @@ content expansion, and exports complete metadata to L2.
 import pytest
 from l1.outreach_dataclasses import (
     ArchetypeType,
-    ExecutiveReasoningProfile,
     EXECUTIVE_REASONING_PROFILES,
     SECTION_TEMPERATURE_SCHEDULE,
     adjust_temperature_by_intensity,
-    expand_section_by_intensity,
-    reasoning_intensity_metadata
+    expand_section_by_intensity
 )
 from l1.message_planning import MessagePlanner, MessageContent
 from l1.outreach_archetype_planning import OutreachArchetypePlanner
