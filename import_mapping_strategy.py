@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
-Comprehensive import mapping strategy for canonical structure cleanup.
-Maps old import paths to new canonical locations based on FOLDER_MAP.md.
+Maps import paths to maintain clean resume generation architecture.
+
+Ensures code organization supports efficient resume generation
+and easier maintenance for future enhancements.
 """
 
 # Import mapping for canonical structure enforcement
@@ -77,8 +79,10 @@ FILE_MAPPINGS = {
 
 def apply_import_mappings():
     """
-    Apply import mappings to all Python files in the repository.
-    This function will be used to systematically update imports.
+    Applies import mappings to maintain clean code architecture.
+
+    Ensures resume generation system remains properly structured
+    for improved maintainability and easier enhancements.
     """
     import os
     import re

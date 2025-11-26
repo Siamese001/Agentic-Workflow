@@ -1,3 +1,10 @@
+"""
+Checks import validity to ensure resume generation system works properly.
+
+Verifies all modules can be imported without errors to maintain
+code quality and ensure smooth resume generation functionality.
+"""
+
 import pkgutil
 
 print("=== IMPORT CHECK START ===")

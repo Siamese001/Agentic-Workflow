@@ -1,7 +1,8 @@
 """
-L2 strategy execution for résumé improvement workflows.
+L2 strategy execution for resume improvement workflows.
 
-Executes strategy generation using optimal models for comprehensive résumé enhancement planning.
+Executes strategy generation using optimal models for comprehensive
+resume enhancement planning and job alignment.
 """
 
 from typing import Optional
@@ -13,9 +14,10 @@ from runtime.observability import record_event, record_exception
 
 class StrategyExecutor:
     """
-    Executes résumé strategy generation with optimal model selection.
-    
-    Delivers targeted improvement plans to enhance résumé job alignment and effectiveness.
+    Executes resume strategy generation with optimal model selection.
+
+    Delivers targeted improvement plans to enhance resume job
+    alignment and effectiveness for better applications.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -25,9 +27,10 @@ class StrategyExecutor:
     
     def execute_strategy(self, prompt: str) -> str:
         """
-        Executes résumé strategy generation using LLM models.
-        
-        Produces comprehensive improvement strategies for optimal résumé job matching.
+        Executes resume strategy generation using LLM models.
+
+        Produces comprehensive improvement strategies for optimal
+        resume job matching and better applications.
         """
         try:
             model = self.routing_policy.select_model(

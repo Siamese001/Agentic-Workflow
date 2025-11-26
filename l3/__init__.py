@@ -1,8 +1,7 @@
 """
-L3 - Pure Orchestration Layer
+L3 orchestration layer for resume workflow coordination.
 
-This layer contains only control flow and coordination logic.
-No business logic, tool execution, or state management is allowed here.
+Manages control flow for resume job alignment processing.
 """
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, Protocol, TypeVar, Generic, Callable
@@ -14,7 +13,7 @@ from infra.di_container import inject_dependencies
 T = TypeVar('T')
 
 class NodeStatus(str, Enum):
-    """Status of a workflow node."""
+    """Status of resume workflow node for job alignment processing."""
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -23,33 +22,33 @@ class NodeStatus(str, Enum):
 
 @dataclass
 class NodeResult(Generic[T]):
-    """Result of a workflow node execution."""
+    """Result of resume workflow node execution for job alignment."""
     status: NodeStatus
     output: Optional[T] = None
     error: Optional[str] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 class WorkflowNode(Protocol[T]):
-    """Protocol that all workflow nodes must implement."""
+    """Protocol for resume workflow nodes in job alignment processing."""
     
     @property
     def node_id(self) -> str:
-        """Unique identifier for this node."""
+        """Unique identifier for resume workflow node."""
         ...
         
     async def execute(self, context: Dict[str, Any]) -> NodeResult[T]:
-        """Execute this node with the given context."""
+        """Executes resume workflow node for job alignment."""
         ...
 
 @dataclass
 class Edge:
-    """Directed edge between two workflow nodes."""
+    """Directed edge between resume workflow nodes for job alignment."""
     source: str
     target: str
     condition: Optional[Callable[[Dict[str, Any]], bool]] = None
 
 class Workflow:
-    """A directed acyclic graph (DAG) of workflow nodes."""
+    """DAG of resume workflow nodes for job alignment processing."""
     
     def __init__(self, nodes: List[WorkflowNode], edges: List[Edge]):
         self.nodes = {node.node_id: node for node in nodes}
@@ -57,13 +56,13 @@ class Workflow:
         self._validate()
     
     def _validate(self) -> None:
-        """Validate the workflow graph."""
+        """Validates resume workflow graph for job alignment."""
         # Check for cycles, invalid node references, etc.
         # Implementation omitted for brevity
         pass
     
     async def execute(self, initial_context: Dict[str, Any]) -> Dict[str, NodeResult]:
-        """Execute the workflow with the given initial context."""
+        """Executes resume workflow for job alignment processing."""
         # Implementation of DAG execution
         # This is a simplified version - a real implementation would include:
         # - Parallel execution where possible
@@ -88,7 +87,7 @@ class Workflow:
 
 @dataclass
 class DAGResult:
-    """Result of a DAG execution."""
+    """Result of resume workflow DAG execution for job alignment."""
     success: bool
     results: Dict[str, NodeResult] = field(default_factory=dict)
     error: Optional[str] = None
@@ -103,17 +102,9 @@ class DAGResult:
 
 
 def run_dag(ctx, plans, *, max_retries: int = 0):
-    """Execute workflow DAG with the given context and plans.
-    
-    This is a synchronous wrapper that matches the expected test interface.
-    
-    Args:
-        ctx: ExecutionContext
-        plans: WorkflowPlanBundle
-        max_retries: Maximum number of retries (currently unused)
-        
-    Returns:
-        DAGResult-like object with l2_results and other fields
+    """Executes resume workflow DAG for job alignment processing.
+
+    Synchronous wrapper for resume workflow orchestration.
     """
     # Ensure dependencies are injected via DI container
     ctx = inject_dependencies(ctx)

@@ -1,16 +1,8 @@
-"""Observability - Runtime Layer
+"""
+Provides observability compatibility shim for resume generation system.
 
-This module provides observability compatibility shim.
-
-Layer: Runtime/Infrastructure
-Responsibilities:
-- Forward to runtime.observability
-- Maintain backward compatibility
-- Provide unified observability API
-
-Non-responsibilities:
-- Business logic
-- Layer-specific operations
+Ensures runtime monitoring and tracking capabilities for improved
+resume generation quality and debugging.
 """
 
 # FILE: observability.py
@@ -27,14 +19,20 @@ from runtime.observability.collectors import (  # noqa: F401
 
 
 def get_all_events():
-    """Backward-compatible alias for get_events()."""
+    """Retrieves all observability events for resume generation monitoring.
 
+    Ensures comprehensive tracking of resume generation processes
+    for quality assurance and debugging.
+    """
     return get_events()
 
 
 def clear_events() -> None:  # type: ignore[override]
-    """Backward-compatible alias for collectors.clear_events()."""
+    """Clears observability events to maintain clean monitoring state.
 
+    Ensures resume generation tracking remains organized and
+    manageable for quality control purposes.
+    """
     _clear_events_impl()
 
 

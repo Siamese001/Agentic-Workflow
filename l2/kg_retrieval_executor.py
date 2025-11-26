@@ -1,20 +1,8 @@
 """
-Knowledge graph retrieval executor for résumé processing workflows.
+Knowledge graph retrieval executor for resume processing workflows.
 
-Implements L2 execution for multi-hop knowledge graph traversal to support résumé enhancement operations.
-
-Layer: L2 (Execution)
-Responsibilities:
-- Execute multi-hop graph traversal for résumé data extraction
-- Apply filters and constraints per hop in résumé knowledge graphs
-- Aggregate and deduplicate results for résumé processing
-- Return structured retrieval results for workflow coordination
-
-Non-responsibilities:
-- Query planning (L1)
-- Triplet storage (L4)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Implements L2 execution for multi-hop knowledge graph traversal
+to support resume enhancement and job alignment operations.
 """
 
 from __future__ import annotations
@@ -36,9 +24,9 @@ from l4.triplet_store import Triplet, TripletStore, TripletQuery
 @dataclass
 class TraversalPath:
     """
-    Represents a path through the résumé processing knowledge graph.
+    Represents a path through the resume processing knowledge graph.
 
-    Enables systematic traversal of résumé enhancement data relationships.
+    Enables systematic traversal of resume enhancement data relationships.
     """
     
     entities: List[str]
@@ -47,14 +35,16 @@ class TraversalPath:
     
     def add_hop(self, triplet: Triplet, next_entity: str) -> "TraversalPath":
         """
-        Adds a hop to the résumé processing knowledge graph path.
+        Adds a hop to the resume processing knowledge graph path.
+
+        Extends the path for resume data exploration and job alignment.
         
         Args:
-            triplet: Triplet traversed in résumé data graph
-            next_entity: Next entity in résumé processing path
+            triplet: Triplet traversed in resume data graph
+            next_entity: Next entity in resume processing path
             
         Returns:
-            New TraversalPath with added hop for résumé enhancement
+            New TraversalPath with added hop for resume enhancement
         """
         return TraversalPath(
             entities=self.entities + [next_entity],
@@ -66,9 +56,9 @@ class TraversalPath:
 @dataclass
 class KGRetrievalResult:
     """
-    Result of knowledge graph retrieval execution for résumé processing.
-    
-    Provides structured data extraction results for résumé enhancement workflows.
+    Result of knowledge graph retrieval for resume processing workflows.
+
+    Provides structured data extraction for resume enhancement and job alignment.
     """
     
     query_id: str
@@ -94,28 +84,26 @@ class KGRetrievalResult:
 
 class KGRetrievalExecutor:
     """
-    Executor for multi-hop knowledge graph retrieval in résumé processing workflows.
-    
-    Traverses the knowledge graph according to query plans created by L1 for résumé enhancement.
+    Executor for multi-hop knowledge graph retrieval in resume processing.
+
+    Traverses knowledge graph according to L1 plans for resume enhancement
+    and job alignment workflows.
     """
     
     def __init__(self, triplet_store: TripletStore):
         """
-        Initializes knowledge graph retrieval executor for résumé processing.
-        
+        Initializes knowledge graph retrieval executor for resume processing.
+
         Args:
-            triplet_store: L4 TripletStore instance for résumé workflow coordination
+            triplet_store: L4 TripletStore for resume workflow coordination
         """
         self.store = triplet_store
     
     def execute(self, plan: KGQueryPlan) -> KGRetrievalResult:
-        """Execute a KG query plan.
-        
+        """Executes KG query plan for resume processing workflows.
+
         Args:
-            plan: Query plan from L1
-            
-        Returns:
-            KGRetrievalResult with retrieved data
+            plan: Query plan from L1 for resume enhancement
         """
         start_time = datetime.now(UTC)
         
@@ -181,13 +169,9 @@ class KGRetrievalExecutor:
         )
     
     def _execute_entity_facts(self, plan: KGQueryPlan) -> List[Triplet]:
-        """Execute entity facts query.
-        
-        Args:
-            plan: Query plan
-            
-        Returns:
-            List of triplets about the entities
+        """Executes entity facts query for resume processing.
+
+        Retrieves triplets about entities for resume enhancement.
         """
         all_triplets: List[Triplet] = []
         
@@ -209,15 +193,9 @@ class KGRetrievalExecutor:
         return all_triplets
     
     def _execute_path_finding(self, plan: KGQueryPlan) -> List[TraversalPath]:
-        """Execute path finding between entities.
-        
-        Uses BFS to find paths between start and target entities.
-        
-        Args:
-            plan: Query plan
-            
-        Returns:
-            List of paths found
+        """Executes path finding for resume entity relationships.
+
+        Uses BFS to find paths for resume enhancement and job alignment.
         """
         if not plan.target_entities:
             return []
@@ -270,13 +248,9 @@ class KGRetrievalExecutor:
         self,
         plan: KGQueryPlan,
     ) -> Tuple[List[Triplet], Set[str]]:
-        """Execute N-hop neighborhood exploration.
-        
-        Args:
-            plan: Query plan
-            
-        Returns:
-            Tuple of (triplets, entities)
+        """Executes N-hop neighborhood exploration for resume entities.
+
+        Explores entity relationships for resume enhancement workflows.
         """
         all_triplets: List[Triplet] = []
         all_entities: Set[str] = set(plan.start_entities)
@@ -306,13 +280,9 @@ class KGRetrievalExecutor:
         return all_triplets, all_entities
     
     def _execute_temporal_slice(self, plan: KGQueryPlan) -> List[Triplet]:
-        """Execute temporal slice query.
-        
-        Args:
-            plan: Query plan
-            
-        Returns:
-            List of triplets valid at the specified time
+        """Executes temporal slice query for resume timeline analysis.
+
+        Retrieves triplets valid at specified time for job alignment.
         """
         all_triplets: List[Triplet] = []
         
@@ -342,15 +312,9 @@ class KGRetrievalExecutor:
         hop_spec: HopSpec,
         temporal_constraint: Optional[datetime],
     ) -> List[Tuple[Triplet, str]]:
-        """Get neighboring entities via triplets.
-        
-        Args:
-            entity: Current entity
-            hop_spec: Hop specification
-            temporal_constraint: Optional temporal filter
-            
-        Returns:
-            List of (triplet, neighbor_entity) tuples
+        """Gets neighboring entities for resume relationship analysis.
+
+        Retrieves connected entities for resume enhancement workflows.
         """
         neighbors: List[Tuple[Triplet, str]] = []
         
@@ -391,14 +355,9 @@ class KGRetrievalExecutor:
         triplets: List[Triplet],
         timestamp: datetime,
     ) -> List[Triplet]:
-        """Filter triplets by temporal constraint.
-        
-        Args:
-            triplets: Triplets to filter
-            timestamp: Point in time
-            
-        Returns:
-            Filtered triplets
+        """Filters triplets by temporal constraint for resume timeline analysis.
+
+        Ensures temporal accuracy for resume job alignment.
         """
         filtered = []
         for triplet in triplets:
@@ -410,13 +369,9 @@ class KGRetrievalExecutor:
         return filtered
     
     def _deduplicate_triplets(self, triplets: List[Triplet]) -> List[Triplet]:
-        """Remove duplicate triplets.
-        
-        Args:
-            triplets: List with potential duplicates
-            
-        Returns:
-            Deduplicated list
+        """Removes duplicate triplets for resume data consistency.
+
+        Ensures clean resume enhancement data for job alignment.
         """
         seen: Set[str] = set()
         unique: List[Triplet] = []
@@ -432,13 +387,9 @@ class KGRetrievalExecutor:
         self,
         triplets: List[Triplet],
     ) -> Dict[str, List[Triplet]]:
-        """Aggregate triplets by entity.
-        
-        Args:
-            triplets: Triplets to aggregate
-            
-        Returns:
-            Dict mapping entity to triplets
+        """Aggregates triplets by entity for resume data organization.
+
+        Groups resume enhancement data by entity for job alignment.
         """
         aggregated: Dict[str, List[Triplet]] = defaultdict(list)
         
@@ -452,13 +403,9 @@ class KGRetrievalExecutor:
         self,
         triplets: List[Triplet],
     ) -> Dict[str, List[Triplet]]:
-        """Aggregate triplets by predicate.
-        
-        Args:
-            triplets: Triplets to aggregate
-            
-        Returns:
-            Dict mapping predicate to triplets
+        """Aggregates triplets by predicate for resume data organization.
+
+        Groups resume enhancement data by relationship type for job alignment.
         """
         aggregated: Dict[str, List[Triplet]] = defaultdict(list)
         

@@ -1,4 +1,8 @@
-"""L3 Unified Workflow Orchestrator - Pure orchestration only."""
+"""
+L3 unified workflow orchestrator for resume job alignment.
+
+Coordinates all atomic layers for resume processing workflows.
+"""
 
 from typing import Any, Dict, Protocol
 from l1.strategy_planning import plan_strategy
@@ -27,7 +31,7 @@ class SafetyValidatorInterface(Protocol):
     def validate_content(self, content: str) -> list: ...
 
 class UnifiedWorkflowOrchestrator:
-    """Pure orchestration - coordinates all atomic layers."""
+    """Pure orchestration for resume job alignment layer coordination."""
     
     def __init__(self, routing_policy: Any, sandbox: Any, state_manager: StateManagerInterface, safety_validator: SafetyValidatorInterface, meta_profile: Any = None):
         # L2: Pure execution components
@@ -48,7 +52,7 @@ class UnifiedWorkflowOrchestrator:
         self.safety_validator = safety_validator
     
     def orchestrate_full_workflow(self, job: Any, resume: Any, config: Any) -> Dict[str, Any]:
-        """Orchestrate complete workflow - pure control flow only."""
+        """Orchestrates complete resume workflow for job alignment processing."""
         record_event("full_workflow_start", {})
         
         # Strategy Phase

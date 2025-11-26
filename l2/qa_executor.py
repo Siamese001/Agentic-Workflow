@@ -1,7 +1,8 @@
 """
-L2 quality assurance execution for résumé validation workflows.
+L2 quality assurance execution for resume validation workflows.
 
-Executes comprehensive QA analysis to ensure résumé accuracy and job alignment.
+Executes comprehensive QA analysis to ensure resume accuracy
+and job alignment for better applications.
 """
 
 from typing import Optional
@@ -13,9 +14,10 @@ from runtime.observability import record_event, record_exception
 
 class QAExecutor:
     """
-    Executes résumé quality assurance validation with optimal model selection.
-    
-    Ensures accuracy, relevance, and professional standards for comprehensive résumé improvement.
+    Executes resume quality assurance validation with optimal model selection.
+
+    Ensures accuracy, relevance, and professional standards for comprehensive
+    resume improvement and job alignment.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -25,9 +27,10 @@ class QAExecutor:
     
     def execute_qa(self, prompt: str) -> str:
         """
-        Executes résumé quality assurance analysis using LLM models.
-        
-        Validates résumé content for accuracy, clarity, and job alignment effectiveness.
+        Executes resume quality assurance analysis using LLM models.
+
+        Validates resume content for accuracy, clarity, and
+        job alignment effectiveness for better applications.
         """
         try:
             model = self.routing_policy.select_model(

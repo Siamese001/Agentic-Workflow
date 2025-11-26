@@ -1,10 +1,8 @@
 """
-L2 Factual QA - Reads from Neo4j for temporal fact queries
+L2 Factual QA for resume temporal fact verification.
 
-Answers factual questions about temporal career facts using Neo4j as primary source
-while maintaining existing interface for backward compatibility.
-
-Layer: L2 (Execution)
+Answers factual questions about temporal career facts using Neo4j
+to ensure resume accuracy and job alignment.
 """
 
 from __future__ import annotations
@@ -27,16 +25,9 @@ def factual_qa(
     predicate: str
 ) -> str:
     """
-    Query temporal facts from Neo4j with original output format.
-    
-    Args:
-        entity: Entity name to search for
-        start_date_range: Start of date range (ISO string)
-        end_date_range: End of date range (ISO string)
-        predicate: Predicate to match (e.g., "WORKED_AT", "HAS_SKILL")
-        
-    Returns:
-        Formatted string with enumerated facts or no-data message
+    Queries temporal facts for resume verification.
+
+    Ensures resume timeline accuracy for improved job alignment.
     """
     if not _NEO4J_AVAILABLE:
         return (
@@ -101,9 +92,9 @@ def trend_analysis(
     end_date_range: str
 ) -> str:
     """
-    Analyze trends across companies and topics using factual_qa.
-    
-    Maintains original interface while using Neo4j backend.
+    Analyzes career trends for resume optimization.
+
+    Identifies patterns to improve resume job alignment.
     """
     if not _NEO4J_AVAILABLE:
         return "Neo4j driver not installed. Install with: pip install neo4j>=5.22.0"

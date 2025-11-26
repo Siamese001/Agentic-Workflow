@@ -1,6 +1,7 @@
-"""L3 Adapter - Wraps UnifiedWorkflowOrchestrator to implement L3OrchestratorInterface
+"""
+L3 adapter for resume workflow orchestration interface compatibility.
 
-This adapter provides backward compatibility while enforcing strict interface contracts.
+Wraps orchestrator to enforce resume job alignment interface contracts.
 """
 
 from __future__ import annotations
@@ -28,13 +29,13 @@ from core.models.models import (
 
 
 class UnifiedWorkflowOrchestratorAdapter(L3OrchestratorInterface):
-    """Adapter that wraps UnifiedWorkflowOrchestrator to implement L3 interface."""
+    """Adapter wrapping orchestrator for resume job alignment interface."""
     
     def __init__(self, wrapped_orchestrator: UnifiedWorkflowOrchestrator):
         self.wrapped_orchestrator = wrapped_orchestrator
     
     async def orchestrate_workflow(self, request: L3OrchestrationRequest) -> L3OrchestrationResult:
-        """Orchestrate workflow using wrapped implementation."""
+        """Orchestrates resume workflow for job alignment processing."""
         try:
             # Convert interface request to internal format
             job_data = {
@@ -71,7 +72,7 @@ class UnifiedWorkflowOrchestratorAdapter(L3OrchestratorInterface):
             )
     
     async def create_dag(self, plan: WorkflowPlanBundle) -> tuple[List[DAGNode], List[DAGEdge]]:
-        """Create DAG from workflow plan."""
+        """Creates resume workflow DAG for job alignment processing."""
         # Delegate to wrapped orchestrator's DAG creation logic
         # This is a simplified implementation - the actual logic would be in UnifiedWorkflowOrchestrator
         nodes = []
@@ -96,7 +97,7 @@ class UnifiedWorkflowOrchestratorAdapter(L3OrchestratorInterface):
         return nodes, edges
     
     async def validate_dag(self, nodes: List[DAGNode], edges: List[DAGEdge]) -> bool:
-        """Validate DAG structure and dependencies."""
+        """Validates resume workflow DAG structure for job alignment."""
         # Basic validation - check for cycles and missing dependencies
         node_ids = {node.id for node in nodes}
         
@@ -111,7 +112,7 @@ class UnifiedWorkflowOrchestratorAdapter(L3OrchestratorInterface):
         return True
     
     def _convert_to_node_results(self, internal_results: List[Any]) -> List[NodeResult]:
-        """Convert internal result format to NodeResult format."""
+        """Converts internal results to resume workflow NodeResult format."""
         node_results = []
         for i, result in enumerate(internal_results):
             node_result = NodeResult(

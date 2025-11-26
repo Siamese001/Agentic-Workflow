@@ -1,7 +1,7 @@
 """
-L4 State Management - Journal
+L4 state journal for resume job alignment workflows.
 
-Implements a journal for state changes with support for corrections and auditing.
+Implements state change journal with corrections for resume enhancement.
 """
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, TypeVar, Generic, Callable
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 T = TypeVar('T')
 
 class CorrectionType(str, Enum):
-    """Types of corrections that can be made to the state."""
+    """Correction types for resume workflow state management."""
     UNDO = "undo"
     REDO = "redo"
     AMEND = "amend"
@@ -26,7 +26,7 @@ class CorrectionType(str, Enum):
 
 @dataclass
 class JournalEntry(Generic[T]):
-    """A single entry in the state journal."""
+    """Single entry in resume workflow state journal."""
     entry_id: str
     timestamp: datetime
     transition: StateTransition[T]
@@ -38,7 +38,7 @@ class JournalEntry(Generic[T]):
 
 @dataclass
 class Correction(Generic[T]):
-    """Represents a correction to a previous state change."""
+    """Represents correction to resume workflow state change."""
     correction_id: str
     entry_id: str
     correction_type: CorrectionType
@@ -52,10 +52,9 @@ class Correction(Generic[T]):
 
 class StateJournal(Generic[T]):
     """
-    Maintains a journal of all state changes with support for corrections.
+    Maintains resume workflow state journal with corrections support.
     
-    The journal provides a complete audit trail of all state changes,
-    including corrections and their justifications.
+    Provides complete audit trail of state changes for job alignment.
     """
     
     def __init__(self):
@@ -71,7 +70,7 @@ class StateJournal(Generic[T]):
         correlation_id: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None
     ) -> JournalEntry[T]:
-        """Record a new state transition in the journal."""
+        """Records resume workflow state transition in journal."""
         entry_id = str(uuid.uuid4())
         correlation_id = correlation_id or str(uuid.uuid4())
         
@@ -110,7 +109,7 @@ class StateJournal(Generic[T]):
         corrected_snapshot: Optional[StateSnapshot[T]] = None,
         metadata: Optional[Dict[str, Any]] = None
     ) -> Correction[T]:
-        """Record a correction to a previous journal entry."""
+        """Records correction to resume workflow journal entry."""
         if entry_id not in self._entries:
             raise ValueError(f"Journal entry not found: {entry_id}")
         
@@ -139,15 +138,15 @@ class StateJournal(Generic[T]):
         return correction
     
     def get_entry(self, entry_id: str) -> Optional[JournalEntry[T]]:
-        """Get a journal entry by ID."""
+        """Gets resume workflow journal entry by ID."""
         return self._entries.get(entry_id)
     
     def get_correction(self, correction_id: str) -> Optional[Correction[T]]:
-        """Get a correction by ID."""
+        """Gets resume workflow correction by ID."""
         return self._corrections.get(correction_id)
     
     def get_correlation_chain(self, correlation_id: str) -> List[JournalEntry[T]]:
-        """Get all journal entries for a given correlation ID."""
+        """Gets resume workflow journal entries for correlation ID."""
         entry_ids = self._correlation_chain.get(correlation_id, [])
         return [self._entries[eid] for eid in entry_ids if eid in self._entries]
     
@@ -156,7 +155,7 @@ class StateJournal(Generic[T]):
         timestamp: datetime,
         include_corrections: bool = False
     ) -> List[JournalEntry[T]]:
-        """Get all journal entries since the given timestamp."""
+        """Gets resume workflow journal entries since timestamp."""
         return [
             entry for entry in self._entries.values()
             if entry.timestamp > timestamp and 
@@ -168,7 +167,7 @@ class StateJournal(Generic[T]):
         path: StatePath,
         since: Optional[datetime] = None
     ) -> List[JournalEntry[T]]:
-        """Get all journal entries that modified the given path."""
+        """Gets resume workflow journal entries for given path."""
         result = []
         for entry in self._entries.values():
             if since and entry.timestamp <= since:
@@ -181,7 +180,7 @@ class StateJournal(Generic[T]):
         return result
     
     def _path_matches(self, path1: StatePath, path2: StatePath) -> bool:
-        """Check if two paths match, with support for wildcards."""
+        """Checks if resume workflow paths match with wildcards."""
         # Exact match
         if path1 == path2:
             return True
@@ -198,7 +197,7 @@ class StateJournal(Generic[T]):
         end_time: Optional[datetime] = None,
         include_corrections: bool = True
     ) -> List[Dict[str, Any]]:
-        """Generate an audit trail of all state changes."""
+        """Generates audit trail of resume workflow state changes."""
         audit = []
         
         for entry in sorted(self._entries.values(), key=lambda e: e.timestamp):
@@ -235,7 +234,7 @@ class StateJournal(Generic[T]):
 _journal: Optional[StateJournal] = None
 
 def get_global_journal() -> StateJournal:
-    """Get or create the global state journal instance."""
+    """Gets or creates global resume workflow state journal."""
     global _journal
     if _journal is None:
         _journal = StateJournal()
@@ -248,7 +247,7 @@ def record_transition(
     correlation_id: Optional[str] = None,
     metadata: Optional[Dict[str, Any]] = None
 ) -> JournalEntry[T]:
-    """Record a state transition in the global journal."""
+    """Records resume workflow state transition in global journal."""
     return get_global_journal().record(
         transition=transition,
         snapshot_before=snapshot_before,

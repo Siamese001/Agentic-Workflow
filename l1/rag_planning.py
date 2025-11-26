@@ -1,7 +1,8 @@
 """
-RAG planning for comprehensive résumé evidence gathering.
+RAG planning for comprehensive resume evidence gathering and retrieval.
 
-Creates structured plans to retrieve relevant data for optimal résumé improvement.
+Creates structured plans to retrieve relevant data for optimal
+resume improvement and job alignment.
 """
 
 from __future__ import annotations
@@ -16,9 +17,10 @@ from l1.builders.prompt_builder import PromptInstance, build_rag_prompt, build_h
 @dataclass(frozen=True)
 class RAGReasoningPlan:
     """
-    Defines evidence analysis structure for résumé improvement.
+    Defines evidence analysis structure for resume improvement.
 
-    Ensures systematic processing of retrieved data for comprehensive résumé enhancement.
+    Ensures systematic processing of retrieved data for comprehensive
+    resume enhancement and job alignment.
     """
 
     prompt: PromptInstance
@@ -29,7 +31,8 @@ class HydePlan:
     """
     Structures hypothetical document query planning.
 
-    Creates enhanced search strategies for better résumé evidence retrieval.
+    Creates enhanced search strategies for better resume
+    evidence retrieval and job alignment.
     """
 
     prompt: PromptInstance
@@ -42,9 +45,10 @@ def plan_rag_reasoning(
     evidence: Sequence[Evidence],
 ) -> RAGReasoningPlan:
     """
-    Creates evidence analysis plan for résumé improvement.
+    Creates evidence analysis plan for resume improvement.
 
-    Structures approach to process retrieved data for comprehensive résumé enhancement.
+    Structures approach to process retrieved data for comprehensive
+    resume enhancement and job alignment.
     """
     prompt = build_rag_prompt(
         plan=rag_plan,
