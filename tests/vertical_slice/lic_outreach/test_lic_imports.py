@@ -85,7 +85,7 @@ def test_lic_end_to_end_import_chain():
         assert callable(run_batch_high_volume)
         
         # Verify we can create basic objects
-        from l3.lic_orchestrator import RecipientProfile
+        from l1.outreach_archetype_planning import RecipientProfile
         from l1.outreach_dataclasses import OutreachMission
         
         recipient = RecipientProfile(
