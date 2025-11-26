@@ -5,10 +5,8 @@ Verifies that all archetypes get correct reasoning-intensity parameters
 and that ExecutiveReasoningProfile is properly integrated.
 """
 
-import pytest
 from l1.outreach_dataclasses import (
     ArchetypeType,
-    ExecutiveReasoningProfile,
     EXECUTIVE_REASONING_PROFILES,
     compute_reasoning_multiplier
 )
