@@ -1,7 +1,7 @@
 """
-L4 State Management - Core Types
+L4 state management types for resume job alignment.
 
-Defines the fundamental types for state management with strict immutability.
+Defines fundamental types for resume workflow state operations.
 """
 from __future__ import annotations
 from typing import Any, Dict, Optional, TypeVar, Generic, Callable
@@ -14,7 +14,7 @@ import json
 T = TypeVar('T')
 
 class StateOperation(str, Enum):
-    """Types of state operations."""
+    """State operations for resume job alignment workflows."""
     CREATE = "create"
     READ = "read"
     UPDATE = "update"
@@ -22,7 +22,7 @@ class StateOperation(str, Enum):
     PATCH = "patch"
 
 class StateEventType(str, Enum):
-    """Types of state events."""
+    """State events for resume job alignment workflows."""
     TRANSITION = "transition"
     SNAPSHOT = "snapshot"
     ROLLBACK = "rollback"
@@ -30,25 +30,25 @@ class StateEventType(str, Enum):
 
 @dataclass(frozen=True)
 class StatePath:
-    """Immutable representation of a path in the state tree."""
+    """Immutable path for resume workflow state tree navigation."""
     parts: tuple[str, ...] = field(default_factory=tuple)
     
     def __truediv__(self, other: str) -> StatePath:
-        """Create a new path by appending a component."""
+        """Creates new resume workflow state path with component."""
         return StatePath(self.parts + (str(other),))
     
     def __str__(self) -> str:
-        """Convert to dot notation."""
+        """Converts resume workflow state path to dot notation."""
         return ".".join(self.parts)
     
     @classmethod
     def from_string(cls, path_str: str) -> StatePath:
-        """Create from a dot-separated string."""
+        """Creates resume workflow state path from dot string."""
         return cls(parts=tuple(part for part in path_str.split(".") if part))
 
 @dataclass(frozen=True)
 class StateTransition(Generic[T]):
-    """Immutable representation of a state change."""
+    """Immutable representation of resume workflow state change."""
     operation: StateOperation
     path: StatePath
     value: Any = None
@@ -57,7 +57,7 @@ class StateTransition(Generic[T]):
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc), compare=False)
     
     def with_metadata(self, **kwargs: Any) -> StateTransition[T]:
-        """Create a new transition with updated metadata."""
+        """Creates new resume workflow transition with metadata."""
         return StateTransition(
             operation=self.operation,
             path=self.path,
@@ -69,7 +69,7 @@ class StateTransition(Generic[T]):
 
 @dataclass(frozen=True)
 class StateSnapshot(Generic[T]):
-    """Immutable snapshot of state at a point in time."""
+    """Immutable snapshot of resume workflow state for job alignment."""
     state_id: str
     data: T
     parent_id: Optional[str] = None
@@ -78,7 +78,7 @@ class StateSnapshot(Generic[T]):
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def get_hash(self) -> str:
-        """Generate a deterministic hash of this snapshot."""
+        """Generates deterministic hash of resume workflow snapshot."""
         data = {
             'state_id': self.state_id,
             'data': self.data,
@@ -94,15 +94,15 @@ class StateSnapshot(Generic[T]):
         return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
 
 class StateError(Exception):
-    """Base class for state-related errors."""
+    """Base error for resume workflow state operations."""
     pass
 
 class StateValidationError(StateError):
-    """Raised when a state transition is invalid."""
+    """Error for invalid resume workflow state transitions."""
     pass
 
 class StateRollbackError(StateError):
-    """Raised when a rollback operation fails."""
+    """Error for failed resume workflow state rollbacks."""
     pass
 
 

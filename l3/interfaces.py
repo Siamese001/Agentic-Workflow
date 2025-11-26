@@ -1,21 +1,7 @@
-"""L3 Interfaces - Orchestration Layer
+"""
+L3 interfaces for resume workflow orchestration.
 
-This module defines abstract interfaces for all L3 orchestration operations.
-All L3 implementations must inherit from these interfaces.
-
-Layer: L3 (Orchestration)
-Responsibilities:
-- DAG construction and execution
-- Workflow coordination
-- Concurrency control
-- Error handling and recovery
-- Resource management
-
-Non-responsibilities:
-- Planning (L1)
-- Tool execution (L2)
-- State mutation (L4)
-- Safety/policy decisions (L5)
+Defines abstract interfaces for resume job alignment coordination.
 """
 
 from __future__ import annotations
@@ -37,7 +23,7 @@ from core.models.models import (
 
 
 class ExecutionMode(Enum):
-    """Execution modes for orchestration."""
+    """Execution modes for resume workflow orchestration."""
     SEQUENTIAL = "sequential"
     PARALLEL = "parallel"
     PIPELINE = "pipeline"
@@ -46,7 +32,7 @@ class ExecutionMode(Enum):
 
 @dataclass
 class L3OrchestrationRequest:
-    """Input request for L3 orchestration operations."""
+    """Input request for resume workflow orchestration operations."""
     plan_bundle: WorkflowPlanBundle
     execution_context: ExecutionContext
     mode: ExecutionMode = ExecutionMode.SEQUENTIAL
@@ -55,7 +41,7 @@ class L3OrchestrationRequest:
 
 @dataclass
 class L3OrchestrationResult:
-    """Output result from L3 orchestration operations."""
+    """Output result from resume workflow orchestration operations."""
     success: bool
     status: WorkflowStatus
     results: List[NodeResult]
@@ -64,95 +50,95 @@ class L3OrchestrationResult:
 
 
 class L3OrchestratorInterface(ABC):
-    """Abstract interface for all L3 orchestration operations."""
+    """Abstract interface for resume workflow orchestration operations."""
     
     @abstractmethod
     async def orchestrate_workflow(self, request: L3OrchestrationRequest) -> L3OrchestrationResult:
-        """Orchestrate the execution of a complete workflow."""
+        """Orchestrates resume workflow execution for job alignment."""
         pass
     
     @abstractmethod
     async def create_dag(self, plan: WorkflowPlanBundle) -> tuple[List[DAGNode], List[DAGEdge]]:
-        """Create a DAG from a workflow plan."""
+        """Creates resume workflow DAG for job alignment processing."""
         pass
     
     @abstractmethod
     async def validate_dag(self, nodes: List[DAGNode], edges: List[DAGEdge]) -> bool:
-        """Validate DAG structure and dependencies."""
+        """Validates resume workflow DAG structure for job alignment."""
         pass
 
 
 class L3DAGExecutorInterface(ABC):
-    """Interface for DAG execution operations."""
+    """Interface for resume workflow DAG execution operations."""
     
     @abstractmethod
     async def execute_dag(self, nodes: List[DAGNode], edges: List[DAGEdge], context: ExecutionContext) -> List[NodeResult]:
-        """Execute a DAG with given context."""
+        """Executes resume workflow DAG for job alignment processing."""
         pass
     
     @abstractmethod
     async def execute_node(self, node: DAGNode, context: ExecutionContext) -> NodeResult:
-        """Execute a single DAG node."""
+        """Executes single resume workflow DAG node for job alignment."""
         pass
     
     @abstractmethod
     async def handle_node_failure(self, node: DAGNode, error: Exception, context: ExecutionContext) -> bool:
-        """Handle node execution failure with retry/recovery logic."""
+        """Handles resume workflow node failure for job alignment recovery."""
         pass
 
 
 class L3ConcurrencyControllerInterface(ABC):
-    """Interface for concurrency control operations."""
+    """Interface for resume workflow concurrency control operations."""
     
     @abstractmethod
     async def schedule_parallel_execution(self, nodes: List[DAGNode], context: ExecutionContext) -> List[NodeResult]:
-        """Schedule and execute nodes in parallel."""
+        """Schedules parallel resume workflow execution for job alignment."""
         pass
     
     @abstractmethod
     async def manage_resource_limits(self, active_executions: List[Awaitable]) -> List[Awaitable]:
-        """Manage resource limits for concurrent executions."""
+        """Manages resource limits for resume workflow concurrent execution."""
         pass
     
     @abstractmethod
     async def resolve_dependencies(self, node: DAGNode, completed_results: List[NodeResult]) -> bool:
-        """Check if node dependencies are satisfied."""
+        """Checks resume workflow node dependencies for job alignment."""
         pass
 
 
 class L3ErrorHandlerInterface(ABC):
-    """Interface for error handling and recovery operations."""
+    """Interface for resume workflow error handling and recovery operations."""
     
     @abstractmethod
     async def handle_execution_error(self, error: Exception, context: ExecutionContext) -> bool:
-        """Handle workflow-level execution errors."""
+        """Handles resume workflow execution errors for job alignment."""
         pass
     
     @abstractmethod
     async def attempt_recovery(self, failed_nodes: List[DAGNode], context: ExecutionContext) -> List[NodeResult]:
-        """Attempt to recover from failed executions."""
+        """Attempts resume workflow recovery for job alignment processing."""
         pass
     
     @abstractmethod
     async def rollback_execution(self, completed_nodes: List[DAGNode], context: ExecutionContext) -> bool:
-        """Rollback completed executions if needed."""
+        """Rollbacks resume workflow executions for job alignment recovery."""
         pass
 
 
 class L3ResourceMonitorInterface(ABC):
-    """Interface for resource monitoring operations."""
+    """Interface for resume workflow resource monitoring operations."""
     
     @abstractmethod
     async def monitor_resource_usage(self, execution_id: str) -> Dict[str, Any]:
-        """Monitor resource usage for an execution."""
+        """Monitors resume workflow resource usage for job alignment."""
         pass
     
     @abstractmethod
     async def enforce_resource_limits(self, limits: Dict[str, Any], current_usage: Dict[str, Any]) -> bool:
-        """Enforce resource limits during execution."""
+        """Enforces resource limits during resume workflow execution."""
         pass
     
     @abstractmethod
     async def optimize_execution_plan(self, nodes: List[DAGNode], resource_constraints: Dict[str, Any]) -> List[DAGNode]:
-        """Optimize execution plan based on resource constraints."""
+        """Optimizes resume workflow execution plan for job alignment."""
         pass

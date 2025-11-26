@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """
-Update all imports after reorganization to OpenAI agentic architecture.
-This script updates import statements to reflect the new capability-based folder structure.
+Updates import paths after reorganization for clean architecture.
+
+Ensures resume generation system maintains proper structure
+ for improved code organization and easier maintenance.
 """
 
-import os
 from pathlib import Path
 
 # Define the root directory

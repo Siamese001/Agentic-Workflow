@@ -1,7 +1,7 @@
 """
-Defines data structures for tracking career timeline and experience validation.
+L4 temporal schemas for resume job alignment workflows.
 
-Improves résumé accuracy by ensuring career dates and job facts are consistent and properly validated.
+Defines career timeline structures for resume enhancement processing.
 """
 
 from __future__ import annotations
@@ -17,9 +17,9 @@ from .types import StatePath
 
 class TemporalFactStatus(str, Enum):
     """
-    Tracks validation status of career facts and experiences in résumé data.
+    Tracks validation status of career facts for resume job alignment.
 
-    Improves résumé reliability by ensuring only verified and current career information is displayed.
+    Ensures only verified career information is displayed for resume enhancement.
     """
     ACTIVE = "active"
     INVALIDATED = "invalidated"
@@ -30,9 +30,9 @@ class TemporalFactStatus(str, Enum):
 
 class ConflictType(str, Enum):
     """
-    Identifies types of inconsistencies in career timeline and job experience data.
+    Identifies inconsistencies in career timeline for resume job alignment.
 
-    Improves résumé accuracy by detecting and flagging conflicting career information for resolution.
+    Detects conflicting career information for resume enhancement processing.
     """
     OVERLAPPING_FACTS = "overlapping_facts"
     CONTRADICTORY_PREDICATES = "contradictory_predicates"
@@ -44,42 +44,30 @@ class ConflictType(str, Enum):
 @dataclass(frozen=True)
 class TemporalRange:
     """
-    Defines valid time periods for career experiences and job accomplishments.
+    Defines valid time periods for career experiences in resume enhancement.
 
-    Improves résumé timeline accuracy by ensuring experiences are shown within their correct date ranges.
+    Ensures experiences are shown within correct date ranges for job alignment.
     """
     valid_at: datetime
     invalid_at: Optional[datetime] = None
     
     def is_valid_at(self, timestamp: datetime) -> bool:
-        """
-        Validates if a career experience was active at a specific point in time.
-
-        Improves résumé timeline accuracy by showing only relevant experiences for target job timeframes.
-        """
+        """Validates if career experience was active at specific time for resume."""
         return self.valid_at <= timestamp and (
             self.invalid_at is None or timestamp < self.invalid_at
         )
     
     def overlaps_with(self, other: TemporalRange) -> bool:
-        """
-        Detects when career experiences or jobs have conflicting time periods.
-
-        Improves résumé consistency by identifying overlapping employment that needs clarification.
-        """
+        """Detects conflicting time periods in career experiences for resume."""
         start = max(self.valid_at, other.valid_at)
         end = min(
-            self.invalid_at or datetime.max.replace(tzinfo=UTC),
-            other.invalid_at or datetime.max.replace(tzinfo=UTC)
+            self.invalid_at or datetime.max.replace(tzinfo=timezone.utc),
+            other.invalid_at or datetime.max.replace(tzinfo=timezone.utc)
         )
         return start < end
     
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts career timeline data to storage format for persistence.
-
-        Improves résumé data management by enabling reliable saving and loading of career timelines.
-        """
+        """Converts career timeline data to storage format for resume processing."""
         return {
             "valid_at": self.valid_at.isoformat(),
             "invalid_at": self.invalid_at.isoformat() if self.invalid_at else None,
@@ -89,9 +77,9 @@ class TemporalRange:
 @dataclass(frozen=True)
 class TemporalEntity:
     """
-    Represents companies, roles, and skills in career experience tracking.
+    Represents career entities for resume job alignment workflows.
 
-    Improves résumé structure by organizing career entities with proper relationships and aliases.
+    Organizes companies, roles, and skills for resume enhancement processing.
     """
     entity_id: str
     entity_type: str
@@ -102,11 +90,7 @@ class TemporalEntity:
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
     
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts career entity data to storage format for database persistence.
-
-        Improves résumé data integrity by ensuring consistent storage of companies, roles, and skills.
-        """
+        """Converts career entity data to storage format for resume processing."""
         return {
             "entity_id": self.entity_id,
             "entity_type": self.entity_type,
@@ -121,9 +105,9 @@ class TemporalEntity:
 @dataclass(frozen=True)
 class TemporalTriplet:
     """
-    Represents career facts like job titles, responsibilities, and achievements with time context.
+    Represents career facts with time context for resume job alignment.
 
-    Improves résumé accuracy by structuring career information as verifiable subject-predicate-object facts.
+    Structures career information as verifiable facts for resume enhancement.
     """
     triplet_id: str
     subject: str
@@ -136,11 +120,7 @@ class TemporalTriplet:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_text(self) -> str:
-        """
-        Converts career facts to readable text for résumé bullet points.
-
-        Improves résumé readability by presenting structured career data as natural language achievements.
-        """
+        """Converts career facts to readable text for resume bullet points."""
         validity = f" (valid from {self.temporal_range.valid_at.isoformat()}"
         if self.temporal_range.invalid_at:
             validity += f" until {self.temporal_range.invalid_at.isoformat()}"
@@ -148,11 +128,7 @@ class TemporalTriplet:
         return f"{self.subject} {self.predicate} {self.object}{validity}"
     
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts career fact data to storage format for database persistence.
-
-        Improves résumé data management by enabling reliable storage of job achievements and responsibilities.
-        """
+        """Converts career fact data to storage format for resume processing."""
         return {
             "triplet_id": self.triplet_id,
             "subject": self.subject,
@@ -169,9 +145,9 @@ class TemporalTriplet:
 @dataclass(frozen=True)
 class TemporalEvent:
     """
-    Tracks career changes like job transitions, promotions, and skill acquisitions.
+    Tracks career changes for resume job alignment workflows.
 
-    Improves résumé chronology by maintaining an audit trail of career progression events.
+    Maintains audit trail of career progression events for resume enhancement.
     """
     event_id: str
     event_type: str
@@ -181,11 +157,7 @@ class TemporalEvent:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts career event data to storage format for audit trail persistence.
-
-        Improves résumé verification by maintaining a complete history of career changes and updates.
-        """
+        """Converts career event data to storage format for resume processing."""
         return {
             "event_id": self.event_id,
             "event_type": self.event_type,
@@ -199,9 +171,9 @@ class TemporalEvent:
 @dataclass(frozen=True)
 class ConflictDetection:
     """
-    Identifies inconsistencies in career timeline and job experience data.
+    Identifies inconsistencies in career timeline for resume job alignment.
 
-    Improves résumé accuracy by flagging conflicting dates, overlapping jobs, and contradictory facts.
+    Flags conflicting dates and overlapping jobs for resume enhancement.
     """
     conflict_id: str
     conflict_type: ConflictType
@@ -212,11 +184,7 @@ class ConflictDetection:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> Dict[str, Any]:
-        """
-        Converts conflict detection data to storage format for tracking resolution progress.
-
-        Improves résumé quality control by maintaining records of identified inconsistencies and fixes.
-        """
+        """Converts conflict detection data to storage format for resume processing."""
         return {
             "conflict_id": self.conflict_id,
             "conflict_type": self.conflict_type.value,
@@ -230,7 +198,7 @@ class ConflictDetection:
 
 @dataclass(frozen=True)
 class IngestionBatch:
-    """Immutable batch for ingestion tracking."""
+    """Immutable batch for resume workflow ingestion tracking."""
     batch_id: str
     source_id: str
     document_count: int
@@ -241,7 +209,7 @@ class IngestionBatch:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for storage."""
+        """Converts ingestion batch to storage format for resume processing."""
         return {
             "batch_id": self.batch_id,
             "source_id": self.source_id,
@@ -256,7 +224,7 @@ class IngestionBatch:
 
 @dataclass(frozen=True)
 class FusionSession:
-    """Immutable fusion session tracking."""
+    """Immutable fusion session for resume workflow tracking."""
     session_id: str
     user_query: str
     temporal_constraints: Optional[Dict[str, Any]] = None
@@ -267,7 +235,7 @@ class FusionSession:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for storage."""
+        """Converts fusion session to storage format for resume processing."""
         return {
             "session_id": self.session_id,
             "user_query": self.user_query,

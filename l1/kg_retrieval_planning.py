@@ -1,20 +1,8 @@
 """
-Knowledge graph retrieval planning for résumé processing workflows.
+Knowledge graph retrieval planning for resume processing workflows.
 
-Implements L1 planning for multi-hop knowledge graph retrieval to support comprehensive résumé enhancement operations.
-
-Layer: L1 (Planning)
-Responsibilities:
-- Plan multi-hop KG traversal paths for résumé data retrieval
-- Decompose complex résumé queries into traversal steps
-- Determine hop count and entity filters for résumé matching
-- Plan temporal constraint application for accurate résumé information
-
-Non-responsibilities:
-- Graph traversal execution (L2)
-- Triplet storage (L4)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Implements L1 planning for multi-hop knowledge graph retrieval to support
+comprehensive resume enhancement and job alignment.
 """
 
 from __future__ import annotations
@@ -26,14 +14,20 @@ from enum import Enum
 
 
 class HopDirection(str, Enum):
-    """Direction of traversal in résumé processing knowledge graph."""
+    """Direction of traversal in resume processing knowledge graph.
+
+    Ensures proper navigation through resume-related career data.
+    """
     OUTGOING = "outgoing"    # Subject -> Object
     INCOMING = "incoming"    # Object <- Subject
     BIDIRECTIONAL = "both"   # Both directions
 
 
 class QueryType(str, Enum):
-    """Type of résumé processing KG query."""
+    """Type of resume processing KG query.
+
+    Defines query patterns for optimal resume data retrieval.
+    """
     ENTITY_FACTS = "entity_facts"           # All facts about an entity
     PATH_FINDING = "path_finding"           # Find path between entities
     NEIGHBORHOOD = "neighborhood"           # N-hop neighborhood
@@ -43,7 +37,10 @@ class QueryType(str, Enum):
 
 @dataclass
 class HopSpec:
-    """Specification for a single hop in résumé processing multi-hop traversal."""
+    """Specification for a single hop in resume processing traversal.
+
+    Defines navigation steps for comprehensive resume data retrieval.
+    """
     
     hop_number: int
     direction: HopDirection

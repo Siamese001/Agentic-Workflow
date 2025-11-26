@@ -8,7 +8,10 @@ from typing import Any, List, Dict
 
 class Neo4jGraphStore:
     """
-    L4 State: Neo4j-backed graph store for entities, temporal relations, and queries.
+    Stores resume-related entities and relationships in Neo4j graph database.
+
+    Enables efficient retrieval of structured knowledge to improve
+    resume content accuracy and job alignment.
     """
 
     def __init__(self) -> None:
@@ -27,10 +30,13 @@ class Neo4jGraphStore:
         with self._driver.session() as session:
             return list(session.run(cypher, params or {}))
 
-    def upsert_entity(self, entity_id: str, etype: str, name: str,
+    def upsert_entity(self, entity_id: str, etype: str, name: str, 
                         metadata: Dict[str, Any] | None = None) -> None:
         """
-        MERGE an Entity node with basic fields + arbitrary metadata.
+        Stores or updates resume-related entities with metadata.
+
+        Ensures all resume entities are properly structured for
+        accurate content generation and job alignment.
         """
         cypher = """
         MERGE (e:Entity {id: $id})
@@ -80,7 +86,10 @@ class Neo4jGraphStore:
         attrs: Dict[str, Any] | None = None,
     ) -> None:
         """
-        MERGE a RELATION edge between two Entity nodes with temporal validity.
+        Stores relationships between resume entities with temporal tracking.
+
+        Ensures resume content relationships are properly structured
+        for accurate job alignment and relevance.
         """
         cypher = """
         MATCH (s:Entity {id: $subject_id})
@@ -124,7 +133,10 @@ class Neo4jGraphStore:
         invalidated_by: str | None,
     ) -> None:
         """
-        Update invalidation fields for a RELATION (used by InvalidationAgent).
+        Updates temporal validity of resume entity relationships.
+
+        Ensures outdated information is properly marked to maintain
+        resume accuracy and relevance for job applications.
         """
         cypher = """
         MATCH ()-[r:RELATION {id: $rel_id}]->()
@@ -148,7 +160,10 @@ class Neo4jGraphStore:
         end: str,
     ) -> List[Any]:
         """
-        Query temporal facts: subject -[RELATION]-> object filtered on time interval.
+        Queries temporal facts about resume entities within time ranges.
+
+        Ensures resume content reflects current and relevant information
+        for improved accuracy and job alignment.
         """
         cypher = """
         MATCH (s:Entity)-[r:RELATION]->(o:Entity)

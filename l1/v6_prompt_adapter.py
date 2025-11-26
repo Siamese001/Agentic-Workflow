@@ -1,20 +1,8 @@
-"""V6 Prompt Adapter - Wire v6 prompts to L1 planners
+"""
+V6 Prompt Adapter for resume generation planning integration.
 
-This module adapts v6 instructional prompts for use in L1 planning agents.
-It bridges the v6 prompt system with existing L1 planning functions.
-
-Layer: L1 (Planning)
-Responsibilities:
-- Adapt v6 prompts to L1 planner interface
-- Inject many-shot examples into planning
-- Wire extensions (RAG, CoT, temporal) to planners
-- Provide backward-compatible interface
-
-Non-responsibilities:
-- LLM invocation (L2)
-- Orchestration (L3)
-- State management (L4)
-- Policy enforcement (L5)
+Adapts v6 instructional prompts for use in L1 planning agents
+to improve resume quality and job alignment.
 """
 
 from __future__ import annotations
@@ -33,7 +21,12 @@ from l1.v6_prompt_integration import (
 
 @dataclass
 class V6PromptConfig:
-    """Configuration for v6 prompt generation."""
+    """
+    Configuration for v6 prompt generation in resume planning.
+
+    Ensures consistent prompt structure for improved resume
+    quality and job alignment.
+    """
     
     include_examples: bool = True
     enable_cot: bool = True
@@ -47,7 +40,12 @@ def build_v6_strategy_prompt(
     config: Any,
     v6_config: Optional[V6PromptConfig] = None,
 ) -> str:
-    """Build v6 strategy planner prompt with context.
+    """
+    Builds v6 strategy planner prompt for resume improvement.
+
+    Creates structured approach for optimal resume job alignment
+    and enhanced content quality.
+    """
     
     Args:
         ctx: Execution context with L4 adapters

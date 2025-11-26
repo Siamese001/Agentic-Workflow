@@ -1,10 +1,8 @@
 """
-L2 KG Writer - Mirrors temporal graph data to Neo4j
+L2 KG Writer for resume temporal graph data.
 
-Writes entities, relations, and events to Neo4jGraphStore while preserving
-existing SQLite/NetworkX behavior for backward compatibility.
-
-Layer: L2 (Execution)
+Writes entities, relations, and events to Neo4jGraphStore
+to support resume timeline analysis and job alignment.
 """
 
 from __future__ import annotations
@@ -29,9 +27,9 @@ from l4.temporal_schemas import (
 
 async def insert_entity(entity: TemporalEntity) -> None:
     """
-    Insert entity into Neo4j while preserving existing behavior.
-    
-    Mirrors canonical entity data to Neo4jGraphStore.
+    Inserts resume entity into Neo4j for timeline analysis.
+
+    Mirrors canonical entity data to support resume job alignment.
     """
     if not _NEO4J_AVAILABLE:
         return
@@ -57,9 +55,9 @@ async def insert_entity(entity: TemporalEntity) -> None:
 
 async def insert_triplet(triplet: TemporalTriplet) -> None:
     """
-    Insert triplet as relation in Neo4j while preserving existing behavior.
-    
-    Creates RELATION edge between subject and object entities.
+    Inserts resume triplet as relation in Neo4j for timeline analysis.
+
+    Creates RELATION edge to support resume job alignment.
     """
     if not _NEO4J_AVAILABLE:
         return
@@ -87,9 +85,9 @@ async def insert_triplet(triplet: TemporalTriplet) -> None:
 
 async def insert_event(event: TemporalEvent) -> None:
     """
-    Insert temporal event in Neo4j while preserving existing behavior.
-    
-    Updates relation invalidation if event affects a triplet.
+    Inserts resume temporal event in Neo4j for timeline analysis.
+
+    Updates relation invalidation to support resume job alignment.
     """
     if not _NEO4J_AVAILABLE:
         return
@@ -115,9 +113,9 @@ async def batch_process_invalidation(
     events_to_update: List[TemporalEvent]
 ) -> None:
     """
-    Process batch invalidation updates to Neo4j while preserving existing behavior.
-    
-    Updates multiple relations' invalidity status.
+    Processes batch invalidation updates for resume timeline analysis.
+
+    Updates multiple relations to support resume job alignment.
     """
     if not _NEO4J_AVAILABLE:
         return
@@ -133,9 +131,9 @@ async def ingest_transcript(
     events: List[TemporalEvent],
 ) -> None:
     """
-    Ingest complete transcript data to Neo4j while preserving existing behavior.
-    
-    Mirrors all transcript components to Neo4jGraphStore.
+    Ingests complete resume transcript data for timeline analysis.
+
+    Mirrors all components to support resume job alignment.
     """
     if not _NEO4J_AVAILABLE:
         return

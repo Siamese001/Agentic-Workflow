@@ -1,7 +1,8 @@
 """
-Quality assurance planning for résumé improvement validation.
+Quality assurance planning for resume improvement validation and accuracy.
 
-Creates structured plans to ensure comprehensive résumé enhancement quality and accuracy.
+Creates structured plans to ensure comprehensive resume enhancement
+quality and job alignment.
 """
 
 from __future__ import annotations
@@ -22,7 +23,8 @@ class SemanticQAPlan:
     """
     Defines semantic quality assurance structure.
 
-    Ensures thorough evaluation of résumé improvement content for accuracy and relevance.
+    Ensures thorough evaluation of resume improvement content
+    for accuracy and job alignment.
     """
 
     prompt: PromptInstance
@@ -33,7 +35,8 @@ class CouncilPlan:
     """
     Structures council review planning approach.
 
-    Coordinates comprehensive evaluation of résumé enhancement recommendations.
+    Coordinates comprehensive evaluation of resume enhancement
+    recommendations for improved quality.
     """
 
     prompt: PromptInstance
@@ -47,9 +50,10 @@ def plan_semantic_qa(
     rag: RAGResult,
 ) -> SemanticQAPlan:
     """
-    Creates semantic quality assurance plan for résumé validation.
+    Creates semantic quality assurance plan for resume validation.
 
-    Structures evaluation approach to ensure comprehensive résumé improvement quality.
+    Ensures thorough evaluation of resume content for accuracy
+    and improved job alignment.
     """
     prompt = build_qa_prompt(
         plan=qa_plan,

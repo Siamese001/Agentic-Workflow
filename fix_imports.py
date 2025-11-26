@@ -1,4 +1,9 @@
-"""Fix all imports after reorganization to OpenAI agentic architecture."""
+"""
+Fixes import statements after reorganization to maintain clean architecture.
+
+Ensures resume generation system remains properly structured for improved
+code maintainability and easier future enhancements.
+"""
 
 import os
 import re
@@ -28,7 +33,11 @@ IMPORT_MAPPINGS = {
 }
 
 def fix_file(filepath: Path) -> bool:
-    """Fix imports in a single file. Returns True if changes were made."""
+    """Fixes import statements in a single file for architectural consistency.
+
+    Ensures resume generation modules maintain proper import structure
+    for improved code organization and easier maintenance.
+    """
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -50,7 +59,11 @@ def fix_file(filepath: Path) -> bool:
         return False
 
 def main():
-    """Fix all Python files in the repository."""
+    """Fixes all Python files in the repository for architectural consistency.
+
+    Ensures resume generation system maintains clean import structure
+    for improved code organization and easier maintenance.
+    """
     changed_files = []
     
     # Walk through all Python files

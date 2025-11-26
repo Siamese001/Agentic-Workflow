@@ -10,7 +10,10 @@ except ImportError:
 
 def graph_query(cypher: str, params: Dict[str, Any] | None = None) -> List[Any]:
     """
-    Simple helper to run arbitrary Cypher against Neo4j and return the raw records.
+    Executes Cypher queries against Neo4j for resume data retrieval.
+
+    Ensures resume generation system can efficiently access and process
+    structured knowledge for improved content quality and relevance.
     """
     if not _NEO4J_AVAILABLE or _graph is None:
         raise ImportError("Neo4j driver not installed. Install with: pip install neo4j>=5.22.0")

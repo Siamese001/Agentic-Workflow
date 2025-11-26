@@ -1,19 +1,8 @@
-"""Prompt Builder - Meta Layer
+"""
+Prompt Builder for resume generation prompt construction.
 
-This module builds structured prompts for agents.
-
-Layer: Meta
-Responsibilities:
-- Construct prompt envelopes
-- Assemble context
-- Apply prompt templates
-- Validate prompt schemas
-
-Non-responsibilities:
-- LLM invocation
-- Planning
-- Execution
-- State management
+Builds structured prompts for agents to ensure consistent
+resume improvement and job alignment.
 """
 
 from __future__ import annotations
@@ -91,7 +80,10 @@ SECTION_ORDER: Tuple[str, ...] = (
 @dataclass
 class PromptInstance:
     """
-    Concrete prompt ready for LLM invocation.
+    Concrete prompt ready for LLM invocation in resume generation.
+
+    Ensures structured prompt delivery for consistent resume
+    improvement and job alignment.
     """
 
     prompt_id: str

@@ -1,20 +1,8 @@
-"""L1 Interfaces - Planning Layer
+"""
+Defines abstract interfaces for L1 planning operations in resume generation.
 
-This module defines abstract interfaces for all L1 planning operations.
-All L1 implementations must inherit from these interfaces.
-
-Layer: L1 (Planning)
-Responsibilities:
-- Pure planning and reasoning
-- Task decomposition
-- Uncertainty estimation
-- Plan validation
-
-Non-responsibilities:
-- Tool execution (L2)
-- Orchestration (L3)
-- State management (L4)
-- Safety/policy (L5)
+Ensures consistent planning implementation across all resume
+generation components for improved code organization.
 """
 
 from __future__ import annotations
@@ -34,7 +22,11 @@ from core.models.models import (
 
 @dataclass
 class L1PlanRequest:
-    """Input request for L1 planning operations."""
+    """Input request for L1 resume planning operations.
+
+    Ensures standardized planning requests for consistent
+    resume generation across all components.
+    """
     mission: str
     context: ExecutionContext
     constraints: Optional[Dict[str, Any]] = None
@@ -43,7 +35,11 @@ class L1PlanRequest:
 
 @dataclass
 class L1PlanResult:
-    """Output result from L1 planning operations."""
+    """Output result from L1 resume planning operations.
+
+    Provides structured planning results for consistent
+    resume generation across all system components.
+    """
     plan_bundle: WorkflowPlanBundle
     decomposition: TaskDecomposition
     uncertainty: UncertaintyEstimate
@@ -51,62 +47,114 @@ class L1PlanResult:
 
 
 class L1PlannerInterface(ABC):
-    """Abstract interface for all L1 planning operations."""
+    """Abstract interface for L1 resume planning operations.
+
+    Ensures consistent planning behavior across all resume
+    generation components for improved system reliability.
+    """
     
     @abstractmethod
     async def plan_workflow(self, request: L1PlanRequest) -> L1PlanResult:
-        """Create a comprehensive workflow plan."""
+        """Creates comprehensive resume workflow plans.
+
+        Ensures structured planning for consistent resume
+        generation across all job applications.
+        """
         pass
     
     @abstractmethod
     async def decompose_task(self, task: str, context: ExecutionContext) -> TaskDecomposition:
-        """Decompose a task into executable subtasks."""
+        """Decomposes resume tasks into executable subtasks.
+
+        Enables systematic resume generation through proper
+        task breakdown for improved quality.
+        """
         pass
     
     @abstractmethod
     async def estimate_uncertainty(self, plan: WorkflowPlanBundle, context: ExecutionContext) -> UncertaintyEstimate:
-        """Estimate uncertainty and confidence levels for a plan."""
+        """Estimates uncertainty levels for resume planning.
+
+        Provides confidence metrics to ensure resume
+        generation meets quality standards.
+        """
         pass
     
     @abstractmethod
     async def validate_plan(self, plan: WorkflowPlanBundle, context: ExecutionContext) -> bool:
-        """Validate that a plan is executable and safe."""
+        """Validates resume plans for execution and safety.
+
+        Ensures generated resumes meet professional standards
+        and job application requirements.
+        """
         pass
 
 
 class L1StrategyPlannerInterface(L1PlannerInterface):
-    """Interface for strategy-specific planning operations."""
+    """Interface for resume strategy planning operations.
+
+    Ensures consistent strategy planning for optimal
+    job alignment and resume effectiveness.
+    """
     
     @abstractmethod
     async def plan_strategy(self, request: L1PlanRequest) -> L1PlanResult:
-        """Plan strategy execution workflow."""
+        """Plans resume strategy execution workflow.
+
+        Ensures strategic resume organization for maximum
+        impact on job applications.
+        """
         pass
 
 
 class L1DraftingPlannerInterface(L1PlannerInterface):
-    """Interface for drafting-specific planning operations."""
+    """Interface for resume content drafting planning.
+
+    Ensures consistent drafting planning for high-quality
+        resume content generation.
+    """
     
     @abstractmethod
     async def plan_drafting(self, request: L1PlanRequest) -> L1PlanResult:
-        """Plan content drafting workflow."""
+        """Plans resume content drafting workflow.
+
+        Ensures structured content creation for professional
+        resume presentation.
+        """
         pass
 
 
 class L1QAPlannerInterface(L1PlannerInterface):
-    """Interface for QA-specific planning operations."""
+    """Interface for resume quality assurance planning.
+
+    Ensures consistent QA planning for resume
+    accuracy and job alignment.
+    """
     
     @abstractmethod
     async def plan_qa(self, request: L1PlanRequest) -> L1PlanResult:
-        """Plan quality assurance workflow."""
+        """Plans resume quality assurance workflow.
+
+        Ensures thorough validation for resume
+        correctness and professional standards.
+        """
         pass
 
 
 class L1SafetyPlannerInterface(L1PlannerInterface):
-    """Interface for safety-specific planning operations."""
+    """Interface for resume safety planning operations.
+
+    Ensures consistent safety planning for professional
+    and ethical resume generation.
+    """
     
     @abstractmethod
     async def plan_safety(self, request: L1PlanRequest) -> L1PlanResult:
-        """Plan safety evaluation workflow."""
+        """Plans resume safety evaluation workflow.
+
+        Ensures resume content meets professional standards
+        and ethical guidelines.
+        """
         pass
 
 
@@ -116,7 +164,11 @@ class L1SafetyPlannerInterface(L1PlannerInterface):
 
 @dataclass
 class BiasIndicator:
-    """Indicator of potential bias in planning inputs or outputs."""
+    """Indicator of potential bias in resume planning.
+
+    Helps ensure resume generation remains fair and unbiased
+    for professional job applications.
+    """
     
     indicator_type: str
     description: str
@@ -127,7 +179,11 @@ class BiasIndicator:
 
 @dataclass
 class BiasPreCheckResult:
-    """Result of bias pre-check before planning execution."""
+    """Result of bias pre-check for resume planning.
+
+    Ensures resume generation maintains fairness and
+    professional standards throughout the process.
+    """
     
     has_bias_indicators: bool
     indicators: List[BiasIndicator]
@@ -137,33 +193,38 @@ class BiasPreCheckResult:
 
 class L1BiasPreCheckInterface(ABC):
     """
-    Interface for detecting potential bias before L1 planning execution.
-    
-    Defends against Model Bias Injection (ID 9) by flagging potential
-    bias indicators in planning inputs before execution proceeds.
+    Interface for detecting bias in resume planning operations.
+
+    Ensures resume generation remains fair and unbiased
+    for professional job applications.
     """
     
     @abstractmethod
     def check_input_bias(self, request: L1PlanRequest) -> BiasPreCheckResult:
         """
-        Check planning request for potential bias indicators.
-        
-        Should be called before any L1 planning operation.
+        Checks resume planning requests for bias indicators.
+
+        Ensures fair and unbiased resume generation
+        before planning operations begin.
         """
         pass
     
     @abstractmethod
     def check_output_bias(self, result: L1PlanResult) -> BiasPreCheckResult:
         """
-        Check planning result for potential bias indicators.
-        
-        Should be called after L1 planning to validate output.
+        Checks resume planning results for bias indicators.
+
+        Validates that generated plans remain fair
+        and unbiased for professional use.
         """
         pass
     
     @abstractmethod
     def get_bias_patterns(self) -> List[str]:
         """
-        Get list of bias patterns being checked.
+        Gets bias patterns checked in resume planning.
+
+        Provides transparency for bias detection
+        in resume generation processes.
         """
         pass

@@ -1,24 +1,7 @@
-"""L4 Adapter - Wraps StateManager to implement L4StateManagerInterface
+"""
+L4 adapter for resume job alignment state management.
 
-This adapter provides backward compatibility while enforcing strict interface contracts.
-
-Injection Types Handled:
-- Context Injection (ID 3): Provides STRUCTURED contextual data (JD, resume, 
-  Pinecone RAG chunks, temporal KG) into prompts in a safe, layered way.
-  Context is canonicalized, validated, and ordered before injection.
-
-- Data Injection (ID 4): Passes RAW user data, retrieved chunks, or metadata
-  into the agent pipeline. Data flows from L4 to L1/L2/L3 without 
-  structural transformation.
-
-- State Injection Defense (ID 8): Validates all state writes to prevent
-  unsafe or unvalidated data from entering L4 memory that could re-enter
-  prompts and corrupt L1/L3 reasoning.
-
-- KG Injection (ID 11): Injects structured temporal or KG-derived information
-  into agent planning via TemporalContext and EpisodicMemory.
-
-Layer: L4 (Memory & State)
+Wraps StateManager to implement interface contracts for resume enhancement.
 """
 
 from __future__ import annotations
@@ -52,13 +35,13 @@ from core.models.models import (
 
 
 class StateManagerAdapter(L4StateManagerInterface):
-    """Adapter that wraps StateManager to implement L4 interface."""
+    """Adapter wrapping StateManager for resume job alignment interface."""
     
     def __init__(self, wrapped_state_manager: StateManager):
         self.wrapped_state_manager = wrapped_state_manager
     
     async def save_state(self, context: ExecutionContext, state: StateSnapshot) -> bool:
-        """Save execution state using wrapped implementation."""
+        """Saves resume workflow execution state for job alignment."""
         try:
             # Convert StateSnapshot to WorkflowState
             workflow_state = WorkflowState(
@@ -77,7 +60,7 @@ class StateManagerAdapter(L4StateManagerInterface):
             return False
     
     async def load_state(self, context: ExecutionContext) -> Optional[StateSnapshot]:
-        """Load execution state using wrapped implementation."""
+        """Loads resume workflow execution state for job alignment."""
         try:
             # Load using wrapped implementation
             workflow_state = self.wrapped_state_manager.load_state()
@@ -96,7 +79,7 @@ class StateManagerAdapter(L4StateManagerInterface):
             return None
     
     async def delete_state(self, context: ExecutionContext) -> bool:
-        """Delete execution state."""
+        """Deletes resume workflow execution state for job alignment."""
         try:
             # Simple implementation - would need to be added to StateManager
             # For now, return True as if deleted
@@ -105,20 +88,20 @@ class StateManagerAdapter(L4StateManagerInterface):
             return False
     
     async def list_states(self, filters: Dict[str, Any]) -> List[StateSnapshot]:
-        """List states matching filters."""
+        """Lists resume workflow states matching job alignment filters."""
         # Simple implementation - would need to be added to StateManager
         return []
 
 
 class MemoryManagerAdapter(L4MemoryManagerInterface):
-    """Adapter for memory management operations."""
+    """Adapter for resume workflow memory management operations."""
     
     def __init__(self):
         # Simple in-memory implementation for now
         self._memories: Dict[str, MemoryFragment] = {}
     
     async def store_memory(self, memory: MemoryFragment, context: ExecutionContext) -> bool:
-        """Store a memory fragment."""
+        """Stores resume workflow memory fragment for job alignment."""
         try:
             self._memories[memory.id] = memory
             return True
@@ -126,7 +109,7 @@ class MemoryManagerAdapter(L4MemoryManagerInterface):
             return False
     
     async def retrieve_memory(self, query: str, context: ExecutionContext) -> List[MemoryFragment]:
-        """Retrieve relevant memory fragments."""
+        """Retrieves resume workflow memory fragments for job alignment."""
         # Simple keyword matching implementation
         results = []
         query_lower = query.lower()
@@ -136,7 +119,7 @@ class MemoryManagerAdapter(L4MemoryManagerInterface):
         return results
     
     async def update_memory(self, memory_id: str, updates: Dict[str, Any]) -> bool:
-        """Update existing memory."""
+        """Updates existing resume workflow memory for job alignment."""
         try:
             if memory_id in self._memories:
                 memory = self._memories[memory_id]
@@ -149,7 +132,7 @@ class MemoryManagerAdapter(L4MemoryManagerInterface):
             return False
     
     async def delete_memory(self, memory_id: str) -> bool:
-        """Delete memory fragment."""
+        """Deletes resume workflow memory fragment for job alignment."""
         try:
             if memory_id in self._memories:
                 del self._memories[memory_id]
@@ -160,7 +143,7 @@ class MemoryManagerAdapter(L4MemoryManagerInterface):
 
 
 class VectorStoreAdapter(L4VectorStoreInterface):
-    """Adapter for vector storage operations."""
+    """Adapter for resume workflow vector storage operations."""
     
     def __init__(self):
         # Simple in-memory implementation for now
@@ -168,7 +151,7 @@ class VectorStoreAdapter(L4VectorStoreInterface):
         self._metadata: Dict[str, Dict[str, Any]] = {}
     
     async def store_vectors(self, vectors: List[Dict[str, Any]], metadata: List[Dict[str, Any]]) -> bool:
-        """Store vectors with metadata."""
+        """Stores resume workflow vectors with job alignment metadata."""
         try:
             for i, vector_data in enumerate(vectors):
                 vector_id = vector_data.get("id", f"vector_{i}")
@@ -181,7 +164,7 @@ class VectorStoreAdapter(L4VectorStoreInterface):
             return False
     
     async def search_vectors(self, query_vector: List[float], limit: int, filters: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """Search for similar vectors."""
+        """Searches resume workflow vectors for job alignment similarity."""
         # Simple implementation - would use proper similarity search
         results = []
         for vector_id, vector in self._vectors.items():
@@ -196,7 +179,7 @@ class VectorStoreAdapter(L4VectorStoreInterface):
         return results
     
     async def update_vectors(self, vector_ids: List[str], updates: List[Dict[str, Any]]) -> bool:
-        """Update existing vectors."""
+        """Updates existing resume workflow vectors for job alignment."""
         try:
             for i, vector_id in enumerate(vector_ids):
                 if vector_id in self._vectors and i < len(updates):
@@ -210,7 +193,7 @@ class VectorStoreAdapter(L4VectorStoreInterface):
             return False
     
     async def delete_vectors(self, vector_ids: List[str]) -> bool:
-        """Delete vectors."""
+        """Deletes resume workflow vectors for job alignment processing."""
         try:
             for vector_id in vector_ids:
                 if vector_id in self._vectors:
@@ -223,7 +206,7 @@ class VectorStoreAdapter(L4VectorStoreInterface):
 
 
 class GraphStoreAdapter(L4GraphStoreInterface):
-    """Adapter for graph storage operations."""
+    """Adapter for resume workflow graph storage operations."""
     
     def __init__(self):
         # Simple in-memory implementation for now
@@ -231,7 +214,7 @@ class GraphStoreAdapter(L4GraphStoreInterface):
         self._triplets: List[Triplet] = []
     
     async def store_entities(self, entities: List[Entity]) -> bool:
-        """Store entities in the graph."""
+        """Stores resume workflow entities for job alignment graph."""
         try:
             for entity in entities:
                 self._entities[entity.id] = entity
@@ -240,7 +223,7 @@ class GraphStoreAdapter(L4GraphStoreInterface):
             return False
     
     async def store_triplets(self, triplets: List[Triplet]) -> bool:
-        """Store triplets in the graph."""
+        """Stores resume workflow triplets for job alignment graph."""
         try:
             self._triplets.extend(triplets)
             return True
@@ -248,7 +231,7 @@ class GraphStoreAdapter(L4GraphStoreInterface):
             return False
     
     async def query_graph(self, query: str, parameters: Dict[str, Any]) -> List[Entity | Triplet]:
-        """Query the knowledge graph."""
+        """Queries resume workflow knowledge graph for job alignment."""
         # Simple implementation - would use proper graph query language
         results = []
         if "entity" in query.lower():
@@ -258,7 +241,7 @@ class GraphStoreAdapter(L4GraphStoreInterface):
         return results
     
     async def resolve_entities(self, entity_names: List[str]) -> List[Entity]:
-        """Resolve entity names to canonical entities."""
+        """Resolves resume workflow entities for job alignment processing."""
         results = []
         for name in entity_names:
             for entity in self._entities.values():
@@ -269,13 +252,13 @@ class GraphStoreAdapter(L4GraphStoreInterface):
 
 
 class TemporalKGAdapter(L4TemporalKGInterface):
-    """Adapter for temporal knowledge graph operations."""
+    """Adapter for resume workflow temporal knowledge graph operations."""
     
     def __init__(self):
         self._temporal_triplets: List[Triplet] = []
     
     async def store_temporal_triplet(self, triplet: Triplet, valid_from: datetime, valid_to: Optional[datetime]) -> bool:
-        """Store a temporal triplet."""
+        """Stores resume workflow temporal triplet for job alignment."""
         try:
             # Add temporal metadata to triplet
             triplet.temporal_metadata = {
@@ -288,7 +271,7 @@ class TemporalKGAdapter(L4TemporalKGInterface):
             return False
     
     async def query_temporal_graph(self, query: str, timestamp: datetime, parameters: Dict[str, Any]) -> List[Entity | Triplet]:
-        """Query the temporal knowledge graph at a specific time."""
+        """Queries resume workflow temporal graph for job alignment."""
         results = []
         for triplet in self._temporal_triplets:
             if self._is_valid_at_time(triplet, timestamp):
@@ -296,7 +279,7 @@ class TemporalKGAdapter(L4TemporalKGInterface):
         return results
     
     async def get_entity_history(self, entity_id: str, from_time: datetime, to_time: datetime) -> List[Triplet]:
-        """Get entity history within time range."""
+        """Gets resume workflow entity history for job alignment."""
         results = []
         for triplet in self._temporal_triplets:
             if self._involves_entity(triplet, entity_id) and self._overlaps_time_range(triplet, from_time, to_time):
@@ -304,12 +287,12 @@ class TemporalKGAdapter(L4TemporalKGInterface):
         return results
     
     async def update_temporal_triplet(self, triplet_id: str, updates: Dict[str, Any]) -> bool:
-        """Update temporal triplet."""
+        """Updates resume workflow temporal triplet for job alignment."""
         # Simple implementation - would need proper indexing
         return True
     
     def _is_valid_at_time(self, triplet: Triplet, timestamp: datetime) -> bool:
-        """Check if triplet is valid at given timestamp."""
+        """Checks if resume workflow triplet is valid at timestamp."""
         if not hasattr(triplet, 'temporal_metadata'):
             return True
         
@@ -321,11 +304,11 @@ class TemporalKGAdapter(L4TemporalKGInterface):
         return valid_from <= timestamp and (valid_to is None or timestamp <= valid_to)
     
     def _involves_entity(self, triplet: Triplet, entity_id: str) -> bool:
-        """Check if triplet involves the given entity."""
+        """Checks if resume workflow triplet involves given entity."""
         return triplet.subject == entity_id or triplet.object == entity_id
     
     def _overlaps_time_range(self, triplet: Triplet, from_time: datetime, to_time: datetime) -> bool:
-        """Check if triplet time range overlaps with given range."""
+        """Checks if resume workflow triplet time range overlaps."""
         if not hasattr(triplet, 'temporal_metadata'):
             return True
         
@@ -338,13 +321,13 @@ class TemporalKGAdapter(L4TemporalKGInterface):
 
 
 class ProvenanceManagerAdapter(L4ProvenanceManagerInterface):
-    """Adapter for provenance tracking operations."""
+    """Adapter for resume workflow provenance tracking operations."""
     
     def __init__(self):
         self._provenance: Dict[str, Provenance] = {}
     
     async def record_provenance(self, data_id: str, provenance: Provenance) -> bool:
-        """Record provenance for data."""
+        """Records resume workflow provenance for job alignment data."""
         try:
             self._provenance[data_id] = provenance
             return True
@@ -352,11 +335,11 @@ class ProvenanceManagerAdapter(L4ProvenanceManagerInterface):
             return False
     
     async def get_provenance(self, data_id: str) -> Optional[Provenance]:
-        """Get provenance for data."""
+        """Gets resume workflow provenance for job alignment data."""
         return self._provenance.get(data_id)
     
     async def trace_lineage(self, data_id: str, depth: int) -> List[Provenance]:
-        """Trace data lineage."""
+        """Traces resume workflow data lineage for job alignment."""
         # Simple implementation - would follow provenance chain
         results = []
         current = self._provenance.get(data_id)
@@ -369,20 +352,20 @@ class ProvenanceManagerAdapter(L4ProvenanceManagerInterface):
         return results
     
     async def validate_provenance(self, data_id: str, expected_provenance: Provenance) -> bool:
-        """Validate data provenance."""
+        """Validates resume workflow data provenance for job alignment."""
         actual = self._provenance.get(data_id)
         return actual == expected_provenance
 
 
 class CacheAdapter(L4CacheInterface):
-    """Adapter for caching operations."""
+    """Adapter for resume workflow caching operations."""
     
     def __init__(self):
         self._cache: Dict[str, Any] = {}
         self._ttl: Dict[str, datetime] = {}
     
     async def get(self, key: str) -> Optional[Any]:
-        """Get value from cache."""
+        """Gets resume workflow value from cache for job alignment."""
         if key not in self._cache:
             return None
         
@@ -396,7 +379,7 @@ class CacheAdapter(L4CacheInterface):
         return self._cache[key]
     
     async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
-        """Set value in cache with optional TTL."""
+        """Sets resume workflow value in cache for job alignment."""
         try:
             self._cache[key] = value
             if ttl:
@@ -406,7 +389,7 @@ class CacheAdapter(L4CacheInterface):
             return False
     
     async def delete(self, key: str) -> bool:
-        """Delete value from cache."""
+        """Deletes resume workflow value from cache for job alignment."""
         try:
             if key in self._cache:
                 del self._cache[key]
@@ -417,7 +400,7 @@ class CacheAdapter(L4CacheInterface):
             return False
     
     async def clear(self, pattern: Optional[str] = None) -> bool:
-        """Clear cache values matching pattern."""
+        """Clears resume workflow cache values for job alignment."""
         try:
             if pattern:
                 keys_to_delete = [k for k in self._cache.keys() if pattern in k]

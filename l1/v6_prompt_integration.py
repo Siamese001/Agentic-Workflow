@@ -1,21 +1,8 @@
-"""V6 Prompt Integration - Wiring Instructional Injection v6 to Agents
+"""
+V6 Prompt Integration for resume generation system.
 
-This module integrates Instructional Injection v6 prompts with L1 planners,
-L2 executors, and L3 orchestrators. It provides factory functions to create
-v6-enhanced prompts with many-shot examples.
-
-Layer: Meta
-Responsibilities:
-- Create v6 prompts for agents
-- Add many-shot examples to prompts
-- Wire extensions (RAG, CoT, temporal, etc.)
-- Validate prompt completeness
-
-Non-responsibilities:
-- LLM invocation
-- Planning
-- Execution
-- State management
+Integrates instructional prompts with planners to ensure consistent
+resume improvement and job alignment.
 """
 
 from __future__ import annotations
@@ -50,14 +37,11 @@ def create_strategy_planner_prompt(
     include_examples: bool = True,
     enable_cot: bool = True,
 ) -> str:
-    """Create v6 prompt for L1 strategy planner with examples.
-    
-    Args:
-        include_examples: Whether to include many-shot examples
-        enable_cot: Whether to enable Chain-of-Thought extension
-        
-    Returns:
-        Rendered prompt string
+    """
+Creates v6 prompt for L1 strategy planner with resume examples.
+
+Generates structured approach for optimal resume job alignment
+and enhanced content quality.
     """
     prompt = create_l1_planner_prompt(
         agent_name="Strategy Planner",

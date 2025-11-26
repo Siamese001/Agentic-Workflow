@@ -1,7 +1,7 @@
 """
-L5 - Safety/Policy Layer - Core Types
+L5 safety and policy types for resume job alignment workflows.
 
-Defines the fundamental types for safety and policy enforcement.
+Defines fundamental types for safety and policy enforcement in resume enhancement.
 """
 from __future__ import annotations
 from typing import Any, Dict, List, Optional, Union, TypeVar
@@ -14,35 +14,24 @@ T = TypeVar('T')
 
 @runtime_checkable
 class SafetyPolicy(Protocol):
-    """Protocol that all safety policies must implement."""
+    """Protocol that resume workflow safety policies must implement."""
     
     @property
     def policy_id(self) -> str:
-        """Unique identifier for this policy."""
+        """Unique identifier for resume workflow safety policy."""
         ...
     
     @property
     def description(self) -> str:
-        """Human-readable description of the policy."""
+        """Human-readable description of resume workflow safety policy."""
         ...
     
     def evaluate(self, context: SafetyContext) -> PolicyDecision:
-        """
-        Evaluate the given context against this policy.
-        
-        Args:
-            context: The safety context to evaluate
-            
-        Returns:
-            PolicyDecision with the evaluation results
-            
-        Raises:
-            PolicyEvaluationError: If the evaluation fails
-        """
+        """Evaluates resume workflow context against safety policy."""
         ...
 
 class Severity(str, Enum):
-    """Severity levels for safety findings."""
+    """Severity levels for resume workflow safety findings."""
     CRITICAL = "critical"  # Immediate block required
     HIGH = "high"          # Should be blocked by default
     MEDIUM = "medium"      # Should be reviewed
@@ -55,20 +44,20 @@ class Severity(str, Enum):
         return order.index(self) > order.index(other)
 
 class Verdict(str, Enum):
-    """Final verdict for a safety check."""
+    """Final verdict for resume workflow safety checks."""
     BLOCK = "block"        # Operation must be blocked
     ALLOW = "allow"        # Operation is allowed
     REVIEW = "review"      # Requires human review
     
     @classmethod
     def from_severity(cls, severity: Severity, threshold: Severity = Severity.HIGH) -> Verdict:
-        """Convert severity to verdict based on threshold."""
+        """Converts severity to verdict for resume workflow operations."""
         if severity >= threshold:
             return cls.BLOCK
         return cls.ALLOW
 
 class FindingType(str, Enum):
-    """Types of safety findings."""
+    """Types of safety findings for resume workflow operations."""
     CONTENT = "content"           # Inappropriate content
     PRIVACY = "privacy"           # PII or sensitive data
     SECURITY = "security"         # Security vulnerability
@@ -81,7 +70,7 @@ class FindingType(str, Enum):
 
 @dataclass(frozen=True)
 class SafetyFinding:
-    """An individual safety finding."""
+    """Individual safety finding for resume workflow operations."""
     id: str
     type: Union[FindingType, str]
     severity: Severity
@@ -91,7 +80,7 @@ class SafetyFinding:
     timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to a dictionary for serialization."""
+        """Converts resume workflow safety finding to dictionary format."""
         return {
             'id': self.id,
             'type': self.type.value if isinstance(self.type, FindingType) else self.type,
@@ -102,9 +91,9 @@ class SafetyFinding:
             'timestamp': self.timestamp.isoformat()
         }
 
-@dataclass(frozen=True)
+@dataclass
 class PolicyDecision:
-    """The result of evaluating a safety policy."""
+    """Result of evaluating resume workflow safety policy."""
     policy_id: str
     verdict: Verdict
     findings: List[SafetyFinding]
@@ -113,11 +102,11 @@ class PolicyDecision:
     
     @property
     def has_blocking_findings(self) -> bool:
-        """Check if there are any findings that would cause a block."""
+        """Checks for findings that would block resume workflow operations."""
         return any(f.severity >= Severity.HIGH for f in self.findings)
     
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to a dictionary for serialization."""
+        """Converts resume workflow policy decision to dictionary format."""
         return {
             'policy_id': self.policy_id,
             'verdict': self.verdict.value,
@@ -128,7 +117,7 @@ class PolicyDecision:
 
 @dataclass
 class SafetyContext:
-    """Context for safety evaluations."""
+    """Context for resume workflow safety evaluations."""
     # Content being evaluated
     content: Any
     
@@ -148,11 +137,11 @@ class SafetyContext:
     metadata: Dict[str, Any] = field(default_factory=dict)
     
     def get(self, key: str, default: Any = None) -> Any:
-        """Get a value from the context with a default."""
+        """Gets value from resume workflow safety context."""
         return self.metadata.get(key, default)
     
     def with_metadata(self, **kwargs: Any) -> SafetyContext:
-        """Create a new context with additional metadata."""
+        """Creates new resume workflow safety context with metadata."""
         return SafetyContext(
             content=self.content,
             content_type=self.content_type,

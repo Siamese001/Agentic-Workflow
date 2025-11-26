@@ -1,21 +1,8 @@
-# FILE: 10_10/prompt_system_v10_10.py
 """
-Prompt Registry & Governance (v10_10 · Phase 3)
-===============================================
+Prompt Registry & Governance for resume generation system.
 
-Single source of truth for all prompts in v10_10.
-
-Provides:
-    • PromptVersion & PromptDefinition registry.
-    • Prompt ACL governance via PromptACL + PromptActorRole.
-    • Envelope-style templates with deterministic anchors:
-          "## CONTEXT", "## INSTRUCTIONS", "## OUTPUT_FORMAT"
-    • Metadata-based ACL structure (layers / agents / model_tiers).
-
-Design constraints:
-    • No LLM calls.
-    • No orchestration or routing.
-    • No state mutation outside in-memory registries.
+Single source of truth for all prompts to ensure consistent
+resume improvement and job alignment.
 """
 
 from __future__ import annotations
@@ -35,7 +22,9 @@ from core.models.models import PromptDefinition, PromptVersion
 
 class PromptActorRole(str, Enum):
     """
-    Logical actors that may interact with the prompt registry.
+    Logical actors that interact with the prompt registry.
+
+    Defines roles for resume generation prompt governance and access control.
     """
 
     ENGINE = "engine"   # runtime engine / L2 cognition
@@ -46,7 +35,9 @@ class PromptActorRole(str, Enum):
 
 class PromptACL(BaseModel):
     """
-    Simple role-based ACL for a single prompt ID.
+    Role-based ACL for prompt access control in resume generation.
+
+    Ensures proper governance for consistent resume improvement prompts.
     """
 
     id: str

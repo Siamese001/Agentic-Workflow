@@ -1,7 +1,8 @@
 """
-Vector search planning for résumé evidence retrieval.
+Vector search planning for resume evidence retrieval and semantic matching.
 
-Creates structured plans to support comprehensive résumé improvement through semantic search.
+Creates structured plans to support comprehensive resume improvement
+through semantic search and job alignment.
 """
 from dataclasses import dataclass
 from typing import Dict, Any, Optional
@@ -10,9 +11,10 @@ from typing import Dict, Any, Optional
 @dataclass
 class VectorSearchPlan:
     """
-    Defines vector search structure for résumé evidence gathering.
+    Defines vector search structure for resume evidence gathering.
 
-    Ensures systematic retrieval of relevant data for comprehensive résumé enhancement.
+    Ensures systematic retrieval of relevant data for comprehensive
+    resume enhancement and job alignment.
     """
     query_text: str
     namespace: str
@@ -23,9 +25,10 @@ class VectorSearchPlan:
 @dataclass
 class VectorUpsertPlan:
     """
-    Structures vector storage planning for résumé data.
+    Structures vector storage planning for resume data.
 
-    Guides efficient storage of résumé improvement evidence for future retrieval.
+    Guides efficient storage of resume improvement evidence
+    for future retrieval and job alignment.
     """
     id: str
     text: str
@@ -40,9 +43,10 @@ def plan_vector_search(
     metadata_filters: Optional[Dict[str, Any]] = None
 ) -> VectorSearchPlan:
     """
-    Creates vector search plan for résumé evidence retrieval.
+    Creates vector search plan for resume evidence retrieval.
 
-    Structures semantic search approach to find relevant data for résumé improvement.
+    Structures semantic search approach to find relevant data
+    for resume improvement and job alignment.
     """
     return VectorSearchPlan(
         query_text=query,
@@ -59,9 +63,10 @@ def plan_vector_upsert(
     metadata: Optional[Dict[str, Any]] = None
 ) -> VectorUpsertPlan:
     """
-    Plans vector storage for résumé improvement data.
+    Plans vector storage for resume improvement data.
 
-    Structures approach to efficiently store résumé evidence for future retrieval.
+    Structures approach to efficiently store resume evidence
+    for future retrieval and job alignment.
     """
     if metadata is None:
         metadata = {}

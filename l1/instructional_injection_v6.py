@@ -1,8 +1,9 @@
-"""Instructional Injection v6 - 30 Base Layers + 6 Extensions
+"""
+Instructional Injection v6 for resume generation prompt engineering.
 
-This module implements the Instructional Injection v6 framework for prompt
-engineering. It provides a layered approach to building robust, context-aware
-prompts for agentic systems.
+Implements layered framework for robust, context-aware prompts
+to improve resume quality and job alignment.
+"""
 
 ## 30 Base Layers (Core Foundation)
 

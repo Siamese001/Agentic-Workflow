@@ -1,20 +1,8 @@
 """
-Triplet extraction executor for résumé processing knowledge graphs.
+Triplet extraction executor for resume processing knowledge graphs.
 
-Implements L2 executor for transforming unstructured text into structured knowledge graph triplets for résumé enhancement.
-
-Layer: L2 (Execution)
-Responsibilities:
-- Execute triplet extraction based on L1 plans for résumé data processing
-- Parse LLM outputs into structured triplets for résumé knowledge graphs
-- Perform entity linking on extracted entities for résumé enhancement
-- Return extraction results for workflow coordination
-
-Non-responsibilities:
-- Extraction planning (L1)
-- Triplet storage (L4)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Transforms unstructured text into structured knowledge graph triplets
+to support resume enhancement and job alignment workflows.
 """
 
 from __future__ import annotations
@@ -37,9 +25,10 @@ from l4.entity_resolution import (
 @dataclass
 class ExtractionPlan:
     """
-    Plan for triplet extraction in résumé processing workflows (from L1).
-    
-    Defines extraction strategy for converting résumé text to knowledge graph data.
+    Plan for triplet extraction in resume processing workflows.
+
+    Defines extraction strategy for converting resume text to
+    knowledge graph data for job alignment.
     """
     
     source_text: str
@@ -80,9 +69,10 @@ class ExtractedStatement:
 @dataclass
 class ExtractionResult:
     """
-    Result of triplet extraction for résumé processing workflows.
-    
-    Provides structured knowledge graph data extracted from résumé enhancement text.
+    Result of triplet extraction for resume processing workflows.
+
+    Provides structured knowledge graph data extracted from resume
+    enhancement text for job alignment.
     """
     
     source_id: str
@@ -101,20 +91,20 @@ class ExtractionResult:
 
 class TripletExtractionExecutor:
     """
-    Executor for triplet extraction from résumé processing text.
-    
-    Uses pattern matching and heuristics for extraction in résumé enhancement workflows.
-    In production, this would integrate with an LLM for more sophisticated extraction.
+    Executor for triplet extraction from resume processing text.
+
+    Uses pattern matching for resume enhancement workflows and
+    job alignment knowledge graph construction.
     """
     
     def __init__(
         self,
         entity_registry: Optional[EntityRegistry] = None,
     ):
-        """Initialize executor.
-        
+        """Initializes resume triplet extraction executor.
+
         Args:
-            entity_registry: L4 EntityRegistry for entity resolution
+            entity_registry: L4 EntityRegistry for resume entity resolution
         """
         self.entity_registry = entity_registry or EntityRegistry()
         
@@ -149,13 +139,9 @@ class TripletExtractionExecutor:
         ]
     
     def execute(self, plan: ExtractionPlan) -> ExtractionResult:
-        """Execute triplet extraction based on plan.
-        
-        Args:
-            plan: Extraction plan from L1
-            
-        Returns:
-            Extraction result with triplets
+        """Executes triplet extraction for resume processing workflows.
+
+        Extracts structured knowledge graph data for resume job alignment.
         """
         start_time = datetime.now(UTC)
         
@@ -233,15 +219,9 @@ class TripletExtractionExecutor:
         subject: str,
         plan: ExtractionPlan,
     ) -> Tuple[List[Triplet], List[ExtractedStatement]]:
-        """Extract skill-related triplets.
-        
-        Args:
-            text: Source text
-            subject: Subject entity
-            plan: Extraction plan
-            
-        Returns:
-            Tuple of (triplets, statements)
+        """Extracts skill-related triplets for resume enhancement.
+
+        Identifies resume skills for job alignment knowledge graphs.
         """
         triplets: List[Triplet] = []
         statements: List[ExtractedStatement] = []
@@ -293,15 +273,9 @@ class TripletExtractionExecutor:
         subject: str,
         plan: ExtractionPlan,
     ) -> Tuple[List[Triplet], List[ExtractedStatement]]:
-        """Extract experience-related triplets.
-        
-        Args:
-            text: Source text
-            subject: Subject entity
-            plan: Extraction plan
-            
-        Returns:
-            Tuple of (triplets, statements)
+        """Extracts experience-related triplets for resume enhancement.
+
+        Identifies resume work experience for job alignment knowledge graphs.
         """
         triplets: List[Triplet] = []
         statements: List[ExtractedStatement] = []
@@ -356,15 +330,9 @@ class TripletExtractionExecutor:
         subject: str,
         plan: ExtractionPlan,
     ) -> Tuple[List[Triplet], List[ExtractedStatement]]:
-        """Extract education-related triplets.
-        
-        Args:
-            text: Source text
-            subject: Subject entity
-            plan: Extraction plan
-            
-        Returns:
-            Tuple of (triplets, statements)
+        """Extracts education-related triplets for resume enhancement.
+
+        Identifies resume education for job alignment knowledge graphs.
         """
         triplets: List[Triplet] = []
         statements: List[ExtractedStatement] = []
@@ -411,15 +379,9 @@ class TripletExtractionExecutor:
         start: int,
         end: int,
     ) -> Dict[str, Any]:
-        """Extract temporal information near a match.
-        
-        Args:
-            text: Source text
-            start: Start of match
-            end: End of match
-            
-        Returns:
-            Dictionary with temporal information
+        """Extracts temporal information for resume timeline analysis.
+
+        Identifies date ranges for resume job alignment accuracy.
         """
         # Look at surrounding context
         context_start = max(0, start - 50)
@@ -447,13 +409,9 @@ class TripletExtractionExecutor:
         return temporal_info
     
     def _infer_entity_type(self, predicate: str) -> EntityType:
-        """Infer entity type from predicate.
-        
-        Args:
-            predicate: Triplet predicate
-            
-        Returns:
-            Inferred entity type
+        """Infers entity type from predicate for resume processing.
+
+        Maps resume relationships to appropriate entity types.
         """
         predicate_to_type = {
             "has_skill": EntityType.SKILL,
@@ -478,17 +436,9 @@ def create_extraction_plan(
     user_id: Optional[str] = None,
     job_id: Optional[str] = None,
 ) -> ExtractionPlan:
-    """Create an extraction plan.
-    
-    Args:
-        source_text: Text to extract from
-        source_id: Source document ID
-        extraction_type: Type of extraction
-        user_id: Optional user ID
-        job_id: Optional job ID
-        
-    Returns:
-        ExtractionPlan
+    """Creates extraction plan for resume processing workflows.
+
+    Configures triplet extraction for resume enhancement and job alignment.
     """
     return ExtractionPlan(
         source_text=source_text,

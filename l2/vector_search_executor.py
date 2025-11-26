@@ -1,18 +1,8 @@
 """
-Vector search execution layer for résumé processing workflows.
+Vector search execution layer for resume processing workflows.
 
-Executes vector search operations to support comprehensive résumé enhancement through semantic retrieval.
-
-Layer: L2 (Execution)
-Responsibilities:
-- Execute vector search operations based on L1 plans for résumé data retrieval
-- Transform L4 vector results into L2 execution results for résumé enhancement
-- Handle execution errors in résumé processing vector operations
-
-Non-responsibilities:
-- Planning queries (L1)
-- Managing vector store state (L4)
-- Orchestration (L3)
+Executes vector search operations to support comprehensive resume
+enhancement through semantic retrieval for job alignment.
 """
 
 from typing import List, Dict, Any, Optional
@@ -24,9 +14,10 @@ from l4 import PineconeAdapter, VectorQueryResult
 @dataclass
 class SearchResult:
     """
-    Container for résumé processing vector search results (L2 execution result).
+    Container for resume processing vector search results.
 
-    Provides structured data retrieval results for comprehensive résumé enhancement workflows.
+    Provides structured data retrieval for resume enhancement
+    and job alignment workflows.
     """
     id: str
     score: float
@@ -35,17 +26,18 @@ class SearchResult:
 
 class VectorSearchExecutor:
     """
-    L2 executor for résumé processing vector search operations.
-    
-    Executes search plans from L1 via L4's PineconeAdapter for résumé enhancement workflows.
+    L2 executor for resume processing vector search operations.
+
+    Executes search plans from L1 via L4's PineconeAdapter for
+    resume enhancement and job alignment workflows.
     """
     
     def __init__(self, pinecone_adapter: PineconeAdapter):
         """
-        Initializes vector search executor for résumé processing workflows.
-        
+        Initializes vector search executor for resume processing.
+
         Args:
-            pinecone_adapter: L4 PineconeAdapter instance for résumé data retrieval
+            pinecone_adapter: L4 PineconeAdapter for resume data retrieval
         """
         self.adapter = pinecone_adapter
     
@@ -58,19 +50,10 @@ class VectorSearchExecutor:
         score_threshold: Optional[float] = None,
     ) -> List[SearchResult]:
         """
-        Executes vector search operation for résumé processing data retrieval.
-        
-        Main L2 execution method that takes search plan and executes via L4 for résumé enhancement.
-        
-        Args:
-            namespace: Target namespace for résumé data (from L1 plan)
-            query_text: Query text for résumé search (from L1 plan)
-            top_k: Number of results for résumé matching (from L1 plan)
-            metadata_filter: Optional metadata filters for résumé data (from L1 plan)
-            score_threshold: Optional score threshold for résumé relevance (from L1 plan)
-            
-        Returns:
-            List of SearchResult objects for résumé enhancement workflows (L2 execution results)
+        Executes vector search for resume processing data retrieval.
+
+        Main L2 execution method that takes search plan and executes
+        via L4 for resume enhancement and job alignment.
         """
         # Delegate to L4 adapter
         l4_results: List[VectorQueryResult] = self.adapter.query_by_text(
@@ -99,18 +82,9 @@ class VectorSearchExecutor:
         metadata_list: Optional[List[Dict[str, Any]]] = None,
     ) -> List[str]:
         """
-        Executes vector upsert operation for résumé processing data storage.
-        
-        Args:
-            namespace: Target namespace for résumé data storage
-            texts: Text content to upsert for résumé enhancement
-            record_type: Type of résumé processing records
-            metadata_list: Optional metadata for résumé data organization
-            record_type: Type prefix for IDs
-            metadata_list: Optional metadata for each text
-            
-        Returns:
-            List of generated record IDs
+        Executes vector upsert for resume processing data storage.
+
+        Stores resume enhancement data for improved job alignment.
         """
         # Delegate to L4 adapter
         return self.adapter.upsert_text_records(

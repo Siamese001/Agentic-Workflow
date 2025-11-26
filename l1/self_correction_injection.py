@@ -1,7 +1,8 @@
-"""Self-Correction Injection for V6 System
+"""
+Self-Correction Injection for resume generation quality improvement.
 
-Provides self-correction loops and mechanisms for continuous improvement
-and error recovery across all agent types.
+Provides self-correction loops and mechanisms for continuous
+resume enhancement and error recovery.
 """
 
 from __future__ import annotations
@@ -16,7 +17,11 @@ from l1.instructional_injection_v6 import InstructionalExtension, ExtensionConte
 
 
 class CorrectionType(str, Enum):
-    """Types of self-correction mechanisms."""
+    """
+    Types of self-correction mechanisms for resume improvement.
+
+    Defines correction approaches for enhanced resume quality.
+    """
     
     PROMPT_REFINEMENT = "prompt_refinement"
     OUTPUT_VALIDATION = "output_validation"
@@ -27,7 +32,11 @@ class CorrectionType(str, Enum):
 
 @dataclass
 class CorrectionRule:
-    """Rule for triggering self-correction."""
+    """
+    Rule for triggering self-correction in resume generation.
+
+    Ensures automated quality improvement for resume content.
+    """
     
     rule_id: str
     correction_type: CorrectionType
@@ -39,7 +48,11 @@ class CorrectionRule:
 
 @dataclass
 class CorrectionAttempt:
-    """Record of a correction attempt."""
+    """
+    Record of a correction attempt for resume improvement.
+
+    Tracks quality enhancement progress for resume content optimization.
+    """
     
     attempt_id: str
     original_output: str
