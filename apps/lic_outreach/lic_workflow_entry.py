@@ -18,7 +18,7 @@ from l2.company_research_executor import CompanyResearchExecutor
 from l2.contact_research_executor import ContactResearchExecutor
 from l2.message_generation_executor import MessageGenerationExecutor
 from l2.llm_caller import LLMCaller
-from l4.hybrid_search import HybridSearch
+from l4.hybrid_search import HybridSearchExecutor
 from l4.pinecone_adapter import PineconeAdapter
 from l4.triplet_store import TripletStore
 from l5.safety_validator import L5SafetyValidator
@@ -69,11 +69,27 @@ def run_single_outreach(
         # L1: Message planning
         # HSON: Creates structured message plan with reasoning intensity for executive engagement
         message_planner = MessagePlanner()
-        message_plan = message_planner.create_message_plan(recipient, mission, archetype_context)
+        
+        # Create MessageContent using real signature with individual fields
+        from l1.message_planning import MessageContent
+        content = MessageContent(
+            recipient_name=recipient.name,
+            recipient_title=recipient.title,
+            company_name=recipient.company,
+            value_proposition=mission.objective,
+            key_points=[],
+            personalization_elements=[],
+            constraints=[],
+            metadata={"mission": mission}
+        )
+        
+        message_plan = message_planner.create_message_plan(content, archetype_context)
         
         # Initialize L4 components for research
-        hybrid_search = HybridSearch()
-        pinecone_adapter = PineconeAdapter()
+        from l4.pinecone_adapter import PineconeConfig
+        pinecone_config = PineconeConfig()
+        pinecone_adapter = PineconeAdapter(pinecone_config)
+        hybrid_search = HybridSearchExecutor(pinecone_adapter)
         triplet_store = TripletStore()
         
         # L2: Company research
@@ -104,14 +120,17 @@ def run_single_outreach(
         llm_caller = LLMCaller()
         message_executor = MessageGenerationExecutor(llm_caller)
         
-        # Create generation context
+        # Create generation context using real signature
         from l2.message_generation_executor import GenerationContext
         gen_context = GenerationContext(
             mission_id=mission_id,
-            recipient=recipient,
-            mission=mission,
-            archetype_context=archetype_context,
-            config=config
+            archetype=archetype_context.archetype,
+            target_role=recipient.title,
+            target_company=recipient.company,
+            value_proposition=mission.objective,
+            personalization_points=[],
+            constraints=[],
+            metadata={"config": config}
         )
         
         # Generate message
@@ -125,12 +144,13 @@ def run_single_outreach(
         # L5: Safety validation
         # HSON: Ensures strong tone without safety violations to maintain executive trust
         safety_validator = L5SafetyValidator()
-        safety_result = safety_validator.validate(message_result.content)
+        safety_result = safety_validator.validate_layer_input("L2", message_result.content, None)
         
-        if not safety_result.is_safe:
+        # Check if any safety findings exist
+        if len(safety_result.findings) > 0:
             return LICPipelineResult(
                 success=False,
-                error=f"Safety validation failed: {safety_result.reason}",
+                error=f"Safety validation failed: {len(safety_result.findings)} violations found",
                 archetype_context=archetype_context
             )
         
