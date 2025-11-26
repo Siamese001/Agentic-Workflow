@@ -46,28 +46,28 @@ class MessagePlanner:
             ArchetypeType.RECRUITER: {
                 "subject": -0.1,  # More formal
                 "hook": 0.0,       # Standard
-                "body": -0.1,      # Concise
+                "value": -0.1,     # Concise
                 "cta": 0.0,        # Standard
                 "signature": 0.0   # Standard
             },
             ArchetypeType.SENIOR_TA: {
                 "subject": 0.0,   # Standard
                 "hook": 0.1,      # More engaging
-                "body": 0.0,      # Standard
+                "value": 0.0,     # Standard
                 "cta": -0.1,      # More formal
                 "signature": 0.0  # Standard
             },
-            ArchetypeType.HIRING_MANAGER: {
-                "subject": 0.0,   # Standard
-                "hook": 0.1,      # More engaging
-                "body": 0.0,      # Standard
+            ArchetypeType.EXECUTIVE: {
+                "subject": -0.1,  # More formal
+                "hook": 0.0,      # Strategic
+                "value": 0.0,     # Business-focused
                 "cta": 0.1,       # More action-oriented
                 "signature": 0.1  # Warmer
             },
             ArchetypeType.C_LEVEL: {
                 "subject": -0.2,  # Very formal
                 "hook": -0.1,     # Strategic
-                "body": -0.1,     # Concise
+                "value": -0.1,    # Concise
                 "cta": -0.1,      # Professional
                 "signature": -0.1 # Formal
             }
@@ -86,9 +86,9 @@ class MessagePlanner:
                 "avoid_strategic_language",
                 "must_include_company_specificity"
             ],
-            ArchetypeType.HIRING_MANAGER: [
-                "pain_point_relevance_required",
-                "team_impact_required",
+            ArchetypeType.EXECUTIVE: [
+                "business_impact_required",
+                "team_outcomes_required",
                 "no_buzzwords",
                 "specific_metrics_required"
             ],
@@ -118,10 +118,10 @@ class MessagePlanner:
                 "optional_elements": ["personalization", "achievement"],
                 "style_guidelines": ["engaging", "specific"]
             },
-            "body": {
+            "value": {
                 "max_length": 500,
                 "required_elements": ["value_proposition", "evidence"],
-                "optional_elements": ["technical_details", "company_info", "personalization"],
+                "optional_elements": ["business_impact", "technical_details", "company_info"],
                 "style_guidelines": ["structured", "persuasive"]
             },
             "cta": {
@@ -165,7 +165,7 @@ class MessagePlanner:
             # Section-specific plans
             subject_plan=sections.get("subject", ""),
             hook_plan=sections.get("hook", ""),
-            value_plan=sections.get("body", ""),
+            value_plan=sections.get("value", ""),
             cta_plan=sections.get("cta", ""),
             signature_plan=sections.get("signature", ""),
             # Legacy sections dict for backward compatibility
@@ -178,7 +178,11 @@ class MessagePlanner:
                 "archetype": archetype_context.archetype,
                 "target_company": content.company_name,
                 "planning_timestamp": self._get_current_timestamp(),
-                "complexity_score": self._calculate_complexity_score(sections, constraints)
+                "complexity_score": self._calculate_complexity_score(sections, constraints),
+                "reasoning_intensity": archetype_context.executive_reasoning_profile.reasoning_intensity,
+                "sc_k": archetype_context.executive_reasoning_profile.sc_k,
+                "reflexion_passes": archetype_context.executive_reasoning_profile.reflexion_passes,
+                "reasoning_mode": str(archetype_context.reasoning_params.reasoning_mode)
             }
         )
     
@@ -196,8 +200,8 @@ class MessagePlanner:
         # Hook planning
         sections["hook"] = self._plan_hook(content, archetype_context)
         
-        # Body planning
-        sections["body"] = self._plan_body(content, archetype_context)
+        # Value planning
+        sections["value"] = self._plan_value(content, archetype_context)
         
         # CTA planning
         sections["cta"] = self._plan_cta(content, archetype_context)
@@ -250,7 +254,7 @@ class MessagePlanner:
             hook_parts.append(f"Noticed your work at {content.company_name}")
         elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             hook_parts.append(f"Following {content.company_name}'s strategic direction")
-        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
             hook_parts.append(f"Interested in your team's work at {content.company_name}")
         elif archetype_context.archetype == ArchetypeType.RECRUITER:
             hook_parts.append(f"Regarding opportunities at {content.company_name}")
@@ -264,37 +268,37 @@ class MessagePlanner:
         
         return " ".join(hook_parts)
     
-    def _plan_body(
+    def _plan_value(
         self, 
         content: MessageContent, 
         archetype_context: ArchetypeContext
     ) -> str:
-        """Plan body content structure."""
-        body_parts = []
+        """Plan value content structure."""
+        value_parts = []
         
         # Opening based on archetype
         if archetype_context.archetype == ArchetypeType.SENIOR_TA:
-            body_parts.append("I'm reaching out regarding technical leadership opportunities")
+            value_parts.append("I'm reaching out regarding technical leadership opportunities")
         elif archetype_context.archetype == ArchetypeType.C_LEVEL:
-            body_parts.append("I'm writing to discuss potential business collaboration")
-        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
-            body_parts.append("I'm interested in exploring opportunities with your team")
+            value_parts.append("I'm writing to discuss potential business collaboration")
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
+            value_parts.append("I'm interested in exploring opportunities with your team")
         elif archetype_context.archetype == ArchetypeType.RECRUITER:
-            body_parts.append("I'm reaching out about potential opportunities")
+            value_parts.append("I'm reaching out about potential opportunities")
         
         # Value proposition
         if content.value_proposition:
-            body_parts.append(f"Key value: {content.value_proposition}")
+            value_parts.append(f"Key value: {content.value_proposition}")
         
         # Key points
         for point in content.key_points[:3]:  # Limit to 3 key points
-            body_parts.append(f"• {point}")
+            value_parts.append(f"• {point}")
         
         # Company-specific content for senior roles
         if archetype_context.archetype in [ArchetypeType.SENIOR_TA, ArchetypeType.C_LEVEL]:
-            body_parts.append(f"Specific to {content.company_name}'s context")
+            value_parts.append(f"Specific to {content.company_name}'s context")
         
-        return " ".join(body_parts)
+        return " ".join(value_parts)
     
     def _plan_cta(
         self, 
@@ -329,7 +333,7 @@ class MessagePlanner:
         self, 
         archetype_context: ArchetypeContext
     ) -> Dict[str, float]:
-        """Calculate temperature schedule based on archetype and context."""
+        """Calculate temperature schedule based on archetype and reasoning intensity."""
         base_schedule = SECTION_TEMPERATURE_SCHEDULE.copy()
         
         # Get archetype adjustments
@@ -338,29 +342,72 @@ class MessagePlanner:
             {}
         )
         
-        # Apply adjustments
+        # Apply archetype adjustments
         final_schedule = {}
         for section, base_temp in base_schedule.items():
             adjustment = adjustments.get(section, 0.0)
             final_temp = max(0.1, min(1.5, base_temp + adjustment))  # Clamp between 0.1 and 1.5
             final_schedule[section] = final_temp
         
+        # Apply reasoning intensity adjustments
+        reasoning_intensity = archetype_context.executive_reasoning_profile.reasoning_intensity
+        intensity_adjustments = self._apply_reasoning_intensity_adjustments(
+            final_schedule, reasoning_intensity, archetype_context.archetype
+        )
+        
         # Apply tone parameter adjustments
         if archetype_context.tone_params.enthusiasm_level == "high":
-            final_schedule["hook"] += 0.1
-            final_schedule["cta"] += 0.1
+            intensity_adjustments["hook"] += 0.1
+            intensity_adjustments["cta"] += 0.1
         elif archetype_context.tone_params.enthusiasm_level == "low":
-            final_schedule["hook"] -= 0.1
-            final_schedule["cta"] -= 0.1
+            intensity_adjustments["hook"] -= 0.1
+            intensity_adjustments["cta"] -= 0.1
         
-        if archetype_context.tone_params.formality_level == "formal":
-            final_schedule["subject"] -= 0.1
-            final_schedule["signature"] -= 0.1
+        if archetype_context.tone_params.formality_level == "executive":
+            intensity_adjustments["subject"] -= 0.1
+            intensity_adjustments["signature"] -= 0.1
         elif archetype_context.tone_params.formality_level == "casual":
-            final_schedule["hook"] += 0.1
-            final_schedule["signature"] += 0.1
+            intensity_adjustments["hook"] += 0.1
+            intensity_adjustments["signature"] += 0.1
         
-        return final_schedule
+        return intensity_adjustments
+    
+    def _apply_reasoning_intensity_adjustments(
+        self, 
+        base_schedule: Dict[str, float], 
+        reasoning_intensity: str,
+        archetype: str
+    ) -> Dict[str, float]:
+        """Apply reasoning intensity-based temperature adjustments."""
+        adjusted_schedule = base_schedule.copy()
+        
+        # Reasoning intensity adjustments
+        if reasoning_intensity == "extreme":
+            # Higher temperatures for creative sections, lower for formal sections
+            adjusted_schedule["hook"] += 0.15
+            adjusted_schedule["value"] += 0.10
+            adjusted_schedule["cta"] += 0.05
+            # Lower temperatures for formal sections (C_LEVEL)
+            if archetype == ArchetypeType.C_LEVEL:
+                adjusted_schedule["subject"] -= 0.05
+                adjusted_schedule["signature"] -= 0.05
+        elif reasoning_intensity == "high":
+            # Moderate temperature increases
+            adjusted_schedule["hook"] += 0.10
+            adjusted_schedule["value"] += 0.05
+            # Slightly lower for executive archetypes
+            if archetype in [ArchetypeType.EXECUTIVE, ArchetypeType.C_LEVEL]:
+                adjusted_schedule["subject"] -= 0.05
+        elif reasoning_intensity == "medium":
+            # Small adjustments
+            adjusted_schedule["hook"] += 0.05
+        # "low" intensity uses base schedule without adjustments
+        
+        # Clamp all temperatures between 0.1 and 1.5
+        for section in adjusted_schedule:
+            adjusted_schedule[section] = max(0.1, min(1.5, adjusted_schedule[section]))
+        
+        return adjusted_schedule
     
     def _determine_constraints(
         self, 
@@ -423,7 +470,7 @@ class MessagePlanner:
             return "sequential_with_validation"
         elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             return "concise_priority"
-        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
             return "balanced_approach"
         elif archetype_context.archetype == ArchetypeType.RECRUITER:
             return "sequential"
@@ -440,7 +487,20 @@ class MessagePlanner:
         section_complexity = len(sections) * 0.2
         
         # Constraint complexity
-        constraint_count = sum(len(constraints.get(key, [])) for key in ["content_requirements", "style_requirements"])
+        content_reqs = constraints.get("content_requirements", {})
+        style_reqs = constraints.get("style_requirements", {})
+        
+        # Count list items in constraint dictionaries
+        constraint_count = 0
+        if isinstance(content_reqs, dict):
+            for value in content_reqs.values():
+                if isinstance(value, list):
+                    constraint_count += len(value)
+        if isinstance(style_reqs, dict):
+            for value in style_reqs.values():
+                if isinstance(value, list):
+                    constraint_count += len(value)
+        
         constraint_complexity = min(constraint_count * 0.1, 0.5)
         
         # Content complexity

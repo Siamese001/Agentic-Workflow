@@ -13,7 +13,10 @@ from .outreach_dataclasses import (
     ArchetypeContext,
     ArchetypeType,
     RefinementPlan,
-    AgentType
+    AgentType,
+    ExecutiveReasoningProfile,
+    MultiAxisReasoningPlan,
+    ReflexionPlan
 )
 
 
@@ -270,8 +273,8 @@ class ResearchRefinementPlanner:
             base_threshold = 0.8  # Higher bar for senior technical authorities
         elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             base_threshold = 0.75  # Higher bar for executives
-        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
-            base_threshold = 0.7  # Standard bar for hiring managers
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
+            base_threshold = 0.7  # Standard bar for executives
         else:  # RECRUITER
             base_threshold = 0.65  # Lower bar for recruiters
         
@@ -333,7 +336,7 @@ class ResearchRefinementPlanner:
             needs.append("validate_technical_expertise")
         elif archetype_context.archetype == ArchetypeType.C_LEVEL:
             needs.append("quantify_business_impact")
-        elif archetype_context.archetype == ArchetypeType.HIRING_MANAGER:
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
             needs.append("assess_team_fit")
         elif archetype_context.archetype == ArchetypeType.RECRUITER:
             needs.append("verify_job_requirements")
@@ -444,6 +447,338 @@ class ResearchRefinementPlanner:
             reasoning_parts.append(f"Iteration {iteration} refinement")
         
         return "; ".join(reasoning_parts)
+    
+    def plan_multi_axis_research(
+        self,
+        base_query: str,
+        archetype_context: ArchetypeContext,
+        target_company: str = ""
+    ) -> MultiAxisReasoningPlan:
+        """
+        Plan multi-axis research expansion using ExecutiveReasoningProfile.
+        
+        For EXECUTIVE and C_LEVEL archetypes, expands queries across all cognitive axes
+        with reasoning depth multipliers from the executive profile.
+        
+        Args:
+            base_query: Base research query
+            archetype_context: Archetype context with executive reasoning profile
+            target_company: Target company for context-specific queries
+            
+        Returns:
+            MultiAxisReasoningPlan with expanded queries and reasoning parameters
+        """
+        executive_profile = archetype_context.executive_reasoning_profile
+        
+        # Initialize multi-axis plan
+        plan = MultiAxisReasoningPlan(
+            base_query=base_query,
+            cognitive_axes=executive_profile.cognitive_axes,
+            reasoning_intensity=executive_profile.reasoning_intensity,
+            require_deep_research=executive_profile.require_deep_research,
+            sc_k=executive_profile.sc_k,
+            cot_depth_multiplier=executive_profile.cot_depth,
+            tot_recursion_multiplier=executive_profile.tot_recursion_depth
+        )
+        
+        # Generate cognitive axes queries if deep research required
+        if executive_profile.require_deep_research:
+            plan.cognitive_axes_queries = self._generate_cognitive_axes_queries(
+                base_query, executive_profile.cognitive_axes, target_company
+            )
+            
+            # Expand subqueries using reasoning depth multipliers
+            plan.expanded_subqueries = self._expand_queries_with_reasoning_depth(
+                plan.cognitive_axes_queries, executive_profile
+            )
+            
+            plan.total_query_count = len(plan.expanded_subqueries)
+        else:
+            # Simple query expansion for non-deep research
+            plan.expanded_subqueries = [base_query]
+            plan.total_query_count = 1
+        
+        # Set target sources based on archetype
+        plan.target_sources = self._determine_target_sources(archetype_context.archetype)
+        
+        return plan
+    
+    def plan_reflexion_cycles(
+        self,
+        current_results: ResearchResult,
+        archetype_context: ArchetypeContext,
+        iteration: int = 1
+    ) -> ReflexionPlan:
+        """
+        Plan reflexion critique and refinement cycles.
+        
+        Generates critique questions and refinement strategies based on
+        reflexion_passes from ExecutiveReasoningProfile.
+        
+        Args:
+            current_results: Current research results to critique
+            archetype_context: Archetype context with executive reasoning profile
+            iteration: Current iteration number
+            
+        Returns:
+            ReflexionPlan with critique questions and refinement strategies
+        """
+        executive_profile = archetype_context.executive_reasoning_profile
+        
+        # Initialize reflexion plan
+        plan = ReflexionPlan(
+            reflexion_passes=executive_profile.reflexion_passes,
+            current_pass=iteration,
+            max_passes=executive_profile.reflexion_passes,
+            reasoning_intensity=executive_profile.reasoning_intensity,
+            confidence_threshold=archetype_context.signal_params.min_signal_score
+        )
+        
+        # Generate critique questions if reflexion passes > 0
+        if executive_profile.reflexion_passes > 0:
+            plan.critique_questions = self._generate_critique_questions(
+                current_results, archetype_context, iteration
+            )
+            
+            plan.refinement_strategies = self._generate_refinement_strategies(
+                plan.critique_questions, archetype_context
+            )
+            
+            plan.completion_criteria = self._generate_completion_criteria(
+                executive_profile, archetype_context
+            )
+        
+        return plan
+    
+    def _generate_cognitive_axes_queries(
+        self, 
+        base_query: str, 
+        cognitive_axes: List[str], 
+        target_company: str = ""
+    ) -> Dict[str, List[str]]:
+        """Generate queries expanded across cognitive axes."""
+        axes_queries = {}
+        
+        # Cognitive axis query templates
+        axis_templates = {
+            "strategic": [
+                f"{base_query} strategic vision",
+                f"{base_query} long-term strategy",
+                f"{base_query} market positioning"
+            ],
+            "financial": [
+                f"{base_query} financial performance",
+                f"{base_query} revenue growth",
+                f"{base_query} investment strategy"
+            ],
+            "technical": [
+                f"{base_query} technology stack",
+                f"{base_query} technical innovation",
+                f"{base_query} engineering capabilities"
+            ],
+            "competitive": [
+                f"{base_query} competitive landscape",
+                f"{base_query} market competition",
+                f"{base_query} competitive advantages"
+            ],
+            "product": [
+                f"{base_query} product strategy",
+                f"{base_query} product development",
+                f"{base_query} product roadmap"
+            ],
+            "operational": [
+                f"{base_query} operational efficiency",
+                f"{base_query} business operations",
+                f"{base_query} process optimization"
+            ],
+            "risk": [
+                f"{base_query} risk management",
+                f"{base_query} business risks",
+                f"{base_query} strategic risks"
+            ],
+            "psychographic": [
+                f"{base_query} leadership style",
+                f"{base_query} decision making",
+                f"{base_query} team culture"
+            ]
+        }
+        
+        # Generate queries for each cognitive axis
+        for axis in cognitive_axes:
+            if axis in axis_templates:
+                queries = axis_templates[axis]
+                if target_company:
+                    queries = [q.replace(base_query, f"{target_company} {base_query}") for q in queries]
+                axes_queries[axis] = queries
+        
+        return axes_queries
+    
+    def _expand_queries_with_reasoning_depth(
+        self, 
+        cognitive_axes_queries: Dict[str, List[str]], 
+        executive_profile: ExecutiveReasoningProfile
+    ) -> List[str]:
+        """Expand queries using reasoning depth multipliers."""
+        expanded_queries = []
+        
+        # Calculate expansion multiplier
+        depth_multiplier = executive_profile.cot_depth * executive_profile.tot_recursion_depth
+        
+        for axis, queries in cognitive_axes_queries.items():
+            # Expand each query based on reasoning depth
+            for query in queries:
+                # Generate depth-specific variations
+                for depth in range(depth_multiplier):
+                    depth_query = f"{query} (depth {depth + 1})"
+                    expanded_queries.append(depth_query)
+        
+        return expanded_queries
+    
+    def _generate_critique_questions(
+        self, 
+        current_results: ResearchResult, 
+        archetype_context: ArchetypeContext, 
+        iteration: int
+    ) -> List[str]:
+        """Generate LIC-style critique questions for reflexion."""
+        questions = []
+        
+        # Quality-based critique questions
+        avg_confidence = sum(current_results.confidence_scores) / len(current_results.confidence_scores) if current_results.confidence_scores else 0.0
+        
+        if avg_confidence < 0.7:
+            questions.append("Are the research sources sufficiently credible for this archetype?")
+            questions.append("What additional evidence would strengthen confidence in findings?")
+        
+        if len(current_results.results) < 5:
+            questions.append("Is the research scope comprehensive enough for informed outreach?")
+            questions.append("What critical information gaps remain in the current research?")
+        
+        # Archetype-specific critique questions
+        if archetype_context.archetype == ArchetypeType.C_LEVEL:
+            questions.extend([
+                "Does the research demonstrate strategic business impact?",
+                "Are financial signals and market positioning adequately quantified?",
+                "Is there sufficient competitive intelligence for executive decision-making?"
+            ])
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
+            questions.extend([
+                "Does the research address business outcomes and team impact?",
+                "Are operational and strategic considerations properly balanced?",
+                "Is there sufficient context for business stakeholder evaluation?"
+            ])
+        elif archetype_context.archetype == ArchetypeType.SENIOR_TA:
+            questions.extend([
+                "Does the research demonstrate technical depth and innovation?",
+                "Are technical achievements and capabilities clearly articulated?",
+                "Is there sufficient technical context for expert evaluation?"
+            ])
+        
+        # Iteration-specific questions
+        if iteration > 1:
+            questions.append(f"Have the refinement strategies from iteration {iteration - 1} been effectively addressed?")
+        
+        return questions
+    
+    def _generate_refinement_strategies(
+        self, 
+        critique_questions: List[str], 
+        archetype_context: ArchetypeContext
+    ) -> List[str]:
+        """Generate refinement strategies based on critique questions."""
+        strategies = []
+        
+        # Map question patterns to refinement strategies
+        for question in critique_questions:
+            question_lower = question.lower()
+            
+            if "credibility" in question_lower or "confidence" in question_lower:
+                strategies.append("Seek higher-authority sources and validate claims")
+                strategies.append("Find supporting evidence from multiple independent sources")
+            
+            elif "comprehensive" in question_lower or "gaps" in question_lower:
+                strategies.append("Expand research scope to cover missing domains")
+                strategies.append("Identify and research critical information gaps")
+            
+            elif "strategic" in question_lower or "business impact" in question_lower:
+                strategies.append("Focus on strategic business outcomes and metrics")
+                strategies.append("Quantify business value and competitive advantages")
+            
+            elif "financial" in question_lower or "market" in question_lower:
+                strategies.append("Research financial performance and market positioning")
+                strategies.append("Gather quantitative business metrics and indicators")
+            
+            elif "technical" in question_lower or "innovation" in question_lower:
+                strategies.append("Deepen research into technical capabilities and innovations")
+                strategies.append("Document technical achievements and expertise areas")
+            
+            elif "operational" in question_lower or "team" in question_lower:
+                strategies.append("Research operational processes and team dynamics")
+                strategies.append("Understand organizational structure and decision-making")
+        
+        return list(set(strategies))  # Remove duplicates
+    
+    def _generate_completion_criteria(
+        self, 
+        executive_profile: ExecutiveReasoningProfile, 
+        archetype_context: ArchetypeContext
+    ) -> List[str]:
+        """Generate completion criteria for reflexion cycles."""
+        criteria = []
+        
+        # Base criteria for all archetypes
+        criteria.extend([
+            "Research confidence meets or exceeds archetype threshold",
+            "Sufficient information depth for personalized outreach",
+            "Key claims supported by credible evidence"
+        ])
+        
+        # Intensity-specific criteria
+        if executive_profile.reasoning_intensity in ["high", "extreme"]:
+            criteria.extend([
+                "Multi-axis research covers all relevant cognitive domains",
+                "Strategic and business implications clearly articulated",
+                "Competitive landscape and market positioning well understood"
+            ])
+        
+        # Archetype-specific criteria
+        if archetype_context.archetype == ArchetypeType.C_LEVEL:
+            criteria.extend([
+                "Executive-level strategic insights documented",
+                "Financial signals and business impact quantified",
+                "Leadership decision-making context established"
+            ])
+        elif archetype_context.archetype == ArchetypeType.EXECUTIVE:
+            criteria.extend([
+                "Business stakeholder concerns addressed",
+                "Team and operational impact assessed",
+                "Strategic alignment opportunities identified"
+            ])
+        
+        return criteria
+    
+    def _determine_target_sources(self, archetype: str) -> List[str]:
+        """Determine target research sources based on archetype."""
+        source_mapping = {
+            ArchetypeType.RECRUITER: [
+                "job_postings", "company_career_pages", "linkedin_profiles",
+                "recruitment_blogs", "hiring_insights"
+            ],
+            ArchetypeType.SENIOR_TA: [
+                "technical_blogs", "github_repositories", "stackoverflow",
+                "research_papers", "patent_filings", "conference_proceedings"
+            ],
+            ArchetypeType.EXECUTIVE: [
+                "executive_insights", "business_news", "market_analysis",
+                "company_reports", "management_blogs", "industry_analysis"
+            ],
+            ArchetypeType.C_LEVEL: [
+                "earnings_calls", "executive_interviews", "market_reports",
+                "financial_filings", "competitor_analysis", "strategic_documents"
+            ]
+        }
+        
+        return source_mapping.get(archetype, ["general_web_search"])
     
     def plan_research_refinement(
         self,
