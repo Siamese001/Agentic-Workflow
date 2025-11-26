@@ -1,6 +1,6 @@
 from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
 from infra.sandbox.models import ToolCallRequest
-from observability import clear_events, get_all_events
+from observability import get_all_events, clear_events
 
 
 def test_microvm_create_exec_teardown_emits_events():

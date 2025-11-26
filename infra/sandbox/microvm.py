@@ -46,7 +46,7 @@ def exec_in_vm(vm: MicroVM, request: ToolCallRequest) -> ToolCallResult:
     code. It simulates execution and supports basic timeout behavior.
     """
 
-    start_ms = _now_ms()
+    start_ms = _now_ms()  # noqa: F841 - timestamp for potential debugging
     if request.timeout_s <= 0:
         record_event(
             "sandbox_timeout",
