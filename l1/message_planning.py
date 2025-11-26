@@ -36,7 +36,7 @@ class MessagePlanner:
         # Pure section templates - no external dependencies
         self._section_templates = self._build_section_templates()
         
-        # HSON: Adjusts temperature by archetype to match executive cognitive patterns → increases engagement
+        # HSON: Adjusts temperature by archetype to match executive cognitive patterns -> increases engagement
         self._temperature_adjustments = {
             ArchetypeType.RECRUITER: {
                 "subject": -0.1,  # More formal
@@ -139,13 +139,13 @@ class MessagePlanner:
         archetype_context: ArchetypeContext
     ) -> MessagePlan:
         """Creates archetype-optimized message structure to maximize executive reply rates."""
-        # HSON: Plans sections with archetype-specific content → increases message relevance
+        # HSON: Plans sections with archetype-specific content -> increases message relevance
         sections = self._plan_sections(content, archetype_context)
         
-        # HSON: Adjusts temperature by archetype to match executive cognitive patterns → boosts engagement
+        # HSON: Adjusts temperature by archetype to match executive cognitive patterns -> boosts engagement
         temperature_schedule = self._calculate_temperature_schedule(archetype_context)
         
-        # HSON: Applies archetype-specific constraints to maintain professional tone → preserves executive trust
+        # HSON: Applies archetype-specific constraints to maintain professional tone -> preserves executive trust
         constraints = self._determine_constraints(content, archetype_context)
         
         # Estimate tokens
@@ -173,7 +173,7 @@ class MessagePlanner:
                 "planning_timestamp": self._get_current_timestamp(),
                 "complexity_score": self._calculate_complexity_score(sections, constraints),
                 "reasoning_mode": str(archetype_context.reasoning_params.reasoning_mode),
-                # Complete reasoning-intensity metadata for L1→L2 propagation
+                # Complete reasoning-intensity metadata for L1->L2 propagation
                 **reasoning_intensity_metadata(archetype_context.executive_reasoning_profile)
             }
         )
@@ -559,10 +559,10 @@ class MessagePlanner:
         return self.create_message_plan(content, archetype_context)
 
 
-"""
-=== Learning Trace Map ===
-LAYER: L1
-ROLE: Structures executive messages with archetype-specific parameters for high reply rates
-IMPACT: Optimizes message sections and temperature by archetype → increases executive engagement by 35%
-FLOW: apps/lic_outreach/lic_workflow_entry.py → OutreachArchetypePlanner → MessagePlanner.create_message_plan() → L2 message generation
-"""
+#
+# === Learning Trace Map ===
+# LAYER: L1
+# ROLE: Structures executive messages with archetype-specific parameters for high reply rates
+# IMPACT: Optimizes message sections and temperature by archetype -> increases executive engagement by 35%
+# FLOW: apps/lic_outreach/lic_workflow_entry.py -> OutreachArchetypePlanner -> MessagePlanner.create_message_plan() -> L2 message generation
+#

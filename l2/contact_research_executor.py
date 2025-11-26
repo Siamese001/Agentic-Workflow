@@ -70,10 +70,10 @@ class ContactResearchExecutor:
             profile_type="contact"
         )
         
-        # HSON: Builds archetype-specific contact queries → surfaces personalization signals executives respond to
+        # HSON: Builds archetype-specific contact queries -> surfaces personalization signals executives respond to
         query = self._build_contact_query(target_role, target_company, archetype)
         
-        # HSON: Applies archetype-specific search thresholds → ensures executive-grade personalization quality
+        # HSON: Applies archetype-specific search thresholds -> ensures executive-grade personalization quality
         config = HybridSearchConfig(
             dense_top_k=rag_params.get("top_k", 10),
             sparse_top_k=rag_params.get("top_k", 10),
@@ -307,10 +307,10 @@ class ContactResearchExecutor:
         return [t for t in texts if t and t.strip()]
 
 
-"""
-=== Learning Trace Map ===
-LAYER: L2
-ROLE: Executes contact research to gather personalization intelligence for executive message relevance
-IMPACT: Provides high-quality contact evidence → strengthens executive message personalization by 35%
-FLOW: apps/lic_outreach/lic_workflow_entry.py → OutreachArchetypePlanner → ContactResearchExecutor.search_contact_profile() → L4 hybrid search → L5 safety
-"""
+#
+# === Learning Trace Map ===
+# LAYER: L2
+# ROLE: Executes contact research to gather personalization intelligence for executive message relevance
+# IMPACT: Provides high-quality contact evidence -> strengthens executive message personalization by 35%
+# FLOW: apps/lic_outreach/lic_workflow_entry.py -> OutreachArchetypePlanner -> ContactResearchExecutor.search_contact_profile() -> L4 hybrid search -> L5 safety
+#
