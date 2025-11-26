@@ -40,7 +40,6 @@ from core.models.models import (
     PermanentError,
     RetryExhaustedError,
     CircuitBreakerOpenError,
-    ToolInvocationError,
     ResilienceDecision,
 )
 from observability import record_event, record_exception
