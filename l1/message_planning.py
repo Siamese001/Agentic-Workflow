@@ -465,7 +465,11 @@ class MessagePlanner:
             analysis["weaknesses"].append("Limited temperature variation may reduce creativity")
         
         # Analyze constraints
-        constraint_count = sum(len(plan.constraints.get(key, [])) for key in plan.constraints if isinstance(plan.constraints[key], list))
+        constraint_count = 0
+        for key, value in plan.constraints.items():
+            if isinstance(value, list):
+                constraint_count += len(value)
+        
         if constraint_count > 10:
             analysis["weaknesses"].append("High constraint count may limit generation flexibility")
             analysis["optimization_suggestions"].append("Consider relaxing non-critical constraints")
