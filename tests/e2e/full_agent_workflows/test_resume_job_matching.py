@@ -58,8 +58,8 @@ class TestResumeJobMatchingWorkflow:
         ]
         
         # Mock L4 Memory operations
-        mock_triplet_store.store_triplets.return_value = True
-        mock_triplet_store.query_knowledge.return_value = {"relevant_skills": ["Python", "Cloud Computing"]}
+        mock_triplet_store.add_triplets.return_value = ["triplet_1", "triplet_2"]
+        mock_triplet_store.query.return_value = [{"id": "triplet_1", "subject": "Python", "predicate": "skill", "object": "required"}]
         
         # Mock L5 Safety validation
         mock_safety.validate_input.return_value = {"is_safe": True, "risk_level": "low"}
@@ -146,7 +146,7 @@ class TestResumeJobMatchingWorkflow:
         """Test workflow with L4 memory/knowledge graph integration."""
         
         # Mock memory providing context from previous analyses
-        mock_triplet_store.query_knowledge.return_value = {
+        mock_triplet_store.query.return_value = {
             "similar_positions": ["Software Engineer", "Senior Developer"],
             "common_requirements": ["Python", "Cloud Experience", "Problem Solving"],
             "industry_trends": ["Remote work", "Agile methodologies"]
@@ -166,7 +166,7 @@ class TestResumeJobMatchingWorkflow:
         workflow_input = {"job_title": "Software Engineer", "resume": "Resume content..."}
         
         # Query memory for context
-        memory_context = mock_triplet_store.query_knowledge("job_analysis", workflow_input["job_title"])
+        memory_context = mock_triplet_store.query("job_analysis", workflow_input["job_title"])
         
         # Execute analysis with memory context
         enhanced_parameters = {
@@ -179,7 +179,7 @@ class TestResumeJobMatchingWorkflow:
         
         # Verify memory integration
         assert result["success"] is True
-        mock_triplet_store.query_knowledge.assert_called_once()
+        mock_triplet_store.query.assert_called_once()
         assert "industry_trends" in memory_context
     
     async def test_workflow_error_recovery_and_retry(self):
@@ -233,7 +233,7 @@ class TestResumeJobMatchingWorkflow:
         
         # Mock safety and memory
         mock_safety.validate_input.return_value = {"is_safe": True, "risk_level": "low"}
-        mock_triplet_store.store_triplets.return_value = True
+        mock_triplet_store.add_triplets.return_value = ["triplet_1", "triplet_2"]
         
         # Execute batch workflow
         batch_results = []
@@ -249,12 +249,12 @@ class TestResumeJobMatchingWorkflow:
             batch_results.append(result)
             
             # Store results in memory
-            mock_triplet_store.store_triplets(f"job_analysis_{job['job_id']}", result)
+            mock_triplet_store.add_triplets(f"job_analysis_{job['job_id']}", result)
         
         # Verify batch processing
         assert len(batch_results) == 3
         assert all(result["success"] for result in batch_results)
-        assert mock_triplet_store.store_triplets.call_count == 3
+        assert mock_triplet_store.add_triplets.call_count == 3
         
         # Verify job isolation
         job_ids = [result["job_id"] for result in batch_results]
