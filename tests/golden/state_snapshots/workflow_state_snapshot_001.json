@@ -1,0 +1,15 @@
+{
+  "version": "1.0",
+  "snapshot_id": "snapshot_001",
+  "workflow_id": "wf_001",
+  "timestamp": 1700000000,
+  "state": {
+    "phase": "drafting",
+    "completed_steps": ["analyze", "plan"],
+    "pending_steps": ["draft", "review"],
+    "context": {
+      "job_id": "job_001",
+      "resume_id": "resume_001"
+    }
+  }
+}
