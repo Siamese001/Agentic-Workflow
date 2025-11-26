@@ -50,28 +50,28 @@ from runtime.observability import (
 
 # "Light" models: fast, cheap, shallow reasoning
 LIGHT_MODELS = {
-    "openai": "gpt-5.1-codex-mini",
+    "openai": "gpt-5-nano",
     "anthropic": "claude-haiku-4-5-20251001",
     "google": "gemini-2.5-flash-lite",
 }
 
 # "Medium" models: balanced cost vs reasoning depth
 MEDIUM_MODELS = {
-    "openai": "gpt-5.1",
+    "openai": "gpt-5-mini",
     "anthropic": "claude-sonnet-4-5-20250929",
     "google": "gemini-2.5-flash",
 }
 
 # "Heavy" models: deep reasoning, longer outputs
 HEAVY_MODELS = {
-    "openai": "gpt-5.1-codex",
+    "openai": "gpt-5.1",
     "anthropic": "claude-opus-4-1-20250805",
     "google": "gemini-3-pro-preview",
 }
 
 # Specialized drafting models
 DRAFTING_MODELS = {
-    "openai": "gpt-5.1-codex",
+    "openai": "gpt-5.1",
     "anthropic": "claude-opus-4-1-20250805",
     "google": "gemini-3-pro-preview",
 }
