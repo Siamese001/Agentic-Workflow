@@ -258,7 +258,7 @@ class OutreachOrchestrator:
         
         return OutreachPipelineResult(
             success=False,
-            message="",
+            message=f"All archetype attempts failed after {len(fallback_sequence)} fallback attempts",
             metadata={
                 "error": "All archetype attempts failed",
                 "attempts": len(fallback_sequence),

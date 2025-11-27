@@ -325,9 +325,9 @@ class TestOutreachOrchestrationUnit:
         self.company_executor.search_company_context.assert_called_once()
         call_kwargs = self.company_executor.search_company_context.call_args.kwargs
         
-        assert "query" in call_kwargs
+        assert "target_company" in call_kwargs
         assert "archetype" in call_kwargs
-        assert call_kwargs["query"] == self.recipient.company
+        assert call_kwargs["target_company"] == self.recipient.company
         assert call_kwargs["archetype"] == ArchetypeType.C_LEVEL  # Meta-loop starts with C_LEVEL
     
     def test_contract_L2_return_shapes(self):

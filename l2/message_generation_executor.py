@@ -48,10 +48,12 @@ class GenerationContext:
 class MessageGenerationExecutor:
     """Executes message generation with archetype-specific temperature control to maximize executive reply rates."""
     
-    def __init__(self, llm_client: Any, safety_validator: Any = None):
-        """Initializes executor with LLM client and safety validator for archetype-optimized message generation."""
+    def __init__(self, llm_client: Any, safety_validator: Any = None, routing_policy: Any = None, budget_manager: Any = None):
+        """Initializes executor with LLM client, safety validator, routing policy, and budget manager for archetype-optimized message generation."""
         self.llm_client = llm_client
         self.safety_validator = safety_validator
+        self.routing_policy = routing_policy
+        self.budget_manager = budget_manager
         self.telemetry_bus = get_telemetry_bus()
     
     def generate_message(
@@ -241,9 +243,40 @@ class MessageGenerationExecutor:
             reasoning_metadata=reasoning_metadata
         )
         
-        # Call LLM with temperature
+        # Apply routing if available to select optimal model
+        selected_model = None
+        if self.routing_policy:
+            try:
+                # Extract context for routing
+                from l1.outreach_dataclasses import ArchetypeType
+                archetype = getattr(ctx, 'archetype', 'EXECUTIVE')
+                if isinstance(archetype, str):
+                    # Convert string to ArchetypeType enum
+                    archetype_map = {
+                        'C_LEVEL': ArchetypeType.C_LEVEL,
+                        'EXECUTIVE': ArchetypeType.EXECUTIVE, 
+                        'SENIOR_TA': ArchetypeType.SENIOR_TA,
+                        'RECRUITER': ArchetypeType.RECRUITER
+                    }
+                    archetype = archetype_map.get(archetype.upper(), ArchetypeType.EXECUTIVE)
+                
+                # Call routing policy to select model
+                selected_model = self.routing_policy.select_model(
+                    stage="message_generation",
+                    archetype=archetype,
+                    complexity="medium",  # Default complexity
+                    budget_manager=self.budget_manager
+                )
+            except Exception:
+                # Fallback to default model if routing fails
+                selected_model = None
+        
+        # Call LLM with temperature and selected model
         # Note: Temperature is handled at section level for archetype optimization
-        content = self.llm_client.generate(prompt)
+        if selected_model and hasattr(self.llm_client, 'generate_with_model'):
+            content = self.llm_client.generate_with_model(prompt, model=selected_model)
+        else:
+            content = self.llm_client.generate(prompt)
         
         # Estimate tokens (simple approximation)
         content_text = getattr(content, 'content', str(content))
