@@ -188,6 +188,57 @@ class OutreachOrchestrator:
         
         logger.info("Initialized OutreachOrchestrator")
     
+    async def execute_outreach_workflow(
+        self,
+        mission_id: str,
+        mission: Optional[OutreachMission] = None,
+        recipient: Optional[RecipientProfile] = None,
+        config: Optional[Dict[str, Any]] = None,
+        **kwargs
+    ) -> Dict[str, Any]:
+        """Execute outreach workflow for LIC compatibility.
+        
+        Args:
+            mission_id: Unique identifier for the workflow
+            mission: Outreach mission details (optional, created from kwargs if not provided)
+            recipient: Target recipient profile (optional, created from kwargs if not provided)
+            config: Optional configuration overrides
+            **kwargs: Additional parameters for compatibility
+            
+        Returns:
+            Dict with workflow results for LIC compatibility
+        """
+        # Create mission and recipient from kwargs if not provided
+        if mission is None:
+            mission = OutreachMission(
+                id=mission_id,
+                objective=kwargs.get("objective", "outreach"),
+                target_company=kwargs.get("target_company", "Unknown"),
+                deadline=kwargs.get("deadline", None)
+            )
+        
+        if recipient is None:
+            recipient = RecipientProfile(
+                name=kwargs.get("recipient_name", "Unknown"),
+                title=kwargs.get("recipient_title", "Unknown"),
+                company=kwargs.get("recipient_company", mission.target_company),
+                email=kwargs.get("recipient_email", ""),
+                linkedin_url=kwargs.get("recipient_linkedin", "")
+            )
+        
+        # Execute the actual workflow
+        result = self.orchestrate_outreach(mission, recipient, config)
+        
+        # Return dict format for LIC compatibility
+        return {
+            "success": result.success,
+            "message": result.message,
+            "metadata": result.metadata,
+            "mission_id": mission_id,
+            "archetype": result.metadata.get("archetype"),
+            "safety_passed": result.metadata.get("safety_passed", True)
+        }
+    
     def orchestrate_outreach(
         self,
         mission: OutreachMission,
@@ -507,12 +558,7 @@ class OutreachOrchestrator:
                     
                     # P4 — Final Safety Check (MUST be after message generation)
                     logger.info("P4: Safety validation at meta-loop level")
-                    safety_context = SafetyContext(
-                        content=result.message,
-                        content_type="text",
-                        domain="outreach"
-                    )
-                    safety_result_raw = self.safety_validator.evaluate(safety_context)
+                    safety_result_raw = self.safety_validator.evaluate(result.message)
                     
                     # Handle both sync and async safety evaluators with timeout
                     import inspect
@@ -754,12 +800,7 @@ class OutreachOrchestrator:
             pass
         
         # Handle both sync and async safety evaluators with timeout
-        safety_context = SafetyContext(
-            content=message_result.message,
-            content_type="text",
-            domain="outreach"
-        )
-        safety_result_raw = self.safety_validator.evaluate(safety_context)
+        safety_result_raw = self.safety_validator.evaluate(message_result.message)
         import inspect
         safety_timeout = config.get("safety_timeout", None)
         
@@ -938,12 +979,7 @@ class OutreachOrchestrator:
         
         # P4 — Final Safety Check (MUST be after message generation)
         logger.info("P4: Safety validation")
-        safety_context = SafetyContext(
-            content=message_result.message,
-            content_type="text",
-            domain="outreach"
-        )
-        safety_result_raw = self.safety_validator.evaluate(safety_context)
+        safety_result_raw = self.safety_validator.evaluate(message_result.message)
         
         # Handle both sync and async safety evaluators
         import inspect

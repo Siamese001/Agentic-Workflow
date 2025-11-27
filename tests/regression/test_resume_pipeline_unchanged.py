@@ -72,7 +72,7 @@ class TestResumePipelineUnchanged:
             'location': 'San Francisco, CA'
         }
     
-    def test_run_single_outreach_success_preserved_functionality(self):
+    async def test_run_single_outreach_success_preserved_functionality(self):
         """Test that run_single_outreach_success functionality is preserved."""
         # Mock successful outreach workflow
         mock_outreach_result = {
@@ -101,7 +101,7 @@ class TestResumePipelineUnchanged:
         
         # Mock the orchestrator to return expected result
         with patch.object(self.orchestrator, 'execute_outreach_workflow', return_value=mock_outreach_result):
-            result = self.orchestrator.execute_outreach_workflow(
+            result = await self.orchestrator.execute_outreach_workflow(
                 job_title=self.test_job['title'],
                 company=self.test_job['company'],
                 target_archetype='senior_ta',
