@@ -118,10 +118,13 @@ class TestResumePipelineUnchanged:
         assert 'generated_message' in result
         assert 'safety_result' in result
     
-    def test_resume_job_alignment_workflow_unchanged(self):
-        """Test that resume job alignment workflow remains unchanged."""
-        # Mock resume job alignment results
+    async def test_resume_job_alignment_workflow_unchanged(self):
+        """Test that resume job alignment workflow is unchanged."""
+        # Mock alignment result
         mock_alignment_result = {
+            'candidate_name': 'John Doe',
+            'job_title': 'Senior Software Engineer',
+            'company': 'Enterprise Tech',
             'resume_data': self.test_resume,
             'job_data': self.test_job,
             'alignment_score': 0.87,
@@ -133,19 +136,17 @@ class TestResumePipelineUnchanged:
             ],
             'temporal_enhancements': {
                 'recency_analysis': {
-                    'enabled': True,
-                    'recent_experience_weighted': True
+                    'enabled': True
                 },
                 'signal_detection': {
-                    'high_signals_found': True,
-                    'quantitative_indicators': ['3+ years', 'cloud infrastructure']
+                    'high_signals_found': True
                 }
             }
         }
         
         # Mock the alignment workflow
         with patch.object(self.orchestrator, 'analyze_resume_job_alignment', return_value=mock_alignment_result):
-            result = self.orchestrator.analyze_resume_job_alignment(
+            result = await self.orchestrator.analyze_resume_job_alignment(
                 resume_data=self.test_resume,
                 job_data=self.test_job
             )
