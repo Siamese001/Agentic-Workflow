@@ -60,7 +60,9 @@ class TestLLMRoutingExecutors:
         # Create executor with routed caller
         self.executor = MessageGenerationExecutor(
             llm_client=self.outreach_caller,
-            safety_validator=self.mock_safety_validator
+            safety_validator=self.mock_safety_validator,
+            routing_policy=self.routing_policy,
+            budget_manager=self.budget_manager
         )
     
     def test_executor_routing_disabled_by_default(self):
@@ -223,7 +225,9 @@ class TestLLMRoutingExecutors:
             
             executor = MessageGenerationExecutor(
                 llm_client=caller,
-                safety_validator=self.mock_safety_validator
+                safety_validator=self.mock_safety_validator,
+                routing_policy=self.routing_policy,
+                budget_manager=self.budget_manager
             )
             
             with patch.object(self.routing_policy, 'select_model') as mock_select:
@@ -252,8 +256,8 @@ class TestLLMRoutingExecutors:
                     
                     # Verify routing policy was called with correct archetype
                     assert mock_select.called
-                    call_args = mock_select.call_args[0]
-                    assert call_args.kwargs['archetype'] == archetype  # archetype parameter
+                    call_args, call_kwargs = mock_select.call_args
+                    assert call_kwargs['archetype'] == archetype  # archetype parameter
     
     def test_executor_routing_with_budget_constraints(self):
         """Test that executor respects budget constraints in routing."""
@@ -294,8 +298,8 @@ class TestLLMRoutingExecutors:
                 
                 # Verify routing policy was called with budget manager
                 assert mock_select.called
-                call_args = mock_select.call_args[0]
-                assert call_args.kwargs['budget_manager'] == self.budget_manager
+                call_args, call_kwargs = mock_select.call_args
+                assert call_kwargs['budget_manager'] == self.budget_manager
     
     def test_executor_routing_fallback_mechanism(self):
         """Test that executor routing falls back gracefully when routing fails."""

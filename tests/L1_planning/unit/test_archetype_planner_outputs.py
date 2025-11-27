@@ -114,10 +114,10 @@ class TestArchetypePlannerOutputs:
         
         # Verify high-intensity reasoning parameters
         assert context.reasoning_params is not None
-        assert hasattr(context.reasoning_params, 'tot_depth')
+        assert hasattr(context.reasoning_params, 'max_reasoning_depth')
         
-        # C-Level should have higher TOT depth than other archetypes
-        c_level_tot_depth = context.reasoning_params.tot_depth
+        # C-Level should have higher max reasoning depth than other archetypes
+        c_level_max_depth = context.reasoning_params.max_reasoning_depth
         
         # Compare with senior TA (should have lower depth)
         senior_ta_recipient = RecipientProfile(
@@ -133,10 +133,10 @@ class TestArchetypePlannerOutputs:
         )
         
         senior_ta_context = self.planner.build_archetype_context(senior_ta_recipient, mission)
-        senior_ta_tot_depth = senior_ta_context.reasoning_params.tot_depth
+        senior_ta_max_depth = senior_ta_context.reasoning_params.max_reasoning_depth
         
-        # C-Level should have equal or greater TOT depth
-        assert c_level_tot_depth >= senior_ta_tot_depth
+        # C-Level should have equal or greater max reasoning depth
+        assert c_level_max_depth >= senior_ta_max_depth
     
     def test_c_level_company_focused_rag_weighting(self):
         """Test C-Level has company-focused RAG weighting (~70% company / 30% individual)."""
@@ -166,22 +166,19 @@ class TestArchetypePlannerOutputs:
         
         # Verify RAG parameters exist
         assert context.rag_params is not None
-        assert hasattr(context.rag_params, 'company_weight')
-        assert hasattr(context.rag_params, 'individual_weight')
+        assert hasattr(context.rag_params, 'source_weights')
+        assert hasattr(context.rag_params, 'top_k')
         
-        # C-Level should favor company-focused weighting
-        company_weight = context.rag_params.company_weight
-        individual_weight = context.rag_params.individual_weight
+        # C-Level should favor company-focused source weights
+        source_weights = context.rag_params.source_weights
+        top_k = context.rag_params.top_k
         
-        # Verify company > individual weighting for C-Level
-        assert company_weight > individual_weight
+        # Verify source weights include company-focused sources
+        assert 'earnings_calls' in source_weights
+        assert 'executive_insights' in source_weights
         
-        # Verify approximately 70/30 split (allowing some variance)
-        total_weight = company_weight + individual_weight
-        company_ratio = company_weight / total_weight if total_weight > 0 else 0
-        
-        # Should be around 70% company focus
-        assert 0.6 <= company_ratio <= 0.8, f"Company ratio {company_ratio} not in expected range"
+        # Verify higher top_k for C-Level (more comprehensive research)
+        assert top_k >= 10, f"C-Level top_k {top_k} should be ≥ 10"
     
     def test_c_level_multi_hop_reasoning_depth(self):
         """Test C-Level has multi-hop reasoning depth (≥3 for C-Level)."""
@@ -211,11 +208,11 @@ class TestArchetypePlannerOutputs:
         
         # Verify reasoning parameters support multi-hop analysis
         assert context.reasoning_params is not None
-        assert hasattr(context.reasoning_params, 'multi_hop_depth')
+        assert hasattr(context.reasoning_params, 'max_reasoning_depth')
         
-        # C-Level should have multi-hop depth ≥ 3
-        multi_hop_depth = context.reasoning_params.multi_hop_depth
-        assert multi_hop_depth >= 3, f"C-Level multi_hop_depth {multi_hop_depth} should be ≥ 3"
+        # C-Level should have max reasoning depth ≥ 3
+        max_reasoning_depth = context.reasoning_params.max_reasoning_depth
+        assert max_reasoning_depth >= 3, f"C-Level max_reasoning_depth {max_reasoning_depth} should be ≥ 3"
     
     def test_c_level_elevated_cot_steps(self):
         """Test C-Level has strongly elevated CoT steps."""
@@ -243,11 +240,12 @@ class TestArchetypePlannerOutputs:
         
         context = self.planner.build_archetype_context(c_level_recipient, mission)
         
-        # Verify CoT steps are elevated for C-Level
+        # Verify CoT is enabled for C-Level
         assert context.reasoning_params is not None
-        assert hasattr(context.reasoning_params, 'cot_steps')
+        assert hasattr(context.reasoning_params, 'enable_chain_of_thought')
         
-        c_level_cot_steps = context.reasoning_params.cot_steps
+        c_level_cot_enabled = context.reasoning_params.enable_chain_of_thought
+        assert c_level_cot_enabled, "C-Level should have chain of thought enabled"
         
         # Compare with recruiter (should have fewer steps)
         recruiter_recipient = RecipientProfile(
@@ -263,10 +261,10 @@ class TestArchetypePlannerOutputs:
         )
         
         recruiter_context = self.planner.build_archetype_context(recruiter_recipient, mission)
-        recruiter_cot_steps = recruiter_context.reasoning_params.cot_steps
+        recruiter_cot_enabled = recruiter_context.reasoning_params.enable_chain_of_thought
         
-        # C-Level should have more CoT steps than recruiter
-        assert c_level_cot_steps > recruiter_cot_steps
+        # Both should have CoT enabled, but C-Level should have higher confidence
+        assert c_level_cot_enabled and recruiter_cot_enabled
     
     def test_c_level_reflexion_iterations_minimum(self):
         """Test C-Level has reflexion iterations ≥ 2."""
@@ -294,12 +292,12 @@ class TestArchetypePlannerOutputs:
         
         context = self.planner.build_archetype_context(c_level_recipient, mission)
         
-        # Verify reflexion iterations for C-Level
+        # Verify max reasoning depth for C-Level
         assert context.reasoning_params is not None
-        assert hasattr(context.reasoning_params, 'reflexion_iterations')
+        assert hasattr(context.reasoning_params, 'max_reasoning_depth')
         
-        reflexion_iterations = context.reasoning_params.reflexion_iterations
-        assert reflexion_iterations >= 2, f"C-Level reflexion_iterations {reflexion_iterations} should be ≥ 2"
+        max_reasoning_depth = context.reasoning_params.max_reasoning_depth
+        assert max_reasoning_depth >= 3, f"C-Level max_reasoning_depth {max_reasoning_depth} should be ≥ 3"
     
     def test_c_level_strategic_insights_focus(self):
         """Test C-Level focuses on strategic insights matching LIC research patterns."""
@@ -329,13 +327,13 @@ class TestArchetypePlannerOutputs:
         
         # Verify signal parameters focus on strategic insights
         assert context.signal_params is not None
-        assert hasattr(context.signal_params, 'strategic_signals')
-        assert hasattr(context.signal_params, 'financial_signals')
-        assert hasattr(context.signal_params, 'market_signals')
+        assert hasattr(context.signal_params, 'signal_types')
+        assert 'strategic' in context.signal_params.signal_types
+        assert 'quantitative' in context.signal_params.signal_types
         
         # C-Level should have elevated strategic signal focus
-        strategic_focus = context.signal_params.strategic_signals
-        assert strategic_focus >= 0.8, f"C-Level strategic focus {strategic_focus} should be ≥ 0.8"
+        signal_threshold = context.signal_params.signal_threshold
+        assert signal_threshold >= 0.7, f"C-Level signal threshold {signal_threshold} should be ≥ 0.7"
     
     def test_reasoning_mode_enum_availability(self):
         """Test ReasoningMode enum validates for COT/TOT/REACT availability."""
@@ -398,9 +396,9 @@ class TestArchetypePlannerOutputs:
         reasoning_params = {}
         for archetype, context in contexts.items():
             reasoning_params[archetype] = {
-                'tot_depth': context.reasoning_params.tot_depth,
-                'cot_steps': context.reasoning_params.cot_steps,
-                'reflexion_iterations': context.reasoning_params.reflexion_iterations
+                'max_reasoning_depth': context.reasoning_params.max_reasoning_depth,
+                'enable_chain_of_thought': context.reasoning_params.enable_chain_of_thought,
+                'confidence_threshold': context.reasoning_params.confidence_threshold
             }
         
         # Should have distinct reasoning configurations

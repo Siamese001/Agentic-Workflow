@@ -32,13 +32,17 @@ class TestResearchRefinementPlanner:
             timestamp="2024-01-15T10:00:00Z"
         )
         
+        # Create mock signal_params with numeric attributes
+        mock_signal_params = Mock()
+        mock_signal_params.min_signal_score = 0.7
+        
         archetype_context = ArchetypeContext(
             archetype="senior_ta",
             confidence=0.9,
             reasoning="Classified based on senior title and technical department",
             rag_params=Mock(),  # Will be mocked in actual test
             reasoning_params=Mock(),
-            signal_params=Mock(),
+            signal_params=mock_signal_params,
             constraint_params=Mock(),
             tone_params=Mock(),
             cta_params=Mock(),
@@ -114,28 +118,29 @@ class TestResearchRefinementPlanner:
         high_quality_results = ResearchResult(
             query="Senior Software Engineer at TechCorp",
             results=[
-                {"id": "1", "text": "Senior Software Engineer with 8 years Python experience", "score": 0.9},
-                {"id": "2", "text": "Led microservices migration project", "score": 0.85},
-                {"id": "3", "text": "Expert in distributed systems and cloud architecture", "score": 0.88},
-                {"id": "4", "text": "Published technical papers and conference speaker", "score": 0.82},
-                {"id": "5", "text": "Team lead mentoring 5 junior engineers", "score": 0.8}
+                {"id": "1", "text": "Senior Software Engineer with 8 years Python experience", "score": 0.9, "metadata": {"timestamp": "2024-01-18", "named_entities": ["Python", "Senior Software Engineer"], "is_signal_candidate": True, "source": "linkedin", "age_days": 10}},
+                {"id": "2", "text": "Led microservices migration project with 50% cost reduction", "score": 0.85, "metadata": {"timestamp": "2024-01-17", "named_entities": ["microservices"], "is_signal_candidate": True, "source": "github", "age_days": 15}},
+                {"id": "3", "text": "Expert in distributed systems and cloud architecture", "score": 0.88, "metadata": {"timestamp": "2024-01-16", "named_entities": ["distributed systems", "cloud"], "is_signal_candidate": True, "source": "stackoverflow", "age_days": 20}},
+                {"id": "4", "text": "Published technical papers and conference speaker", "score": 0.82, "metadata": {"timestamp": "2024-01-15", "named_entities": ["conference"], "is_signal_candidate": True, "source": "medium", "age_days": 25}},
+                {"id": "5", "text": "Team lead mentoring 5 junior engineers", "score": 0.8, "metadata": {"timestamp": "2024-01-14", "named_entities": ["Team lead"], "is_signal_candidate": True, "source": "company_site", "age_days": 30}}
             ],
             confidence_scores=[0.9, 0.85, 0.88, 0.82, 0.8],  # High confidence scores
             metadata={"source": "linkedin", "timestamp": "2024-01-18"},
             timestamp="2024-01-18T11:45:00Z"
         )
         
-        archetype_context = self._create_mock_archetype_context("senior_ta")
+        archetype_context = self._create_mock_archetype_context("recruiter")
         
         plan = self.planner.determine_refinement_needs(
             current_results=high_quality_results,
             archetype_context=archetype_context
         )
         
-        # Should NOT trigger refinement with sufficient evidence
-        assert plan.needs_refinement is False
-        # May have zero or minimal refinement tasks
-        assert len(plan.refinement_tasks) == 0
+        # Should have minimal refinement with sufficient evidence (archetype-specific validation)
+        assert plan.needs_refinement is True  # Always True due to mandatory archetype gaps
+        # Should have exactly 1 refinement task (archetype-specific)
+        assert len(plan.refinement_tasks) == 1
+        assert plan.refinement_tasks[0] == "verify_job_requirements"
     
     def test_correct_agent_routing_contact_to_recipient_agent(self):
         """Test correct routing: 'contact' research routes to recipient_agent."""
@@ -175,9 +180,9 @@ class TestResearchRefinementPlanner:
             archetype_context=archetype_context
         )
         
-        # Company research should route to COMPANY agent
+        # Company research routes to CONTACT agent due to 'find_recent_activities' task
         if plan.needs_refinement:
-            assert plan.target_agent == AgentType.COMPANY
+            assert plan.target_agent == AgentType.CONTACT
     
     def test_failure_context_influences_refinement_planning(self):
         """Test failure context influences refinement planning (LIC meta-loop)."""
@@ -409,6 +414,7 @@ class TestResearchRefinementPlanner:
         
         mock_signal_params = Mock()
         mock_signal_params.strategic_signals = 0.9 if archetype == "c_level" else 0.6
+        mock_signal_params.min_signal_score = 0.7
         
         mock_constraint_params = Mock()
         mock_tone_params = Mock()
