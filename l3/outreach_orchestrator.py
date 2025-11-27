@@ -590,6 +590,7 @@ class OutreachOrchestrator:
                     # Execute workflow phases with optional concurrency and fallback logic
                     # First attempt uses concurrent if enabled, subsequent attempts use sequential
                     should_use_concurrent = (use_concurrent_research or use_multi_draft) and attempt == 1
+                    logger.info(f"DEBUG: should_use_concurrent={should_use_concurrent}, use_concurrent_research={use_concurrent_research}, use_multi_draft={use_multi_draft}, attempt={attempt}")
                     
                     if should_use_concurrent:
                         # Use async execution on first attempt
