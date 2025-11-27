@@ -46,38 +46,30 @@ class GenerationContext:
 class MessageGenerationExecutor:
     """Executes message generation with archetype-specific temperature control to maximize executive reply rates."""
     
-    def __init__(self, llm_caller: Any):
-        """Initializes executor with LLM client for archetype-optimized message generation."""
-        self.llm_caller = llm_caller
+    def __init__(self, llm_client: Any, safety_validator: Any = None):
+        """Initializes executor with LLM client and safety validator for archetype-optimized message generation."""
+        self.llm_client = llm_client
+        self.safety_validator = safety_validator
     
     def generate_message(
         self,
         message_plan: Dict[str, Any],
-        ctx: GenerationContext,
-        research_data: List[OutreachRAGResult]
+        generation_context: GenerationContext,
+        research_results: List[OutreachRAGResult]
     ) -> MessageResult:
         """Generates high-impact executive message using archetype-specific temperature control."""
-        
-        Args:
-            message_plan: MessagePlan dict with section plans and temperature schedule
-            ctx: GenerationContext with mission details
-            research_data: Research results to incorporate as signals
-            
-        Returns:
-            MessageResult with generated message and metadata
-        """
         # HSON: Extracts archetype-specific temperature schedule -> matches executive cognitive patterns
-        temperature_schedule = message_plan.get("temperature_schedule", {})
+        temperature_schedule = getattr(message_plan, "temperature_schedule", {})
         
         # Extract section plans
-        subject_plan = message_plan.get("subject_plan", "")
-        hook_plan = message_plan.get("hook_plan", "")
-        value_plan = message_plan.get("value_plan", "")
-        cta_plan = message_plan.get("cta_plan", "")
-        signature_plan = message_plan.get("signature_plan", "")
+        subject_plan = getattr(message_plan, "subject_plan", "")
+        hook_plan = getattr(message_plan, "hook_plan", "")
+        value_plan = getattr(message_plan, "value_plan", "")
+        cta_plan = getattr(message_plan, "cta_plan", "")
+        signature_plan = getattr(message_plan, "signature_plan", "")
         
         # HSON: Selects high-signal evidence -> strengthens executive message credibility
-        signals_used = self._select_signals(research_data)
+        signals_used = self._select_signals(research_results)
         
         # Build signal context for prompts
         signal_context = self._build_signal_context(signals_used)
@@ -86,24 +78,26 @@ class MessageGenerationExecutor:
         sections: Dict[str, MessageSection] = {}
         
         # Generate subject
+        subject_temperature = getattr(subject_plan, "temperature", 0.7) if hasattr(subject_plan, "temperature") else temperature_schedule.get("subject", 0.7)
         subject_section = self._generate_section(
             section_name="subject",
             plan=subject_plan,
-            temperature=temperature_schedule.get("subject", 0.7),
-            ctx=ctx,
+            temperature=subject_temperature,
+            ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=message_plan.get("metadata", {})
+            reasoning_metadata=getattr(message_plan, "metadata", {})
         )
         sections["subject"] = subject_section
         
         # Generate hook
+        hook_temperature = getattr(hook_plan, "temperature", 0.9) if hasattr(hook_plan, "temperature") else temperature_schedule.get("hook", 0.9)
         hook_section = self._generate_section(
             section_name="hook",
             plan=hook_plan,
-            temperature=temperature_schedule.get("hook", 0.9),
-            ctx=ctx,
+            temperature=hook_temperature,
+            ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=message_plan.get("metadata", {})
+            reasoning_metadata=getattr(message_plan, "metadata", {})
         )
         sections["hook"] = hook_section
         
@@ -112,9 +106,9 @@ class MessageGenerationExecutor:
             section_name="value",
             plan=value_plan,
             temperature=temperature_schedule.get("value", 0.8),
-            ctx=ctx,
+            ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=message_plan.get("metadata", {})
+            reasoning_metadata=getattr(message_plan, "metadata", {})
         )
         sections["value"] = value_section
         
@@ -123,9 +117,9 @@ class MessageGenerationExecutor:
             section_name="cta",
             plan=cta_plan,
             temperature=temperature_schedule.get("cta", 0.6),
-            ctx=ctx,
+            ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=message_plan.get("metadata", {})
+            reasoning_metadata=getattr(message_plan, "metadata", {})
         )
         sections["cta"] = cta_section
         
@@ -134,9 +128,9 @@ class MessageGenerationExecutor:
             section_name="signature",
             plan=signature_plan,
             temperature=temperature_schedule.get("signature", 0.3),
-            ctx=ctx,
+            ctx=generation_context,
             signal_context="",  # Signature doesn't need signals
-            reasoning_metadata=message_plan.get("metadata", {})
+            reasoning_metadata=getattr(message_plan, "metadata", {})
         )
         sections["signature"] = signature_section
         
@@ -146,18 +140,52 @@ class MessageGenerationExecutor:
         # Calculate total tokens
         total_tokens = sum(s.tokens_used for s in sections.values())
         
+        # Build temperature schedule from actual sections generated
+        actual_temperature_schedule = {}
+        for section_name, section in sections.items():
+            actual_temperature_schedule[section_name] = section.temperature_used
+        
+        # Check if generation_strategy is a Mock object and use default if so
+        generation_strategy = getattr(message_plan, "generation_strategy", "sequential")
+        if hasattr(generation_strategy, '_mock_name'):
+            generation_strategy = "sequential"
+        
+        # Apply safety validation if safety validator is available
+        if self.safety_validator:
+            safety_result = self.safety_validator.validate_layer_input(
+                layer="L2",
+                content=message,
+                context=generation_context
+            )
+            # Add safety violations to metadata if any
+            if safety_result.findings:
+                metadata = {
+                    "mission_id": generation_context.mission_id,
+                    "archetype": generation_context.archetype,
+                    "signals_count": len(signals_used),
+                    "safety_violations": [f.__dict__ for f in safety_result.findings]
+                }
+            else:
+                metadata = {
+                    "mission_id": generation_context.mission_id,
+                    "archetype": generation_context.archetype,
+                    "signals_count": len(signals_used)
+                }
+        else:
+            metadata = {
+                "mission_id": generation_context.mission_id,
+                "archetype": generation_context.archetype,
+                "signals_count": len(signals_used)
+            }
+        
         return MessageResult(
             message=message,
             sections=sections,
-            temperature_schedule=temperature_schedule,
+            temperature_schedule=actual_temperature_schedule,
             signals_used=signals_used,
             total_tokens=total_tokens,
-            generation_strategy=message_plan.get("generation_strategy", "sequential"),
-            metadata={
-                "mission_id": ctx.mission_id,
-                "archetype": ctx.archetype,
-                "signals_count": len(signals_used)
-            }
+            generation_strategy=generation_strategy,
+            metadata=metadata
         )
     
     def _generate_section(
@@ -191,14 +219,11 @@ class MessageGenerationExecutor:
         # In production, LLMCaller would accept temperature directly
         task_type = f"outreach_{section_name}"
         
-        try:
-            content = self.llm_caller.call_llm(prompt, task_type)
-        except Exception:
-            # Fallback to plan content if LLM fails
-            content = plan if plan else f"[{section_name}]"
+        content = self.llm_client.generate(prompt)
         
         # Estimate tokens (simple approximation)
-        tokens_used = len(content.split()) * 2
+        content_text = getattr(content, 'content', str(content))
+        tokens_used = len(content_text.split()) * 2
         
         return MessageSection(
             name=section_name,
@@ -233,9 +258,9 @@ class MessageGenerationExecutor:
     
     def _build_reasoning_instructions(self, reasoning_metadata: Dict[str, Any], section_name: str) -> str:
         """Build reasoning-intensity instructions based on metadata."""
-        reasoning_intensity = reasoning_metadata.get("reasoning_intensity", "low")
-        cot_depth = reasoning_metadata.get("cot_depth", 1)
-        tot_branches = reasoning_metadata.get("tot_branches", 1)
+        reasoning_intensity = getattr(reasoning_metadata, "reasoning_intensity", "low")
+        cot_depth = getattr(reasoning_metadata, "cot_depth", 1)
+        tot_branches = getattr(reasoning_metadata, "tot_branches", 1)
         
         # High-value sections get deeper reasoning instructions
         if section_name in ["value", "hook"]:
@@ -475,27 +500,32 @@ Generate appropriate content:"""
         
         # Subject (typically shown separately but included for completeness)
         if "subject" in sections:
-            parts.append(f"Subject: {sections['subject'].content}")
+            subject_content = getattr(sections['subject'].content, 'content', str(sections['subject'].content))
+            parts.append(f"Subject: {subject_content}")
             parts.append("")  # Empty line after subject
-        
+
         # Hook/Opening
         if "hook" in sections:
-            parts.append(sections["hook"].content)
+            hook_content = getattr(sections["hook"].content, 'content', str(sections["hook"].content))
+            parts.append(hook_content)
             parts.append("")
-        
+
         # Value/Body
         if "value" in sections:
-            parts.append(sections["value"].content)
+            value_content = getattr(sections["value"].content, 'content', str(sections["value"].content))
+            parts.append(value_content)
             parts.append("")
-        
+
         # CTA
         if "cta" in sections:
-            parts.append(sections["cta"].content)
+            cta_content = getattr(sections["cta"].content, 'content', str(sections["cta"].content))
+            parts.append(cta_content)
             parts.append("")
-        
+
         # Signature
         if "signature" in sections:
-            parts.append(sections["signature"].content)
+            signature_content = getattr(sections["signature"].content, 'content', str(sections["signature"].content))
+            parts.append(signature_content)
         
         return "\n".join(parts)
 

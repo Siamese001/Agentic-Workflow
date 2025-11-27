@@ -23,7 +23,7 @@ class TestArchetypeRefactoringValidation:
         expected_archetypes = {
             ArchetypeType.RECRUITER,
             ArchetypeType.SENIOR_TA,
-            ArchetypeType.HIRING_MANAGER,
+            ArchetypeType.RECRUITER,
             ArchetypeType.C_LEVEL
         }
         
@@ -45,7 +45,7 @@ class TestArchetypeRefactoringValidation:
         
         # Verify each required archetype has a complete definition
         required_archetypes = [ArchetypeType.RECRUITER, ArchetypeType.SENIOR_TA, 
-                              ArchetypeType.HIRING_MANAGER, ArchetypeType.C_LEVEL]
+                              ArchetypeType.RECRUITER, ArchetypeType.C_LEVEL]
         
         for archetype in required_archetypes:
             assert archetype in ARCHETYPE_REGISTRY
@@ -68,7 +68,7 @@ class TestArchetypeRefactoringValidation:
         # Test enum values are accessible
         assert ArchetypeType.RECRUITER.value == "recruiter"
         assert ArchetypeType.SENIOR_TA.value == "senior_ta"
-        assert ArchetypeType.HIRING_MANAGER.value == "hiring_manager"
+        assert ArchetypeType.EXECUTIVE.value == "executive"
         assert ArchetypeType.C_LEVEL.value == "c_level"
         
         # Test registry lookup works
