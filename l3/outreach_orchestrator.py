@@ -635,6 +635,8 @@ class OutreachOrchestrator:
                                 # Timeout occurred in thread execution
                                 raise
                     
+                    print(f"DEBUG: Async result message = {result.message}")
+                    
                     if timeout_occurred:
                         # Fall back to sequential execution after timeout
                         logger.warning("Concurrent execution timed out, falling back to sequential")
@@ -642,9 +644,6 @@ class OutreachOrchestrator:
                         # Add timeout fallback flag if result succeeds
                         if result.success and hasattr(result, 'metadata') and result.metadata:
                             result.metadata["timeout_fallback"] = True
-                    else:
-                        # Use sequential execution (fallback for subsequent attempts)
-                        result = self._execute_workflow_phases(mission, recipient, ctx, config)
                     
                     if result.success:
                         logger.info(f"Outreach successful with archetype {archetype}")
@@ -1183,7 +1182,12 @@ class OutreachOrchestrator:
         
         if use_multi_draft:
             print("DEBUG: Taking multi-draft branch in async method!")
-            message_result = await self._generate_multiple_drafts_and_select_best(mp, ctx, config)
+            try:
+                message_result = await self._generate_multiple_drafts_and_select_best(mp, ctx, config)
+                print(f"DEBUG: Multi-draft result message = {message_result.message}")
+            except Exception as e:
+                print(f"DEBUG: Exception in multi-draft call: {e}")
+                raise
         else:
             print("DEBUG: Taking stub executor branch in async method!")
             message_result = self.message_executor.generate_message(
