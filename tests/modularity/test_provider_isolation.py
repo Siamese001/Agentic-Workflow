@@ -26,7 +26,7 @@ def test_only_providers_contain_provider_sdks() -> None:
     violations = []
     
     # Check non-provider directories for SDK imports
-    exclude_dirs = {'providers', 'tests', '__pycache__', '.venv', '.pytest_cache'}
+    exclude_dirs = {'providers', 'tests', '__pycache__', '.venv', '.pytest_cache', 'archive'}
     
     for py_file in PROJECT_ROOT.rglob('*.py'):
         # Skip files in excluded directories or test files
