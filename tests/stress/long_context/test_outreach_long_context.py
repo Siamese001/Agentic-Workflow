@@ -232,7 +232,7 @@ class TestOutreachLongContext:
         
         orchestrator = self.create_orchestrator(config)
         mission = self.create_sample_mission()
-        recipient = self.create_sample_recipient()
+        recipient = self.create_large_recipient()
         
         # Should handle large message generation
         result = orchestrator.orchestrate_outreach(mission, recipient, config)
