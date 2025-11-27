@@ -2,11 +2,9 @@
 Integration tests for the completed archetype refactoring.
 
 Validates that the outreach archetype system uses only the 4 correct archetypes:
-recruiter, senior_ta, hiring_manager, c_level, and all old archetype references
+recruiter, senior_ta, executive, c_level, and all old archetype references
 have been eliminated from the active codebase.
 """
-
-from typing import Set
 
 from l1.outreach_dataclasses import ArchetypeType, ARCHETYPE_REGISTRY
 
@@ -23,7 +21,7 @@ class TestArchetypeRefactoringValidation:
         expected_archetypes = {
             ArchetypeType.RECRUITER,
             ArchetypeType.SENIOR_TA,
-            ArchetypeType.RECRUITER,
+            ArchetypeType.EXECUTIVE,
             ArchetypeType.C_LEVEL
         }
         
@@ -31,7 +29,7 @@ class TestArchetypeRefactoringValidation:
         assert actual_archetypes == expected_archetypes
         
         # Verify old archetypes are NOT present
-        old_archetypes = ["EXECUTIVE", "FOUNDER", "INDIVIDUAL_CONTRIBUTOR", 
+        old_archetypes = ["FOUNDER", "INDIVIDUAL_CONTRIBUTOR", 
                          "SENIOR_INDIVIDUAL_CONTRIBUTOR", "TECHNICAL_LEADER", 
                          "BUSINESS_EXECUTIVE"]
         
@@ -45,7 +43,7 @@ class TestArchetypeRefactoringValidation:
         
         # Verify each required archetype has a complete definition
         required_archetypes = [ArchetypeType.RECRUITER, ArchetypeType.SENIOR_TA, 
-                              ArchetypeType.RECRUITER, ArchetypeType.C_LEVEL]
+                              ArchetypeType.EXECUTIVE, ArchetypeType.C_LEVEL]
         
         for archetype in required_archetypes:
             assert archetype in ARCHETYPE_REGISTRY
