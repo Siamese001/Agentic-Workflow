@@ -61,8 +61,7 @@ class TestOutreachLongContext:
             contact_executor=self.mock_contact_executor,
             message_executor=self.mock_message_executor,
             state_manager=self.mock_state_manager,
-            safety_validator=self.mock_safety_validator,
-            config=config or {}
+            safety_validator=self.mock_safety_validator
         )
     
     def create_sample_mission(self):
@@ -96,7 +95,7 @@ class TestOutreachLongContext:
             seniority="Senior with extensive seniority details " + "b" * 100,
             department="Engineering with large department description " + "c" * 100,
             skills=large_skills,
-            recent_activities=large_activities,
+            recent_activity=large_activities,
             metadata=large_metadata
         )
     
