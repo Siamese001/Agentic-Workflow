@@ -122,7 +122,7 @@ class SafetyContext:
     content: Any
     
     # Metadata about the content
-    content_type: str  # e.g., "text", "json", "image"
+    content_type: str = "text"  # e.g., "text", "json", "image"
     content_format: Optional[str] = None  # e.g., "markdown", "yaml"
     
     # Source and destination information
@@ -132,6 +132,9 @@ class SafetyContext:
     # User and session context
     user_id: Optional[str] = None
     session_id: Optional[str] = None
+    
+    # Domain for routing (Phase 5 outreach expansion)
+    domain: str = "resume"  # "resume" or "outreach"
     
     # Additional context for policy evaluation
     metadata: Dict[str, Any] = field(default_factory=dict)
@@ -150,6 +153,7 @@ class SafetyContext:
             destination=self.destination,
             user_id=self.user_id,
             session_id=self.session_id,
+            domain=self.domain,
             metadata={**self.metadata, **kwargs}
         )
 
