@@ -53,9 +53,9 @@ class TestTemporalNegativePaths:
                 max_results=10
             )
         
-        # Should return KG-only results
+        # Should return KG-only results but no fusion (no hybrid text to fuse with)
         assert result is not None
-        assert result['fusion_applied'] is True  # KG scores available
+        assert result['fusion_applied'] is False  # No hybrid text to fuse with KG
         assert result['temporal_facts_found'] == 1
         assert result['results'] == []  # No hybrid text to process
         assert 'error' not in result

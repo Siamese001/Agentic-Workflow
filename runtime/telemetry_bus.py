@@ -76,27 +76,49 @@ class TelemetryBus:
         if not self._enabled:
             return
         
-        with self._lock:
-            # Filter payload based on detail level
-            filtered_payload = self._filter_payload(payload)
-            event = TelemetryEvent(name=name, layer=layer, payload=filtered_payload)
-            self._events.append(event)
+        try:
+            with self._lock:
+                # Validate payload is not None and is a dict
+                if payload is None:
+                    payload = {}
+                elif not isinstance(payload, dict):
+                    # Skip non-dict payloads gracefully
+                    return
+                
+                # Filter payload based on detail level
+                filtered_payload = self._filter_payload(payload)
+                event = TelemetryEvent(name=name, layer=layer, payload=filtered_payload)
+                self._events.append(event)
+        except Exception:
+            # Telemetry failures should never break workflows
+            pass
     
     def record_error(self, name: str, layer: str, error: BaseException, context: Dict[str, Any]) -> None:
         """Record an error event."""
         if not self._enabled:
             return
         
-        with self._lock:
-            # Filter context based on detail level
-            filtered_context = self._filter_payload(context)
-            error_event = TelemetryError(
-                name=name, 
-                layer=layer, 
-                error=error, 
-                context=filtered_context
-            )
-            self._errors.append(error_event)
+        try:
+            with self._lock:
+                # Validate context is not None and is a dict
+                if context is None:
+                    context = {}
+                elif not isinstance(context, dict):
+                    # Skip non-dict contexts gracefully
+                    context = {}
+                
+                # Filter context based on detail level
+                filtered_context = self._filter_payload(context)
+                error_event = TelemetryError(
+                    name=name, 
+                    layer=layer, 
+                    error=error, 
+                    context=filtered_context
+                )
+                self._errors.append(error_event)
+        except Exception:
+            # Telemetry failures should never break workflows
+            pass
     
     def record_trace(self, trace: Dict[str, Any]) -> None:
         """Record a trace event."""
@@ -110,24 +132,48 @@ class TelemetryBus:
     
     def _filter_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
         """Filter payload based on detail level and remove sensitive data."""
-        if self._detail_level == "verbose":
-            return payload.copy()
-        elif self._detail_level == "standard":
-            # Include basic workflow info, exclude detailed metrics
-            allowed_keys = {
-                'workflow_type', 'archetype', 'mission_id', 'stage', 
-                'phase', 'duration', 'success', 'error_type', 'layer'
-            }
-            return {k: v for k, v in payload.items() if k in allowed_keys}
-        else:  # minimal
-            # Only include essential identifiers
-            allowed_keys = {'workflow_type', 'stage', 'layer'}
-            return {k: v for k, v in payload.items() if k in allowed_keys}
+        try:
+            if payload is None:
+                return {}
+            elif not isinstance(payload, dict):
+                return {}
+            
+            if self._detail_level == "verbose":
+                # Remove layer from payload even at verbose level
+                filtered = payload.copy()
+                filtered.pop('layer', None)
+                return filtered
+            elif self._detail_level == "standard":
+                # Include basic workflow info and correlation identifiers, exclude detailed metrics and layer
+                allowed_keys = {
+                    'workflow_type', 'archetype', 'mission_id', 'stage', 
+                    'phase', 'duration', 'success', 'error_type', 'concurrent_id'
+                }
+                return {k: v for k, v in payload.items() if k in allowed_keys}
+            else:  # minimal
+                # Only include essential identifiers, exclude layer
+                allowed_keys = {'workflow_type', 'stage'}
+                return {k: v for k, v in payload.items() if k in allowed_keys}
+        except Exception:
+            # Return empty payload on any filtering error
+            return {}
     
     def get_events(self, layer: Optional[str] = None, name: Optional[str] = None) -> List[TelemetryEvent]:
         """Get recorded events with optional filtering."""
-        with self._lock:
-            events = self._events.copy()
+        try:
+            # Recover from corruption if internal state is invalid
+            if not hasattr(self, '_events') or self._events is None:
+                self._events = []
+            if not hasattr(self, '_errors') or self._errors is None:
+                self._errors = []
+            if not hasattr(self, '_traces') or self._traces is None:
+                self._traces = []
+            
+            with self._lock:
+                events = self._events.copy()
+        except Exception:
+            # Return empty list on any error
+            return []
         
         if layer:
             events = [e for e in events if e.layer == layer]

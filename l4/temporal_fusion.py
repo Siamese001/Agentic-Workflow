@@ -49,6 +49,10 @@ class TemporalRankFusion:
         Returns:
             List of fused scores (0-1)
         """
+        # Early return: if only hybrid scores exist, return unchanged
+        if hybrid_scores and not kg_scores and not temporal_scores:
+            return hybrid_scores.copy()
+        
         # Normalize input scores to 0-1 range
         normalized_hybrid = self._normalize_scores(hybrid_scores)
         normalized_kg = self._normalize_scores(kg_scores)
@@ -126,9 +130,18 @@ class TemporalRankFusion:
         if metadata is None:
             metadata = [{}] * len(fused_scores)
         
-        # Ensure metadata length matches
+        # Ensure metadata length matches and handle None values
         max_length = len(fused_scores)
-        padded_metadata = metadata + [{}] * (max_length - len(metadata))
+        # Replace None items with empty dicts
+        clean_metadata = [(m if m is not None else {}) for m in metadata] if metadata else []
+        padded_metadata = clean_metadata + [{}] * (max_length - len(clean_metadata))
+        
+        # Ensure all metadata items have default keys for tie-breaking
+        for i, meta in enumerate(padded_metadata):
+            if 'source' not in meta:
+                meta['source'] = 'unknown'
+            if 'timestamp' not in meta:
+                meta['timestamp'] = datetime.min.replace(tzinfo=UTC)
         
         # Create list of tuples for sorting with tie-break rules
         scored_items = []

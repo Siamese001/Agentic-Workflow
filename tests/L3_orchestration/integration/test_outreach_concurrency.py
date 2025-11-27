@@ -187,10 +187,10 @@ class TestOutreachConcurrency:
                 contact={"contact": "test_contact", "level": "senior"}
             )
             
-            # Execute concurrent workflow
-            result_concurrent = mock_orchestrator.orchestrate_outreach_concurrent(
+            # Execute concurrent workflow (await the async method)
+            result_concurrent = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
-            )
+            ))
             
             # Execute sequential workflow for comparison
             result_sequential = mock_orchestrator.orchestrate_outreach(
@@ -225,9 +225,9 @@ class TestOutreachConcurrency:
                     contact={"contact": "test_contact"}
                 )
                 
-                result = mock_orchestrator.orchestrate_outreach_concurrent(
+                result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                     sample_mission, sample_recipient, config
-                )
+                ))
                 
                 # Should respect parallel limit
                 assert len(created_tasks) <= config["max_parallel_research"]
@@ -255,9 +255,9 @@ class TestOutreachConcurrency:
         mock_orchestrator.safety_validator.evaluate.side_effect = mock_safety_eval
         
         with patch.object(mock_orchestrator, '_generate_multiple_drafts_and_select_best', return_value=drafts[2]):
-            result = mock_orchestrator.orchestrate_outreach_concurrent(
+            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
-            )
+            ))
             
             # Should select the longest, highest-quality draft
             assert result.success
@@ -280,9 +280,9 @@ class TestOutreachConcurrency:
                 metadata={"workflow_type": "sequential"}
             )
             
-            result_concurrent = mock_orchestrator.orchestrate_outreach_concurrent(
+            result_concurrent = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
-            )
+            ))
             
             result_sequential = mock_orchestrator.orchestrate_outreach(
                 sample_mission, sample_recipient, config
@@ -307,9 +307,9 @@ class TestOutreachConcurrency:
                 contact={}  # Empty contact research
             )
             
-            result = mock_orchestrator.orchestrate_outreach_concurrent(
+            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
-            )
+            ))
             
             # Should succeed with available research
             assert result.success
@@ -339,9 +339,9 @@ class TestOutreachConcurrency:
         mock_orchestrator.safety_validator.evaluate.side_effect = mock_safety_eval
         
         with patch.object(mock_orchestrator, '_generate_multiple_drafts_and_select_best', return_value=drafts[1]):
-            result = mock_orchestrator.orchestrate_outreach_concurrent(
+            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
-            )
+            ))
             
             # Should select the safe draft
             assert result.success
@@ -358,9 +358,9 @@ class TestOutreachConcurrency:
                 message="Default message"
             )
             
-            result = mock_orchestrator.orchestrate_outreach_concurrent(
+            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
-            )
+            ))
             
             # Should use sequential workflow by default
             mock_sequential.assert_called_once()
