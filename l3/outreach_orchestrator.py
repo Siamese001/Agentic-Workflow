@@ -1164,6 +1164,7 @@ class OutreachOrchestrator:
         # P3 — Message Planning & Generation with optional multi-draft
         use_multi_draft = config.get("use_multi_draft", False)
         logger.info("P3: Planning and generating message")
+        print(f"DEBUG: use_multi_draft in async method = {use_multi_draft}")
         content = MessageContent(
             recipient_name=recipient.name,
             recipient_title=recipient.title,
