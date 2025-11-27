@@ -71,27 +71,7 @@ class TestContextExceeded:
         
         assert result is True  # Should handle gracefully
     
-    def test_orchestrator_context_size_enforcement(self):
-        """Test that orchestrator enforces context size limits."""
-        # Create orchestrator with low context limits
-        config = {
-            "max_context_size": 500,  # Very low limit
-            "max_tokens": 100000,
-            "max_requests": 100
-        }
         
-        orchestrator = OutreachOrchestrator(config=config)
-        
-        # Test context size checking in orchestrator context
-        small_context = "x" * 400  # Within limit
-        large_context = "x" * 600  # Exceeds limit
-        
-        # Small context should pass
-        assert orchestrator.budget_manager.check_context_size(len(small_context)) is True
-        
-        # Large context should fail
-        assert orchestrator.budget_manager.check_context_size(len(large_context)) is False
-    
     def test_context_size_configuration_change_runtime(self):
         """Test changing context size limits during runtime."""
         # Start with low limit

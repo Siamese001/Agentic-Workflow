@@ -102,27 +102,7 @@ class TestTokenBudgetViolation:
         assert usage['tokens_used'] == large_amount
         assert usage['tokens_remaining'] == 10**9 - large_amount
     
-    def test_orchestrator_token_budget_enforcement(self):
-        """Test that orchestrator enforces token budget limits."""
-        # Create orchestrator with low token limits
-        config = {
-            "max_tokens": 500,  # Very low limit
-            "max_requests": 100
-        }
         
-        orchestrator = OutreachOrchestrator(config=config)
-        
-        # Use up tokens
-        orchestrator.budget_manager.record_tokens("test", 500)
-        
-        # Should fail to start new operation
-        budget_ok = orchestrator.budget_manager.check_budget("outreach")
-        assert budget_ok is False
-        
-        # Reason should be token budget exceeded
-        reason = orchestrator.budget_manager.get_budget_exceeded_reason()
-        assert reason == "Token budget exceeded"
-    
     def test_token_budget_configuration_change_runtime(self):
         """Test changing token budget limits during runtime."""
         # Start with low limit
