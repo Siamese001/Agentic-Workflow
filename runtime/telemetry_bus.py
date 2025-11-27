@@ -9,7 +9,6 @@ import time
 import threading
 from typing import Dict, List, Any, Optional
 from dataclasses import dataclass, field
-from datetime import datetime
 
 @dataclass
 class TelemetryEvent:
@@ -151,7 +150,7 @@ class TelemetryBus:
                 }
                 return {k: v for k, v in payload.items() if k in allowed_keys}
             else:  # minimal
-                # Only include essential identifiers, exclude layer
+                # Only include essential identifiers, exclude layer and mission_id
                 allowed_keys = {'workflow_type', 'stage'}
                 return {k: v for k, v in payload.items() if k in allowed_keys}
         except Exception:
