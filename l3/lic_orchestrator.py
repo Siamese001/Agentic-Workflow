@@ -25,7 +25,7 @@ from l2.contact_research_executor import ContactResearchExecutor
 from l2.message_generation_executor import MessageGenerationExecutor
 from l2.outreach.outreach_batch_executor import OutreachBatchExecutor, BatchRequest, BatchResult
 from l4.rag.rag_engine import RAGEngine
-from l5.safety_validator import L5SafetyValidator
+from l5.safety_validator import SafetyValidator
 from l1.outreach_dataclasses import OutreachMission, ArchetypeContext
 from l1.outreach_archetype_planning import RecipientProfile
 from core.models.models import ExecutionContext, SafetyResult
@@ -95,7 +95,7 @@ class LICOrchestrator:
         self.rag_engine = RAGEngine()
         
         # Initialize L5 safety validator first (dependency for L2 executors)
-        self.safety_validator = L5SafetyValidator()
+        self.safety_validator = SafetyValidator()
         
         # Initialize LLM client first (dependency for L2 executors)
         from runtime.llm_client import LLMClient
