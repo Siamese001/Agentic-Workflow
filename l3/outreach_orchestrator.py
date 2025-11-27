@@ -463,6 +463,7 @@ class OutreachOrchestrator:
         Returns:
             OutreachPipelineResult with generated message and metadata
         """
+        print("DEBUG: orchestrate_outreach_concurrent CALLED!")
         config = config or {}
         
         # CRITICAL: Configure telemetry FIRST to force suppression before any events
