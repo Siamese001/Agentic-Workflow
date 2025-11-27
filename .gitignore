@@ -4,6 +4,9 @@
 # python noise
 __pycache__/
 *.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
 
 # temp extraction folders
 temp_*/
