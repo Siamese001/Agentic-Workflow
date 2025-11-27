@@ -396,7 +396,8 @@ class TestConcurrentTelemetry:
         """Test that telemetry suppression works during concurrent execution."""
         config = {
             "use_concurrent_research": True,
-            "use_multi_draft": False
+            "use_multi_draft": False,
+            "telemetry_enabled": False
         }
         
         # Disable telemetry
