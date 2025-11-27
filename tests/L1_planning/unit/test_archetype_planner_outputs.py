@@ -373,10 +373,10 @@ class TestArchetypePlannerOutputs:
                 industry="Tech", seniority="senior", department="Engineering",
                 skills=["Python"], recent_activity=["Coding"], metadata={}
             ),
-            ArchetypeType.HIRING_MANAGER: RecipientProfile(
-                name="Manager", title="Engineering Manager", company="ManageCorp",
-                industry="Tech", seniority="manager", department="Engineering",
-                skills=["Management"], recent_activity=["Managing"], metadata={}
+            ArchetypeType.EXECUTIVE: RecipientProfile(
+                name="Executive", title="VP Engineering", company="ExecCorp",
+                industry="Tech", seniority="executive", department="Engineering",
+                skills=["Leadership"], recent_activity=["Strategy"], metadata={}
             ),
             ArchetypeType.C_LEVEL: RecipientProfile(
                 name="Executive", title="CTO", company="ExecCorp",
