@@ -133,7 +133,7 @@ class TestOutreachConcurrencyMetaLoop:
                 OutreachPipelineResult(
                     success=True,
                     message="Fallback success",
-                    metadata={"fallback_used": True}
+                    metadata={"meta_loop_fallback": True}
                 )
             ]
             
