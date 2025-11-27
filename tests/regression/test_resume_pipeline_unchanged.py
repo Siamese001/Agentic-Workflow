@@ -7,13 +7,29 @@ Tests that resume workflow remains identical pre/post Phase 6 temporal changes:
 - Temporal enhancements don't break existing resume processing
 - End-to-end resume pipeline regression validation
 - Backward compatibility with existing resume workflows
+
+Phase 9 ExecutionBudgetManager regression tests:
+- Sequential outreach workflow functional equivalence with budget tracking
+- No behavioral regressions with budget enforcement
+- Budget manager integration preserves existing logic
+- Performance and error handling maintained with budget overhead
+
+Phase 10 Model Routing regression tests:
+- Resume pipeline identical pre/post routing integration
+- Model routing doesn't affect resume workflows
+- Safety routing invariance preserved in resume context
 """
 
 import pytest
 from datetime import datetime, UTC
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from l3.lic_orchestrator import LICOrchestrator
+from runtime.execution_budget_manager import (
+    ExecutionBudgetManager,
+    BudgetLimits,
+    get_budget_manager
+)
 
 
 class TestResumePipelineUnchanged:
@@ -441,3 +457,176 @@ class TestResumePipelineUnchanged:
         assert 0.0 <= result['alignment_score'] <= 1.0
         assert result['processing_results']['skills_extracted'] is True
         assert result['output_data']['confidence'] in ['low', 'medium', 'high']
+
+
+class TestBudgetManagerRegression:
+    """Test suite for ExecutionBudgetManager integration regression validation."""
+    
+    def setup_method(self):
+        """Set up test fixtures for budget manager regression testing."""
+        # Clear singleton to ensure clean state
+        ExecutionBudgetManager._instance = None
+        self.budget_manager = get_budget_manager()
+        self.budget_manager.reset_usage()
+        
+        # Configure generous limits for regression testing
+        self.generous_limits = BudgetLimits(
+            max_parallel=10,
+            max_tokens=1000000,
+            max_requests=1000,
+            max_depth=20,
+            executor_timeout=30.0,
+            max_context_size=50000,
+            max_message_length=10000
+        )
+        self.budget_manager.configure(self.generous_limits)
+    
+    def test_budget_manager_basic_functionality_regression(self):
+        """Test that basic budget manager functionality works correctly."""
+        # Test token recording
+        initial_usage = self.budget_manager.current_usage()
+        assert initial_usage['tokens_used'] == 0
+        
+        self.budget_manager.record_tokens("test_stage", 1000)
+        after_usage = self.budget_manager.current_usage()
+        assert after_usage['tokens_used'] == 1000
+        assert after_usage['tokens_remaining'] == 1000000 - 1000
+        
+        # Test request recording
+        self.budget_manager.record_request()
+        request_usage = self.budget_manager.current_usage()
+        assert request_usage['requests_made'] == 1
+        assert request_usage['requests_remaining'] == 999
+    
+    def test_budget_manager_concurrent_slot_management_regression(self):
+        """Test that concurrent slot management works correctly."""
+        # Test slot acquisition
+        assert self.budget_manager.acquire_concurrent_slot() is True
+        
+        usage_after_acquire = self.budget_manager.current_usage()
+        assert usage_after_acquire['active_concurrent'] == 1
+        
+        # Test slot release
+        self.budget_manager.release_concurrent_slot()
+        
+        usage_after_release = self.budget_manager.current_usage()
+        assert usage_after_release['active_concurrent'] == 0
+    
+    def test_budget_manager_depth_tracking_regression(self):
+        """Test that depth tracking works correctly."""
+        # Test depth increment
+        assert self.budget_manager.increment_depth("test_operation") is True
+        
+        usage_after_increment = self.budget_manager.current_usage()
+        assert usage_after_increment['current_depth'] == 1
+        
+        # Test depth decrement
+        self.budget_manager.decrement_depth("test_operation")
+        
+        usage_after_decrement = self.budget_manager.current_usage()
+        assert usage_after_decrement['current_depth'] == 0
+    
+    def test_budget_manager_configuration_changes_regression(self):
+        """Test that configuration changes work correctly."""
+        # Change to restrictive limits
+        restrictive_limits = BudgetLimits(
+            max_tokens=5000,
+            max_requests=10,
+            max_depth=3
+        )
+        self.budget_manager.configure(restrictive_limits)
+        
+        # Verify new limits applied
+        new_limits = self.budget_manager.get_limits()
+        assert new_limits['max_tokens'] == 5000
+        assert new_limits['max_requests'] == 10
+        assert new_limits['max_depth'] == 3
+        
+        # Test budget checking with new limits
+        assert self.budget_manager.check_budget("test") is True
+        
+        # Use up token budget
+        self.budget_manager.record_tokens("test", 5000)
+        assert self.budget_manager.check_budget("test") is False
+    
+    def test_budget_manager_error_handling_regression(self):
+        """Test that budget manager error handling works correctly."""
+        # Test budget exceeded reason
+        self.budget_manager.configure(BudgetLimits(max_tokens=100))
+        self.budget_manager.record_tokens("test", 100)
+        
+        reason = self.budget_manager.get_budget_exceeded_reason()
+        assert reason == "Token budget exceeded"
+        
+        # Test context size checking
+        assert self.budget_manager.check_context_size(1000) is True
+        
+        # Configure small context limit
+        self.budget_manager.configure(BudgetLimits(max_context_size=500))
+        assert self.budget_manager.check_context_size(1000) is False
+
+
+class TestModelRoutingRegression:
+    """Test suite for Phase 10 model routing regression validation."""
+    
+    def setup_method(self):
+        """Set up test fixtures for model routing regression testing."""
+        # Create LIC orchestrator for resume pipeline testing
+        self.orchestrator = LICOrchestrator()
+        
+        # Test resume data (unchanged from Phase 6)
+        self.test_resume = {
+            'candidate_name': 'John Doe',
+            'contact_info': {
+                'email': 'john.doe@email.com',
+                'phone': '+1-555-0123'
+            },
+            'experience': [
+                {
+                    'title': 'Senior Software Engineer',
+                    'company': 'Tech Corp',
+                    'duration': '2020-2023',
+                    'description': 'Led development of cloud infrastructure'
+                }
+            ],
+            'skills': ['Python', 'AWS', 'Docker', 'Kubernetes'],
+            'education': {
+                'degree': 'BS Computer Science',
+                'university': 'State University',
+                'year': '2018'
+            }
+        }
+        
+        # Test job posting (unchanged from Phase 6)
+        self.test_job = {
+            'title': 'Senior Software Engineer',
+            'company': 'Enterprise Tech',
+            'description': 'Seeking experienced software engineer for cloud platform team',
+            'requirements': ['Python', 'AWS', 'Cloud infrastructure'],
+            'location': 'San Francisco, CA'
+        }
+    
+    def test_resume_pipeline_unchanged_with_routing_disabled(self):
+        """Test that resume pipeline is identical when routing is disabled."""
+        # TODO: Test resume pipeline produces same results with use_model_routing=False
+        pass
+    
+    def test_resume_pipeline_unchanged_with_routing_enabled(self):
+        """Test that resume pipeline is identical when routing is enabled."""
+        # TODO: Test resume pipeline produces same results with use_model_routing=True
+        pass
+    
+    def test_resume_routing_does_not_affect_model_selection(self):
+        """Test that model routing doesn't affect resume model selection."""
+        # TODO: Test resume workflows use same models regardless of routing
+        pass
+    
+    def test_resume_safety_routing_invariance_preserved(self):
+        """Test that safety routing invariance is preserved in resume context."""
+        # TODO: Test resume safety checks bypass routing constraints
+        pass
+    
+    def test_resume_pipeline_performance_with_routing_overhead(self):
+        """Test that routing overhead doesn't affect resume pipeline performance."""
+        # TODO: Test resume pipeline performance unchanged with routing
+        pass

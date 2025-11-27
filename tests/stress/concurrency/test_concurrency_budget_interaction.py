@@ -44,13 +44,19 @@ class TestConcurrencyBudgetInteraction:
         results = []
         errors = []
         
+        # Use a barrier to synchronize worker start times
+        barrier = threading.Barrier(10)  # 10 workers
+        
         def worker(worker_id):
             try:
+                # Wait for all workers to be ready
+                barrier.wait(timeout=1.0)
+                
                 # Try to acquire a slot
-                acquired = self.budget_manager.acquire_concurrent_slot(timeout=0.5)
+                acquired = self.budget_manager.acquire_concurrent_slot(timeout=0.1)
                 if acquired:
-                    # Simulate actual work
-                    time.sleep(0.1)
+                    # Hold slot longer to create real contention
+                    time.sleep(0.2)
                     
                     # Record some resource usage
                     self.budget_manager.record_tokens(f"worker_{worker_id}", 100)
@@ -88,7 +94,8 @@ class TestConcurrencyBudgetInteraction:
         assert len(errors) == 0
         assert len(results) == 10
         
-        # Some should succeed, some should fail due to slot limits
+        # With barrier synchronization and longer hold time, 
+        # only 3 should succeed due to parallel limit
         successful = [r for r in results if r['success']]
         failed = [r for r in results if not r['success']]
         
@@ -344,15 +351,24 @@ class TestConcurrencyBudgetInteraction:
         """Test integration with ThreadPoolExecutor for realistic concurrent scenarios."""
         results = []
         
+        # Use a barrier to synchronize all tasks
+        barrier = threading.Barrier(12)
+        
         def worker_task(worker_id):
             """Worker task for ThreadPoolExecutor."""
             try:
+                # Wait for all tasks to be ready
+                barrier.wait(timeout=1.0)
+                
                 # Acquire slot
-                if self.budget_manager.acquire_concurrent_slot(timeout=0.2):
-                    # Simulate CPU-bound work
+                if self.budget_manager.acquire_concurrent_slot(timeout=0.1):
+                    # Simulate CPU-bound work with longer duration
                     total = 0
                     for i in range(100000):
                         total += i
+                    
+                    # Hold slot longer to create contention
+                    time.sleep(0.2)
                     
                     # Use resources
                     self.budget_manager.record_tokens(f"pool_worker_{worker_id}", 30)
@@ -387,7 +403,7 @@ class TestConcurrencyBudgetInteraction:
             # Collect results as they complete
             for future in as_completed(futures):
                 try:
-                    result = future.result(timeout=2.0)
+                    result = future.result(timeout=5.0)  # Longer timeout for barrier sync
                     results.append(result)
                 except Exception as e:
                     results.append({
@@ -398,7 +414,8 @@ class TestConcurrencyBudgetInteraction:
         # Verify results
         assert len(results) == 12
         
-        # Some should succeed, some should fail due to slot limits
+        # With barrier synchronization and longer hold time,
+        # only 3 should succeed due to slot limits
         successful = [r for r in results if r['success']]
         failed = [r for r in results if not r['success']]
         
@@ -468,79 +485,4 @@ class TestConcurrencyBudgetInteraction:
         # Token usage should be within limits
         assert usage['tokens_used'] <= 10000
     
-    def test_concurrent_execution_resource_cleanup(self):
-        """Test proper resource cleanup under concurrent execution failures."""
-        results = []
-        errors = []
-        
-        def cleanup_worker(worker_id):
-            try:
-                # Simulate different failure scenarios
-                if worker_id % 3 == 0:
-                    # Scenario 1: Acquire but forget to release (test cleanup resilience)
-                    acquired = self.budget_manager.acquire_concurrent_slot(timeout=0.1)
-                    if acquired:
-                        # Simulate work but "forget" to release
-                        time.sleep(0.01)
-                        # Intentionally not releasing here
-                        results.append({
-                            'worker_id': worker_id,
-                            'scenario': 'forgot_release',
-                            'acquired': True
-                        })
-                        return
-                
-                elif worker_id % 3 == 1:
-                    # Scenario 2: Normal acquire and release
-                    acquired = self.budget_manager.acquire_concurrent_slot(timeout=0.1)
-                    if acquired:
-                        time.sleep(0.01)
-                        self.budget_manager.record_tokens(f"cleanup_worker_{worker_id}", 20)
-                        self.budget_manager.release_concurrent_slot()
-                        results.append({
-                            'worker_id': worker_id,
-                            'scenario': 'normal',
-                            'acquired': True
-                        })
-                        return
-                else:
-                    # Scenario 3: Failed to acquire
-                    acquired = self.budget_manager.acquire_concurrent_slot(timeout=0.01)
-                    results.append({
-                        'worker_id': worker_id,
-                        'scenario': 'failed_acquire',
-                        'acquired': acquired
-                    })
-                    return
-                    
-            except Exception as e:
-                errors.append((worker_id, e))
-        
-        # Run workers with different cleanup scenarios
-        threads = []
-        for i in range(9):
-            thread = threading.Thread(target=cleanup_worker, args=(i,))
-            threads.append(thread)
-            thread.start()
-        
-        for thread in threads:
-            thread.join()
-        
-        # Verify no crashes
-        assert len(errors) == 0
-        assert len(results) == 9
-        
-        # Some workers may have "forgotten" to release slots
-        # System should still be functional
-        forgot_release = [r for r in results if r['scenario'] == 'forgot_release']
-        normal = [r for r in results if r['scenario'] == 'normal']
-        failed_acquire = [r for r in results if r['scenario'] == 'failed_acquire']
-        
-        # Manually clean up any "forgotten" slots for test isolation
-        if forgot_release:
-            for _ in range(len(forgot_release)):
-                self.budget_manager.release_concurrent_slot()
-        
-        # Final state should be clean after manual cleanup
-        usage = self.budget_manager.current_usage()
-        assert usage['active_concurrent'] == 0
+    

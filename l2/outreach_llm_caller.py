@@ -79,3 +79,18 @@ class OutreachLLMCaller:
     def update_budget_manager(self, budget_manager: ExecutionBudgetManager) -> None:
         """Update the budget manager for subsequent calls."""
         self.budget_manager = budget_manager
+    
+    def generate(self, prompt: str) -> str:
+        """
+        Generate response using message generation routing.
+        
+        Provides interface compatibility with MessageGenerationExecutor by
+        calling call_llm with stage="message_generation".
+        
+        Args:
+            prompt: The prompt to send to the LLM
+            
+        Returns:
+            Generated response from the selected model
+        """
+        return self.call_llm(prompt=prompt, stage="message_generation")
