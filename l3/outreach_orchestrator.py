@@ -584,6 +584,9 @@ class OutreachOrchestrator:
                     # Update archetype context
                     ctx.archetype = archetype
                     
+                    # Initialize timeout tracking variables
+                    timeout_occurred = False
+                    
                     # Execute workflow phases with optional concurrency and fallback logic
                     # First attempt uses concurrent if enabled, subsequent attempts use sequential
                     should_use_concurrent = (use_concurrent_research or use_multi_draft) and attempt == 1
@@ -806,7 +809,7 @@ class OutreachOrchestrator:
         except Exception:
             pass
         
-        # research_plan = self.research_planner.plan_research(ctx, mission, recipient)  # Currently unused, available for future research planning
+        research_plan = self.research_planner.plan_research(ctx, mission, recipient)
         
         # Research Execution
         logger.info("P2: Executing research")
@@ -1173,9 +1176,9 @@ class OutreachOrchestrator:
             message_result = await self._generate_multiple_drafts_and_select_best(mp, ctx, config)
         else:
             message_result = self.message_executor.generate_message(
-            message_plan=mp.__dict__,
-            archetype_context=ctx.__dict__
-        )
+                message_plan=mp.__dict__,
+                archetype_context=ctx.__dict__
+            )
         
         # P4 — Final Safety Check (MUST be after message generation)
         logger.info("P4: Safety validation")
