@@ -5,9 +5,19 @@ Validates domain gating, outreach constraints firing only under domain="outreach
 and LIC error codes E001, E002, E005 mapping correctly.
 Tests MUST NOT import L1 or L2 modules.
 """
+from dataclasses import dataclass, field
+from typing import Dict, Any
 
 from l5.safety_validator import SafetyValidator
-from l5.interfaces import ExecutionContext, SafetyResult, SafetyFinding
+from l5.interfaces import SafetyResult, SafetyFinding
+
+
+@dataclass
+class MockExecutionContext:
+    """Mock execution context for safety validator tests."""
+    layer: str = "L2"
+    operation: str = "message_generation"
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class TestSafetyValidatorOutreachDomain:
@@ -20,7 +30,7 @@ class TestSafetyValidatorOutreachDomain:
     def test_outreach_domain_gating_blocks_non_outreach_content(self):
         """Test outreach constraints are blocked when domain is not 'outreach'."""
         # Create execution context with resume domain
-        resume_context = ExecutionContext(
+        resume_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "resume"}
@@ -46,7 +56,7 @@ class TestSafetyValidatorOutreachDomain:
     def test_outreach_domain_gating_allows_outreach_content(self):
         """Test outreach constraints fire when domain is 'outreach'."""
         # Create execution context with outreach domain
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -71,7 +81,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_lic_error_code_e001_placeholder_detection(self):
         """Test LIC-E001 error code: No placeholders in message."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -95,7 +105,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_lic_error_code_e002_confidence_threshold(self):
         """Test LIC-E002 error code: Per-claim confidence must be >= 0.70."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -117,7 +127,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_lic_error_code_e005_job_title_requirement(self):
         """Test LIC-E005 error code: Message must contain job title in first 50 words."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -161,7 +171,7 @@ class TestSafetyValidatorOutreachDomain:
     def test_domain_gating_with_missing_domain_metadata(self):
         """Test domain gating defaults to resume when domain metadata is missing."""
         # Create context without domain metadata
-        no_domain_context = ExecutionContext(
+        no_domain_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={}  # No domain specified
@@ -185,7 +195,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_safety_result_structure_validation(self):
         """Test SafetyResult structure contains required fields."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -214,7 +224,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_layer_applicability_respect(self):
         """Test outreach constraints only apply to specified layers."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -251,7 +261,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_violation_history_tracking(self):
         """Test safety violations are tracked in violation history."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -277,7 +287,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_constraint_metadata_preservation(self):
         """Test constraint metadata including LIC error codes is preserved."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -304,7 +314,7 @@ class TestSafetyValidatorOutreachDomain:
     
     def test_multiple_constraint_types_interaction(self):
         """Test interaction between outreach and other constraint types."""
-        outreach_context = ExecutionContext(
+        outreach_context = MockExecutionContext(
             layer="L2",
             operation="message_generation",
             metadata={"domain": "outreach"}
@@ -341,7 +351,7 @@ class TestSafetyValidatorOutreachDomain:
         assert isinstance(validator.violation_history, list)
         
         # Should have outreach constraints
-        from l5.interfaces import SafetyConstraintType
+        from l5.safety_validator import SafetyConstraintType
         assert SafetyConstraintType.OUTREACH_CONSTRAINTS in validator.constraints
         
         outreach_constraints = validator.constraints[SafetyConstraintType.OUTREACH_CONSTRAINTS]
