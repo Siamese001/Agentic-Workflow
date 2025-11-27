@@ -1,8 +1,7 @@
 """
-L5 - Pure Safety and Policy Layer
+L5 safety and policy layer for resume job alignment workflows.
 
-This layer handles all safety checks and policy enforcement.
-No business logic, tool execution, or state management is allowed here.
+Handles safety checks and policy enforcement for resume enhancement processing.
 """
 from __future__ import annotations
 from typing import Any, Dict, Optional

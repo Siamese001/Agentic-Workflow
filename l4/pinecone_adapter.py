@@ -1,34 +1,20 @@
-"""L4 - Pinecone Vector Store Adapter
+"""
+L4 Pinecone adapter for resume job alignment workflows.
 
-This module centralizes all Pinecone operations in the L4 state layer.
-
-Layer: L4 (State & Memory)
-Responsibilities:
-- Manage Pinecone index/namespace configuration
-- Handle all vector upsert/query/delete operations
-- Enforce consistent ID schemas and metadata
-- Provide temporal query support
-- Manage embedding pipelines
-
-Non-responsibilities:
-- Planning what to query (L1)
-- Executing business logic (L2)
-- Orchestration (L3)
-- Safety decisions (L5)
+Centralizes vector operations for resume enhancement processing.
 """
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Sequence
 from datetime import datetime, UTC
-import hashlib
-import os
 
 
 @dataclass
 class PineconeConfig:
-    """Configuration for Pinecone vector store."""
+    """Configuration for resume workflow Pinecone vector store."""
     
     api_key: str
     index_name: str
@@ -39,7 +25,7 @@ class PineconeConfig:
 
 @dataclass
 class VectorRecord:
-    """Typed vector record for Pinecone operations."""
+    """Vector record for resume workflow job alignment processing."""
     
     id: str
     values: List[float]
@@ -48,7 +34,7 @@ class VectorRecord:
 
 @dataclass
 class VectorQueryResult:
-    """Result from vector similarity search."""
+    """Result from resume workflow vector similarity search."""
     
     id: str
     score: float
@@ -57,41 +43,28 @@ class VectorQueryResult:
 
 
 class PineconeAdapter:
-    """L4 adapter for Pinecone vector operations.
+    """L4 adapter for resume workflow Pinecone vector operations.
     
-    This adapter ensures all Pinecone access goes through L4, maintaining
-    proper layer boundaries. It provides:
-    - Namespace management per user/job/workflow
-    - Consistent ID schemas
-    - Metadata filtering
-    - Temporal queries
-    - Centralized embedding
+    Ensures all Pinecone access goes through L4 for job alignment processing.
     """
     
     def __init__(self, config: PineconeConfig):
-        """Initialize Pinecone adapter with configuration."""
+        """Initializes resume workflow Pinecone adapter."""
         self.config = config
         self._client: Optional[Any] = None
         self._index: Optional[Any] = None
         
     def _ensure_client(self) -> Any:
-        """Lazy initialization of Pinecone client."""
+        """Lazy initializes resume workflow Pinecone client."""
         if self._client is None:
-            try:
-                # Try new pinecone package first
-                from pinecone import Pinecone
-                pc = Pinecone(api_key=self.config.api_key)
-                self._index = pc.Index(self.config.index_name)
-                self._client = pc
-            except ImportError:
-                # Fallback to providers wrapper if available
-                from providers.pinecone_client import PineconeClient
-                client = PineconeClient(
-                    api_key=self.config.api_key,
-                    index_name=self.config.index_name
-                )
-                self._client = client
-                self._index = client.index
+            # Always use provider client to maintain SDK isolation
+            from providers.pinecone_client import PineconeClient
+            client = PineconeClient(
+                api_key=self.config.api_key,
+                index_name=self.config.index_name
+            )
+            self._client = client
+            self._index = client.index
         return self._client
     
     def build_namespace(
@@ -100,11 +73,7 @@ class PineconeAdapter:
         job_id: Optional[str] = None,
         workflow_id: Optional[str] = None,
     ) -> str:
-        """Build a namespace string from context identifiers.
-        
-        Namespaces follow pattern: {prefix}_{user}_{job}_{workflow}
-        This ensures clean separation of data per context.
-        """
+        """Builds namespace for resume workflow data separation."""
         parts = [self.config.namespace_prefix]
         if user_id:
             parts.append(f"user_{user_id}")
@@ -120,11 +89,7 @@ class PineconeAdapter:
         content_hash: Optional[str] = None,
         timestamp: Optional[datetime] = None,
     ) -> str:
-        """Build a consistent ID for vector records.
-        
-        ID pattern: {type}_{hash}_{timestamp}
-        This ensures uniqueness and enables temporal queries.
-        """
+        """Builds consistent ID for resume workflow vector records."""
         parts = [record_type]
         
         if content_hash:
@@ -140,20 +105,17 @@ class PineconeAdapter:
         return "_".join(parts)
     
     def hash_content(self, content: str) -> str:
-        """Generate a stable hash for content."""
+        """Generates stable hash for resume workflow content."""
         return hashlib.sha256(content.encode()).hexdigest()
     
     def embed_text(self, text: str) -> List[float]:
-        """Generate embeddings for text using configured model.
-        
-        This centralizes embedding generation to ensure consistency.
-        """
+        """Generates embeddings for resume workflow text processing."""
         # Placeholder implementation - in production would use OpenAI/embeddings
         # For now, return a deterministic hash-based vector for testing
-        import numpy as np
+        import random
         hash_val = int(hashlib.sha256(text.encode()).hexdigest()[:16], 16)
-        np.random.seed(hash_val % (2**32))
-        return [float(np.random.random()) for _ in range(self.config.dimension)]
+        random.seed(hash_val % (2**32))
+        return [float(random.random()) for _ in range(self.config.dimension)]
     
     async def retrieve_evidence(
         self,
@@ -164,10 +126,9 @@ class PineconeAdapter:
         council_vote: Optional[Any] = None,
     ) -> List[Any]:
         """
-        Retrieve evidence from vector store using DI-compatible interface.
+        Retrieves evidence for resume job alignment processing.
         
-        This method provides the same interface as run_rag_retrieval but
-        operates through the L4 adapter, maintaining proper layer boundaries.
+        Provides DI-compatible interface through L4 adapter for resume enhancement.
         
         Args:
             query: Base query string
@@ -237,12 +198,7 @@ class PineconeAdapter:
         records: Sequence[VectorRecord],
         namespace: str,
     ) -> None:
-        """Upsert vector records to Pinecone.
-        
-        Args:
-            records: Vector records to upsert
-            namespace: Target namespace
-        """
+        """Upserts resume workflow vector records to Pinecone."""
         self._ensure_client()
         
         # Convert to Pinecone format (tuples for new SDK)
@@ -261,11 +217,10 @@ class PineconeAdapter:
         metadata_filter: Optional[Dict[str, Any]] = None,
         score_threshold: Optional[float] = None,
     ) -> List[VectorQueryResult]:
-        """Query vectors by similarity.
+        """Queries resume workflow vectors by similarity for job alignment.
         
         Args:
-            query_vector: Query embedding
-            namespace: Target namespace
+            namespace: Namespace to query in
             top_k: Number of results to return
             metadata_filter: Optional metadata filters
             score_threshold: Optional minimum score threshold
@@ -327,10 +282,7 @@ class PineconeAdapter:
         metadata_filter: Optional[Dict[str, Any]] = None,
         score_threshold: Optional[float] = None,
     ) -> List[VectorQueryResult]:
-        """Query vectors using text (auto-embeds).
-        
-        Convenience method that embeds query text and performs vector search.
-        """
+        """Queries resume workflow vectors using text for job alignment."""
         query_vector = self.embed_text(query_text)
         return self.query_vectors(
             query_vector=query_vector,
@@ -349,11 +301,11 @@ class PineconeAdapter:
         top_k: int = 10,
         metadata_filter: Optional[Dict[str, Any]] = None,
     ) -> List[VectorQueryResult]:
-        """Query vectors with temporal constraints.
+        """Queries resume workflow vectors with temporal constraints.
         
         Args:
-            query_vector: Query embedding
-            namespace: Target namespace
+            query_vector: Query vector for similarity search
+            namespace: Namespace to query in
             start_time: Optional start of time range
             end_time: Optional end of time range
             top_k: Number of results
@@ -385,12 +337,7 @@ class PineconeAdapter:
         ids: Sequence[str],
         namespace: str,
     ) -> None:
-        """Delete vector records by ID.
-        
-        Args:
-            ids: Record IDs to delete
-            namespace: Target namespace
-        """
+        """Deletes resume workflow vector records by ID."""
         self._ensure_client()
         self._index.delete(ids=list(ids), namespace=namespace)
     
@@ -401,17 +348,7 @@ class PineconeAdapter:
         record_type: str = "doc",
         metadata_list: Optional[Sequence[Dict[str, Any]]] = None,
     ) -> List[str]:
-        """Convenience method to upsert text records with auto-embedding.
-        
-        Args:
-            texts: Text content to embed and upsert
-            namespace: Target namespace
-            record_type: Type prefix for IDs
-            metadata_list: Optional metadata for each text
-            
-        Returns:
-            List of generated record IDs
-        """
+        """Upserts resume workflow text records with auto-embedding."""
         if metadata_list and len(metadata_list) != len(texts):
             raise ValueError("metadata_list length must match texts length")
         

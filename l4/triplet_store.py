@@ -1,158 +1,113 @@
 """
-Triplet store for résumé processing knowledge graph management.
+L4 Triplet Store for resume job alignment workflows.
 
-Implements triplet (subject, predicate, object) storage for temporal knowledge graph systems supporting résumé enhancement workflows.
-
-Layer: L4 (State & Memory)
-Responsibilities:
-- Store and retrieve triplets for résumé processing data
-- Index triplets for efficient querying in résumé enhancement workflows
-- Support temporal validity ranges for accurate résumé information
-- Provide entity-centric views for résumé knowledge graph operations
-
-Non-responsibilities:
-- Triplet extraction from text (L2)
-- Query planning (L1)
-- Orchestration (L3)
-- Policy enforcement (L5)
+Maintains efficient indexes for resume enhancement querying.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Tuple
-from datetime import datetime, UTC
-from enum import Enum
 import hashlib
+from dataclasses import dataclass
+from datetime import datetime, UTC
+from typing import Any, Dict, List, Optional, Set, Tuple
+from enum import Enum
 
 
-class TemporalType(str, Enum):
-    """Temporal classification of facts for résumé processing knowledge graphs."""
-    STATIC = "static"          # Unchanging facts (e.g., birthdate)
-    DYNAMIC = "dynamic"        # Time-varying facts (e.g., current job)
-    ATEMPORAL = "atemporal"    # Facts without temporal dimension
+class TemporalType(Enum):
+    """Temporal classification of facts for resume job alignment workflows."""
+    STATIC = "static"
+    DYNAMIC = "dynamic"
+    TEMPORARY = "temporary"
 
 
-class TripletStatus(str, Enum):
-    """Status of a triplet in résumé processing knowledge graph."""
+class TripletStatus(Enum):
+    """Status of triplet in resume job alignment workflow."""
     ACTIVE = "active"
     INVALIDATED = "invalidated"
-    SUPERSEDED = "superseded"
-    PENDING = "pending"
+    ARCHIVED = "archived"
 
 
 @dataclass
 class Triplet:
     """
-    Knowledge graph triplet with temporal metadata for résumé processing.
+    Resume workflow triplet representing a relationship between entities.
     
-    Represents structured facts extracted from résumé enhancement workflows.
+    Used for resume enhancement and job alignment processing.
     """
-    
     id: str
     subject: str
     predicate: str
     object: str
-    
-    # Temporal metadata
     temporal_type: TemporalType = TemporalType.DYNAMIC
+    confidence: float = 1.0
+    source: str = "extraction"
     valid_from: Optional[datetime] = None
     valid_until: Optional[datetime] = None
-    extracted_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    
-    # Provenance
-    source: str = "extraction"
-    confidence: float = 1.0
-    evidence_ids: List[str] = field(default_factory=list)
-    
-    # Status
     status: TripletStatus = TripletStatus.ACTIVE
-    invalidated_by: Optional[str] = None
-    invalidation_reason: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+    extracted_at: Optional[datetime] = None
     
-    # Additional metadata
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    
-    def to_text(self) -> str:
-        """Convert résumé processing triplet to natural language for display."""
+    def to_natural_language(self) -> str:
+        """Converts resume workflow triplet to natural language for display."""
         return f"{self.subject} {self.predicate} {self.object}"
     
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert résumé processing triplet to dictionary for persistent storage."""
+    def to_storage_dict(self) -> Dict[str, Any]:
+        """Converts resume workflow triplet to storage format for processing."""
         return {
             "id": self.id,
             "subject": self.subject,
             "predicate": self.predicate,
             "object": self.object,
             "temporal_type": self.temporal_type.value,
+            "confidence": self.confidence,
+            "source": self.source,
             "valid_from": self.valid_from.isoformat() if self.valid_from else None,
             "valid_until": self.valid_until.isoformat() if self.valid_until else None,
-            "extracted_at": self.extracted_at.isoformat(),
-            "source": self.source,
-            "confidence": self.confidence,
-            "evidence_ids": self.evidence_ids,
             "status": self.status.value,
-            "invalidated_by": self.invalidated_by,
-            "invalidation_reason": self.invalidation_reason,
             "metadata": self.metadata,
         }
     
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Triplet":
-        """Create triplet from dictionary."""
+    def from_storage_dict(cls, data: Dict[str, Any]) -> "Triplet":
+        """Creates resume workflow triplet from storage dictionary."""
         return cls(
             id=data["id"],
             subject=data["subject"],
             predicate=data["predicate"],
             object=data["object"],
-            temporal_type=TemporalType(data.get("temporal_type", "dynamic")),
-            valid_from=datetime.fromisoformat(data["valid_from"]) if data.get("valid_from") else None,
-            valid_until=datetime.fromisoformat(data["valid_until"]) if data.get("valid_until") else None,
-            extracted_at=datetime.fromisoformat(data["extracted_at"]) if data.get("extracted_at") else datetime.now(UTC),
-            source=data.get("source", "extraction"),
-            confidence=data.get("confidence", 1.0),
-            evidence_ids=data.get("evidence_ids", []),
-            status=TripletStatus(data.get("status", "active")),
-            invalidated_by=data.get("invalidated_by"),
-            invalidation_reason=data.get("invalidation_reason"),
-            metadata=data.get("metadata", {}),
+            temporal_type=TemporalType(data["temporal_type"]),
+            confidence=data["confidence"],
+            source=data["source"],
+            valid_from=datetime.fromisoformat(data["valid_from"]) if data["valid_from"] else None,
+            valid_until=datetime.fromisoformat(data["valid_until"]) if data["valid_until"] else None,
+            status=TripletStatus(data["status"]),
+            metadata=data.get("metadata"),
         )
 
 
 @dataclass
 class TripletQuery:
-    """Query specification for résumé processing triplet retrieval."""
-    
+    """Query specification for resume workflow triplet retrieval."""
     subject: Optional[str] = None
     predicate: Optional[str] = None
     object: Optional[str] = None
-    
-    # Temporal filters
-    valid_at: Optional[datetime] = None
     temporal_type: Optional[TemporalType] = None
-    
-    # Status filters
+    status: TripletStatus = TripletStatus.ACTIVE
+    valid_at: Optional[datetime] = None
+    metadata_filter: Optional[Dict[str, Any]] = None
     include_invalidated: bool = False
     min_confidence: float = 0.0
-    
-    # Pagination
-    limit: int = 100
-    offset: int = 0
 
 
 class TripletStore:
     """
-    In-memory triplet store with indexing for résumé processing workflows.
+    In-memory triplet store for resume job alignment workflows.
     
-    Maintains efficient indexes for résumé enhancement querying:
-    - Subject index: subject -> list of triplet IDs
-    - Predicate index: predicate -> list of triplet IDs
-    - Object index: object -> list of triplet IDs
-    - SPO index: (subject, predicate) -> list of objects
+    Maintains efficient indexes for resume enhancement querying.
     """
     
     def __init__(self):
-        """Initialize empty résumé processing triplet store."""
+        """Initializes empty resume workflow triplet store."""
         self._triplets: Dict[str, Triplet] = {}
         self._subject_index: Dict[str, Set[str]] = {}
         self._predicate_index: Dict[str, Set[str]] = {}
@@ -160,14 +115,7 @@ class TripletStore:
         self._spo_index: Dict[Tuple[str, str], Set[str]] = {}
     
     def add_triplet(self, triplet: Triplet) -> str:
-        """Add a résumé processing triplet to the store.
-        
-        Args:
-            triplet: Triplet to add for résumé enhancement workflows
-            
-        Returns:
-            Triplet ID for résumé processing reference
-        """
+        """Adds resume workflow triplet to the store for enhancement processing."""
         # Store triplet
         self._triplets[triplet.id] = triplet
         
@@ -184,36 +132,15 @@ class TripletStore:
         return triplet.id
     
     def add_triplets(self, triplets: List[Triplet]) -> List[str]:
-        """Add multiple résumé processing triplets in batch.
-        
-        Args:
-            triplets: List of triplets to add for résumé enhancement workflows
-            
-        Returns:
-            List of triplet IDs for résumé processing reference
-        """
+        """Adds multiple resume workflow triplets in batch for processing."""
         return [self.add_triplet(t) for t in triplets]
     
     def get_triplet(self, triplet_id: str) -> Optional[Triplet]:
-        """Get a résumé processing triplet by ID.
-        
-        Args:
-            triplet_id: Triplet ID for résumé processing reference
-            
-        Returns:
-            Triplet if found, None otherwise
-        """
+        """Gets resume workflow triplet by ID for enhancement processing."""
         return self._triplets.get(triplet_id)
     
     def query(self, query: TripletQuery) -> List[Triplet]:
-        """Query résumé processing triplets matching the specification.
-        
-        Args:
-            query: Query specification for résumé enhancement workflows
-            
-        Returns:
-            List of matching résumé processing triplets
-        """
+        """Queries resume workflow triplets matching specification for enhancement."""
         # Start with candidate set
         candidates: Optional[Set[str]] = None
         
@@ -229,141 +156,70 @@ class TripletStore:
             object_ids = self._object_index.get(query.object, set())
             candidates = object_ids if candidates is None else candidates & object_ids
         
-        # If no filters, return all
         if candidates is None:
             candidates = set(self._triplets.keys())
         
-        # Filter and collect results
-        results: List[Triplet] = []
+        # Filter by status and other criteria
+        results = []
         for triplet_id in candidates:
             triplet = self._triplets.get(triplet_id)
-            if triplet is None:
-                continue
-            
-            # Apply filters
-            if not query.include_invalidated and triplet.status != TripletStatus.ACTIVE:
-                continue
-            
-            if triplet.confidence < query.min_confidence:
-                continue
-            
-            if query.temporal_type and triplet.temporal_type != query.temporal_type:
-                continue
-            
-            if query.valid_at:
-                if triplet.valid_from and triplet.valid_from > query.valid_at:
+            if triplet:
+                # Handle include_invalidated
+                if query.include_invalidated:
+                    # When include_invalidated=True, accept all statuses
+                    pass
+                else:
+                    # When include_invalidated=False, only accept specified status
+                    if triplet.status != query.status:
+                        continue
+                
+                # Handle min_confidence
+                if triplet.confidence < query.min_confidence:
                     continue
-                if triplet.valid_until and triplet.valid_until < query.valid_at:
+                    
+                if query.temporal_type and triplet.temporal_type != query.temporal_type:
                     continue
-            
-            results.append(triplet)
-        
-        # Apply pagination
-        results = results[query.offset:query.offset + query.limit]
+                if query.valid_at and not self._is_valid_at(triplet, query.valid_at):
+                    continue
+                if query.metadata_filter and not self._matches_metadata(triplet, query.metadata_filter):
+                    continue
+                results.append(triplet)
         
         return results
     
-    def get_objects_for_subject_predicate(
-        self,
-        subject: str,
-        predicate: str,
-    ) -> Set[str]:
-        """Get all objects for résumé processing subject-predicate pair.
-        
-        Args:
-            subject: Subject entity for résumé enhancement workflows
-            predicate: Predicate/relation for résumé processing
-            
-        Returns:
-            Set of object values for résumé processing queries
-        """
-        return self._spo_index.get((subject, predicate), set()).copy()
+    def get_objects_for_subject_predicate(self, subject: str, predicate: str) -> List[str]:
+        """Gets all objects for resume workflow subject-predicate pair."""
+        spo_key = (subject, predicate)
+        return list(self._spo_index.get(spo_key, set()))
     
-    def get_subjects_for_predicate_object(
-        self,
-        predicate: str,
-        obj: str,
-    ) -> List[str]:
-        """Get all subjects that have résumé processing predicate pointing to object.
-        
-        Args:
-            predicate: Predicate/relation for résumé enhancement workflows
-            obj: Object value for résumé processing queries
-            
-        Returns:
-            List of subject entities for résumé processing
-        """
-        results = []
-        for triplet in self._triplets.values():
-            if (triplet.predicate == predicate and 
-                triplet.object == obj and 
-                triplet.status == TripletStatus.ACTIVE):
-                results.append(triplet.subject)
-        return results
+    def get_subjects_for_predicate_object(self, predicate: str, obj: str) -> List[str]:
+        """Gets all subjects with resume workflow predicate pointing to object."""
+        subjects = []
+        for subject, predicate_key in self._spo_index.keys():
+            if predicate_key == predicate and obj in self._spo_index[(subject, predicate_key)]:
+                subjects.append(subject)
+        return subjects
     
-    def invalidate_triplet(
-        self,
-        triplet_id: str,
-        reason: str,
-        invalidated_by: Optional[str] = None,
-    ) -> bool:
-        """Mark a résumé processing triplet as invalidated.
-        
-        Args:
-            triplet_id: ID of résumé processing triplet to invalidate
-            reason: Reason for invalidation in résumé enhancement workflows
-            invalidated_by: ID of superseding triplet for résumé processing (if any)
-            
-        Returns:
-            True if résumé processing triplet was found and invalidated
-        """
+    def invalidate_triplet(self, triplet_id: str, reason: str) -> bool:
+        """Marks resume workflow triplet as invalidated for enhancement processing."""
         triplet = self._triplets.get(triplet_id)
-        if triplet is None:
-            return False
-        
-        triplet.status = TripletStatus.INVALIDATED
-        triplet.invalidation_reason = reason
-        triplet.invalidated_by = invalidated_by
-        triplet.valid_until = datetime.now(UTC)
-        
-        return True
+        if triplet:
+            triplet.status = TripletStatus.INVALIDATED
+            if triplet.metadata is None:
+                triplet.metadata = {}
+            triplet.metadata["invalidation_reason"] = reason
+            return True
+        return False
     
-    def supersede_triplet(
-        self,
-        old_triplet_id: str,
-        new_triplet: Triplet,
-        reason: str = "updated",
-    ) -> str:
-        """Replace an old triplet with a new one.
-        
-        Args:
-            old_triplet_id: ID of triplet to supersede
-            new_triplet: New triplet
-            reason: Reason for supersession
-            
-        Returns:
-            ID of new triplet
-        """
-        # Mark old triplet as superseded
-        old_triplet = self._triplets.get(old_triplet_id)
-        if old_triplet:
-            old_triplet.status = TripletStatus.SUPERSEDED
-            old_triplet.invalidated_by = new_triplet.id
-            old_triplet.invalidation_reason = reason
-            old_triplet.valid_until = datetime.now(UTC)
-        
-        # Add new triplet
-        return self.add_triplet(new_triplet)
+    def replace_triplet(self, old_triplet_id: str, new_triplet: Triplet) -> Optional[str]:
+        """Replaces old resume workflow triplet with new one for enhancement processing."""
+        if old_triplet_id in self._triplets:
+            self.invalidate_triplet(old_triplet_id, "replaced")
+            return self.add_triplet(new_triplet)
+        return None
     
-    def get_entity_triplets(self, entity: str) -> List[Triplet]:
-        """Get all triplets involving an entity (as subject or object).
-        
-        Args:
-            entity: Entity identifier
-            
-        Returns:
-            List of triplets involving the entity
-        """
+    def get_triplets_for_entity(self, entity: str) -> List[Triplet]:
+        """Gets all resume workflow triplets involving entity for enhancement."""
         triplet_ids = set()
         triplet_ids.update(self._subject_index.get(entity, set()))
         triplet_ids.update(self._object_index.get(entity, set()))
@@ -374,30 +230,40 @@ class TripletStore:
             if tid in self._triplets and self._triplets[tid].status == TripletStatus.ACTIVE
         ]
     
+    def get_entity_triplets(self, entity: str) -> List[Triplet]:
+        """Return all triplets where entity is the subject or object."""
+        return self.get_triplets_for_entity(entity)
+    
     def count(self, include_invalidated: bool = False) -> int:
-        """Get count of triplets in store.
-        
-        Args:
-            include_invalidated: Whether to include invalidated triplets
-            
-        Returns:
-            Count of triplets
-        """
+        """Gets count of resume workflow triplets in store for enhancement."""
         if include_invalidated:
             return len(self._triplets)
         return sum(1 for t in self._triplets.values() if t.status == TripletStatus.ACTIVE)
     
     @staticmethod
     def _add_to_index(index: Dict[str, Set[str]], key: str, value: str) -> None:
-        """Add a value to an index."""
+        """Adds value to resume workflow index for enhancement processing."""
         if key not in index:
             index[key] = set()
         index[key].add(value)
+    
+    def _is_valid_at(self, triplet: Triplet, valid_at: datetime) -> bool:
+        """Checks if resume workflow triplet is valid at given time."""
+        if triplet.valid_from and valid_at < triplet.valid_from:
+            return False
+        if triplet.valid_until and valid_at > triplet.valid_until:
+            return False
+        return True
+    
+    def _matches_metadata(self, triplet: Triplet, filter_dict: Dict[str, Any]) -> bool:
+        """Checks if resume workflow triplet matches metadata filter."""
+        if not triplet.metadata:
+            return False
+        for key, value in filter_dict.items():
+            if triplet.metadata.get(key) != value:
+                return False
+        return True
 
-
-# =============================================================================
-# Triplet Creation Helpers
-# =============================================================================
 
 def create_triplet(
     subject: str,
@@ -409,21 +275,8 @@ def create_triplet(
     valid_from: Optional[datetime] = None,
     metadata: Optional[Dict[str, Any]] = None,
 ) -> Triplet:
-    """Create a new résumé processing triplet with auto-generated ID.
+    """Creates new resume workflow triplet with auto-generated ID for enhancement."""
     
-    Args:
-        subject: Subject entity for résumé enhancement workflows
-        predicate: Predicate/relation for résumé processing
-        obj: Object value for résumé processing queries
-        temporal_type: Temporal classification for résumé processing facts
-        confidence: Confidence score for résumé enhancement workflows
-        source: Source of résumé processing extraction
-        valid_from: Validity start time for accurate résumé information
-        metadata: Additional metadata for résumé processing context
-        
-    Returns:
-        Created résumé processing triplet with unique ID
-    """
     # Generate deterministic ID
     id_input = f"{subject}|{predicate}|{obj}|{datetime.now(UTC).isoformat()}"
     triplet_id = hashlib.sha256(id_input.encode()).hexdigest()[:16]
@@ -437,15 +290,11 @@ def create_triplet(
         confidence=confidence,
         source=source,
         valid_from=valid_from or datetime.now(UTC),
-        metadata=metadata or {},
+        metadata=metadata,
+        extracted_at=valid_from or datetime.now(UTC),
     )
 
 
-# =============================================================================
-# Predicate Definitions
-# =============================================================================
-
-# Common predicates for resume/job domain
 PREDICATES = {
     # Skills
     "has_skill": "has_skill",
@@ -456,17 +305,6 @@ PREDICATES = {
     "worked_at": "worked_at",
     "held_role": "held_role",
     "managed": "managed",
-    "reported_to": "reported_to",
-    
-    # Education
-    "attended": "attended",
-    "graduated_from": "graduated_from",
-    "has_degree": "has_degree",
-    
-    # Job relationships
-    "applied_to": "applied_to",
-    "interviewed_at": "interviewed_at",
-    "offered_by": "offered_by",
     
     # Requirements
     "requires_skill": "requires_skill",

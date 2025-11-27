@@ -1,8 +1,8 @@
 """
-CMS (Content Management System) compiler for prompt compilation.
+CMS compiler for resume generation prompt compilation.
 
-This module provides prompt compilation functionality that was referenced
-by multiple modules but was lost during canonical structure cleanup.
+Provides prompt compilation functionality to ensure consistent
+resume improvement and job alignment.
 """
 
 from typing import Any, Dict, Optional
@@ -10,14 +10,10 @@ from typing import Any, Dict, Optional
 
 def compile_prompt(prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
     """
-    Compile a prompt template with context variables.
-    
-    Args:
-        prompt: The prompt template to compile
-        context: Optional context variables for template substitution
-        
-    Returns:
-        Compiled prompt string
+    Compiles prompt template for resume generation.
+
+    Ensures consistent prompt structure for improved resume
+    quality and job alignment.
     """
     # Minimal implementation to unblock imports
     # This should be expanded based on actual requirements
@@ -37,13 +33,16 @@ def compile_prompt(prompt: str, context: Optional[Dict[str, Any]] = None) -> str
 
 class PromptCompiler:
     """
-    Content Management System prompt compiler.
+    CMS prompt compiler for resume generation.
+
+    Ensures consistent prompt compilation for improved resume
+    quality and job alignment.
     """
     
     def __init__(self, default_context: Optional[Dict[str, Any]] = None):
         self.default_context = default_context or {}
     
     def compile(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
-        """Compile prompt with merged context."""
+        """Compiles prompt with merged context for resume generation."""
         merged_context = {**self.default_context, **(context or {})}
         return compile_prompt(prompt, merged_context)

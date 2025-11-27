@@ -1,6 +1,7 @@
-"""L5 Adapter - Wraps SafetyValidator to implement L5 interfaces
+"""
+L5 adapter for resume job alignment workflows.
 
-This adapter provides backward compatibility while enforcing strict interface contracts.
+Wraps safety validator to enforce interface contracts for resume enhancement.
 """
 
 from __future__ import annotations
@@ -35,13 +36,13 @@ from core.models.models import (
 
 
 class SafetyValidatorAdapter(L5SafetyCheckerInterface):
-    """Adapter that wraps SafetyValidator to implement L5 safety interface."""
+    """Adapter wrapping safety validator for resume job alignment workflows."""
     
     def __init__(self, wrapped_validator: SafetyValidator):
         self.wrapped_validator = wrapped_validator
     
     async def check_content_safety(self, content: str, context: ExecutionContext) -> SafetyResult:
-        """Check content for safety violations using wrapped implementation."""
+        """Checks resume workflow content for safety violations for enhancement."""
         try:
             violations = self.wrapped_validator.validate_content(content)
             
@@ -83,18 +84,18 @@ class SafetyValidatorAdapter(L5SafetyCheckerInterface):
             )
     
     async def check_data_privacy(self, data: Any, context: ExecutionContext) -> SafetyResult:
-        """Check data for privacy violations."""
+        """Checks resume workflow data for privacy violations for enhancement."""
         # Convert data to string for validation
         content = str(data) if data else ""
         return await self.check_content_safety(content, context)
     
     async def assess_risk(self, operation: str, data: Any, context: ExecutionContext) -> RiskLevel:
-        """Assess risk level for an operation."""
+        """Assesses risk level for resume workflow operations for enhancement."""
         safety_result = await self.check_content_safety(str(data), context)
         return RiskLevel(safety_result.risk_level)
     
     async def detect_injection(self, input_data: str, context: ExecutionContext) -> SafetyResult:
-        """Detect potential injection attacks."""
+        """Detects injection attacks in resume workflow data for enhancement."""
         # Enhanced injection detection beyond basic safety validation
         injection_patterns = [
             r'<script[^>]*>.*?</script>',
@@ -135,7 +136,7 @@ class SafetyValidatorAdapter(L5SafetyCheckerInterface):
 
 
 class PolicyEnforcerAdapter(L5PolicyEnforcerInterface):
-    """Adapter for policy enforcement operations."""
+    """Adapter for resume workflow policy enforcement operations."""
     
     def __init__(self, safety_adapter: SafetyValidatorAdapter):
         self.safety_adapter = safety_adapter
@@ -149,7 +150,7 @@ class PolicyEnforcerAdapter(L5PolicyEnforcerInterface):
         }
     
     async def evaluate_policy(self, request: L5PolicyRequest) -> L5PolicyResult:
-        """Evaluate policy compliance for an operation."""
+        """Evaluates policy compliance for resume workflow operations."""
         violations = []
         findings = []
         action = Action.ALLOW
@@ -198,7 +199,7 @@ class PolicyEnforcerAdapter(L5PolicyEnforcerInterface):
         )
     
     async def enforce_policy(self, request: L5PolicyRequest) -> L5PolicyResult:
-        """Enforce policy compliance and take appropriate action."""
+        """Enforces policy compliance for resume workflow operations."""
         result = await self.evaluate_policy(request)
         
         # Take enforcement action based on evaluation
@@ -213,18 +214,18 @@ class PolicyEnforcerAdapter(L5PolicyEnforcerInterface):
         return result
     
     async def validate_policy_config(self, policy_config: Dict[str, Any]) -> bool:
-        """Validate policy configuration."""
+        """Validates policy configuration for resume workflow enhancement."""
         required_keys = ["enabled_policies", "thresholds"]
         return all(key in policy_config for key in required_keys)
     
     async def _log_policy_event(self, event_type: str, data: Dict[str, Any]) -> None:
-        """Log policy-related events."""
+        """Logs resume workflow policy events for enhancement processing."""
         # Simple logging - would integrate with proper audit system
         print(f"POLICY_EVENT: {event_type} - {data}")
 
 
 class RiskAssessmentAdapter(L5RiskAssessmentInterface):
-    """Adapter for risk assessment operations."""
+    """Adapter for resume workflow risk assessment operations."""
     
     def __init__(self):
         self.risk_factors = {
@@ -234,7 +235,7 @@ class RiskAssessmentAdapter(L5RiskAssessmentInterface):
         }
     
     async def calculate_risk_score(self, operation: str, data: Any, context: ExecutionContext) -> float:
-        """Calculate numerical risk score (0.0-1.0)."""
+        """Calculates numerical risk score for resume workflow operations."""
         risk_level = await self._assess_operation_risk(operation, data, context)
         
         # Convert risk level to numerical score
@@ -248,7 +249,7 @@ class RiskAssessmentAdapter(L5RiskAssessmentInterface):
         return scores.get(risk_level, 0.5)
     
     async def identify_risk_factors(self, operation: str, data: Any, context: ExecutionContext) -> List[str]:
-        """Identify specific risk factors."""
+        """Identifies specific risk factors for resume workflow operations."""
         factors = []
         content = str(data).lower()
         
@@ -271,7 +272,7 @@ class RiskAssessmentAdapter(L5RiskAssessmentInterface):
         return factors
     
     async def recommend_mitigation(self, risk_factors: List[str], context: ExecutionContext) -> List[str]:
-        """Recommend risk mitigation strategies."""
+        """Recommends risk mitigation strategies for resume workflow operations."""
         recommendations = []
         
         for factor in risk_factors:
@@ -317,7 +318,7 @@ class ComplianceCheckerAdapter(L5ComplianceCheckerInterface):
         }
     
     async def check_regulatory_compliance(self, data: Any, regulations: List[str], context: ExecutionContext) -> bool:
-        """Check compliance with specific regulations."""
+        """Checks regulatory compliance for resume workflow operations."""
         content = str(data).lower()
         
         for regulation in regulations:
@@ -333,7 +334,7 @@ class ComplianceCheckerAdapter(L5ComplianceCheckerInterface):
         return True  # Placeholder
     
     async def validate_ethical_guidelines(self, content: str, guidelines: List[str], context: ExecutionContext) -> SafetyResult:
-        """Validate content against ethical guidelines."""
+        """Validates resume workflow content against ethical guidelines."""
         findings = []
         
         # Simple ethical guideline checks
@@ -364,7 +365,7 @@ class ComplianceCheckerAdapter(L5ComplianceCheckerInterface):
         )
     
     async def audit_operation(self, operation: str, data: Any, context: ExecutionContext) -> Dict[str, Any]:
-        """Create audit trail for operation."""
+        """Creates audit trail for resume workflow operations."""
         audit_entry = {
             "timestamp": datetime.now().isoformat(),
             "operation": operation,
@@ -379,13 +380,13 @@ class ComplianceCheckerAdapter(L5ComplianceCheckerInterface):
 
 
 class HitLAdapter(L5HitLInterface):
-    """Adapter for Human-in-the-Loop operations."""
+    """Adapter for resume workflow Human-in-the-Loop operations."""
     
     def __init__(self):
         self.pending_requests: Dict[str, HitLRequest] = {}
     
     async def should_require_hitl(self, operation: str, data: Any, context: ExecutionContext) -> bool:
-        """Determine if human approval is required."""
+        """Determines if human approval is required for resume workflow operations."""
         # High-risk operations require HITL
         high_risk_operations = [
             "file_delete", "system_modify", "external_api_call",
@@ -395,7 +396,7 @@ class HitLAdapter(L5HitLInterface):
         return any(risk_op in operation.lower() for risk_op in high_risk_operations)
     
     async def create_hitl_request(self, operation: str, data: Any, context: ExecutionContext) -> HitLRequest:
-        """Create human approval request."""
+        """Creates human approval request for resume workflow operations."""
         request = HitLRequest(
             id=f"hitl_{context.execution_id}_{datetime.now().timestamp()}",
             operation=operation,
@@ -409,7 +410,7 @@ class HitLAdapter(L5HitLInterface):
         return request
     
     async def process_hitl_response(self, request_id: str, response: Dict[str, Any]) -> bool:
-        """Process human response to approval request."""
+        """Processes human response to resume workflow approval request."""
         if request_id not in self.pending_requests:
             return False
         
@@ -421,7 +422,7 @@ class HitLAdapter(L5HitLInterface):
         return True
     
     async def escalate_for_review(self, issue: str, context: ExecutionContext) -> bool:
-        """Escalate issue for human review."""
+        """Escalates resume workflow issue for human review."""
         escalation_request = HitLRequest(
             id=f"escalate_{context.execution_id}_{datetime.now().timestamp()}",
             operation="escalation",
@@ -436,7 +437,7 @@ class HitLAdapter(L5HitLInterface):
 
 
 class ResourceGuardAdapter(L5ResourceGuardInterface):
-    """Adapter for resource guarding operations."""
+    """Adapter for resume workflow resource protection operations."""
     
     def __init__(self):
         self.limits = {

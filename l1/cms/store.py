@@ -1,7 +1,8 @@
 """
-CMS (Content Management System) store for prompt storage and retrieval.
+CMS store for resume generation prompt storage and retrieval.
 
-This module provides storage functionality for compiled prompts and templates.
+Provides storage functionality for compiled prompts and templates
+to ensure consistent resume improvement and job alignment.
 """
 
 from typing import Any, Dict, List, Optional
@@ -10,7 +11,11 @@ from dataclasses import dataclass
 
 @dataclass
 class StoredPrompt:
-    """Represents a stored prompt with metadata."""
+    """
+    Represents a stored resume generation prompt with metadata.
+
+    Ensures prompt storage supports consistent resume improvement.
+    """
     id: str
     content: str
     template: Optional[str] = None
@@ -21,29 +26,30 @@ class StoredPrompt:
 
 class PromptStore:
     """
-    Content Management System prompt storage.
-    
-    Provides storage and retrieval for compiled prompts and templates.
+    CMS prompt storage for resume generation.
+
+    Provides storage and retrieval for compiled prompts and templates
+    to ensure consistent resume improvement and job alignment.
     """
     
     def __init__(self):
         self._prompts: Dict[str, StoredPrompt] = {}
     
     def store(self, prompt: StoredPrompt) -> str:
-        """Store a prompt and return its ID."""
+        """Stores resume generation prompt and returns its ID."""
         self._prompts[prompt.id] = prompt
         return prompt.id
     
     def retrieve(self, prompt_id: str) -> Optional[StoredPrompt]:
-        """Retrieve a stored prompt by ID."""
+        """Retrieves stored resume generation prompt by ID."""
         return self._prompts.get(prompt_id)
     
     def list_prompts(self) -> List[str]:
-        """List all stored prompt IDs."""
+        """Lists all stored resume generation prompt IDs."""
         return list(self._prompts.keys())
     
     def delete(self, prompt_id: str) -> bool:
-        """Delete a stored prompt."""
+        """Deletes stored resume generation prompt."""
         if prompt_id in self._prompts:
             del self._prompts[prompt_id]
             return True
@@ -55,22 +61,22 @@ default_store = PromptStore()
 
 
 def get_store() -> PromptStore:
-    """Get the default prompt store instance."""
+    """Gets the default resume generation prompt store instance."""
     return default_store
 
 
 def store_prompt(prompt_id: str, content: str, **kwargs) -> str:
-    """Convenience function to store a prompt."""
+    """Convenience function to store resume generation prompt."""
     prompt = StoredPrompt(id=prompt_id, content=content, **kwargs)
     return default_store.store(prompt)
 
 
 def retrieve_prompt(prompt_id: str) -> Optional[StoredPrompt]:
-    """Convenience function to retrieve a prompt."""
+    """Convenience function to retrieve resume generation prompt."""
     return default_store.retrieve(prompt_id)
 
 
 def get_prompt_version(prompt_id: str) -> Optional[str]:
-    """Get the version of a stored prompt."""
+    """Gets the version of a stored resume generation prompt."""
     prompt = default_store.retrieve(prompt_id)
     return prompt.version if prompt else None

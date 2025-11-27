@@ -1,7 +1,8 @@
 """
-CMS (Content Management System) schemas for prompt validation.
+CMS schemas for resume generation prompt validation.
 
-This module provides schema definitions for prompt validation and structure.
+Provides schema definitions for prompt validation to ensure
+consistent resume improvement and job alignment.
 """
 
 from typing import Any, Dict, List
@@ -10,7 +11,11 @@ from enum import Enum
 
 
 class PromptType(str, Enum):
-    """Types of prompts supported by the CMS."""
+    """
+    Types of prompts supported by the CMS for resume generation.
+
+    Defines prompt categories for consistent resume improvement workflows.
+    """
     SIMPLE = "simple"
     TEMPLATE = "template"
     CONDITIONAL = "conditional"
@@ -19,7 +24,11 @@ class PromptType(str, Enum):
 
 @dataclass
 class PromptSchema:
-    """Schema definition for prompt validation."""
+    """
+    Schema definition for resume generation prompt validation.
+
+    Ensures consistent prompt structure for improved resume quality.
+    """
     name: str
     prompt_type: PromptType
     required_fields: List[str]
@@ -29,7 +38,11 @@ class PromptSchema:
 
 @dataclass
 class ValidationResult:
-    """Result of prompt validation."""
+    """
+    Result of resume generation prompt validation.
+
+    Tracks validation outcomes for consistent resume improvement.
+    """
     is_valid: bool
     errors: List[str] = None
     warnings: List[str] = None
@@ -42,7 +55,11 @@ class ValidationResult:
 
 
 def validate_prompt(prompt: str, schema: PromptSchema) -> ValidationResult:
-    """Validate a prompt against a schema."""
+    """
+    Validates resume generation prompt against schema.
+
+    Ensures prompt structure supports consistent resume improvement.
+    """
     errors = []
     warnings = []
     

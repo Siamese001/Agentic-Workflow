@@ -19,7 +19,7 @@ Non-responsibilities:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Optional, Dict, Any, Sequence
 
 
 class ChromaNotConfiguredError(RuntimeError):
@@ -30,16 +30,6 @@ class ChromaClientError(RuntimeError):
     """Raised when the underlying Chroma client cannot be created or used."""
 
 
-def _import_chromadb():
-    """Import the chromadb package lazily."""
-
-    try:  # pragma: no cover - import path is environment dependent
-        import chromadb  # type: ignore
-    except ImportError as exc:  # pragma: no cover
-        raise ChromaClientError("chromadb package not installed") from exc
-    return chromadb
-
-
 @dataclass
 class ChromaConfig:
     """Configuration for connecting to a ChromaDB instance."""
@@ -47,6 +37,12 @@ class ChromaConfig:
     collection_name: str
     persist_directory: Optional[str] = None
     require_collection: bool = True
+
+
+def _import_chromadb():
+    """Import the chromadb package using provider isolation."""
+    from providers.chromadb_client import ChromaClient
+    return ChromaClient
 
 
 def init_chroma_client(cfg: ChromaConfig):

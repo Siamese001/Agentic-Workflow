@@ -1,7 +1,8 @@
 """
-Plans knowledge graph and document retrieval for résumé analysis.
+Plans knowledge graph and document retrieval for resume analysis.
 
-Improves résumé accuracy by finding relevant job experiences and skills that match specific positions.
+Improves resume accuracy by finding relevant job experiences
+and skills that match specific positions.
 """
 
 from __future__ import annotations
@@ -21,9 +22,10 @@ from .kg_retrieval_planning import (
 
 class RetrievalStepType(str, Enum):
     """
-    Defines types of information retrieval steps for résumé processing.
+    Defines types of information retrieval steps for resume processing.
 
-    Improves résumé completeness by ensuring all relevant experiences and skills are captured systematically.
+    Improves resume completeness by ensuring all relevant experiences
+    and skills are captured systematically.
     """
     KG_HOP = "kg_hop"
     VECTOR_SEARCH = "vector_search"
@@ -35,9 +37,10 @@ class RetrievalStepType(str, Enum):
 
 class QueryComplexity(str, Enum):
     """
-    Determines how complex a résumé query is to process.
+    Determines how complex a resume query is to process.
 
-    Improves résumé processing efficiency by matching analysis depth to job requirement complexity.
+    Improves resume processing efficiency by matching analysis
+    depth to job requirement complexity.
     """
     SIMPLE = "simple"           # Direct entity lookup
     MEDIUM = "medium"           # Multi-hop KG traversal
@@ -48,9 +51,10 @@ class QueryComplexity(str, Enum):
 @dataclass
 class RAGRetrievalStep:
     """
-    Defines a single document search step for résumé information retrieval.
+    Defines a single document search step for resume information retrieval.
 
-    Improves résumé relevance by finding job-specific documents and experiences that match target positions.
+    Improves resume relevance by finding job-specific documents
+    and experiences that match target positions.
     """
     
     step_type: RetrievalStepType
@@ -78,9 +82,10 @@ class RAGRetrievalStep:
 @dataclass
 class FusionPlanStep:
     """
-    Combines knowledge graph and document search steps for résumé analysis.
+    Combines knowledge graph and document search steps for resume analysis.
 
-    Improves résumé comprehensiveness by integrating structured career data with relevant job experiences.
+    Improves resume comprehensiveness by integrating structured career
+    data with relevant job experiences.
     """
     
     step_type: RetrievalStepType
@@ -106,9 +111,10 @@ class FusionPlanStep:
 @dataclass
 class KGRAGFusionPlan(KGQueryPlan):
     """
-    Creates comprehensive retrieval plans for résumé job matching analysis.
+    Creates comprehensive retrieval plans for resume job matching analysis.
 
-    Improves résumé targeting by combining career history with job-specific requirements and skills.
+    Improves resume targeting by combining career history with job-specific
+    requirements and skills for better alignment.
     """
     
     # RAG fusion components

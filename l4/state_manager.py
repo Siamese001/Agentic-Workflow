@@ -1,7 +1,7 @@
 """
-L4 state management for persistent résumé processing data.
+L4 state manager for resume job alignment workflows.
 
-Ensures reliable storage and retrieval of workflow state for consistent résumé improvement with temporal awareness.
+Ensures reliable storage and retrieval for resume enhancement.
 """
 
 from typing import Any, Dict, Optional, List
@@ -13,16 +13,16 @@ from pathlib import Path
 @dataclass
 class TemporalContext:
     """
-    Manages temporal context for time-aware résumé processing.
-    
-    Provides time-bounded reasoning and temporal relationship tracking for enhanced résumé analysis.
+    Manages temporal context for resume job alignment workflows.
+
+    Provides time-bounded reasoning for resume enhancement.
     """
     current_time: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     processing_window: str = "30d"  # Default 30-day window
     temporal_relationships: Dict[str, Any] = field(default_factory=dict)
     
     def is_within_window(self, timestamp: datetime) -> bool:
-        """Check if a timestamp is within the processing window."""
+        """Checks if timestamp is within resume processing window."""
         from datetime import timedelta
         window_delta = timedelta(days=int(self.processing_window.replace('d', '')))
         return (self.current_time - timestamp) <= window_delta
@@ -30,15 +30,15 @@ class TemporalContext:
 @dataclass 
 class EpisodicMemory:
     """
-    Stores episodic memory of past résumé processing interactions.
-    
-    Maintains interaction history for contextual learning and improvement.
+    Stores episodic memory for resume job alignment workflows.
+
+    Maintains interaction history for resume enhancement learning.
     """
     interactions: List[Dict[str, Any]] = field(default_factory=list)
     max_interactions: int = 100
     
     def add_interaction(self, interaction: Dict[str, Any]) -> None:
-        """Add a new interaction to episodic memory."""
+        """Adds new resume workflow interaction to episodic memory."""
         interaction['timestamp'] = datetime.now(timezone.utc).isoformat()
         self.interactions.append(interaction)
         
@@ -47,36 +47,36 @@ class EpisodicMemory:
             self.interactions = self.interactions[-self.max_interactions:]
     
     def get_recent_interactions(self, count: int = 10) -> List[Dict[str, Any]]:
-        """Get the most recent interactions."""
+        """Gets most recent resume workflow interactions for job alignment."""
         return self.interactions[-count:]
 
 @dataclass
 class ProceduralMemory:
     """
-    Stores procedural memory of résumé processing workflows.
-    
-    Maintains how-to knowledge and process patterns for consistent execution.
+    Stores procedural memory for resume job alignment workflows.
+
+    Maintains how-to knowledge for resume enhancement execution.
     """
     procedures: Dict[str, Any] = field(default_factory=dict)
     success_patterns: List[Dict[str, Any]] = field(default_factory=list)
     
     def add_procedure(self, name: str, procedure: Dict[str, Any]) -> None:
-        """Add a new procedure to procedural memory."""
+        """Adds new resume workflow procedure for job alignment."""
         self.procedures[name] = {
             **procedure,
             'created_at': datetime.now(timezone.utc).isoformat()
         }
     
     def get_procedure(self, name: str) -> Optional[Dict[str, Any]]:
-        """Retrieve a procedure by name."""
+        """Retrieves resume workflow procedure for job alignment."""
         return self.procedures.get(name)
 
 @dataclass
 class WorkflowState:
     """
-    Stores résumé workflow state data for persistence with temporal and memory capabilities.
-    
-    Maintains job, resume, strategy data, and temporal context for reliable résumé processing continuity.
+    Stores resume workflow state data for job alignment persistence.
+
+    Maintains temporal context for resume enhancement continuity.
     """
     job_data: Optional[Dict[str, Any]] = None
     resume_data: Optional[Dict[str, Any]] = None
@@ -89,9 +89,9 @@ class WorkflowState:
 
 class StateManager:
     """
-    Manages persistent state storage for résumé workflows with temporal awareness.
-    
-    Ensures data integrity and continuity for comprehensive résumé improvement processes with time-bounded reasoning.
+    Manages persistent state storage for resume job alignment workflows.
+
+    Ensures data integrity for resume enhancement processes.
     """
     
     def __init__(self, storage_path: Path):
@@ -100,9 +100,9 @@ class StateManager:
     
     def save_state(self, state: WorkflowState) -> None:
         """
-        Persists résumé workflow state to storage with temporal context.
-        
-        Ensures data preservation for reliable résumé processing continuity with time awareness.
+        Persists resume workflow state for job alignment processing.
+
+        Ensures data preservation for resume enhancement continuity.
         """
         # Serialize datetime objects for JSON storage
         serializable_state = {
@@ -132,9 +132,9 @@ class StateManager:
     
     def load_state(self) -> Optional[WorkflowState]:
         """
-        Retrieves résumé workflow state from storage with temporal context.
-        
-        Restores previous processing state for consistent résumé improvement workflows with time awareness.
+        Retrieves resume workflow state for job alignment processing.
+
+        Restores previous state for resume enhancement workflows.
         """
         if not self.storage_path.exists():
             return None
@@ -179,9 +179,9 @@ class StateManager:
     
     def add_interaction(self, interaction_type: str, content: Dict[str, Any]) -> None:
         """
-        Add an interaction to episodic memory for temporal context.
-        
-        Maintains interaction history for improved résumé processing context.
+        Adds resume workflow interaction for job alignment context.
+
+        Maintains history for resume enhancement processing.
         """
         if self._state is None:
             self._state = WorkflowState()
@@ -194,9 +194,9 @@ class StateManager:
     
     def get_temporal_context(self) -> TemporalContext:
         """
-        Get current temporal context for time-aware processing.
-        
-        Provides temporal boundaries and relationships for résumé analysis.
+        Gets current temporal context for resume job alignment.
+
+        Provides temporal boundaries for resume enhancement analysis.
         """
         if self._state is None:
             self._state = WorkflowState()
