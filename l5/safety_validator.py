@@ -105,7 +105,12 @@ class OutreachSafetyPolicy:
         
         # Determine maximum severity for escalation
         if findings:
-            max_severity = max(finding.severity for finding in findings)
+            # Use explicit severity ordering instead of max() on enum
+            severity_order = [Severity.LOW, Severity.MEDIUM, Severity.HIGH, Severity.CRITICAL]
+            max_severity = Severity.LOW
+            for finding in findings:
+                if severity_order.index(finding.severity) > severity_order.index(max_severity):
+                    max_severity = finding.severity
         
         # Apply escalation logic
         action = self.escalation_config[max_severity]
