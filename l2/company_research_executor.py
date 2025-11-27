@@ -64,12 +64,6 @@ class CompanyResearchExecutor:
         triplet_store: Optional[TripletStore] = None
     ):
         """Initializes executor with search infrastructure for executive-grade company intelligence."""
-        
-        Args:
-            hybrid_search: L4 HybridSearchExecutor for search operations
-            pinecone_adapter: L4 PineconeAdapter for namespace operations
-            triplet_store: Optional L4 TripletStore for KG fallback
-        """
         self.hybrid_search = hybrid_search
         self.adapter = pinecone_adapter
         self.triplet_store = triplet_store
