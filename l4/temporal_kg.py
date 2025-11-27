@@ -563,7 +563,9 @@ class TemporalKG:
                 temporal_scores.append(signal_score.score)
             
             # Apply TemporalRankFusion with tie-break rules
-            if hybrid_scores and (kg_scores or temporal_scores):
+            # Only apply fusion when we have actual KG temporal facts (not just signal scores)
+            fusion_applied = False
+            if hybrid_scores and len(kg_scores) > 0:
                 # Create enhanced metadata for tie-breaking
                 enhanced_metadata = []
                 for i, meta in enumerate(metadata_list):
@@ -572,16 +574,25 @@ class TemporalKG:
                         meta['temporal_score'] = temporal_scores[i]
                     enhanced_metadata.append(meta)
                 
-                # Use tie-break fusion for deterministic results
-                fused_results = self.temporal_fusion.fuse_with_tiebreak(
-                    hybrid_scores, kg_scores, temporal_scores, enhanced_metadata
-                )
-                fused_scores = [item['score'] for item in fused_results]
-                final_metadata = [item['metadata'] for item in fused_results]
+                try:
+                    # Use tie-break fusion for deterministic results
+                    fused_results = self.temporal_fusion.fuse_with_tiebreak(
+                        hybrid_scores, kg_scores, temporal_scores, enhanced_metadata
+                    )
+                    fused_scores = [item['score'] for item in fused_results]
+                    final_metadata = [item['metadata'] for item in fused_results]
+                    fusion_applied = True
+                except Exception as fusion_error:
+                    logger.warning(f"Temporal fusion failed: {fusion_error}")
+                    # Fallback to hybrid scores only
+                    fused_scores = hybrid_scores
+                    final_metadata = metadata_list
+                    fusion_applied = False
             else:
                 # Fallback to hybrid scores only
                 fused_scores = hybrid_scores
                 final_metadata = metadata_list
+                fusion_applied = False
             
             # Create enriched results
             enriched_results = []
@@ -601,7 +612,7 @@ class TemporalKG:
             
             return {
                 'results': enriched_results[:max_results],
-                'fusion_applied': len(kg_scores) > 0 or len(temporal_scores) > 0,
+                'fusion_applied': fusion_applied,
                 'temporal_window_applied': temporal_window_days is not None,
                 'temporal_facts_found': len(temporal_metadata),
                 'high_signal_count': sum(1 for score in temporal_scores if score > 0.7)
