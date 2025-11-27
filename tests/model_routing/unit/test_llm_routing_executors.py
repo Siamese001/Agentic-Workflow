@@ -271,37 +271,46 @@ class TestLLMRoutingExecutors:
                 with patch.object(caller, 'generate') as mock_generate:
                     mock_generate.return_value = f"Response for {archetype.value}"
                     
-                    # Generate message
-                    message_plan = Mock()
-                    message_plan.subject_plan = "Test subject"
-                    message_plan.hook_plan = "Test hook"
-                    message_plan.value_plan = "Test value"
-                    message_plan.cta_plan = "Test CTA"
-                    message_plan.signature_plan = "Test signature"
-                    # Configure Mock to be iterable for _estimate_generation_tokens
-                    message_plan.items.return_value = [
-                        ("subject_plan", "Test subject"),
-                        ("hook_plan", "Test hook"),
-                        ("value_plan", "Test value"),
-                        ("cta_plan", "Test CTA"),
-                        ("signature_plan", "Test signature")
-                    ]
-                    
-                    context = GenerationContext(
-                        mission_id="test_mission",
-                        archetype=archetype.value,
-                        target_role="Test Role",
-                        target_company="Test Corp",
-                        value_proposition="Test value"
-                    )
-                    
-                    result = self.executor.generate_message(message_plan, context, [])
-                    
-                    # Verify routing policy was called with correct archetype
-                    assert mock_select.called
-                    call_args, call_kwargs = mock_select.call_args
-                    assert call_kwargs['archetype'] == archetype  # archetype parameter
-                    assert result is not None  # Verify result is produced
+                    # Mock invoke_model to prevent real API calls
+                    with patch('l2.outreach_llm_caller.invoke_model') as mock_invoke:
+                        mock_invoke.return_value = f"Mocked response for {archetype.value}"
+                        
+                        # Generate message
+                        message_plan = Mock()
+                        message_plan.subject_plan = "Test subject"
+                        message_plan.hook_plan = "Test hook"
+                        message_plan.value_plan = "Test value"
+                        message_plan.cta_plan = "Test CTA"
+                        message_plan.signature_plan = "Test signature"
+                        # Configure Mock to be iterable for _estimate_generation_tokens
+                        message_plan.items.return_value = [
+                            ("subject_plan", "Test subject"),
+                            ("hook_plan", "Test hook"),
+                            ("value_plan", "Test value"),
+                            ("cta_plan", "Test CTA"),
+                            ("signature_plan", "Test signature")
+                        ]
+                        
+                        context = GenerationContext(
+                            mission_id="test_mission",
+                            archetype=archetype.value,
+                            target_role="Test Role",
+                            target_company="Test Corp",
+                            value_proposition="Test value"
+                        )
+                        
+                        result = self.executor.generate_message(message_plan, context, [])
+                        
+                        # Verify routing policy was called with correct archetype
+                        assert mock_select.called
+                        # Get the specific call for this iteration (not the last one)
+                        call_found = False
+                        for call in mock_select.call_args_list:
+                            if call.kwargs['archetype'] == archetype:
+                                call_found = True
+                                break
+                        assert call_found, f"Expected call with archetype {archetype} not found"
+                        assert result is not None  # Verify result is produced
     
     def test_executor_routing_with_budget_constraints(self):
         """Test that executor respects budget constraints in routing."""
