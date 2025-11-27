@@ -32,6 +32,21 @@ class LLMCaller:
         except Exception as exc:
             record_exception("llm_call_error", exc)
             raise
+    
+    def generate(self, prompt: str) -> str:
+        """
+        Generate response using default task routing.
+        
+        Provides interface compatibility with MessageGenerationExecutor by
+        calling call_llm with default task_type.
+        
+        Args:
+            prompt: The prompt to send to the LLM
+            
+        Returns:
+            Generated response from the selected model
+        """
+        return self.call_llm(prompt=prompt, task_type="default")
 
 
 #

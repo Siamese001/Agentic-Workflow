@@ -6,7 +6,7 @@ This is pure configuration - no business logic.
 """
 
 from dataclasses import dataclass
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from enum import Enum
 from typing import Literal
 
@@ -62,6 +62,9 @@ class LICHyperparameters:
     # Phase 8 Telemetry Configuration
     telemetry_enabled: bool = True
     telemetry_detail_level: Literal["minimal", "standard", "verbose"] = "standard"
+    
+    # Phase 10 Model Routing Configuration
+    use_model_routing: bool = False
     
     def __post_init__(self):
         """Initialize defaults for complex fields."""
