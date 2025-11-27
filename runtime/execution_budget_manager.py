@@ -213,6 +213,28 @@ class ExecutionBudgetManager:
             if self._usage.active_concurrent >= self._limits.max_parallel:
                 return "Concurrent execution limit exceeded"
             return None
+    
+    # Phase 9 required method aliases
+    def check_token_budget(self) -> bool:
+        """Check if token budget allows further execution."""
+        return self.check_budget("token_check")
+    
+    def check_context_limit(self, context_size: int) -> bool:
+        """Check if context size is within limits."""
+        return self.check_context_size(context_size)
+    
+    def check_depth(self) -> bool:
+        """Check if recursion depth is within limits."""
+        with self._lock:
+            return self._usage.current_depth < self._limits.max_depth
+    
+    def acquire_slot(self, timeout: Optional[float] = None) -> bool:
+        """Acquire a concurrent execution slot."""
+        return self.acquire_concurrent_slot(timeout)
+    
+    def release_slot(self) -> None:
+        """Release a concurrent execution slot."""
+        self.release_concurrent_slot()
 
 
 # Global singleton instance
