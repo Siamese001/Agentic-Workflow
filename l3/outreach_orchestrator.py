@@ -37,12 +37,12 @@ logger = logging.getLogger(__name__)
 
 # Stub classes for safe constructor defaults
 class StubLLMClient:
-    def generate(self, *a, **kw): 
+    def generate(self, *args, **kwargs): 
         return ""
 
 
 class StubSafetyValidator:
-    def evaluate(self, *a, **kw):
+    def evaluate(self, *args, **kwargs):
         class MockSafetyResult:
             def __init__(self):
                 self.passed = True
@@ -52,64 +52,64 @@ class StubSafetyValidator:
 
 
 class StubRoutingPolicy:
-    def select_model(self, *a, **kw):
+    def select_model(self, *args, **kwargs):
         return "default"
 
 
 class StubBudgetManager:
-    def check_message_length(self, *a, **kw):
+    def check_message_length(self, *args, **kwargs):
         return True
 
 
 class StubTelemetryBus:
-    def record_event(self, *a, **kw):
+    def record_event(self, *args, **kwargs):
         pass
     
-    def record_metric(self, *a, **kw):
+    def record_metric(self, *args, **kwargs):
         pass
     
-    def record(self, *a, **kw):
+    def record(self, *args, **kwargs):
         pass
 
 
 class StubCompanyResearchExecutor:
-    def search_company_context(self, *a, **kw):
+    def search_company_context(self, *args, **kwargs):
         return {}
 
 
 class StubContactResearchExecutor:
-    def search_contact_profile(self, *a, **kw):
+    def search_contact_profile(self, *args, **kwargs):
         return {}
 
 
 class StubMessageGenerationExecutor:
-    def generate_message(self, *a, **kw):
+    def generate_message(self, *args, **kwargs):
         return ""
 
 
 class StubArchetypePlanner:
-    def plan_archetype(self, *a, **kw):
+    def plan_archetype(self, *args, **kwargs):
         return {}
 
 
 class StubResearchPlanner:
-    def plan_research(self, *a, **kw):
+    def plan_research(self, *args, **kwargs):
         return {}
 
 
 class StubMessagePlanner:
-    def plan_message(self, *a, **kw):
+    def plan_message(self, *args, **kwargs):
         return {}
     
-    def create_message_plan(self, *a, **kw):
+    def create_message_plan(self, *args, **kwargs):
         return {"sections": [], "tone": "professional"}
 
 
 class StubStateManager:
-    def save_state(self, *a, **kw):
+    def save_state(self, *args, **kwargs):
         pass
     
-    def load_state(self, *a, **kw):
+    def load_state(self, *args, **kwargs):
         return None
 
 
@@ -696,9 +696,18 @@ class OutreachOrchestrator:
             pass
         
         content = MessageContent(
-            company_context=research_bundle.company or {},
-            contact_context=research_bundle.contact or {},
-            archetype_context=ctx.__dict__
+            recipient_name=recipient.name,
+            recipient_title=recipient.title,
+            company_name=recipient.company,
+            value_proposition=getattr(mission, 'value_proposition', ''),
+            key_points=[],
+            personalization_elements=[],
+            constraints=[],
+            metadata={
+                'company_context': research_bundle.company or {},
+                'contact_context': research_bundle.contact or {},
+                'archetype_context': ctx.__dict__
+            }
         )
         mp = self.message_planner.create_message_plan(content)
         
@@ -907,9 +916,18 @@ class OutreachOrchestrator:
         use_multi_draft = config.get("use_multi_draft", False)
         logger.info("P3: Planning and generating message")
         content = MessageContent(
-            company_context=research_bundle.company or {},
-            contact_context=research_bundle.contact or {},
-            archetype_context=ctx.__dict__
+            recipient_name=recipient.name,
+            recipient_title=recipient.title,
+            company_name=recipient.company,
+            value_proposition=getattr(mission, 'value_proposition', ''),
+            key_points=[],
+            personalization_elements=[],
+            constraints=[],
+            metadata={
+                'company_context': research_bundle.company or {},
+                'contact_context': research_bundle.contact or {},
+                'archetype_context': ctx.__dict__
+            }
         )
         mp = self.message_planner.create_message_plan(content)
         
@@ -1083,8 +1101,7 @@ class OutreachOrchestrator:
             task = asyncio.create_task(
                 asyncio.to_thread(
                     self.message_executor.generate_message,
-                    message_plan=temp_plan,
-                    archetype_context=ctx.__dict__
+                    message_plan=temp_plan
                 )
             )
             draft_tasks.append(task)

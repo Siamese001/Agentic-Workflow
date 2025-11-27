@@ -117,7 +117,12 @@ class ExecutiveReasoningProfile:
     schema_version: str = "v1"
     model_name: str = "ExecutiveReasoningProfile"
     
-    # Reasoning depth parameters
+    # Required fields for Phase 2 compatibility
+    max_reasoning_depth: int = 3
+    reasoning_mode: str = "analytical"
+    reasoning_style: str = "analytical"
+    
+    # Explicit backward compatibility fields for test expectations
     cot_depth: int = 2
     tot_branches: int = 2
     tot_recursion_depth: int = 1
@@ -330,6 +335,9 @@ SECTION_TEMPERATURE_SCHEDULE = {
 # Executive reasoning profiles for each archetype
 EXECUTIVE_REASONING_PROFILES = {
     ArchetypeType.RECRUITER: ExecutiveReasoningProfile(
+        max_reasoning_depth=2,
+        reasoning_mode="analytical",
+        reasoning_style="direct",
         cot_depth=2,
         tot_branches=2,
         tot_recursion_depth=1,
@@ -342,6 +350,9 @@ EXECUTIVE_REASONING_PROFILES = {
     ),
     
     ArchetypeType.SENIOR_TA: ExecutiveReasoningProfile(
+        max_reasoning_depth=4,
+        reasoning_mode="technical",
+        reasoning_style="detailed",
         cot_depth=4,
         tot_branches=3,
         tot_recursion_depth=2,
@@ -354,6 +365,9 @@ EXECUTIVE_REASONING_PROFILES = {
     ),
     
     ArchetypeType.EXECUTIVE: ExecutiveReasoningProfile(
+        max_reasoning_depth=8,
+        reasoning_mode="strategic",
+        reasoning_style="executive",
         cot_depth=8,
         tot_branches=6,
         tot_recursion_depth=3,
@@ -366,6 +380,9 @@ EXECUTIVE_REASONING_PROFILES = {
     ),
     
     ArchetypeType.C_LEVEL: ExecutiveReasoningProfile(
+        max_reasoning_depth=12,
+        reasoning_mode="strategic",
+        reasoning_style="board_level",
         cot_depth=12,
         tot_branches=10,
         tot_recursion_depth=4,
