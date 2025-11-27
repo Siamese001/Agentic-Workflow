@@ -52,7 +52,7 @@ class TestMessagePlannerStructure:
             metadata={"team_size": "15"}
         )
         
-        archetype_context = self._create_mock_archetype_context("hiring_manager")
+        archetype_context = self._create_mock_archetype_context("executive")
         
         plan = self.planner.create_message_plan(content, archetype_context)
         

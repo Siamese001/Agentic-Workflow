@@ -54,7 +54,7 @@ class TestStateManagerOutreachIsolation:
             interactions=[
                 {
                     "type": "outreach_sent",
-                    "archetype": "hiring_manager",
+                    "archetype": "executive",
                     "company": "TestCorp",
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 },
@@ -94,7 +94,7 @@ class TestStateManagerOutreachIsolation:
             temporal_relationships={
                 "workflow_type": "outreach",
                 "target_company": "IsolationCorp",
-                "archetype": "hiring_manager",
+                "archetype": "executive",
                 "contacts_researched": ["contact_1", "contact_2"],
                 "companies_researched": ["company_x"],
                 "messages_generated": ["message_1"]
@@ -181,7 +181,7 @@ class TestStateManagerOutreachIsolation:
         
         memory.add_interaction({
             "type": "message_generated",
-            "archetype": "hiring_manager",
+            "archetype": "executive",
             "recipient": "manager@testcorp.com",
             "sections": 5,
             "safety_check": "passed"
@@ -197,7 +197,7 @@ class TestStateManagerOutreachIsolation:
         # Verify interactions are stored
         assert len(memory.interactions) == 3
         assert memory.interactions[0]["type"] == "contact_research"
-        assert memory.interactions[1]["archetype"] == "hiring_manager"
+        assert memory.interactions[1]["archetype"] == "executive"
         assert memory.interactions[2]["follow_up_date"] == "2024-02-01"
         
         # Verify timestamps are added automatically
@@ -253,7 +253,7 @@ class TestStateManagerOutreachIsolation:
         # Add one more interaction (should trigger cleanup)
         memory.add_interaction({
             "type": "outreach_step_3",
-            "archetype": "hiring_manager",
+            "archetype": "executive",
             "step_number": 3
         })
         
@@ -271,7 +271,7 @@ class TestStateManagerOutreachIsolation:
             temporal_relationships={
                 "workflow_id": "outreach_test_789",
                 "target_company": "PersistenceCorp",
-                "archetype": "hiring_manager",
+                "archetype": "executive",
                 "contacts_researched": ["contact_a", "contact_b"],
                 "companies_researched": ["company_x"],
                 "messages_generated": ["message_1"]

@@ -199,7 +199,7 @@ class TestContactResearchExecutor:
         self.mock_pinecone_adapter.build_namespace.return_value = "archetype_test_contact"
         
         # Test different archetypes
-        archetypes = ["recruiter", "senior_ta", "hiring_manager", "c_level"]
+        archetypes = ["recruiter", "senior_ta", "executive", "c_level"]
         
         for archetype in archetypes:
             self.executor.search_contact_profile(
@@ -230,7 +230,7 @@ class TestContactResearchExecutor:
             mission_id="rag_mission",
             target_role="Test Role",
             target_company="TestCorp",
-            archetype="hiring_manager",
+            archetype="executive",
             rag_params=rag_params,
             signal_params={}
         )
