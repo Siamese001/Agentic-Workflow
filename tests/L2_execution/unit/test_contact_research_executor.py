@@ -5,6 +5,7 @@ Validates search_contact_profile() returns List[OutreachRAGResult], uses HybridS
 namespace building via pinecone_adapter, and pure L2 execution without L1/L3/L4/L5 imports.
 """
 
+import pytest
 from unittest.mock import Mock
 
 from l2.contact_research_executor import ContactResearchExecutor, ContactSearchConfig, ContactResearchResult
@@ -31,12 +32,14 @@ class TestContactResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="contact_1",
+                score=0.85,
                 text="John Smith - Senior Software Engineer at TechCorp",
                 fused_score=0.85,
                 metadata={"company": "TechCorp", "title": "Senior Software Engineer"}
             ),
             SearchResult(
-                id="contact_2", 
+                id="contact_2",
+                score=0.78,
                 text="Jane Doe - Engineering Manager at StartupCorp",
                 fused_score=0.78,
                 metadata={"company": "StartupCorp", "title": "Engineering Manager"}
@@ -71,13 +74,13 @@ class TestContactResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="contact_1",
+                score=0.92,
                 text="Sarah Chen - Principal Engineer with Python expertise",
                 fused_score=0.92,
                 metadata={
                     "company": "TechCorp",
                     "title": "Principal Engineer",
-                    "source": "linkedin",
-                    "timestamp": "2024-01-15T10:30:00Z"
+                    "source": "linkedin"
                 }
             )
         ]
@@ -91,7 +94,7 @@ class TestContactResearchExecutor:
             target_company="TechCorp",
             archetype="senior_ta",
             rag_params={"company_weight": 0.4, "individual_weight": 0.6},
-            signal_params={"technical_signals": True}
+            signal_params={"min_signal_score": 0.0, "max_age_days": 400}
         )
         
         # Verify results contain OutreachRAGResult objects
@@ -112,6 +115,7 @@ class TestContactResearchExecutor:
         expected_results = [
             SearchResult(
                 id="search_1",
+                score=0.88,
                 text="Michael Johnson - CTO at EnterpriseCorp",
                 fused_score=0.88,
                 metadata={"company": "EnterpriseCorp", "title": "CTO"}
@@ -126,13 +130,18 @@ class TestContactResearchExecutor:
             mission_id="enterprise_mission",
             target_role="CTO",
             target_company="EnterpriseCorp",
-            archetype="c_level",
+            archetype="senior_ta",
             rag_params={"company_weight": 0.7, "individual_weight": 0.3},
-            signal_params={"strategic_signals": True, "financial_signals": True}
+            signal_params={"min_signal_score": 0.0, "max_age_days": 400}
         )
         
         # Verify HybridSearchExecutor.search was called
         self.mock_hybrid_search.search.assert_called_once()
+        
+        # Debug: Check mock call details
+        print(f"DEBUG: call_count = {self.mock_hybrid_search.search.call_count}")
+        print(f"DEBUG: call_args = {self.mock_hybrid_search.search.call_args}")
+        print(f"DEBUG: call_args_list = {self.mock_hybrid_search.search.call_args_list}")
         
         # Get the call arguments
         call_args = self.mock_hybrid_search.search.call_args
@@ -140,7 +149,10 @@ class TestContactResearchExecutor:
         
         # Verify search was called with proper configuration
         args, kwargs = call_args
-        assert len(args) > 0  # Should have query argument
+        assert len(kwargs) > 0  # Should have query argument
+        assert "query" in kwargs  # Query should be present
+        assert "namespace" in kwargs  # Namespace should be present
+        assert "config" in kwargs  # Config should be present
     
     def test_namespace_built_via_pinecone_adapter(self):
         """Test namespace is built via pinecone_adapter.build_namespace()."""
@@ -257,6 +269,7 @@ class TestContactResearchExecutor:
         mock_results = [
             SearchResult(
                 id="meta_test_1",
+                score=0.75,
                 text="Test contact with metadata",
                 fused_score=0.75,
                 metadata={"test": "metadata"}
