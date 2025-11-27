@@ -23,6 +23,15 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
+class TemporalNodeMetadata:
+    """Metadata for temporal knowledge graph nodes."""
+    timestamp: datetime
+    source: str
+    weight: float
+    hop_distance: int
+
+
+@dataclass
 class TemporalFact:
     """
     Represents time-stamped career fact for resume job alignment.
@@ -380,6 +389,83 @@ class TemporalKG:
                     )
                 except Exception as e:
                     logger.error(f"Failed to invalidate fact in Neo4j: {e}", exc_info=True)
+    
+    def compute_temporal_weight(self, timestamp: datetime) -> float:
+        """Compute temporal weight based on age of the timestamp."""
+        from datetime import timedelta
+        
+        now = datetime.now(UTC)
+        age_days = (now - timestamp).days
+        
+        if age_days <= 30:
+            return 1.0
+        elif age_days <= 90:
+            return 0.6
+        elif age_days <= 180:
+            return 0.2
+        else:
+            return 0.05
+    
+    def apply_hop_distance_penalty(self, base_weight: float, hop_distance: int) -> float:
+        """Apply hop distance penalty to temporal weight."""
+        if hop_distance == 0:
+            return base_weight
+        elif hop_distance == 1:
+            return base_weight * 0.8
+        elif hop_distance == 2:
+            return base_weight * 0.6
+        elif hop_distance == 3:
+            return base_weight * 0.4
+        else:
+            return base_weight * 0.2  # Maximum penalty for >3 hops
+    
+    def search_temporal(self, query: str, hops: int = 1, user_id: Optional[str] = None) -> List[TemporalNodeMetadata]:
+        """
+        Search temporal KG with multi-hop traversal.
+        
+        Args:
+            query: Search query string
+            hops: Number of hops to traverse (1-3)
+            user_id: Optional user ID for namespace isolation
+            
+        Returns:
+            List of TemporalNodeMetadata objects
+        """
+        if hops < 1 or hops > 3:
+            logger.warning(f"Invalid hop count {hops}, using 1")
+            hops = 1
+        
+        # Create temporal query for base search
+        temporal_query = TemporalQuery(
+            object=query,  # Search for query in object field
+            limit=50  # Limit results for performance
+        )
+        
+        # Get base facts
+        base_facts = self.query_facts(temporal_query, user_id)
+        
+        # Convert to TemporalNodeMetadata
+        results = []
+        for fact in base_facts:
+            # Compute temporal weight
+            temporal_weight = self.compute_temporal_weight(fact.timestamp)
+            
+            # Apply hop distance penalty
+            adjusted_weight = self.apply_hop_distance_penalty(temporal_weight, hops - 1)
+            
+            metadata = TemporalNodeMetadata(
+                timestamp=fact.timestamp,
+                source=fact.source,
+                weight=adjusted_weight,
+                hop_distance=hops - 1
+            )
+            
+            results.append(metadata)
+        
+        # Sort by weight (descending) and timestamp (descending for ties)
+        results.sort(key=lambda m: (m.weight, m.timestamp), reverse=True)
+        
+        return results[:20]  # Return top 20 results
     
     def _build_namespace(self, user_id: Optional[str]) -> str:
         """Builds namespace for resume workflow temporal KG storage."""

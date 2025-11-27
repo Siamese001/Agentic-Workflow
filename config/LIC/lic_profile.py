@@ -8,6 +8,7 @@ This is pure configuration - no business logic.
 from dataclasses import dataclass
 from typing import Dict, Any, Optional
 from enum import Enum
+from typing import Literal
 
 
 class LICSafetyStrictness(str, Enum):
@@ -43,6 +44,12 @@ class LICHyperparameters:
     max_parallel_tasks: int = 4
     batch_size: int = 8
     
+    # Phase 7 Outreach Concurrency Settings
+    use_concurrent_research: bool = False
+    use_multi_draft: bool = False
+    max_parallel_research: int = 2
+    max_parallel_drafts: int = 2
+    
     # Safety Configuration
     safety_strictness: LICSafetyStrictness = LICSafetyStrictness.STANDARD
     enable_pii_sanitization: bool = True
@@ -51,7 +58,10 @@ class LICHyperparameters:
     # Performance Configuration
     cost_limit_per_run: float = 10.0
     latency_limit_seconds: float = 30.0
-    enable_telemetry: bool = False
+    
+    # Phase 8 Telemetry Configuration
+    telemetry_enabled: bool = True
+    telemetry_detail_level: Literal["minimal", "standard", "verbose"] = "standard"
     
     def __post_init__(self):
         """Initialize defaults for complex fields."""

@@ -18,7 +18,7 @@ from l2.contact_research_executor import ContactResearchExecutor
 from l4.hybrid_search import HybridSearchExecutor
 from l4.pinecone_adapter import PineconeAdapter
 from l4.triplet_store import TripletStore
-from l5.safety_validator import L5SafetyValidator
+from l5.safety_validator import SafetyValidator
 
 logger = logging.getLogger(__name__)
 

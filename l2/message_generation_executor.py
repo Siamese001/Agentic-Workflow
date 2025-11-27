@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
 from l4.schema.outreach_schema import OutreachRAGResult
+from runtime.telemetry_bus import get_telemetry_bus
 
 
 @dataclass
@@ -50,6 +52,7 @@ class MessageGenerationExecutor:
         """Initializes executor with LLM client and safety validator for archetype-optimized message generation."""
         self.llm_client = llm_client
         self.safety_validator = safety_validator
+        self.telemetry_bus = get_telemetry_bus()
     
     def generate_message(
         self,
@@ -58,6 +61,16 @@ class MessageGenerationExecutor:
         research_results: List[OutreachRAGResult]
     ) -> MessageResult:
         """Generates high-impact executive message using archetype-specific temperature control."""
+        # Record phase start
+        start_time = time.time()
+        try:
+            self.telemetry_bus.record_event("phase_start", "L2", {
+                "workflow_type": "outreach",
+                "stage": "message_generation"
+            })
+        except Exception:
+            pass
+        
         # HSON: Extracts archetype-specific temperature schedule -> matches executive cognitive patterns
         temperature_schedule = getattr(message_plan, "temperature_schedule", {})
         
@@ -180,6 +193,17 @@ class MessageGenerationExecutor:
                 "archetype": generation_context.archetype,
                 "signal_count": len(signals_used)
             }
+        
+        # Record phase completion
+        try:
+            self.telemetry_bus.record_event("phase_end", "L2", {
+                "workflow_type": "outreach",
+                "stage": "message_generation",
+                "success": True,
+                "duration": time.time() - start_time
+            })
+        except Exception:
+            pass
         
         return MessageResult(
             message=message,
