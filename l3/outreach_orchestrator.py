@@ -90,6 +90,23 @@ class StubMessageGenerationExecutor:
 class StubArchetypePlanner:
     def plan_archetype(self, *args, **kwargs):
         return {}
+    
+    def plan_archetype_influence(self, mission, *args, **kwargs):
+        """Stub method for plan_archetype_influence to support LIC compatibility."""
+        from l1.outreach_dataclasses import ArchetypeContext, RagParameters, ReasoningParameters, SignalParameters, ConstraintParameters, ToneParameters, CtaParameters, ExecutiveReasoningProfile
+        
+        return ArchetypeContext(
+            archetype="executive",
+            confidence=0.8,
+            reasoning="Stub archetype planning for LIC compatibility",
+            rag_params=RagParameters(),
+            reasoning_params=ReasoningParameters(),
+            signal_params=SignalParameters(),
+            constraint_params=ConstraintParameters(),
+            tone_params=ToneParameters(),
+            cta_params=CtaParameters(),
+            executive_reasoning_profile=ExecutiveReasoningProfile()
+        )
 
 
 class StubResearchPlanner:
