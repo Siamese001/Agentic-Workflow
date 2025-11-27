@@ -246,8 +246,7 @@ class CompanyResearchExecutor:
             kg_query = TripletQuery(
                 subject=target_company,
                 predicate=None,  # Any predicate
-                object=None,
-                limit=signal_params.get("top_k", 10)
+                object=None
             )
             
             # Execute KG search
@@ -277,9 +276,8 @@ class CompanyResearchExecutor:
             
             return kg_results
             
-        except Exception as e:
+        except Exception:
             # KG fallback is optional - fail silently
-            print(f"KG fallback exception: {e}")
             return []
     
     def _build_company_query(self, target_company: str, archetype: ArchetypeType) -> str:
