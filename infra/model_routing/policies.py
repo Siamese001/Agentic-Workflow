@@ -7,7 +7,7 @@ Provides intelligent model selection and budget enforcement for optimal résumé
 from typing import Optional
 from l1.outreach_dataclasses import ArchetypeType
 from core.models.models import ExecutionProfile, ComplexityLevel
-from meta.routing import RoutingPolicy, LIGHT_MODELS, MEDIUM_MODELS, HEAVY_MODELS, DRAFTING_MODELS, QA_SAFETY_MODELS
+from meta.routing import RoutingPolicy, LIGHT_MODELS, MEDIUM_MODELS, HEAVY_MODELS, QA_SAFETY_MODELS
 from runtime.execution_budget_manager import ExecutionBudgetManager
 
 from .models import ModelChoice, RoutingContext
@@ -273,7 +273,8 @@ class ModelRoutingPolicy:
         try:
             usage = budget_manager.current_usage()
             tokens_remaining = usage.get("tokens_remaining", 0)
-            tokens_total = usage.get("tokens_remaining", 0) + usage.get("tokens_used", 0)
+            tokens_used = usage.get("tokens_used", 0)
+            tokens_total = tokens_remaining + tokens_used
             
             if tokens_total == 0:
                 return base_complexity

@@ -6,7 +6,7 @@ This is pure configuration - no business logic.
 """
 
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Optional
 from enum import Enum
 from typing import Literal
 
