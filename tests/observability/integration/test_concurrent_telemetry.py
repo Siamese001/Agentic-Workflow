@@ -12,11 +12,8 @@ Tests telemetry integration with concurrent outreach workflow:
 
 import pytest
 import asyncio
-import threading
 import time
-from unittest.mock import Mock, patch, AsyncMock
-from typing import Dict, Any
-
+from unittest.mock import Mock, patch
 from runtime.telemetry_bus import TelemetryBus, get_telemetry_bus
 from l3.outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
 from l1.outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
@@ -132,7 +129,7 @@ class TestConcurrentTelemetry:
                 metadata={"concurrent_id": "test_concurrent_123"}
             )
             
-            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+            _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
             ))
             
@@ -165,7 +162,7 @@ class TestConcurrentTelemetry:
                 contact={"contact": "researched_contact"}
             )
             
-            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+            _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
             ))
             
@@ -198,7 +195,7 @@ class TestConcurrentTelemetry:
         ]
         
         with patch.object(mock_orchestrator, '_generate_multiple_drafts_and_select_best', return_value=drafts[0]):
-            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+            _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
             ))
             
@@ -241,7 +238,7 @@ class TestConcurrentTelemetry:
                     metadata={"fallback_used": True}
                 )
                 
-                result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+                _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                     sample_mission, sample_recipient, config
                 ))
                 
@@ -276,7 +273,7 @@ class TestConcurrentTelemetry:
             )
         
         with patch.object(mock_orchestrator, '_execute_workflow_phases_concurrent_async', side_effect=mock_concurrent_with_delay):
-            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+            _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
             ))
             
@@ -372,13 +369,13 @@ class TestConcurrentTelemetry:
                 contact={}  # Failure
             )
             
-            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+            _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
             ))
             
             # Should have recorded partial failure telemetry
             events = self.bus.get_events()
-            error_events = self.bus.get_errors()
+            _ = self.bus.get_errors()
             
             # Should have events and possibly errors
             assert len(events) >= 1
@@ -411,18 +408,18 @@ class TestConcurrentTelemetry:
                 metadata={"concurrent_id": "suppression_test"}
             )
             
-            result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+            _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                 sample_mission, sample_recipient, config
             ))
             
             # Should have no telemetry events
             events = self.bus.get_events()
-            errors = self.bus.get_errors()
-            traces = self.bus.get_traces()
+            _ = self.bus.get_errors()
+            _ = self.bus.get_traces()
             
             assert len(events) == 0
-            assert len(errors) == 0
-            assert len(traces) == 0
+            assert len(self.bus.get_errors()) == 0
+            assert len(self.bus.get_traces()) == 0
     
     def test_concurrent_workflow_telemetry_detail_levels(self, mock_orchestrator, sample_mission, sample_recipient):
         """Test telemetry detail levels during concurrent workflow execution."""
@@ -440,7 +437,13 @@ class TestConcurrentTelemetry:
             self.bus.clear()
             self.bus.configure(enabled=True, detail_level=detail_level)
             
-            # Execute concurrent workflow
+            # Execute concurrent workflow with detail level in config
+            config = {
+                "use_concurrent_research": True,
+                "use_multi_draft": False,
+                "telemetry_detail_level": detail_level
+            }
+            
             with patch.object(mock_orchestrator, '_execute_workflow_phases_concurrent_async') as mock_concurrent:
                 mock_concurrent.return_value = OutreachPipelineResult(
                     success=True,
@@ -452,7 +455,7 @@ class TestConcurrentTelemetry:
                     }
                 )
                 
-                result = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
+                _ = asyncio.run(mock_orchestrator.orchestrate_outreach_concurrent(
                     sample_mission, sample_recipient, config
                 ))
                 
