@@ -277,8 +277,9 @@ class CompanyResearchExecutor:
             
             return kg_results
             
-        except Exception:
+        except Exception as e:
             # KG fallback is optional - fail silently
+            print(f"KG fallback exception: {e}")
             return []
     
     def _build_company_query(self, target_company: str, archetype: ArchetypeType) -> str:

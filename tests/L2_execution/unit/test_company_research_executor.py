@@ -22,6 +22,13 @@ class TestCompanyResearchExecutor:
         self.mock_hybrid_search = Mock(spec=HybridSearchExecutor)
         self.mock_pinecone_adapter = Mock(spec=PineconeAdapter)
         self.mock_triplet_store = Mock(spec=TripletStore)
+        self.mock_telemetry_bus = Mock()
+        
+        # Patch telemetry bus to avoid potential exceptions
+        import l2.company_research_executor
+        original_get_telemetry_bus = l2.company_research_executor.get_telemetry_bus
+        l2.company_research_executor.get_telemetry_bus = lambda: self.mock_telemetry_bus
+        
         self.executor = CompanyResearchExecutor(
             hybrid_search=self.mock_hybrid_search,
             pinecone_adapter=self.mock_pinecone_adapter,
@@ -69,6 +76,7 @@ class TestCompanyResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="limited_company",
+                score=0.6,
                 text="Basic company information",
                 fused_score=0.6,
                 metadata={"company": "ExecCorp"}
@@ -78,24 +86,29 @@ class TestCompanyResearchExecutor:
         # Mock KG results (substantial)
         mock_kg_triplets = [
             Triplet(
+                id="triplet_1",
                 subject="ExecCorp",
                 predicate="has_executive",
                 object="CEO_John_Smith",
-                timestamp="2024-01-15",
                 confidence=0.9
             ),
             Triplet(
+                id="triplet_2",
                 subject="ExecCorp",
                 predicate="revenue",
                 object="$500M",
-                timestamp="2024-01-10",
                 confidence=0.85
             )
         ]
         
         self.mock_hybrid_search.search.return_value = mock_search_results
         self.mock_triplet_store.query.return_value = mock_kg_triplets
+        self.mock_triplet_store.query.side_effect = lambda x: print(f"KG Query called with: {x}") or mock_kg_triplets
         self.mock_pinecone_adapter.build_namespace.return_value = "exec_mission_company"
+        
+        # Debug: Check KG fallback conditions
+        print(f"DEBUG: executor.triplet_store = {self.executor.triplet_store}")
+        print(f"DEBUG: _should_use_kg_fallback(C_LEVEL) = {self.executor._should_use_kg_fallback(ArchetypeType.C_LEVEL)}")
         
         # Execute C-Level search
         result = self.executor.search_company_context(
@@ -103,7 +116,7 @@ class TestCompanyResearchExecutor:
             target_company="ExecCorp",
             archetype=ArchetypeType.C_LEVEL,
             rag_params={"company_weight": 0.9, "individual_weight": 0.1},
-            signal_params={"strategic_signals": True, "financial_signals": True}
+            signal_params={"strategic_signals": True, "financial_signals": True, "top_k": 5}
         )
         
         # Verify KG fallback was attempted for C-Level
