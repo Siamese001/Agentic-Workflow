@@ -636,7 +636,7 @@ class OutreachOrchestrator:
                                 raise
                     
                     print(f"DEBUG: Async result message = {result.message}")
-                
+                    
                 if timeout_occurred:
                     # Fall back to sequential execution after timeout
                     logger.warning("Concurrent execution timed out, falling back to sequential")
