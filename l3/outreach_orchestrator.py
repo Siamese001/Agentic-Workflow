@@ -639,6 +639,7 @@ class OutreachOrchestrator:
                     return result
                     
                 # Safety failure - try next archetype
+                safety_failure_count += 1
                 logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
                 continue
                 
@@ -646,15 +647,20 @@ class OutreachOrchestrator:
                 logger.error(f"Error with archetype {archetype}: {e}")
                 if attempt >= len(fallback_sequence):
                     # Final attempt failed - return error result
+                    metadata = {
+                        "error": str(e),
+                        "attempts": attempt,
+                        "final_archetype": archetype,
+                        "workflow_type": "outreach_concurrent"
+                    }
+                    # Add safety_timeout flag if this was a safety timeout
+                    if "Safety validation timed out" in str(e):
+                        metadata["safety_timeout"] = True
+                    
                     return OutreachPipelineResult(
                         success=False,
                         message="",
-                        metadata={
-                            "error": str(e),
-                            "attempts": attempt,
-                            "final_archetype": archetype,
-                            "workflow_type": "outreach_concurrent"
-                        }
+                        metadata=metadata
                     )
                 continue
         
@@ -677,6 +683,10 @@ class OutreachOrchestrator:
         # Add safety timeout flag if all attempts timed out
         if safety_timeout_count == len(fallback_sequence):
             metadata["safety_timeout"] = True
+        
+        # Add safety blocked flag if all attempts failed safety validation
+        if safety_failure_count == len(fallback_sequence):
+            metadata["safety_blocked"] = True
             
         return OutreachPipelineResult(
             success=False,
@@ -774,7 +784,10 @@ class OutreachOrchestrator:
         )
         mp = self.message_planner.create_message_plan(content)
         
-        message_result = self.message_executor.generate_message(mp.__dict__)
+        message_result = self.message_executor.generate_message(
+            message_plan=mp.__dict__,
+            archetype_context=ctx.__dict__
+        )
         
         # Validate message length against budget limits
         message_content = getattr(message_result, 'message', getattr(message_result, 'content', ''))
@@ -992,7 +1005,10 @@ class OutreachOrchestrator:
         if use_multi_draft:
             message_result = await self._generate_multiple_drafts_and_select_best(mp, ctx, config)
         else:
-            message_result = self.message_executor.generate_message(mp.__dict__)
+            message_result = self.message_executor.generate_message(
+            message_plan=mp.__dict__,
+            archetype_context=ctx.__dict__
+        )
         
         # P4 — Final Safety Check (MUST be after message generation)
         logger.info("P4: Safety validation")
