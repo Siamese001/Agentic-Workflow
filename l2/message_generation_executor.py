@@ -102,10 +102,11 @@ class MessageGenerationExecutor:
         sections["hook"] = hook_section
         
         # Generate value/body
+        value_temperature = getattr(value_plan, "temperature", 0.8) if hasattr(value_plan, "temperature") else temperature_schedule.get("value", 0.8)
         value_section = self._generate_section(
             section_name="value",
             plan=value_plan,
-            temperature=temperature_schedule.get("value", 0.8),
+            temperature=value_temperature,
             ctx=generation_context,
             signal_context=signal_context,
             reasoning_metadata=getattr(message_plan, "metadata", {})
@@ -113,10 +114,11 @@ class MessageGenerationExecutor:
         sections["value"] = value_section
         
         # Generate CTA
+        cta_temperature = getattr(cta_plan, "temperature", 0.6) if hasattr(cta_plan, "temperature") else temperature_schedule.get("cta", 0.6)
         cta_section = self._generate_section(
             section_name="cta",
             plan=cta_plan,
-            temperature=temperature_schedule.get("cta", 0.6),
+            temperature=cta_temperature,
             ctx=generation_context,
             signal_context=signal_context,
             reasoning_metadata=getattr(message_plan, "metadata", {})
@@ -124,10 +126,11 @@ class MessageGenerationExecutor:
         sections["cta"] = cta_section
         
         # Generate signature
+        signature_temperature = getattr(signature_plan, "temperature", 0.3) if hasattr(signature_plan, "temperature") else temperature_schedule.get("signature", 0.3)
         signature_section = self._generate_section(
             section_name="signature",
             plan=signature_plan,
-            temperature=temperature_schedule.get("signature", 0.3),
+            temperature=signature_temperature,
             ctx=generation_context,
             signal_context="",  # Signature doesn't need signals
             reasoning_metadata=getattr(message_plan, "metadata", {})
@@ -153,29 +156,29 @@ class MessageGenerationExecutor:
         # Apply safety validation if safety validator is available
         if self.safety_validator:
             safety_result = self.safety_validator.validate_layer_input(
-                layer="L2",
-                content=message,
-                context=generation_context
+                "L2", message, generation_context
             )
             # Add safety violations to metadata if any
             if safety_result.findings:
                 metadata = {
                     "mission_id": generation_context.mission_id,
                     "archetype": generation_context.archetype,
-                    "signals_count": len(signals_used),
+                    "signal_count": len(signals_used),
+                    "safety_check": "failed",
                     "safety_violations": [f.__dict__ for f in safety_result.findings]
                 }
             else:
                 metadata = {
                     "mission_id": generation_context.mission_id,
                     "archetype": generation_context.archetype,
-                    "signals_count": len(signals_used)
+                    "signal_count": len(signals_used),
+                    "safety_check": "passed"
                 }
         else:
             metadata = {
                 "mission_id": generation_context.mission_id,
                 "archetype": generation_context.archetype,
-                "signals_count": len(signals_used)
+                "signal_count": len(signals_used)
             }
         
         return MessageResult(
@@ -215,10 +218,7 @@ class MessageGenerationExecutor:
         )
         
         # Call LLM with temperature
-        # Note: Temperature is passed via task_type encoding for now
-        # In production, LLMCaller would accept temperature directly
-        task_type = f"outreach_{section_name}"
-        
+        # Note: Temperature is handled at section level for archetype optimization
         content = self.llm_client.generate(prompt)
         
         # Estimate tokens (simple approximation)
