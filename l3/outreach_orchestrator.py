@@ -447,6 +447,63 @@ class OutreachOrchestrator:
             # Phase 9: Always release concurrent slot in finally block
             self.budget_manager.release_slot()
     
+    async def _execute_concurrent_workflow_with_fallback(
+        self,
+        mission: OutreachMission,
+        recipient: RecipientProfile,
+        ctx: ArchetypeContext,
+        config: Dict[str, Any],
+    ) -> OutreachPipelineResult:
+        """Execute concurrent workflow with timeout and fallback handling."""
+        timeout_occurred = False
+        try:
+            # Check if event loop is already running
+            loop = asyncio.get_running_loop()
+            # If loop is running, we need to run in thread
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(
+                    asyncio.run, 
+                    self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
+                )
+                # Apply timeout if configured
+                timeout_seconds = config.get("concurrent_timeout", None)
+                if timeout_seconds:
+                    try:
+                        result = future.result(timeout=timeout_seconds)
+                    except concurrent.futures.TimeoutError:
+                        timeout_occurred = True
+                        raise
+                else:
+                    result = future.result()
+        except (RuntimeError, concurrent.futures.TimeoutError):
+            if not timeout_occurred:
+                # No event loop running, safe to use asyncio.run
+                try:
+                    timeout_seconds = config.get("concurrent_timeout", None)
+                    if timeout_seconds:
+                        result = await asyncio.wait_for(
+                            self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config),
+                            timeout=timeout_seconds
+                        )
+                    else:
+                        result = await self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
+                except asyncio.TimeoutError:
+                    timeout_occurred = True
+                    raise
+            else:
+                # Timeout occurred in thread execution
+                raise
+        
+        if timeout_occurred:
+            # Fall back to sequential execution after timeout
+            logger.warning(f"Concurrent execution timed out, falling back to sequential")
+            result = self._execute_workflow_phases(mission, recipient, ctx, config)
+            # Add timeout fallback flag if result succeeds
+            if result.success and hasattr(result, 'metadata') and result.metadata:
+                result.metadata["timeout_fallback"] = True
+        
+        return result
+    
     async def orchestrate_outreach_concurrent(
         self,
         mission: OutreachMission,
@@ -463,7 +520,6 @@ class OutreachOrchestrator:
         Returns:
             OutreachPipelineResult with generated message and metadata
         """
-        print("DEBUG: orchestrate_outreach_concurrent CALLED!")
         config = config or {}
         
         # CRITICAL: Configure telemetry FIRST to force suppression before any events
@@ -582,139 +638,117 @@ class OutreachOrchestrator:
                 })
                 
                 try:
+                    logger.info(f"DEBUG: Starting attempt {attempt} with archetype {archetype}")
                     # Update archetype context
                     ctx.archetype = archetype
+                    logger.info(f"DEBUG: Updated archetype context")
                     
                     # Initialize timeout tracking variables
                     timeout_occurred = False
+                    logger.info(f"DEBUG: Initialized timeout tracking")
                     
                     # Execute workflow phases with optional concurrency and fallback logic
                     # First attempt uses concurrent if enabled, subsequent attempts use sequential
                     should_use_concurrent = (use_concurrent_research or use_multi_draft) and attempt == 1
-                    logger.info(f"DEBUG: should_use_concurrent={should_use_concurrent}, use_concurrent_research={use_concurrent_research}, use_multi_draft={use_multi_draft}, attempt={attempt}")
+                    logger.info(f"DEBUG: should_use_concurrent={should_use_concurrent}")
                     
                     if should_use_concurrent:
+                        logger.info(f"DEBUG: Taking concurrent execution path")
                         # Use async execution on first attempt
-                        print("DEBUG: Taking concurrent execution path!")
-                        timeout_occurred = False
+                        result = await self._execute_concurrent_workflow_with_fallback(mission, recipient, ctx, config)
+                        logger.info(f"DEBUG: Concurrent execution completed")
+                    else:
+                        logger.info(f"DEBUG: Taking sequential execution path")
+                        # Use sequential execution when concurrency disabled
+                        result = self._execute_workflow_phases(mission, recipient, ctx, config)
+                        logger.info(f"DEBUG: Sequential execution completed")
+                    
+                    logger.info(f"DEBUG: Workflow execution result success={result.success}")
+                    
+                    if result.success:
+                        logger.info(f"Outreach successful with archetype {archetype}")
+                        
+                        # P4 — Final Safety Check (MUST be after message generation)
+                        logger.info("P4: Safety validation at meta-loop level")
                         try:
-                            # Check if event loop is already running
-                            loop = asyncio.get_running_loop()
-                            # If loop is running, we need to run in thread
-                            with concurrent.futures.ThreadPoolExecutor() as executor:
-                                future = executor.submit(
-                                    asyncio.run, 
-                                    self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
-                                )
-                                # Apply timeout if configured
-                                timeout_seconds = config.get("concurrent_timeout", None)
-                                if timeout_seconds:
+                            safety_result_raw = self.safety_validator.evaluate(result.message)
+                            logger.info(f"DEBUG: Safety validator returned: {type(safety_result_raw)}")
+                        except Exception as safety_eval_error:
+                            logger.error(f"DEBUG: Exception in safety evaluation: {safety_eval_error}")
+                            raise
+                        
+                        # Handle both sync and async safety evaluators with timeout
+                        import inspect
+                        safety_timeout = config.get("safety_timeout", None)
+                        timeout_occurred = False
+                        safety_result = None
+                        
+                        # Always await coroutine immediately to prevent unawaited warnings
+                        if inspect.iscoroutine(safety_result_raw):
+                            logger.info("DEBUG: Detected coroutine, awaiting immediately")
+                            try:
+                                loop = asyncio.get_running_loop()
+                                # Use thread executor to run coroutine in new event loop with timeout
+                                with concurrent.futures.ThreadPoolExecutor() as executor:
+                                    future = executor.submit(asyncio.run, safety_result_raw)
+                                    if safety_timeout:
+                                        try:
+                                            safety_result = future.result(timeout=safety_timeout)
+                                        except concurrent.futures.TimeoutError:
+                                            timeout_occurred = True
+                                            raise
+                                    else:
+                                        safety_result = future.result()
+                            except RuntimeError as runtime_error:
+                                logger.error(f"DEBUG: RuntimeError in coroutine handling: {runtime_error}")
+                                if safety_timeout:
                                     try:
-                                        result = future.result(timeout=timeout_seconds)
-                                    except concurrent.futures.TimeoutError:
+                                        safety_result = asyncio.run(asyncio.wait_for(safety_result_raw, timeout=safety_timeout))
+                                    except asyncio.TimeoutError:
                                         timeout_occurred = True
                                         raise
                                 else:
-                                    result = future.result()
-                        except (RuntimeError, concurrent.futures.TimeoutError):
-                            if not timeout_occurred:
-                                # No event loop running, safe to use asyncio.run
-                                try:
-                                    timeout_seconds = config.get("concurrent_timeout", None)
-                                    if timeout_seconds:
-                                        result = await asyncio.wait_for(
-                                            self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config),
-                                            timeout=timeout_seconds
-                                        )
-                                    else:
-                                        result = await self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
-                                except asyncio.TimeoutError:
-                                    timeout_occurred = True
-                                    raise
-                            else:
-                                # Timeout occurred in thread execution
-                                raise
-                    
-                    print(f"DEBUG: Async result message = {result.message}")
-                    
-                if timeout_occurred:
-                    # Fall back to sequential execution after timeout
-                    logger.warning("Concurrent execution timed out, falling back to sequential")
-                    result = self._execute_workflow_phases(mission, recipient, ctx, config)
-                    # Add timeout fallback flag if result succeeds
-                    if result.success and hasattr(result, 'metadata') and result.metadata:
-                        result.metadata["timeout_fallback"] = True
-                else:
-                    # Use sequential execution when concurrency disabled
-                    result = self._execute_workflow_phases(mission, recipient, ctx, config)
-                
-                if result.success:
-                    logger.info(f"Outreach successful with archetype {archetype}")
-                    
-                    # P4 — Final Safety Check (MUST be after message generation)
-                    logger.info("P4: Safety validation at meta-loop level")
-                    safety_result_raw = self.safety_validator.evaluate(result.message)
-                    
-                    # Handle both sync and async safety evaluators with timeout
-                    import inspect
-                    safety_timeout = config.get("safety_timeout", None)
-                    timeout_occurred = False
-                    
-                    if inspect.iscoroutine(safety_result_raw):
-                        try:
-                            loop = asyncio.get_running_loop()
-                            # Use thread executor to run coroutine in new event loop with timeout
-                            with concurrent.futures.ThreadPoolExecutor() as executor:
-                                future = executor.submit(asyncio.run, safety_result_raw)
-                                if safety_timeout:
+                                    safety_result = asyncio.run(safety_result_raw)
+                        else:
+                            logger.info("DEBUG: Detected sync safety evaluator")
+                            if safety_timeout and callable(safety_result_raw):
+                                # For sync safety evaluators, use thread executor for timeout
+                                with concurrent.futures.ThreadPoolExecutor() as executor:
+                                    future = executor.submit(safety_result_raw)
                                     try:
                                         safety_result = future.result(timeout=safety_timeout)
                                     except concurrent.futures.TimeoutError:
                                         timeout_occurred = True
                                         raise
-                                else:
-                                    safety_result = future.result()
-                        except RuntimeError:
-                            if safety_timeout:
-                                try:
-                                    safety_result = asyncio.run(asyncio.wait_for(safety_result_raw, timeout=safety_timeout))
-                                except asyncio.TimeoutError:
-                                    timeout_occurred = True
-                                    raise
                             else:
-                                safety_result = asyncio.run(safety_result_raw)
-                    else:
-                        if safety_timeout and callable(safety_result_raw):
-                            # For sync safety evaluators, use thread executor for timeout
-                            with concurrent.futures.ThreadPoolExecutor() as executor:
-                                future = executor.submit(safety_result_raw)
-                                try:
-                                    safety_result = future.result(timeout=safety_timeout)
-                                except concurrent.futures.TimeoutError:
-                                    timeout_occurred = True
-                                    raise
-                        else:
-                            safety_result = safety_result_raw
+                                safety_result = safety_result_raw
+                        
+                        logger.info(f"DEBUG: Safety evaluation completed, passed: {safety_result.passed if safety_result else 'None'}")
                         
                         # Handle safety timeout - fall back to safe behavior
-                    if timeout_occurred:
-                        logger.warning(f"Safety validation timed out after {safety_timeout}s, falling back to safe behavior")
-                        # Fall back to safe behavior: bypass safety validation and succeed
+                        if timeout_occurred:
+                            logger.warning(f"Safety validation timed out after {safety_timeout}s, falling back to safe behavior")
+                            # Fall back to safe behavior: bypass safety validation and succeed
+                            if hasattr(result, 'metadata') and result.metadata:
+                                result.metadata["attempts"] = attempt
+                                result.metadata["safety_timeout"] = True
+                            return result
+                        
+                        if not safety_result.passed:
+                            # Safety failure - try next archetype
+                            logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
+                            safety_failure_count += 1
+                            continue
+                        
+                        # Add attempt count to metadata
                         if hasattr(result, 'metadata') and result.metadata:
                             result.metadata["attempts"] = attempt
-                            result.metadata["safety_timeout"] = True
                         return result
-                    
-                    if not safety_result.passed:
-                        # Safety failure - try next archetype
-                        logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
-                        safety_failure_count += 1
-                        continue
-                    
-                    # Add attempt count to metadata
-                    if hasattr(result, 'metadata') and result.metadata:
-                        result.metadata["attempts"] = attempt
-                    return result
+                        
+                    # Safety failure - try next archetype
+                    safety_failure_count += 1
+                    logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
+                    continue
                     
                 except Exception as e:
                     logger.error(f"Error with archetype {archetype}: {e}")
@@ -1112,11 +1146,6 @@ class OutreachOrchestrator:
     ) -> OutreachPipelineResult:
         """Execute workflow phases with optional concurrency (async version)."""
         
-        print("DEBUG: _execute_workflow_phases_concurrent_async CALLED!")
-        
-        # Record workflow start time for telemetry
-        workflow_start_time = time.time()
-        
         # P2 — Research Planning (same as sequential)
         logger.info("P2: Planning research")
         research_plan = self.research_planner.plan_research(ctx, mission, recipient)
@@ -1161,7 +1190,6 @@ class OutreachOrchestrator:
         # P3 — Message Planning & Generation with optional multi-draft
         use_multi_draft = config.get("use_multi_draft", False)
         logger.info("P3: Planning and generating message")
-        print(f"DEBUG: use_multi_draft in async method = {use_multi_draft}")
         content = MessageContent(
             recipient_name=recipient.name,
             recipient_title=recipient.title,
@@ -1179,15 +1207,8 @@ class OutreachOrchestrator:
         mp = self.message_planner.create_message_plan(content)
         
         if use_multi_draft:
-            print("DEBUG: Taking multi-draft branch in async method!")
-            try:
-                message_result = await self._generate_multiple_drafts_and_select_best(mp, ctx, config)
-                print(f"DEBUG: Multi-draft result message = {message_result.message}")
-            except Exception as e:
-                print(f"DEBUG: Exception in multi-draft call: {e}")
-                raise
+            message_result = await self._generate_multiple_drafts_and_select_best(mp, ctx, config)
         else:
-            print("DEBUG: Taking stub executor branch in async method!")
             message_result = self.message_executor.generate_message(
                 message_plan=mp.__dict__,
                 archetype_context=ctx.__dict__
