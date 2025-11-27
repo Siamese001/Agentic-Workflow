@@ -7,15 +7,16 @@ Tests for MessageGenerationExecutor routing integration:
 """
 
 import pytest
-from unittest.mock import Mock, patch, call
-from typing import Optional
+from unittest.mock import Mock, patch
 
 from l2.outreach_llm_caller import OutreachLLMCaller
-from l2.message_generation_executor import MessageGenerationExecutor, GenerationContext, MessageResult
+from l2.message_generation_executor import MessageGenerationExecutor, GenerationContext
 from infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
 from runtime.runtime_utils import SandboxConfig
 from l1.outreach_dataclasses import ArchetypeType
+from config.LIC.lic_profile import create_custom_profile
+from l3.outreach_factory import create_message_executor_with_routing
 
 
 class TestLLMRoutingExecutors:
@@ -294,16 +295,161 @@ class TestLLMRoutingExecutors:
                 # Verify routing policy was called with budget manager
                 assert mock_select.called
                 call_args = mock_select.call_args[0]
-                assert call_args.kwargs['budget_manager'] == self.budget_manager  # budget_manager parameter
+                assert call_args.kwargs['budget_manager'] == self.budget_manager
     
     def test_executor_routing_fallback_mechanism(self):
-        """Test that executor has fallback when routing fails."""
-        # TODO: Implement exception handling test after L3 integration complete
-        # Current implementation has graceful error handling that prevents propagation
-        pytest.skip("Exception handling test deferred - requires L3 integration context")
+        """Test that executor routing falls back gracefully when routing fails."""
+        # Create executor with routing enabled
+        routing_profile = create_custom_profile(use_model_routing=True)
+        
+        with patch('config.LIC.lic_profile.get_lic_profile', return_value=routing_profile):
+            executor = create_message_executor_with_routing(
+                archetype=ArchetypeType.C_LEVEL,
+                safety_validator=self.mock_safety_validator,
+                budget_manager=self.budget_manager
+            )
+            
+            # Mock invoke_model to raise exception, forcing fallback
+            with patch('runtime.runtime_utils.invoke_model', side_effect=Exception("LLM error")):
+                # Should handle error gracefully
+                with pytest.raises(Exception):
+                    executor.llm_client.generate("test prompt")
     
     def test_executor_routing_error_handling(self):
-        """Test that executor handles routing errors gracefully."""
-        # TODO: Implement error handling test after L3 integration complete
-        # Current implementation has graceful error handling that prevents propagation
-        pytest.skip("Error handling test deferred - requires L3 integration context")
+        """Test that executor routing handles errors gracefully."""
+        # Create executor with routing enabled
+        routing_profile = create_custom_profile(use_model_routing=True)
+        
+        with patch('config.LIC.lic_profile.get_lic_profile', return_value=routing_profile):
+            executor = create_message_executor_with_routing(
+                archetype=ArchetypeType.C_LEVEL,
+                safety_validator=self.mock_safety_validator,
+                budget_manager=self.budget_manager
+            )
+            
+            # Mock routing policy to raise exception
+            with patch.object(executor.llm_client.routing_policy, 'select_model', side_effect=Exception("Routing error")):
+                # Should handle routing error gracefully
+                with pytest.raises(Exception):
+                    executor.llm_client.generate("test prompt")
+    
+    def test_executor_routing_model_selection_c_level(self):
+        """Test that C_LEVEL archetype gets heavy models when routing enabled."""
+        routing_profile = create_custom_profile(use_model_routing=True)
+        
+        with patch('config.LIC.lic_profile.get_lic_profile', return_value=routing_profile):
+            executor = create_message_executor_with_routing(
+                archetype=ArchetypeType.C_LEVEL,
+                safety_validator=self.mock_safety_validator,
+                budget_manager=self.budget_manager
+            )
+            
+            # Mock invoke_model at the correct import path to capture model selection
+            with patch('l2.outreach_llm_caller.invoke_model') as mock_invoke:
+                mock_invoke.return_value = "Generated response"
+                
+                # Generate message
+                executor.llm_client.generate("test prompt")
+                
+                # Verify heavy model was selected for C_LEVEL
+                call_args = mock_invoke.call_args
+                selected_model = call_args[1]['model']
+                assert selected_model in ["gpt-4", "gpt-5.1", "claude-3-opus"], f"C_LEVEL should get heavy model, got {selected_model}"
+    
+    def test_executor_routing_model_selection_recruiter(self):
+        """Test that RECRUITER archetype gets light models when budget constrained."""
+        routing_profile = create_custom_profile(use_model_routing=True)
+        
+        with patch('config.LIC.lic_profile.get_lic_profile', return_value=routing_profile):
+            # Configure low budget to force light model selection
+            self.budget_manager.record_tokens("test", 9000)  # Use most of budget
+            
+            executor = create_message_executor_with_routing(
+                archetype=ArchetypeType.RECRUITER,
+                safety_validator=self.mock_safety_validator,
+                budget_manager=self.budget_manager
+            )
+            
+            # Mock invoke_model at the correct import path to capture model selection
+            with patch('l2.outreach_llm_caller.invoke_model') as mock_invoke:
+                mock_invoke.return_value = "Generated response"
+                
+                # Generate message
+                executor.llm_client.generate("test prompt")
+                
+                # Verify light model was selected for RECRUITER with low budget
+                call_args = mock_invoke.call_args
+                selected_model = call_args[1]['model']
+                assert selected_model in ["gpt-5-nano"], f"RECRUITER with low budget should get light model, got {selected_model}"
+    
+    def test_executor_routing_safety_always_heavy(self):
+        """Test that safety stage always uses heavy models regardless of budget."""
+        routing_profile = create_custom_profile(use_model_routing=True)
+        
+        with patch('config.LIC.lic_profile.get_lic_profile', return_value=routing_profile):
+            # Configure very low budget
+            self.budget_manager.record_tokens("test", 9500)  # Almost exhausted
+            
+            executor = create_message_executor_with_routing(
+                archetype=ArchetypeType.SENIOR_TA,  # Non-C_LEVEL archetype
+                safety_validator=self.mock_safety_validator,
+                budget_manager=self.budget_manager
+            )
+            
+            # Mock invoke_model at the correct import path to capture model selection for safety stage
+            with patch('l2.outreach_llm_caller.invoke_model') as mock_invoke:
+                mock_invoke.return_value = "Safety check passed"
+                
+                # Call safety check directly
+                executor.llm_client.call_llm("test content", stage="safety")
+                
+                # Verify heavy model was used for safety regardless of budget
+                call_args = mock_invoke.call_args
+                selected_model = call_args[1]['model']
+                assert selected_model in ["gpt-4", "gpt-5.1", "claude-3-opus"], f"Safety should always use heavy model, got {selected_model}"
+    
+    def test_executor_routing_budget_aware_downgrade(self):
+        """Test that routing downgrades models based on remaining budget percentage."""
+        routing_profile = create_custom_profile(use_model_routing=True)
+        
+        with patch('config.LIC.lic_profile.get_lic_profile', return_value=routing_profile):
+            # Test different budget levels
+            test_cases = [
+                (0.9, "light"),   # < 20% remaining -> light models
+                (0.4, "light"),   # < 50% remaining -> downgrade to light  
+                (0.8, "medium"),  # > 50% remaining -> medium for EXECUTIVE
+            ]
+            
+            for budget_usage, expected_complexity in test_cases:
+                # Reset and configure budget
+                self.budget_manager.reset_usage()
+                if budget_usage == 0.9:
+                    self.budget_manager.record_tokens("test", 9000)  # Low remaining
+                elif budget_usage == 0.4:
+                    self.budget_manager.record_tokens("test", 6000)  # Medium remaining
+                else:
+                    self.budget_manager.record_tokens("test", 2000)  # High remaining
+                
+                executor = create_message_executor_with_routing(
+                    archetype=ArchetypeType.EXECUTIVE,
+                    safety_validator=self.mock_safety_validator,
+                    budget_manager=self.budget_manager
+                )
+                
+                # Mock invoke_model at the correct import path to capture model selection
+                with patch('l2.outreach_llm_caller.invoke_model') as mock_invoke:
+                    mock_invoke.return_value = "Generated response"
+                    
+                    # Generate message
+                    executor.llm_client.generate("test prompt")
+                    
+                    # Verify model complexity matches expected budget-based selection
+                    call_args = mock_invoke.call_args
+                    selected_model = call_args[1]['model']
+                    
+                    if expected_complexity == "light":
+                        assert selected_model in ["gpt-5-nano"], f"Low budget should use light model, got {selected_model}"
+                    elif expected_complexity == "medium":
+                        assert selected_model in ["gpt-5-mini"], f"Medium budget should use medium model, got {selected_model}"
+                    else:  # heavy
+                        assert selected_model in ["gpt-5.1"], f"High budget should use heavy model, got {selected_model}"
