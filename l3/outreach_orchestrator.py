@@ -440,6 +440,13 @@ class OutreachOrchestrator:
         """
         config = config or {}
         
+        # Record concurrent workflow start telemetry
+        self.telemetry_bus.record_event("concurrent_workflow_start", "L3", {
+            "mission_id": getattr(mission, 'id', 'unknown'),
+            "target_company": recipient.company,
+            "workflow_type": "outreach_concurrent"
+        })
+        
         # Configure budget manager from config
         budget_limits = create_budget_limits_from_config(config)
         self.budget_manager.configure(budget_limits)
@@ -491,6 +498,22 @@ class OutreachOrchestrator:
         use_concurrent_research = config.get("use_concurrent_research", False)
         use_multi_draft = config.get("use_multi_draft", False)
         
+        # Record research telemetry if concurrent research is enabled
+        if use_concurrent_research:
+            self.telemetry_bus.record_event("research_parallel_start", "L3", {
+                "workflow_type": "outreach",
+                "stage": "research",
+                "mission_id": getattr(mission, 'id', 'unknown')
+            })
+        
+        # Record multi-draft telemetry if multi-draft is enabled
+        if use_multi_draft:
+            self.telemetry_bus.record_event("draft_generation_start", "L3", {
+                "workflow_type": "outreach",
+                "stage": "drafts",
+                "mission_id": getattr(mission, 'id', 'unknown')
+            })
+        
         # P1 — Archetype Planning (same as sequential)
         logger.info(f"P1: Building archetype context for {recipient.name}")
         ctx = self.archetype_planner.plan_archetype_influence(mission)
@@ -509,6 +532,14 @@ class OutreachOrchestrator:
         for attempt, archetype in enumerate(fallback_sequence, 1):
             logger.info(f"Meta-loop attempt {attempt}/{len(fallback_sequence)}: {archetype}")
             final_attempt = attempt
+            
+            # Record meta-loop attempt telemetry
+            self.telemetry_bus.record_event("meta_loop_attempt", "L3", {
+                "attempt": attempt,
+                "total_attempts": len(fallback_sequence),
+                "archetype": archetype.value if hasattr(archetype, 'value') else str(archetype),
+                "workflow_type": "outreach"
+            })
             
             try:
                 # Update archetype context
@@ -920,6 +951,31 @@ class OutreachOrchestrator:
         if hasattr(self.state_manager, 'save_state'):
             self.state_manager.save_state(workflow_state)
         
+        # Record concurrent workflow completion telemetry
+        # research phase finished
+        if use_concurrent_research:
+            self.telemetry_bus.record_event("research_parallel_end", "L3", {
+                "workflow_type": "outreach",
+                "stage": "research",
+                "mission_id": getattr(mission, 'id', 'unknown')
+            })
+        
+        # draft generation finished
+        if use_multi_draft:
+            self.telemetry_bus.record_event("draft_generation_end", "L3", {
+                "workflow_type": "outreach",
+                "stage": "drafts",
+                "mission_id": getattr(mission, 'id', 'unknown')
+            })
+        
+        self.telemetry_bus.record_event("concurrent_workflow_end", "L3", {
+            "mission_id": getattr(mission, 'id', 'unknown'),
+            "target_company": recipient.company,
+            "archetype": ctx.archetype.value if hasattr(ctx.archetype, 'value') else str(ctx.archetype),
+            "workflow_type": "outreach_concurrent",
+            "success": True
+        })
+        
         # Return successful result
         return OutreachPipelineResult(
             success=True,
@@ -1088,9 +1144,21 @@ class OutreachOrchestrator:
     ) -> ResearchBundle:
         """Execute company and contact research concurrently."""
         
+        # Record concurrent research start telemetry
+        self.telemetry_bus.record_event("concurrent_research_start", "L3", {
+            "mission_id": getattr(mission, 'id', 'unknown'),
+            "target_company": recipient.company,
+            "archetype": ctx.archetype.value if hasattr(ctx.archetype, 'value') else str(ctx.archetype),
+            "workflow_type": "outreach"
+        })
+        
         # Acquire concurrent execution slot
         timeout = self.budget_manager.get_limits()['executor_timeout']
         if not self.budget_manager.acquire_concurrent_slot(timeout=timeout):
+            self.telemetry_bus.record_error("concurrent_slot_timeout", "L3", Exception(f"Could not acquire concurrent execution slot within {timeout}s"), {
+                "mission_id": getattr(mission, 'id', 'unknown'),
+                "timeout": timeout
+            })
             raise Exception(f"Could not acquire concurrent execution slot within {timeout}s")
         
         try:
@@ -1139,10 +1207,26 @@ class OutreachOrchestrator:
             else:
                 logger.warning(f"Contact research failed: {contact_result}")
             
+            # Record concurrent research completion telemetry
+            self.telemetry_bus.record_event("concurrent_research_end", "L3", {
+                "mission_id": getattr(mission, 'id', 'unknown'),
+                "target_company": recipient.company,
+                "archetype": ctx.archetype.value if hasattr(ctx.archetype, 'value') else str(ctx.archetype),
+                "company_success": not isinstance(company_result, Exception),
+                "contact_success": not isinstance(contact_result, Exception),
+                "workflow_type": "outreach"
+            })
+            
             return ResearchBundle(company=company_data, contact=contact_data)
             
         except Exception as e:
             logger.error(f"Concurrent research execution failed: {e}")
+            # Record concurrent research failure telemetry
+            self.telemetry_bus.record_error("concurrent_research_failure", "L3", e, {
+                "mission_id": getattr(mission, 'id', 'unknown'),
+                "target_company": recipient.company,
+                "workflow_type": "outreach"
+            })
             # Return empty research bundle on failure
             return ResearchBundle(company={}, contact={})
         finally:
@@ -1156,6 +1240,13 @@ class OutreachOrchestrator:
         config: Dict[str, Any],
     ) -> Any:
         """Generate multiple message drafts and select the best one."""
+        
+        # Record multi-draft generation start telemetry
+        self.telemetry_bus.record_event("multi_draft_start", "L3", {
+            "archetype": ctx.archetype.value if hasattr(ctx.archetype, 'value') else str(ctx.archetype),
+            "max_parallel_drafts": config.get("max_parallel_drafts", 2),
+            "workflow_type": "outreach"
+        })
         
         max_parallel_drafts = config.get("max_parallel_drafts", 2)
         temperatures = [0.3, 0.7, 1.0][:max_parallel_drafts]
@@ -1182,7 +1273,21 @@ class OutreachOrchestrator:
         valid_drafts = [d for d in drafts if not isinstance(d, Exception)]
         
         if not valid_drafts:
+            # Record multi-draft failure telemetry
+            self.telemetry_bus.record_error("multi_draft_all_failed", "L3", Exception("All message draft generation attempts failed"), {
+                "archetype": ctx.archetype.value if hasattr(ctx.archetype, 'value') else str(ctx.archetype),
+                "total_attempts": len(drafts),
+                "workflow_type": "outreach"
+            })
             raise Exception("All message draft generation attempts failed")
+        
+        # Record multi-draft completion telemetry
+        self.telemetry_bus.record_event("multi_draft_end", "L3", {
+            "archetype": ctx.archetype.value if hasattr(ctx.archetype, 'value') else str(ctx.archetype),
+            "total_drafts": len(drafts),
+            "valid_drafts": len(valid_drafts),
+            "workflow_type": "outreach"
+        })
         
         # Select best draft using voting
         return self._vote_best_draft(valid_drafts, ctx)
