@@ -222,7 +222,7 @@ class TestMessageGenerationExecutor:
     def test_archetype_influences_generation_parameters(self):
         """Test archetype influences generation parameters and content style."""
         # Test different archetypes
-        archetypes = ["recruiter", "senior_ta", "hiring_manager", "c_level"]
+        archetypes = ["recruiter", "senior_ta", "executive", "c_level"]
         
         for archetype in archetypes:
             # Create context for specific archetype

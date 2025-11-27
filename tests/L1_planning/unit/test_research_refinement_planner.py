@@ -69,7 +69,7 @@ class TestResearchRefinementPlanner:
             timestamp="2024-01-16T14:30:00Z"
         )
         
-        archetype_context = self._create_mock_archetype_context("hiring_manager")
+        archetype_context = self._create_mock_archetype_context("executive")
         
         plan = self.planner.determine_refinement_needs(
             current_results=current_results,
@@ -173,7 +173,7 @@ class TestResearchRefinementPlanner:
             timestamp="2024-01-20T10:10:00Z"
         )
         
-        archetype_context = self._create_mock_archetype_context("hiring_manager")
+        archetype_context = self._create_mock_archetype_context("executive")
         
         plan = self.planner.determine_refinement_needs(
             current_results=company_results,
@@ -268,7 +268,7 @@ class TestResearchRefinementPlanner:
             timestamp="2024-01-23T16:45:00Z"
         )
         
-        archetype_context = self._create_mock_archetype_context("hiring_manager")
+        archetype_context = self._create_mock_archetype_context("executive")
         
         # Test first iteration
         plan_iteration_1 = self.planner.determine_refinement_needs(
