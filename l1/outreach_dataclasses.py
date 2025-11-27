@@ -703,7 +703,7 @@ def expand_section_by_intensity(
 
 def reasoning_intensity_metadata(profile: ExecutiveReasoningProfile) -> Dict[str, Any]:
     """
-    Generate complete reasoning-intensity metadata for L1→L2 propagation.
+    Generate complete reasoning-intensity metadata for L1->L2 propagation.
     
     Returns all fields needed by L2 executors to respect reasoning intensity.
     """

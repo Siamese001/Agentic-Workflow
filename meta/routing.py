@@ -157,7 +157,7 @@ class RoutingPolicy:
             return 1
         if complexity == ComplexityLevel.MEDIUM:
             return 3
-        return 4  # HIGH complexity → deeper exploration
+        return 4  # HIGH complexity -> deeper exploration
 
     # ---------------------------------------------------------------------
     # Main model-selection entrypoint
@@ -471,7 +471,7 @@ def classify_complexity(
         skill_profile = None
         domain_profile = None
 
-    # Senior roles → more complexity
+    # Senior roles -> more complexity
     seniority = str(getattr(job, "seniority", "")).lower()
     title = str(getattr(job, "title", "")).lower()
     if seniority in ("director", "vp", "svp", "c-level", "chief") or any(
@@ -479,7 +479,7 @@ def classify_complexity(
     ):
         score += 0.5
 
-    # Many requirements → more alignment complexity
+    # Many requirements -> more alignment complexity
     try:
         reqs = getattr(job, "requirements", []) or []
         if len(reqs) > 8:
@@ -489,7 +489,7 @@ def classify_complexity(
     except Exception:
         pass
 
-    # Long experience → more data to integrate
+    # Long experience -> more data to integrate
     try:
         exp_sections = getattr(resume, "experience_sections", []) or []
         if len(exp_sections) > 6:
@@ -519,7 +519,7 @@ def classify_complexity(
         except Exception:
             pass
 
-    # Map score → ComplexityLevel
+    # Map score -> ComplexityLevel
     if score < 1.2:
         return ComplexityLevel.LOW
     if score < 1.8:

@@ -5,7 +5,7 @@ RAG, MoR recursion, and L5 safety into a single production-grade interface.
 
 Layer: L3 (Orchestration / DAGs)
 Responsibilities:
-- Orchestrate the complete fusion pipeline (L1 → L3 → L2 → L4 → L5)
+- Orchestrate the complete fusion pipeline (L1 -> L3 -> L2 -> L4 -> L5)
 - Apply safety checkpoints at critical decision points
 - Manage MoR recursion depth and compute allocation
 - Provide single entry point for production queries

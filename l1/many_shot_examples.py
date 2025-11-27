@@ -154,7 +154,7 @@ STRATEGY_PLANNING_EXAMPLES = [
                 "Cross-functional collaboration"
             ],
             "emphasis_areas": [
-                "Team growth (15 → 50+ trajectory)",
+                "Team growth (15 -> 50+ trajectory)",
                 "Strategic initiatives led",
                 "Organizational improvements",
                 "Mentorship and culture building"
