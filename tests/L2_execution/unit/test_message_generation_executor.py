@@ -418,6 +418,9 @@ class TestMessageGenerationExecutor:
         plan.signature_plan = Mock(content="Signature content", word_target=5, temperature=0.0)
         
         plan.metadata = {"test": True}
+        plan.temperature_schedule = {'subject': -0.2, 'hook': -0.1, 'value': -0.1, 'cta': -0.1, 'signature': -0.1}
+        # Add get method to support dictionary-like access with proper key handling
+        plan.get = Mock(side_effect=lambda k, d=None: {"temperature_schedule": plan.temperature_schedule, "metadata": plan.metadata}.get(k, d))
         return plan
     
     def _create_mock_message_plan_with_temperatures(self, temperatures: Dict[str, float]) -> Mock:
@@ -431,6 +434,9 @@ class TestMessageGenerationExecutor:
         plan.signature_plan = Mock(content="Signature", word_target=5, temperature=temperatures['signature'])
         
         plan.metadata = {"test": True}
+        plan.temperature_schedule = temperatures
+        # Add get method to support dictionary-like access with proper key handling
+        plan.get = Mock(side_effect=lambda k, d=None: {"temperature_schedule": plan.temperature_schedule, "metadata": plan.metadata}.get(k, d))
         return plan
     
     def _create_generation_context(self, archetype: str = "senior_ta") -> GenerationContext:
