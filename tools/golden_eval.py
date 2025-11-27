@@ -22,7 +22,7 @@ The main responsibilities are:
            • HYDE on vs HYDE off
            • RRF strategy variants
            • QA council size (1 vs N)
-           • Correction‑loop depth (0 → N)
+           • Correction‑loop depth (0 -> N)
            • Telemetry‑aware routing modes
            • Deterministic "golden mode" configuration
 
@@ -332,8 +332,8 @@ class GoldenScenario(ModelLike):
     """
     Complete description of a golden scenario used by simulation.py.
 
-        • knobs      → how to configure main_v10_10 / run_batch_v10_10
-        • expectation → how to evaluate the resulting state patch
+        • knobs      -> how to configure main_v10_10 / run_batch_v10_10
+        • expectation -> how to evaluate the resulting state patch
     """
 
     scenario_id: str
@@ -934,7 +934,7 @@ def _metric_correction_loop(
     if not corr:
         if expectation.expect_correction_max_iterations is None:
             return None
-        # No correction info when we expected some → hard fail metric.
+        # No correction info when we expected some -> hard fail metric.
         return EvalMetric(
             name="correction_loop_state_missing",
             category="correction",
@@ -1449,7 +1449,7 @@ def load_expectations(path: str | Path) -> List[GoldenExpectation]:
               { "scenario_id": "...", ... }
             ]
 
-        2) JSON object mapping scenario_id → expectation object:
+        2) JSON object mapping scenario_id -> expectation object:
             {
               "scenario_a": { "required_sections": [...], ... },
               "scenario_b": { ... }
@@ -1478,7 +1478,7 @@ def load_expectations(path: str | Path) -> List[GoldenExpectation]:
     else:
         raise ValueError(
             "Expectation JSON must be either an array of objects or an "
-            "object mapping scenario_id → expectation."
+            "object mapping scenario_id -> expectation."
         )
 
     return [GoldenExpectation.from_dict(r) for r in records]
@@ -1523,8 +1523,8 @@ def _load_patch(path: str | Path) -> Mapping[str, Any]:
     Load a patch JSON file.
 
     Supported shapes:
-        • Single JSON object → returned as‑is.
-        • JSON object mapping scenario_id → patch → caller should
+        • Single JSON object -> returned as-is.
+        • JSON object mapping scenario_id -> patch -> caller should
           select by scenario_id before passing to evaluate_patch.
     """
     path = Path(path)

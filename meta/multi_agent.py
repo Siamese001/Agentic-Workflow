@@ -108,7 +108,7 @@ def build_linear_pipeline(roles: List[str]) -> AgentGraph:
     """
     Builds linear pipeline for résumé processing agent coordination.
 
-    Creates sequential agent flow: r0 → r1 → r2 → ... for résumé enhancement workflows.
+    Creates sequential agent flow: r0 -> r1 -> r2 -> ... for résumé enhancement workflows.
     """
 
     nodes = {str(r): AgentNode(role=str(r), config={}) for r in roles}

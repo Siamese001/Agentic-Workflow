@@ -296,7 +296,7 @@ async def run_workflow_graph(
 
     Correction loop (meta-level):
 
-        1. Run full pass: Strategy + Retrieval → Drafting → QA → Safety.
+        1. Run full pass: Strategy + Retrieval -> Drafting -> QA -> Safety.
         2. Evaluate correction surfaces via self_correction.evaluate_all_surfaces.
         3. Aggregate into a single CorrectionSignal.
         4. If no correction needed, or max corrections reached: stop.
@@ -514,7 +514,7 @@ async def run_workflow_graph(
                 correction = aggregate_correction_signals(signals)
 
                 if correction is None or not correction.needs_correction:
-                    # No correction needed → exit loop early.
+                    # No correction needed -> exit loop early.
                     break
 
                 # If we have used all allowed corrections, stop here.

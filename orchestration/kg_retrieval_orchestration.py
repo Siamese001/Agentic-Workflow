@@ -6,7 +6,7 @@ context retrieval.
 
 Layer: L3 (Orchestration)
 Responsibilities:
-- Orchestrate KG → Vector → Fusion pipeline
+- Orchestrate KG -> Vector -> Fusion pipeline
 - Build retrieval DAGs
 - Coordinate L1 planners and L2 executors
 - Manage hybrid ranking
@@ -21,7 +21,7 @@ Non-responsibilities:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Set, Callable
+from typing import Any, Dict, List, Optional, Set
 from datetime import datetime, UTC
 from enum import Enum
 import asyncio
