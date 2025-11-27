@@ -1182,8 +1182,10 @@ class OutreachOrchestrator:
         mp = self.message_planner.create_message_plan(content)
         
         if use_multi_draft:
+            print("DEBUG: Taking multi-draft branch in async method!")
             message_result = await self._generate_multiple_drafts_and_select_best(mp, ctx, config)
         else:
+            print("DEBUG: Taking stub executor branch in async method!")
             message_result = self.message_executor.generate_message(
                 message_plan=mp.__dict__,
                 archetype_context=ctx.__dict__
