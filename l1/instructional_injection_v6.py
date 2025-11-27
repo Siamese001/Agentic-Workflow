@@ -480,8 +480,8 @@ Chain-of-Thought Process:
 6. Double-check the final answer
 
 Format your reasoning as:
-Step 1: [description] → [result]
-Step 2: [description] → [result]
+Step 1: [description] -> [result]
+Step 2: [description] -> [result]
 ...
 Final Answer: [answer]
 """.strip(),
