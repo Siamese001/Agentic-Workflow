@@ -112,7 +112,7 @@ LIC_CONFIG_PRESETS = {
         retrieval_mode=LICRetrievalMode.FAST,
         hyperparameters=LICHyperparameters(
             safety_strictness=LICSafetyStrictness.PERMISSIVE,
-            enable_telemetry=True,
+            telemetry_enabled=True,
             max_parallel_tasks=2
         ),
         safety_profile=LICSafetyProfile(
@@ -172,9 +172,9 @@ LIC_CONFIG_PRESETS = {
                 "enable_kg_fallback": True,
                 "enable_temporal_kg": True,
                 "enable_cross_reference": True,
-                "kg_confidence_threshold": 0.5
+                "kg_confidence_threshold": "0.5"
             },
-            enable_telemetry=True
+            telemetry_enabled=True
         ),
         safety_profile=LICSafetyProfile(
             strictness=LICSafetyStrictness.STANDARD,
