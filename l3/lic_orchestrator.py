@@ -90,17 +90,34 @@ class LICOrchestrator:
         self.message_planner = MessagePlanner()
         self.research_planner = ResearchRefinementPlanner()
         
-        # Initialize L2 executors
-        self.company_executor = CompanyResearchExecutor()
-        self.contact_executor = ContactResearchExecutor()
-        self.message_executor = MessageGenerationExecutor()
-        self.batch_executor = OutreachBatchExecutor()
-        
-        # Initialize L4 RAG engine
+        # Initialize L4 RAG engine first (dependency for L2 executors)
         self.rag_engine = RAGEngine()
         
-        # Initialize L5 safety validator
+        # Initialize L5 safety validator first (dependency for L2 executors)
         self.safety_validator = L5SafetyValidator()
+        
+        # Initialize LLM client first (dependency for L2 executors)
+        from runtime.llm_client import LLMClient
+        self.llm_client = LLMClient()
+        
+        # Initialize L2 executors with proper dependencies
+        self.company_executor = CompanyResearchExecutor(
+            hybrid_search=self.rag_engine.hybrid_search,
+            pinecone_adapter=self.rag_engine.pinecone_adapter
+        )
+        self.contact_executor = ContactResearchExecutor(
+            hybrid_search=self.rag_engine.hybrid_search,
+            pinecone_adapter=self.rag_engine.pinecone_adapter
+        )
+        self.message_executor = MessageGenerationExecutor(
+            llm_client=self.llm_client,
+            safety_validator=self.safety_validator
+        )
+        self.batch_executor = OutreachBatchExecutor(
+            hybrid_search=self.rag_engine.hybrid_search,
+            pinecone_adapter=self.rag_engine.pinecone_adapter,
+            llm_client=self.llm_client
+        )
         
         logger.info(f"Initialized LICOrchestrator with profile: {self.config.profile_name or 'default'}")
     
