@@ -72,7 +72,7 @@ class TelemetryBus:
             self._detail_level = detail_level
     
     def record_event(self, name: str, layer: str, payload: Dict[str, Any]) -> None:
-        """Record a structured event."""
+        """Record a telemetry event."""
         if not self._enabled:
             return
         
