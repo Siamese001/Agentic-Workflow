@@ -4,7 +4,7 @@ L3 unified workflow orchestrator for resume job alignment.
 Coordinates all atomic layers for resume processing workflows.
 """
 
-from typing import Any, Dict, Protocol
+from typing import Any, Dict, Protocol, Optional
 from l1.strategy_planning import plan_strategy
 from l1.draft_planning import plan_drafting
 from l1.qa_planning import plan_qa
@@ -19,6 +19,7 @@ from l3.strategy_orchestrator import StrategyOrchestrator
 from l3.draft_orchestrator import DraftOrchestrator
 from l3.qa_orchestrator import QAOrchestrator
 from l3.safety_orchestrator import SafetyOrchestrator
+from l3.outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
 from runtime.observability import record_event
 
 # Protocol interfaces for L4/L5 dependency injection
@@ -46,6 +47,9 @@ class UnifiedWorkflowOrchestrator:
         self.draft_orchestrator = DraftOrchestrator(self.draft_executor)
         self.qa_orchestrator = QAOrchestrator(self.qa_executor)
         self.safety_orchestrator = SafetyOrchestrator(self.safety_executor)
+        
+        # L3: Outreach orchestration (Phase 4)
+        self.outreach_orchestrator: Optional[OutreachOrchestrator] = None
         
         # L4/L5: Injected dependencies (no direct imports)
         self.state_manager = state_manager
@@ -100,3 +104,38 @@ class UnifiedWorkflowOrchestrator:
             "safety": parsed_safety,
             "state": workflow_state
         }
+    
+    def set_outreach_orchestrator(self, outreach_orchestrator: OutreachOrchestrator) -> None:
+        """Set the outreach orchestrator for outreach workflow dispatch."""
+        self.outreach_orchestrator = outreach_orchestrator
+    
+    def dispatch_workflow(self, workflow_type: str, mission: Any, recipient: Any, config: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Dispatch workflow based on type - resume or outreach.
+        
+        Args:
+            workflow_type: "resume" or "outreach"
+            mission: Mission details (job for resume, OutreachMission for outreach)
+            recipient: Recipient details (resume for resume, RecipientProfile for outreach)
+            config: Optional configuration
+            
+        Returns:
+            Workflow result dictionary
+        """
+        if workflow_type == "outreach":
+            if self.outreach_orchestrator is None:
+                raise ValueError("Outreach orchestrator not initialized")
+            
+            result = self.outreach_orchestrator.orchestrate_outreach(mission, recipient, config)
+            return {
+                "success": result.success,
+                "message": result.message,
+                "metadata": result.metadata,
+                "workflow_type": "outreach"
+            }
+        
+        elif workflow_type == "resume":
+            # Existing resume workflow logic
+            return self.orchestrate_full_workflow(mission, recipient, config)
+        
+        else:
+            raise ValueError(f"Unknown workflow type: {workflow_type}")

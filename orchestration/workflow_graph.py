@@ -65,6 +65,12 @@ class Node:
     DRAFTING = "drafting"
     QA = "qa"
     SAFETY = "safety"
+    
+    # Outreach workflow nodes (Phase 4)
+    OUTREACH_STRATEGY = "outreach_strategy"
+    OUTREACH_RESEARCH = "outreach_research"
+    OUTREACH_GENERATION = "outreach_generation"
+    OUTREACH_SAFETY = "outreach_safety"
 
 
 def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> DagGraph:
@@ -169,6 +175,11 @@ def _build_workflow_dag(plans: WorkflowPlanBundle, ctx: ExecutionContext) -> Dag
         DagEdge(source=Node.RETRIEVAL, target=Node.DRAFTING),
         DagEdge(source=Node.DRAFTING, target=Node.QA),
         DagEdge(source=Node.QA, target=Node.SAFETY),
+        
+        # Outreach workflow edges (Phase 4)
+        DagEdge(source=Node.OUTREACH_STRATEGY, target=Node.OUTREACH_RESEARCH),
+        DagEdge(source=Node.OUTREACH_RESEARCH, target=Node.OUTREACH_GENERATION),
+        DagEdge(source=Node.OUTREACH_GENERATION, target=Node.OUTREACH_SAFETY),
     ]
 
     return DagGraph(nodes=nodes, edges=edges)
