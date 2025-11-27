@@ -1115,6 +1115,8 @@ class OutreachOrchestrator:
     ) -> OutreachPipelineResult:
         """Execute workflow phases with optional concurrency (async version)."""
         
+        print("DEBUG: _execute_workflow_phases_concurrent_async CALLED!")
+        
         # Record workflow start time for telemetry
         workflow_start_time = time.time()
         
