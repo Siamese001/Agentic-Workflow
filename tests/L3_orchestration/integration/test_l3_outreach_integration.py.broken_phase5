@@ -275,13 +275,18 @@ Best regards,
             contact = research.get("contact", {})
             
             # Generate message incorporating signals
-            message = f"""Dear {contact.get('name', 'there')},
+            name = contact.get('name', 'there')
+            company_name = company.get('name', 'your company')
+            industry = company.get('industry', 'technology')
+            title = contact.get('title', 'engineering leader')
+            
+            message = f"""Dear {name},
 
-I'm impressed by {company.get('name', 'your company')}'s work in {company.get('industry', 'technology')} and your leadership as {contact.get('title', 'engineering leader')}.
+I am impressed by {company_name} work in {industry} and your leadership as {title}.
 
-Your background in {contact.get('background', 'computer science')} and achievements like {', '.join(contact.get('achievements', ['leading teams']))} demonstrate exceptional technical leadership.
+Your background demonstrates exceptional technical leadership.
 
-I'd love to discuss how we can collaborate on innovative technologies.
+I would love to discuss how we can collaborate on innovative technologies.
 
 Best regards"""
             
