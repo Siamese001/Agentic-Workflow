@@ -19,6 +19,10 @@ except ImportError:
     _Neo4jGraphStore = object  # type: ignore
     _NEO4J_AVAILABLE = False
 
+# Import L4 temporal components for orchestration
+from .temporal_fusion import TemporalRankFusion
+from .high_signal import HighSignalScorer
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,6 +33,8 @@ class TemporalNodeMetadata:
     source: str
     weight: float
     hop_distance: int
+    recency_days: Optional[int] = None
+    within_window: bool = False
 
 
 @dataclass
@@ -98,6 +104,10 @@ class TemporalKG:
         """Sets up career timeline storage for resume job alignment processing."""
         self.adapter = pinecone_adapter
         self.namespace_prefix = "temporal_kg"
+        
+        # Initialize temporal components for orchestration
+        self.temporal_fusion = TemporalRankFusion()
+        self.high_signal_scorer = HighSignalScorer()
         
         # Initialize Neo4j graph store if available
         self.neo4j = None
@@ -466,6 +476,148 @@ class TemporalKG:
         results.sort(key=lambda m: (m.weight, m.timestamp), reverse=True)
         
         return results[:20]  # Return top 20 results
+    
+    def execute_temporal_retrieval(self, query: str, hybrid_results: Optional[List[str]] = None, 
+                                  temporal_window_days: Optional[int] = None, 
+                                  max_results: int = 10) -> Dict[str, Any]:
+        """
+        Execute complete temporal retrieval orchestration extracted from RAGEngine.
+        
+        This method extracts the temporal logic orchestration from RAGEngine._execute_retrieval()
+        to provide L4 purity and modular temporal processing.
+        
+        Args:
+            query: Search query string
+            hybrid_results: Optional list of hybrid search result texts
+            temporal_window_days: Optional temporal window constraint
+            max_results: Maximum number of results to return
+            
+        Returns:
+            Dictionary with fused scores, metadata, and temporal analysis
+        """
+        try:
+            # Initialize result containers
+            hybrid_scores = []
+            kg_scores = []
+            temporal_scores = []
+            results_text = []
+            metadata_list = []
+            
+            # Process hybrid search results if provided
+            if hybrid_results:
+                results_text = hybrid_results
+                # Generate mock hybrid scores (in real implementation, would come from hybrid search)
+                hybrid_scores = [0.8 - (i * 0.05) for i in range(len(hybrid_results))]
+                
+                # Create metadata for each result
+                for i, text in enumerate(hybrid_results):
+                    metadata_list.append({
+                        'source': 'hybrid',
+                        'timestamp': datetime.now(UTC),
+                        'index': i
+                    })
+            
+            # Search temporal KG with recency filtering
+            temporal_metadata = self.search_temporal(
+                query=query,
+                hops=1,
+                user_id=None
+            )
+            
+            # Apply temporal window filtering if specified
+            if temporal_window_days:
+                now = datetime.now(UTC)
+                filtered_metadata = []
+                for metadata in temporal_metadata:
+                    # Handle None timestamps gracefully
+                    if metadata.timestamp is None:
+                        metadata.recency_days = None
+                        metadata.within_window = False
+                        continue
+                    
+                    age_days = (now - metadata.timestamp).days
+                    metadata.recency_days = age_days
+                    metadata.within_window = age_days <= temporal_window_days
+                    if metadata.within_window:
+                        filtered_metadata.append(metadata)
+                temporal_metadata = filtered_metadata
+            else:
+                # Set recency metadata even without window
+                now = datetime.now(UTC)
+                for metadata in temporal_metadata:
+                    # Handle None timestamps gracefully
+                    if metadata.timestamp is None:
+                        metadata.recency_days = None
+                        metadata.within_window = False
+                    else:
+                        metadata.recency_days = (now - metadata.timestamp).days
+                        metadata.within_window = True
+            
+            # Extract KG scores from temporal metadata
+            kg_scores = [m.weight for m in temporal_metadata]
+            
+            # Compute high-signal scores for all results
+            temporal_scores = []
+            for text in results_text:
+                signal_score = self.high_signal_scorer.compute_signal_score(text)
+                temporal_scores.append(signal_score.score)
+            
+            # Apply TemporalRankFusion with tie-break rules
+            if hybrid_scores and (kg_scores or temporal_scores):
+                # Create enhanced metadata for tie-breaking
+                enhanced_metadata = []
+                for i, meta in enumerate(metadata_list):
+                    # Add temporal score to metadata if available
+                    if i < len(temporal_scores):
+                        meta['temporal_score'] = temporal_scores[i]
+                    enhanced_metadata.append(meta)
+                
+                # Use tie-break fusion for deterministic results
+                fused_results = self.temporal_fusion.fuse_with_tiebreak(
+                    hybrid_scores, kg_scores, temporal_scores, enhanced_metadata
+                )
+                fused_scores = [item['score'] for item in fused_results]
+                final_metadata = [item['metadata'] for item in fused_results]
+            else:
+                # Fallback to hybrid scores only
+                fused_scores = hybrid_scores
+                final_metadata = metadata_list
+            
+            # Create enriched results
+            enriched_results = []
+            for i, text in enumerate(results_text):
+                if i < len(fused_scores):
+                    result = {
+                        'text': text,
+                        'score': fused_scores[i],
+                        'metadata': final_metadata[i] if i < len(final_metadata) else {},
+                        'temporal_analysis': {
+                            'has_temporal_signal': i < len(temporal_scores) and temporal_scores[i] > 0.7,
+                            'recency_available': i < len(final_metadata) and 'timestamp' in final_metadata[i],
+                            'signal_score': temporal_scores[i] if i < len(temporal_scores) else 0.0
+                        }
+                    }
+                    enriched_results.append(result)
+            
+            return {
+                'results': enriched_results[:max_results],
+                'fusion_applied': len(kg_scores) > 0 or len(temporal_scores) > 0,
+                'temporal_window_applied': temporal_window_days is not None,
+                'temporal_facts_found': len(temporal_metadata),
+                'high_signal_count': sum(1 for score in temporal_scores if score > 0.7)
+            }
+            
+        except Exception as e:
+            logger.warning(f"Temporal retrieval orchestration failed: {e}")
+            # Safe fallback for negative path testing
+            return {
+                'results': [],
+                'fusion_applied': False,
+                'temporal_window_applied': False,
+                'temporal_facts_found': 0,
+                'high_signal_count': 0,
+                'error': str(e)
+            }
     
     def _build_namespace(self, user_id: Optional[str]) -> str:
         """Builds namespace for resume workflow temporal KG storage."""

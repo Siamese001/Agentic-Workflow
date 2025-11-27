@@ -6,12 +6,10 @@ and resume workflow unaffected.
 """
 
 import pytest
-from unittest.mock import Mock, patch
-from typing import List, Dict, Any
 
 from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext, Severity
-from l5.interfaces import PolicyDecision, Action
+from l5.types import SafetyContext
+from l5.interfaces import Action, Verdict
 from l1.outreach_dataclasses import OutreachMission, ArchetypeType
 from l3.lic_orchestrator import LICOrchestrator
 
@@ -69,9 +67,9 @@ class TestOutreachSafetyIntegration:
         result = self.safety_validator.evaluate(safety_context)
         
         assert result is not None
-        assert hasattr(result, 'action')
-        assert hasattr(result, 'severity')
+        assert hasattr(result, 'verdict')
         assert hasattr(result, 'findings')
+        assert hasattr(result, 'metadata')
     
     def test_meta_loop_remains_intact(self):
         """Test that meta-loop remains intact after safety validation."""
@@ -109,8 +107,9 @@ class TestOutreachSafetyIntegration:
         # Unsafe messages should produce safe=False
         assert result is not None
         # Critical violations should be blocked
-        if any("privacy" in finding.lower() for finding in result.findings):
-            assert result.action == Action.BLOCK
+        escalation_action = result.metadata.get('escalation_action')
+        if escalation_action == 'block':
+            assert result.verdict == Verdict.BLOCK
     
     def test_safe_messages_pass_unchanged(self):
         """Test that safe messages pass through unchanged."""
@@ -135,7 +134,8 @@ class TestOutreachSafetyIntegration:
         # Safe messages should pass through
         assert result is not None
         # Should not block safe content
-        assert result.action != Action.BLOCK
+        escalation_action = result.metadata.get('escalation_action')
+        assert escalation_action != 'block'
     
     def test_resume_workflow_unaffected(self):
         """Test that resume workflow is unaffected by outreach safety rules."""
@@ -203,12 +203,12 @@ class TestOutreachSafetyIntegration:
         
         result = self.safety_validator.evaluate(safety_context)
         
-        # Should maintain SafetyResult contract
-        assert hasattr(result, 'action')
-        assert hasattr(result, 'severity')
+        # Should maintain PolicyDecision contract
+        assert hasattr(result, 'verdict')
         assert hasattr(result, 'findings')
+        assert hasattr(result, 'metadata')
         assert isinstance(result.findings, list)
-        assert all(isinstance(finding, str) for finding in result.findings)
+        assert all(hasattr(finding, 'rule') for finding in result.findings)
     
     def test_l1_l5_boundary_intact(self):
         """Test that L1-L5 boundary purity is maintained."""
@@ -306,6 +306,7 @@ class TestOutreachSafetyIntegration:
         
         # Should detect and report appropriate error codes
         assert result is not None
-        if result.action == Action.BLOCK:
-            # Should include LIC error codes
-            assert any("LIC-E" in finding for finding in result.findings)
+        escalation_action = result.metadata.get('escalation_action')
+        if escalation_action == 'block':
+            # Should include LIC error codes in metadata
+            assert any(hasattr(finding, 'metadata') and finding.metadata.get('lic_error_code') for finding in result.findings)

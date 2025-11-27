@@ -5,8 +5,10 @@ Provides intelligent model selection and budget enforcement for optimal résumé
 """
 
 from typing import Optional
-
-from core.models.models import ExecutionProfile
+from l1.outreach_dataclasses import ArchetypeType
+from core.models.models import ExecutionProfile, ComplexityLevel
+from meta.routing import RoutingPolicy, LIGHT_MODELS, MEDIUM_MODELS, HEAVY_MODELS, DRAFTING_MODELS, QA_SAFETY_MODELS
+from runtime.execution_budget_manager import ExecutionBudgetManager
 
 from .models import ModelChoice, RoutingContext
 
@@ -155,6 +157,146 @@ def enforce_cost_budget(choice: ModelChoice, profile: Optional[ExecutionProfile]
     """
 
     return enforce_budget(choice, profile)
+
+
+class ModelRoutingPolicy:
+    """
+    Policy-driven model routing for outreach workflows with budget awareness.
+    
+    Wraps the existing meta/routing.RoutingPolicy to maintain backward compatibility
+    while adding budget-aware model selection for outreach workflows.
+    """
+    
+    def __init__(self, base_policy: Optional[RoutingPolicy] = None):
+        """Initialize with optional base routing policy."""
+        # Configure base policy to respect complexity constraints
+        self.base_policy = base_policy or RoutingPolicy(
+            prefer_anthropic=False,
+            prefer_openai=True,
+            allow_heavy=True,  # Allow heavy but respect complexity for non-C_LEVEL
+            enforce_low_cost=False
+        )
+    
+    # Stage to task mapping for compatibility with existing RoutingPolicy
+    _stage_to_task = {
+        "message_generation": "drafting_narrative",
+        "research": "strategy_generate_branch", 
+        "safety": "safety_check",
+        "qa": "qa_semantic_check",
+        "planning": "strategy_generate_branch",
+        "drafting": "drafting_structure",
+    }
+    
+    # Archetype to complexity mapping
+    _archetype_to_complexity = {
+        ArchetypeType.C_LEVEL: ComplexityLevel.HIGH,
+        ArchetypeType.EXECUTIVE: ComplexityLevel.MEDIUM,
+        ArchetypeType.SENIOR_TA: ComplexityLevel.LOW,
+        ArchetypeType.RECRUITER: ComplexityLevel.LOW,
+    }
+    
+    def select_model(
+        self,
+        stage: str,
+        archetype: ArchetypeType,
+        budget_manager: ExecutionBudgetManager
+    ) -> str:
+        """
+        Select appropriate model based on stage, archetype, and budget constraints.
+        
+        Args:
+            stage: Workflow stage (message_generation, research, safety, etc.)
+            archetype: Target archetype for model quality requirements
+            budget_manager: ExecutionBudgetManager for budget-aware selection
+            
+        Returns:
+            Selected model name string
+        """
+        # Get base complexity from archetype
+        base_complexity = self._archetype_to_complexity.get(archetype, ComplexityLevel.MEDIUM)
+        
+        # Apply budget-based complexity adjustment
+        adjusted_complexity = self._adjust_complexity_for_budget(
+            base_complexity, stage, budget_manager
+        )
+        
+        # Safety stages always use high complexity regardless of budget
+        if stage == "safety":
+            adjusted_complexity = ComplexityLevel.HIGH
+        
+        # Get provider from base policy (reuses provider selection logic)
+        provider = self.base_policy._choose_provider(meta_profile=None)
+        
+        # Direct model selection based on stage and complexity
+        if stage.startswith("drafting") or stage == "message_generation":
+            if adjusted_complexity == ComplexityLevel.LOW:
+                return LIGHT_MODELS[provider]
+            elif adjusted_complexity == ComplexityLevel.MEDIUM:
+                return MEDIUM_MODELS[provider]
+            else:  # HIGH
+                return HEAVY_MODELS[provider]
+        elif stage == "safety" or stage.startswith("qa"):
+            # Safety and QA always use appropriate models regardless of complexity
+            if stage == "safety":
+                return QA_SAFETY_MODELS[provider]
+            else:  # QA
+                return MEDIUM_MODELS[provider]
+        elif stage == "research" or stage.startswith("strategy"):
+            # Research uses complexity-based selection
+            if adjusted_complexity == ComplexityLevel.LOW:
+                return LIGHT_MODELS[provider]
+            elif adjusted_complexity == ComplexityLevel.MEDIUM:
+                return MEDIUM_MODELS[provider]
+            else:  # HIGH
+                return HEAVY_MODELS[provider]
+        else:
+            # Default to medium models for unknown stages
+            return MEDIUM_MODELS[provider]
+    
+    def _adjust_complexity_for_budget(
+        self,
+        base_complexity: ComplexityLevel,
+        stage: str,
+        budget_manager: ExecutionBudgetManager
+    ) -> ComplexityLevel:
+        """
+        Adjust complexity based on budget constraints.
+        
+        Args:
+            base_complexity: Initial complexity from archetype
+            stage: Current workflow stage
+            budget_manager: Budget manager for usage checking
+            
+        Returns:
+            Budget-adjusted complexity level
+        """
+        try:
+            usage = budget_manager.current_usage()
+            tokens_remaining = usage.get("tokens_remaining", 0)
+            tokens_total = usage.get("tokens_remaining", 0) + usage.get("tokens_used", 0)
+            
+            if tokens_total == 0:
+                return base_complexity
+            
+            remaining_percentage = tokens_remaining / tokens_total
+            
+            # Budget-based downgrade logic
+            if remaining_percentage < 0.2:  # < 20% remaining
+                # Force light models for non-critical stages
+                if stage != "safety":
+                    return ComplexityLevel.LOW
+            elif remaining_percentage < 0.5:  # < 50% remaining
+                # Downgrade one level from base
+                if base_complexity == ComplexityLevel.HIGH:
+                    return ComplexityLevel.MEDIUM
+                elif base_complexity == ComplexityLevel.MEDIUM:
+                    return ComplexityLevel.LOW
+            
+            return base_complexity
+            
+        except Exception:
+            # If budget checking fails, return base complexity
+            return base_complexity
 
 
 

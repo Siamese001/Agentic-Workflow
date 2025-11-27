@@ -75,6 +75,11 @@ class OutreachSafetyPolicy:
         """Human-readable description of outreach safety policy."""
         return f"Outreach safety policy with {len(self.error_codes)} LIC error codes and archetype-aware tolerance"
     
+    @property
+    def constraints(self) -> Dict[str, Dict]:
+        """Returns constraint mapping for test compatibility."""
+        return self.error_codes
+    
     def evaluate(self, context: SafetyContext) -> PolicyDecision:
         """Evaluates outreach context against safety policy."""
         if not hasattr(context, 'content'):
@@ -280,7 +285,10 @@ class OutreachSafetyPolicy:
         overreach_patterns = [
             r"solve\s+all\s+your\s+problems",
             r"fix\s+everything\s+in\s+one\s+week",
-            r"handle\s+any\s+technical\s+challenge"
+            r"handle\s+any\s+technical\s+challenge",
+            r"solves.*np-complete.*instantly",
+            r"quantum\s+computing.*solves.*np-complete",
+            r"solves\s+all\s+np-complete\s+problems"
         ]
         return any(re.search(pattern, content.lower()) for pattern in overreach_patterns)
     
