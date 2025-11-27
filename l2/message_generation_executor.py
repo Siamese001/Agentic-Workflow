@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 
 from l4.schema.outreach_schema import OutreachRAGResult
 from runtime.telemetry_bus import get_telemetry_bus
+from runtime.execution_budget_manager import get_budget_manager
 
 
 @dataclass
@@ -53,7 +54,7 @@ class MessageGenerationExecutor:
         self.llm_client = llm_client
         self.safety_validator = safety_validator
         self.routing_policy = routing_policy
-        self.budget_manager = budget_manager
+        self.budget_manager = budget_manager or get_budget_manager()
         self.telemetry_bus = get_telemetry_bus()
     
     def generate_message(
@@ -72,6 +73,21 @@ class MessageGenerationExecutor:
             })
         except Exception:
             pass
+        
+        # Phase 9: Estimate tokens and check budget before generation
+        estimated_tokens = self._estimate_generation_tokens(message_plan, generation_context, research_results)
+        if not self.budget_manager.check_token_budget():
+            return MessageResult(
+                message="",
+                sections={},
+                temperature_schedule={},
+                signals_used=[],
+                metadata={
+                    "error": "token_budget_exceeded",
+                    "estimated_tokens": estimated_tokens,
+                    "workflow_type": "outreach"
+                }
+            )
         
         # HSON: Extracts archetype-specific temperature schedule -> matches executive cognitive patterns
         temperature_schedule = message_plan.get("temperature_schedule", {})
@@ -157,6 +173,9 @@ class MessageGenerationExecutor:
         
         # Calculate total tokens
         total_tokens = sum(s.tokens_used for s in sections.values())
+        
+        # Phase 9: Record actual token usage after generation
+        self.budget_manager.record_tokens("message_generation", total_tokens)
         
         # Build temperature schedule from actual sections generated
         actual_temperature_schedule = {}
@@ -547,6 +566,40 @@ Generate appropriate content:"""
             lines.append(f"{i}. [{signal_type}] {signal.text[:200]}...")
         
         return "\n".join(lines)
+    
+    def _estimate_generation_tokens(
+        self,
+        message_plan: Dict[str, Any],
+        generation_context: GenerationContext,
+        research_results: List[OutreachRAGResult]
+    ) -> int:
+        """Estimate tokens needed for message generation."""
+        # Rough estimation: characters * 0.25 (typical token ratio)
+        total_chars = 0
+        
+        # Count characters from message plan
+        for key, value in message_plan.items():
+            if isinstance(value, str):
+                total_chars += len(value)
+            elif hasattr(value, '__dict__'):
+                total_chars += len(str(value.__dict__))
+        
+        # Count characters from context
+        total_chars += len(generation_context.value_proposition)
+        total_chars += len(' '.join(generation_context.personalization_points))
+        total_chars += len(' '.join(generation_context.constraints))
+        
+        # Count characters from research results
+        for result in research_results:
+            total_chars += len(result.text or "")
+        
+        # Convert to tokens (rough estimate)
+        estimated_tokens = int(total_chars * 0.25)
+        
+        # Add buffer for LLM overhead
+        estimated_tokens += 500
+        
+        return estimated_tokens
     
     def _assemble_message(
         self,

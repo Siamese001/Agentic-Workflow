@@ -276,148 +276,176 @@ class OutreachOrchestrator:
         budget_limits = create_budget_limits_from_config(config)
         self.budget_manager.configure(budget_limits)
         
-        # Check budget before starting workflow
-        if not self.budget_manager.check_budget("outreach"):
+        # Phase 9: Acquire concurrent slot before any execution begins
+        if not self.budget_manager.acquire_slot():
             return OutreachPipelineResult(
                 success=False,
-                message=f"Budget exceeded: {self.budget_manager.get_budget_exceeded_reason()}",
+                message="Concurrent execution slot unavailable",
                 metadata={
-                    "error": "budget_exceeded",
+                    "error": "slot_limit_exceeded",
                     "workflow_type": "outreach"
                 }
             )
         
-        # Check context size limits
-        recipient_size = len(str(recipient.__dict__))
-        if not self.budget_manager.check_context_size(recipient_size):
-            return OutreachPipelineResult(
-                success=False,
-                message=f"Context size {recipient_size} exceeds limit {budget_limits.max_context_size}",
-                metadata={
-                    "error": "context_size_exceeded",
-                    "context_size": recipient_size,
-                    "max_context_size": budget_limits.max_context_size,
-                    "workflow_type": "outreach"
-                }
-            )
-        
-        # Configure telemetry from config
-        telemetry_enabled = config.get("telemetry_enabled", True)
-        telemetry_detail_level = config.get("telemetry_detail_level", "standard")
-        self.telemetry_bus.configure(enabled=telemetry_enabled, detail_level=telemetry_detail_level)
-        
-        # Record workflow start and budget tracking
-        workflow_start_time = time.time()
-        self.budget_manager.start_stage("outreach")
-        self.budget_manager.record_request()
         try:
-            self.telemetry_bus.record_event("phase_start", "L3", {
-                "workflow_type": "outreach",
-                "stage": "orchestration",
-                "mission_id": getattr(mission, 'id', 'unknown'),
-                "recipient": recipient.name
-            })
-        except Exception:
-            # Telemetry failures should never break workflow
-            pass
-        
-        # P1 — Archetype Planning
-        logger.info(f"P1: Building archetype context for {recipient.name}")
-        ctx = self.archetype_planner.plan_archetype_influence(mission)
-        
-        # Meta-loop fallback sequence: C_LEVEL → EXECUTIVE → SENIOR_TA → RECRUITER
-        fallback_sequence = [
-            ArchetypeType.C_LEVEL,
-            ArchetypeType.EXECUTIVE,
-            ArchetypeType.SENIOR_TA,
-            ArchetypeType.RECRUITER,
-        ]
-        
-        # Track recursion depth for budget management
-        max_attempts = config.get("max_fallback_attempts", len(fallback_sequence))
-        
-        for attempt, archetype in enumerate(fallback_sequence[:max_attempts], 1):
-            logger.info(f"Meta-loop attempt {attempt}/{max_attempts}: {archetype}")
-            
-            # Check recursion depth budget
-            if not self.budget_manager.increment_depth("outreach"):
-                logger.warning("Recursion depth budget exceeded")
+            # Phase 9: Check budget before starting workflow
+            if not self.budget_manager.check_budget("outreach"):
                 return OutreachPipelineResult(
                     success=False,
-                    message=f"Recursion depth exceeded: {self.budget_manager.get_budget_exceeded_reason()}",
+                    message=f"Budget exceeded: {self.budget_manager.get_budget_exceeded_reason()}",
                     metadata={
-                        "error": "depth_exceeded",
-                        "attempts_made": attempt - 1,
+                        "error": "budget_exceeded",
                         "workflow_type": "outreach"
                     }
                 )
             
+            # Phase 9: Check context size limits BEFORE research phase
+            recipient_size = len(str(recipient.__dict__))
+            if not self.budget_manager.check_context_limit(recipient_size):
+                return OutreachPipelineResult(
+                    success=False,
+                    message=f"Context size {recipient_size} exceeds limit {budget_limits.max_context_size}",
+                    metadata={
+                        "error": "context_size_exceeded",
+                        "context_size": recipient_size,
+                        "max_context_size": budget_limits.max_context_size,
+                        "workflow_type": "outreach"
+                    }
+                )
+            
+            # Configure telemetry from config
+            telemetry_enabled = config.get("telemetry_enabled", True)
+            telemetry_detail_level = config.get("telemetry_detail_level", "standard")
+            self.telemetry_bus.configure(enabled=telemetry_enabled, detail_level=telemetry_detail_level)
+            
+            # Record workflow start and budget tracking
+            workflow_start_time = time.time()
+            self.budget_manager.start_stage("outreach")
+            self.budget_manager.record_request()
             try:
-                # Update archetype context
-                ctx.archetype = archetype
+                self.telemetry_bus.record_event("phase_start", "L3", {
+                    "workflow_type": "outreach",
+                    "stage": "orchestration",
+                    "mission_id": getattr(mission, 'id', 'unknown'),
+                    "recipient": recipient.name
+                })
+            except Exception:
+                # Telemetry failures should never break workflow
+                pass
+            
+            # P1 — Archetype Planning
+            logger.info(f"P1: Building archetype context for {recipient.name}")
+            ctx = self.archetype_planner.plan_archetype_influence(mission)
+            
+            # Meta-loop fallback sequence: C_LEVEL → EXECUTIVE → SENIOR_TA → RECRUITER
+            fallback_sequence = [
+                ArchetypeType.C_LEVEL,
+                ArchetypeType.EXECUTIVE,
+                ArchetypeType.SENIOR_TA,
+                ArchetypeType.RECRUITER,
+            ]
+            
+            # Track recursion depth for budget management
+            max_attempts = config.get("max_fallback_attempts", len(fallback_sequence))
+            
+            for attempt, archetype in enumerate(fallback_sequence[:max_attempts], 1):
+                logger.info(f"Meta-loop attempt {attempt}/{max_attempts}: {archetype}")
                 
-                # Execute workflow phases
-                result = self._execute_workflow_phases(mission, recipient, ctx, config)
+                # Phase 9: Check recursion depth budget BEFORE each meta-loop attempt
+                if not self.budget_manager.check_depth():
+                    logger.warning("Recursion depth budget exceeded")
+                    return OutreachPipelineResult(
+                        success=False,
+                        message=f"Recursion depth exceeded: {self.budget_manager.get_budget_exceeded_reason()}",
+                        metadata={
+                            "error": "depth_exceeded",
+                            "attempts_made": attempt - 1,
+                            "workflow_type": "outreach"
+                        }
+                    )
                 
-                if result.success:
-                    logger.info(f"Outreach successful with archetype {archetype}")
+                # Increment depth for this attempt
+                if not self.budget_manager.increment_depth("outreach"):
+                    logger.warning("Recursion depth budget exceeded")
+                    return OutreachPipelineResult(
+                        success=False,
+                        message=f"Recursion depth exceeded: {self.budget_manager.get_budget_exceeded_reason()}",
+                        metadata={
+                            "error": "depth_exceeded",
+                            "attempts_made": attempt - 1,
+                            "workflow_type": "outreach"
+                        }
+                    )
+                
+                try:
+                    # Update archetype context
+                    ctx.archetype = archetype
                     
-                    # Record workflow success
+                    # Execute workflow phases
+                    result = self._execute_workflow_phases(mission, recipient, ctx, config)
+                    
+                    if result.success:
+                        logger.info(f"Outreach successful with archetype {archetype}")
+                        
+                        # Record workflow success
+                        try:
+                            self.telemetry_bus.record_event("phase_end", "L3", {
+                                "workflow_type": "outreach",
+                                "stage": "orchestration",
+                                "mission_id": getattr(mission, 'id', 'unknown'),
+                                "archetype": archetype,
+                                "success": True,
+                                "duration": time.time() - workflow_start_time
+                            })
+                        except Exception:
+                            pass
+                        
+                        return result
+                        
+                    # Safety failure - try next archetype
+                    logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
+                    
+                except Exception as e:
+                    logger.error(f"Unexpected error in meta-loop attempt {attempt}: {e}")
+                    
+                    # Record error telemetry
                     try:
-                        self.telemetry_bus.record_event("phase_end", "L3", {
+                        self.telemetry_bus.record_error("workflow_failure", "L3", e, {
                             "workflow_type": "outreach",
                             "stage": "orchestration",
                             "mission_id": getattr(mission, 'id', 'unknown'),
                             "archetype": archetype,
-                            "success": True,
-                            "duration": time.time() - workflow_start_time
+                            "attempt": attempt
                         })
                     except Exception:
                         pass
-                    
-                    return result
-                    
-                # Safety failure - try next archetype
-                logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
-                
-            except Exception as e:
-                logger.error(f"Unexpected error in meta-loop attempt {attempt}: {e}")
-                
-                # Record error telemetry
-                try:
-                    self.telemetry_bus.record_error("workflow_failure", "L3", e, {
-                        "workflow_type": "outreach",
-                        "stage": "orchestration",
-                        "mission_id": getattr(mission, 'id', 'unknown'),
-                        "archetype": archetype,
-                        "attempt": attempt
-                    })
-                except Exception:
-                    pass
-            finally:
-                # Always decrement depth after each attempt
-                self.budget_manager.decrement_depth("outreach")
-        
-        # All attempts failed
-        try:
-            self.telemetry_bus.record_error("workflow_failure", "L3", Exception("All archetype attempts failed"), {
-                "workflow_type": "outreach",
-                "stage": "orchestration",
-                "mission_id": getattr(mission, 'id', 'unknown'),
-                "attempts": len(fallback_sequence)
-            })
-        except Exception:
-            pass
-        
-        return OutreachPipelineResult(
-            success=False,
-            message=f"All archetype attempts failed after {len(fallback_sequence)} fallback attempts",
-            metadata={
-                "error": "All archetype attempts failed",
-                "attempts": len(fallback_sequence),
-                "workflow_type": "outreach"
-            }
-        )
+                finally:
+                    # Always decrement depth after each attempt
+                    self.budget_manager.decrement_depth("outreach")
+            
+            # All attempts failed
+            try:
+                self.telemetry_bus.record_error("workflow_failure", "L3", Exception("All archetype attempts failed"), {
+                    "workflow_type": "outreach",
+                    "stage": "orchestration",
+                    "mission_id": getattr(mission, 'id', 'unknown'),
+                    "attempts": len(fallback_sequence)
+                })
+            except Exception:
+                pass
+            
+            return OutreachPipelineResult(
+                success=False,
+                message=f"All archetype attempts failed after {len(fallback_sequence)} fallback attempts",
+                metadata={
+                    "error": "All archetype attempts failed",
+                    "attempts": len(fallback_sequence),
+                    "workflow_type": "outreach"
+                }
+            )
+        finally:
+            # Phase 9: Always release concurrent slot in finally block
+            self.budget_manager.release_slot()
     
     async def orchestrate_outreach_concurrent(
         self,
@@ -453,144 +481,153 @@ class OutreachOrchestrator:
         budget_limits = create_budget_limits_from_config(config)
         self.budget_manager.configure(budget_limits)
         
-        # Check budget before starting workflow
-        if not self.budget_manager.check_budget("outreach_concurrent"):
+        # Phase 9: Acquire concurrent slot before any execution begins
+        if not self.budget_manager.acquire_slot():
             return OutreachPipelineResult(
                 success=False,
-                message=f"Budget exceeded: {self.budget_manager.get_budget_exceeded_reason()}",
+                message="Concurrent execution slot unavailable",
                 metadata={
-                    "error": "budget_exceeded",
+                    "error": "slot_limit_exceeded",
                     "workflow_type": "outreach_concurrent"
                 }
             )
         
-        # Check context size limits
-        recipient_size = len(str(recipient.__dict__))
-        if not self.budget_manager.check_context_size(recipient_size):
-            return OutreachPipelineResult(
-                success=False,
-                message=f"Context size {recipient_size} exceeds limit {budget_limits.max_context_size}",
-                metadata={
-                    "error": "context_size_exceeded",
-                    "context_size": recipient_size,
-                    "max_context_size": budget_limits.max_context_size,
-                    "workflow_type": "outreach_concurrent"
-                }
-            )
-        
-        # Configure telemetry from config
-        telemetry_enabled = config.get("telemetry_enabled", True)
-        telemetry_detail_level = config.get("telemetry_detail_level", "standard")
-        self.telemetry_bus.configure(enabled=telemetry_enabled, detail_level=telemetry_detail_level)
-        
-        # Record workflow start and budget tracking
-        workflow_start_time = time.time()
-        self.budget_manager.start_stage("outreach_concurrent")
-        self.budget_manager.record_request()
         try:
-            self.telemetry_bus.record_event("phase_start", "L3", {
-                "workflow_type": "outreach_concurrent",
-                "stage": "orchestration",
-                "mission_id": getattr(mission, 'id', 'unknown')
-            })
-        except Exception:
-            pass
-        
-        # Apply default concurrency settings (all False for backward compatibility)
-        use_concurrent_research = config.get("use_concurrent_research", False)
-        use_multi_draft = config.get("use_multi_draft", False)
-        
-        # Record research telemetry if concurrent research is enabled
-        if use_concurrent_research:
-            self.telemetry_bus.record_event("research_parallel_start", "L3", {
-                "workflow_type": "outreach",
-                "stage": "research",
-                "mission_id": getattr(mission, 'id', 'unknown')
-            })
-        
-        # Record multi-draft telemetry if multi-draft is enabled
-        if use_multi_draft:
-            self.telemetry_bus.record_event("draft_generation_start", "L3", {
-                "workflow_type": "outreach",
-                "stage": "drafts",
-                "mission_id": getattr(mission, 'id', 'unknown')
-            })
-        
-        # P1 — Archetype Planning (same as sequential)
-        logger.info(f"P1: Building archetype context for {recipient.name}")
-        ctx = self.archetype_planner.plan_archetype_influence(mission)
-        
-        # Meta-loop fallback sequence: C_LEVEL → EXECUTIVE → SENIOR_TA → RECRUITER
-        fallback_sequence = [
-            ArchetypeType.C_LEVEL,
-            ArchetypeType.EXECUTIVE,
-            ArchetypeType.SENIOR_TA,
-            ArchetypeType.RECRUITER,
-        ]
-        
-        final_attempt = None
-        safety_failure_count = 0
-        safety_timeout_count = 0
-        for attempt, archetype in enumerate(fallback_sequence, 1):
-            logger.info(f"Meta-loop attempt {attempt}/{len(fallback_sequence)}: {archetype}")
-            final_attempt = attempt
+            # Phase 9: Check budget before starting workflow
+            if not self.budget_manager.check_budget("outreach_concurrent"):
+                return OutreachPipelineResult(
+                    success=False,
+                    message=f"Budget exceeded: {self.budget_manager.get_budget_exceeded_reason()}",
+                    metadata={
+                        "error": "budget_exceeded",
+                        "workflow_type": "outreach_concurrent"
+                    }
+                )
             
-            # Record meta-loop attempt telemetry
-            self.telemetry_bus.record_event("meta_loop_attempt", "L3", {
-                "attempt": attempt,
-                "total_attempts": len(fallback_sequence),
-                "archetype": archetype.value if hasattr(archetype, 'value') else str(archetype),
-                "workflow_type": "outreach"
-            })
+            # Phase 9: Check context size limits BEFORE research phase
+            recipient_size = len(str(recipient.__dict__))
+            if not self.budget_manager.check_context_limit(recipient_size):
+                return OutreachPipelineResult(
+                    success=False,
+                    message=f"Context size {recipient_size} exceeds limit {budget_limits.max_context_size}",
+                    metadata={
+                        "error": "context_size_exceeded",
+                        "context_size": recipient_size,
+                        "max_context_size": budget_limits.max_context_size,
+                        "workflow_type": "outreach_concurrent"
+                    }
+                )
             
+            # Configure telemetry from config
+            telemetry_enabled = config.get("telemetry_enabled", True)
+            telemetry_detail_level = config.get("telemetry_detail_level", "standard")
+            self.telemetry_bus.configure(enabled=telemetry_enabled, detail_level=telemetry_detail_level)
+            
+            # Record workflow start and budget tracking
+            self.budget_manager.start_stage("outreach_concurrent")
+            self.budget_manager.record_request()
             try:
-                # Update archetype context
-                ctx.archetype = archetype
+                self.telemetry_bus.record_event("phase_start", "L3", {
+                    "workflow_type": "outreach_concurrent",
+                    "stage": "orchestration",
+                    "mission_id": getattr(mission, 'id', 'unknown')
+                })
+            except Exception:
+                pass
+            
+            # Apply default concurrency settings (all False for backward compatibility)
+            use_concurrent_research = config.get("use_concurrent_research", False)
+            use_multi_draft = config.get("use_multi_draft", False)
+            
+            # Record research telemetry if concurrent research is enabled
+            if use_concurrent_research:
+                self.telemetry_bus.record_event("research_parallel_start", "L3", {
+                    "workflow_type": "outreach",
+                    "stage": "research",
+                    "mission_id": getattr(mission, 'id', 'unknown')
+                })
+            
+            # Record multi-draft telemetry if multi-draft is enabled
+            if use_multi_draft:
+                self.telemetry_bus.record_event("draft_generation_start", "L3", {
+                    "workflow_type": "outreach",
+                    "stage": "drafts",
+                    "mission_id": getattr(mission, 'id', 'unknown')
+                })
+            
+            # P1 — Archetype Planning (same as sequential)
+            logger.info(f"P1: Building archetype context for {recipient.name}")
+            ctx = self.archetype_planner.plan_archetype_influence(mission)
+            
+            # Meta-loop fallback sequence: C_LEVEL → EXECUTIVE → SENIOR_TA → RECRUITER
+            fallback_sequence = [
+                ArchetypeType.C_LEVEL,
+                ArchetypeType.EXECUTIVE,
+                ArchetypeType.SENIOR_TA,
+                ArchetypeType.RECRUITER,
+            ]
+            
+            safety_failure_count = 0
+            safety_timeout_count = 0
+            for attempt, archetype in enumerate(fallback_sequence, 1):
+                logger.info(f"Meta-loop attempt {attempt}/{len(fallback_sequence)}: {archetype}")
                 
-                # Execute workflow phases with optional concurrency and fallback logic
-                # First attempt uses concurrent if enabled, subsequent attempts use sequential
-                should_use_concurrent = (use_concurrent_research or use_multi_draft) and attempt == 1
+                # Record meta-loop attempt telemetry
+                self.telemetry_bus.record_event("meta_loop_attempt", "L3", {
+                    "attempt": attempt,
+                    "total_attempts": len(fallback_sequence),
+                    "archetype": archetype.value if hasattr(archetype, 'value') else str(archetype),
+                    "workflow_type": "outreach"
+                })
                 
-                if should_use_concurrent:
-                    # Use async execution on first attempt
-                    timeout_occurred = False
-                    try:
-                        # Check if event loop is already running
-                        loop = asyncio.get_running_loop()
-                        # If loop is running, we need to run in thread
-                        with concurrent.futures.ThreadPoolExecutor() as executor:
-                            future = executor.submit(
-                                asyncio.run, 
-                                self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
-                            )
-                            # Apply timeout if configured
-                            timeout_seconds = config.get("concurrent_timeout", None)
-                            if timeout_seconds:
+                try:
+                    # Update archetype context
+                    ctx.archetype = archetype
+                    
+                    # Execute workflow phases with optional concurrency and fallback logic
+                    # First attempt uses concurrent if enabled, subsequent attempts use sequential
+                    should_use_concurrent = (use_concurrent_research or use_multi_draft) and attempt == 1
+                    
+                    if should_use_concurrent:
+                        # Use async execution on first attempt
+                        timeout_occurred = False
+                        try:
+                            # Check if event loop is already running
+                            loop = asyncio.get_running_loop()
+                            # If loop is running, we need to run in thread
+                            with concurrent.futures.ThreadPoolExecutor() as executor:
+                                future = executor.submit(
+                                    asyncio.run, 
+                                    self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
+                                )
+                                # Apply timeout if configured
+                                timeout_seconds = config.get("concurrent_timeout", None)
+                                if timeout_seconds:
+                                    try:
+                                        result = future.result(timeout=timeout_seconds)
+                                    except concurrent.futures.TimeoutError:
+                                        timeout_occurred = True
+                                        raise
+                                else:
+                                    result = future.result()
+                        except (RuntimeError, concurrent.futures.TimeoutError):
+                            if not timeout_occurred:
+                                # No event loop running, safe to use asyncio.run
                                 try:
-                                    result = future.result(timeout=timeout_seconds)
-                                except concurrent.futures.TimeoutError:
+                                    timeout_seconds = config.get("concurrent_timeout", None)
+                                    if timeout_seconds:
+                                        result = await asyncio.wait_for(
+                                            self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config),
+                                            timeout=timeout_seconds
+                                        )
+                                    else:
+                                        result = await self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
+                                except asyncio.TimeoutError:
                                     timeout_occurred = True
                                     raise
                             else:
-                                result = future.result()
-                    except (RuntimeError, concurrent.futures.TimeoutError):
-                        if not timeout_occurred:
-                            # No event loop running, safe to use asyncio.run
-                            try:
-                                timeout_seconds = config.get("concurrent_timeout", None)
-                                if timeout_seconds:
-                                    result = await asyncio.wait_for(
-                                        self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config),
-                                        timeout=timeout_seconds
-                                    )
-                                else:
-                                    result = await self._execute_workflow_phases_concurrent_async(mission, recipient, ctx, config)
-                            except asyncio.TimeoutError:
-                                timeout_occurred = True
+                                # Timeout occurred in thread execution
                                 raise
-                        else:
-                            # Timeout occurred in thread execution
-                            raise
                     
                     if timeout_occurred:
                         # Fall back to sequential execution after timeout
@@ -599,133 +636,150 @@ class OutreachOrchestrator:
                         # Add timeout fallback flag if result succeeds
                         if result.success and hasattr(result, 'metadata') and result.metadata:
                             result.metadata["timeout_fallback"] = True
-                else:
-                    # Use sequential execution (fallback for subsequent attempts)
-                    result = self._execute_workflow_phases(mission, recipient, ctx, config)
-                
-                if result.success:
-                    logger.info(f"Outreach successful with archetype {archetype}")
+                    else:
+                        # Use sequential execution (fallback for subsequent attempts)
+                        result = self._execute_workflow_phases(mission, recipient, ctx, config)
                     
-                    # P4 — Final Safety Check (MUST be after message generation)
-                    logger.info("P4: Safety validation at meta-loop level")
-                    safety_result_raw = self.safety_validator.evaluate(result.message)
-                    
-                    # Handle both sync and async safety evaluators with timeout
-                    import inspect
-                    safety_timeout = config.get("safety_timeout", None)
-                    timeout_occurred = False
-                    
-                    if inspect.iscoroutine(safety_result_raw):
-                        try:
-                            loop = asyncio.get_running_loop()
-                            # Use thread executor to run coroutine in new event loop with timeout
-                            with concurrent.futures.ThreadPoolExecutor() as executor:
-                                future = executor.submit(asyncio.run, safety_result_raw)
+                    if result.success:
+                        logger.info(f"Outreach successful with archetype {archetype}")
+                        
+                        # P4 — Final Safety Check (MUST be after message generation)
+                        logger.info("P4: Safety validation at meta-loop level")
+                        safety_result_raw = self.safety_validator.evaluate(result.message)
+                        
+                        # Handle both sync and async safety evaluators with timeout
+                        import inspect
+                        safety_timeout = config.get("safety_timeout", None)
+                        timeout_occurred = False
+                        
+                        if inspect.iscoroutine(safety_result_raw):
+                            try:
+                                loop = asyncio.get_running_loop()
+                                # Use thread executor to run coroutine in new event loop with timeout
+                                with concurrent.futures.ThreadPoolExecutor() as executor:
+                                    future = executor.submit(asyncio.run, safety_result_raw)
+                                    if safety_timeout:
+                                        try:
+                                            safety_result = future.result(timeout=safety_timeout)
+                                        except concurrent.futures.TimeoutError:
+                                            timeout_occurred = True
+                                            raise
+                                    else:
+                                        safety_result = future.result()
+                            except RuntimeError:
                                 if safety_timeout:
+                                    try:
+                                        safety_result = asyncio.run(asyncio.wait_for(safety_result_raw, timeout=safety_timeout))
+                                    except asyncio.TimeoutError:
+                                        timeout_occurred = True
+                                        raise
+                                else:
+                                    safety_result = asyncio.run(safety_result_raw)
+                        else:
+                            if safety_timeout and callable(safety_result_raw):
+                                # For sync safety evaluators, use thread executor for timeout
+                                with concurrent.futures.ThreadPoolExecutor() as executor:
+                                    future = executor.submit(safety_result_raw)
                                     try:
                                         safety_result = future.result(timeout=safety_timeout)
                                     except concurrent.futures.TimeoutError:
                                         timeout_occurred = True
                                         raise
-                                else:
-                                    safety_result = future.result()
-                        except RuntimeError:
-                            if safety_timeout:
-                                try:
-                                    safety_result = asyncio.run(asyncio.wait_for(safety_result_raw, timeout=safety_timeout))
-                                except asyncio.TimeoutError:
-                                    timeout_occurred = True
-                                    raise
                             else:
-                                safety_result = asyncio.run(safety_result_raw)
-                    else:
-                        if safety_timeout and callable(safety_result_raw):
-                            # For sync safety evaluators, use thread executor for timeout
-                            with concurrent.futures.ThreadPoolExecutor() as executor:
-                                future = executor.submit(safety_result_raw)
-                                try:
-                                    safety_result = future.result(timeout=safety_timeout)
-                                except concurrent.futures.TimeoutError:
-                                    timeout_occurred = True
-                                    raise
-                        else:
-                            safety_result = safety_result_raw
-                    
-                    # Handle safety timeout - fall back to safe behavior
-                    if timeout_occurred:
-                        logger.warning(f"Safety validation timed out after {safety_timeout}s, falling back to safe behavior")
-                        # Fall back to safe behavior: bypass safety validation and succeed
+                                safety_result = safety_result_raw
+                        
+                        # Handle safety timeout - fall back to safe behavior
+                        if timeout_occurred:
+                            logger.warning(f"Safety validation timed out after {safety_timeout}s, falling back to safe behavior")
+                            # Fall back to safe behavior: bypass safety validation and succeed
+                            if hasattr(result, 'metadata') and result.metadata:
+                                result.metadata["attempts"] = attempt
+                                result.metadata["safety_timeout"] = True
+                            return result
+                        
+                        if not safety_result.passed:
+                            # Safety failure - try next archetype
+                            logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
+                            safety_failure_count += 1
+                            continue
+                        
+                        # Add attempt count to metadata
                         if hasattr(result, 'metadata') and result.metadata:
                             result.metadata["attempts"] = attempt
-                            result.metadata["safety_timeout"] = True
                         return result
+                        
+                    # Safety failure - try next archetype
+                    safety_failure_count += 1
+                    logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
+                    continue
                     
-                    if not safety_result.passed:
-                        # Safety failure - try next archetype
-                        logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
-                        safety_failure_count += 1
-                        continue
+                except Exception as e:
+                    logger.error(f"Error with archetype {archetype}: {e}")
                     
-                    # Add attempt count to metadata
-                    if hasattr(result, 'metadata') and result.metadata:
-                        result.metadata["attempts"] = attempt
-                    return result
+                    # Phase 9: Fail immediately on executor timeout to avoid sequential fallback delays
+                    if "Executor timeout" in str(e):
+                        return OutreachPipelineResult(
+                            success=False,
+                            message=f"Executor timeout after {config.get('executor_timeout', 'unknown')}s",
+                            metadata={
+                                "error": "executor_timeout",
+                                "timeout_duration": config.get("executor_timeout"),
+                                "archetype": archetype,
+                                "workflow_type": "outreach_concurrent"
+                            }
+                        )
                     
-                # Safety failure - try next archetype
-                safety_failure_count += 1
-                logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
-                continue
+                    if attempt >= len(fallback_sequence):
+                        # Final attempt failed - return error result
+                        metadata = {
+                            "error": str(e),
+                            "attempts": attempt,
+                            "final_archetype": archetype,
+                            "workflow_type": "outreach_concurrent"
+                        }
+                        # Add safety_timeout flag if this was a safety timeout
+                        if "Safety validation timed out" in str(e):
+                            metadata["safety_timeout"] = True
+                        
+                        return OutreachPipelineResult(
+                            success=False,
+                            message="",
+                            metadata=metadata
+                        )
+                    continue
+            
+            # All attempts failed
+            # Check if all failures were safety-related or timeout-related
+            if safety_failure_count == len(fallback_sequence):
+                error_message = "All archetype attempts failed due to safety validation"
+            elif safety_timeout_count == len(fallback_sequence):
+                error_message = "All archetype attempts failed due to safety timeout"
+            else:
+                error_message = "All archetype attempts failed"
                 
-            except Exception as e:
-                logger.error(f"Error with archetype {archetype}: {e}")
-                if attempt >= len(fallback_sequence):
-                    # Final attempt failed - return error result
-                    metadata = {
-                        "error": str(e),
-                        "attempts": attempt,
-                        "final_archetype": archetype,
-                        "workflow_type": "outreach_concurrent"
-                    }
-                    # Add safety_timeout flag if this was a safety timeout
-                    if "Safety validation timed out" in str(e):
-                        metadata["safety_timeout"] = True
-                    
-                    return OutreachPipelineResult(
-                        success=False,
-                        message="",
-                        metadata=metadata
-                    )
-                continue
-        
-        # All attempts failed
-        # Check if all failures were safety-related or timeout-related
-        if safety_failure_count == len(fallback_sequence):
-            error_message = "All archetype attempts failed due to safety validation"
-        elif safety_timeout_count == len(fallback_sequence):
-            error_message = "All archetype attempts failed due to safety timeout"
-        else:
-            error_message = "All archetype attempts failed"
+            metadata = {
+                "error": error_message,
+                "attempts": len(fallback_sequence),
+                "safety_failures": safety_failure_count,
+                "workflow_type": "outreach_concurrent"
+            }
             
-        metadata = {
-            "error": error_message,
-            "attempts": len(fallback_sequence),
-            "safety_failures": safety_failure_count,
-            "workflow_type": "outreach_concurrent"
-        }
-        
-        # Add safety timeout flag if all attempts timed out
-        if safety_timeout_count == len(fallback_sequence):
-            metadata["safety_timeout"] = True
-        
-        # Add safety blocked flag if all attempts failed safety validation
-        if safety_failure_count == len(fallback_sequence):
-            metadata["safety_blocked"] = True
+            # Add safety timeout flag if all attempts timed out
+            if safety_timeout_count == len(fallback_sequence):
+                metadata["safety_timeout"] = True
             
-        return OutreachPipelineResult(
-            success=False,
-            message="",
-            metadata=metadata
-        )
+            # Add safety blocked flag if all attempts failed safety validation
+            if safety_failure_count == len(fallback_sequence):
+                metadata["safety_blocked"] = True
+                
+            return OutreachPipelineResult(
+                success=False,
+                message="",
+                metadata=metadata
+            )
+        finally:
+            # Phase 9: Always release concurrent slot in finally block
+            self.budget_manager.release_slot()
     
     def _execute_workflow_phases(
         self,
@@ -735,6 +789,9 @@ class OutreachOrchestrator:
         config: Dict[str, Any],
     ) -> OutreachPipelineResult:
         """Execute the core workflow phases P2-P6."""
+        
+        # Record workflow start time for telemetry
+        # workflow_start_time = time.time()  # Currently unused, available for future telemetry
         
         # P2 — Research Planning
         logger.info("P2: Planning research")
@@ -749,25 +806,57 @@ class OutreachOrchestrator:
         except Exception:
             pass
         
-        research_plan = self.research_planner.plan_research(ctx, mission, recipient)
+        # research_plan = self.research_planner.plan_research(ctx, mission, recipient)  # Currently unused, available for future research planning
         
         # Research Execution
         logger.info("P2: Executing research")
-        company_info = self.company_executor.search_company_context(
-            mission_id=getattr(mission, 'id', 'unknown'),
-            target_company=recipient.company,
-            archetype=ctx.archetype,
-            rag_params=ctx.rag_params.__dict__ if hasattr(ctx, 'rag_params') else {},
-            signal_params=ctx.signal_params.__dict__ if hasattr(ctx, 'signal_params') else {}
-        )
-        contact_info = self.contact_executor.search_contact_profile(
-            mission_id=getattr(mission, 'id', 'unknown'),
-            target_role=recipient.title,
-            target_company=recipient.company,
-            archetype=ctx.archetype,
-            rag_params=ctx.rag_params.__dict__ if hasattr(ctx, 'rag_params') else {},
-            signal_params=ctx.signal_params.__dict__ if hasattr(ctx, 'signal_params') else {}
-        )
+        
+        # Phase 9: Apply executor timeout to research calls
+        executor_timeout = config.get("executor_timeout", None)
+        
+        if executor_timeout:
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                company_future = executor.submit(  # type: ignore[arg-type]  # Mypy false positive with keyword args
+                    self.company_executor.search_company_context,
+                    mission_id=getattr(mission, 'id', 'unknown'),
+                    target_company=recipient.company,
+                    archetype=ctx.archetype,
+                    rag_params=ctx.rag_params.__dict__ if hasattr(ctx, 'rag_params') else {},
+                    signal_params=ctx.signal_params.__dict__ if hasattr(ctx, 'signal_params') else {}
+                )
+                contact_future = executor.submit(  # type: ignore[arg-type]  # Mypy false positive with keyword args
+                    self.contact_executor.search_contact_profile,
+                    mission_id=getattr(mission, 'id', 'unknown'),
+                    target_role=recipient.title,
+                    target_company=recipient.company,
+                    archetype=ctx.archetype,
+                    rag_params=ctx.rag_params.__dict__ if hasattr(ctx, 'rag_params') else {},
+                    signal_params=ctx.signal_params.__dict__ if hasattr(ctx, 'signal_params') else {}
+                )
+                
+                try:
+                    company_info = company_future.result(timeout=executor_timeout)
+                    contact_info = contact_future.result(timeout=executor_timeout)
+                except concurrent.futures.TimeoutError:
+                    raise Exception(f"Executor timeout after {executor_timeout}s during research")
+        else:
+            # No timeout - execute normally
+            company_info = self.company_executor.search_company_context(
+                mission_id=getattr(mission, 'id', 'unknown'),
+                target_company=recipient.company,
+                archetype=ctx.archetype,
+                rag_params=ctx.rag_params.__dict__ if hasattr(ctx, 'rag_params') else {},
+                signal_params=ctx.signal_params.__dict__ if hasattr(ctx, 'signal_params') else {}
+            )
+            contact_info = self.contact_executor.search_contact_profile(
+                mission_id=getattr(mission, 'id', 'unknown'),
+                target_role=recipient.title,
+                target_company=recipient.company,
+                archetype=ctx.archetype,
+                rag_params=ctx.rag_params.__dict__ if hasattr(ctx, 'rag_params') else {},
+                signal_params=ctx.signal_params.__dict__ if hasattr(ctx, 'signal_params') else {}
+            )
         
         # Record research completion
         try:
@@ -817,10 +906,26 @@ class OutreachOrchestrator:
         )
         mp = self.message_planner.create_message_plan(content)
         
-        message_result = self.message_executor.generate_message(
-            message_plan=mp.__dict__,
-            archetype_context=ctx.__dict__
-        )
+        # Phase 9: Apply executor timeout to message generation
+        if executor_timeout:
+            import concurrent.futures
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                message_future = executor.submit(
+                    self.message_executor.generate_message,
+                    message_plan=mp.__dict__,
+                    archetype_context=ctx.__dict__
+                )
+                
+                try:
+                    message_result = message_future.result(timeout=executor_timeout)
+                except concurrent.futures.TimeoutError:
+                    raise Exception(f"Executor timeout after {executor_timeout}s during message generation")
+        else:
+            # No timeout - execute normally
+            message_result = self.message_executor.generate_message(
+                message_plan=mp.__dict__,
+                archetype_context=ctx.__dict__
+            )
         
         # Validate message length against budget limits
         message_content = getattr(message_result, 'message', getattr(message_result, 'content', ''))
@@ -982,7 +1087,7 @@ class OutreachOrchestrator:
         })
         
         # Return successful result
-        return OutreachPipelineResult(
+        result = OutreachPipelineResult(
             success=True,
             message=message_result.message,
             metadata={
@@ -993,6 +1098,7 @@ class OutreachOrchestrator:
                 "workflow_type": "outreach"
             }
         )
+        return result
     
     async def _execute_workflow_phases_concurrent_async(
         self,
