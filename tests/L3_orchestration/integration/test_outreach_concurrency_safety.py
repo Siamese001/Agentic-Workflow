@@ -163,7 +163,7 @@ class TestOutreachConcurrencySafety:
         # Create multiple drafts with mixed safety results
         drafts = [
             MockMessageDraft(message="High quality but unsafe", content="dangerous content"),
-            MockMessageDraft(message="Medium quality safe", content="safe professional message"),
+            MockMessageDraft(message="safe professional message", content="Medium quality safe"),
             MockMessageDraft(message="Low quality but unsafe", content="spam content")
         ]
         

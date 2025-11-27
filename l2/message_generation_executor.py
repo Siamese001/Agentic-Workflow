@@ -74,14 +74,14 @@ class MessageGenerationExecutor:
             pass
         
         # HSON: Extracts archetype-specific temperature schedule -> matches executive cognitive patterns
-        temperature_schedule = getattr(message_plan, "temperature_schedule", {})
+        temperature_schedule = message_plan.get("temperature_schedule", {})
         
         # Extract section plans
-        subject_plan = getattr(message_plan, "subject_plan", "")
-        hook_plan = getattr(message_plan, "hook_plan", "")
-        value_plan = getattr(message_plan, "value_plan", "")
-        cta_plan = getattr(message_plan, "cta_plan", "")
-        signature_plan = getattr(message_plan, "signature_plan", "")
+        subject_plan = message_plan.get("subject_plan", "")
+        hook_plan = message_plan.get("hook_plan", "")
+        value_plan = message_plan.get("value_plan", "")
+        cta_plan = message_plan.get("cta_plan", "")
+        signature_plan = message_plan.get("signature_plan", "")
         
         # HSON: Selects high-signal evidence -> strengthens executive message credibility
         signals_used = self._select_signals(research_results)
@@ -100,7 +100,7 @@ class MessageGenerationExecutor:
             temperature=subject_temperature,
             ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=getattr(message_plan, "metadata", {})
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["subject"] = subject_section
         
@@ -112,7 +112,7 @@ class MessageGenerationExecutor:
             temperature=hook_temperature,
             ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=getattr(message_plan, "metadata", {})
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["hook"] = hook_section
         
@@ -124,7 +124,7 @@ class MessageGenerationExecutor:
             temperature=value_temperature,
             ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=getattr(message_plan, "metadata", {})
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["value"] = value_section
         
@@ -136,7 +136,7 @@ class MessageGenerationExecutor:
             temperature=cta_temperature,
             ctx=generation_context,
             signal_context=signal_context,
-            reasoning_metadata=getattr(message_plan, "metadata", {})
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["cta"] = cta_section
         
@@ -148,7 +148,7 @@ class MessageGenerationExecutor:
             temperature=signature_temperature,
             ctx=generation_context,
             signal_context="",  # Signature doesn't need signals
-            reasoning_metadata=getattr(message_plan, "metadata", {})
+            reasoning_metadata=message_plan.get("metadata", {})
         )
         sections["signature"] = signature_section
         
@@ -315,9 +315,9 @@ class MessageGenerationExecutor:
     
     def _build_reasoning_instructions(self, reasoning_metadata: Dict[str, Any], section_name: str) -> str:
         """Build reasoning-intensity instructions based on metadata."""
-        reasoning_intensity = getattr(reasoning_metadata, "reasoning_intensity", "low")
-        cot_depth = getattr(reasoning_metadata, "cot_depth", 1)
-        tot_branches = getattr(reasoning_metadata, "tot_branches", 1)
+        reasoning_intensity = reasoning_metadata.get("reasoning_intensity", "low")
+        cot_depth = reasoning_metadata.get("cot_depth", 1)
+        tot_branches = reasoning_metadata.get("tot_branches", 1)
         
         # High-value sections get deeper reasoning instructions
         if section_name in ["value", "hook"]:

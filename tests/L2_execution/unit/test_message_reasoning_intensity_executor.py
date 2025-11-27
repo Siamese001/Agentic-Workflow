@@ -29,6 +29,8 @@ class TestMessageReasoningIntensityExecutor:
         """Test L2 uses reasoning multiplier for EXECUTIVE intensity prompts."""
         # Create mock LLM caller
         mock_llm_caller = Mock()
+        mock_llm_caller.generate.return_value = "Generated content"
+        mock_llm_caller.generate.return_value = "Generated content"
         mock_llm_caller.call_llm.return_value = "Generated content"
         
         # Create executor
@@ -67,17 +69,17 @@ class TestMessageReasoningIntensityExecutor:
         result = executor.generate_message(message_plan, ctx, [])
         
         # Verify LLM was called with reasoning-intensity enhanced prompts
-        assert mock_llm_caller.call_llm.call_count == 5  # 5 sections
+        assert mock_llm_caller.generate.call_count == 5  # 5 sections
         
         # Check that value section prompt includes reasoning instructions
-        value_prompt = mock_llm_caller.call_llm.call_args_list[2][0][0]  # 3rd call (value)
+        value_prompt = mock_llm_caller.generate.call_args_list[2][0][0]  # 3rd call (value)
         assert "REASONING INTENSITY: HIGH" in value_prompt
         assert "structured reasoning with clear justification steps" in value_prompt
         assert "Chain-of-Thought depth: 8 steps" in value_prompt
         assert "Tree-of-Thought branches: 6" in value_prompt
         
         # Check that hook section prompt includes reasoning instructions
-        hook_prompt = mock_llm_caller.call_llm.call_args_list[1][0][0]  # 2nd call (hook)
+        hook_prompt = mock_llm_caller.generate.call_args_list[1][0][0]  # 2nd call (hook)
         assert "REASONING INTENSITY: HIGH" in hook_prompt
         assert "structured reasoning with clear justification steps" in hook_prompt
     
@@ -85,6 +87,7 @@ class TestMessageReasoningIntensityExecutor:
         """Test L2 uses temperature values from L1 MessagePlan."""
         # Create mock LLM caller
         mock_llm_caller = Mock()
+        mock_llm_caller.generate.return_value = "Generated content"
         mock_llm_caller.call_llm.return_value = "Generated content"
         
         # Create executor
@@ -140,6 +143,7 @@ class TestMessageReasoningIntensityExecutor:
         """Test L2 handles RECRUITER low intensity without over-expansion."""
         # Create mock LLM caller
         mock_llm_caller = Mock()
+        mock_llm_caller.generate.return_value = "Generated content"
         mock_llm_caller.call_llm.return_value = "Generated content"
         
         # Create executor
@@ -178,10 +182,10 @@ class TestMessageReasoningIntensityExecutor:
         result = executor.generate_message(message_plan, ctx, [])
         
         # Verify LLM was called with clean prompts (no reasoning instructions)
-        assert mock_llm_caller.call_llm.call_count == 5
+        assert mock_llm_caller.generate.call_count == 5
         
         # Check that value section prompt does NOT include reasoning instructions
-        value_prompt = mock_llm_caller.call_llm.call_args_list[2][0][0]  # 3rd call (value)
+        value_prompt = mock_llm_caller.generate.call_args_list[2][0][0]  # 3rd call (value)
         assert "REASONING INTENSITY:" not in value_prompt
         assert "Chain-of-Thought depth:" not in value_prompt
         assert "Tree-of-Thought branches:" not in value_prompt
@@ -194,6 +198,7 @@ class TestMessageReasoningIntensityExecutor:
         """Test C_LEVEL extreme intensity gets comprehensive reasoning instructions."""
         # Create mock LLM caller
         mock_llm_caller = Mock()
+        mock_llm_caller.generate.return_value = "Generated content"
         mock_llm_caller.call_llm.return_value = "Generated content"
         
         # Create executor
@@ -233,7 +238,7 @@ class TestMessageReasoningIntensityExecutor:
         )
         
         # Verify LLM was called with comprehensive reasoning instructions
-        value_prompt = mock_llm_caller.call_llm.call_args[0][0]
+        value_prompt = mock_llm_caller.generate.call_args[0][0]
         assert "REASONING INTENSITY: EXTREME" in value_prompt
         assert "multi-step justification with explicit reasoning chains" in value_prompt
         assert "3-4 distinct value dimensions with specific examples" in value_prompt
@@ -321,6 +326,7 @@ class TestMessageReasoningIntensityExecutor:
         
         # Create L2 executor
         mock_llm_caller = Mock()
+        mock_llm_caller.generate.return_value = "Generated content"
         mock_llm_caller.call_llm.return_value = "Generated content"
         executor = MessageGenerationExecutor(mock_llm_caller)
         
@@ -357,7 +363,7 @@ class TestMessageReasoningIntensityExecutor:
         assert l1_plan.metadata["reasoning_multiplier"] == 120
         
         # Verify L2 used reasoning-intensity enhanced prompts
-        value_prompt = mock_llm_caller.call_llm.call_args_list[2][0][0]
+        value_prompt = mock_llm_caller.generate.call_args_list[2][0][0]
         assert "REASONING INTENSITY: EXTREME" in value_prompt
         assert "12 steps" in value_prompt
         assert "10" in value_prompt
