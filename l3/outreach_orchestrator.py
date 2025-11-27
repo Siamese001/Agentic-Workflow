@@ -636,87 +636,85 @@ class OutreachOrchestrator:
                                 raise
                     
                     print(f"DEBUG: Async result message = {result.message}")
+                
+                if timeout_occurred:
+                    # Fall back to sequential execution after timeout
+                    logger.warning("Concurrent execution timed out, falling back to sequential")
+                    result = self._execute_workflow_phases(mission, recipient, ctx, config)
+                    # Add timeout fallback flag if result succeeds
+                    if result.success and hasattr(result, 'metadata') and result.metadata:
+                        result.metadata["timeout_fallback"] = True
+                else:
+                    # Use sequential execution when concurrency disabled
+                    result = self._execute_workflow_phases(mission, recipient, ctx, config)
+                
+                if result.success:
+                    logger.info(f"Outreach successful with archetype {archetype}")
                     
-                    if timeout_occurred:
-                        # Fall back to sequential execution after timeout
-                        logger.warning("Concurrent execution timed out, falling back to sequential")
-                        result = self._execute_workflow_phases(mission, recipient, ctx, config)
-                        # Add timeout fallback flag if result succeeds
-                        if result.success and hasattr(result, 'metadata') and result.metadata:
-                            result.metadata["timeout_fallback"] = True
+                    # P4 — Final Safety Check (MUST be after message generation)
+                    logger.info("P4: Safety validation at meta-loop level")
+                    safety_result_raw = self.safety_validator.evaluate(result.message)
                     
-                    if result.success:
-                        logger.info(f"Outreach successful with archetype {archetype}")
-                        
-                        # P4 — Final Safety Check (MUST be after message generation)
-                        logger.info("P4: Safety validation at meta-loop level")
-                        safety_result_raw = self.safety_validator.evaluate(result.message)
-                        
-                        # Handle both sync and async safety evaluators with timeout
-                        import inspect
-                        safety_timeout = config.get("safety_timeout", None)
-                        timeout_occurred = False
-                        
-                        if inspect.iscoroutine(safety_result_raw):
-                            try:
-                                loop = asyncio.get_running_loop()
-                                # Use thread executor to run coroutine in new event loop with timeout
-                                with concurrent.futures.ThreadPoolExecutor() as executor:
-                                    future = executor.submit(asyncio.run, safety_result_raw)
-                                    if safety_timeout:
-                                        try:
-                                            safety_result = future.result(timeout=safety_timeout)
-                                        except concurrent.futures.TimeoutError:
-                                            timeout_occurred = True
-                                            raise
-                                    else:
-                                        safety_result = future.result()
-                            except RuntimeError:
+                    # Handle both sync and async safety evaluators with timeout
+                    import inspect
+                    safety_timeout = config.get("safety_timeout", None)
+                    timeout_occurred = False
+                    
+                    if inspect.iscoroutine(safety_result_raw):
+                        try:
+                            loop = asyncio.get_running_loop()
+                            # Use thread executor to run coroutine in new event loop with timeout
+                            with concurrent.futures.ThreadPoolExecutor() as executor:
+                                future = executor.submit(asyncio.run, safety_result_raw)
                                 if safety_timeout:
-                                    try:
-                                        safety_result = asyncio.run(asyncio.wait_for(safety_result_raw, timeout=safety_timeout))
-                                    except asyncio.TimeoutError:
-                                        timeout_occurred = True
-                                        raise
-                                else:
-                                    safety_result = asyncio.run(safety_result_raw)
-                        else:
-                            if safety_timeout and callable(safety_result_raw):
-                                # For sync safety evaluators, use thread executor for timeout
-                                with concurrent.futures.ThreadPoolExecutor() as executor:
-                                    future = executor.submit(safety_result_raw)
                                     try:
                                         safety_result = future.result(timeout=safety_timeout)
                                     except concurrent.futures.TimeoutError:
                                         timeout_occurred = True
                                         raise
+                                else:
+                                    safety_result = future.result()
+                        except RuntimeError:
+                            if safety_timeout:
+                                try:
+                                    safety_result = asyncio.run(asyncio.wait_for(safety_result_raw, timeout=safety_timeout))
+                                except asyncio.TimeoutError:
+                                    timeout_occurred = True
+                                    raise
                             else:
-                                safety_result = safety_result_raw
+                                safety_result = asyncio.run(safety_result_raw)
+                    else:
+                        if safety_timeout and callable(safety_result_raw):
+                            # For sync safety evaluators, use thread executor for timeout
+                            with concurrent.futures.ThreadPoolExecutor() as executor:
+                                future = executor.submit(safety_result_raw)
+                                try:
+                                    safety_result = future.result(timeout=safety_timeout)
+                                except concurrent.futures.TimeoutError:
+                                    timeout_occurred = True
+                                    raise
+                        else:
+                            safety_result = safety_result_raw
                         
                         # Handle safety timeout - fall back to safe behavior
-                        if timeout_occurred:
-                            logger.warning(f"Safety validation timed out after {safety_timeout}s, falling back to safe behavior")
-                            # Fall back to safe behavior: bypass safety validation and succeed
-                            if hasattr(result, 'metadata') and result.metadata:
-                                result.metadata["attempts"] = attempt
-                                result.metadata["safety_timeout"] = True
-                            return result
-                        
-                        if not safety_result.passed:
-                            # Safety failure - try next archetype
-                            logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
-                            safety_failure_count += 1
-                            continue
-                        
-                        # Add attempt count to metadata
+                    if timeout_occurred:
+                        logger.warning(f"Safety validation timed out after {safety_timeout}s, falling back to safe behavior")
+                        # Fall back to safe behavior: bypass safety validation and succeed
                         if hasattr(result, 'metadata') and result.metadata:
                             result.metadata["attempts"] = attempt
+                            result.metadata["safety_timeout"] = True
                         return result
-                        
-                    # Safety failure - try next archetype
-                    safety_failure_count += 1
-                    logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
-                    continue
+                    
+                    if not safety_result.passed:
+                        # Safety failure - try next archetype
+                        logger.warning(f"Safety failure with archetype {archetype}, trying fallback")
+                        safety_failure_count += 1
+                        continue
+                    
+                    # Add attempt count to metadata
+                    if hasattr(result, 'metadata') and result.metadata:
+                        result.metadata["attempts"] = attempt
+                    return result
                     
                 except Exception as e:
                     logger.error(f"Error with archetype {archetype}: {e}")
