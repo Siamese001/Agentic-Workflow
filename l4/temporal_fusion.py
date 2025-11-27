@@ -1,12 +1,14 @@
 """
 Temporal rank fusion for temporal KG - Phase 6 L4 expansion.
 
-Implements deterministic fusion of hybrid, KG, and temporal scores.
+Implements deterministic fusion of hybrid, KG, and temporal scores
+with deterministic tie-break rules.
 """
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import List, Optional, Dict, Any, Tuple
+from datetime import datetime, UTC
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,6 +20,7 @@ class TemporalRankFusion:
     
     Combines hybrid search scores, KG traversal scores, and temporal weights
     using the formula: fused = 0.5*hybrid + 0.3*kg + 0.2*temporal
+    with deterministic tie-break rules for equal scores.
     """
     
     def __init__(self):
@@ -25,6 +28,14 @@ class TemporalRankFusion:
         self.hybrid_weight = 0.5
         self.kg_weight = 0.3
         self.temporal_weight = 0.2
+        
+        # Source priority for tie-breaking (lower number = higher priority)
+        self.source_priorities = {
+            "hybrid": 1,
+            "kg": 2, 
+            "temporal": 3,
+            "unknown": 999
+        }
     
     def fuse(self, hybrid_scores: List[float], kg_scores: List[float], temporal_scores: List[float]) -> List[float]:
         """
@@ -94,6 +105,56 @@ class TemporalRankFusion:
             })
         
         return result
+    
+    def fuse_with_tiebreak(self, hybrid_scores: List[float], kg_scores: List[float], 
+                          temporal_scores: List[float], metadata: Optional[List[Dict[str, Any]]] = None) -> List[Dict[str, Any]]:
+        """
+        Fuse scores with deterministic tie-break rules.
+        
+        Args:
+            hybrid_scores: List of hybrid search scores
+            kg_scores: List of KG traversal scores  
+            temporal_scores: List of temporal weight scores
+            metadata: Optional metadata list containing timestamps and sources
+            
+        Returns:
+            List of dictionaries with fused scores, sorted by tie-break rules
+        """
+        # Get basic fused scores
+        fused_scores = self.fuse(hybrid_scores, kg_scores, temporal_scores)
+        
+        if metadata is None:
+            metadata = [{}] * len(fused_scores)
+        
+        # Ensure metadata length matches
+        max_length = len(fused_scores)
+        padded_metadata = metadata + [{}] * (max_length - len(metadata))
+        
+        # Create list of tuples for sorting with tie-break rules
+        scored_items = []
+        for i, score in enumerate(fused_scores):
+            item_metadata = padded_metadata[i] if i < len(padded_metadata) else {}
+            
+            # Extract tie-break criteria
+            timestamp = item_metadata.get('timestamp', datetime.min.replace(tzinfo=UTC))
+            source = item_metadata.get('source', 'unknown')
+            source_priority = self.source_priorities.get(source, 999)
+            
+            # Create tie-break tuple: (-score, source_priority, -timestamp)
+            # Negative score for descending order, negative timestamp for recent first
+            tie_break_tuple = (-score, source_priority, -timestamp.timestamp() if timestamp else 0)
+            
+            scored_items.append({
+                'score': score,
+                'metadata': item_metadata,
+                'tie_break_tuple': tie_break_tuple
+            })
+        
+        # Sort by tie-break rules (deterministic)
+        scored_items.sort(key=lambda x: x['tie_break_tuple'])
+        
+        # Remove tie-break tuples from final result
+        return [{'score': item['score'], 'metadata': item['metadata']} for item in scored_items]
     
     def _normalize_scores(self, scores: List[float]) -> List[float]:
         """
