@@ -34,6 +34,7 @@ class TestCompanyResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="company_1",
+                score=0.85,
                 text="TechCorp - Leading technology company with 5000 employees",
                 fused_score=0.85,
                 metadata={"company": "TechCorp", "industry": "Technology", "size": "5000-10000"}

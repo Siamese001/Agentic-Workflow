@@ -180,9 +180,9 @@ class TestResearchRefinementPlanner:
             archetype_context=archetype_context
         )
         
-        # Company research routes to CONTACT agent due to 'find_recent_activities' task
+        # Company research routes to COMPANY agent due to 'diversify_information_sources' task
         if plan.needs_refinement:
-            assert plan.target_agent == AgentType.CONTACT
+            assert plan.target_agent == AgentType.COMPANY
     
     def test_failure_context_influences_refinement_planning(self):
         """Test failure context influences refinement planning (LIC meta-loop)."""
