@@ -20,6 +20,7 @@ class TestOutreachSchemaMapping:
         # Create mock SearchResult
         search_result = SearchResult(
             id="test_result_123",
+            score=0.85,
             text="John Smith is a Senior Software Engineer at TechCorp with 5 years experience in Python and machine learning.",
             fused_score=0.85,
             metadata={
@@ -50,6 +51,7 @@ class TestOutreachSchemaMapping:
         quantitative_text = "Increased revenue by 25% and reduced costs by $1M through 3x efficiency improvements."
         search_result = SearchResult(
             id="quantitative_test",
+            score=0.7,
             text=quantitative_text,
             fused_score=0.7,
             metadata={
@@ -72,6 +74,7 @@ class TestOutreachSchemaMapping:
         strategic_text = "Led digital transformation initiative to modernize core infrastructure and drive strategic vision."
         search_result = SearchResult(
             id="strategic_test",
+            score=0.75,
             text=strategic_text,
             fused_score=0.75,
             metadata={
@@ -93,6 +96,7 @@ class TestOutreachSchemaMapping:
         recent_text = "Recently announced new product launch and just secured Series C funding."
         search_result = SearchResult(
             id="recent_test",
+            score=0.6,
             text=recent_text,
             fused_score=0.6,
             metadata={
@@ -114,6 +118,7 @@ class TestOutreachSchemaMapping:
         general_text = "Works in engineering department and collaborates with cross-functional teams."
         search_result = SearchResult(
             id="general_test",
+            score=0.5,
             text=general_text,
             fused_score=0.5,
             metadata={
@@ -136,6 +141,7 @@ class TestOutreachSchemaMapping:
         past_date = datetime.now(timezone.utc) - timedelta(days=30)
         search_result = SearchResult(
             id="age_test",
+            score=0.8,
             text="Test content",
             fused_score=0.8,
             metadata={
@@ -155,6 +161,7 @@ class TestOutreachSchemaMapping:
         """Test age_days defaults to 365 with invalid timestamp."""
         search_result = SearchResult(
             id="invalid_age_test",
+            score=0.8,
             text="Test content",
             fused_score=0.8,
             metadata={
@@ -174,6 +181,7 @@ class TestOutreachSchemaMapping:
         """Test age_days defaults to 365 with missing timestamp."""
         search_result = SearchResult(
             id="missing_age_test",
+            score=0.8,
             text="Test content",
             fused_score=0.8,
             metadata={
@@ -205,6 +213,7 @@ class TestOutreachSchemaMapping:
         
         search_result = SearchResult(
             id="lic_metadata_test",
+            score=0.9,
             text="Executive with strategic technology leadership and quantifiable business impact.",
             fused_score=0.9,
             metadata=lic_metadata
@@ -224,6 +233,7 @@ class TestOutreachSchemaMapping:
         """Test signal scoring increases with named entities in metadata."""
         search_result_with_entities = SearchResult(
             id="entities_test",
+            score=0.6,
             text="Technology leader at major corporation",
             fused_score=0.6,
             metadata={
@@ -244,6 +254,7 @@ class TestOutreachSchemaMapping:
         # Test just below threshold
         below_threshold = SearchResult(
             id="below_threshold",
+            score=0.5,
             text="Basic professional information",
             fused_score=0.5,
             metadata={"company": "TestCorp", "title": "Engineer", "source": "profile"}
@@ -256,6 +267,7 @@ class TestOutreachSchemaMapping:
         # Test just above threshold
         above_threshold = SearchResult(
             id="above_threshold",
+            score=0.5,
             text="Achieved 150% growth with $2M revenue impact",
             fused_score=0.5,
             metadata={"company": "TestCorp", "title": "Director", "source": "achievement"}
@@ -269,6 +281,7 @@ class TestOutreachSchemaMapping:
         """Test OutreachRAGResult has all required fields with proper types."""
         search_result = SearchResult(
             id="completeness_test",
+            score=0.8,
             text="Complete test data",
             fused_score=0.8,
             metadata={
@@ -301,6 +314,7 @@ class TestOutreachSchemaMapping:
         mixed_text = "Strategic initiative increased revenue by 40% through digital transformation."
         search_result = SearchResult(
             id="mixed_signals_test",
+            score=0.7,
             text=mixed_text,
             fused_score=0.7,
             metadata={
