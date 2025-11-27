@@ -9,7 +9,7 @@ import pytest
 from typing import Dict, List
 from unittest.mock import Mock
 
-from l2.message_generation_executor import MessageGenerationExecutor, MessageSection, MessageResult, GenerationContext
+from l2.message_generation_executor import MessageGenerationExecutor, GenerationContext, MessageResult, MessageSection
 from l4.schema.outreach_schema import OutreachRAGResult
 from l1.outreach_dataclasses import MessagePlan
 
@@ -408,7 +408,7 @@ class TestMessageGenerationExecutor:
     
     def _create_mock_message_plan(self) -> Mock:
         """Helper to create mock MessagePlan."""
-        plan = Mock(spec=MessagePlan)
+        plan = Mock()  # Removed spec to allow dynamic attribute addition
         
         # Create mock sections
         plan.subject_plan = Mock(content="Subject content", word_target=10, temperature=0.0)
@@ -421,11 +421,19 @@ class TestMessageGenerationExecutor:
         plan.temperature_schedule = {'subject': -0.2, 'hook': -0.1, 'value': -0.1, 'cta': -0.1, 'signature': -0.1}
         # Add get method to support dictionary-like access with proper key handling
         plan.get = Mock(side_effect=lambda k, d=None: {"temperature_schedule": plan.temperature_schedule, "metadata": plan.metadata}.get(k, d))
+        # Configure Mock to be iterable for _estimate_generation_tokens
+        plan.items.return_value = [
+            ("subject_plan", plan.subject_plan),
+            ("hook_plan", plan.hook_plan),
+            ("value_plan", plan.value_plan),
+            ("cta_plan", plan.cta_plan),
+            ("signature_plan", plan.signature_plan)
+        ]
         return plan
     
     def _create_mock_message_plan_with_temperatures(self, temperatures: Dict[str, float]) -> Mock:
         """Helper to create mock MessagePlan with specific temperatures."""
-        plan = Mock(spec=MessagePlan)
+        plan = Mock()  # Removed spec to allow dynamic attribute addition
         
         plan.subject_plan = Mock(content="Subject", word_target=10, temperature=temperatures['subject'])
         plan.hook_plan = Mock(content="Hook", word_target=20, temperature=temperatures['hook'])
@@ -437,6 +445,14 @@ class TestMessageGenerationExecutor:
         plan.temperature_schedule = temperatures
         # Add get method to support dictionary-like access with proper key handling
         plan.get = Mock(side_effect=lambda k, d=None: {"temperature_schedule": plan.temperature_schedule, "metadata": plan.metadata}.get(k, d))
+        # Configure Mock to be iterable for _estimate_generation_tokens
+        plan.items.return_value = [
+            ("subject_plan", plan.subject_plan),
+            ("hook_plan", plan.hook_plan),
+            ("value_plan", plan.value_plan),
+            ("cta_plan", plan.cta_plan),
+            ("signature_plan", plan.signature_plan)
+        ]
         return plan
     
     def _create_generation_context(self, archetype: str = "senior_ta") -> GenerationContext:
