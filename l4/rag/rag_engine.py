@@ -13,6 +13,8 @@ from l4.hybrid_search import HybridSearchExecutor, HybridSearchConfig
 from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
 from l4.triplet_store import TripletStore, TripletQuery
 from l4.temporal_kg import TemporalKG
+from l4.high_signal import HighSignalScorer
+from l4.temporal_fusion import TemporalRankFusion
 from l4.schema.outreach_schema import OutreachRAGResult
 from l4.rag.lic_rag_policies import get_rag_policy
 
@@ -52,6 +54,11 @@ class RAGEngine:
             self.hybrid_search = HybridSearchExecutor(pinecone_adapter=self.pinecone_adapter)
             self.triplet_store = TripletStore()
             self.temporal_kg = TemporalKG(pinecone_adapter=self.pinecone_adapter)
+            
+            # Initialize Phase 6 temporal components
+            self.high_signal_scorer = HighSignalScorer()
+            self.temporal_fusion = TemporalRankFusion()
+            
             self._is_stub = False
         except Exception as e:
             # Fallback to stub mode for Phase 4 completion
@@ -61,6 +68,8 @@ class RAGEngine:
             self.hybrid_search = None
             self.triplet_store = None
             self.temporal_kg = None
+            self.high_signal_scorer = None
+            self.temporal_fusion = None
             self._is_stub = True
     
     def retrieve(self, query: str, profile: Optional[str] = None) -> List[OutreachRAGResult]:
@@ -107,28 +116,23 @@ class RAGEngine:
     
     def _execute_retrieval(self, rag_query: RAGQuery) -> List[OutreachRAGResult]:
         """
-        Execute retrieval using underlying components.
+        Execute retrieval using underlying components with Phase 6 temporal enhancement.
         
         Args:
             rag_query: RAG query configuration
             
         Returns:
-            List of RAG results
+            List of RAG results with temporal and high-signal scoring
         """
-        results = []
-        
-        # Vector search via Pinecone
-        if self.policy.enable_vector_search:
-            vector_results = self.pinecone_adapter.search(
-                query=rag_query.query,
-                top_k=rag_query.max_results // 2  # Split results between sources
-            )
-            results.extend(vector_results)
+        hybrid_scores = []
+        kg_scores = []
+        temporal_scores = []
+        results_text = []
         
         # Hybrid search
-        if self.policy.enable_hybrid_search:
+        if self.policy.enable_hybrid_search and self.hybrid_search:
             hybrid_config = HybridSearchConfig(
-                top_k=rag_query.max_results // 2,
+                top_k=rag_query.max_results,
                 include_text=True,
                 include_metadata=True
             )
@@ -136,18 +140,72 @@ class RAGEngine:
                 query=rag_query.query,
                 config=hybrid_config
             )
-            results.extend(hybrid_results)
+            # Safety check: ensure hybrid_results is not empty and has required attributes
+            if hybrid_results and hasattr(hybrid_results[0], 'fused_score') and hasattr(hybrid_results[0], 'text'):
+                hybrid_scores = [r.fused_score for r in hybrid_results]
+                results_text = [r.text for r in hybrid_results]
+            else:
+                logger.warning("Hybrid search returned empty or invalid results")
+                hybrid_scores = []
+                results_text = []
         
-        # Knowledge graph search
-        if rag_query.include_kg and self.policy.enable_kg_search:
-            kg_results = self._search_knowledge_graph(rag_query)
-            results.extend(kg_results)
+        # Temporal KG search
+        if rag_query.include_kg and self.temporal_kg and self.high_signal_scorer:
+            try:
+                # Search temporal KG with multi-hop traversal
+                temporal_metadata = self.temporal_kg.search_temporal(
+                    query=rag_query.query,
+                    hops=1,  # Default to 1 hop for performance
+                    user_id=None
+                )
+                
+                # Compute KG scores based on temporal weights
+                kg_scores = [m.weight for m in temporal_metadata]
+                
+                # Compute high-signal scores for all results
+                temporal_scores = []
+                for text in results_text:
+                    signal_score = self.high_signal_scorer.compute_signal_score(text)
+                    temporal_scores.append(signal_score.score)
+                
+            except Exception as e:
+                logger.warning(f"Temporal KG search failed: {e}")
+                kg_scores = []
+                temporal_scores = []
         
-        # Apply policy-based filtering and ranking
-        filtered_results = self._apply_policy_filters(results, rag_query)
+        # Apply TemporalRankFusion if we have temporal components
+        if hybrid_scores and self.temporal_fusion and (kg_scores or temporal_scores):
+            fused_scores = self.temporal_fusion.fuse(hybrid_scores, kg_scores, temporal_scores)
+        else:
+            # Fallback to hybrid scores only
+            fused_scores = hybrid_scores
+        
+        # Create OutreachRAGResult objects with enriched signal data
+        enriched_results = []
+        for i, text in enumerate(results_text):
+            if i < len(fused_scores):
+                # Compute high-signal score for this result
+                signal_score = 0.0
+                signal_type = None
+                if self.high_signal_scorer and text:
+                    high_signal = self.high_signal_scorer.compute_signal_score(text)
+                    signal_score = high_signal.score
+                    signal_type = "high_signal" if signal_score > 0.7 else "moderate_signal"
+                
+                result = OutreachRAGResult(
+                    id=f"rag_{i}",
+                    text=text,
+                    score=fused_scores[i],
+                    company="Unknown",  # Would be extracted from metadata in real implementation
+                    title="Search Result",
+                    source="rag_engine",
+                    signal_score=signal_score,
+                    signal_type=signal_type
+                )
+                enriched_results.append(result)
         
         # Return top N results
-        return filtered_results[:rag_query.max_results]
+        return enriched_results[:rag_query.max_results]
     
     def _search_knowledge_graph(self, rag_query: RAGQuery) -> List[OutreachRAGResult]:
         """Search knowledge graph based on policy."""

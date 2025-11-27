@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -9,6 +10,7 @@ from l4 import PineconeAdapter
 from l4.hybrid_search import HybridSearchExecutor, HybridSearchConfig, SearchResult
 from l4.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
 from l1.outreach_dataclasses import ArchetypeType
+from runtime.telemetry_bus import get_telemetry_bus
 
 
 @dataclass
@@ -53,6 +55,7 @@ class ContactResearchExecutor:
         """Initializes executor with search infrastructure for executive-grade contact intelligence."""
         self.hybrid_search = hybrid_search
         self.adapter = pinecone_adapter
+        self.telemetry_bus = get_telemetry_bus()
     
     def search_contact_profile(
         self,
@@ -64,6 +67,15 @@ class ContactResearchExecutor:
         signal_params: Dict[str, Any],
     ) -> ContactResearchResult:
         """Executes contact research to gather personalization intelligence that strengthens executive message relevance."""
+        # Record phase start
+        start_time = time.time()
+        try:
+            self.telemetry_bus.record_event("phase_start", "L2", {
+                "workflow_type": "outreach",
+                "stage": "contact_research"
+            })
+        except Exception:
+            pass
         # Build namespace using adapter
         namespace = self.adapter.build_namespace(
             mission_id=mission_id,
@@ -99,6 +111,17 @@ class ContactResearchExecutor:
             outreach_results,
             signal_params
         )
+        
+        # Record phase completion
+        try:
+            self.telemetry_bus.record_event("phase_end", "L2", {
+                "workflow_type": "outreach",
+                "stage": "contact_research",
+                "success": True,
+                "duration": time.time() - start_time
+            })
+        except Exception:
+            pass
         
         return ContactResearchResult(
             results=filtered_results,
