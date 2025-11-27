@@ -9,6 +9,23 @@ from typing import Dict, Any, Optional, List
 from l3.outreach_orchestrator import OutreachOrchestrator
 
 
+class RecipientProfile:
+    """Mock recipient profile for LIC compatibility."""
+    
+    def __init__(self, name: str = "", role: str = "", company: str = ""):
+        self.name = name
+        self.role = role
+        self.company = company
+
+
+class LICPipelineResult:
+    """Mock pipeline result for LIC compatibility."""
+    
+    def __init__(self, success: bool = True, message: str = ""):
+        self.success = success
+        self.message = message
+
+
 class LICOrchestrator:
     """
     Compatibility wrapper for legacy LIC orchestrator functionality.
