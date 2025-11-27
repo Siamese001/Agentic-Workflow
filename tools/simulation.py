@@ -638,7 +638,7 @@ class Engine:
     @staticmethod
     def list() -> Dict[str, str]:
         """
-        Return a mapping of scenario_id → human-readable description.
+        Return a mapping of scenario_id -> human-readable description.
         """
         return {name: golden.description for name, golden in SCENARIO_REGISTRY.items()}
 

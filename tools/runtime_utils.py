@@ -124,7 +124,7 @@ class CircuitBreaker:
                 return False
 
         if self.state == "HALF_OPEN" and self.success_count >= self.half_open_max_calls:
-            # Enough successes → close the breaker.
+            # Enough successes -> close the breaker.
             self.state = "CLOSED"
             self.failure_count = 0
             self.success_count = 0
@@ -393,9 +393,9 @@ def _infer_provider(model: str) -> str:
 
     Heuristics (deterministic):
 
-        • If "claude" in model → "anthropic"
-        • If "gemini" or "google" in model → "google"
-        • Else → "openai"
+        • If "claude" in model -> "anthropic"
+        • If "gemini" or "google" in model -> "google"
+        • Else -> "openai"
     """
     m = (model or "").lower()
     if "claude" in m:

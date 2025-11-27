@@ -29,7 +29,7 @@ IMPORT_MAPPINGS = {
 
 # Specific file mappings for conflicts resolved
 FILE_MAPPINGS = {
-    # agents/planning → l1 (agents versions were larger/more complete)
+    # agents/planning -> l1 (agents versions were larger/more complete)
     "agents.planning.qa_planning": "l1.qa_planning",
     "agents.planning.safety_planning": "l1.safety_planning", 
     "agents.planning.strategy_planning": "l1.strategy_planning",
@@ -40,11 +40,11 @@ FILE_MAPPINGS = {
     "agents.planning.vector_search_planning": "l1.vector_search_planning",
     "agents.planning.workflow_planning": "l1.workflow_planning",
     
-    # agents/execution → l2
+    # agents/execution -> l2
     "agents.execution.execution": "l2.execution",
     "agents.execution.agents": "l2.agents",
     
-    # state → l4
+    # state -> l4
     "state.entity_resolution": "l4.entity_resolution",
     "state.hybrid_search": "l4.hybrid_search", 
     "state.journal": "l4.journal",
@@ -56,16 +56,16 @@ FILE_MAPPINGS = {
     "state.triplet_store": "l4.triplet_store",
     "state.types": "l4.types",
     
-    # safety → l5
+    # safety -> l5
     "safety.injection_detection": "l5.injection_detection",
     "safety.policy": "l5.policy",
     "safety.types": "l5.types",
     
-    # cli → tools
+    # cli -> tools
     "cli.main_v10_10": "tools.main_v10_10",
     "cli.run_batch_v10_10": "tools.run_batch_v10_10",
     
-    # infrastructure → infra (preserve substructure)
+    # infrastructure -> infra (preserve substructure)
     "infrastructure.context_engine": "infra.context_engine",
     "infrastructure.control_plane": "infra.control_plane",
     "infrastructure.dag": "infra.dag",

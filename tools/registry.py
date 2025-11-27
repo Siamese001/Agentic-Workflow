@@ -143,13 +143,13 @@ def build_default_prompt_registry() -> PromptRegistry:
 
 def build_retrieval_config(strategy: RAGStrategyDefinition) -> RetrievalConfig:
     """
-    Convert a RAGStrategyDefinition → RetrievalConfig (Phase 3).
+    Convert a RAGStrategyDefinition -> RetrievalConfig (Phase 3).
 
     Mapping:
-        retrieval_mode → RetrievalConfig.strategy
-        use_hyde      → RetrievalConfig.allow_hyde
-        use_rrf       → RetrievalConfig.use_rrf
-        top_k         → RetrievalConfig.max_hits
+        retrieval_mode -> RetrievalConfig.strategy
+        use_hyde      -> RetrievalConfig.allow_hyde
+        use_rrf       -> RetrievalConfig.use_rrf
+        top_k         -> RetrievalConfig.max_hits
     """
     return RetrievalConfig(
         strategy=strategy.retrieval_mode,
