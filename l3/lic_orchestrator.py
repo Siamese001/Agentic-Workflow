@@ -21,6 +21,17 @@ class LICOrchestrator:
         """Initialize with OutreachOrchestrator backend."""
         self._orchestrator = OutreachOrchestrator(config or {})
     
+    async def execute_outreach_workflow(self, mission_id: str, **kwargs) -> Dict[str, Any]:
+        """
+        Legacy compatibility method for outreach workflow execution.
+        
+        Delegates to OutreachOrchestrator's execute_outreach_workflow method.
+        """
+        return await self._orchestrator.execute_outreach_workflow(
+            mission_id=mission_id,
+            **kwargs
+        )
+    
     async def run_single_outreach_success(self, mission_id: str, **kwargs) -> Dict[str, Any]:
         """
         Legacy compatibility method for single outreach execution.
