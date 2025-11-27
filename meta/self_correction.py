@@ -73,7 +73,7 @@ def _evaluate_strategy_surface(strategy: StrategyResult) -> CorrectionSignal:
 
     Heuristics (deterministic, non-LLM):
 
-        • If there are zero branches → severe issue → retry strategy.
+        • If there are zero branches -> severe issue -> retry strategy.
         • If chosen_branch_id is None or invalid:
              – severity = 3 (severe)
              – recommended_action = "retry_strategy"
@@ -83,7 +83,7 @@ def _evaluate_strategy_surface(strategy: StrategyResult) -> CorrectionSignal:
         • Otherwise:
              – severity = 0 (no correction)
     """
-    # No branches at all → strong signal to retry strategy
+    # No branches at all -> strong signal to retry strategy
     if not strategy.branches:
         return CorrectionSignal(
             surface="strategy",
@@ -377,7 +377,7 @@ def aggregate_correction_signals(
         • If none need correction, return None.
         • Otherwise, pick the signal with highest severity.
         • If multiple share the highest severity, pick the first
-          in canonical order (strategy → rag → drafting → qa → safety).
+          in canonical order (strategy -> rag -> drafting -> qa -> safety).
     """
     if not signals:
         return None

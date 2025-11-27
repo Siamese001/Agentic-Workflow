@@ -9,7 +9,7 @@ Tests MUST NOT import L2 or L4 modules.
 from unittest.mock import Mock
 
 from l1.message_planning import MessagePlanner, MessageContent
-from l1.outreach_dataclasses import MessagePlan
+from l1.outreach_dataclasses import MessagePlan, ArchetypeContext
 
 
 class TestMessagePlannerStructure:

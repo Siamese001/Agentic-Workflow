@@ -7,18 +7,9 @@ from l1.outreach_dataclasses import (
     OutreachMission,
     ArchetypeType,
     ArchetypeContext,
-    ArchetypeDefinition,
-    SignalParameters,
-    RagParameters,
-    ReasoningParameters,
-    ConstraintParameters,
-    ToneParameters,
-    CtaParameters,
     ReasoningMode,
-    ExecutiveReasoningProfile,
     ARCHETYPE_REGISTRY,
     EXECUTIVE_REASONING_PROFILES,
-    compute_reasoning_multiplier
 )
 
 
@@ -224,7 +215,7 @@ class OutreachArchetypePlanner:
     
     def plan_archetype_influence(
         self, 
-        mission: OutreachMissionDataclass,
+        mission: OutreachMission,
         reasoning_mode: ReasoningMode = ReasoningMode.COT
     ) -> ArchetypeContext:
         """

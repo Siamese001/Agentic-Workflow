@@ -42,7 +42,7 @@ def run_single_outreach(
     """
     Run single outreach mission through LIC pipeline.
     
-    # HSON: Implements L1→L2→L5→L4 functional pipeline to maximize executive reply rates
+    # HSON: Implements L1->L2->L5->L4 functional pipeline to maximize executive reply rates
     # through proper archetype classification, targeted research, and safety validation.
     
     Args:
