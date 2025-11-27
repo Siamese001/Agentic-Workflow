@@ -5,7 +5,6 @@ Provides intelligent model selection for outreach workflows based on stage,
 archetype, and budget constraints using the ModelRoutingPolicy.
 """
 
-from typing import Optional
 from l1.outreach_dataclasses import ArchetypeType
 from runtime.runtime_utils import invoke_model, SandboxConfig
 from infra.model_routing.policies import ModelRoutingPolicy
@@ -44,25 +43,52 @@ class OutreachLLMCaller:
         
         try:
             # Select model based on stage, archetype, and budget
-            model = self.routing_policy.select_model(
+            selected_model = self.routing_policy.select_model(
                 stage=stage,
                 archetype=self.archetype,
                 budget_manager=self.budget_manager
             )
             
+            # Determine routing reason for telemetry
+            if stage == "safety":
+                routing_reason = "safety_invariance_heavy_model"
+            else:
+                # Check budget state to determine reason
+                try:
+                    usage = self.budget_manager.current_usage()
+                    tokens_remaining = usage.get("tokens_remaining", 0)
+                    tokens_used = usage.get("tokens_used", 0)
+                    tokens_total = tokens_remaining + tokens_used
+                    
+                    if tokens_total == 0:
+                        routing_reason = "archetype_based_selection"
+                    else:
+                        remaining_percentage = tokens_remaining / tokens_total
+                        if remaining_percentage < 0.2:
+                            routing_reason = "budget_constraint_light_model"
+                        elif remaining_percentage < 0.5:
+                            routing_reason = "budget_constraint_downgraded_model"
+                        else:
+                            routing_reason = "archetype_based_selection"
+                except Exception:
+                    routing_reason = "fallback_selection"
+            
+            # Emit telemetry with required fields
             record_event("outreach_model_selected", {
                 "stage": stage,
                 "archetype": self.archetype.value,
-                "model": model
+                "selected_model": selected_model,
+                "routing_reason": routing_reason
             })
             
             # Execute the LLM call
-            result = invoke_model(model=model, prompt=prompt, sandbox=self.sandbox)
+            result = invoke_model(model=selected_model, prompt=prompt, sandbox=self.sandbox)
             
             record_event("outreach_llm_call_success", {
                 "stage": stage,
                 "archetype": self.archetype.value,
-                "model": model
+                "selected_model": selected_model,
+                "routing_reason": routing_reason
             })
             
             return result
