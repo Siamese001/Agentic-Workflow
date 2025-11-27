@@ -48,10 +48,17 @@ class TestOutreachEscalation:
         
         result = self.safety_validator.evaluate(context)
         
-        # LOW severity should result in WARN action
+        # Should have result with metadata
         assert result is not None
-        if result.severity == Severity.LOW:
-            assert result.verdict in [Action.ALLOW, Action.REVIEW]  # Should not block
+        assert hasattr(result, 'metadata')
+        
+        # Check severity from metadata
+        max_severity = result.metadata.get('max_severity')
+        escalation_action = result.metadata.get('escalation_action')
+        
+        # Low severity should escalate to ALLOW action
+        if max_severity == 'low':
+            assert escalation_action == 'allow'
     
     def test_medium_severity_escalates_to_warn_with_annotation(self):
         """Test that MEDIUM severity issues escalate to WARN with annotation."""
@@ -64,10 +71,13 @@ class TestOutreachEscalation:
         
         result = self.safety_validator.evaluate(context)
         
-        # MEDIUM severity should result in WARN with annotation
+        # MEDIUM severity should result in REQUIRE_APPROVAL with annotation
         assert result is not None
-        if result.severity == Severity.MEDIUM:
-            assert result.verdict in [Action.REVIEW, Action.MODIFY]  # Should require review
+        max_severity = result.metadata.get('max_severity')
+        escalation_action = result.metadata.get('escalation_action')
+        
+        if max_severity == 'medium':
+            assert escalation_action == 'require_approval'  # Should require review
             assert len(result.findings) > 0  # Should have annotations
     
     def test_high_severity_escalates_to_error(self):
@@ -81,10 +91,13 @@ class TestOutreachEscalation:
         
         result = self.safety_validator.evaluate(context)
         
-        # HIGH severity should result in ERROR (safe=False)
+        # HIGH severity should result in BLOCK (safe=False)
         assert result is not None
-        if result.severity == Severity.HIGH:
-            assert result.verdict == Action.BLOCK  # Should be blocked
+        max_severity = result.metadata.get('max_severity')
+        escalation_action = result.metadata.get('escalation_action')
+        
+        if max_severity == 'high':
+            assert escalation_action == 'block'  # Should be blocked
     
     def test_critical_severity_escalates_to_block(self):
         """Test that CRITICAL severity issues escalate to BLOCK (force safe=False)."""
@@ -99,17 +112,20 @@ class TestOutreachEscalation:
         
         # CRITICAL severity should result in BLOCK (force safe=False)
         assert result is not None
-        if result.severity == Severity.CRITICAL:
-            assert result.verdict == Action.BLOCK  # Must be blocked
+        max_severity = result.metadata.get('max_severity')
+        escalation_action = result.metadata.get('escalation_action')
+        
+        if max_severity == 'critical':
+            assert escalation_action == 'block'  # Must be blocked
     
     def test_escalation_logic_preserves_safety_result_structure(self):
         """Test that escalation logic maintains SafetyResult contract."""
         result = self.safety_validator.evaluate(self.base_context)
         
         # Should maintain proper structure regardless of escalation
-        assert hasattr(result, 'action')
-        assert hasattr(result, 'severity')
+        assert hasattr(result, 'verdict')
         assert hasattr(result, 'findings')
+        assert hasattr(result, 'metadata')
         assert isinstance(result.findings, list)
     
     def test_multiple_violations_escalate_to_highest_severity(self):
@@ -129,8 +145,10 @@ class TestOutreachEscalation:
             # Should have multiple findings but escalate to highest severity
             assert len(result.findings) >= 1
             # Critical violations should trigger BLOCK
-            if any("privacy" in finding.lower() for finding in result.findings):
-                assert result.verdict == Action.BLOCK
+            max_severity = result.metadata.get('max_severity')
+            escalation_action = result.metadata.get('escalation_action')
+            if max_severity == 'critical':
+                assert escalation_action == 'block'
     
     def test_escalation_thresholds_are_configurable(self):
         """Test that escalation thresholds can be configured."""
@@ -163,9 +181,10 @@ class TestOutreachEscalation:
         
         # WARN should include explanatory findings
         assert result is not None
-        if result.verdict in [Action.REVIEW, Action.MODIFY]:
+        escalation_action = result.metadata.get('escalation_action')
+        if escalation_action in ['allow', 'require_approval']:
             assert len(result.findings) > 0
-            assert all(isinstance(finding, str) for finding in result.findings)
+            assert all(hasattr(finding, 'rule') for finding in result.findings)
     
     def test_error_action_includes_violation_details(self):
         """Test that ERROR actions include detailed violation information."""
@@ -180,10 +199,13 @@ class TestOutreachEscalation:
         
         # ERROR should include detailed violation information
         assert result is not None
-        if result.verdict == Action.BLOCK and result.severity == Severity.HIGH:
+        max_severity = result.metadata.get('max_severity')
+        escalation_action = result.metadata.get('escalation_action')
+        
+        if escalation_action == 'block' and max_severity == 'high':
             assert len(result.findings) > 0
-            # Should include specific error codes
-            assert any("LIC-E" in finding for finding in result.findings)
+            # Should include specific error codes in metadata
+            assert any(hasattr(finding, 'metadata') and finding.metadata.get('lic_error_code') for finding in result.findings)
     
     def test_block_action_includes_critical_violation_details(self):
         """Test that BLOCK actions include critical violation details."""
@@ -198,7 +220,10 @@ class TestOutreachEscalation:
         
         # BLOCK should include critical violation details
         assert result is not None
-        if result.verdict == Action.BLOCK and result.severity == Severity.CRITICAL:
+        max_severity = result.metadata.get('max_severity')
+        escalation_action = result.metadata.get('escalation_action')
+        
+        if escalation_action == 'block' and max_severity == 'critical':
             assert len(result.findings) > 0
-            # Should include critical error codes
-            assert any("LIC-E013" in finding for finding in result.findings)
+            # Should include critical error codes in metadata
+            assert any(hasattr(finding, 'metadata') and finding.metadata.get('lic_error_code') == 'LIC-E013' for finding in result.findings)

@@ -37,17 +37,19 @@ class TestOutreachLongContext:
         )
         
         self.mock_research_planner.plan_research.return_value = {"query": "test"}
-        self.mock_message_planner.create_message_plan.return_value = Mock(
-            __dict__={"template": "test_template"}
-        )
-        self.mock_message_executor.generate_message.return_value = Mock(
-            message="Test message",
-            __dict__={"content": "Test message"}
-        )
-        self.mock_safety_validator.evaluate.return_value = Mock(
-            passed=True,
-            findings=[]
-        )
+        self.mock_message_planner.create_message_plan.return_value = type('MockMessagePlan', (), {
+            'template': 'test_template',
+            '__dict__': {"template": "test_template"}
+        })()
+        self.mock_message_executor.generate_message.return_value = type('MockMessageResult', (), {
+            'message': "Test message",
+            'content': "Test message",
+            '__dict__': {"content": "Test message"}
+        })()
+        self.mock_safety_validator.evaluate.return_value = type('MockSafetyResult', (), {
+            'passed': True,
+            'findings': []
+        })()
     
     def create_orchestrator(self, config: dict = None):
         """Create OutreachOrchestrator with mocked components."""

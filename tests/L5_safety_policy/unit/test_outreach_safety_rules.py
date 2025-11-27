@@ -71,17 +71,18 @@ class TestOutreachSafetyRules:
         
         policy = OutreachSafetyPolicy()
         
-        # Should have outreach-specific constraint categories
-        expected_categories = [
-            "OUTREACH_CONTENT",
-            "OUTREACH_STYLE", 
-            "OUTREACH_TONE",
-            "OUTREACH_ARCHETYPE",
-            "OUTREACH_ROUTE"
+        # Should have outreach-specific constraint categories (error codes)
+        expected_error_codes = [
+            "LIC-E001", "LIC-E002", "LIC-E003", "LIC-E004", "LIC-E005",
+            "LIC-E006", "LIC-E007", "LIC-E008", "LIC-E009", "LIC-E010", 
+            "LIC-E011", "LIC-E012", "LIC-E013"
         ]
         
-        # Implementation will add these categories
+        # Implementation should have all error codes
         assert hasattr(policy, 'constraints')
+        constraints = policy.constraints
+        for error_code in expected_error_codes:
+            assert error_code in constraints, f"Missing error code: {error_code}"
     
     def test_outreach_safety_policy_initialization(self):
         """Test OutreachSafetyPolicy can be initialized properly."""

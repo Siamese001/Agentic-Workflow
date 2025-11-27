@@ -7,11 +7,12 @@ Implements signal detection for numeric mentions, product launches, hiring trend
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 import re
 import logging
 
-from l4.temporal_kg import TemporalNodeMetadata
+if TYPE_CHECKING:
+    from l4.temporal_kg import TemporalNodeMetadata
 
 logger = logging.getLogger(__name__)
 
