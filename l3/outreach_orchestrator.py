@@ -595,6 +595,7 @@ class OutreachOrchestrator:
                     
                     if should_use_concurrent:
                         # Use async execution on first attempt
+                        print("DEBUG: Taking concurrent execution path!")
                         timeout_occurred = False
                         try:
                             # Check if event loop is already running
