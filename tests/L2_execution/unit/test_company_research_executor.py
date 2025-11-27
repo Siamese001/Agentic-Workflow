@@ -26,7 +26,7 @@ class TestCompanyResearchExecutor:
         
         # Patch telemetry bus to avoid potential exceptions
         import l2.company_research_executor
-        original_get_telemetry_bus = l2.company_research_executor.get_telemetry_bus
+        self.original_get_telemetry_bus = l2.company_research_executor.get_telemetry_bus
         l2.company_research_executor.get_telemetry_bus = lambda: self.mock_telemetry_bus
         
         self.executor = CompanyResearchExecutor(
@@ -34,6 +34,12 @@ class TestCompanyResearchExecutor:
             pinecone_adapter=self.mock_pinecone_adapter,
             triplet_store=self.mock_triplet_store
         )
+    
+    def teardown_method(self):
+        """Clean up test fixtures."""
+        # Restore original telemetry bus function to prevent test isolation issues
+        import l2.company_research_executor
+        l2.company_research_executor.get_telemetry_bus = self.original_get_telemetry_bus
     
     def test_search_company_context_returns_company_research_result(self):
         """Test search_company_context() returns CompanyResearchResult with correct type."""
@@ -103,12 +109,7 @@ class TestCompanyResearchExecutor:
         
         self.mock_hybrid_search.search.return_value = mock_search_results
         self.mock_triplet_store.query.return_value = mock_kg_triplets
-        self.mock_triplet_store.query.side_effect = lambda x: print(f"KG Query called with: {x}") or mock_kg_triplets
         self.mock_pinecone_adapter.build_namespace.return_value = "exec_mission_company"
-        
-        # Debug: Check KG fallback conditions
-        print(f"DEBUG: executor.triplet_store = {self.executor.triplet_store}")
-        print(f"DEBUG: _should_use_kg_fallback(C_LEVEL) = {self.executor._should_use_kg_fallback(ArchetypeType.C_LEVEL)}")
         
         # Execute C-Level search
         result = self.executor.search_company_context(
@@ -131,7 +132,7 @@ class TestCompanyResearchExecutor:
         # Verify all 4 archetypes are in KG fallback set
         expected_archetypes = {
             ArchetypeType.C_LEVEL,
-            ArchetypeType.HIRING_MANAGER,
+            ArchetypeType.EXECUTIVE,
             ArchetypeType.SENIOR_TA,
             ArchetypeType.RECRUITER
         }
@@ -139,8 +140,8 @@ class TestCompanyResearchExecutor:
         assert KG_FALLBACK_ARCHETYPES == expected_archetypes
         
         # Mock minimal setup for each archetype test
-        mock_search_results = [SearchResult(id="1", text="Company info", fused_score=0.7, metadata={})]
-        mock_kg_triplets = [Triplet(subject="TestCorp", predicate="test", object="value", timestamp="2024-01-01", confidence=0.8)]
+        mock_search_results = [SearchResult(id="1", score=0.7, text="Company info", fused_score=0.7, metadata={})]
+        mock_kg_triplets = [Triplet(id="test_triplet", subject="TestCorp", predicate="test", object="value", confidence=0.8)]
         
         self.mock_hybrid_search.search.return_value = mock_search_results
         self.mock_triplet_store.query.return_value = mock_kg_triplets
@@ -173,6 +174,7 @@ class TestCompanyResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="no_kg_company",
+                score=0.75,
                 text="Company without KG data",
                 fused_score=0.75,
                 metadata={"company": "NoKGCorp"}
@@ -202,6 +204,7 @@ class TestCompanyResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="single_result_company",
+                score=0.7,
                 text="Company with limited data",
                 fused_score=0.7,
                 metadata={"company": "LimitedCorp"}
@@ -211,10 +214,10 @@ class TestCompanyResearchExecutor:
         # Mock KG with only 1 result (below threshold)
         mock_kg_triplets = [
             Triplet(
+                id="limited_triplet",
                 subject="LimitedCorp",
                 predicate="has_employee",
                 object="1_employee",
-                timestamp="2024-01-01",
                 confidence=0.6
             )
         ]
@@ -243,6 +246,7 @@ class TestCompanyResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="mapped_company_1",
+                score=0.88,
                 text="TechCorp - Technology innovation leader",
                 fused_score=0.88,
                 metadata={
@@ -254,6 +258,7 @@ class TestCompanyResearchExecutor:
             ),
             SearchResult(
                 id="mapped_company_2",
+                score=0.82,
                 text="TechCorp - Recent product launch success",
                 fused_score=0.82,
                 metadata={
@@ -270,7 +275,7 @@ class TestCompanyResearchExecutor:
         result = self.executor.search_company_context(
             mission_id="mapped_mission",
             target_company="TechCorp",
-            archetype=ArchetypeType.HIRING_MANAGER,
+            archetype=ArchetypeType.RECRUITER,
             rag_params={"company_weight": 0.8},
             signal_params={"growth_signals": True}
         )
@@ -291,23 +296,23 @@ class TestCompanyResearchExecutor:
         """Test KG results are mapped to OutreachRAGResult format."""
         # Mock search results
         mock_search_results = [
-            SearchResult(id="base", text="Base company info", fused_score=0.7, metadata={})
+            SearchResult(id="base", score=0.7, text="Base company info", fused_score=0.7, metadata={})
         ]
         
         # Mock KG results
         mock_kg_triplets = [
             Triplet(
+                id="finance_triplet_1",
                 subject="FinanceCorp",
                 predicate="revenue_2023",
                 object="$1.2B",
-                timestamp="2024-01-15",
                 confidence=0.95
             ),
             Triplet(
+                id="finance_triplet_2",
                 subject="FinanceCorp",
                 predicate="executive_team",
                 object="CFO_Jane_Doe",
-                timestamp="2024-01-10",
                 confidence=0.88
             )
         ]
@@ -358,8 +363,8 @@ class TestCompanyResearchExecutor:
     
     def test_archetype_influences_search_configuration(self):
         """Test archetype influences search configuration and KG usage."""
-        mock_search_results = [SearchResult(id="1", text="Company info", fused_score=0.8, metadata={})]
-        mock_kg_triplets = [Triplet(subject="TestCorp", predicate="test", object="value", timestamp="2024-01-01", confidence=0.9)]
+        mock_search_results = [SearchResult(id="1", score=0.8, text="Company info", fused_score=0.8, metadata={})]
+        mock_kg_triplets = [Triplet(id="test_triplet", subject="TestCorp", predicate="test", object="value", confidence=0.9)]
         
         self.mock_hybrid_search.search.return_value = mock_search_results
         self.mock_triplet_store.query.return_value = mock_kg_triplets
@@ -369,7 +374,7 @@ class TestCompanyResearchExecutor:
         archetypes = [
             ArchetypeType.RECRUITER,
             ArchetypeType.SENIOR_TA,
-            ArchetypeType.HIRING_MANAGER,
+            ArchetypeType.EXECUTIVE,
             ArchetypeType.C_LEVEL
         ]
         
@@ -397,6 +402,7 @@ class TestCompanyResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="meta_company",
+                score=0.85,
                 text="Company with complete metadata",
                 fused_score=0.85,
                 metadata={
@@ -410,10 +416,10 @@ class TestCompanyResearchExecutor:
         
         mock_kg_triplets = [
             Triplet(
+                id="meta_triplet",
                 subject="MetaCorp",
                 predicate="has_funding",
                 object="$50M_Series_B",
-                timestamp="2024-01-01",
                 confidence=0.9
             )
         ]
@@ -444,6 +450,7 @@ class TestCompanyResearchExecutor:
         mock_search_results = [
             SearchResult(
                 id="error_company",
+                score=0.75,
                 text="Company with KG error",
                 fused_score=0.75,
                 metadata={"company": "ErrorCorp"}
