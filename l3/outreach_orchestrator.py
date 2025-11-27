@@ -191,11 +191,8 @@ class OutreachOrchestrator:
         self.state_manager = state_manager or StubStateManager()
         self.safety_validator = safety_validator or StubSafetyValidator()
         
-        # Initialize telemetry bus with fallback
-        try:
-            self.telemetry_bus = get_telemetry_bus()
-        except Exception:
-            self.telemetry_bus = StubTelemetryBus()
+        # Initialize telemetry bus - MUST use singleton only
+        self.telemetry_bus = get_telemetry_bus()
         
         # Initialize budget manager with dependency injection fallback
         try:
@@ -439,6 +436,11 @@ class OutreachOrchestrator:
             OutreachPipelineResult with generated message and metadata
         """
         config = config or {}
+        
+        # CRITICAL: Configure telemetry FIRST to force suppression before any events
+        telemetry_enabled = config.get("telemetry_enabled", True)
+        telemetry_detail_level = config.get("telemetry_detail_level", "standard")
+        self.telemetry_bus.configure(enabled=telemetry_enabled, detail_level=telemetry_detail_level)
         
         # Record concurrent workflow start telemetry
         self.telemetry_bus.record_event("concurrent_workflow_start", "L3", {
@@ -953,6 +955,9 @@ class OutreachOrchestrator:
         
         # Record concurrent workflow completion telemetry
         # research phase finished
+        use_concurrent_research = config.get("use_concurrent_research", False)
+        use_multi_draft = config.get("use_multi_draft", False)
+        
         if use_concurrent_research:
             self.telemetry_bus.record_event("research_parallel_end", "L3", {
                 "workflow_type": "outreach",
