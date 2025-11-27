@@ -634,7 +634,7 @@ class OutreachOrchestrator:
                     
                     if timeout_occurred:
                         # Fall back to sequential execution after timeout
-                        logger.warning(f"Concurrent execution timed out, falling back to sequential")
+                        logger.warning("Concurrent execution timed out, falling back to sequential")
                         result = self._execute_workflow_phases(mission, recipient, ctx, config)
                         # Add timeout fallback flag if result succeeds
                         if result.success and hasattr(result, 'metadata') and result.metadata:
@@ -1111,6 +1111,9 @@ class OutreachOrchestrator:
         config: Dict[str, Any],
     ) -> OutreachPipelineResult:
         """Execute workflow phases with optional concurrency (async version)."""
+        
+        # Record workflow start time for telemetry
+        workflow_start_time = time.time()
         
         # P2 — Research Planning (same as sequential)
         logger.info("P2: Planning research")
