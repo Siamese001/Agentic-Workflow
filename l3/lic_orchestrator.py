@@ -19,9 +19,9 @@ import asyncio
 from l1.outreach_archetype_planning import OutreachArchetypePlanner
 from l1.message_planning import MessagePlanner
 from l1.research_planning import ResearchRefinementPlanner
-from l2.outreach.company_research_executor import CompanyResearchExecutor
-from l2.outreach.contact_research_executor import ContactResearchExecutor
-from l2.outreach.message_generation_executor import MessageGenerationExecutor
+from l2.company_research_executor import CompanyResearchExecutor
+from l2.contact_research_executor import ContactResearchExecutor
+from l2.message_generation_executor import MessageGenerationExecutor
 from l2.outreach.outreach_batch_executor import OutreachBatchExecutor, BatchRequest, BatchResult
 from l4.rag.rag_engine import RAGEngine
 from l5.safety_validator import L5SafetyValidator
@@ -249,28 +249,46 @@ class LICOrchestrator:
         # Company Research
         if self.config.enable_company_research:
             result.company_research = self.company_executor.search_company_context(
-                query=result.mission.objective,
-                archetype_context=result.archetype_context
+                mission_id=context.mission_id,
+                target_company=result.recipient.company,
+                archetype=result.archetype_context.archetype,
+                rag_params=result.archetype_context.rag_params.__dict__,
+                signal_params=result.archetype_context.signal_params.__dict__
             )
         
         # Contact Research
         if self.config.enable_contact_research:
             result.contact_research = self.contact_executor.search_contact_profile(
-                query=result.mission.objective,
-                archetype_context=result.archetype_context
+                mission_id=context.mission_id,
+                target_role=result.recipient.title,
+                target_company=result.recipient.company,
+                archetype=result.archetype_context.archetype,
+                rag_params=result.archetype_context.rag_params.__dict__,
+                signal_params=result.archetype_context.signal_params.__dict__
             )
         
         # Message Planning
-        result.message_plan = self.message_planner.plan_message(
+        result.message_plan = self.message_planner.create_message_plan(
             content=None,  # Will be populated by actual implementation
             archetype_context=result.archetype_context
         )
         
         # Message Generation
         if self.config.enable_message_generation and result.message_plan:
+            # Create GenerationContext for MessageGenerationExecutor
+            from l2.message_generation_executor import GenerationContext
+            gen_context = GenerationContext(
+                mission_id=context.mission_id,
+                archetype=result.archetype_context.archetype,
+                target_role=result.recipient.title,
+                target_company=result.recipient.company,
+                value_proposition=result.mission.value_proposition
+            )
+            
             result.generated_message = self.message_executor.generate_message(
-                message_plan=result.message_plan,
-                context=context
+                message_plan=result.message_plan.__dict__,
+                generation_context=gen_context,
+                research_results=[]  # Will be populated by actual implementation
             )
         
         return result
@@ -285,8 +303,11 @@ class LICOrchestrator:
                 asyncio.get_event_loop().run_in_executor(
                     None,
                     lambda: self.company_executor.search_company_context(
-                        query=result.mission.objective,
-                        archetype_context=result.archetype_context
+                        mission_id=context.mission_id,
+                        target_company=result.recipient.company,
+                        archetype=result.archetype_context.archetype,
+                        rag_params=result.archetype_context.rag_params.__dict__,
+                        signal_params=result.archetype_context.signal_params.__dict__
                     )
                 )
             ))
@@ -296,8 +317,12 @@ class LICOrchestrator:
                 asyncio.get_event_loop().run_in_executor(
                     None,
                     lambda: self.contact_executor.search_contact_profile(
-                        query=result.mission.objective,
-                        archetype_context=result.archetype_context
+                        mission_id=context.mission_id,
+                        target_role=result.recipient.title,
+                        target_company=result.recipient.company,
+                        archetype=result.archetype_context.archetype,
+                        rag_params=result.archetype_context.rag_params.__dict__,
+                        signal_params=result.archetype_context.signal_params.__dict__
                     )
                 )
             ))
