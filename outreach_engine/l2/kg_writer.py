@@ -11,14 +11,14 @@ from typing import List, Optional
 from datetime import datetime
 
 try:
-    from agentic_workflow.outreach_engine.utils.graph_store_neo4j import Neo4jGraphStore
+    from outreach_engine.utils.graph_store_neo4j import Neo4jGraphStore
     _neo4j_graph: Optional[Neo4jGraphStore] = Neo4jGraphStore()
     _NEO4J_AVAILABLE = True
 except ImportError:
     _neo4j_graph = None
     _NEO4J_AVAILABLE = False
 
-from agentic_workflow.outreach_engine.l4.temporal_schemas import (
+from outreach_engine.l4.temporal_schemas import (
     TemporalEntity,
     TemporalTriplet,
     TemporalEvent,

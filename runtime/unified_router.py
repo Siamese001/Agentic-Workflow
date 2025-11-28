@@ -22,10 +22,10 @@ class UnifiedRouter:
     def __init__(self):
         """Initialize both specialized engines"""
         # Import resume engine
-        from agentic_workflow.resume_engine.l1.rg_planner import RGPlanner
-        from agentic_workflow.resume_engine.l3.rg_orchestrator import RGOrchestrator
-        from agentic_workflow.resume_engine.l4.rg_state import RGStateManager
-        from agentic_workflow.resume_engine.l5.rg_safety_validator import RGSafetyValidator
+        from resume_engine.l1.rg_planner import RGPlanner
+        from resume_engine.l3.rg_orchestrator import RGOrchestrator
+        from resume_engine.l4.rg_state import RGStateManager
+        from resume_engine.l5.rg_safety_validator import RGSafetyValidator
         
         # Initialize resume engine components
         self.resume_planner = RGPlanner()
@@ -34,7 +34,7 @@ class UnifiedRouter:
         self.resume_safety_validator = RGSafetyValidator()
         
         # TODO: Initialize outreach engine components when needed
-        # from agentic_workflow.outreach_engine.l1.lic_planner import LICPlanner
+        # from outreach_engine.l1.lic_planner import LICPlanner
         # self.outreach_planner = LICPlanner()
         # ... other outreach components
     

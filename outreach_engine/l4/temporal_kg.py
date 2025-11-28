@@ -13,7 +13,7 @@ import hashlib
 import logging
 
 try:
-    from agentic_workflow.outreach_engine.utils.graph_store_neo4j import Neo4jGraphStore as _Neo4jGraphStore
+    from outreach_engine.utils.graph_store_neo4j import Neo4jGraphStore as _Neo4jGraphStore
     _NEO4J_AVAILABLE = True
 except ImportError:
     _Neo4jGraphStore = object  # type: ignore
