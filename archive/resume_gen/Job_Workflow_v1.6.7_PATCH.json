@@ -1,4 +1,9 @@
 {
+  "_deprecated": {
+    "notice": "DEPRECATED — This file is part of the legacy Resume Generator architecture.",
+    "purpose": "Preserved for archival and zero-loss historical reconstruction only.",
+    "status": "NOT used in RG v10_12 runtime."
+  },
   "metadata": {
     "patch_id": "P-v1.6.7-HEADLINE-CHAR-LIMIT",
     "patch_name": "Headline Character Limit Enforcement (≤90 chars)",
