@@ -8,10 +8,9 @@ K1 Extract → K2 Clean → K3 Quantify → K4 Rewrite → K5 Skillmap → K6 As
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Union
 import logging
 import re
-from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +30,15 @@ class QuantifiedMetric:
 
 @dataclass
 class QuantifiedAchievement:
-    """Quantified achievement with impact metrics."""
+    """Quantified achievement with impact metrics and evidence ranking."""
     achievement_id: str
     description: str
     quantified_metrics: List[QuantifiedMetric]
     impact_category: str  # "efficiency", "growth", "cost_savings", "quality", "innovation"
     impact_score: float  # 0.0 to 1.0
     confidence_score: float
+    ranking_score: float = 0.0  # Combined evidence ranking score
+    rank: int = 0  # Position in ranked list (1=best)
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 
@@ -149,19 +150,21 @@ class RGK3Quantify:
         self,
         *,
         cleaning_output: Any,  # From K2 cleaning
+        job_requirements: Optional[Dict[str, Any]] = None,  # Job context for ranking
         quantification_params: Optional[Dict[str, Any]] = None
     ) -> QuantificationOutput:
-        """Execute resume content quantification.
+        """Execute resume content quantification with evidence ranking.
         
         Args:
             cleaning_output: Output from K2 cleaning phase
+            job_requirements: Job requirements for evidence ranking
             quantification_params: Quantification strategy and parameters
             
         Returns:
-            Complete quantification output with metrics and achievements
+            Complete quantification output with ranked metrics and achievements
         """
         quantification_params = quantification_params or {}
-        processing_trace = []
+        processing_trace: List[Dict[str, Union[str, int]]] = []
         
         try:
             # 1. Initialize quantification strategy
@@ -196,8 +199,17 @@ class RGK3Quantify:
                 "timestamp": "2024-01-01T00:00:04Z"
             })
             
+            # 5. Apply evidence ranking to achievements
+            ranked_achievements = self._rank_achievements(achievements, job_requirements, strategy)
+            processing_trace.append({
+                "step": "evidence_ranking",
+                "achievements_ranked": len(ranked_achievements),
+                "top_rank_score": ranked_achievements[0].ranking_score if ranked_achievements else 0.0,
+                "timestamp": "2024-01-01T00:00:05Z"
+            })
+            
             # 5. Generate quantified content
-            quantified_content = self._generate_quantified_content(metrics, achievements)
+            quantified_content = self._generate_quantified_content(metrics, ranked_achievements)
             processing_trace.append({
                 "step": "content_generation",
                 "quantified_length": len(quantified_content),
@@ -205,7 +217,7 @@ class RGK3Quantify:
             })
             
             # 6. Calculate quantification metrics
-            quant_metrics = self._calculate_quantification_metrics(metrics, achievements)
+            quant_metrics = self._calculate_quantification_metrics(metrics, ranked_achievements)
             processing_trace.append({
                 "step": "metrics_calculation",
                 "quantification_confidence": quant_metrics.quantification_confidence,
@@ -215,13 +227,14 @@ class RGK3Quantify:
             # 7. Build quantification output
             quantification_output = QuantificationOutput(
                 quantified_metrics=metrics,
-                quantified_achievements=achievements,
+                quantified_achievements=ranked_achievements,  # Use ranked achievements
                 quantified_content=quantified_content,
                 metrics=quant_metrics,
                 quantification_plan={
                     "strategy": strategy,
                     "parameters": quantification_params,
-                    "patterns_used": list(self.metric_patterns.keys())
+                    "patterns_used": list(self.metric_patterns.keys()),
+                    "evidence_ranking_enabled": job_requirements is not None
                 },
                 success=True,
                 error_message="",
@@ -260,8 +273,144 @@ class RGK3Quantify:
             "extract_metrics": params.get("extract_metrics", True),
             "focus_on_impact": params.get("focus_on_impact", True),
             "confidence_threshold": params.get("confidence_threshold", 0.6),
-            "min_metric_value": params.get("min_metric_value", 1)
+            "min_metric_value": params.get("min_metric_value", 1),
+            "evidence_ranking": params.get("evidence_ranking", True)
         }
+    
+    def _rank_achievements(self, achievements: List[QuantifiedAchievement], job_requirements: Optional[Dict[str, Any]], strategy: Dict[str, Any]) -> List[QuantifiedAchievement]:
+        """Apply evidence ranking to achievements based on multiple factors."""
+        if not strategy.get("evidence_ranking", True):
+            return achievements
+        
+        # Calculate ranking scores for each achievement
+        for achievement in achievements:
+            achievement.ranking_score = self._calculate_ranking_score(achievement, job_requirements)
+        
+        # Sort achievements by ranking score (descending)
+        ranked_achievements = sorted(achievements, key=lambda x: x.ranking_score, reverse=True)
+        
+        # Assign ranks (1-based)
+        for i, achievement in enumerate(ranked_achievements):
+            achievement.rank = i + 1
+        
+        return ranked_achievements
+    
+    def _calculate_ranking_score(self, achievement: QuantifiedAchievement, job_requirements: Optional[Dict[str, Any]]) -> float:
+        """Calculate comprehensive ranking score for an achievement."""
+        base_score = 0.0
+        
+        # 1. Impact score weight (30%)
+        base_score += achievement.impact_score * 0.3
+        
+        # 2. Confidence score weight (20%)
+        base_score += achievement.confidence_score * 0.2
+        
+        # 3. Quantifiable metrics score weight (25%)
+        metrics_score = self._calculate_metrics_score(achievement.quantified_metrics)
+        base_score += metrics_score * 0.25
+        
+        # 4. Action verb strength weight (15%)
+        verb_score = self._calculate_verb_strength_score(achievement.description)
+        base_score += verb_score * 0.15
+        
+        # 5. Job relevance score weight (10%)
+        relevance_score = self._calculate_job_relevance_score(achievement, job_requirements)
+        base_score += relevance_score * 0.1
+        
+        return min(base_score, 1.0)
+    
+    def _calculate_metrics_score(self, metrics: List[QuantifiedMetric]) -> float:
+        """Calculate score based on quality and quantity of metrics."""
+        if not metrics:
+            return 0.0
+        
+        score = 0.0
+        
+        # High-value metric types
+        high_value_types = {"percentage", "currency", "time"}
+        metric_count = len(metrics)
+        high_value_count = sum(1 for m in metrics if m.metric_type in high_value_types)
+        
+        # Base score for having metrics
+        score += min(metric_count * 0.1, 0.3)  # Max 0.3 for quantity
+        
+        # Bonus for high-value metrics
+        score += min(high_value_count * 0.2, 0.4)  # Max 0.4 for quality
+        
+        # Bonus for large values
+        for metric in metrics:
+            if metric.metric_type == "percentage" and isinstance(metric.value, (int, float)):
+                if metric.value >= 50:
+                    score += 0.1
+            elif metric.metric_type == "currency" and isinstance(metric.value, (int, float)):
+                if metric.value >= 1000000:  # $1M+
+                    score += 0.1
+                elif metric.value >= 100000:  # $100k+
+                    score += 0.05
+            elif metric.metric_type == "time" and isinstance(metric.value, (int, float)):
+                if metric.value >= 5:  # 5+ years
+                    score += 0.05
+        
+        return min(score, 1.0)
+    
+    def _calculate_verb_strength_score(self, description: str) -> float:
+        """Calculate score based on strength of action verbs."""
+        description_lower = description.lower()
+        
+        # Strong action verbs with their scores
+        verb_strengths = {
+            "revolutionized": 1.0, "transformed": 0.95, "pioneered": 0.9,
+            "engineered": 0.85, "architected": 0.85, "orchestrated": 0.8,
+            "led": 0.75, "managed": 0.7, "directed": 0.7,
+            "developed": 0.65, "implemented": 0.65, "created": 0.6,
+            "optimized": 0.6, "improved": 0.55, "enhanced": 0.5,
+            "increased": 0.45, "reduced": 0.45, "achieved": 0.4,
+            "delivered": 0.35, "launched": 0.35, "built": 0.3
+        }
+        
+        max_score = 0.0
+        for verb, score in verb_strengths.items():
+            if verb in description_lower:
+                max_score = max(max_score, score)
+        
+        return max_score
+    
+    def _calculate_job_relevance_score(self, achievement: QuantifiedAchievement, job_requirements: Optional[Dict[str, Any]]) -> float:
+        """Calculate score based on relevance to job requirements."""
+        if not job_requirements:
+            return 0.5  # Neutral score when no job requirements
+        
+        score = 0.0
+        achievement_text = achievement.description.lower()
+        
+        # Check skills relevance
+        job_skills = job_requirements.get("skills", [])
+        for skill in job_skills:
+            if isinstance(skill, str) and skill.lower() in achievement_text:
+                score += 0.2
+        
+        # Check requirements relevance
+        job_requirements_text = " ".join(job_requirements.get("requirements", [])).lower()
+        for req_word in job_requirements_text.split():
+            if len(req_word) > 4 and req_word in achievement_text:
+                score += 0.1
+        
+        # Check industry alignment
+        job_title = job_requirements.get("title", "").lower()
+        if "software" in job_title or "developer" in job_title:
+            tech_keywords = ["developed", "implemented", "coded", "engineered", "programmed"]
+            for keyword in tech_keywords:
+                if keyword in achievement_text:
+                    score += 0.15
+                    break
+        elif "manager" in job_title or "lead" in job_title:
+            mgmt_keywords = ["led", "managed", "directed", "coordinated", "oversaw"]
+            for keyword in mgmt_keywords:
+                if keyword in achievement_text:
+                    score += 0.15
+                    break
+        
+        return min(score, 1.0)
     
     def _extract_cleaned_content(self, cleaning_output: Any) -> str:
         """Extract cleaned content from K2 output."""
