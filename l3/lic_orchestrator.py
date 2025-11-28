@@ -26,17 +26,16 @@ class LICPipelineResult:
         self.message = message
 
 
-class LICOrchestrator:
+class LICOrchestrator(OutreachOrchestrator):
     """
     Compatibility wrapper for legacy LIC orchestrator functionality.
     
-    This class provides the same interface as the original LICOrchestrator
-    but delegates to the new OutreachOrchestrator implementation.
+    Inherits from OutreachOrchestrator to maintain full API compatibility.
     """
     
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
-        """Initialize with OutreachOrchestrator backend."""
-        self._orchestrator = OutreachOrchestrator(config or {})
+    def __init__(self, *args, **kwargs):
+        """Initialize using OutreachOrchestrator constructor."""
+        super().__init__(*args, **kwargs)
     
     def run_single_outreach(self, mission, recipient, config: Optional[Dict[str, Any]] = None):
         """

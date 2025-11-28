@@ -1,518 +1,378 @@
-"""LIC Sender Grounding Planning - L1 Planning Layer
+"""LIC Grounding Planner - L1 pure planning for sender capability analysis.
 
-Implements HOP-3 sender grounding planning from legacy LIC system.
-Plans extraction of sender capabilities from knowledge base.
-Pure planning - no execution, IO, or LLM calls.
+Implements nuclear prompt requirements for deterministic grounding planning:
+- Analyze sender capabilities and align them with LIC archetype + role
+- Identify potential overclaims and tag capabilities by verification level
+- Pure L1 planning with no external calls or execution
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional, Set
-from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
+import logging
 
-
-class GroundingSource(Enum):
-    """Sources for sender grounding information"""
-    MASTER_RESUME = "master_resume"
-    SENDER_KNOWLEDGE_BASE = "sender_knowledge_base"
-    VOICE_PROFILE = "voice_profile"
-    SKILL_INVENTORY = "skill_inventory"
-    EXPERIENCE_HISTORY = "experience_history"
-
-
-class CapabilityType(Enum):
-    """Types of sender capabilities to extract"""
-    TECHNICAL_SKILLS = "technical_skills"
-    DOMAIN_EXPERTISE = "domain_expertise"
-    LEADERSHIP_EXPERIENCE = "leadership_experience"
-    PROJECT_ACHIEVEMENTS = "project_achievements"
-    COMMUNICATION_STYLE = "communication_style"
-    INDUSTRY_KNOWLEDGE = "industry_knowledge"
+logger = logging.getLogger(__name__)
 
 
 @dataclass
-class ExtractionTarget:
-    """Specific information to extract from grounding sources"""
-    source_type: GroundingSource
-    capability_type: CapabilityType
-    extraction_fields: List[str]
-    priority: str
-    required: bool = True
+class LICSenderCapability:
+    """Individual sender capability extracted from resume features."""
+    id: str                              # stable identifier
+    description: str                     # capability description
+    verification_level: str              # "high", "medium", "unverified"
+    strength_score: float               # capability strength [0, 1]
+    seniority_claim: str                 # "executive", "manager", "ic", "unknown"
+    risk_flags: List[str]                # identified risk flags
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
-class SenderGroundingPlan:
-    """Complete sender grounding extraction plan"""
-    # Core planning data
-    mission_context: str
-    recipient_archetype: str
-    
-    # Extraction configuration
-    extraction_targets: List[ExtractionTarget]
-    source_files: Dict[str, str]
-    
-    # Capability mapping
-    technical_capabilities: List[str]
-    domain_expertise_areas: List[str]
-    leadership_qualifications: List[str]
-    achievement_highlights: List[str]
-    
-    # Communication planning
-    voice_tone_mapping: Dict[str, str]
-    communication_strategy: str
-    
-    # Planning metadata
-    plan_id: str
-    created_at: str
-    extraction_priority_order: List[str]
-    expected_outputs: Dict[str, List[str]]
-    
-    # Grounding validation
-    required_capabilities: Set[str]
-    optional_capabilities: Set[str]
+class LICGroundingPlan:
+    """Complete sender grounding analysis plan."""
+    allowed_claims: List[LICSenderCapability]    # capabilities that can be claimed
+    disallowed_claims: List[LICSenderCapability] # capabilities that should not be claimed
+    persona_alignment_notes: List[str]           # alignment observations
+    risk_flags: List[str]                        # overall risk flags
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class LICGroundingPlanner:
-    """
-    L1 Planner for LIC HOP-3 Sender Grounding
+    """L1 pure planner for sender capability analysis and grounding.
     
-    Creates plans for extracting sender capabilities from knowledge base
-    to support personalized message generation.
-    Pure deterministic planning - no external execution.
+    Generates deterministic grounding plans by analyzing resume features
+    and identifying safe claims vs potential overclaims.
     """
     
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
-        """
-        Initialize grounding planner with configuration
+    def __init__(self, telemetry_bus: Optional[Any] = None) -> None:
+        """Initialize LIC grounding planner."""
+        self.telemetry_bus = telemetry_bus
         
-        Args:
-            config: Optional configuration for grounding extraction
-        """
-        self.config = config or self._get_default_config()
-        
-    def _get_default_config(self) -> Dict[str, Any]:
-        """Get default grounding configuration"""
-        return {
-            "sender_grounding_agent": {
-                "source_files": {
-                    "master_resume": "master_resume.json",
-                    "sender_knowledge_base": "sender_knowledge_base.json", 
-                    "voice_profile": "sender_voice_profile.json"
-                },
-                "extraction_targets": {
-                    "technical_skills": {
-                        "fields": ["skills", "technologies", "tools", "languages"],
-                        "priority": "high",
-                        "required": True
-                    },
-                    "domain_expertise": {
-                        "fields": ["domains", "industries", "specializations"],
-                        "priority": "high", 
-                        "required": True
-                    },
-                    "leadership_experience": {
-                        "fields": ["leadership", "management", "mentorship"],
-                        "priority": "medium",
-                        "required": False
-                    },
-                    "project_achievements": {
-                        "fields": ["achievements", "impact", "results"],
-                        "priority": "medium",
-                        "required": False
-                    },
-                    "communication_style": {
-                        "fields": ["communication", "style", "tone"],
-                        "priority": "low",
-                        "required": False
-                    }
-                }
-            }
+        # Seniority claim indicators
+        self.executive_indicators = {
+            "led", "managed", "directed", "oversaw", "executive", "leadership",
+            "vp", "director", "head", "chief", "c-level", "president"
         }
+        
+        self.manager_indicators = {
+            "managed", "led", "coordinated", "supervised", "mentored",
+            "team lead", "manager", "supervisor"
+        }
+        
+        self.ic_indicators = {
+            "developed", "implemented", "built", "created", "designed",
+            "engineered", "programmed", "analyzed", "optimized"
+        }
+        
+        # Risk flag patterns
+        self.overclaim_patterns = [
+            "led the entire company", "ran all operations", "managed whole organization",
+            "responsible for all", "owned the entire", "controlled the complete"
+        ]
+        
+        self.unverified_patterns = [
+            "estimated", "approximately", "roughly", "about", "potential",
+            "could have", "might have", "estimated to"
+        ]
     
-    def plan_grounding_extraction(
+    def plan(
         self,
-        mission_context: str,
-        recipient_archetype: str,
-        plan_id: Optional[str] = None
-    ) -> SenderGroundingPlan:
-        """
-        Create sender grounding extraction plan
+        *,
+        resume_features: Dict[str, Any],
+        outreach_context: Dict[str, Any],
+    ) -> LICGroundingPlan:
+        """Generate a deterministic grounding analysis plan.
         
         Args:
-            mission_context: Context of the outreach mission
-            recipient_archetype: Target recipient's archetype
-            plan_id: Optional plan identifier
+            resume_features: Pre-computed resume signals (achievements, skills, etc.)
+            outreach_context: Context data including target archetype and role
             
         Returns:
-            Complete grounding extraction plan
+            Complete grounding plan with allowed/disallowed claims and risk flags
         """
-        # Generate plan ID if not provided
-        if plan_id is None:
-            import hashlib
-            id_string = f"{mission_context}_{recipient_archetype}"
-            plan_id = hashlib.md5(id_string.encode()).hexdigest()[:12]
+        # 1. Extract capabilities from resume features
+        capabilities = self._extract_capabilities(resume_features)
         
-        # Extract configuration
-        agent_config = self.config["sender_grounding_agent"]
-        source_files = agent_config["source_files"]
-        extraction_config = agent_config["extraction_targets"]
+        # 2. Analyze each capability for risk and verification
+        analyzed_capabilities = self._analyze_capabilities(capabilities)
         
-        # Create extraction targets
-        extraction_targets = self._create_extraction_targets(extraction_config)
+        # 3. Separate allowed vs disallowed claims
+        allowed_claims, disallowed_claims = self._classify_claims(analyzed_capabilities)
         
-        # Define capability categories based on archetype
-        technical_capabilities = self._define_technical_capabilities(recipient_archetype)
-        domain_expertise_areas = self._define_domain_expertise(recipient_archetype)
-        leadership_qualifications = self._define_leadership_qualifications(recipient_archetype)
-        achievement_highlights = self._define_achievement_highlights(recipient_archetype)
+        # 4. Generate persona alignment notes
+        alignment_notes = self._generate_alignment_notes(analyzed_capabilities, outreach_context)
         
-        # Plan voice tone mapping based on archetype
-        voice_tone_mapping = self._create_voice_tone_mapping(recipient_archetype)
-        communication_strategy = self._define_communication_strategy(recipient_archetype)
+        # 5. Collect overall risk flags
+        risk_flags = self._collect_risk_flags(analyzed_capabilities)
         
-        # Determine extraction priority order
-        extraction_priority_order = self._prioritize_extractions(recipient_archetype)
+        # 6. Build metadata
+        metadata = {
+            "total_capabilities": len(analyzed_capabilities),
+            "allowed_claims": len(allowed_claims),
+            "disallowed_claims": len(disallowed_claims),
+            "risk_flag_count": len(risk_flags),
+        }
         
-        # Define expected outputs
-        expected_outputs = self._define_expected_outputs(recipient_archetype)
-        
-        # Define capability requirements
-        required_capabilities, optional_capabilities = self._define_capability_requirements(recipient_archetype)
-        
-        # Get timestamp
-        from datetime import datetime
-        created_at = datetime.now().isoformat()
-        
-        return SenderGroundingPlan(
-            mission_context=mission_context,
-            recipient_archetype=recipient_archetype,
-            extraction_targets=extraction_targets,
-            source_files=source_files,
-            technical_capabilities=technical_capabilities,
-            domain_expertise_areas=domain_expertise_areas,
-            leadership_qualifications=leadership_qualifications,
-            achievement_highlights=achievement_highlights,
-            voice_tone_mapping=voice_tone_mapping,
-            communication_strategy=communication_strategy,
-            plan_id=plan_id,
-            created_at=created_at,
-            extraction_priority_order=extraction_priority_order,
-            expected_outputs=expected_outputs,
-            required_capabilities=required_capabilities,
-            optional_capabilities=optional_capabilities
+        # 7. Create grounding plan
+        plan = LICGroundingPlan(
+            allowed_claims=allowed_claims,
+            disallowed_claims=disallowed_claims,
+            persona_alignment_notes=alignment_notes,
+            risk_flags=risk_flags,
+            metadata=metadata,
         )
-    
-    def _create_extraction_targets(self, extraction_config: Dict[str, Any]) -> List[ExtractionTarget]:
-        """Create extraction targets from configuration"""
-        targets = []
         
-        for capability_name, config in extraction_config.items():
-            # Map capability name to enum
-            try:
-                capability_type = CapabilityType(capability_name)
-            except ValueError:
-                # Skip unknown capability types
-                continue
+        # 8. Record telemetry (best-effort)
+        self._safe_record_telemetry(plan)
+        
+        return plan
+    
+    def _extract_capabilities(self, resume_features: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Extract raw capabilities from resume features."""
+        capabilities = []
+        
+        # Extract from achievements
+        achievements = resume_features.get("achievements", [])
+        for i, achievement in enumerate(achievements):
+            if isinstance(achievement, dict):
+                capabilities.append({
+                    "id": f"achievement_{i}",
+                    "description": achievement.get("text", ""),
+                    "source": "achievement",
+                    "impact_type": achievement.get("impact_type", "general"),
+                    "seniority_signal": achievement.get("seniority_signal", "unknown"),
+                })
+        
+        # Extract from skills
+        skills = resume_features.get("skills", [])
+        for i, skill in enumerate(skills):
+            capabilities.append({
+                "id": f"skill_{i}",
+                "description": skill,
+                "source": "skill",
+                "impact_type": "skill",
+                "seniority_signal": "unknown",
+            })
+        
+        # Extract from experience summary
+        summary = resume_features.get("summary", "")
+        if summary:
+            capabilities.append({
+                "id": "summary_0",
+                "description": summary,
+                "source": "summary",
+                "impact_type": "general",
+                "seniority_signal": "unknown",
+            })
+        
+        return capabilities
+    
+    def _analyze_capabilities(self, capabilities: List[Dict[str, Any]]) -> List[LICSenderCapability]:
+        """Analyze capabilities for verification level and risk flags."""
+        analyzed = []
+        
+        for cap in capabilities:
+            description = cap["description"].lower()
             
-            # Create extraction targets for each source
-            for source_type in [GroundingSource.MASTER_RESUME, GroundingSource.SENDER_KNOWLEDGE_BASE]:
-                target = ExtractionTarget(
-                    source_type=source_type,
-                    capability_type=capability_type,
-                    extraction_fields=config["fields"],
-                    priority=config["priority"],
-                    required=config["required"]
-                )
-                targets.append(target)
-        
-        return targets
-    
-    def _define_technical_capabilities(self, archetype: str) -> List[str]:
-        """Define technical capabilities to extract based on recipient archetype"""
-        base_capabilities = [
-            "programming_languages",
-            "frameworks_libraries", 
-            "databases",
-            "cloud_platforms",
-            "devops_tools",
-            "methodologies"
-        ]
-        
-        # Add archetype-specific capabilities
-        if archetype == "technical_lead":
-            base_capabilities.extend([
-                "architecture_patterns",
-                "system_design",
-                "scalability_solutions",
-                "performance_optimization"
-            ])
-        elif archetype == "executive":
-            base_capabilities.extend([
-                "technology_strategy",
-                "digital_transformation",
-                "innovation_management",
-                "technical_leadership"
-            ])
-        elif archetype == "hiring_manager":
-            base_capabilities.extend([
-                "team_technologies",
-                "development_practices",
-                "technical_mentoring",
-                "skill_assessment"
-            ])
-        
-        return base_capabilities
-    
-    def _define_domain_expertise(self, archetype: str) -> List[str]:
-        """Define domain expertise areas based on recipient archetype"""
-        base_domains = [
-            "software_development",
-            "product_engineering",
-            "data_analytics",
-            "machine_learning"
-        ]
-        
-        # Add archetype-specific domains
-        if archetype == "executive":
-            base_domains.extend([
-                "business_strategy",
-                "market_analysis",
-                "competitive_intelligence",
-                "financial_modeling"
-            ])
-        elif archetype == "technical_lead":
-            base_domains.extend([
-                "system_architecture",
-            "infrastructure_design",
-                "security_engineering",
-                "performance_engineering"
-            ])
-        elif archetype == "recruiter":
-            base_domains.extend([
-                "talent_acquisition",
-                "human_resources",
-                "organizational_development",
-                "workforce_planning"
-            ])
-        
-        return base_domains
-    
-    def _define_leadership_qualifications(self, archetype: str) -> List[str]:
-        """Define leadership qualifications based on recipient archetype"""
-        base_leadership = [
-            "project_management",
-            "team_collaboration",
-            "decision_making",
-            "problem_solving"
-        ]
-        
-        # Add archetype-specific leadership
-        if archetype == "executive":
-            base_leadership.extend([
-                "strategic_planning",
-                "executive_leadership",
-                "change_management",
-                "stakeholder_management"
-            ])
-        elif archetype == "hiring_manager":
-            base_leadership.extend([
-                "team_leadership",
-                "talent_development",
-                "performance_management",
-                "resource_allocation"
-            ])
-        elif archetype == "technical_lead":
-            base_leadership.extend([
-                "technical_leadership",
-                "architecture_decisions",
-                "technology_roadmapping",
-                "innovation_management"
-            ])
-        
-        return base_leadership
-    
-    def _define_achievement_highlights(self, archetype: str) -> List[str]:
-        """Define achievement categories based on recipient archetype"""
-        base_achievements = [
-            "project_successes",
-            "performance_improvements",
-            "cost_savings",
-            "efficiency_gains"
-        ]
-        
-        # Add archetype-specific achievements
-        if archetype == "executive":
-            base_achievements.extend([
-                "revenue_growth",
-                "market_expansion",
-                "strategic_initiatives",
-                "business_transformation"
-            ])
-        elif archetype == "technical_lead":
-            base_achievements.extend([
-                "technical_innovations",
-                "scalability_achievements",
-                "architecture_improvements",
-                "performance_optimizations"
-            ])
-        elif archetype == "hiring_manager":
-            base_achievements.extend([
-                "team_building",
-                "talent_acquisition",
-                "process_improvements",
-                "culture_development"
-            ])
-        
-        return base_achievements
-    
-    def _create_voice_tone_mapping(self, archetype: str) -> Dict[str, str]:
-        """Create voice tone mapping based on recipient archetype"""
-        tone_mappings = {
-            "executive": {
-                "formality": "high",
-                "directness": "high", 
-                "strategic_focus": "business_value",
-                "communication_style": "executive_briefing"
-            },
-            "hiring_manager": {
-                "formality": "medium",
-                "directness": "medium",
-                "strategic_focus": "team_value",
-                "communication_style": "collaborative"
-            },
-            "technical_lead": {
-                "formality": "medium",
-                "directness": "high",
-                "strategic_focus": "technical_value",
-                "communication_style": "technical_discussion"
-            },
-            "recruiter": {
-                "formality": "low",
-                "directness": "medium",
-                "strategic_focus": "candidate_value",
-                "communication_style": "professional_friendly"
-            },
-            "influencer": {
-                "formality": "low",
-                "directness": "medium",
-                "strategic_focus": "innovation_value",
-                "communication_style": "thought_leadership"
-            },
-            "peer": {
-                "formality": "low",
-                "directness": "high",
-                "strategic_focus": "peer_value",
-                "communication_style": "collaborative"
-            }
-        }
-        
-        return tone_mappings.get(archetype, tone_mappings["peer"])
-    
-    def _define_communication_strategy(self, archetype: str) -> str:
-        """Define communication strategy based on recipient archetype"""
-        strategies = {
-            "executive": "Focus on business outcomes, strategic impact, and high-level value propositions with concise, data-driven messaging.",
-            "hiring_manager": "Emphasize team collaboration, leadership capabilities, and specific contributions to team success and culture.",
-            "technical_lead": "Highlight technical expertise, problem-solving capabilities, and specific technical achievements and innovations.",
-            "recruiter": "Showcase professional qualifications, career progression, and alignment with opportunity requirements.",
-            "influencer": "Demonstrate thought leadership, industry insights, and innovative perspectives on relevant trends.",
-            "peer": "Focus on shared experiences, collaborative opportunities, and mutual professional interests."
-        }
-        
-        return strategies.get(archetype, strategies["peer"])
-    
-    def _prioritize_extractions(self, archetype: str) -> List[str]:
-        """Prioritize extraction order based on recipient archetype"""
-        base_priority = [
-            "technical_skills",
-            "domain_expertise",
-            "leadership_experience",
-            "project_achievements",
-            "communication_style"
-        ]
-        
-        # Adjust priority based on archetype
-        if archetype == "executive":
-            base_priority = [
-                "leadership_experience",
-                "domain_expertise", 
-                "technical_skills",
-                "project_achievements",
-                "communication_style"
-            ]
-        elif archetype == "technical_lead":
-            base_priority = [
-                "technical_skills",
-                "domain_expertise",
-                "project_achievements",
-                "leadership_experience",
-                "communication_style"
-            ]
-        
-        return base_priority
-    
-    def _define_expected_outputs(self, archetype: str) -> Dict[str, List[str]]:
-        """Define expected outputs from grounding extraction"""
-        base_outputs = {
-            "technical_capabilities": ["skills_list", "proficiency_levels", "experience_years"],
-            "domain_expertise": ["domains_list", "expertise_depth", "industry_knowledge"],
-            "leadership_qualifications": ["leadership_roles", "team_sizes", "management_experience"],
-            "achievement_highlights": ["key_achievements", "quantified_impact", "recognition_awards"]
-        }
-        
-        # Add archetype-specific outputs
-        if archetype == "executive":
-            base_outputs["strategic_capabilities"] = ["strategic_initiatives", "business_impact", "growth_metrics"]
-        elif archetype == "technical_lead":
-            base_outputs["technical_leadership"] = ["architecture_decisions", "technical_roadmaps", "innovation_projects"]
-        
-        return base_outputs
-    
-    def _define_capability_requirements(self, archetype: str) -> Tuple[Set[str], Set[str]]:
-        """Define required and optional capabilities based on archetype"""
-        required = {"technical_skills", "domain_expertise"}
-        optional = {"leadership_experience", "project_achievements", "communication_style"}
-        
-        # Adjust based on archetype
-        if archetype == "executive":
-            required.add("leadership_experience")
-        elif archetype == "technical_lead":
-            required.add("project_achievements")
-        
-        return required, optional
-    
-    def validate_plan(self, plan: SenderGroundingPlan) -> List[str]:
-        """
-        Validate grounding plan for completeness and correctness
-        
-        Args:
-            plan: Grounding plan to validate
+            # Determine verification level
+            verification_level = self._determine_verification_level(description, cap)
             
-        Returns:
-            List of validation errors (empty if valid)
-        """
-        errors = []
+            # Calculate strength score
+            strength_score = self._calculate_strength_score(description, cap)
+            
+            # Determine seniority claim
+            seniority_claim = self._determine_seniority_claim(description, cap)
+            
+            # Identify risk flags
+            risk_flags = self._identify_risk_flags(description, cap)
+            
+            analyzed_capability = LICSenderCapability(
+                id=cap["id"],
+                description=cap["description"],
+                verification_level=verification_level,
+                strength_score=strength_score,
+                seniority_claim=seniority_claim,
+                risk_flags=risk_flags,
+                metadata={
+                    "source": cap["source"],
+                    "impact_type": cap["impact_type"],
+                    "raw_seniority_signal": cap["seniority_signal"],
+                },
+            )
+            
+            analyzed.append(analyzed_capability)
         
-        if not plan.mission_context:
-            errors.append("mission_context is required")
+        return analyzed
+    
+    def _determine_verification_level(self, description: str, cap: Dict[str, Any]) -> str:
+        """Determine verification level for a capability."""
+        # High verification for specific, measurable achievements
+        if any(char in description for char in ["%", "$", "x", "k", "m"]):
+            return "high"
         
-        if not plan.recipient_archetype:
-            errors.append("recipient_archetype is required")
+        # High verification for achievement source with seniority signal
+        if cap["source"] == "achievement" and cap["seniority_signal"] != "unknown":
+            return "high"
         
-        if not plan.extraction_targets:
-            errors.append("extraction_targets cannot be empty")
+        # Medium verification for skills and general claims
+        if cap["source"] in ["skill", "achievement"]:
+            return "medium"
         
-        if not plan.source_files:
-            errors.append("source_files cannot be empty")
+        # Low verification for summary claims
+        if cap["source"] == "summary":
+            return "unverified"
         
-        if not plan.plan_id:
-            errors.append("plan_id is required")
+        # Check for unverified patterns
+        if any(pattern in description for pattern in self.unverified_patterns):
+            return "unverified"
         
-        if not plan.technical_capabilities:
-            errors.append("technical_capabilities cannot be empty")
+        return "medium"
+    
+    def _calculate_strength_score(self, description: str, cap: Dict[str, Any]) -> float:
+        """Calculate strength score for a capability."""
+        score = 0.5  # Base score
         
-        if not plan.domain_expertise_areas:
-            errors.append("domain_expertise_areas cannot be empty")
+        # Boost for metrics and quantification
+        if any(char in description for char in ["%", "$", "x", "k", "m"]):
+            score += 0.3
         
-        return errors
+        # Boost for action verbs
+        action_verbs = ["led", "built", "created", "developed", "implemented", "achieved"]
+        if any(verb in description for verb in action_verbs):
+            score += 0.1
+        
+        # Boost for seniority-aligned claims
+        if cap["seniority_signal"] != "unknown":
+            score += 0.1
+        
+        return min(score, 1.0)
+    
+    def _determine_seniority_claim(self, description: str, cap: Dict[str, Any]) -> str:
+        """Determine seniority claim from description."""
+        # Use explicit seniority signal if available
+        if cap["seniority_signal"] != "unknown":
+            return cap["seniority_signal"]
+        
+        # Analyze description for seniority indicators
+        if any(indicator in description for indicator in self.executive_indicators):
+            return "executive"
+        elif any(indicator in description for indicator in self.manager_indicators):
+            return "manager"
+        elif any(indicator in description for indicator in self.ic_indicators):
+            return "ic"
+        
+        return "unknown"
+    
+    def _identify_risk_flags(self, description: str, cap: Dict[str, Any]) -> List[str]:
+        """Identify risk flags for a capability."""
+        risk_flags = []
+        
+        # Check for overclaim patterns
+        if any(pattern in description for pattern in self.overclaim_patterns):
+            risk_flags.append("overclaim_breadth")
+        
+        # Check for seniority mismatches
+        if cap["seniority_signal"] == "ic" and any(indicator in description for indicator in self.executive_indicators):
+            risk_flags.append("overclaim_seniority")
+        
+        # Check for unverified metrics
+        if any(pattern in description for pattern in self.unverified_patterns):
+            risk_flags.append("unverified_metric")
+        
+        # Check for vague claims
+        vague_indicators = ["various", "multiple", "several", "many", "numerous"]
+        if any(indicator in description for indicator in vague_indicators):
+            risk_flags.append("vague_claim")
+        
+        return risk_flags
+    
+    def _classify_claims(self, capabilities: List[LICSenderCapability]) -> Tuple[List[LICSenderCapability], List[LICSenderCapability]]:
+        """Classify capabilities into allowed vs disallowed claims."""
+        allowed = []
+        disallowed = []
+        
+        for cap in capabilities:
+            # Disallowed if high-risk flags present
+            if any(flag in cap.risk_flags for flag in ["overclaim_breadth", "overclaim_seniority"]):
+                disallowed.append(cap)
+            # Disallowed if very low verification and low strength
+            elif cap.verification_level == "unverified" and cap.strength_score < 0.3:
+                disallowed.append(cap)
+            # Otherwise allowed
+            else:
+                allowed.append(cap)
+        
+        return allowed, disallowed
+    
+    def _generate_alignment_notes(self, capabilities: List[LICSenderCapability], outreach_context: Dict[str, Any]) -> List[str]:
+        """Generate persona alignment notes."""
+        notes = []
+        
+        target_archetype = outreach_context.get("archetype", "").upper()
+        
+        # Count seniority claims
+        executive_claims = sum(1 for cap in capabilities if cap.seniority_claim == "executive")
+        manager_claims = sum(1 for cap in capabilities if cap.seniority_claim == "manager")
+        ic_claims = sum(1 for cap in capabilities if cap.seniority_claim == "ic")
+        
+        # Generate archetype-specific notes
+        if target_archetype == "EXECUTIVE":
+            if executive_claims == 0:
+                notes.append("No executive-level leadership claims detected")
+            elif executive_claims < 2:
+                notes.append("Limited executive leadership experience")
+            else:
+                notes.append("Strong executive leadership profile")
+        
+        elif target_archetype == "SENIOR_TA":
+            if ic_claims == 0:
+                notes.append("No technical implementation claims detected")
+            elif manager_claims > executive_claims:
+                notes.append("Profile leans more toward management than technical leadership")
+            else:
+                notes.append("Strong technical leadership profile")
+        
+        elif target_archetype == "RECRUITER":
+            if manager_claims > 0:
+                notes.append("Management experience relevant for recruiting role")
+            else:
+                notes.append("Focus on individual contributor experience")
+        
+        # Add risk-related notes
+        high_risk_caps = [cap for cap in capabilities if cap.risk_flags]
+        if len(high_risk_caps) > len(capabilities) * 0.3:
+            notes.append("High proportion of risky claims detected")
+        
+        # Add verification notes
+        high_verification_caps = [cap for cap in capabilities if cap.verification_level == "high"]
+        if len(high_verification_caps) > len(capabilities) * 0.5:
+            notes.append("Strong verification of key claims")
+        elif len(high_verification_caps) < len(capabilities) * 0.2:
+            notes.append("Limited verification of claims")
+        
+        return notes
+    
+    def _collect_risk_flags(self, capabilities: List[LICSenderCapability]) -> List[str]:
+        """Collect all unique risk flags from capabilities."""
+        all_flags = set()
+        for cap in capabilities:
+            all_flags.update(cap.risk_flags)
+        return list(all_flags)
+    
+    def _safe_record_telemetry(self, plan: LICGroundingPlan) -> None:
+        """Record telemetry event safely without breaking planning."""
+        if not self.telemetry_bus:
+            return
+        
+        try:
+            self.telemetry_bus.record_event(
+                "lic_grounding_plan_created",
+                layer="L1",
+                payload={
+                    "total_capabilities": plan.metadata["total_capabilities"],
+                    "allowed_claims": plan.metadata["allowed_claims"],
+                    "disallowed_claims": plan.metadata["disallowed_claims"],
+                    "risk_flag_count": plan.metadata["risk_flag_count"],
+                },
+            )
+        except Exception:
+            # Telemetry failures should never break planning logic
+            logger.debug("Failed to record telemetry for LIC grounding plan")
