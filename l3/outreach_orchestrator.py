@@ -47,9 +47,9 @@ from runtime.telemetry_bus import get_telemetry_bus
 from runtime.execution_budget_manager import get_budget_manager, create_budget_limits_from_config
 
 # LIC-specific L4 components
-from l4.lic_vector_memory import VectorMemoryStore
-from l4.lic_signal_scoring import SignalScorer
-from l4.lic_cache_critique import CacheCritiquer
+from l4.lic_vector_memory import LICVectorMemory
+from l4.lic_signal_scoring import LICSignalScoring
+from l4.lic_cache_critique import LICCacheCritique
 
 
 logger = logging.getLogger(__name__)
@@ -160,9 +160,9 @@ class OutreachOrchestrator:
         lic_persona_planner: Optional[LICPersonaPlanner] = None,
         lic_research_executor: Optional[LICResearchExecutor] = None,
         lic_message_executor: Optional[LICMessageExecutor] = None,
-        vector_memory_store: Optional[VectorMemoryStore] = None,
-        signal_scorer: Optional[SignalScorer] = None,
-        cache_critiquer: Optional[CacheCritiquer] = None,
+        vector_memory_store: Optional[LICVectorMemory] = None,
+        signal_scorer: Optional[LICSignalScoring] = None,
+        cache_critiquer: Optional[LICCacheCritique] = None,
         **kwargs,
     ) -> None:
         """Initialize OutreachOrchestrator with dependency injection."""
