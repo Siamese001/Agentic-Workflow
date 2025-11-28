@@ -1,4 +1,9 @@
 {
+  "_deprecated": {
+    "notice": "DEPRECATED — This file is part of the legacy Resume Generator architecture.",
+    "purpose": "Preserved for archival and zero-loss historical reconstruction only.",
+    "status": "NOT used in RG v10_12 runtime."
+  },
   "metadata": {
     "schema": "Job_Workflow",
     "version": "v1.6.2",

@@ -1,3 +1,7 @@
+DEPRECATED — This file is part of the legacy Resume Generator architecture.
+Preserved for archival and zero-loss historical reconstruction only.
+NOT used in RG v10_12 runtime.
+
 {
   "instructions": [
     "Do NOT run or emit Section 1 (Role) or Section 2 (Task).",
