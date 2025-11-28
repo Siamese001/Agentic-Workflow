@@ -1,117 +1,148 @@
 #!/usr/bin/env python3
 """
-Resume Engine - RG v10_12
-Focused resume generation pipeline with L1-L5 architecture
-Phase F: Resume Engine Consolidation - All non-deprecated capabilities integrated
+Resume Engine - Complete Resume Generation Pipeline
+
+Incorporated from historical agentic_workflow to provide the full 8-node
+resume generation pipeline with L1 planning and L3 orchestration.
+
+Architecture Overview:
+L1 Planning Layer: RGPlanner (rg_planner.py)
+L2 Execution Layer: K1 Extract → K2 Clean → K3 Quantify → K4 Rewrite → K5 Skillmap → K6 Assemble → K7 Format → K8 Validate
+L3 Orchestration Layer: RGOrchestrator (rg_orchestrator.py)
+
+Usage:
+    from resume_engine import RGOrchestrator, ResumeGenerationRequest
+    
+    orchestrator = RGOrchestrator()
+    request = orchestrator.create_sample_request()
+    result = orchestrator.generate_resume(request=request)
 """
 
-__version__ = "10_12"
-__description__ = "Resume Engine with Lift & Shift + Enhanced capabilities"
+__version__ = "1.0.0"
+__author__ = "Resume Generation Engine"
+__description__ = "Complete 8-node resume generation pipeline with L1-L3 architecture"
 
-# Core models and configuration
-from .models import (
-    ValidationSeverity,
-    ResumeSection,
-    GateDecision,
-    BulletProvenance,
-    ValidationResult,
-    ThematicAnalysis,
-    RAGEvidence,
-    RAGCritique,
-    RAGState,
-    SkillRequirement,
-    SkillCluster,
-    MasterResumeIndex,
-    CompetitiveIntelligence,
-    RetrievalSource,
-    FilePathsConfig,
-    ArtistConfig,
-    ValidatorConfig,
-    WebRagConfig,
-    EnricherConfig,
-    ContentConstraintsConfig,
-    SignalControlConfig,
-    AppConfig,
-    JDEnforcementRule,
-    JDEnforcementResult
-)
+# L1 Planning Layer
+from .rg_planner import RGPlanner, ResumeProcessingPlan, ResumeAnalysisPlan, ResumeSectionConfig
 
-# State management
-from .state import (
-    StagingBufferError,
-    ImmutableStagingBuffer,
-    TextSanitizer,
-    ValidationContext
-)
+# L2 Execution Layer - K-node Executors
+from .rg_k1_extract import RGK1Extract, ExtractionOutput, ExtractedSection, ExtractionMetrics
+from .rg_k2_clean import RGK2Clean, CleaningOutput, CleaningOperation, CleaningMetrics
+from .rg_k3_quantify import RGK3Quantify, QuantificationOutput, QuantifiedMetric, QuantifiedAchievement, QuantificationMetrics
+from .rg_k4_rewrite import RGK4Rewrite, RewritingOutput, RewritingOperation, RewrittenSection, RewritingMetrics
+from .rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput, SkillMapping, SkillGap, SkillMappingMetrics
+from .rg_k6_assemble import RGK6Assemble, AssemblyOutput, SectionAssembly, AssemblyMetrics
+from .rg_k7_format import RGK7Format, FormattingOutput, FormattingRule, FormattedSection, FormattingMetrics
+from .rg_k8_validate import RGK8Validate, ValidationOutput, ValidationResult, ValidationRule, ValidationMetrics
 
-# L2 - Extraction and Enrichment Layer
-from .l2.extraction import (
-    ClerkExtractor,
-    DuplicateDetector,
-    DataEnricher
-)
+# L3 Orchestration Layer
+from .rg_orchestrator import RGOrchestrator, ResumeGenerationRequest, ResumeGenerationResult, OrchestratorMetrics
 
-# L5 - Validation Layer
-from .l5.validation_engine import (
-    ValidationRule,
-    ValidationEngine,
-    JDEnforcementValidator,
-    PreFlightValidator
-)
-
-# Rendering Layer
-from .rendering import FileRenderer
-
-# Export main components
+# Public API exports
 __all__ = [
-    # Core models
-    'ValidationSeverity',
-    'ResumeSection', 
-    'GateDecision',
-    'BulletProvenance',
-    'ValidationResult',
-    'ThematicAnalysis',
-    'RAGEvidence',
-    'RAGCritique',
-    'RAGState',
-    'SkillRequirement',
-    'SkillCluster',
-    'MasterResumeIndex',
-    'CompetitiveIntelligence',
-    'RetrievalSource',
+    # L1 Planning Layer
+    "RGPlanner",
+    "ResumeProcessingPlan", 
+    "ResumeAnalysisPlan",
+    "ResumeSectionConfig",
     
-    # Configuration
-    'FilePathsConfig',
-    'ArtistConfig',
-    'ValidatorConfig',
-    'WebRagConfig',
-    'EnricherConfig',
-    'ContentConstraintsConfig',
-    'SignalControlConfig',
-    'AppConfig',
-    'JDEnforcementRule',
-    'JDEnforcementResult',
+    # L2 Execution Layer - K1 Extract
+    "RGK1Extract",
+    "ExtractionOutput",
+    "ExtractedSection", 
+    "ExtractionMetrics",
     
-    # State management
-    'StagingBufferError',
-    'ImmutableStagingBuffer',
-    'TextSanitizer',
-    'ValidationContext',
+    # L2 Execution Layer - K2 Clean
+    "RGK2Clean",
+    "CleaningOutput",
+    "CleaningOperation",
+    "CleaningMetrics",
     
-    # L2 Components
-    'ClerkExtractor',
-    'DuplicateDetector',
-    'DataEnricher',
+    # L2 Execution Layer - K3 Quantify
+    "RGK3Quantify",
+    "QuantificationOutput",
+    "QuantifiedMetric",
+    "QuantifiedAchievement", 
+    "QuantificationMetrics",
     
-    # L5 Components
-    'ValidationRule',
-    'ValidationEngine',
-    'JDEnforcementValidator',
-    'PreFlightValidator',
+    # L2 Execution Layer - K4 Rewrite
+    "RGK4Rewrite",
+    "RewritingOutput",
+    "RewritingOperation",
+    "RewrittenSection",
+    "RewritingMetrics",
     
-    # Rendering
-    'FileRenderer'
+    # L2 Execution Layer - K5 Skillmap
+    "RGK5Skillmap",
+    "SkillMappingOutput",
+    "SkillMapping",
+    "SkillGap",
+    "SkillMappingMetrics",
+    
+    # L2 Execution Layer - K6 Assemble
+    "RGK6Assemble",
+    "AssemblyOutput",
+    "SectionAssembly",
+    "AssemblyMetrics",
+    
+    # L2 Execution Layer - K7 Format
+    "RGK7Format",
+    "FormattingOutput",
+    "FormattingRule",
+    "FormattedSection",
+    "FormattingMetrics",
+    
+    # L2 Execution Layer - K8 Validate
+    "RGK8Validate",
+    "ValidationOutput",
+    "ValidationResult",
+    "ValidationRule",
+    "ValidationMetrics",
+    
+    # L3 Orchestration Layer
+    "RGOrchestrator",
+    "ResumeGenerationRequest",
+    "ResumeGenerationResult",
+    "OrchestratorMetrics",
+    
+    # Convenience functions
+    "generate_resume",
+    "create_sample_request"
 ]
+
+def generate_resume(
+    job_input: dict,
+    resume_input: dict,
+    processing_options: dict = None,
+    config: dict = None
+) -> ResumeGenerationResult:
+    """Convenience function to generate a resume with default orchestrator.
+    
+    Args:
+        job_input: Target job requirements and specifications
+        resume_input: Current resume content and structure
+        processing_options: Optional processing preferences
+        config: Optional orchestrator configuration
+        
+    Returns:
+        Complete resume generation result
+    """
+    orchestrator = RGOrchestrator(config=config)
+    request = ResumeGenerationRequest(
+        job_input=job_input,
+        resume_input=resume_input,
+        processing_options=processing_options
+    )
+    return orchestrator.generate_resume(request=request)
+
+def create_sample_request() -> ResumeGenerationRequest:
+    """Create a sample resume generation request for testing.
+    
+    Returns:
+        Sample request with realistic job and resume data
+    """
+    orchestrator = RGOrchestrator()
+    return orchestrator.create_sample_request()
 
 def get_resume_engine_version():
     """Get the current resume engine version"""
