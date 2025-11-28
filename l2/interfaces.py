@@ -79,6 +79,10 @@ class L2ExecutionResult:
         )
 
 
+# Alias for backward compatibility with LIC components
+ExecutorResult = L2ExecutionResult
+
+
 class L2ExecutorInterface(ABC):
     """
     Abstract interface for L2 resume processing execution operations.
