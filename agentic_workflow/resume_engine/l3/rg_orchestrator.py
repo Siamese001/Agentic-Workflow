@@ -9,24 +9,20 @@ import time
 import logging
 from datetime import datetime
 
-import sys
-sys.path.append(r'C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_workflow\RG_capabilities')
-from rg_atomic_spec import ATOMIC_RG_SPEC
+from agentic_workflow.RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
 
 # Import L1 planning
-sys.path.append(r'C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_workflow\l1')
-from rg_planner import RGPlanner
+from agentic_workflow.resume_engine.l1.rg_planner import RGPlanner
 
 # Import L2 executors
-sys.path.append(r'C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_workflow\l2')
-from rg_k1_extract import K1Extractor
-from rg_k2_clean import K2Cleaner
-from rg_k3_quant import K3Quantifier
-from rg_k4_rewrite import K4Rewriter
-from rg_k5_skillmap import K5SkillMapper
-from rg_k6_section_assembly import K6SectionAssembler
-from rg_k7_format import K7Formatter
-from rg_k8_validation import K8Validator
+from agentic_workflow.resume_engine.l2.rg_k1_extract import K1Extractor
+from agentic_workflow.resume_engine.l2.rg_k2_clean import K2Cleaner
+from agentic_workflow.resume_engine.l2.rg_k3_quant import K3Quantifier
+from agentic_workflow.resume_engine.l2.rg_k4_rewrite import K4Rewriter
+from agentic_workflow.resume_engine.l2.rg_k5_skillmap import K5SkillMapper
+from agentic_workflow.resume_engine.l2.rg_k6_section_assembly import K6SectionAssembler
+from agentic_workflow.resume_engine.l2.rg_k7_format import K7Formatter
+from agentic_workflow.resume_engine.l2.rg_k8_validation import K8Validator
 
 class RGOrchestrator:
     """Resume Generator Orchestrator - L3 orchestration layer"""
