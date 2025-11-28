@@ -6,7 +6,7 @@ Pure cognition planner using ATOMIC_RG_SPEC
 
 from typing import Dict, Any, Optional
 
-from agentic_workflow.l1.rg_plan_schema import CompleteRGPlan
+from agentic_workflow.resume_engine.l1.rg_plan_schema import CompleteRGPlan
 
 class RGPlanner:
     """Resume Generator Planner - L1 pure cognition layer"""
