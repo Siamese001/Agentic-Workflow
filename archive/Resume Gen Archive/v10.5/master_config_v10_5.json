@@ -1,0 +1,283 @@
+{
+  "schema_version": "master_config_v10.5",
+  "description": "v10.5: Configuration file aligned with v10.5 code. Implements Dynamic Model Routing (Fix #2), Tool Caching (Fix #1), Node Timeouts (Fix #6), Tool Generation (Fix #7), and Semantic Validation (Fix #13).",
+  "version_notes": {
+    "v10_5_changes": [
+      "SCHEMA_VERSION: Updated to v10.5",
+      "FILE_PATHS: All logs/dbs updated to v10_5 versions.",
+      "FIX_2 (Dynamic Routing): Added '_simple' (Flash) and '_complex' (Pro/Opus) variants for strategy, prompt_engineer, and react_conductor models.",
+      "FIX_6 (Timeouts): Added 'workflow_node_timeout_seconds' to performance_config.",
+      "FIX_7 (Tool Gen): Added 'meta_tool_generator_model' and 'meta_tool_critique_model'.",
+      "FIX_12 (PI Detect): Added 'prompt_injection_model'.",
+      "FIX_1 (Tool Caching): 'enable_tool_caching' flag added to caching_config.",
+      "FIX_8 (Metrics): 'metrics_log_path' added to logging_config.",
+      "FIX_13 (Semantic Validation): 'enable_semantic_validation' flag added to agent_stacks."
+    ],
+    "v10_4_changes": [
+      "Inherits all v10.4 features: Hybrid RAG, Pydantic Validation, Centralized Prompts, Resilience (Retries, Circuit Breakers), Context Budgeting, and True DI."
+    ]
+  },
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "log_file": "./logs/workflow_v10_5.log",
+    "metrics_log_path": "./logs/metrics_v10_5.jsonl",
+    "log_format": "json",
+    "correlation_ids": true
+  },
+  "redis_config": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "description": "Redis for LangGraph checkpoints, LLM caching, and Tool caching"
+  },
+  "chromadb_config": {
+    "host": "localhost",
+    "port": 8000,
+    "use_http_client": false,
+    "persistent_path": "./chroma_db_v10_5",
+    "default_collection_name": "resume_embeddings_v10_5",
+    "description": "v10.5: ChromaDB for semantic (vector) search in Hybrid RAG"
+  },
+  "caching_config": {
+    "enable_llm_caching": true,
+    "enable_tool_caching": true,
+    "cache_ttl_seconds": 3600,
+    "cache_db": 1
+  },
+  "performance_config": {
+    "enable_async_llm": true,
+    "max_concurrent_llm_calls": 10,
+    "llm_timeout_seconds": 30,
+    "workflow_node_timeout_seconds": 60,
+    "default_token_limit": 8192
+  },
+  "cost_config": {
+    "cost_ceiling_per_workflow": 5.0,
+    "enable_cost_tracking": true
+  },
+  "batch_config": {
+    "max_parallel_workers": 4,
+    "enable_circuit_breaker": true,
+    "circuit_breaker_failure_threshold": 3
+  },
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "max_meta_replan_loops": 3,
+    "feedback_log_path": "./logs/feedback_log.jsonl",
+    "preference_log_path": "./logs/preference_log.jsonl",
+    "proposed_rules_path": "./logs/proposed_rules.jsonl",
+    "generated_tools_path": "./generated_tools_v10_5",
+    "enable_hot_reloading": true
+  },
+  "feedback_config": {
+    "enable_feedback_aware_agents": true,
+    "feedback_cache_ttl_seconds": 60,
+    "feedback_lookback_entries": 100
+  },
+  "tracing_config": {
+    "langsmith_enabled": false,
+    "langsmith_api_key": null
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json"
+  },
+  "agent_stacks": {
+    "description": "v10.5: All stacks validated, resilient, and use centralized prompts.",
+    "safety_stack_enabled": true,
+    "bias_detection_threshold": 0.7,
+    "pii_detection_enabled": true,
+    "enable_prompt_injection_detection": true,
+    "enable_semantic_validation": true,
+    "strategy_tot_branching_factor": 3,
+    "strategy_tot_depth": 2,
+    "strategy_feedback_aware": true,
+    "prompt_llm_driven": true,
+    "prompt_feedback_aware": true,
+    "enable_local_retries": true,
+    "max_local_retries": 2,
+    "enable_react_conductors": true,
+    "conductor_max_steps": 10,
+    "conductor_temperature": 0.6,
+    "conductor_feedback_aware": true,
+    "enable_hil_stack": true,
+    "ambiguity_confidence_threshold": 0.8,
+    "enable_hyde": true,
+    "enable_reranking": true,
+    "reranking_top_k": 5,
+    "rag_feedback_aware": true
+  },
+  "model_config": {
+    "description": "v10.5: Added _simple (Flash) and _complex (Opus/Pro) variants for dynamic routing.",
+    "strategy_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.5
+    },
+    "strategy_model_simple": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.6
+    },
+    "strategy_model_complex": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.4
+    },
+    "prompt_engineer_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.7
+    },
+    "prompt_engineer_model_simple": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.7
+    },
+    "prompt_engineer_model_complex": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.6
+    },
+    "bullet_generator_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.7
+    },
+    "bullet_fact_check_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2
+    },
+    "critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2
+    },
+    "qa_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.3
+    },
+    "react_conductor_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.6
+    },
+    "react_conductor_model_simple": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.7
+    },
+    "react_conductor_model_complex": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.5
+    },
+    "hyde_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.6
+    },
+    "reranker_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.2
+    },
+    "drafting_strategist_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.5
+    },
+    "drafting_redteam_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.6
+    },
+    "drafting_refiner_model": {
+      "provider": "openai",
+      "model_name": "gpt-5",
+      "temperature": 0.6
+    },
+    "drafting_metrics_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.4
+    },
+    "qa_adversarial_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.5
+    },
+    "qa_validator_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.3
+    },
+    "prompt_injection_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-flash",
+      "temperature": 0.1
+    },
+    "meta_tool_generator_model": {
+      "provider": "anthropic",
+      "model_name": "claude-4.1-opus",
+      "temperature": 0.4
+    },
+    "meta_tool_critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.5-pro",
+      "temperature": 0.2
+    }
+  },
+  "v10_5_improvements_summary": {
+    "version": "10.5.0-full-fix-list",
+    "techniques_applied": [
+      {
+        "technique": "Dynamic Model Routing (Fix #2)",
+        "implementation": "Config now has _simple/_complex models; BaseAgent.get_model_client selects based on context.complexity."
+      },
+      {
+        "technique": "Tool Result Caching (Fix #1)",
+        "implementation": "CacheManager now supports get/set_tool_cache; ReAct conductors will be modified to use it."
+      },
+      {
+        "technique": "Node Timeouts (Fix #6)",
+        "implementation": "core_v10_5.py contains @async_timeout; config has 'workflow_node_timeout_seconds'."
+      },
+      {
+        "technique": "Tool Generation (Fix #7)",
+        "implementation": "Config and PromptManager updated for meta-learning tool generation."
+      },
+      {
+        "technique": "Agent Ops / Metrics (Fix #8)",
+        "implementation": "core_v10_5.py has MetricsCollector and @track_metrics; context will inject it."
+      },
+      {
+        "technique": "Self-Consistency Voting (Fix #9)",
+        "implementation": "PromptManager has 'strategy_tot_vote' prompt for ToTStrategistAgent."
+      },
+      {
+        "technique": "Curriculum Learning (Fix #11)",
+        "implementation": "PromptEngineerAgent prompt now accepts 'complexity' for curriculum-guided prompting."
+      },
+      {
+        "technique": "Proactive PI Detection (Fix #12)",
+        "implementation": "Config and PromptManager support new PromptInjectionDetectorAgent."
+      },
+      {
+        "technique": "Semantic Validation (Fix #13, #14)",
+        "implementation": "core_v10_5.py has SemanticValidator; context will inject it."
+      },
+      {
+        "technique": "Debate Pattern (Fix #4)",
+        "implementation": "PromptManager 'refine_section' prompt ready for debate pattern."
+      },
+      {
+        "technique": "Deeper HIL (Fix #5)",
+        "implementation": "PromptManager 'hil_feedback_router' prompt ready for 'INJECT_EDIT' route."
+      }
+    ]
+  }
+}

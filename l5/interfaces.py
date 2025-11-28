@@ -233,11 +233,7 @@ class SafetyViolation:
     metadata: Dict[str, Any]
 
 
-class Verdict(Enum):
-    """Policy evaluation verdict."""
-    ALLOW = "allow"
-    BLOCK = "block"
-    MODIFY = "modify"
+from l5.types import Verdict
 
 
 @dataclass

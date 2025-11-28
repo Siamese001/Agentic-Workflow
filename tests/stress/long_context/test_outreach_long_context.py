@@ -128,7 +128,8 @@ class TestOutreachLongContext:
         
         return mock_company_result, mock_contact_result
     
-    def test_long_context_does_not_crash(self):
+    @pytest.mark.asyncio
+    async def test_long_context_does_not_crash(self):
         """Test that large context sizes don't cause crashes."""
         # Setup large data
         large_recipient = self.create_large_recipient()
@@ -147,7 +148,7 @@ class TestOutreachLongContext:
         
         # Should handle large context gracefully
         start_time = time.time()
-        result = orchestrator.orchestrate_outreach(mission, large_recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, large_recipient, config)
         execution_time = time.time() - start_time
         
         # Should complete in reasonable time despite large data
@@ -157,7 +158,8 @@ class TestOutreachLongContext:
         assert result is not None
         assert hasattr(result, 'success')
     
-    def test_context_size_limit_enforced(self):
+    @pytest.mark.asyncio
+    async def test_context_size_limit_enforced(self):
         """Test that context size limits are enforced."""
         # Create extremely large recipient that exceeds limits
         huge_recipient = self.create_large_recipient()
@@ -176,7 +178,7 @@ class TestOutreachLongContext:
         mission = self.create_sample_mission()
         
         # Should handle context size limit gracefully
-        result = orchestrator.orchestrate_outreach(mission, huge_recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, huge_recipient, config)
         
         # Should not crash, may fail gracefully or truncate data
         assert result is not None
@@ -185,7 +187,8 @@ class TestOutreachLongContext:
         if hasattr(result, 'success') and not result.success:
             assert "context" in result.message.lower() or "size" in result.message.lower()
     
-    def test_memory_usage_stable_under_load(self):
+    @pytest.mark.asyncio
+    async def test_memory_usage_stable_under_load(self):
         """Test that memory usage remains stable with multiple large contexts."""
         import psutil
         import os
@@ -205,7 +208,7 @@ class TestOutreachLongContext:
         
         # Execute multiple workflows
         for i in range(10):
-            result = orchestrator.orchestrate_outreach(mission, large_recipient, config)
+            result = await orchestrator.orchestrate_outreach(mission, large_recipient, config)
             assert result is not None
         
         final_memory = process.memory_info().rss / 1024 / 1024  # MB
@@ -214,7 +217,8 @@ class TestOutreachLongContext:
         # Memory increase should be reasonable (less than 100MB for 10 large workflows)
         assert memory_increase < 100, f"Memory increased by {memory_increase}MB, which is too high"
     
-    def test_large_message_generation_handled(self):
+    @pytest.mark.asyncio
+    async def test_large_message_generation_handled(self):
         """Test that large message generation doesn't cause issues."""
         # Mock large message generation
         large_message = "x" * 50000  # 50KB message
@@ -235,7 +239,7 @@ class TestOutreachLongContext:
         recipient = self.create_large_recipient()
         
         # Should handle large message generation
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, recipient, config)
         
         assert result is not None
         assert hasattr(result, 'success')

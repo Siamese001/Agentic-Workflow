@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import logging
 import re
+from l5.types import Verdict, Action
 
 logger = logging.getLogger(__name__)
 
@@ -80,17 +81,6 @@ class EvaluationContext:
 
 
 # Legacy compatibility classes for existing tests
-class Verdict(str, Enum):
-    """Legacy verdict enum for test compatibility."""
-    ALLOW = "allow"
-    BLOCK = "block"
-
-
-class Action(str, Enum):
-    """Legacy action enum for test compatibility."""
-    ALLOW = "allow"
-    REQUIRE_APPROVAL = "require_approval"
-    BLOCK = "block"
 
 
 @dataclass
@@ -121,6 +111,23 @@ class OutreachSafetyPolicy:
             "LIC-E011": "unsafe_assertion",
             "LIC-E012": "competency_overreach",
             "LIC-E013": "privacy_violation"
+        }
+        
+        # Missing attributes for test compatibility
+        self.archetype_tolerance_config = {
+            "executive": "moderate",
+            "senior_ta": "low", 
+            "recruiter": "conservative",
+            "c_level": "permissive"
+        }
+        
+        self.error_codes = [f"LIC-E{str(i).zfill(3)}" for i in range(1, 14)]
+        
+        self.escalation_config = {
+            "low_threshold": 3,
+            "medium_threshold": 2,
+            "high_threshold": 1,
+            "critical_threshold": 0
         }
     
     @property

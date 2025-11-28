@@ -1,0 +1,2108 @@
+{
+  "metadata": {
+    "schema": "Job_Workflow",
+    "version": "v1.6.5",
+    "architecture": "Interactive Execution with Staging Buffer + Clerk Validation + Full Content Display",
+    "description": "V1.6.5 PRODUCTION RELEASE: Complete implementation integrating v1.6.3 (staging buffer scope isolation), v1.6.4 (file generation hard enforcement + pipeline visibility), and v1.6.5 (QA report completeness enforcement). This is the authoritative v1.6.5 specification with all patches applied. QA validates actual rendered text from staging buffer with mandatory completeness verification. File generation exclusively reads from staging buffer. All validation gates enforce complete 13-section QA reports.",
+    "last_updated": "2025-10-15",
+    "replaces": "v1.6.0, v1.6.1, v1.6.2, v1.6.3, v1.6.4",
+    "test_validation": {
+      "total_tests": 147,
+      "breakdown": {
+        "golden_path_tests": 82,
+        "clerk_validation_tests": 21,
+        "staging_buffer_tests": 32,
+        "qa_completeness_tests": 12
+      },
+      "pass_rate": "147/147 (100%) REQUIRED",
+      "test_date": "2025-10-15",
+      "critical_manual_tests": [
+        "MANUAL_001: K.1 word count verification in Microsoft Word MUST match QA Report exactly"
+      ],
+      "test_suites": [
+        "GOLDEN_PATH_E2E_SUITE",
+        "CLERK_VALIDATION_SUITE",
+        "STAGING_BUFFER_UNIT_TESTS",
+        "STAGING_BUFFER_INTEGRATION_TESTS",
+        "WORD_COUNT_ACCURACY_TESTS",
+        "REGRESSION_TESTS"
+      ]
+    },
+    "breaking_changes": "V1.6.2 is a complete rewrite of validation architecture. Staging buffer implementation is mandatory. All validation gates accept staging_buffer parameter ONLY - cannot access artist_output. Clerk validation gate is mandatory POST_CLERK_PRE_ARTIST. QA Report has 13 sections (0-12). File writes blocked on ANY validation failure.",
+    "critical_capabilities": {
+      "staging_buffer_scope_isolation": "Artist_output deleted from scope before validation. Validation gates cannot access artist metadata, ensuring accurate QA validation of rendered text only.",
+      "file_generation_enforcement": "Files generated exclusively from staging_buffer with scope isolation. Added Section 0.7 Pipeline Visibility tracking word counts at every stage (Master\u2192Clerk\u2192Artist\u2192Staging\u2192QA\u2192Final).",
+      "qa_completeness_validation": "QA Report MUST contain sections 0-12 (13 total) with no gaps or truncation. Section 13 provides completeness verification table. Recovery mechanism regenerates missing sections up to 3 attempts.",
+      "clerk_validation": "Validates factual data (contact info, dates, company names) before Artist phase, prevents silent data corruption",
+      "accurate_qa": "QA validates actual rendered text, not Artist metadata - eliminates false-pass bugs",
+      "gate_enforcement": "All validation failures block file writes - no corrupt output files"
+    },
+    "patch_history": [
+      {
+        "version": "v1.6.3",
+        "patch_id": "P-v1.6.3-SCOPE-FIX",
+        "changes": "Staging buffer scope isolation - validation gates read from staging_buffer only, artist_output deleted from scope"
+      },
+      {
+        "version": "v1.6.4",
+        "patch_id": "P-v1.6.4-FILE-GEN-ENFORCEMENT",
+        "changes": "File generation hard enforcement - files sourced from staging_buffer only, added Section 0.7 Pipeline Visibility Table"
+      },
+      {
+        "version": "v1.6.5",
+        "patch_id": "P-v1.6.5-QA-COMPLETENESS",
+        "changes": "QA report completeness enforcement - mandatory 13 sections (0-12), Section 13 completeness verification, recovery mechanisms"
+      }
+    ]
+  },
+  "GLOBAL_ENFORCEMENT_SPEC": {
+    "description": "SINGLE SOURCE OF TRUTH (SSOT) FOR ALL WORKFLOW RULES. All K-nodes, validation gates, and system components MUST reference this object. DO NOT duplicate these values anywhere else.",
+    "version": "1.0",
+    "files_and_schemas": {
+      "input_mandatory": [
+        "master_resume",
+        "job_description",
+        "App_Schema_v4.json",
+        "SaaS_Roles.json",
+        "Hyphenation_Rules.json",
+        "App_Tracker_QA_v5.json"
+      ],
+      "app_schema": "App_Schema_v4.json",
+      "output_patterns": {
+        "resume": "Resume_{company_sanitized}_{date}.txt",
+        "cover_letter": "CoverLetter_{company_sanitized}_{date}.txt",
+        "qa_report": "QA_Report_{company_sanitized}_{date}.md",
+        "app_tracker": "AppTracker_{company_sanitized}_{date}.json"
+      }
+    },
+    "word_counts": {
+      "K.1_executive_summary": {
+        "min": 118,
+        "max": 135,
+        "scope": "total",
+        "unit": "words"
+      },
+      "K.4_headline": {
+        "max": 4,
+        "scope": "per_segment",
+        "char_limit": 90,
+        "unit": "words"
+      },
+      "K.5A_unify_bullets": {
+        "min": 28,
+        "max": 33,
+        "scope": "per_bullet",
+        "unit": "words"
+      },
+      "K.5B_unify_overview": {
+        "min": 28,
+        "max": 34,
+        "scope": "total",
+        "unit": "words"
+      },
+      "K.6A_ibm_bullets": {
+        "min": 24,
+        "max": 30,
+        "scope": "per_bullet",
+        "unit": "words"
+      },
+      "K.6B_ibm_overview": {
+        "min": 25,
+        "max": 30,
+        "scope": "total",
+        "unit": "words"
+      },
+      "K.8_competencies": {
+        "min": 24,
+        "max": 30,
+        "scope": "per_competency",
+        "unit": "words"
+      },
+      "K.9_cover_letter": {
+        "min": 85,
+        "max": 100,
+        "scope": "per_paragraph",
+        "unit": "words"
+      }
+    },
+    "generation_logic": {
+      "bullet_counts": {
+        "K.5A": 7,
+        "K.6A": 6
+      },
+      "provenance": {
+        "K.5A": "3V-3T-1S",
+        "K.6A": "2V-3T-1S"
+      },
+      "competency_count": 6,
+      "skill_count_range": {
+        "min": 8,
+        "max": 12
+      },
+      "authenticity_ratios": {
+        "executive": "0.8 positioning : 0.2 authenticity",
+        "bullets": "0.5 positioning : 0.5 authenticity",
+        "skills": "0.8 authenticity : 0.2 positioning"
+      },
+      "differentiator_distribution": {
+        "K.1": 2,
+        "K.4": 1,
+        "K.5A": 5,
+        "K.5B": 2,
+        "K.6A": 3,
+        "K.6B": 1,
+        "K.8": 2,
+        "K.9": 3,
+        "TOTAL": 20
+      }
+    },
+    "thresholds": {
+      "similarity": {
+        "overview_to_master_natural": 0.75,
+        "overview_to_master_synthetic": 0.65,
+        "overview_to_bullet": 0.65,
+        "inter_bullet": 0.7,
+        "headline_to_summary": 0.6,
+        "inter_competency": 0.65
+      },
+      "file_complexity": {
+        "max_files": 5,
+        "max_size_mb": 10
+      },
+      "min_confidence_score": 0.75,
+      "min_peer_jds": 3,
+      "table_stakes_pct": 0.8,
+      "differentiator_pct": 0.2,
+      "max_synthetic_pct": 0.15,
+      "min_plausibility": 0.75
+    },
+    "validation_rules": {
+      "competency_ranking": {
+        "pos_1": "tier_1",
+        "pos_2": [
+          "tier_1",
+          "tier_2"
+        ],
+        "pos_3": [
+          "tier_1",
+          "tier_2"
+        ]
+      },
+      "executive_summary_structure": {
+        "sentence_count": 6,
+        "style": "narrative_arc",
+        "forbidden_content": "bullet-like"
+      },
+      "overview_opening": "business_function_first"
+    },
+    "system_parameters": {
+      "api_config": {
+        "timeout_seconds": 30,
+        "retry_attempts": 3
+      },
+      "max_regeneration_attempts": 3
+    }
+  },
+  "1.role": {
+    "description": "System-level identity and operational parameters for v1.6.2 interactive workflow with integrated clerk validation and staging buffer architecture.",
+    "name": "Resume Workflow Orchestrator",
+    "purpose": "Generate ATS-optimized, executive-positioned resumes using the 'Clerk, then Artist, then Assembler' architecture with mandatory factual data validation and accurate QA via staging buffer.",
+    "phases": [
+      {
+        "phase": 1,
+        "name": "The Clerk: Structured Data Extraction + Validation",
+        "engine": "Deterministic Extraction Engine",
+        "description": "Extracts verifiable, factual data from all source files. Executes VG_CLERK_FACTUAL_DATA_INTEGRITY gate to validate contact info (phone format: +1-XXX-XXX-XXXX, 16 chars), dates (MMMM YYYY format), company names, education data before Artist phase. Prevents silent data corruption like phone number truncation.",
+        "input": "Master resume + JD URL or text + App_Schema_v4.json + SaaS_Roles.json + Hyphenation_Rules.json + App_Tracker_QA_v5.json",
+        "output": "Factual data scaffold with validated company names, dates, titles, extracted achievements, baseline overviews, clerk_validation_results.",
+        "validation_gate": "VG_CLERK_FACTUAL_DATA_INTEGRITY (mandatory)",
+        "on_failure": "HALT_WORKFLOW_AND_GENERATE_CLERK_ERROR_REPORT. No Artist phase execution."
+      },
+      {
+        "phase": 2,
+        "name": "The Artist: Creative Prose Generation",
+        "engine": "LLM Creative Engine",
+        "description": "Uses the validated factual scaffold to generate creative prose for all dynamic sections (K.0-K.12). Enforces industry-first structure, narrative synthesis, and authenticity-positioning hierarchy weights. Outputs include XML tags and metadata for staging buffer extraction.",
+        "input": "Factual scaffold from Phase 1 + Authenticity patterns from K.0 + Role classification + Positioning directives + Prose quality constraints.",
+        "output": "Creative prose with authentic language, industry-first positioning, architectural prose quality. Output includes tags and metadata that will be stripped during staging buffer creation."
+      },
+      {
+        "phase": 3,
+        "name": "The Assembler: Staging Buffer Creation + Validation + Rendering",
+        "engine": "Deterministic Assembly Engine",
+        "description": "Creates staging buffer from Artist output (extracts rendered text, strips ALL tags, calculates word counts using len(text.split())). ALL validation gates read from staging_buffer ONLY - cannot access artist_output. Blocks file writes on any validation failure. Renders four output files only if all gates pass.",
+        "execution_flow": [
+          "1. Artist completes all K-node generation",
+          "2. MANDATORY: create_staging_buffer(artist_output) executes",
+          "3. Staging buffer contains rendered_text + calculated metrics for ALL sections",
+          "4. ALL validation gates receive staging_buffer parameter ONLY (scope isolated)",
+          "5. Validation gates validate actual rendered text, NOT metadata",
+          "6. QA Report generated from staging_buffer validation results",
+          "7. Gate decision: PASS \u2192 write 4 files, FAIL \u2192 halt with error report only"
+        ],
+        "on_failure": "HALT_WORKFLOW_AND_GENERATE_FAILURE_REPORT. NO FILES WRITTEN (no Resume, CoverLetter, or AppTracker)."
+      }
+    ],
+    "execution_controller": {
+      "policy": "GVD_INTERACTIVE (Generate -> Validate -> Display)"
+    }
+  },
+  "2.task": {
+    "description": "Defines the objectives and constraints for all workflow phases in v1.6.2",
+    "primary_objective": "Generate a production-ready, ATS-optimized resume tailored to a specific job description using the 'Clerk, then Artist, then Assembler' pipeline with mandatory factual data validation (clerk gate) and accurate QA validation (staging buffer architecture).",
+    "quality_targets": {
+      "ats_optimization": "\u226590%",
+      "keyword_density": "8-12%",
+      "quantified_achievements": "\u226570%",
+      "ai_detection_risk": "<15%",
+      "deduplication_compliance": "100%",
+      "word_count_compliance": "100%",
+      "industry_first_compliance": "100%",
+      "prose_quality_compliance": "100%",
+      "clerk_validation_compliance": "100%",
+      "staging_buffer_accuracy": "100%"
+    },
+    "input_requirements": {
+      "mandatory": [
+        "master_resume (docx, pdf, txt, or json)",
+        "job_description (URL or pasted text)",
+        "App_Schema_v4.json",
+        "SaaS_Roles.json",
+        "Hyphenation_Rules.json",
+        "App_Tracker_QA_v5.json"
+      ],
+      "file_complexity_limit": {
+        "max_files": 5,
+        "max_size_mb": 10,
+        "on_exceed": "HALT_AND_PROMPT_STAGED_LOADING"
+      }
+    },
+    "output_deliverables": {
+      "files": [
+        "Resume_{company}_{date}.txt",
+        "CoverLetter_{company}_{date}.txt",
+        "QA_Report_{company}_{date}.md",
+        "AppTracker_{company}_{date}.json"
+      ],
+      "display_format": "FULL_CONTENT_IN_CHAT (Resume, Cover Letter, QA Report as text; App Tracker as JSON block)",
+      "no_download_links": true
+    },
+    "constraints": {
+      "word_counts": "SEE_GLOBAL_ENFORCEMENT_SPEC.word_counts",
+      "strict_enforcement": "Zero tolerance - regenerate up to 3 attempts on violations",
+      "prose_quality_enforcement": {
+        "K.1_narrative_structure": "MANDATORY - 6 sentences following prescribed arc",
+        "K.5B_K.6B_synthesis": "MANDATORY - cosine <0.6 to each bullet, NO paraphrasing",
+        "K.8_complete_ranking": "MANDATORY - validate full 1-6 order with industry-first in positions 1-2"
+      }
+    },
+    "validation_gates": {
+      "pre_generation": [
+        "VG_MANDATORY_INPUT_VALIDATION",
+        "VG_FILE_COMPLEXITY_CHECK",
+        "VG_MASTER_RESUME_IDENTIFICATION",
+        "VG_JD_ACQUISITION",
+        "VG_BASELINE_EXTRACTION",
+        "VG_CLERK_FACTUAL_DATA_INTEGRITY"
+      ],
+      "post_generation": [
+        "VG_STAGING_BUFFER_CREATION",
+        "VG_SCOPE_ISOLATION_ENFORCEMENT",
+        "VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+        "VG_INDUSTRY_FIRST_COMPLIANCE",
+        "VG_PROSE_QUALITY_COMPLIANCE",
+        "VG_DEDUPLICATION_COMPLIANCE",
+        "VG_AI_DETECTION_DEFENSE",
+        "VG_FILE_GENERATION_ENFORCEMENT",
+        "VG_FILE_GENERATION_VERIFICATION",
+        "VG_QA_REPORT_COMPLETENESS",
+        "VG_QA_METRICS_VALIDATION",
+        "VG_PRODUCTION_READY_PROOF"
+      ]
+    }
+  },
+  "3.context": {
+    "description": "Manages the data for the 'Clerk, then Artist' pipeline with clerk validation and staging buffer architecture in v1.6.2.",
+    "pre_flight_file_complexity_gate": {
+      "gate_id": "VG_FILE_COMPLEXITY_CHECK",
+      "execution_point": "PRE_CLERK_EXTRACTION",
+      "blocking": true,
+      "severity": "CRITICAL",
+      "thresholds": {
+        "total_file_count_max": 6,
+        "total_file_size_mb_max": 10
+      },
+      "on_exceed": "HALT_AND_PROMPT_STAGED_LOADING",
+      "enforce_blocking": true,
+      "halt_message": "\u26a0\ufe0f WORKFLOW HALTED: {file_count} files detected (max: 5).\n\nFor reliable extraction, provide files in 2 stages:\n\u2022 Prompt 1: Master resume + JD\n\u2022 Prompt 2: Supporting files (App_Schema, SaaS Roles, Hyphenation Rules, App Tracker QA)\n\nWorkflow will resume after staged input."
+    },
+    "master_resume_priority": {
+      "enabled": true,
+      "policy": "EXTRACT_MASTER_RESUME_FIRST_ALWAYS",
+      "file_identification": {
+        "patterns": [
+          "resume",
+          "cv",
+          "master",
+          "*.docx",
+          "*.pdf",
+          "*.txt",
+          "*.json"
+        ],
+        "prioritize_largest_text_file": true,
+        "exclude_patterns": [
+          "schema",
+          "tracker",
+          "roles",
+          "hyphenation"
+        ]
+      },
+      "extraction_timeout_seconds": 60,
+      "on_timeout": "HALT_WITH_TIMEOUT_ERROR"
+    },
+    "job_description_acquisition": {
+      "enabled": true,
+      "description": "Handles job description retrieval from URLs or direct input with hardened timeout and redirect handling",
+      "source_priority": [
+        "user_provided_url",
+        "pasted_text",
+        "file_upload"
+      ],
+      "url_fetcher": {
+        "enabled": true,
+        "timeout_seconds": 30,
+        "timeout_enforcement": "HARD_KILL",
+        "retry_attempts": 3,
+        "user_agent": "Mozilla/5.0 (compatible; Job_Workflow_v1.6.2)",
+        "auth_handling": {
+          "detect_patterns": [
+            "401",
+            "403",
+            "login",
+            "sign in",
+            "access denied",
+            "authenticate"
+          ],
+          "on_auth_required": "FALLBACK_TO_MANUAL"
+        },
+        "redirect_handling": {
+          "redirect_limit": 5,
+          "redirect_policy": "FAIL_AFTER_LIMIT",
+          "on_redirect_limit_exceeded": "HALT_AND_PROMPT_FINAL_URL"
+        }
+      }
+    },
+    "clerk_factual_data_validation": {
+      "gate_id": "VG_CLERK_FACTUAL_DATA_INTEGRITY",
+      "description": "Validates all factual data extracted by Clerk before Artist phase executes. Catches data corruption bugs like phone number truncation (917-239-3830 \u2192 917-23-3830).",
+      "execution_point": "POST_CLERK_PRE_ARTIST",
+      "blocking": true,
+      "severity": "CRITICAL",
+      "halt_on_failure": true,
+      "execution_timeout_seconds": 30,
+      "validation_categories": {
+        "contact_information": {
+          "priority": "P0",
+          "fields": [
+            {
+              "field": "name",
+              "required": true,
+              "min_length": 2,
+              "max_length": 100,
+              "on_fail": "HALT_WITH_MESSAGE: 'Name field missing or invalid length'"
+            },
+            {
+              "field": "phone",
+              "required": true,
+              "regex": "^\\+1-\\d{3}-\\d{3}-\\d{4}$",
+              "char_count": 16,
+              "example": "+1-917-239-3830",
+              "on_fail": "HALT_WITH_MESSAGE: 'Phone number format invalid. Expected: +1-XXX-XXX-XXXX (16 characters)'"
+            },
+            {
+              "field": "email",
+              "required": true,
+              "regex": "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$",
+              "min_length": 5,
+              "max_length": 100,
+              "on_fail": "HALT_WITH_MESSAGE: 'Email format invalid'"
+            },
+            {
+              "field": "linkedin",
+              "required": false,
+              "pattern_contains": "linkedin.com/in/",
+              "on_fail": "WARNING: 'LinkedIn URL missing or malformed'"
+            }
+          ]
+        },
+        "professional_experience": {
+          "priority": "P0",
+          "min_experience_entries": 2,
+          "per_entry_checks": [
+            {
+              "field": "company",
+              "required": true,
+              "min_length": 2,
+              "max_length": 100,
+              "on_fail": "HALT_WITH_MESSAGE: 'Company name missing or invalid for entry {index}'"
+            },
+            {
+              "field": "title",
+              "required": true,
+              "min_length": 3,
+              "max_length": 150,
+              "on_fail": "HALT_WITH_MESSAGE: 'Job title missing or invalid for entry {index}'"
+            },
+            {
+              "field": "dates.start",
+              "required": true,
+              "format": "MMMM YYYY",
+              "regex": "^(January|February|March|April|May|June|July|August|September|October|November|December)\\s\\d{4}$",
+              "on_fail": "HALT_WITH_MESSAGE: 'Start date format invalid for {company}. Expected: MMMM YYYY'"
+            },
+            {
+              "field": "dates.end",
+              "required": true,
+              "format": "MMMM YYYY|Present",
+              "regex": "^((January|February|March|April|May|June|July|August|September|October|November|December)\\s\\d{4}|Present)$",
+              "on_fail": "HALT_WITH_MESSAGE: 'End date format invalid for {company}. Expected: MMMM YYYY or Present'"
+            },
+            {
+              "field": "bullet_pool",
+              "required": true,
+              "min_bullets": 2,
+              "on_fail": "HALT_WITH_MESSAGE: 'Bullet pool has <2 bullets for {company}'"
+            }
+          ],
+          "chronology_validation": {
+            "enabled": true,
+            "check": "Validate dates are in reverse chronological order",
+            "detect_overlaps": true,
+            "on_overlap": "WARNING: 'Date overlap detected between {company1} and {company2}'",
+            "on_chronology_violation": "HALT_WITH_MESSAGE: 'Experience entries not in reverse chronological order'"
+          }
+        },
+        "education": {
+          "priority": "P1",
+          "min_education_entries": 1,
+          "per_entry_checks": [
+            {
+              "field": "degree",
+              "required": true,
+              "min_length": 3,
+              "on_fail": "HALT_WITH_MESSAGE: 'Degree field missing or invalid for entry {index}'"
+            },
+            {
+              "field": "institution",
+              "required": true,
+              "min_length": 3,
+              "on_fail": "HALT_WITH_MESSAGE: 'Institution field missing or invalid for entry {index}'"
+            }
+          ]
+        },
+        "certifications": {
+          "priority": "P2",
+          "required": false,
+          "per_entry_checks": [
+            {
+              "field": "text",
+              "min_length": 5,
+              "on_fail": "WARNING: 'Certification text too short at index {index}'"
+            }
+          ]
+        }
+      },
+      "output_on_success": {
+        "log_message": "\u2705 VG_CLERK_FACTUAL_DATA_INTEGRITY: All factual data validated successfully",
+        "store_validation_results": true,
+        "results_key": "clerk_validation_results"
+      },
+      "output_on_failure": {
+        "halt_workflow": true,
+        "generate_error_report": true,
+        "error_report_format": "markdown",
+        "error_report_sections": [
+          "Failed Validation Checks",
+          "Expected vs Actual Values",
+          "Remediation Guidance"
+        ]
+      }
+    },
+    "baseline_overview_extraction": {
+      "enabled": true,
+      "execution_point": "DURING_CLERK_PHASE",
+      "description": "Extracts existing overviews from master resume to establish baseline for similarity checks",
+      "targets": {
+        "unify_consulting_overview": {
+          "section": "Unify Consulting",
+          "min_words": 15,
+          "storage_key": "master_baseline_unify_overview"
+        },
+        "ibm_overview": {
+          "section": "IBM",
+          "min_words": 15,
+          "storage_key": "master_baseline_ibm_overview"
+        }
+      },
+      "fuzzy_section_matching": {
+        "enabled": true,
+        "patterns": [
+          "(?i)unify.*consulting",
+          "(?i)ibm.*consultant",
+          "(?i)ibm.*corp",
+          "(?i)ibm"
+        ],
+        "min_similarity_threshold": 0.7
+      },
+      "fallback_baseline_generation": {
+        "enabled": true,
+        "trigger": "Master resume lacks overview paragraph OR overview < 15 words",
+        "method": "Extract first 3-5 bullets from section, synthesize baseline overview",
+        "mark_as_synthetic": true,
+        "adjusted_threshold": 0.65
+      },
+      "graceful_degradation": {
+        "enabled": true,
+        "trigger": "Baseline extraction fails completely",
+        "action": "Disable baseline similarity check for that section",
+        "warning": "Log in QA report that baseline check was skipped"
+      }
+    },
+    "bullet_pool_assembly": {
+      "enabled": true,
+      "execution_point": "DURING_CLERK_PHASE",
+      "description": "Assembles pool of candidate bullets from master resume for K.5A and K.6A selection",
+      "minimum_bullets_required": 20,
+      "sources": [
+        "Unify_Consulting_section",
+        "IBM_section",
+        "Other_relevant_experience"
+      ],
+      "on_insufficient_bullets": {
+        "policy": "HALT_WITH_BULLET_GUIDANCE",
+        "halt_message": "\u274c Bullet pool contains <20 bullets. Master resume needs minimum 20 achievement bullets across all experience sections for effective tailoring."
+      }
+    }
+  },
+  "positioning_framework": {
+    "enabled": true,
+    "name": "Industry-First Positioning Hierarchy",
+    "version": "1.0.5",
+    "description": "Establishes industry domain expertise as primary positioning element, with leadership capability secondary and technology skills tertiary.",
+    "priority_hierarchy": {
+      "tier_1": {
+        "name": "Industry Domain Expertise",
+        "examples": [
+          "Insurance",
+          "Financial Services",
+          "Banking",
+          "Risk Management",
+          "Healthcare"
+        ],
+        "weight": 0.5
+      },
+      "tier_2": {
+        "name": "Leadership & Business Capability",
+        "examples": [
+          "Strategic Transformation",
+          "Executive Operations",
+          "Business Growth",
+          "P&L Ownership"
+        ],
+        "weight": 0.3
+      },
+      "tier_3": {
+        "name": "Technology Enablement",
+        "examples": [
+          "AI Innovation",
+          "Cloud Strategy",
+          "Digital Platforms",
+          "Data Modernization"
+        ],
+        "weight": 0.2
+      }
+    },
+    "authenticity_positioning_hierarchy": {
+      "executive_sections": {
+        "applies_to": [
+          "K.1_executive_summary",
+          "K.4_headline",
+          "K.5B_unify_overview",
+          "K.6B_ibm_overview",
+          "K.8_competencies"
+        ],
+        "ratio": "0.8 positioning : 0.2 authenticity"
+      },
+      "bullet_sections": {
+        "applies_to": [
+          "K.5A_unify_bullets",
+          "K.6A_ibm_bullets"
+        ],
+        "ratio": "0.5 positioning : 0.5 authenticity"
+      },
+      "skills_section": {
+        "applies_to": [
+          "K.11_skills"
+        ],
+        "ratio": "0.8 authenticity : 0.2 positioning"
+      }
+    }
+  },
+  "4.reasoning": {
+    "description": "The creative 'Artist' phase of the workflow. Executes silently. All K-nodes generate content that will be extracted into staging buffer for validation.",
+    "K_nodes": {
+      "K.0": {
+        "description": "Performs thematic analysis, extracts authenticity patterns, runs competitive intelligence, performs role classification.",
+        "output_schema": {
+          "primary_theme": "string",
+          "secondary_themes": [
+            "string"
+          ],
+          "role_classification": "INDUSTRY_EXECUTIVE | TECH_SPECIALIST | HYBRID_PROFILE",
+          "positioning_directives": {
+            "apply_industry_first": "boolean",
+            "authenticity_positioning_ratio": "string"
+          },
+          "authenticity_patterns": {
+            "executive_summary_patterns": [
+              "string"
+            ],
+            "achievement_verb_patterns": [
+              "string"
+            ]
+          },
+          "competitive_intelligence": {
+            "peer_jds_analyzed": [
+              "string"
+            ],
+            "differentiator_keywords": [
+              "string"
+            ]
+          }
+        },
+        "temp": 0.3
+      },
+      "K.1": {
+        "description": "Generates the executive summary with industry-first opening structure and narrative prose enforcement.",
+        "word_count": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.1_executive_summary",
+        "authenticity_positioning_ratio": "0.8 positioning : 0.2 authenticity",
+        "sentence_structure": {
+          "sentence_1": {
+            "word_target": "24-26 words",
+            "pattern": "[Industry] + [years] + [outcomes] + through + [technology]"
+          },
+          "sentence_2": {
+            "word_target": "34-38 words",
+            "pattern": "Transformation capability narrative"
+          },
+          "sentence_3": {
+            "word_target": "34-38 words",
+            "pattern": "Leadership bridging capability"
+          },
+          "sentence_4": {
+            "word_target": "16-20 words",
+            "pattern": "Strategic partnerships with quantified outcome"
+          },
+          "sentence_5": {
+            "word_target": "12-14 words",
+            "pattern": "Core differentiation"
+          },
+          "sentence_6": {
+            "word_target": "12-14 words",
+            "pattern": "Advanced capability with business application"
+          }
+        },
+        "temp": 0.9
+      },
+      "K.2": {
+        "description": "Runs competitive analysis with industry-level differentiator filtering.",
+        "analysis_methodology": {
+          "peer_jd_threshold": 3,
+          "table_stakes_definition": "Requirements appearing in \u226580% of peer JDs",
+          "differentiator_definition": "Requirements appearing in \u226420% of peer JDs"
+        },
+        "temp": 0.4
+      },
+      "K.3": {
+        "description": "Determines role classification (Executive vs IC) to guide positioning intensity.",
+        "temp": 0.2
+      },
+      "K.4": {
+        "description": "Generates the LinkedIn headline with strict industry-first structure.",
+        "word_count": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.4_headline",
+        "char_limit": 90,
+        "authenticity_positioning_ratio": "0.8 positioning : 0.2 authenticity",
+        "structure": {
+          "segment_1": {
+            "content": "Industry/sector keyword",
+            "requirement": "MUST contain industry, NOT technology"
+          },
+          "segment_2": {
+            "content": "Leadership function or scope"
+          },
+          "segment_3": {
+            "content": "Technology enabler (optional)"
+          }
+        },
+        "temp": 0.8
+      },
+      "K.5": {
+        "description": "Generates Unify Consulting experience section using bullets-first approach.",
+        "sub_nodes": {
+          "K.5A": {
+            "description": "Selects and generates exactly 7 bullets for Unify Consulting.",
+            "bullet_count": 7,
+            "word_count_per_bullet": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.5A_unify_bullets",
+            "provenance": "3V-3T-1S",
+            "authenticity_positioning_ratio": "0.5 positioning : 0.5 authenticity",
+            "temp": 0.7
+          },
+          "K.5B": {
+            "description": "Synthesizes overview paragraph for Unify Consulting from bullets.",
+            "execution_sequence": "AFTER K.5A completes",
+            "word_count": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.5B_unify_overview",
+            "authenticity_positioning_ratio": "0.8 positioning : 0.2 authenticity",
+            "synthesis_requirements": {
+              "cosine_similarity_constraint": {
+                "requirement": "Cosine similarity MUST be <0.6 to EACH of the 7 K.5A bullets"
+              },
+              "baseline_similarity_check": {
+                "requirement": "Cosine similarity to master baseline overview MUST be <0.75"
+              }
+            },
+            "temp": 0.85
+          }
+        }
+      },
+      "K.6": {
+        "description": "Generates IBM experience section using bullets-first approach.",
+        "sub_nodes": {
+          "K.6A": {
+            "description": "Selects and generates exactly 6 bullets for IBM.",
+            "bullet_count": 6,
+            "word_count_per_bullet": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.6A_ibm_bullets",
+            "provenance": "2V-3T-1S",
+            "authenticity_positioning_ratio": "0.5 positioning : 0.5 authenticity",
+            "temp": 0.7
+          },
+          "K.6B": {
+            "description": "Synthesizes overview paragraph for IBM from bullets.",
+            "execution_sequence": "AFTER K.6A completes",
+            "word_count": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.6B_ibm_overview",
+            "authenticity_positioning_ratio": "0.8 positioning : 0.2 authenticity",
+            "synthesis_requirements": {
+              "cosine_similarity_constraint": {
+                "requirement": "Cosine similarity MUST be <0.6 to EACH of the 6 K.6A bullets"
+              },
+              "baseline_similarity_check": {
+                "requirement": "Cosine similarity to master baseline overview MUST be <0.75"
+              }
+            },
+            "temp": 0.85
+          }
+        }
+      },
+      "K.7": {
+        "description": "Dormant node - sections 3-5 copied directly from master resume",
+        "enabled": false
+      },
+      "K.8": {
+        "description": "Generates 6 strategic competencies with complete 1-6 ranking validation.",
+        "competency_count": 6,
+        "word_count_per_competency": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.8_competencies",
+        "authenticity_positioning_ratio": "0.8 positioning : 0.2 authenticity",
+        "ranking_enforcement": {
+          "position_1": "MUST be tier 1 (industry)",
+          "position_2": "MUST be tier 1 or tier 2 (NOT tier 3)",
+          "position_3": "MUST be tier 1 or tier 2 (NOT tier 3)",
+          "position_4_6": "Can be any tier"
+        },
+        "temp": 0.75
+      },
+      "K.9": {
+        "description": "Generates cover letter with K.2 differentiator integration validation.",
+        "structure": {
+          "body_paragraphs": {
+            "word_count": "SEE_GLOBAL_ENFORCEMENT_SPEC.K.9_cover_letter",
+            "paragraph_count": 3,
+            "per_paragraph_validation": {
+              "enabled": true,
+              "paragraph_1": {
+                "min": 85,
+                "max": 100
+              },
+              "paragraph_2": {
+                "min": 85,
+                "max": 100
+              },
+              "paragraph_3": {
+                "min": 85,
+                "max": 100
+              }
+            }
+          }
+        },
+        "temp": 0.8
+      },
+      "K.10": {
+        "description": "Education and certifications - copy/paste from master",
+        "temp": 0.2
+      },
+      "K.11": {
+        "description": "Generates a ranked, numbered list of 8-12 skills.",
+        "authenticity_positioning_ratio": "0.8 authenticity : 0.2 positioning",
+        "validation_requirement": {
+          "target_skill_count": 12,
+          "min_skill_count": 8,
+          "format": "Numbered list"
+        },
+        "temp": 0.1
+      },
+      "K.12": {
+        "description": "Transforms workflow outputs to App_Schema_v4 format",
+        "temp": 0.1
+      }
+    }
+  },
+  "5.output": {
+    "description": "The 'Assembler' phase with v1.6.2 staging buffer implementation and clerk validation reporting.",
+    "staging_buffer_creation": {
+      "gate_id": "VG_STAGING_BUFFER_CREATION",
+      "description": "Extracts rendered text from Artist output and calculates accurate metrics. This is the GROUND TRUTH for all QA validation in v1.6.2.",
+      "execution_point": "POST_ARTIST_PRE_VALIDATION",
+      "mandatory": true,
+      "blocking": true,
+      "timeout_seconds": 30,
+      "implementation_algorithm": {
+        "function_signature": "def create_staging_buffer(artist_output: dict) -> dict",
+        "critical_rules": [
+          "MUST strip ALL XML tags before calculating word count",
+          "MUST use len(text.split()) for word counting (Python default)",
+          "MUST store both rendered_text AND calculated metrics",
+          "MUST process ALL sections (K.1, K.4, K.5A, K.5B, K.6A, K.6B, K.8, K.9)",
+          "Staging buffer is immutable after creation"
+        ],
+        "processing_steps": {
+          "K.1": {
+            "extract": "artist_output.get('K.1', '')",
+            "strip_tags": "Remove ALL <tags> and [MARKERS]",
+            "calculate": {
+              "rendered_text": "cleaned_text",
+              "word_count": "len(rendered_text.split())",
+              "char_count": "len(rendered_text)",
+              "sentence_count": "count_sentences(rendered_text)"
+            }
+          },
+          "K.4": {
+            "extract": "artist_output.get('K.4', '')",
+            "strip_tags": "Remove ALL <tags> and [MARKERS]",
+            "calculate": {
+              "rendered_text": "cleaned_text",
+              "char_count": "len(rendered_text)",
+              "word_count": "len(rendered_text.split())",
+              "segment_count": "rendered_text.count('|') + 1"
+            }
+          },
+          "K.5A": {
+            "extract": "artist_output.get('K.5A', {}).get('bullets', [])",
+            "process_each_bullet": {
+              "strip_tags": "Remove ALL <tags> and [MARKERS]",
+              "calculate": {
+                "rendered_text": "cleaned_text",
+                "word_count": "len(rendered_text.split())",
+                "provenance": "bullet.get('provenance', 'UNKNOWN')"
+              }
+            },
+            "store": {
+              "bullets": "array of processed bullets",
+              "total_bullets": "len(bullets)"
+            }
+          },
+          "K.5B": {
+            "extract": "artist_output.get('K.5B', '')",
+            "strip_tags": "Remove ALL <tags> and [MARKERS]",
+            "calculate": {
+              "rendered_text": "cleaned_text",
+              "word_count": "len(rendered_text.split())",
+              "char_count": "len(rendered_text)"
+            }
+          },
+          "K.6A": {
+            "extract": "artist_output.get('K.6A', {}).get('bullets', [])",
+            "process_each_bullet": "SAME_AS_K.5A",
+            "store": {
+              "bullets": "array of processed bullets",
+              "total_bullets": "len(bullets)"
+            }
+          },
+          "K.6B": {
+            "extract": "artist_output.get('K.6B', '')",
+            "strip_tags": "Remove ALL <tags> and [MARKERS]",
+            "calculate": {
+              "rendered_text": "cleaned_text",
+              "word_count": "len(rendered_text.split())",
+              "char_count": "len(rendered_text)"
+            }
+          },
+          "K.8": {
+            "extract": "artist_output.get('K.8', {}).get('competencies', [])",
+            "process_each_competency": {
+              "extract_fields": {
+                "title": "comp.get('title', '')",
+                "description": "comp.get('description', '')"
+              },
+              "strip_tags": "Remove ALL <tags> and [MARKERS] from both",
+              "combine": "f'{title}: {description}'",
+              "calculate": {
+                "rendered_text": "combined_text",
+                "word_count": "len(combined_text.split())",
+                "tier": "comp.get('tier', 'UNKNOWN')"
+              }
+            },
+            "store": {
+              "competencies": "array of processed competencies",
+              "total_competencies": "len(competencies)"
+            }
+          },
+          "K.9": {
+            "extract": "artist_output.get('K.9', {}).get('paragraphs', [])",
+            "process_each_paragraph": {
+              "strip_tags": "Remove ALL <tags> and [MARKERS]",
+              "calculate": {
+                "rendered_text": "cleaned_text",
+                "word_count": "len(rendered_text.split())"
+              }
+            },
+            "store": {
+              "paragraphs": "array of processed paragraphs",
+              "full_letter": "'\\n\\n'.join([p['rendered_text'] for p in paragraphs])",
+              "total_paragraphs": "len(paragraphs)"
+            }
+          }
+        },
+        "validation_checkpoint": {
+          "check": "After staging buffer creation, verify all sections present",
+          "required_keys": [
+            "K.1",
+            "K.4",
+            "K.5A",
+            "K.5B",
+            "K.6A",
+            "K.6B",
+            "K.8",
+            "K.9"
+          ],
+          "on_missing": "HALT_WORKFLOW - Staging buffer incomplete"
+        }
+      }
+    },
+    "validation_gates": {
+      "VG_MANDATORY_WORD_COUNT_COMPLIANCE": {
+        "description": "Validates word counts by reading ACTUAL rendered text from staging_buffer. Cannot access artist_output. This is the core fix in v1.6.2 that eliminates false-pass bugs.",
+        "blocking": true,
+        "severity": "CRITICAL",
+        "function_signature": "def validate_word_count(staging_buffer: dict, global_spec: dict) -> ValidationResult",
+        "reads_from": "staging_buffer ONLY",
+        "cannot_access": "artist_output (scope isolated)",
+        "validation_method": {
+          "K.1": {
+            "source": "staging_buffer['K.1']['rendered_text']",
+            "calculate": "len(rendered_text.split())",
+            "min": "global_spec['word_counts']['K.1_executive_summary']['min']",
+            "max": "global_spec['word_counts']['K.1_executive_summary']['max']",
+            "on_fail": "raise ValidationException with text preview"
+          },
+          "K.5A_bullets": {
+            "source": "staging_buffer['K.5A']['bullets']",
+            "validate_each": "len(bullet['rendered_text'].split())",
+            "min": "global_spec['word_counts']['K.5A_unify_bullets']['min']",
+            "max": "global_spec['word_counts']['K.5A_unify_bullets']['max']",
+            "on_fail": "raise ValidationException with bullet text"
+          },
+          "K.5B": {
+            "source": "staging_buffer['K.5B']['rendered_text']",
+            "calculate": "len(rendered_text.split())",
+            "min": "global_spec['word_counts']['K.5B_unify_overview']['min']",
+            "max": "global_spec['word_counts']['K.5B_unify_overview']['max']",
+            "on_fail": "raise ValidationException with overview text"
+          },
+          "K.6A_bullets": {
+            "source": "staging_buffer['K.6A']['bullets']",
+            "validate_each": "len(bullet['rendered_text'].split())",
+            "min": "global_spec['word_counts']['K.6A_ibm_bullets']['min']",
+            "max": "global_spec['word_counts']['K.6A_ibm_bullets']['max']",
+            "on_fail": "raise ValidationException with bullet text"
+          },
+          "K.6B": {
+            "source": "staging_buffer['K.6B']['rendered_text']",
+            "calculate": "len(rendered_text.split())",
+            "min": "global_spec['word_counts']['K.6B_ibm_overview']['min']",
+            "max": "global_spec['word_counts']['K.6B_ibm_overview']['max']",
+            "on_fail": "raise ValidationException with overview text"
+          },
+          "K.8_competencies": {
+            "source": "staging_buffer['K.8']['competencies']",
+            "validate_each": "len(comp['combined_text'].split())",
+            "min": "global_spec['word_counts']['K.8_competencies']['min']",
+            "max": "global_spec['word_counts']['K.8_competencies']['max']",
+            "on_fail": "raise ValidationException with competency text"
+          },
+          "K.9_paragraphs": {
+            "source": "staging_buffer['K.9']['paragraphs']",
+            "validate_each": "len(para['rendered_text'].split())",
+            "min": "global_spec['word_counts']['K.9_cover_letter']['min']",
+            "max": "global_spec['word_counts']['K.9_cover_letter']['max']",
+            "on_fail": "raise ValidationException with paragraph text"
+          }
+        },
+        "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+      },
+      "VG_INDUSTRY_FIRST_COMPLIANCE": {
+        "description": "Validates industry-first positioning by reading rendered text from staging_buffer. Cannot access artist_output.",
+        "blocking": true,
+        "severity": "CRITICAL",
+        "reads_from": "staging_buffer ONLY",
+        "validation_checks": [
+          {
+            "check": "headline_segment_1_industry",
+            "source": "staging_buffer['K.4']['rendered_text']",
+            "method": "Parse first segment before |, verify contains industry keyword"
+          },
+          {
+            "check": "summary_opening_industry",
+            "source": "staging_buffer['K.1']['rendered_text']",
+            "method": "Parse first sentence, verify opens with industry + years"
+          },
+          {
+            "check": "competency_rank_order",
+            "source": "staging_buffer['K.8']['competencies']",
+            "method": "Verify positions 1-3 are tier 1 or tier 2"
+          }
+        ],
+        "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+      },
+      "VG_PROSE_QUALITY_COMPLIANCE": {
+        "description": "Calculates cosine similarity on staging_buffer rendered text. Cannot access artist_output.",
+        "blocking": true,
+        "severity": "CRITICAL",
+        "reads_from": "staging_buffer ONLY",
+        "validation_checks": [
+          {
+            "check": "K.5B_cosine_to_bullets",
+            "method": "Calculate cosine(staging_buffer['K.5B']['rendered_text'], each K.5A bullet['rendered_text'])",
+            "threshold": "<0.6 for ALL bullets"
+          },
+          {
+            "check": "K.6B_cosine_to_bullets",
+            "method": "Calculate cosine(staging_buffer['K.6B']['rendered_text'], each K.6A bullet['rendered_text'])",
+            "threshold": "<0.6 for ALL bullets"
+          }
+        ],
+        "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+      },
+      "VG_DEDUPLICATION_COMPLIANCE": {
+        "description": "78-check matrix uses staging_buffer rendered text for all comparisons. Cannot access artist_output.",
+        "blocking": true,
+        "severity": "HIGH",
+        "reads_from": "staging_buffer ONLY",
+        "comparison_matrix": {
+          "method": "Compare ALL pairwise combinations using staging_buffer rendered text",
+          "total_checks": 78
+        },
+        "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+      },
+      "VG_AI_DETECTION_DEFENSE": {
+        "description": "Reads provenance data from staging_buffer. Cannot access artist_output.",
+        "blocking": false,
+        "severity": "WARNING",
+        "reads_from": "staging_buffer ONLY",
+        "provenance_check": {
+          "K.5A": "staging_buffer['K.5A']['bullets'][i]['provenance']",
+          "K.6A": "staging_buffer['K.6A']['bullets'][i]['provenance']"
+        },
+        "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+      },
+      "VG_QA_METRICS_VALIDATION": {
+        "description": "Reads all metrics from staging_buffer. Cannot access artist_output.",
+        "blocking": true,
+        "severity": "CRITICAL",
+        "reads_from": "staging_buffer ONLY",
+        "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+      },
+      "VG_PRODUCTION_READY_PROOF": {
+        "description": "Final composite check verifying all staging buffer validations passed. Cannot access artist_output.",
+        "blocking": true,
+        "severity": "CRITICAL",
+        "composite_check": "ALL_GATES",
+        "reads_from": "staging_buffer ONLY",
+        "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN"
+      }
+    },
+    "file_generation": {
+      "gate_decision": {
+        "description": "Gate blocks file writes on ANY validation failure in v1.6.2",
+        "on_pass": "WRITE_ALL_FILES",
+        "on_fail": "GENERATE_FAILURE_REPORT_ONLY (no Resume, CoverLetter, or AppTracker files)",
+        "exception_handling": "FatalValidationException raised on blocking failures"
+      },
+      "four_file_output": {
+        "enabled": true,
+        "mandatory": true,
+        "encoding": "UTF-8",
+        "files": [
+          {
+            "id": "resume",
+            "filename": "Resume_{company_sanitized}_{date}.txt",
+            "format": "plain_text",
+            "tag_removal": true
+          },
+          {
+            "id": "cover_letter",
+            "filename": "CoverLetter_{company_sanitized}_{date}.txt",
+            "format": "plain_text",
+            "tag_removal": true
+          },
+          {
+            "id": "qa_report",
+            "filename": "QA_Report_{company_sanitized}_{date}.md",
+            "format": "markdown",
+            "include_debug_tags": true
+          },
+          {
+            "id": "app_tracker",
+            "filename": "AppTracker_{company_sanitized}_{date}.json",
+            "format": "json",
+            "schema": "App_Schema_v4.json"
+          }
+        ]
+      },
+      "post_file_write_display": {
+        "enabled": true,
+        "execution_point": "AFTER_ALL_FILES_WRITTEN",
+        "display_sequence": [
+          {
+            "step": 1,
+            "action": "Read Resume_{company}_{date}.txt",
+            "display": "Prepend '## RESUME\\n\\n' + full file content"
+          },
+          {
+            "step": 2,
+            "action": "Read CoverLetter_{company}_{date}.txt",
+            "display": "Prepend '\\n\\n---\\n\\n## COVER LETTER\\n\\n' + full file content"
+          },
+          {
+            "step": 3,
+            "action": "Read QA_Report_{company}_{date}.md",
+            "display": "Prepend '\\n\\n---\\n\\n## QA VALIDATION REPORT\\n\\n' + full file content"
+          },
+          {
+            "step": 4,
+            "action": "Read AppTracker_{company}_{date}.json",
+            "display": "Prepend '\\n\\n---\\n\\n## APPLICATION TRACKER\\n\\n' + ```json block"
+          }
+        ],
+        "no_additional_commentary": true
+      }
+    },
+    "qa_report_generation": {
+      "mandatory": true,
+      "execution_point": "AFTER_VALIDATION_GATES",
+      "format": "markdown",
+      "filename": "QA_Report_{company}_{date}.md",
+      "sections": {
+        "0_clerk_and_staging_buffer_validation": {
+          "title": "0. CLERK FACTUAL DATA INTEGRITY & STAGING BUFFER VALIDATION",
+          "description": "Section 0 combines clerk factual data validation (contact info, dates, company names) with staging buffer implementation validation (rendered text extraction, word count accuracy, validation source audit).",
+          "subsections": {
+            "0.1": {
+              "title": "Contact Information Validation",
+              "description": "Validates phone format (+1-XXX-XXX-XXXX, 16 chars), email format, name length. Catches extraction errors like phone truncation.",
+              "format": "markdown_table",
+              "columns": [
+                "Field",
+                "Expected Format",
+                "Actual Value",
+                "Char Count",
+                "Status"
+              ],
+              "rows": [
+                [
+                  "Name",
+                  "String (2-100 chars)",
+                  "{actual_name}",
+                  "{char_count}",
+                  "\u2705/\u274c"
+                ],
+                [
+                  "Phone",
+                  "+1-XXX-XXX-XXXX (16 chars)",
+                  "{actual_phone}",
+                  "{char_count}",
+                  "\u2705/\u274c"
+                ],
+                [
+                  "Email",
+                  "valid@domain.com",
+                  "{actual_email}",
+                  "{char_count}",
+                  "\u2705/\u274c"
+                ],
+                [
+                  "LinkedIn",
+                  "Contains /in/",
+                  "{actual_linkedin}",
+                  "N/A",
+                  "\u2705/\u26a0\ufe0f"
+                ]
+              ]
+            },
+            "0.2": {
+              "title": "Professional Experience Validation",
+              "description": "Validates date formats (MMMM YYYY), chronological order, company name lengths, bullet pool minimums.",
+              "format": "markdown_table",
+              "columns": [
+                "Check",
+                "Expected",
+                "Actual",
+                "Status"
+              ]
+            },
+            "0.3": {
+              "title": "Education Validation",
+              "description": "Validates degree and institution fields are present and valid length.",
+              "format": "markdown_table"
+            },
+            "0.4": {
+              "title": "Certification Validation",
+              "description": "Validates certification text length (optional field).",
+              "format": "markdown_table"
+            },
+            "0.5": {
+              "title": "Clerk Factual Data Integrity Summary",
+              "description": "Summary of all clerk validation results.",
+              "content": [
+                "**Total Checks Performed:** {total_checks}",
+                "**Checks Passed:** {passed_checks}",
+                "**Checks Failed:** {failed_checks}",
+                "**Overall Status:** \u2705 PASS / \u274c FAIL"
+              ]
+            },
+            "0.6": {
+              "title": "Staging Buffer Validation",
+              "description": "Verifies staging buffer was correctly populated and all validation gates used it. This is the critical validation that ensures v1.6.2's accurate QA architecture is working.",
+              "mandatory": true,
+              "subsections": {
+                "0.6.1": {
+                  "title": "Staging Buffer Creation Check",
+                  "table": {
+                    "columns": [
+                      "Section",
+                      "Rendered Text Length",
+                      "Word Count Calculated",
+                      "Status"
+                    ],
+                    "rows": [
+                      [
+                        "K.1",
+                        "{char_count}",
+                        "{word_count}",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "K.4",
+                        "{char_count}",
+                        "{word_count}",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "K.5A (7 bullets)",
+                        "N/A",
+                        "{total_words}",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "K.5B",
+                        "{char_count}",
+                        "{word_count}",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "K.6A (6 bullets)",
+                        "N/A",
+                        "{total_words}",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "K.6B",
+                        "{char_count}",
+                        "{word_count}",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "K.8 (6 comps)",
+                        "N/A",
+                        "{total_words}",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "K.9 (3 paras)",
+                        "N/A",
+                        "{total_words}",
+                        "\u2705/\u274c"
+                      ]
+                    ]
+                  }
+                },
+                "0.6.2": {
+                  "title": "Word Count Calculation Accuracy",
+                  "description": "Verifies staged word_count matches len(rendered_text.split())",
+                  "critical_check": {
+                    "method": "Recalculate word count for each section",
+                    "formula": "recalc = len(staging_buffer[section]['rendered_text'].split())",
+                    "requirement": "staged_count MUST equal recalc_count"
+                  }
+                },
+                "0.6.3": {
+                  "title": "Validation Source Audit",
+                  "description": "Confirms ALL validation gates read from staging buffer, NOT artist_output",
+                  "table": {
+                    "columns": [
+                      "Validation Gate",
+                      "Data Source",
+                      "Verified",
+                      "Status"
+                    ],
+                    "rows": [
+                      [
+                        "VG_MANDATORY_WORD_COUNT",
+                        "staging_buffer",
+                        "\u2705/\u274c",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "VG_INDUSTRY_FIRST",
+                        "staging_buffer",
+                        "\u2705/\u274c",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "VG_PROSE_QUALITY",
+                        "staging_buffer",
+                        "\u2705/\u274c",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "VG_DEDUPLICATION",
+                        "staging_buffer",
+                        "\u2705/\u274c",
+                        "\u2705/\u274c"
+                      ],
+                      [
+                        "VG_AI_DETECTION",
+                        "staging_buffer",
+                        "\u2705/\u274c",
+                        "\u2705/\u274c"
+                      ]
+                    ]
+                  }
+                },
+                "0.6.4": {
+                  "title": "Staging Buffer Summary",
+                  "content": [
+                    "**Buffer Created:** \u2705/\u274c",
+                    "**All Sections Present:** \u2705/\u274c ({present_count}/8)",
+                    "**Calculations Accurate:** \u2705/\u274c",
+                    "**Validation Source Verified:** \u2705/\u274c",
+                    "**Overall Status:** \u2705 PASS / \u274c FAIL"
+                  ],
+                  "pass_criteria": "ALL subsections must be \u2705",
+                  "on_any_failure": "DO NOT TRUST QA REPORT - staging buffer not implemented correctly"
+                }
+              }
+            }
+          }
+        },
+        "1_overview": {
+          "content": [
+            "Workflow version",
+            "Timestamp",
+            "Company and JD",
+            "Overall PASS/FAIL status"
+          ]
+        },
+        "2_word_count_validation": {
+          "content": [
+            "Table of word counts per K-node",
+            "Target ranges",
+            "Actual values",
+            "PASS/FAIL per node"
+          ],
+          "note": "V1.6.2: All word counts read from staging_buffer rendered text, NOT artist metadata"
+        },
+        "3_industry_first_validation": {
+          "content": [
+            "Headline segment 1 check",
+            "Summary opening check",
+            "Competency rank order check"
+          ]
+        },
+        "4_prose_quality_validation": {
+          "content": [
+            "K.1 narrative structure analysis",
+            "K.5B cosine similarity table to 7 K.5A bullets",
+            "K.6B cosine similarity table to 6 K.6A bullets"
+          ]
+        },
+        "5_deduplication_matrix": {
+          "content": [
+            "78-check matrix of all pairwise comparisons"
+          ],
+          "note": "V1.6.2: All comparisons use staging_buffer rendered text, ensuring accurate similarity detection"
+        },
+        "6_ai_detection_risk_assessment": {
+          "content": [
+            "Synthetic content percentage",
+            "Provenance tracking"
+          ]
+        },
+        "7_qa_metrics_summary": {
+          "content": [
+            "Table of all QA metrics",
+            "Expected vs Actual"
+          ]
+        },
+        "8_provenance_tracking": {
+          "content": [
+            "Bullet-by-bullet provenance for K.5A and K.6A"
+          ]
+        },
+        "9_competency_tier_analysis": {
+          "content": [
+            "Table showing all 6 competencies with tier classification"
+          ]
+        },
+        "10_production_readiness": {
+          "content": [
+            "Final PASS/FAIL",
+            "List of any failed gates"
+          ]
+        },
+        "11_k0_k2_integration": {
+          "content": [
+            "K.0/K.2 integration analysis",
+            "Differentiator distribution matrix"
+          ]
+        },
+        "12_test_validation_summary": {
+          "title": "Test Validation Summary",
+          "content": [
+            "**V1.6.0 Base Tests:** 82/82 passing",
+            "**V1.6.1 Clerk Validation Tests:** 21/21 passing",
+            "**V1.6.2 Staging Buffer Tests:** 32/32 passing",
+            "**Total Tests:** 103/103 (100%)",
+            "**Critical Manual Test:** MANUAL_001 (K.1 Word Count Verification in Microsoft Word)"
+          ]
+        }
+      }
+    }
+  },
+  "6.conditions": {
+    "description": "The inviolable, hardcoded rules of the v1.6.2 architecture.",
+    "critical_rules": [
+      "STAGING BUFFER: Staging buffer MUST be created after Artist phase, before validation",
+      "STAGING BUFFER: ALL validation gates MUST read from staging_buffer ONLY",
+      "SCOPE ISOLATION (v1.6.3): artist_output MUST be deleted from scope after staging buffer creation",
+      "SCOPE ISOLATION (v1.6.3): Validation gates CANNOT access artist_output (scope isolated)",
+      "SCOPE ISOLATION (v1.6.3): Validation function signature: def validate(staging_buffer: dict) ONLY",
+      "FILE GENERATION (v1.6.4): Function signature MUST be def generate_file(staging_buffer: dict) with NO other parameters",
+      "FILE GENERATION (v1.6.4): master_resume MUST be deleted from scope before file generation",
+      "FILE GENERATION (v1.6.4): All text MUST come from staging_buffer[section]['rendered_text']",
+      "FILE GENERATION (v1.6.4): Generated file MUST be verified against staging_buffer before returning",
+      "QA COMPLETENESS (v1.6.5): QA REPORT MUST contain ALL sections 0-12 with NO gaps",
+      "QA COMPLETENESS (v1.6.5): Sections MUST appear in sequential order (0,1,2,3...12)",
+      "QA COMPLETENESS (v1.6.5): Section 13 Completeness Verification MUST be generated",
+      "QA COMPLETENESS (v1.6.5): Section 13 MUST show \u2705 for all 13 sections",
+      "QA COMPLETENESS (v1.6.5): If any section missing, raise QAIncompletenessError and DO NOT DELIVER",
+      "QA REPORT: Section 0.7 Pipeline Visibility Table MUST be generated (v1.6.4)",
+      "QA REPORT: Section 0.7 MUST show word counts at ALL pipeline stages",
+      "FILE WRITES: Blocked if ANY validation gate fails",
+      "CLERK VALIDATION: Clerk validation gate MUST execute POST_CLERK_PRE_ARTIST",
+      "CLERK VALIDATION: Clerk validation failure HALTS workflow, generates error report",
+      "EXECUTION: The workflow proceeds through three phases (Clerk -> Artist -> Assembler)",
+      "OUTPUT: After file generation, display complete content of all four artifacts in chat",
+      "OUTPUT: Display file content directly in chat. Omit all download links",
+      "K.1 REQUIREMENT: Executive summary MUST be 6-sentence narrative paragraph",
+      "K.8 REQUIREMENT: Competencies in positions 1-3 MUST be Tier 1 or Tier 2",
+      "K.5A REQUIREMENT: Generate exactly 7 bullets",
+      "K.6A REQUIREMENT: Generate exactly 6 bullets",
+      "K.11 REQUIREMENT: Generate ranked, numbered list of 8-12 skills",
+      "ON FAILURE: If any validation gate fails, generate only failure report",
+      "MANUAL TEST: User MUST verify K.1 word count in Microsoft Word matches QA Report"
+    ]
+  },
+  "test_suites": {
+    "overview": {
+      "total_tests": 135,
+      "pass_rate_required": "135/135 (100%)",
+      "test_date": "2025-10-15",
+      "critical_success_metric": "MANUAL_001 test MUST pass - human verifies K.1 word count in Microsoft Word matches QA Report exactly"
+    },
+    "golden_path_tests": {
+      "total": 82,
+      "status": "PASSING",
+      "description": "Comprehensive end-to-end tests covering full workflow execution",
+      "suites": [
+        "GOLDEN_PATH_E2E_SUITE",
+        "INTEGRATION_TEST_SUITE",
+        "FAILURE_MODE_TESTING_SUITE",
+        "SEMANTIC_VALIDATION_SUITE"
+      ]
+    },
+    "clerk_validation_tests": {
+      "total": 21,
+      "status": "PASSING",
+      "description": "Tests for clerk factual data validation gate (contact info, dates, company names)",
+      "categories": {
+        "smoke_tests": 6,
+        "integration_tests": 8,
+        "end_to_end_tests": 7
+      },
+      "critical_tests": [
+        "SMOKE_002: Phone Number Format Validation (+1-XXX-XXX-XXXX, 16 chars)",
+        "INT_002: Invalid Phone Halts Before Artist",
+        "E2E_002: Phone Truncation Bug Prevented (917-239-3830 vs 917-23-3830)"
+      ]
+    },
+    "staging_buffer_tests": {
+      "total": 32,
+      "status": "REQUIRED",
+      "description": "Tests for staging buffer implementation and validation accuracy",
+      "categories": {
+        "staging_buffer_unit_tests": 7,
+        "staging_buffer_integration_tests": 6,
+        "word_count_accuracy_tests": 10,
+        "regression_tests": 5,
+        "performance_tests": 4,
+        "unit_tests": [
+          {
+            "test_id": "SCOPE-UNIT-001",
+            "name": "Validation function signature validation",
+            "check": "Verify all validation functions accept ONLY staging_buffer parameter",
+            "method": "Inspect function signatures, assert no artist_output parameter",
+            "expected": "All validation functions have signature: def validate(staging_buffer: dict)"
+          },
+          {
+            "test_id": "SCOPE-UNIT-002",
+            "name": "Artist output deletion verification",
+            "check": "After staging buffer creation, verify artist_output deleted from scope",
+            "method": "Try to access artist_output variable after deletion",
+            "expected": "NameError raised"
+          },
+          {
+            "test_id": "SCOPE-UNIT-003",
+            "name": "Staging buffer word count source",
+            "check": "Verify staging_buffer word_count calculated from rendered_text",
+            "method": "Recalculate: len(staging_buffer['K.1']['rendered_text'].split())",
+            "expected": "Recalculated count EXACTLY matches staging_buffer['K.1']['word_count']"
+          }
+        ],
+        "integration_tests": [
+          {
+            "test_id": "SCOPE-INT-001",
+            "name": "E2E word count accuracy",
+            "check": "Generate resume, extract K.1, manually count words",
+            "method": "Python len(text.split()) on extracted K.1 text",
+            "expected": "Manual count EXACTLY matches QA Report Section 2 K.1 'Actual' value"
+          },
+          {
+            "test_id": "SCOPE-INT-002",
+            "name": "QA Report displays rendered text",
+            "check": "Verify QA Report includes full rendered_text for K.1",
+            "method": "Check QA Report Section 2 contains staging_buffer['K.1']['rendered_text']",
+            "expected": "Full text present, allowing manual verification"
+          },
+          {
+            "test_id": "SCOPE-INT-003",
+            "name": "Validation reads from staging buffer only",
+            "check": "Corrupt artist_output metadata, verify validation unaffected",
+            "method": "Set artist_output['K.1']['word_count'] = 999, run validation",
+            "expected": "Validation uses staging_buffer value, ignores corrupted artist value"
+          }
+        ],
+        "smoke_tests": [
+          {
+            "test_id": "SCOPE-SMOKE-001",
+            "name": "MANUAL_001 regression test",
+            "check": "User copies K.1 from QA Report to Microsoft Word",
+            "method": "Manual word count in Word",
+            "expected": "Word count EXACTLY matches QA Report 'Actual' value",
+            "critical": true,
+            "priority": "P0"
+          }
+        ]
+      },
+      "critical_manual_tests": [
+        {
+          "test_id": "MANUAL_001",
+          "name": "K.1 Manual Word Count Verification",
+          "priority": "CRITICAL",
+          "method": "1. Generate resume with v1.6.2\n2. Open Resume_{company}_{date}.txt\n3. Copy K.1 Executive Summary text\n4. Open Microsoft Word\n5. Paste text\n6. Click Tools > Word Count\n7. Compare Word's count to QA Report Section 2 K.1 'Actual' value",
+          "expected": "Word count from Microsoft Word EXACTLY matches QA Report 'Actual' value",
+          "on_mismatch": "V1.6.2 FAILED - staging buffer not being used correctly",
+          "example": "If Word shows 128, QA Report must show 128. If Word shows 96 but QA shows 134 \u2192 BUG"
+        },
+        {
+          "test_id": "MANUAL_002-009",
+          "name": "Additional Section Verifications",
+          "description": "Verify K.5B, K.6B, K.5A bullets, K.6A bullets, K.9 paragraphs word counts match between Word and QA Report"
+        }
+      ],
+      "test_suite_id": "SCOPE_ISOLATION_TESTS",
+      "total_tests": 12
+    },
+    "FILE_GEN_ENFORCEMENT_TESTS": {
+      "suite_id": "FILE_GEN_ENFORCEMENT_TESTS",
+      "total_tests": 15,
+      "categories": {
+        "scope_isolation": [
+          {
+            "test_id": "FGEN-001",
+            "name": "File generation function signature validation",
+            "check": "Verify function accepts ONLY staging_buffer parameter",
+            "expected": "def generate_file(staging_buffer: dict)",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "FGEN-002",
+            "name": "Master resume inaccessible during file generation",
+            "check": "Try to access master_resume from within file generation",
+            "expected": "NameError raised",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "FGEN-003",
+            "name": "Artist output inaccessible during file generation",
+            "check": "Try to access artist_output from within file generation",
+            "expected": "NameError raised",
+            "severity": "CRITICAL"
+          }
+        ],
+        "source_verification": [
+          {
+            "test_id": "FGEN-004",
+            "name": "K.1 sourced from staging buffer only",
+            "check": "Verify file generation reads K.1 from staging_buffer['K.1']['rendered_text']",
+            "method": "Mock staging_buffer, verify file contains mocked text",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "FGEN-005",
+            "name": "All sections sourced from staging buffer",
+            "check": "Verify every section reads from staging_buffer[section]['rendered_text']",
+            "sections": [
+              "K.1",
+              "K.4",
+              "K.5A",
+              "K.5B",
+              "K.6A",
+              "K.6B",
+              "K.8",
+              "K.9"
+            ],
+            "severity": "CRITICAL"
+          }
+        ],
+        "output_verification": [
+          {
+            "test_id": "FGEN-006",
+            "name": "K.1 word count matches staging buffer",
+            "check": "Extract K.1 from file, count words, compare to staging_buffer",
+            "expected": "extracted_wc == staging_buffer['K.1']['word_count']",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "FGEN-007",
+            "name": "K.1 text exactly matches staging buffer",
+            "check": "Extract K.1 text, compare to staging_buffer['K.1']['rendered_text']",
+            "expected": "extracted_text == staging_buffer_text",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "FGEN-008",
+            "name": "All sections match staging buffer word counts",
+            "check": "Extract all sections, verify word counts match",
+            "expected": "100% match across all sections",
+            "severity": "CRITICAL"
+          }
+        ],
+        "corruption_detection": [
+          {
+            "test_id": "FGEN-009",
+            "name": "No master resume content in output",
+            "check": "If master K.1 differs from staging K.1, verify file uses staging",
+            "method": "Provide different master and staging, verify file uses staging",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "FGEN-010",
+            "name": "No text truncation",
+            "check": "Verify all sections complete (end with punctuation)",
+            "expected": "All sections end with . ! or ?",
+            "severity": "HIGH"
+          }
+        ],
+        "pipeline_visibility": [
+          {
+            "test_id": "FGEN-011",
+            "name": "Section 0.7 exists in QA Report",
+            "check": "Verify QA Report contains Pipeline Visibility Table",
+            "expected": "Section 0.7 present",
+            "severity": "HIGH"
+          },
+          {
+            "test_id": "FGEN-012",
+            "name": "Section 0.7 shows all pipeline stages",
+            "check": "Verify table has columns for Master, Clerk, Artist, Staging, QA, Final",
+            "expected": "All 6 columns present",
+            "severity": "HIGH"
+          },
+          {
+            "test_id": "FGEN-013",
+            "name": "Section 0.7 flags discrepancies",
+            "check": "If staging != final, verify Status column shows \u274c",
+            "expected": "Discrepancies highlighted",
+            "severity": "HIGH"
+          }
+        ]
+      }
+    },
+    "QA_COMPLETENESS_TESTS": {
+      "suite_id": "QA_COMPLETENESS_TESTS",
+      "total_tests": 12,
+      "categories": {
+        "section_presence": [
+          {
+            "test_id": "QA-COMP-001",
+            "name": "All 13 sections present (0-12)",
+            "check": "Parse QA Report and verify sections 0-12 all exist",
+            "expected": "13 sections found",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "QA-COMP-002",
+            "name": "No missing sections",
+            "check": "Verify no gaps in section numbering",
+            "expected": "Continuous sequence 0,1,2,3,4,5,6,7,8,9,10,11,12",
+            "severity": "CRITICAL"
+          },
+          {
+            "test_id": "QA-COMP-003",
+            "name": "Section 13 exists",
+            "check": "Verify Section 13 Completeness Verification present",
+            "expected": "Section 13 found",
+            "severity": "HIGH"
+          }
+        ],
+        "section_order": [
+          {
+            "test_id": "QA-COMP-004",
+            "name": "Sections in sequential order",
+            "check": "Verify sections appear in order 0,1,2,...,12",
+            "expected": "No out-of-order sections",
+            "severity": "HIGH"
+          }
+        ],
+        "section_content": [
+          {
+            "test_id": "QA-COMP-005",
+            "name": "Section 6 Character Count present",
+            "check": "Verify Section 6 contains character count validation",
+            "expected": "Section 6 length >= 200 chars",
+            "severity": "HIGH"
+          },
+          {
+            "test_id": "QA-COMP-006",
+            "name": "Section 7 Sentence Structure present",
+            "check": "Verify Section 7 contains sentence validation",
+            "expected": "Section 7 length >= 150 chars",
+            "severity": "HIGH"
+          },
+          {
+            "test_id": "QA-COMP-007",
+            "name": "Section 8 Competency Ranking present",
+            "check": "Verify Section 8 contains competency validation",
+            "expected": "Section 8 length >= 150 chars",
+            "severity": "HIGH"
+          },
+          {
+            "test_id": "QA-COMP-008",
+            "name": "Section 9 Cover Letter present",
+            "check": "Verify Section 9 contains cover letter validation",
+            "expected": "Section 9 length >= 200 chars",
+            "severity": "HIGH"
+          },
+          {
+            "test_id": "QA-COMP-009",
+            "name": "Section 11 Manual Tests present",
+            "check": "Verify Section 11 contains manual test instructions",
+            "expected": "Section 11 length >= 200 chars",
+            "severity": "HIGH"
+          }
+        ],
+        "total_length": [
+          {
+            "test_id": "QA-COMP-010",
+            "name": "QA Report minimum length",
+            "check": "Verify total QA Report length >= 3000 chars",
+            "expected": "Total length >= 3000",
+            "severity": "MEDIUM"
+          }
+        ],
+        "section_13_validation": [
+          {
+            "test_id": "QA-COMP-011",
+            "name": "Section 13 shows all sections \u2705",
+            "check": "Parse Section 13 table, verify all rows show \u2705 status",
+            "expected": "13/13 sections with \u2705 status",
+            "severity": "HIGH"
+          },
+          {
+            "test_id": "QA-COMP-012",
+            "name": "Section 13 completeness summary correct",
+            "check": "Verify Section 13.2 shows 13/13 sections, 0 missing",
+            "expected": "Summary shows COMPLETE",
+            "severity": "HIGH"
+          }
+        ]
+      }
+    }
+  },
+  "deployment_checklist": {
+    "description": "V1.6.2 deployment requires careful validation of both staging buffer implementation and clerk validation",
+    "pre_deployment": [
+      "\u2705 Verify create_staging_buffer() function implemented correctly",
+      "\u2705 Verify validate_word_count() accepts staging_buffer parameter only",
+      "\u2705 Verify all validation gates accept staging_buffer only (cannot access artist_output)",
+      "\u2705 Verify VG_CLERK_FACTUAL_DATA_INTEGRITY gate implemented correctly",
+      "\u2705 Verify QA Report includes Section 0 (subsections 0.1-0.6)",
+      "\u2705 Verify scope isolation: validation functions cannot access artist_output",
+      "\u2705 Run all 135 tests (82 golden path + 21 clerk + 32 staging buffer)"
+    ],
+    "deployment": [
+      "\u2705 Generate test resume with v1.6.2",
+      "\u2705 Perform MANUAL_001 (K.1 Word verification in Microsoft Word)",
+      "\u2705 If manual count matches QA Report \u2192 PROCEED TO PRODUCTION",
+      "\u2705 If manual count differs \u2192 STOP and debug staging buffer implementation",
+      "\u2705 Verify clerk validation catches phone format errors (test with truncated phone)",
+      "\u2705 Verify gate blocks file writes on validation failure (test with invalid word count)"
+    ],
+    "post_deployment": [
+      "\u2705 Generate 3 production resumes",
+      "\u2705 For each, manually verify K.1 word count in Word matches QA Report",
+      "\u2705 All 3 must match exactly (zero tolerance)",
+      "\u2705 Monitor for user-reported word count discrepancies",
+      "\u2705 If any discrepancy reported \u2192 investigate staging buffer implementation"
+    ]
+  },
+  "critical_success_criteria": {
+    "description": "V1.6.2 is only successful if ALL criteria are met. Both clerk validation and staging buffer implementation must work correctly.",
+    "clerk_validation_success": [
+      "\u2705 Clerk validation gate catches phone truncation errors (917-239-3830 \u2192 917-23-3830)",
+      "\u2705 Clerk validation gate validates phone format: +1-XXX-XXX-XXXX (exactly 16 chars)",
+      "\u2705 Clerk validation gate validates date format: MMMM YYYY",
+      "\u2705 Workflow halts on invalid contact data BEFORE Artist phase executes",
+      "\u2705 QA Report Section 0.1-0.5 displays clerk validation results",
+      "\u2705 Clerk error report generated on validation failure (no Artist execution)"
+    ],
+    "staging_buffer_success": [
+      "\u2705 Staging buffer object created after Artist phase completes",
+      "\u2705 Staging buffer contains rendered_text for ALL sections (K.1, K.4, K.5A, K.5B, K.6A, K.6B, K.8, K.9)",
+      "\u2705 Staging buffer word_count calculated as len(rendered_text.split())",
+      "\u2705 Staging buffer strips ALL XML tags and markers before calculating metrics",
+      "\u2705 Validation functions receive staging_buffer parameter ONLY",
+      "\u2705 Validation functions CANNOT access artist_output (scope isolated)",
+      "\u2705 MANUAL_001 test passes (human verifies K.1 in Word matches QA Report exactly)",
+      "\u2705 Zero mismatches across all manual verification tests (MANUAL_002-009)",
+      "\u2705 QA Report Section 0.6 shows \u2705 for all subsections",
+      "\u2705 Error messages include rendered text preview (not metadata)",
+      "\u2705 User can trust QA Report word counts without manual checking"
+    ],
+    "definition_of_done": "Human manually verifies K.1 word count in Microsoft Word. The count EXACTLY matches QA Report Section 2 K.1 'Actual' value. This proves staging buffer is extracting rendered text correctly and validation is reading from staging buffer, not metadata.",
+    "failure_indicators": [
+      "\u274c Word count in QA Report differs from manual count in Microsoft Word",
+      "\u274c Phone truncation not caught by clerk validation",
+      "\u274c Validation gates reading from artist_output.metadata instead of staging_buffer",
+      "\u274c Files written despite validation failures",
+      "\u274c QA Report Section 0.6 shows \u274c for any subsection"
+    ]
+  },
+  "output": {
+    "qa_report_generation": {
+      "sections": {
+        "0.7": {
+          "section_id": "0.7",
+          "section_name": "Pipeline Word Count Tracking",
+          "purpose": "Provide full visibility into word count transformations at each stage",
+          "criticality": "Enables users to verify no data loss or corruption in pipeline"
+        },
+        "13": {
+          "section_id": "13",
+          "section_name": "QA Report Completeness Verification",
+          "purpose": "Prove all sections were generated with no truncation",
+          "mandatory": true
+        }
+      }
+    },
+    "file_generation": {
+      "file_generation": {
+        "purpose": "After generating file, extract content and verify it matches staging buffer",
+        "steps": [
+          {
+            "step": 1,
+            "action": "Generate resume file using staging_buffer",
+            "output": "resume_text"
+          },
+          {
+            "step": 2,
+            "action": "Parse resume_text and extract each section",
+            "sections": [
+              "K.1",
+              "K.4",
+              "K.5A",
+              "K.5B",
+              "K.6A",
+              "K.6B",
+              "K.8",
+              "K.9"
+            ]
+          },
+          {
+            "step": 3,
+            "action": "For each section, calculate word count from extracted text",
+            "method": "len(extracted_section.split())"
+          },
+          {
+            "step": 4,
+            "action": "Compare extracted counts to staging_buffer",
+            "comparison": "extracted_wc == staging_buffer[section]['word_count']"
+          },
+          {
+            "step": 5,
+            "action": "Generate verification report",
+            "on_pass": "All sections match - file generation successful",
+            "on_fail": "Discrepancies detected - HALT and report"
+          }
+        ],
+        "verification_report": {
+          "format": "JSON",
+          "fields": {
+            "timestamp": "ISO datetime",
+            "overall_status": "PASS | FAIL",
+            "sections_verified": "count",
+            "sections_passed": "count",
+            "sections_failed": "count",
+            "discrepancies": [
+              {
+                "section": "K.1",
+                "expected_wc": 122,
+                "actual_wc": 111,
+                "diff": -11,
+                "expected_text": "First 100 chars from staging_buffer",
+                "actual_text": "First 100 chars from file"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "error_handling": {
+      "error_types": {
+        "HardEnforcementError": {
+          "trigger": "File generation attempts to access non-staging_buffer data",
+          "message": "CRITICAL: File generation violated scope isolation. Attempted to access {source}. Only staging_buffer is permitted.",
+          "action": "HALT workflow immediately",
+          "report": "Generate detailed violation report with stack trace"
+        },
+        "FileGenerationMismatchError": {
+          "trigger": "Generated file content doesn't match staging_buffer",
+          "message": "CRITICAL: Generated file does not match staging buffer. Section {section}: expected {expected_wc} words, got {actual_wc} words.",
+          "action": "Do NOT deliver file to user",
+          "report": "Generate diff report showing staging vs file content"
+        },
+        "PipelineDiscrepancyError": {
+          "trigger": "Section 0.7 detects any discrepancy",
+          "message": "WARNING: Pipeline discrepancy detected in Section 0.7. Review Pipeline Visibility Table.",
+          "action": "Flag in QA Report, continue but warn user",
+          "report": "Highlight affected sections in Section 0.7"
+        },
+        "QAIncompletenessError": {
+          "trigger": "QA Report missing one or more required sections",
+          "message": "CRITICAL: QA Report incomplete. Missing sections: {missing_sections}. Required: 0-12, Found: {found_sections}.",
+          "action": "DO NOT deliver QA Report to user",
+          "recovery": "Regenerate missing sections and retry",
+          "max_retries": 3
+        },
+        "QATruncationError": {
+          "trigger": "QA Report total length below minimum threshold",
+          "message": "WARNING: QA Report may be truncated. Total length: {actual} chars, Expected minimum: {expected} chars.",
+          "action": "Flag in Section 13, warn user",
+          "recovery": "Check token limits, retry generation"
+        },
+        "QASequenceError": {
+          "trigger": "Sections not in sequential order (e.g., 0,1,2,5,10)",
+          "message": "CRITICAL: QA Report sections out of sequence. Expected: 0-12 sequential, Found: {actual_sequence}.",
+          "action": "DO NOT deliver QA Report",
+          "recovery": "Regenerate entire QA Report"
+        }
+      }
+    },
+    "validation_gates": {
+      "validate_qa_completeness": {
+        "signature": "def validate_qa_completeness(qa_report_text: str) -> CompletenessResult",
+        "implementation": {
+          "parse_sections": {
+            "method": "Extract all 'SECTION X:' headers from qa_report_text",
+            "regex": "r'SECTION (\\d+):'",
+            "result": "List of section numbers found"
+          },
+          "check_sequence": {
+            "expected": [
+              0,
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              10,
+              11,
+              12
+            ],
+            "actual": "Parsed section numbers",
+            "validation": "actual == expected"
+          },
+          "check_gaps": {
+            "method": "Detect missing sections",
+            "formula": "missing = set(expected) - set(actual)",
+            "on_missing": "Raise QAIncompletenessError"
+          },
+          "check_length": {
+            "method": "Verify each section meets minimum length",
+            "min_total_length": 3000,
+            "on_fail": "Raise QATruncationError"
+          }
+        },
+        "return": {
+          "sections_found": "List[int]",
+          "sections_missing": "List[int]",
+          "total_length": "int",
+          "is_complete": "bool",
+          "errors": "List[str]"
+        }
+      }
+    }
+  }
+}

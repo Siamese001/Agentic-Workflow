@@ -56,6 +56,12 @@ class Verdict(str, Enum):
             return cls.BLOCK
         return cls.ALLOW
 
+class Action(str, Enum):
+    """Action enum for test compatibility."""
+    ALLOW = "allow"
+    REQUIRE_APPROVAL = "require_approval"
+    BLOCK = "block"
+
 class FindingType(str, Enum):
     """Types of safety findings for resume workflow operations."""
     CONTENT = "content"           # Inappropriate content

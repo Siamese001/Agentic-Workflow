@@ -1,0 +1,366 @@
+{
+  "schema_version": "v9.5-privacy-provenance",
+  "redis_config": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0
+  },
+  "tracing_config": {
+    "langsmith_enabled": true,
+    "langsmith_api_key": "YOUR_LANGSMITH_API_KEY_HERE"
+  },
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "feedback_log_path": "feedback_log.jsonl",
+    "approved_rules_registry_json": "rules_registry.json",
+    "proposed_rules_path": "proposed_rules.jsonl",
+    "preference_log_path": "preference_log.jsonl",
+    "pattern_confidence_threshold": 0.75,
+    "min_samples_for_learning": 10
+  },
+  "hil_config": {
+    "enable_content_approval": true,
+    "enable_preference_learning": true
+  },
+  "batch_config": {
+    "max_parallel_workers": 8,
+    "enable_online_learning": true,
+    "online_learning_failure_threshold": 2
+  },
+  "orchestration_config": {
+    "orchestration_mode": "dynamic_goal_driven",
+    "default_goal": "Produce a final_draft that passes all ValidationEngine checks",
+    "default_policy_fallback": [
+      "run_strategy_stack",
+      "run_rag_stack",
+      "run_prompt_stack",
+      "run_bullet_stack",
+      "run_drafting_stack",
+      "run_qa_stack"
+    ]
+  },
+  "governor_config": {
+    "max_retries_per_node": 2,
+    "veto_hierarchy": [
+      "ADVERSARIAL",
+      "HOLISTIC",
+      "STRATEGY",
+      "QA3_SEMANTIC",
+      "QA2_FACTUAL",
+      "QA1_LINGUISTIC"
+    ]
+  },
+  "planner_config": {
+    "max_replan_loops": 5,
+    "enable_dynamic_replanning": true,
+    "critique_threshold": 0.7
+  },
+  "conductor_config": {
+    "enabled": true,
+    "num_branches": 3,
+    "strategies": [
+      {
+        "id": "branch_a",
+        "description": "GTM-Focused",
+        "emphasis": "partnerships_go_to_market",
+        "weight_strategic": 0.7,
+        "weight_technical": 0.3
+      },
+      {
+        "id": "branch_b",
+        "description": "Tech-Focused",
+        "emphasis": "technical_depth_innovation",
+        "weight_strategic": 0.3,
+        "weight_technical": 0.7
+      },
+      {
+        "id": "branch_c",
+        "description": "Balanced",
+        "emphasis": "balanced_leadership",
+        "weight_strategic": 0.5,
+        "weight_technical": 0.5
+      }
+    ],
+    "voting_method": "score_based",
+    "min_score_threshold": 0.75,
+    "parallel_execution": true
+  },
+  "rag_config": {
+    "chroma_config": {
+      "persist_directory": "./chromadb",
+      "collection_name": "resume_facts",
+      "embedding_model": "all-MiniLM-L6-v2",
+      "distance_metric": "cosine"
+    },
+    "retrieval": {
+      "top_k": 15,
+      "similarity_threshold": 0.6,
+      "enable_reranking": true
+    },
+    "query_generation": {
+      "max_queries": 7,
+      "query_expansion_enabled": true
+    }
+  },
+  "reasoning_config": {
+    "default_strategy": "standard",
+    "cot_enabled": true,
+    "tot_enabled": false,
+    "max_reasoning_depth": 3,
+    "temperature_scaling": {
+      "min_temp": 0.3,
+      "max_temp": 0.9
+    }
+  },
+  "cost_config": {
+    "enable_cost_tracking": true,
+    "cost_ceiling_per_workflow": 2.5,
+    "cost_alert_threshold": 2.0,
+    "pricing": {
+      "gemini_2_5_pro": {
+        "input_per_1k": 0.00125,
+        "output_per_1k": 0.005
+      },
+      "gemini_2_5_flash": {
+        "input_per_1k": 7.5e-05,
+        "output_per_1k": 0.0003
+      },
+      "gemini_2_5_flash_lite": {
+        "input_per_1k": 3.75e-05,
+        "output_per_1k": 0.00015
+      },
+      "claude_4_1_opus": {
+        "input_per_1k": 0.015,
+        "output_per_1k": 0.075
+      },
+      "gpt_5": {
+        "input_per_1k": 0.01,
+        "output_per_1k": 0.03
+      }
+    }
+  },
+  "circuit_breaker_config": {
+    "enable_circuit_breaker": true,
+    "failure_threshold": 3,
+    "recovery_timeout": 60,
+    "half_open_max_calls": 2
+  },
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "log_file": "resume_factory_v9_5.log",
+    "log_format": "json",
+    "log_rotation": {
+      "max_bytes": 10485760,
+      "backup_count": 5
+    },
+    "correlation_ids": true
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json",
+    "output_dir": "./output"
+  },
+  "validation_rules": {
+    "logic_wc_min": 350,
+    "logic_wc_max": 550,
+    "logic_cc_min": 2000,
+    "logic_cc_max": 3500,
+    "signal_score": {
+      "jd_keyword_top_n": 30,
+      "text_keyword_top_n": 20
+    },
+    "v8_bullet_provenance": {
+      "unify_plan": {
+        "verbatim": 2,
+        "custom": 3,
+        "synthetic": 2
+      },
+      "ibm_plan": {
+        "verbatim": 2,
+        "custom": 2,
+        "synthetic": 2
+      }
+    }
+  },
+  "agent_definitions": {
+    "validation_agents": {
+      "ForbiddenVerbValidator": {
+        "agent_id": "forbidden_verb_validator",
+        "agent_name": "ForbiddenVerbValidator",
+        "intelligence_score": 25,
+        "tier": "tier_3",
+        "model": "gemini-2.5-flash-lite",
+        "system_prompt": "You validate that the draft does NOT use forbidden weak verbs."
+      },
+      "GrammarTokenCount": {
+        "agent_id": "grammar_token_count",
+        "agent_name": "GrammarTokenCount",
+        "intelligence_score": 15,
+        "tier": "tier_3",
+        "model": "gemini-2.5-flash-lite",
+        "system_prompt": "You validate that the draft is within token limits."
+      },
+      "FormatCompliance": {
+        "agent_id": "format_compliance",
+        "agent_name": "FormatCompliance",
+        "intelligence_score": 20,
+        "tier": "tier_3",
+        "model": "gemini-2.5-flash-lite",
+        "system_prompt": "You validate that the draft adheres to format requirements."
+      },
+      "BiasScrubber": {
+        "agent_id": "bias_scrubber",
+        "agent_name": "BiasScrubber",
+        "intelligence_score": 60,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate that the draft is free from bias."
+      },
+      "IntroPhraseValidator": {
+        "agent_id": "intro_phrase_validator",
+        "agent_name": "IntroPhraseValidator",
+        "intelligence_score": 25,
+        "tier": "tier_3",
+        "model": "gemini-2.5-flash-lite",
+        "system_prompt": "You validate that the draft avoids cliche intro phrases."
+      },
+      "ClaimValidatorNLI": {
+        "agent_id": "claim_validator_nli",
+        "agent_name": "ClaimValidatorNLI",
+        "intelligence_score": 75,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate that all claims are supported."
+      },
+      "TenureValidator": {
+        "agent_id": "tenure_validator",
+        "agent_name": "TenureValidator",
+        "intelligence_score": 50,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate that dates and tenure make sense."
+      },
+      "SemanticEntailmentValidator": {
+        "agent_id": "semantic_entailment_validator",
+        "agent_name": "SemanticEntailmentValidator",
+        "intelligence_score": 70,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate semantic consistency."
+      },
+      "ThematicAlignmentValidator": {
+        "agent_id": "thematic_alignment_validator",
+        "agent_name": "ThematicAlignmentValidator",
+        "intelligence_score": 80,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate thematic alignment with strategy."
+      },
+      "JDSkillsValidator": {
+        "agent_id": "jd_skills_validator",
+        "agent_name": "JDSkillsValidator",
+        "intelligence_score": 65,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate that key JD skills are represented."
+      },
+      "NarrativeThreadAgent": {
+        "agent_id": "narrative_thread_agent",
+        "agent_name": "NarrativeThreadAgent",
+        "intelligence_score": 85,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate narrative coherence."
+      },
+      "SignalScoreValidator": {
+        "agent_id": "signal_score_validator",
+        "agent_name": "SignalScoreValidator",
+        "intelligence_score": 70,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate signal score vs JD."
+      },
+      "AdversarialReviewerAgent": {
+        "agent_id": "adversarial_reviewer_agent",
+        "agent_name": "AdversarialReviewerAgent",
+        "intelligence_score": 95,
+        "tier": "tier_1",
+        "model": "claude-4.1-opus",
+        "system_prompt": "You are a critical reviewer looking for weaknesses."
+      },
+      "ToneValidator": {
+        "agent_id": "tone_validator",
+        "agent_name": "ToneValidator",
+        "intelligence_score": 55,
+        "tier": "tier_2",
+        "model": "gemini-2.5-flash",
+        "system_prompt": "You validate that tone is appropriate."
+      }
+    },
+    "intelligence_scores": {
+      "ThemeClassifierAgent": 20,
+      "RAG_QueryGen": 75,
+      "RAG_SearchAgent": 80,
+      "RAG_CritiqueAgent": 85,
+      "ExampleQueryGeneratorAgent": 40,
+      "ExampleSearchAgent": 40,
+      "ExampleRankerAgent": 50,
+      "PromptStackAgent": 5,
+      "PromptCritiqueAgent": 45,
+      "ProvenanceRouterAgent": 80,
+      "CustomizedBulletDrafterAgent": 70,
+      "SyntheticBulletDrafterAgent": 85,
+      "BulletReorderAgent": 30,
+      "DraftingConductorAgent": 90,
+      "MetricsSpecialistAgent": 75,
+      "Gemini_Drafter": 30,
+      "Claude_Drafter": 30,
+      "Muse_Drafter": 30,
+      "QAConductorAgent": 90,
+      "MissedOpportunityAgent": 80,
+      "SynthesisCritiqueAgent": 60,
+      "WorkflowPlannerAgent": 90,
+      "WorkflowCritiqueAgent": 80,
+      "WorkflowRePlanner": 90,
+      "GoalManager": 70,
+      "HolisticQAAgent": 90,
+      "RoadmapBuilderAgent": 30,
+      "AdversarialReviewerAgent": 95,
+      "AtomicQASwarmLLM": 40,
+      "AtomicQASwarmLogic": 40
+    }
+  },
+  "prompts": {
+    "rag_thought_system_prompt": "You are a ReAct agent. Your goal is to gather facts for this query: {query}\nYour available tools are: {tools_list}\nBased on the current context (last 2 observations): {context}\nFormulate a 'thought' and select the single best tool to call next. Respond with JSON: {\"thought\": \"...\", \"action\": {\"tool_name\": \"...\", \"tool_input\": {\"query\": \"...\"}}}",
+    "rag_critique_step_system_prompt": "You are a ReAct critique agent. Has the query '{query}' been satisfied by this context? {context}\nRespond with JSON: {\"is_satisfied\": true/false, \"critique\": \"...\"}",
+    "bullet_customizer_system_prompt": "You are a resume expert. Your job is to rewrite and customize existing resume bullets to be high-impact and perfectly aligned with a specific strategy.",
+    "bullet_customizer_user_prompt": "Strategy Brief:\n{strategy_brief}\n\nMaster Resume Bullets (Choose from these):\n{master_bullets}\n\nTask: Select and rewrite {n_to_gen} of the master bullets to perfectly match the strategy. Ensure they are metrics-driven and powerful.\n\nRespond with JSON: {\"customized_bullets\": [\"...\", \"...\"]}",
+    "bullet_synthetic_system_prompt": "You are a creative resume strategist. Your job is to generate brand new, high-impact bullets that are *not* on the resume but are *supported* by the candidate's overall experience and perfectly match the strategy.",
+    "bullet_synthetic_user_prompt": "Strategy Brief:\n{strategy_brief}\n\nFull Master Resume (for context):\n{master_resume}\n\nTask: Generate {n_to_gen} new, synthetic bullets. They must be plausible, metrics-driven, and aligned with the strategy. Do not copy any bullets.\n\nRespond with JSON: {\"synthetic_bullets\": [\"...\", \"...\"]}",
+    "bullet_critique_system_prompt": "You are a 'BulletCritiqueAgent'. Your job is to review a set of generated resume bullets and ensure they are high-quality and strategically aligned. Be a tough critic.",
+    "bullet_critique_user_prompt": "Strategy Brief:\n{strategy_brief}\n\nGenerated Bullets (Verbatim, Custom, and Synthetic):\n{generated_bullets}\n\nTask: Review all the bullets. Do they *perfectly* align with the strategy? Are they high-impact, metrics-driven, and free of redundancy? Return a simple pass/fail.\n\nRespond with JSON: {\"passed\": true/false, \"critique\": \"...\"}",
+    "drafting_conductor_system_prompt": "You are a (MoE) drafting conductor. Your job is to create the optimal drafting plan by selecting from a list of experts. Your goal is quality and efficiency.",
+    "drafting_conductor_user_prompt": "Available Experts:\n{experts}\n\nDrafting Prompt:\n{prompt}\n\nAvailable Bullets:\n{bullets}\n\nTask: Based on the prompt and bullets, return a JSON list of the *exact* sequence of experts to run (e.g., [\"Strategist\", \"MetricsSpecialist\", \"Refiner\"] or [\"Strategist\", \"RedTeam\", \"Refiner\"] or just [\"Strategist\"]).\n\nRespond with JSON: {\"plan\": [\"...\", \"...\"]}",
+    "drafting_metrics_system_prompt": "You are a 'MetricsSpecialist' agent. You are hyper-focused on numbers. Your job is to take a draft and inject it with powerful, specific metrics from the provided context bullets.",
+    "qa_conductor_system_prompt": "You are a (MoE) QA conductor. Your job is to create the optimal QA plan. Your goal is to maximize quality and minimize cost by only running *necessary* checks.",
+    "qa_conductor_user_prompt": "Available QA Experts:\n{experts}\n\nFinal Draft (truncated):\n{final_draft}\n\nStrategy Brief:\n{strategy_brief}\n\nTask: Based on the draft and strategy, return a JSON list of the *only* QA experts that need to run. Be efficient.\n\nRespond with JSON: {\"plan\": [\"...\", \"...\"]}",
+    "qa_missed_opportunity_system_prompt": "You are an adversarial 'MissedOpportunityAgent'. Your job is to find the single best bullet from the master resume that was *not* used in the final draft but *should* have been, based on the strategy.",
+    "validation_base": "Validate the following content according to {validation_type} criteria:\n\nContent:\n{content}\n\nCriteria:\n{criteria}\n\nProvide a detailed validation report.",
+    "rag_extraction": "Extract relevant information for: {objective}\n\nContext:\n{context}\n\nConstraints:\n{constraints}\n\nSuccess Criteria:\n{success_criteria}",
+    "rag_enrichment": "Enrich the following context: {context}\n\nObjective: {objective}",
+    "rag_critique": "Review the RAG results: {rag_results}\n\nStrategy: {strategy}",
+    "drafting_prompt": "Create a compelling resume section based on:\n\nStrategy:\n{strategy_brief}\n\nContext:\n{rag_context}\n\nBullet Points:\n{generated_bullets}",
+    "replanner_user_prompt": "The previous step failed. Analyze the context and propose a recovery plan.\n\nFailure Context:\n{failure_context}\n\nRespond with JSON: {\"plan_summary\": \"...\", \"requires_new_facts\": true/false, \"new_rag_queries\": [...]}",
+    "adversarial_critique": "Critically review the draft: {draft}\n\nIdentify weaknesses and suggest improvements.",
+    "holistic_qa": "Perform a comprehensive quality assessment of: {draft}",
+    "specialist_rag": "Task: {task}\n\nContext:\n{context}",
+    "specialist_qa": "Task: {task}\n\nContext:\n{context}",
+    "specialist_generic": "Task: {task}\n\nContext:\n{context}"
+  },
+  "caching_config": {
+    "enable_semantic_caching": true,
+    "cache_db": 1,
+    "cache_ttl_sec": 3600
+  }
+}
