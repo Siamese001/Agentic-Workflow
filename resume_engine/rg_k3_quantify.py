@@ -639,7 +639,6 @@ class RGK3Quantify:
     def _deduplicate_metrics(self, metrics: List[QuantifiedMetric]) -> List[QuantifiedMetric]:
         """Remove duplicate metrics, keeping highest confidence ones."""
         seen_metrics = {}
-        deduplicated = []
         
         for metric in metrics:
             key = f"{metric.metric_type}_{metric.value}_{metric.unit}"
