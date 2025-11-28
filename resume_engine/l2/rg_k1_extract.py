@@ -194,7 +194,7 @@ class K1Extractor:
         Returns:
             Complete extraction results
         """
-        result = {
+        result: Dict[str, Any] = {
             "step": "K1_EXTRACT",
             "status": "completed",
             "extracted_data": {}
