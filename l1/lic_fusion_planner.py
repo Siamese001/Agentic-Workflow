@@ -1,624 +1,542 @@
-"""LIC Resume→Message Fusion Planning - L1 Planning Layer
+"""LIC Fusion Planner - L1 pure planning for resume→message fusion.
 
-Implements resume→message fusion planning from legacy LIC system.
-Plans fusion of sender capabilities with message generation strategy.
-Pure planning - no execution, IO, or LLM calls.
+Implements nuclear prompt requirements for deterministic fusion planning:
+- Fuses resume achievements + LIC research signals into value propositions
+- Creates structured message section plans (opening, body, CTA)
+- Determines archetype-specific CTA styles and tone guidance
+- Pure L1 planning with no external calls or execution
 """
 
-from __future__ import annotations
-
 from dataclasses import dataclass, field
-from typing import Dict, List, Any, Optional, Tuple
-from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple
+import logging
 
-
-class FusionStrategy(Enum):
-    """Resume→message fusion strategies"""
-    CAPABILITY_HIGHLIGHT = "capability_highlight"
-    ACHIEVEMENT_NARRATIVE = "achievement_narrative"
-    SKILLS_ALIGNMENT = "skills_alignment"
-    EXPERIENCE_MAPPING = "experience_mapping"
-    VALUE_PROPOSITION = "value_proposition"
-
-
-class MessageComponent(Enum):
-    """Message components that can receive fused content"""
-    HOOK = "hook"
-    VALUE_PROP = "value_prop"
-    EVIDENCE = "evidence"
-    CTA = "cta"
-    CLOSING = "closing"
+logger = logging.getLogger(__name__)
 
 
 @dataclass
-class FusionMapping:
-    """Maps resume content to specific message components"""
-    resume_source: str
-    message_component: MessageComponent
-    fusion_strategy: FusionStrategy
-    content_template: str
-    priority: int
-    required: bool = True
+class LICValueProposition:
+    """A single value proposition combining resume achievement + research signal."""
+    id: str                              # stable identifier (e.g. "vp_1")
+    achievement_snippet: str             # concise resume-derived snippet
+    signal_snippet: str                  # concise research signal snippet
+    archetype_target: str                # e.g. "EXECUTIVE" | "SENIOR_TA" | "RECRUITER"
+    priority: int                        # 1 = highest priority
+    angle: str                           # e.g. "strategic", "operational", "technical"
+    expected_impact: str                 # short description of why this matters
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
-class CapabilityAlignment:
-    """Alignment between sender capabilities and recipient needs"""
-    sender_capability: str
-    recipient_need: str
-    alignment_strength: float
-    evidence_points: List[str]
-    integration_approach: str
+class LICMessageSectionPlan:
+    """Structured plan for one section of an outreach message."""
+    section_type: str                    # "opening" | "body" | "cta"
+    archetype_target: str
+    value_proposition_ids: List[str]     # which LICValueProposition IDs to use
+    tone_guidance: str                   # e.g. "concise and executive", "signal-aware", etc.
+    cta_guidance: Optional[str]          # for "cta" sections, explicit CTA guidance
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
-class ResumeFusionPlan:
-    """Complete resume→message fusion plan"""
-    # Core planning data
-    mission_context: str
-    recipient_archetype: str
-    
-    # Resume analysis
-    key_capabilities: List[str]
-    core_achievements: List[str]
-    relevant_experience: List[str]
-    technical_skills: List[str]
-    
-    # Fusion strategy
-    fusion_mappings: List[FusionMapping]
-    capability_alignments: List[CapabilityAlignment]
-    
-    # Message structure
-    hook_strategy: str
-    value_prop_strategy: str
-    evidence_strategy: str
-    cta_strategy: str
-    
-    # Content planning
-    fused_content_templates: Dict[str, str]
-    integration_points: List[str]
-    
-    # Planning metadata
-    plan_id: str
-    created_at: str
-    fusion_priority_order: List[str]
-    expected_impact_score: float
-    
-    # Validation criteria
-    required_fusions: List[str]
-    optional_fusions: List[str]
+class LICFusionPlan:
+    """Full LIC fusion blueprint from resume + signals → message."""
+    role_title: str
+    company_name: str
+    archetype: str                       # primary archetype for this contact
+    value_propositions: List[LICValueProposition]
+    sections: List[LICMessageSectionPlan]
+    primary_cta_style: str               # e.g. "light_touch", "exploratory_call", "direct"
+    fallback_cta_style: str              # used by L3 meta-loop if CTA deemed too strong
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 
 class LICFusionPlanner:
-    """
-    L1 Planner for LIC Resume→Message Fusion
+    """L1 pure planner for resume→message fusion.
     
-    Creates plans for fusing sender resume capabilities with personalized
-    message generation strategies based on recipient archetype.
-    Pure deterministic planning - no external execution.
+    Generates deterministic fusion plans that combine resume achievements
+    with research signals into structured message blueprints.
     """
     
-    def __init__(self, config: Optional[Dict[str, Any]] = None):
-        """
-        Initialize fusion planner with configuration
+    def __init__(
+        self,
+        *,
+        max_value_props: int = 5,
+        max_body_sections: int = 2,
+        enable_exec_strict_cta: bool = True,
+        telemetry_bus: Optional[Any] = None,
+    ) -> None:
+        """Initialize LIC fusion planner with configuration."""
+        self.max_value_props = max_value_props
+        self.max_body_sections = max_body_sections
+        self.enable_exec_strict_cta = enable_exec_strict_cta
+        self.telemetry_bus = telemetry_bus
+        
+        logger.debug(f"LIC Fusion Planner initialized: max_value_props={max_value_props}")
+    
+    def plan(
+        self,
+        *,
+        role_title: str,
+        company_name: str,
+        archetype: str,
+        resume_features: Dict[str, Any],
+        research_signals: Dict[str, Any],
+        outreach_context: Dict[str, Any],
+    ) -> LICFusionPlan:
+        """Generate a deterministic fusion plan from resume + signals.
         
         Args:
-            config: Optional configuration for fusion strategies
+            role_title: Target role title
+            company_name: Target company name
+            archetype: Primary archetype for this contact
+            resume_features: Pre-computed resume signals (achievements, metrics, themes)
+            research_signals: LIC research outputs (company, market, product, funding)
+            outreach_context: Context data for planning (treated as opaque)
+            
+        Returns:
+            Complete LIC fusion plan with value propositions and message sections
         """
-        self.config = config or self._get_default_config()
+        # 1. Extract and normalize achievements + signals
+        achievements = self._extract_achievements(resume_features)
+        signals = self._extract_signals(research_signals)
         
-    def _get_default_config(self) -> Dict[str, Any]:
-        """Get default fusion configuration"""
+        # 2. Generate candidate value propositions
+        value_props = self._pair_achievements_and_signals(
+            achievements, signals, archetype
+        )
+        
+        # 3. Rank and trim to max_value_props
+        value_props = self._rank_and_trim_value_props(value_props)
+        
+        # 4. Build opening/body/cta section plans
+        sections = self._build_sections(value_props, archetype)
+        
+        # 5. Determine CTA styles
+        primary_cta_style, fallback_cta_style = self._determine_cta_styles(
+            archetype, self.enable_exec_strict_cta
+        )
+        
+        # 6. Build metadata
+        metadata = {
+            "archetype": archetype,
+            "role_title": role_title,
+            "company_name": company_name,
+            "value_prop_count": len(value_props),
+            "primary_cta_style": primary_cta_style,
+            "fallback_cta_style": fallback_cta_style,
+        }
+        
+        # 7. Create fusion plan
+        plan = LICFusionPlan(
+            role_title=role_title,
+            company_name=company_name,
+            archetype=archetype,
+            value_propositions=value_props,
+            sections=sections,
+            primary_cta_style=primary_cta_style,
+            fallback_cta_style=fallback_cta_style,
+            metadata=metadata,
+        )
+        
+        # 8. Record telemetry (best-effort)
+        self._safe_record_telemetry(plan)
+        
+        return plan
+    
+    def _extract_achievements(self, resume_features: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Extract achievements from resume features."""
+        achievements = resume_features.get("achievements", [])
+        
+        # Normalize and validate achievement structure
+        normalized = []
+        for i, achievement in enumerate(achievements):
+            if isinstance(achievement, dict):
+                normalized.append({
+                    "id": achievement.get("id", f"achievement_{i}"),
+                    "text": achievement.get("text", ""),
+                    "impact_type": achievement.get("impact_type", "general"),
+                    "seniority_signal": achievement.get("seniority_signal", "ic"),
+                })
+        
+        return normalized
+    
+    def _extract_signals(self, research_signals: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
+        """Extract signals from research data."""
         return {
-            "fusion_agent": {
-                "fusion_strategies": {
-                    "capability_highlight": {
-                        "components": ["hook", "value_prop"],
-                        "template": "Leveraging {capability} to address {recipient_need}",
-                        "priority": "high"
-                    },
-                    "achievement_narrative": {
-                        "components": ["evidence"],
-                        "template": "Achieved {achievement} resulting in {impact}",
-                        "priority": "high"
-                    },
-                    "skills_alignment": {
-                        "components": ["value_prop", "evidence"],
-                        "template": "Applying {skill} to solve {challenge}",
-                        "priority": "medium"
-                    },
-                    "experience_mapping": {
-                        "components": ["evidence", "closing"],
-                        "template": "From {experience} gained {insight}",
-                        "priority": "medium"
-                    },
-                    "value_proposition": {
-                        "components": ["hook", "cta"],
-                        "template": "Delivering {value} through {approach}",
-                        "priority": "high"
-                    }
-                }
-            }
+            "company_signals": research_signals.get("company_signals", []),
+            "role_signals": research_signals.get("role_signals", []),
+            "strategic_themes": research_signals.get("strategic_themes", []),
         }
     
-    def plan_resume_fusion(
+    def _pair_achievements_and_signals(
         self,
-        mission_context: str,
-        recipient_archetype: str,
-        resume_capabilities: Dict[str, List[str]],
-        plan_id: Optional[str] = None
-    ) -> ResumeFusionPlan:
-        """
-        Create resume→message fusion plan
+        achievements: List[Dict[str, Any]],
+        signals: Dict[str, List[Dict[str, Any]]],
+        archetype: str,
+    ) -> List[LICValueProposition]:
+        """Generate value propositions by pairing achievements with signals."""
+        value_props = []
+        strategic_themes = signals.get("strategic_themes", [])
         
-        Args:
-            mission_context: Context of the outreach mission
-            recipient_archetype: Target recipient's archetype
-            resume_capabilities: Structured resume capabilities
-            plan_id: Optional plan identifier
-            
-        Returns:
-            Complete fusion plan
-        """
-        # Generate plan ID if not provided
-        if plan_id is None:
-            import hashlib
-            id_string = f"{mission_context}_{recipient_archetype}_fusion"
-            plan_id = hashlib.md5(id_string.encode()).hexdigest()[:12]
-        
-        # Extract key capabilities from resume
-        key_capabilities = resume_capabilities.get("technical_skills", [])
-        core_achievements = resume_capabilities.get("achievements", [])
-        relevant_experience = resume_capabilities.get("experience", [])
-        technical_skills = resume_capabilities.get("technologies", [])
-        
-        # Create fusion mappings based on archetype
-        fusion_mappings = self._create_fusion_mappings(recipient_archetype)
-        
-        # Create capability alignments
-        capability_alignments = self._create_capability_alignments(
-            key_capabilities, recipient_archetype
-        )
-        
-        # Define message component strategies
-        hook_strategy = self._define_hook_strategy(recipient_archetype)
-        value_prop_strategy = self._define_value_prop_strategy(recipient_archetype)
-        evidence_strategy = self._define_evidence_strategy(recipient_archetype)
-        cta_strategy = self._define_cta_strategy(recipient_archetype)
-        
-        # Create fused content templates
-        fused_content_templates = self._create_fusion_templates(recipient_archetype)
-        
-        # Define integration points
-        integration_points = self._define_integration_points(recipient_archetype)
-        
-        # Determine fusion priority order
-        fusion_priority_order = self._prioritize_fusions(recipient_archetype)
-        
-        # Calculate expected impact score
-        expected_impact_score = self._calculate_impact_score(
-            key_capabilities, recipient_archetype
-        )
-        
-        # Define validation criteria
-        required_fusions, optional_fusions = self._define_fusion_requirements(recipient_archetype)
-        
-        # Get timestamp
-        from datetime import datetime
-        created_at = datetime.now().isoformat()
-        
-        return ResumeFusionPlan(
-            mission_context=mission_context,
-            recipient_archetype=recipient_archetype,
-            key_capabilities=key_capabilities,
-            core_achievements=core_achievements,
-            relevant_experience=relevant_experience,
-            technical_skills=technical_skills,
-            fusion_mappings=fusion_mappings,
-            capability_alignments=capability_alignments,
-            hook_strategy=hook_strategy,
-            value_prop_strategy=value_prop_strategy,
-            evidence_strategy=evidence_strategy,
-            cta_strategy=cta_strategy,
-            fused_content_templates=fused_content_templates,
-            integration_points=integration_points,
-            plan_id=plan_id,
-            created_at=created_at,
-            fusion_priority_order=fusion_priority_order,
-            expected_impact_score=expected_impact_score,
-            required_fusions=required_fusions,
-            optional_fusions=optional_fusions
-        )
-    
-    def _create_fusion_mappings(self, archetype: str) -> List[FusionMapping]:
-        """Create fusion mappings based on recipient archetype"""
-        mappings = []
-        
-        # Base mappings for all archetypes
-        base_mappings = [
-            FusionMapping(
-                resume_source="technical_skills",
-                message_component=MessageComponent.VALUE_PROP,
-                fusion_strategy=FusionStrategy.CAPABILITY_HIGHLIGHT,
-                content_template="Leveraging {skill} expertise to drive {outcome}",
-                priority=1,
-                required=True
-            ),
-            FusionMapping(
-                resume_source="achievements",
-                message_component=MessageComponent.EVIDENCE,
-                fusion_strategy=FusionStrategy.ACHIEVEMENT_NARRATIVE,
-                content_template="Achieved {achievement} resulting in {impact}",
-                priority=2,
-                required=True
-            )
-        ]
-        
-        mappings.extend(base_mappings)
-        
-        # Add archetype-specific mappings
-        if archetype == "executive":
-            mappings.extend([
-                FusionMapping(
-                    resume_source="leadership_experience",
-                    message_component=MessageComponent.HOOK,
-                    fusion_strategy=FusionStrategy.VALUE_PROPOSITION,
-                    content_template="Delivering {value} through strategic {approach}",
-                    priority=1,
-                    required=True
-                ),
-                FusionMapping(
-                    resume_source="business_impact",
-                    message_component=MessageComponent.CTA,
-                    fusion_strategy=FusionStrategy.EXPERIENCE_MAPPING,
-                    content_template="From {experience} gained strategic {insight}",
-                    priority=3,
-                    required=False
-                )
-            ])
-        elif archetype == "technical_lead":
-            mappings.extend([
-                FusionMapping(
-                    resume_source="technical_skills",
-                    message_component=MessageComponent.HOOK,
-                    fusion_strategy=FusionStrategy.SKILLS_ALIGNMENT,
-                    content_template="Applying {skill} to solve {technical_challenge}",
-                    priority=1,
-                    required=True
-                ),
-                FusionMapping(
-                    resume_source="project_experience",
-                    message_component=MessageComponent.EVIDENCE,
-                    fusion_strategy=FusionStrategy.EXPERIENCE_MAPPING,
-                    content_template="From {project} delivered {solution}",
-                    priority=2,
-                    required=True
-                )
-            ])
-        elif archetype == "hiring_manager":
-            mappings.extend([
-                FusionMapping(
-                    resume_source="team_leadership",
-                    message_component=MessageComponent.VALUE_PROP,
-                    fusion_strategy=FusionStrategy.CAPABILITY_HIGHLIGHT,
-                    content_template="Building {team_type} teams through {leadership_approach}",
-                    priority=1,
-                    required=True
-                ),
-                FusionMapping(
-                    resume_source="mentoring_experience",
-                    message_component=MessageComponent.CTA,
-                    fusion_strategy=FusionStrategy.VALUE_PROPOSITION,
-                    content_template="Contributing {mentorship_value} to team {growth}",
-                    priority=3,
-                    required=False
-                )
-            ])
-        
-        return mappings
-    
-    def _create_capability_alignments(
-        self,
-        capabilities: List[str],
-        archetype: str
-    ) -> List[CapabilityAlignment]:
-        """Create alignments between sender capabilities and recipient needs"""
-        alignments = []
-        
-        # Define recipient needs by archetype
-        recipient_needs = {
-            "executive": [
-                "strategic_leadership", "business_growth", "market_expansion",
-                "operational_excellence", "innovation_driving"
-            ],
-            "hiring_manager": [
-                "team_building", "talent_development", "process_improvement",
-                "project_delivery", "culture_enhancement"
-            ],
-            "technical_lead": [
-                "technical_solutions", "architecture_design", "innovation",
-                "performance_optimization", "scalability"
-            ],
-            "recruiter": [
-                "candidate_qualifications", "career_progression", "skill_assessment",
-                "opportunity_matching", "professional_development"
-            ]
-        }
-        
-        # Create alignments for each capability
-        for capability in capabilities[:10]:  # Limit to top 10 capabilities
-            for need in recipient_needs.get(archetype, []):
-                # Simple alignment strength calculation
-                alignment_strength = self._calculate_alignment_strength(capability, need)
+        for i, achievement in enumerate(achievements):
+            # Create value props for each relevant signal
+            for signal_type, signal_list in signals.items():
+                if signal_type == "strategic_themes":
+                    continue  # Handle themes separately
                 
-                if alignment_strength > 0.5:  # Only include meaningful alignments
-                    evidence_points = self._generate_evidence_points(capability, need)
-                    integration_approach = self._define_integration_approach(capability, need, archetype)
+                for j, signal in enumerate(signal_list[:3]):  # Limit signal pairings
+                    vp_id = f"vp_{len(value_props) + 1}"
                     
-                    alignment = CapabilityAlignment(
-                        sender_capability=capability,
-                        recipient_need=need,
-                        alignment_strength=alignment_strength,
-                        evidence_points=evidence_points,
-                        integration_approach=integration_approach
+                    # Determine archetype target
+                    archetype_target = self._determine_archetype_target(
+                        achievement, signal, archetype
                     )
-                    alignments.append(alignment)
+                    
+                    # Determine angle based on content
+                    angle = self._determine_angle(achievement, signal, strategic_themes)
+                    
+                    # Create snippets
+                    achievement_snippet = self._truncate_text(achievement.get("text", ""), 100)
+                    signal_snippet = self._truncate_text(
+                        signal.get("text", signal.get("description", "")), 80
+                    )
+                    
+                    # Determine expected impact
+                    expected_impact = self._determine_expected_impact(
+                        achievement.get("impact_type", ""), signal_type
+                    )
+                    
+                    # Create metadata
+                    metadata = {
+                        "impact_type": achievement.get("impact_type"),
+                        "source_achievement_id": achievement.get("id"),
+                        "source_signal_id": signal.get("id"),
+                    }
+                    
+                    value_prop = LICValueProposition(
+                        id=vp_id,
+                        achievement_snippet=achievement_snippet,
+                        signal_snippet=signal_snippet,
+                        archetype_target=archetype_target,
+                        priority=999,  # Will be assigned during ranking
+                        angle=angle,
+                        expected_impact=expected_impact,
+                        metadata=metadata,
+                    )
+                    
+                    value_props.append(value_prop)
         
-        # Sort by alignment strength and limit to top alignments
-        alignments.sort(key=lambda x: x.alignment_strength, reverse=True)
-        return alignments[:15]  # Limit to top 15 alignments
+        return value_props
     
-    def _calculate_alignment_strength(self, capability: str, need: str) -> float:
-        """Calculate alignment strength between capability and need"""
-        # Simple keyword-based alignment calculation
-        capability_words = set(capability.lower().split('_'))
-        need_words = set(need.lower().split('_'))
+    def _determine_archetype_target(
+        self,
+        achievement: Dict[str, Any],
+        signal: Dict[str, Any],
+        default_archetype: str,
+    ) -> str:
+        """Determine the best archetype target for a value proposition."""
+        seniority = achievement.get("seniority_signal", "ic")
         
-        # Calculate overlap
-        overlap = len(capability_words & need_words)
-        total_words = len(capability_words | need_words)
+        # Executive seniority targets EXECUTIVE
+        if seniority == "executive":
+            return "EXECUTIVE"
         
-        if total_words == 0:
-            return 0.0
+        # Technical themes target SENIOR_TA
+        signal_text = signal.get("text", signal.get("description", "")).lower()
+        achievement_text = achievement.get("text", "").lower()
         
-        # Base similarity score
-        similarity = overlap / total_words
+        technical_keywords = ["technical", "architecture", "engineering", "stack", "code"]
+        if any(keyword in signal_text or keyword in achievement_text for keyword in technical_keywords):
+            return "SENIOR_TA"
         
-        # Apply some domain-specific boosting
-        if "leadership" in capability and "leadership" in need:
-            similarity += 0.2
-        elif "technical" in capability and "technical" in need:
-            similarity += 0.2
-        elif "team" in capability and "team" in need:
-            similarity += 0.15
+        # Process/throughput themes target RECRUITER or SENIOR_TA
+        process_keywords = ["process", "pipeline", "throughput", "hiring", "recruitment"]
+        if any(keyword in signal_text or keyword in achievement_text for keyword in process_keywords):
+            return "RECRUITER" if default_archetype == "RECRUITER" else "SENIOR_TA"
         
-        return min(similarity, 1.0)
+        return default_archetype.upper()
     
-    def _generate_evidence_points(self, capability: str, need: str) -> List[str]:
-        """Generate evidence points for capability-need alignment"""
-        evidence_templates = [
-            f"Proven track record in {capability.replace('_', ' ')}",
-            f"Successfully applied {capability.replace('_', ' ')} to address {need.replace('_', ' ')}",
-            f"Quantified results in {capability.replace('_', ' ')} domain",
-            f"Recognition for excellence in {capability.replace('_', ' ')}"
+    def _determine_angle(
+        self,
+        achievement: Dict[str, Any],
+        signal: Dict[str, Any],
+        strategic_themes: List[str],
+    ) -> str:
+        """Determine the angle of a value proposition."""
+        signal_text = signal.get("text", signal.get("description", "")).lower()
+        achievement_text = achievement.get("text", "").lower()
+        combined_text = f"{signal_text} {achievement_text}"
+        
+        # Strategic angle for strategy/funding/market/product themes
+        strategic_keywords = [
+            "strategy", "funding", "market", "product", "roadmap", "growth",
+            "revenue", "business", "competitive"
         ]
+        if any(keyword in combined_text for keyword in strategic_keywords):
+            return "strategic"
         
-        return evidence_templates[:3]  # Return top 3 evidence points
-    
-    def _define_integration_approach(self, capability: str, need: str, archetype: str) -> str:
-        """Define how to integrate capability into message"""
-        approaches = {
-            "executive": "Strategic integration with business metrics and ROI focus",
-            "hiring_manager": "Collaborative integration with team impact and culture fit",
-            "technical_lead": "Technical integration with specific solutions and innovations",
-            "recruiter": "Professional integration with career progression and skill development"
-        }
-        
-        base_approach = approaches.get(archetype, "Direct capability highlighting")
-        return f"{base_approach} for {capability} addressing {need}"
-    
-    def _define_hook_strategy(self, archetype: str) -> str:
-        """Define hook strategy based on archetype"""
-        strategies = {
-            "executive": "Lead with strategic value proposition and high-level business impact",
-            "hiring_manager": "Open with team leadership and collaborative achievements",
-            "technical_lead": "Start with technical innovation and problem-solving capabilities",
-            "recruiter": "Begin with professional qualifications and career alignment",
-            "influencer": "Hook with thought leadership and industry insights",
-            "peer": "Open with shared experience and collaborative opportunities"
-        }
-        
-        return strategies.get(archetype, strategies["peer"])
-    
-    def _define_value_prop_strategy(self, archetype: str) -> str:
-        """Define value proposition strategy based on archetype"""
-        strategies = {
-            "executive": "Focus on strategic outcomes, business growth, and competitive advantages",
-            "hiring_manager": "Emphasize team building, process improvements, and leadership impact",
-            "technical_lead": "Highlight technical solutions, innovations, and engineering excellence",
-            "recruiter": "Showcase professional development, skill progression, and opportunity fit",
-            "influencer": "Demonstrate industry expertise, innovation, and thought leadership",
-            "peer": "Focus on mutual value, collaboration, and shared professional interests"
-        }
-        
-        return strategies.get(archetype, strategies["peer"])
-    
-    def _define_evidence_strategy(self, archetype: str) -> str:
-        """Define evidence strategy based on archetype"""
-        strategies = {
-            "executive": "Provide quantified business impact, strategic achievements, and market results",
-            "hiring_manager": "Show team performance, process improvements, and leadership examples",
-            "technical_lead": "Present technical innovations, project outcomes, and problem-solving results",
-            "recruiter": "Demonstrate career progression, skill development, and professional achievements",
-            "influencer": "Share industry recognition, innovative contributions, and thought leadership examples",
-            "peer": "Provide collaborative successes, shared projects, and mutual accomplishments"
-        }
-        
-        return strategies.get(archetype, strategies["peer"])
-    
-    def _define_cta_strategy(self, archetype: str) -> str:
-        """Define call-to-action strategy based on archetype"""
-        strategies = {
-            "executive": "Strategic discussion invitation focused on business opportunities",
-            "hiring_manager": "Collaborative conversation about team and role alignment",
-            "technical_lead": "Technical discussion about solutions and innovations",
-            "recruiter": "Professional discussion about opportunity fit and next steps",
-            "influencer": "Thought leadership exchange and industry collaboration",
-            "peer": "Collaborative discussion about shared interests and opportunities"
-        }
-        
-        return strategies.get(archetype, strategies["peer"])
-    
-    def _create_fusion_templates(self, archetype: str) -> Dict[str, str]:
-        """Create content templates for fused message components"""
-        templates = {
-            "executive": {
-                "hook": "Driving {strategic_outcome} through {leadership_approach} and {business_value}",
-                "value_prop": "Leveraging {capability} to achieve {business_metric} and {competitive_advantage}",
-                "evidence": "Led {initiative} resulting in {quantified_impact} and {market_position}",
-                "cta": "Let's discuss how {strategic_approach} can accelerate your {business_objective}"
-            },
-            "hiring_manager": {
-                "hook": "Building {team_type} teams through {leadership_style} and {collaboration_approach}",
-                "value_prop": "Applying {management_skill} to enhance {team_performance} and {culture_development}",
-                "evidence": "Mentored {team_size} team members achieving {performance_improvement} and {retention_rate}",
-                "cta": "I'd like to share how {team_approach} can strengthen your {hiring_objective}"
-            },
-            "technical_lead": {
-                "hook": "Solving {technical_challenge} with {innovative_approach} and {engineering_excellence}",
-                "value_prop": "Applying {technical_skill} to deliver {solution_type} and {performance_gain}",
-                "evidence": "Architected {system_type} achieving {scalability_metric} and {reliability_improvement}",
-                "cta": "Let's explore how {technical_solution} can address your {engineering_challenge}"
-            }
-        }
-        
-        return templates.get(archetype, templates["hiring_manager"])
-    
-    def _define_integration_points(self, archetype: str) -> List[str]:
-        """Define integration points for resume content in messages"""
-        base_points = [
-            "opening_hook_capability",
-            "value_proposition_skills",
-            "evidence_achievements",
-            "closing_value_reinforcement"
+        # Operational angle for process/throughput improvements
+        operational_keywords = [
+            "process", "throughput", "pipeline", "efficiency", "workflow",
+            "hiring", "recruitment", "team", "operations"
         ]
+        if any(keyword in combined_text for keyword in operational_keywords):
+            return "operational"
         
-        # Add archetype-specific points
-        if archetype == "executive":
-            base_points.extend([
-                "strategic_metrics_insertion",
-                "business_impact_quantification"
-            ])
-        elif archetype == "technical_lead":
-            base_points.extend([
-                "technical_solution_insertion",
-                "innovation_highlight"
-            ])
-        elif archetype == "hiring_manager":
-            base_points.extend([
-                "team_leadership_examples",
-                "culture_contributions"
-            ])
-        
-        return base_points
-    
-    def _prioritize_fusions(self, archetype: str) -> List[str]:
-        """Prioritize fusion strategies based on archetype"""
-        base_priority = [
-            "capability_highlight",
-            "achievement_narrative",
-            "value_proposition",
-            "skills_alignment",
-            "experience_mapping"
+        # Technical angle for stack/architecture/IC contributions
+        technical_keywords = [
+            "technical", "architecture", "engineering", "stack", "code",
+            "development", "software", "system", "infrastructure"
         ]
+        if any(keyword in combined_text for keyword in technical_keywords):
+            return "technical"
         
-        # Adjust priority based on archetype
-        if archetype == "executive":
-            base_priority = [
-                "value_proposition",
-                "capability_highlight",
-                "achievement_narrative",
-                "experience_mapping",
-                "skills_alignment"
-            ]
-        elif archetype == "technical_lead":
-            base_priority = [
-                "skills_alignment",
-                "capability_highlight",
-                "achievement_narrative",
-                "experience_mapping",
-                "value_proposition"
-            ]
-        
-        return base_priority
+        # Default to strategic if no clear match
+        return "strategic"
     
-    def _calculate_impact_score(self, capabilities: List[str], archetype: str) -> float:
-        """Calculate expected impact score for fusion plan"""
-        # Base score by archetype
-        base_scores = {
-            "executive": 0.8,
-            "hiring_manager": 0.7,
-            "technical_lead": 0.7,
-            "recruiter": 0.6,
-            "influencer": 0.5,
-            "peer": 0.5
+    def _determine_expected_impact(self, impact_type: str, signal_type: str) -> str:
+        """Generate expected impact description."""
+        impact_map = {
+            "revenue": "Revenue growth impact",
+            "cost": "Cost optimization impact", 
+            "team": "Team scaling impact",
+            "product": "Product innovation impact",
+            "general": "Business value impact",
         }
         
-        base_score = base_scores.get(archetype, 0.5)
+        base_impact = impact_map.get(impact_type, "Business value impact")
         
-        # Adjust based on capability count and diversity
-        capability_factor = min(len(capabilities) / 10.0, 1.0)  # Cap at 1.0
-        diversity_factor = len(set(capabilities)) / max(len(capabilities), 1)
-        
-        # Calculate final score
-        final_score = base_score * (0.7 + 0.2 * capability_factor + 0.1 * diversity_factor)
-        
-        return min(final_score, 1.0)
+        if signal_type == "company_signals":
+            return f"{base_impact} aligned with company strategy"
+        elif signal_type == "role_signals":
+            return f"{base_impact} aligned with role requirements"
+        else:
+            return base_impact
     
-    def _define_fusion_requirements(self, archetype: str) -> Tuple[List[str], List[str]]:
-        """Define required and optional fusions based on archetype"""
-        required = ["capability_highlight", "achievement_narrative"]
-        optional = ["skills_alignment", "experience_mapping", "value_proposition"]
+    def _rank_and_trim_value_props(self, value_props: List[LICValueProposition]) -> List[LICValueProposition]:
+        """Rank value propositions by priority and trim to max_value_props."""
+        if not value_props:
+            return []
         
-        # Adjust based on archetype
-        if archetype == "executive":
-            required.append("value_proposition")
-        elif archetype == "technical_lead":
-            required.append("skills_alignment")
-        
-        return required, optional
-    
-    def validate_plan(self, plan: ResumeFusionPlan) -> List[str]:
-        """
-        Validate fusion plan for completeness and correctness
-        
-        Args:
-            plan: Fusion plan to validate
+        # Calculate priority scores (higher score = higher priority)
+        for vp in value_props:
+            score = 0
             
-        Returns:
-            List of validation errors (empty if valid)
-        """
-        errors = []
+            # Priority 1: Match to strategic themes (simplified check)
+            if vp.angle == "strategic":
+                score += 10
+            
+            # Priority 2: Presence of numeric impact
+            achievement_text = vp.achievement_snippet.lower()
+            if any(char in achievement_text for char in ["%", "$", "m", "k", "x"]):
+                score += 5
+            
+            # Priority 3: Seniority alignment (EXECUTIVE gets bonus)
+            if vp.archetype_target == "EXECUTIVE":
+                score += 3
+            
+            vp.priority = score
         
-        if not plan.mission_context:
-            errors.append("mission_context is required")
+        # Sort by priority (higher score = higher priority)
+        value_props.sort(key=lambda x: -x.priority)
         
-        if not plan.recipient_archetype:
-            errors.append("recipient_archetype is required")
+        # Assign sequential priorities and trim
+        ranked = []
+        for i, vp in enumerate(value_props[:self.max_value_props]):
+            vp.priority = i + 1
+            ranked.append(vp)
         
-        if not plan.fusion_mappings:
-            errors.append("fusion_mappings cannot be empty")
+        return ranked
+    
+    def _build_sections(
+        self,
+        value_props: List[LICValueProposition],
+        archetype: str,
+    ) -> List[LICMessageSectionPlan]:
+        """Build opening, body, and CTA section plans."""
+        sections = []
         
-        if not plan.capability_alignments:
-            errors.append("capability_alignments cannot be empty")
+        if not value_props:
+            return sections
         
-        if not plan.plan_id:
-            errors.append("plan_id is required")
+        # 1. Opening section
+        opening_section = self._build_opening_section(value_props, archetype)
+        sections.append(opening_section)
         
-        if not plan.key_capabilities:
-            errors.append("key_capabilities cannot be empty")
+        # 2. Body sections
+        body_sections = self._build_body_sections(value_props, archetype)
+        sections.extend(body_sections)
         
-        if plan.expected_impact_score < 0.0 or plan.expected_impact_score > 1.0:
-            errors.append("expected_impact_score must be between 0.0 and 1.0")
+        # 3. CTA section
+        cta_section = self._build_cta_section(value_props, archetype)
+        sections.append(cta_section)
         
-        return errors
+        return sections
+    
+    def _build_opening_section(
+        self,
+        value_props: List[LICValueProposition],
+        archetype: str,
+    ) -> LICMessageSectionPlan:
+        """Build the opening section plan."""
+        # Select 1-2 top-priority strategic or market VPs
+        strategic_vps = [
+            vp for vp in value_props[:3] 
+            if vp.angle in ["strategic", "market"]
+        ]
+        
+        selected_vps = strategic_vps[:2] if strategic_vps else value_props[:2]
+        vp_ids = [vp.id for vp in selected_vps]
+        
+        # Determine tone guidance
+        tone_guidance = {
+            "EXECUTIVE": "concise, strategic, signal-aware",
+            "SENIOR_TA": "clear, technically grounded, concise",
+            "RECRUITER": "clear, human, easy to skim",
+        }.get(archetype.upper(), "clear and professional")
+        
+        metadata = {
+            "section_index": 0,
+            "is_terminal_section": False,
+        }
+        
+        return LICMessageSectionPlan(
+            section_type="opening",
+            archetype_target=archetype.upper(),
+            value_proposition_ids=vp_ids,
+            tone_guidance=tone_guidance,
+            cta_guidance=None,
+            metadata=metadata,
+        )
+    
+    def _build_body_sections(
+        self,
+        value_props: List[LICValueProposition],
+        archetype: str,
+    ) -> List[LICMessageSectionPlan]:
+        """Build body section plans."""
+        sections = []
+        
+        # Group remaining VPs by angle or theme
+        remaining_vps = value_props[2:]  # Skip opening VPs
+        
+        # Create up to max_body_sections body sections
+        for i in range(min(self.max_body_sections, len(remaining_vps))):
+            start_idx = i * 2
+            end_idx = start_idx + 2
+            section_vps = remaining_vps[start_idx:end_idx]
+            
+            if not section_vps:
+                break
+            
+            vp_ids = [vp.id for vp in section_vps]
+            
+            metadata = {
+                "section_index": i + 1,
+                "is_terminal_section": False,
+            }
+            
+            section = LICMessageSectionPlan(
+                section_type="body",
+                archetype_target=archetype.upper(),
+                value_proposition_ids=vp_ids,
+                tone_guidance="evidence-based, clear, signal-aligned",
+                cta_guidance=None,
+                metadata=metadata,
+            )
+            
+            sections.append(section)
+        
+        return sections
+    
+    def _build_cta_section(
+        self,
+        value_props: List[LICValueProposition],
+        archetype: str,
+    ) -> LICMessageSectionPlan:
+        """Build the CTA section plan."""
+        # Use top 1-3 VPs with strongest impact
+        top_vps = value_props[:3]
+        vp_ids = [vp.id for vp in top_vps]
+        
+        # Determine CTA guidance based on archetype
+        cta_guidance_map = {
+            "EXECUTIVE": "ask for 15 minutes to explore strategic alignment, not a formal interview",
+            "SENIOR_TA": "propose brief technical discussion to explore fit and challenges",
+            "RECRUITER": "express interest in role alignment and request brief conversation",
+        }
+        
+        cta_guidance = cta_guidance_map.get(archetype.upper(), "request brief exploratory conversation")
+        
+        # Tone guidance reflects CTA style
+        tone_guidance = {
+            "EXECUTIVE": "respectful, concise, value-focused",
+            "SENIOR_TA": "direct, technically relevant, clear",
+            "RECRUITER": "warm, clear, role-focused",
+        }.get(archetype.upper(), "professional and clear")
+        
+        # Calculate section index correctly
+        section_index = 1 + len([s for s in [] if s.section_type in ["opening", "body"]])
+        
+        metadata = {
+            "section_index": section_index,
+            "is_terminal_section": True,
+        }
+        
+        return LICMessageSectionPlan(
+            section_type="cta",
+            archetype_target=archetype.upper(),
+            value_proposition_ids=vp_ids,
+            tone_guidance=tone_guidance,
+            cta_guidance=cta_guidance,
+            metadata=metadata,
+        )
+    
+    def _determine_cta_styles(self, archetype: str, enable_exec_strict_cta: bool) -> Tuple[str, str]:
+        """Determine primary and fallback CTA styles based on archetype."""
+        archetype_upper = archetype.upper()
+        
+        if archetype_upper == "EXECUTIVE":
+            primary = "light_touch" if enable_exec_strict_cta else "exploratory_call"
+            fallback = "exploratory_call"
+        elif archetype_upper == "SENIOR_TA":
+            primary = "exploratory_call"
+            fallback = "light_touch"
+        elif archetype_upper == "RECRUITER":
+            primary = "direct"
+            fallback = "light_touch"
+        else:
+            primary = "exploratory_call"
+            fallback = "light_touch"
+        
+        return primary, fallback
+    
+    def _truncate_text(self, text: str, max_length: int) -> str:
+        """Truncate text to maximum length with ellipsis if needed."""
+        if len(text) <= max_length:
+            return text
+        
+        return text[:max_length - 3].rstrip() + "..."
+    
+    def _safe_record_telemetry(self, plan: LICFusionPlan) -> None:
+        """Record telemetry event safely without breaking planning."""
+        if not self.telemetry_bus:
+            return
+        
+        try:
+            self.telemetry_bus.record_event(
+                "lic_fusion_plan_created",
+                layer="L1",
+                payload={
+                    "archetype": plan.archetype,
+                    "role_title": plan.role_title,
+                    "company_name": plan.company_name,
+                    "value_prop_count": len(plan.value_propositions),
+                    "section_count": len(plan.sections),
+                    "primary_cta_style": plan.primary_cta_style,
+                },
+            )
+        except Exception:
+            # Telemetry failures should never break planning logic
+            logger.debug("Failed to record telemetry for LIC fusion plan")
