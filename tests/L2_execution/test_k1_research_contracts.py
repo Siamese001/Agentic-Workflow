@@ -1,10 +1,10 @@
-from agentic_workflow.L2_execution.k1_research import K1ResearchExecutor
+from l2.lic_k1_research import LIC_K1_Research
 
 def test_constructor():
-    k1 = K1ResearchExecutor()
-    assert isinstance(k1, K1ResearchExecutor)
+    k1 = LIC_K1_Research({})
+    assert isinstance(k1, LIC_K1_Research)
 
 def test_execute_signature():
-    k1 = K1ResearchExecutor()
-    result = k1.execute(plan=None, state=None)
+    k1 = LIC_K1_Research({})
+    result = k1.execute(recipient=None, message_context=None)
     assert result is None

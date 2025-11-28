@@ -1,10 +1,10 @@
 import inspect
-from agentic_workflow.L2_execution.k6_cta import K6CTAExecutor
+from l2.lic_k6_cta import LIC_K6_CTA
 
 def test_class_exists():
-    assert inspect.isclass(K6CTAExecutor)
+    assert inspect.isclass(LIC_K6_CTA)
 
 def test_required_methods():
-    required = ["execute", "select_cta_family", "apply_cta"]
+    required = ["execute", "generate_date_window", "generate_cta_content"]
     for m in required:
-        assert hasattr(K6CTAExecutor, m)
+        assert hasattr(LIC_K6_CTA, m)

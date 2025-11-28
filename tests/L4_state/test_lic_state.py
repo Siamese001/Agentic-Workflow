@@ -1,4 +1,4 @@
-from agentic_workflow.L4_state.lic_state import LICState
+from l4.lic_state import LICState
 
 def test_state_structure():
     s = LICState()

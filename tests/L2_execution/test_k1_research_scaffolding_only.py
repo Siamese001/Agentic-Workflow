@@ -1,8 +1,8 @@
-from agentic_workflow.L2_execution.k1_research import K1ResearchExecutor
+from l2.lic_k1_research import LIC_K1_Research
 
 def test_stub_returns_none():
-    k1 = K1ResearchExecutor()
+    k1 = LIC_K1_Research({})
     assert k1.execute(None, None) is None
-    assert k1.run_single_hop(None) is None
-    assert k1.aggregate_results(None) is None
-    assert k1.finalize_research(None) is None
+    assert k1.execute_hyde_enrichment(None) is None
+    assert k1.execute_hybrid_recall(None, None) is None
+    assert k1.execute_cross_encoder_reranking(None) is None
