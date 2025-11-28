@@ -24,6 +24,7 @@ from .rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput
 from .rg_k6_assemble import RGK6Assemble, AssemblyOutput
 from .rg_k7_format import RGK7Format, FormattingOutput
 from .rg_k8_validate import RGK8Validate, ValidationOutput
+from .rg_low_complexity_utils import LowComplexityUtils
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +119,9 @@ class RGOrchestrator:
             telemetry_bus=self.telemetry_bus
         )
         
+        # LOW complexity utilities for preprocessing
+        self.low_complexity_utils = LowComplexityUtils()
+        
         # Pipeline configuration
         self.pipeline_config = {
             "enable_error_recovery": self.config.get("enable_error_recovery", True),
@@ -162,7 +166,55 @@ class RGOrchestrator:
                 "timestamp": datetime.now().isoformat()
             })
             
-            # 2. K-Node Sequential Execution
+            # 2. LOW Complexity Preprocessing (NEW STEP)
+            logger.info("Starting LOW complexity preprocessing")
+            preprocessing_start = datetime.now()
+            
+            # Initialize current_input for LOW complexity processing
+            current_input = request.resume_input
+            
+            # Prepare context for LOW complexity processing
+            low_complexity_context = {
+                "scrub_pii": True,  # Enable PII scrubbing
+                "audit_bias": True,  # Enable bias auditing
+                "inject_goals": request.processing_options.get("inject_goals", True),
+                "goal_state": {
+                    "primary_goal": request.job_input.get("title", "professional excellence"),
+                    "target_role": request.job_input.get("title", ""),
+                    "industry": request.job_input.get("industry", "general")
+                },
+                "hyde_expand": request.processing_options.get("hyde_expand", True),
+                "reflect_improve": request.processing_options.get("reflect_improve", True),
+                "skills": request.job_input.get("skills", []),
+                "experience": request.resume_input.get("content", "")
+            }
+            
+            # Apply LOW complexity processing
+            low_complexity_results = self.low_complexity_utils.process_content(
+                current_input.get("content", ""), 
+                low_complexity_context
+            )
+            
+            # Update resume input with processed content
+            current_input["content"] = low_complexity_results["processed_content"]
+            current_input["low_complexity_results"] = low_complexity_results
+            
+            preprocessing_time = (datetime.now() - preprocessing_start).total_seconds() * 1000
+            execution_trace.append({
+                "phase": "LOW_Complexity_Preprocessing",
+                "status": "success",
+                "preprocessing_time_ms": preprocessing_time,
+                "pii_scrubbed": low_complexity_results["pii_result"] is not None,
+                "bias_audited": low_complexity_results["bias_result"] is not None,
+                "goal_injected": low_complexity_results["goal_injected"],
+                "hyde_expanded": low_complexity_results["hyde_expanded"],
+                "reflection_applied": low_complexity_results["reflection_result"] is not None,
+                "timestamp": datetime.now().isoformat()
+            })
+            
+            logger.info(f"LOW complexity preprocessing completed in {preprocessing_time:.2f}ms")
+            
+            # 3. K-Node Sequential Execution
             k_node_outputs = {}
             k_node_times = {}
             current_input = request.resume_input
