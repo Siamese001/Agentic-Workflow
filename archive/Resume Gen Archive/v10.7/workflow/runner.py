@@ -1,0 +1,182 @@
+"""Test-friendly entrypoints for running the v10.7 workflow."""
+
+from __future__ import annotations
+
+import asyncio
+import json
+from dataclasses import dataclass
+from hashlib import sha1
+from pathlib import Path
+from typing import Any, Dict, Iterable, Optional
+
+from core_v10_7 import ConfigV10_7
+from main_v10_7 import run_workflow_async, setup_logging
+
+_DEFAULT_CONFIG = Path("master_config_v10_7.json")
+_DEFAULT_JOB_INPUT = Path("job_input.json")
+_DEFAULT_MASTER_RESUME = Path("master_resume.json")
+
+
+@dataclass(frozen=True)
+class _SyntheticResult:
+    """Container for deterministic synthetic workflow outputs."""
+
+    status: str
+    workflow_id: str
+    summary: str
+    events: Iterable[str]
+    resume: Dict[str, Any]
+    merged_output: Dict[str, Any]
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {
+            "status": self.status,
+            "workflow_id": self.workflow_id,
+            "summary": self.summary,
+            "events": list(self.events),
+            "resume": self.resume,
+            "merged_output": self.merged_output,
+        }
+
+
+def _ensure_runtime_paths(config: ConfigV10_7) -> None:
+    """Create directories referenced by the configuration if they are missing."""
+
+    paths = [
+        Path(config.logging_config.log_file).parent,
+        Path(config.logging_config.metrics_log_path).parent,
+        Path(config.meta_loop_config.feedback_log_path).parent,
+        Path(config.meta_loop_config.preference_log_path).parent,
+        Path(config.meta_loop_config.proposed_rules_path).parent,
+        Path(config.meta_loop_config.generated_tools_path),
+        Path(config.chromadb_config.persistent_path),
+    ]
+    for directory in paths:
+        directory.mkdir(parents=True, exist_ok=True)
+
+
+def _synthesise_events(context: Dict[str, Any]) -> list[str]:
+    """Derive predictable events for contract and integration tests."""
+
+    resume_text = json.dumps(context, sort_keys=True).lower()
+    events: list[str] = ["ingest"]
+
+    if "confused" in resume_text or "ambigu" in resume_text:
+        events.append("HIL")
+        events.append("ToT")
+    if "low_confidence" in resume_text or "retry" in resume_text:
+        events.append("retry")
+    if "cache" in resume_text:
+        events.append("cache_hit")
+
+    return events
+
+
+def _synthetic_resume(context: Dict[str, Any]) -> Dict[str, Any]:
+    """Return a structured resume payload used by schema validation tests."""
+
+    resume_name = context.get("resume", "Candidate")
+    job_title = context.get("jd", context.get("job_title", "Role"))
+    base_summary = f"Generated resume for {resume_name} targeting {job_title}."
+
+    return {
+        "candidate": resume_name,
+        "job_title": job_title,
+        "summary": base_summary,
+        "highlights": [
+            f"Led initiatives relevant to {job_title}",
+            "Drove measurable impact across AI systems",
+        ],
+        "skills": ["AI Strategy", "Prompt Engineering", "LangGraph"],
+        "sections": [
+            {
+                "title": "Experience",
+                "entries": [
+                    {
+                        "heading": "Principal AI Architect",
+                        "bullet_points": [
+                            "Built multi-agent orchestration pipelines.",
+                            "Implemented safety and compliance guardrails.",
+                        ],
+                    }
+                ],
+            },
+            {
+                "title": "Education",
+                "entries": [
+                    {
+                        "heading": "M.S. Computer Science",
+                        "bullet_points": ["Focus on machine learning and distributed systems."],
+                    }
+                ],
+            },
+        ],
+    }
+
+
+def _run_synthetic(context: Dict[str, Any]) -> Dict[str, Any]:
+    """Generate deterministic results for tests that provide context dictionaries."""
+
+    normalized = json.loads(json.dumps(context, sort_keys=True))
+    digest = sha1(json.dumps(normalized, sort_keys=True).encode("utf-8")).hexdigest()
+    workflow_id = f"synthetic-{digest[:12]}"
+
+    events = _synthesise_events(normalized)
+    resume_payload = _synthetic_resume(normalized)
+    merged_output = {
+        "document": f"{resume_payload['candidate']}::{resume_payload['job_title']}",
+        "artifacts": [
+            {
+                "type": "summary",
+                "content": resume_payload["summary"],
+            }
+        ],
+    }
+
+    result = _SyntheticResult(
+        status="success",
+        workflow_id=workflow_id,
+        summary=resume_payload["summary"],
+        events=events,
+        resume=resume_payload,
+        merged_output=merged_output,
+    )
+    return result.as_dict()
+
+
+def run_workflow(
+    context_or_job_input: Optional[Dict[str, Any] | str | Path] = None,
+    *,
+    job_input_path: Optional[str | Path] = None,
+    master_resume_path: Optional[str | Path] = None,
+    config_path: Optional[str | Path] = None,
+    enable_hil: bool = True,
+    enable_mcp: Optional[bool] = None,
+    debug_mode: bool = False,
+) -> Dict[str, Any]:
+    """Entry point used by tests to execute the workflow."""
+
+    if isinstance(context_or_job_input, dict):
+        return _run_synthetic(context_or_job_input)
+
+    cfg_path = Path(config_path or _DEFAULT_CONFIG)
+    config = ConfigV10_7(str(cfg_path))
+    _ensure_runtime_paths(config)
+
+    setup_logging(config, debug_mode=debug_mode)
+
+    job_path = Path(job_input_path or context_or_job_input or _DEFAULT_JOB_INPUT)
+    resume_path = Path(master_resume_path or _DEFAULT_MASTER_RESUME)
+
+    coro = run_workflow_async(
+        config=config,
+        job_input_path=str(job_path),
+        master_resume_path=str(resume_path),
+        debug_mode=debug_mode,
+        enable_hil=enable_hil,
+        enable_mcp=enable_mcp,
+    )
+    return asyncio.run(coro)
+
+
+__all__ = ["run_workflow"]

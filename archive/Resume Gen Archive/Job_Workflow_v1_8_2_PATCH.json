@@ -1,0 +1,332 @@
+{
+  "patch_info": {
+    "version": "v1.8.2",
+    "patch_id": "P-v1.8.2-K7-FORMATTING-HARDENING",
+    "predecessor": "v1.8.1",
+    "patch_type": "FORMATTING_SPECIFICATION",
+    "description": "Hardens K.7 rendering with explicit bullet formatting specification, validation gate for highlight rendering, and truncation prevention. Fixes Gemini rendering issue where highlights were output as plain prose without bullet markers.",
+    "changes_summary": "Added VG_K7_HIGHLIGHT_FORMATTING gate, updated K.7 node with rendering_specification, added highlight count validation, added bullet prefix validation",
+    "files_modified": [
+      "4.reasoning.K_nodes.K.7 (added rendering_specification)",
+      "2.task.validation_gates.post_generation (added VG_K7_HIGHLIGHT_FORMATTING)",
+      "5.output.validation_gates (added VG_K7_HIGHLIGHT_FORMATTING)"
+    ],
+    "tests_added": 6,
+    "critical_gates_added": 1,
+    "regression_risk": "MINIMAL",
+    "test_date": "2025-10-16",
+    "replaces": "v1.8.1",
+    "breaking_changes": "None - v1.8.2 maintains full backward compatibility with v1.8.1"
+  },
+  "updated_metadata": {
+    "schema": "Job_Workflow",
+    "version": "v1.8.2",
+    "architecture": "Interactive Execution with Staging Buffer + Clerk Validation + Full Content Display + Complete Enforcement-Validation Coverage + Explicit RAG Signal Hardening (K0/K2/K.11) + Filename Pattern Enforcement + K.7 Bullet Formatting Hardening",
+    "description": "v1.8.2 PATCH RELEASE: Hardens K.7 output with explicit bullet formatting specification and validation gate to prevent Gemini rendering issues where highlights were output as plain prose without bullet markers. Maintains all v1.8.1 capabilities.",
+    "last_updated": "2025-10-16"
+  },
+  "patch_history_entry": {
+    "version": "v1.8.2",
+    "patch_id": "P-v1.8.2-K7-FORMATTING-HARDENING",
+    "changes": "K.7 rendering specification with explicit bullet formatting (•), highlight count validation, truncation prevention, VG_K7_HIGHLIGHT_FORMATTING gate, temperature reduced to 0.2 for consistent output"
+  },
+  "K_7_UPDATED_NODE": {
+    "K.7": {
+      "description": "Dormant node - sections 3-5 (TraderSense, Ernst & Young, Early Career) copied directly from master resume with explicit bullet formatting specification (v1.8.2)",
+      "enabled": true,
+      "execution_point": "DURING_ARTIST_PHASE",
+      "scope": "Sections 3-5 only - Unify (section 1) and IBM (section 2) use K.5 and K.6 instead",
+      "output_format": "BULLETED_PROSE",
+      "temp": 0.2,
+      "rendering_specification": {
+        "source": "staging_buffer['K.7_extracted'] (pre-extracted from Clerk phase)",
+        "format_structure": {
+          "line_1": "[Company] | [Location]",
+          "line_2": "[Title] ([Start Date] – [End Date])",
+          "line_3": "[Overview paragraph - single continuous paragraph]",
+          "lines_4_plus": "[Bullet 1]\n[Bullet 2]\n[Bullet 3]... (each on new line with • prefix)"
+        },
+        "highlight_formatting": {
+          "prefix": "• ",
+          "line_separator": "\n",
+          "no_indentation": true,
+          "one_bullet_per_line": true
+        },
+        "full_section_example": "Ernst & Young | New York, NY\nPrincipal (October 2009 – March 2014)\nManaged an 18-person enterprise risk team that provided strategic guidance to financial institutions on capital adequacy and regulatory modeling.\n• Directed $16M stress testing transformation for Tier 1 banks, advising CROs on CCAR methodology and automated reporting that reduced Federal Reserve examination findings by 38%.\n• Advised insurance boards and audit committees on Solvency II implementation, designing economic capital models and loss reserving methodologies that reduced statutory provisions by 19%.",
+        "generation_instruction": "Render all extracted K.7 sections (3-5) to bulleted prose format. DO NOT summarize, truncate, or drop any highlights. Each highlight MUST appear on its own line with • prefix. Verify highlight counts before outputting: TraderSense=2, EY=2, Early Career=1."
+      },
+      "section_specifications": {
+        "section_3_tradersense": {
+          "company": "TraderSense (Early-Stage / Stealth)",
+          "location": "New York, NY",
+          "title": "Chief Technology Officer",
+          "dates": {
+            "start": "April 2014",
+            "end": "March 2017"
+          },
+          "highlight_count_required": 2,
+          "overview_source": "master_resume.professional_experience[2].overview",
+          "highlights_source": "master_resume.professional_experience[2].highlights"
+        },
+        "section_4_ey": {
+          "company": "Ernst & Young",
+          "location": "New York, NY",
+          "title": "Principal",
+          "dates": {
+            "start": "October 2009",
+            "end": "March 2014"
+          },
+          "highlight_count_required": 2,
+          "overview_source": "master_resume.professional_experience[3].overview",
+          "highlights_source": "master_resume.professional_experience[3].highlights"
+        },
+        "section_5_early_career": {
+          "company": "Early Career Roles",
+          "location": "Philadelphia, PA",
+          "title": "Actuarial Consultant and Quantitative Roles",
+          "dates": {
+            "start": "October 2002",
+            "end": "September 2009"
+          },
+          "highlight_count_required": 1,
+          "overview_source": "master_resume.professional_experience[4].overview",
+          "highlights_source": "master_resume.professional_experience[4].highlights"
+        }
+      },
+      "validation_requirement": {
+        "highlights_must_have_bullet_prefix": true,
+        "all_highlights_must_render": true,
+        "no_truncation_allowed": true,
+        "exact_highlight_count_required": true
+      }
+    }
+  },
+  "NEW_VALIDATION_GATE": {
+    "VG_K7_HIGHLIGHT_FORMATTING": {
+      "gate_id": "VG_K7_HIGHLIGHT_FORMATTING",
+      "description": "Validates K.7 highlights are formatted with bullet markers (•), all highlights render without truncation, and exact highlight counts match expectations (v1.8.2)",
+      "execution_point": "POST_K7_GENERATION",
+      "blocking": true,
+      "severity": "HIGH",
+      "reads_from": "staging_buffer['K.7']['rendered_text']",
+      "cannot_access": "artist_output (scope isolated)",
+      "validation_checks": [
+        {
+          "check_id": "K7-CHECK-001",
+          "check_name": "Bullet prefix validation",
+          "description": "Verify each highlight line starts with • prefix",
+          "method": "regex_scan: r'\\n•\\s' for each section",
+          "tradersense_expected": 2,
+          "ey_expected": 2,
+          "early_career_expected": 1,
+          "on_fail": {
+            "action": "raise ValidationException",
+            "message": "K.7 highlights missing bullet (•) prefix. Section: {section}, Line: {line_text}",
+            "regenerate": true,
+            "max_attempts": 2
+          }
+        },
+        {
+          "check_id": "K7-CHECK-002",
+          "check_name": "TraderSense highlight count",
+          "description": "Verify exactly 2 highlights for TraderSense",
+          "method": "count bullet lines in TraderSense section",
+          "expected": 2,
+          "on_mismatch": {
+            "action": "raise ValidationException",
+            "message": "TraderSense section has {actual_count} highlights (expected 2). Highlights may have been truncated or duplicated.",
+            "regenerate": true,
+            "max_attempts": 2
+          }
+        },
+        {
+          "check_id": "K7-CHECK-003",
+          "check_name": "Ernst & Young highlight count",
+          "description": "Verify exactly 2 highlights for EY",
+          "method": "count bullet lines in EY section",
+          "expected": 2,
+          "on_mismatch": {
+            "action": "raise ValidationException",
+            "message": "Ernst & Young section has {actual_count} highlights (expected 2). Highlights may have been truncated or duplicated.",
+            "regenerate": true,
+            "max_attempts": 2
+          }
+        },
+        {
+          "check_id": "K7-CHECK-004",
+          "check_name": "Early Career highlight count",
+          "description": "Verify exactly 1 highlight for Early Career",
+          "method": "count bullet lines in Early Career section",
+          "expected": 1,
+          "on_mismatch": {
+            "action": "raise ValidationException",
+            "message": "Early Career section has {actual_count} highlights (expected 1). Highlight may have been truncated or duplicated.",
+            "regenerate": true,
+            "max_attempts": 2
+          }
+        },
+        {
+          "check_id": "K7-CHECK-005",
+          "check_name": "No plain prose highlights",
+          "description": "Verify no highlights are formatted as plain text without bullet prefix",
+          "method": "detect_pattern: highlight text not preceded by •",
+          "on_detected": {
+            "action": "raise ValidationException",
+            "message": "K.7 contains plain prose highlights (no bullet prefix). Text: {detected_text}",
+            "regenerate": true,
+            "max_attempts": 2
+          }
+        },
+        {
+          "check_id": "K7-CHECK-006",
+          "check_name": "Section header format validation",
+          "description": "Verify section headers follow format: [Company] | [Location]",
+          "method": "regex_match: r'^[A-Z].+\\s\\|\\s[A-Z].+$' for each section header",
+          "on_fail": {
+            "action": "warning_log",
+            "message": "Section header {section_header} does not match expected format: [Company] | [Location]"
+          }
+        }
+      ],
+      "on_pass": "Log 'âœ… VG_K7_HIGHLIGHT_FORMATTING: All sections render with proper bullet formatting and correct highlight counts'",
+      "on_fail": "RAISE_EXCEPTION_NO_FILES_WRITTEN",
+      "qa_report_integration": {
+        "section": "6.5",
+        "display_format": "markdown_table",
+        "columns": [
+          "Section",
+          "Expected Highlights",
+          "Actual Highlights",
+          "Bullet Formatting",
+          "Status"
+        ],
+        "rows": [
+          {
+            "section": "TraderSense",
+            "expected": 2,
+            "actual": "{actual_count}",
+            "bullets": "âœ… if all have •",
+            "status": "âœ… / âŒ"
+          },
+          {
+            "section": "Ernst & Young",
+            "expected": 2,
+            "actual": "{actual_count}",
+            "bullets": "âœ… if all have •",
+            "status": "âœ… / âŒ"
+          },
+          {
+            "section": "Early Career",
+            "expected": 1,
+            "actual": "{actual_count}",
+            "bullets": "âœ… if all have •",
+            "status": "âœ… / âœ… / âŒ"
+          }
+        ]
+      }
+    }
+  },
+  "VALIDATION_GATES_POST_GENERATION_UPDATE": {
+    "instruction": "Add VG_K7_HIGHLIGHT_FORMATTING to 2.task.validation_gates.post_generation array after VG_FILE_GENERATION_ENFORCEMENT",
+    "updated_array": [
+      "VG_STAGING_BUFFER_CREATION",
+      "VG_SCOPE_ISOLATION_ENFORCEMENT",
+      "VG_MANDATORY_WORD_COUNT_COMPLIANCE",
+      "VG_HEADLINE_CHARACTER_COMPLIANCE",
+      "VG_HEADLINE_WORD_COUNT_COMPLIANCE",
+      "VG_EXECUTIVE_SUMMARY_STRUCTURE_COMPLIANCE",
+      "VG_SKILL_COUNT_COMPLIANCE",
+      "VG_INDUSTRY_FIRST_COMPLIANCE",
+      "VG_PROSE_QUALITY_COMPLIANCE",
+      "VG_VERSIONED_RESUME_FILENAME_COMPLIANCE",
+      "VG_QUANTITATIVE_CLAIM_VALIDATION",
+      "VG_COVER_LETTER_HEADER_COMPLIANCE",
+      "VG_COVER_LETTER_SIGNATURE_COMPLIANCE",
+      "VG_PROSE_COMPANY_PREFIX_REMOVAL",
+      "VG_DEDUPLICATION_COMPLIANCE",
+      "VG_AI_DETECTION_DEFENSE",
+      "VG_FILE_GENERATION_ENFORCEMENT",
+      "VG_K7_HIGHLIGHT_FORMATTING",
+      "VG_FILE_GENERATION_VERIFICATION",
+      "VG_QA_REPORT_COMPLETENESS",
+      "VG_SECTION_13_COMPLETENESS",
+      "VG_QA_METRICS_VALIDATION",
+      "VG_PRODUCTION_READY_PROOF"
+    ]
+  },
+  "test_suite_additions": {
+    "test_suite_id": "K7_FORMATTING_VALIDATION_SUITE",
+    "total_tests": 6,
+    "tests": [
+      {
+        "test_id": "K7-FMT-001",
+        "name": "TraderSense renders with 2 bullet-prefixed highlights",
+        "input": "K.7 extracted sections with TraderSense highlights",
+        "expected": "âœ… PASS - Both highlights show • prefix",
+        "severity": "CRITICAL"
+      },
+      {
+        "test_id": "K7-FMT-002",
+        "name": "Ernst & Young renders with 2 bullet-prefixed highlights",
+        "input": "K.7 extracted sections with EY highlights",
+        "expected": "âœ… PASS - Both highlights show • prefix",
+        "severity": "CRITICAL"
+      },
+      {
+        "test_id": "K7-FMT-003",
+        "name": "Early Career renders with 1 bullet-prefixed highlight",
+        "input": "K.7 extracted sections with Early Career highlight",
+        "expected": "âœ… PASS - Single highlight shows • prefix",
+        "severity": "CRITICAL"
+      },
+      {
+        "test_id": "K7-FMT-004",
+        "name": "Plain prose highlight detection (no bullets)",
+        "input": "K.7 output with plain prose highlight (no • prefix)",
+        "expected": "âŒ FAIL - ValidationException raised",
+        "severity": "CRITICAL"
+      },
+      {
+        "test_id": "K7-FMT-005",
+        "name": "Truncated highlight detection (EY missing 1 bullet)",
+        "input": "K.7 output with only 1 EY highlight (expected 2)",
+        "expected": "âŒ FAIL - ValidationException raised",
+        "severity": "CRITICAL"
+      },
+      {
+        "test_id": "K7-FMT-006",
+        "name": "QA Report Section 6.5 displays correctly",
+        "input": "All K.7 sections rendering correctly",
+        "expected": "âœ… Table shows all sections with correct counts and bullet status",
+        "severity": "MEDIUM"
+      }
+    ]
+  },
+  "critical_success_criteria": {
+    "k7_formatting_success": [
+      "âœ… TraderSense renders with 2 highlights, each prefixed with •",
+      "âœ… Ernst & Young renders with 2 highlights, each prefixed with •",
+      "âœ… Early Career renders with 1 highlight, prefixed with •",
+      "âœ… No highlights are truncated or dropped during rendering",
+      "âœ… Section headers follow format: [Company] | [Location]",
+      "âœ… Overview paragraphs render without truncation",
+      "âœ… VG_K7_HIGHLIGHT_FORMATTING gate blocks file writes on any formatting failure",
+      "âœ… QA Report Section 6.5 displays bullet status for all sections",
+      "âœ… All 6 K7 formatting tests pass"
+    ],
+    "failure_indicators": [
+      "âŒ K.7 highlights render without • prefix",
+      "âŒ TraderSense shows fewer than 2 highlights",
+      "âŒ Ernst & Young shows fewer than 2 highlights",
+      "âŒ Early Career highlight is missing or truncated",
+      "âŒ Files written despite K.7 formatting violations",
+      "âŒ VG_K7_HIGHLIGHT_FORMATTING gate does not fire"
+    ]
+  },
+  "implementation_notes": {
+    "gemini_prompt_requirement": "K.7 generation prompt MUST include explicit rendering instruction with bullet format example. Temperature reduced to 0.2 to prevent formatting variance.",
+    "backward_compatibility": "Full backward compatibility with v1.8.1 - only adds stricter K.7 formatting specification",
+    "rollback_plan": "If critical failures detected post-deployment, revert to v1.8.1 (remove VG_K7_HIGHLIGHT_FORMATTING gate and rendering_specification)",
+    "merge_strategy": "Apply to Job_Workflow_v1_8_2.json - update K.7 node, add VG_K7_HIGHLIGHT_FORMATTING gate, insert into validation gates array"
+  }
+}

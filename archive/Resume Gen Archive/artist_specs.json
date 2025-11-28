@@ -1,0 +1,127 @@
+{
+  "K0_NAME": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "owner.name"
+  },
+  "K0_CONTACT": {
+    "generation_method": "_copy_k0_contact"
+  },
+  "K0_HEADLINE": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_k0_headline",
+    "prompt_template": "You are a professional resume writer creating a compelling headline for a resume.\n\nGiven the following information:\n- Primary Theme: {primary_theme}\n- Key Differentiators: {differentiators_str}\n\n**Constraints (CRITICAL):**\n1.  **Format:** Must be three components separated by pipes ( | ).\n    Example: `[Role/Expertise] | [Key Skill/Domain] | [Key Accomplishment/Value]`\n2.  **Total Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n3.  **Component Word Count:** Each component (between the pipes) must be between {comp_min_wc} and {comp_max_wc} words.\n4.  **Content:** Must be grounded in the provided themes and differentiators.\n5.  **Forbidden:** Do NOT use commas. Do NOT use generic titles like \"Director\" or \"Manager\" (e.g., \"Director of AI\").\n6.  **Output:** Provide ONLY the headline text. No preamble, no explanation, no markdown.\n\nGenerate only the headline.",
+    "system_prompt": "You are an expert resume headline crafter specializing in concise, impactful, keyword-rich headlines without using job titles.",
+    "reasoning_config": "K0_HEADLINE_CONFIG",
+    "post_processor": null
+  },
+  "K0_EXECUTIVE_SUMMARY_HEADER": {
+    "generation_method": "_generate_dummy_header"
+  },
+  "K0_EXPERIENCE_HEADER": {
+    "generation_method": "_generate_dummy_header"
+  },
+  "K0_EDUCATION_HEADER": {
+    "generation_method": "_generate_dummy_header"
+  },
+  "K0_CERTIFICATIONS_HEADER": {
+    "generation_method": "_generate_dummy_header"
+  },
+  "K0_COMPETENCIES_HEADER": {
+    "generation_method": "_generate_dummy_header"
+  },
+  "K1_EXECUTIVE_SUMMARY": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_k1_summary",
+    "prompt_template": "You are an expert resume writer crafting a compelling executive summary.\n\n**Context:**\n- **Primary Theme:** {primary_theme}\n- **Role Archetype Instruction:** {archetype_instruction}\n- **Key Differentiators (Must include):** {differentiators_str}\n- **Problem-Solution Narrative (Must frame):**\n    - Problem: \"{problem}\"\n    - Solution: \"{solution}\"\n- **Experience Snippets (for context):**\n{experience_snippets}\n\n**Task:**\nWrite a professional resume summary that meets these **CRITICAL** constraints:\n1.  **Sentence Count:** Must be **exactly** {min_sc} to {max_sc} sentences.\n2.  **Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n3.  **Content (Mandatory):**\n    - Must incorporate the **Primary Theme**.\n    - Must align with the **Role Archetype Instruction**.\n    - Must include at least {min_diff} of the **Key Differentiators**.\n    - Must be framed around the **Problem-Solution Narrative**.\n4.  **Format:**\n    - Write in the third person.\n    - Do NOT use \"I\", \"my\", or \"me\".\n    - Do NOT use placeholders (e.g., \"[X years]\").\n5.  **Output:** Provide ONLY the summary text. No preamble, no explanation, no markdown.\n\n**Executive Summary:**\n",
+    "system_prompt": "You are an expert resume writer specializing in crafting concise, forward-looking Executive Value Propositions tailored to specific job descriptions.",
+    "reasoning_config": "K1_EXECUTIVE_SUMMARY_CONFIG",
+    "post_processor": null
+  },
+  "K2_UNIFY_BULLETS": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "Unify Consulting"
+    }
+  },
+  "K2_UNIFY_OVERVIEW": {
+    "generation_method": "_generate_tailored_overview_for_experience",
+    "depends_on": "K2_UNIFY_BULLETS"
+  },
+  "K3_IBM_BULLETS": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "IBM"
+    }
+  },
+  "K3_IBM_OVERVIEW": {
+    "generation_method": "_generate_tailored_overview_for_experience",
+    "depends_on": "K3_IBM_BULLETS"
+  },
+  "K4_TRADERSENSE_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_narrative",
+    "extra_args": {
+      "company_match": "TraderSense",
+      "section_enum": "K4_TRADERSENSE_NARRATIVE"
+    },
+    "prompt_template": "You are an expert resume writer creating a concise 2-3 sentence narrative for a past role.\n\n**Role Context:**\n- **Company:** {company_name}\n- **Title:** {title}\n- **Master Resume Highlights (Grounding):**\n{master_context}\n\n**Targeting Context:**\n- **RAG Signals (Incorporate these):** {combined_signals_str}\n- **K0 Themes (If relevant):** {k0_themes_str}\n- **Focus Instruction:** {focus_instruction}\n\n**Task:**\nWrite a narrative that summarizes the role's scope and impact, grounded in the **Master Resume Highlights** and subtly aligned with the **RAG Signals**.\n\n**CRITICAL Constraints:**\n1.  **Sentence Count:** Must be **exactly {target_sc}** sentences.\n2.  **Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n3.  **Content:** Must be a high-level summary, NOT a bullet point.\n4.  **Forbidden Phrases:** Do NOT start with \"At [Company]\", \"As [Title]\", \"In this role\", or \"Responsible for\".\n5.  **Output:** Provide ONLY the narrative text. No preamble, no explanation, no markdown.\n\n**Narrative ({target_sc} sentences, {min_wc}-{max_wc} words):**\n",
+    "system_prompt": "You are an expert resume writer crafting concise narratives that bridge past technical leadership to current capabilities.",
+    "reasoning_config": "K4_TRADERSENSE_NARRATIVE_CONFIG",
+    "post_processor": "_post_process_narrative"
+  },
+  "K5_EY_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_narrative",
+    "extra_args": {
+      "company_match": "Ernst & Young",
+      "section_enum": "K5_EY_NARRATIVE"
+    },
+    "prompt_template": "You are an expert resume writer creating a concise 2-3 sentence narrative for a past role.\n\n**Role Context:**\n- **Company:** {company_name}\n- **Title:** {title}\n- **Master Resume Highlights (Grounding):**\n{master_context}\n\n**Targeting Context:**\n- **RAG Signals (Incorporate these):** {combined_signals_str}\n- **K0 Themes (If relevant):** {k0_themes_str}\n- **Focus Instruction:** {focus_instruction}\n\n**Task:**\nWrite a narrative that summarizes the role's scope and impact, grounded in the **Master Resume Highlights** and subtly aligned with the **RAG Signals**.\n\n**CRITICAL Constraints:**\n1.  **Sentence Count:** Must be **exactly {target_sc}** sentences.\n2.  **Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n3.  **Content:** Must be a high-level summary, NOT a bullet point.\n4.  **Forbidden Phrases:** Do NOT start with \"At [Company]\", \"As [Title]\", \"In this role\", or \"Responsible for\".\n5.  **Output:** Provide ONLY the narrative text. No preamble, no explanation, no markdown.\n\n**Narrative ({target_sc} sentences, {min_wc}-{max_wc} words):**\n",
+    "system_prompt": "You are an expert resume writer crafting concise narratives that bridge past consulting experience to current executive capabilities.",
+    "reasoning_config": "K5_EY_NARRATIVE_CONFIG",
+    "post_processor": "_post_process_narrative"
+  },
+  "K6_EARLY_CAREER_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_narrative",
+    "extra_args": {
+      "company_match": "Early Career",
+      "section_enum": "K6_EARLY_CAREER_NARRATIVE"
+    },
+    "prompt_template": "You are an expert resume writer creating a concise 2-3 sentence narrative for a past role.\n\n**Role Context:**\n- **Company:** {company_name}\n- **Title:** {title}\n- **Master Resume Highlights (Grounding):**\n{master_context}\n\n**Targeting Context:**\n- **RAG Signals (Incorporate these):** {combined_signals_str}\n- **K0 Themes (If relevant):** {k0_themes_str}\n- **Focus Instruction:** {focus_instruction}\n\n**Task:**\nWrite a narrative that summarizes the role's scope and impact, grounded in the **Master Resume Highlights** and subtly aligned with the **RAG Signals**.\n\n**CRITICAL Constraints:**\n1.  **Sentence Count:** Must be **exactly {target_sc}** sentences.\n2.  **Word Count:** Must be **strictly** between {min_wc} and {max_wc} words.\n3.  **Content:** Must be a high-level summary, NOT a bullet point.\n4.  **Forbidden Phrases:** Do NOT start with \"At [Company]\", \"As [Title]\", \"In this role\", or \"Responsible for\".\n5.  **Output:** Provide ONLY the narrative text. No preamble, no explanation, no markdown.\n\n**Narrative ({target_sc} sentences, {min_wc}-{max_wc} words):**\n",
+    "system_prompt": "You are an expert resume writer crafting concise narratives that bridge early quantitative experience to a technology career path.",
+    "reasoning_config": "K6_EARLY_CAREER_NARRATIVE_CONFIG",
+    "post_processor": "_post_process_narrative"
+  },
+  "K7_EDUCATION": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "education"
+  },
+  "K8_CERTIFICATIONS": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "certifications_and_credentials"
+  },
+  "K9_COMPETENCIES": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "Strategic Competencies Section",
+      "is_competencies": true
+    }
+  },
+  "K10_SKILLS": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_k10_skills",
+    "prompt_template": "You are an expert resume writer creating a \"Strategic & Technical Competencies\" section.\n\n**Context:**\n- **Target Job Keywords (for emphasis):** {combined_keywords_str}\n- **Candidate's Master Skills (for grounding):** (Provided in system context, do not repeat)\n\n**Task:**\nGenerate a list of **exactly 12** strategic and technical competencies, formatted as a bulleted list.\n\n**CRITICAL Constraints:**\n1.  **Count:** Must be **exactly 12** competencies.\n2.  **Format:** Each competency must be a single line starting with an asterisk and a space (`* `).\n3.  **Word Count:** Each competency must be **1-3 words** (e.g., \"* Cloud Architecture\", \"* Strategic Partnerships\", \"* AI/ML Engineering\").\n4.  **Relevance:** Competencies must be a mix of strategic and technical skills, inspired by the Target Job Keywords.\n5.  **Output:** Provide ONLY the 12 bullet points. No preamble, no headers, no explanation, no markdown fences.\n\n**Competencies:**\n",
+    "system_prompt": "You are an expert HR data analyst specializing in extracting concise, relevant skills from job requirements.",
+    "reasoning_config": "K10_SKILLS_CONFIG",
+    "post_processor": "_post_process_k10_skills"
+  },
+  "K11_COVER_LETTER": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_k11_cover_letter",
+    "prompt_template": "You are writing a professional, impactful cover letter.\n\n**Context:**\n- **Current Date:** {current_date}\n- **Primary Theme:** {primary_theme}\n- **Key Differentiators:** {differentiators_str}\n- **Problem-Solution Narrative:**\n    - Problem: \"{problem}\"\n    - Solution: \"{solution}\"\n- **Candidate Experience Snippets:**\n{experience_snippets}\n\n**Task:**\nWrite a full-page cover letter (3-4 paragraphs) that meets these **CRITICAL** constraints:\n\n**Structure (Must follow this exactly):**\n1.  **Date:** `{current_date}`\n2.  **Recipient Block:**\n    Hiring Manager\n    [Company Name]\n3.  **Salutation:**\n    Dear Hiring Manager,\n4.  **Body Paragraph 1 (Hook):**\n    - Express specific enthusiasm for the role and company.\n    - Connect to the **Primary Theme** and the company's goals.\n    - Word count: **Strictly {p1_min_wc}-{p1_max_wc} words.**\n5.  **Body Paragraph 2 (Proof):**\n    - Provide 1-2 specific examples of achievements, grounded in the **Experience Snippets**.\n    - Frame these achievements using the **Problem-Solution Narrative**.\n    - Word count: **Strictly {p2_min_wc}-{p2_max_wc} words.**\n6.  **Body Paragraph 3 (Vision/Fit):**\n    - Connect your skills (using **Key Differentiators**) to the company's future.\n    - Reiterate enthusiasm and state your unique value.\n    - Word count: **Strictly {p3_min_wc}-{p3_max_wc} words.**\n7.  **Closing & Signature:**\n    (Must match this exactly, including line breaks)\n{expected_signature}\n\n**Negative Constraints (CRITICAL):**\n- Do NOT use placeholders (e.g., \"[Company Name]\", \"[My Achievement]\").\n- Do NOT use generic phrases (\"I am writing to apply...\", \"I believe I am a strong fit...\").\n- Do NOT simply list skills; narrate their impact.\n\n**Output:**\nProvide ONLY the complete cover letter text, adhering to all structure and content constraints.\n",
+    "system_prompt": "You are an expert executive ghostwriter crafting tailored cover letters.",
+    "reasoning_config": "K11_COVER_LETTER_CONFIG",
+    "post_processor": "_post_process_k11_cover_letter"
+  }
+}

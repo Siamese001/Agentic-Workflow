@@ -1,0 +1,737 @@
+{
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "feedback_log_path": "feedback_log.jsonl",
+    "rules_registry_path": "rules_registry.json",
+    "pattern_confidence_threshold": 0.75,
+    "min_samples_for_learning": 10
+  },
+  "batch_config": {
+    "max_parallel_workers": 8,
+    "enable_online_learning": true,
+    "online_learning_failure_threshold": 2
+  },
+  "orchestration_config": {
+    "orchestration_mode": "dynamic_goal_driven",
+    "default_goal": "Produce a final_draft that passes all ValidationEngine checks",
+    "default_policy_fallback": [
+      "run_strategy_stack",
+      "run_rag_stack",
+      "run_prompt_stack",
+      "run_bullet_stack",
+      "run_drafting_stack",
+      "run_qa_stack"
+    ]
+  },
+  "governor_config": {
+    "max_retries_per_node": 2,
+    "veto_hierarchy": [
+      "ADVERSARIAL",
+      "HOLISTIC",
+      "STRATEGY",
+      "QA3_SEMANTIC",
+      "QA2_FACTUAL",
+      "QA1_LINGUISTIC"
+    ]
+  },
+  "planner_config": {
+    "max_replan_loops": 5,
+    "enable_dynamic_replanning": true,
+    "critique_threshold": 0.7
+  },
+  "conductor_config": {
+    "enabled": true,
+    "num_branches": 3,
+    "strategies": [
+      {
+        "id": "branch_a",
+        "description": "GTM-Focused",
+        "emphasis": "partnerships_go_to_market",
+        "weight_strategic": 0.7,
+        "weight_technical": 0.3
+      },
+      {
+        "id": "branch_b",
+        "description": "Tech-Focused",
+        "emphasis": "technical_depth_innovation",
+        "weight_strategic": 0.3,
+        "weight_technical": 0.7
+      },
+      {
+        "id": "branch_c",
+        "description": "Balanced",
+        "emphasis": "balanced_leadership",
+        "weight_strategic": 0.5,
+        "weight_technical": 0.5
+      }
+    ],
+    "voting_method": "score_based",
+    "min_score_threshold": 0.75,
+    "parallel_execution": true
+  },
+  "moe_config": {
+    "enabled": true,
+    "routers": {
+      "linguistic_router": {
+        "router_id": "linguistic_router",
+        "router_name": "Linguistic Validation Router",
+        "aggregation_method": "all_pass",
+        "parallel_execution": true,
+        "timeout_seconds": 60,
+        "expert_agents": [
+          "ForbiddenVerbValidator",
+          "GrammarTokenCount",
+          "FormatCompliance",
+          "BiasScrubber",
+          "IntroPhraseValidator"
+        ]
+      },
+      "factual_router": {
+        "router_id": "factual_router",
+        "router_name": "Factual Validation Router",
+        "aggregation_method": "all_pass",
+        "parallel_execution": true,
+        "timeout_seconds": 90,
+        "expert_agents": [
+          "MetricValidator",
+          "TenureValidator",
+          "EntityValidator",
+          "ClaimValidator"
+        ]
+      },
+      "semantic_router": {
+        "router_id": "semantic_router",
+        "router_name": "Semantic Validation Router",
+        "aggregation_method": "voting",
+        "parallel_execution": true,
+        "timeout_seconds": 120,
+        "expert_agents": [
+          "ToneValidator",
+          "ThematicAlignmentValidator",
+          "SemanticEntailmentValidator",
+          "NarrativeThread",
+          "AdversarialReviewer"
+        ]
+      },
+      "global_router": {
+        "router_id": "global_router",
+        "router_name": "Global Validation Router",
+        "aggregation_method": "all_pass",
+        "parallel_execution": true,
+        "timeout_seconds": 60,
+        "expert_agents": [
+          "SectionPresence",
+          "WordCount",
+          "SentenceCount",
+          "Structure",
+          "Similarity",
+          "JDSkillsValidator",
+          "SignalScoreValidator"
+        ]
+      }
+    }
+  },
+  "reflection_config": {
+    "enable_reflection": true,
+    "max_iterations": 3,
+    "convergence_threshold": 0.9
+  },
+  "react_config": {
+    "enabled": true,
+    "max_tool_calls_per_query": 5,
+    "max_reasoning_loops": 3,
+    "available_tools": [
+      "web_search",
+      "chromadb_search",
+      "wiki_search",
+      "browse_page",
+      "company_research"
+    ]
+  },
+  "rag_filter_config": {
+    "top_k_filter": 3
+  },
+  "persistent_memory_config": {
+    "enabled": true,
+    "provider": "chromadb",
+    "golden_bullet_collection": "golden_bullets_v1",
+    "strategic_insights_collection": "strategic_insights_v1"
+  },
+  "adversarial_moe_drafting": {
+    "enabled": true,
+    "collaboration_mode": "iterative_critique",
+    "max_critique_loops": 2,
+    "drafters": [
+      {
+        "id": "gemini",
+        "name": "AdversarialDrafterStrategist",
+        "role": "Strategist (Gemini)",
+        "model": "gemini-2.5-pro",
+        "temperature": 0.7,
+        "enabled": true
+      },
+      {
+        "id": "claude",
+        "name": "RedTeam",
+        "role": "RedTeam (Claude)",
+        "model": "claude-4.1-opus",
+        "temperature": 0.8,
+        "enabled": true
+      },
+      {
+        "id": "muse",
+        "name": "Refiner",
+        "role": "Refiner (GPT-5)",
+        "model": "gpt-5",
+        "temperature": 0.9,
+        "enabled": true
+      }
+    ],
+    "synthesis": {
+      "method": "weighted_blend",
+      "quality_threshold": 0.85,
+      "critique_enabled": true,
+      "max_synthesis_iterations": 2
+    },
+    "parallel_execution": false
+  },
+  "constraints": {
+    "headline": {
+      "word_count_min": 7,
+      "word_count_max": 12
+    },
+    "executive_summary": {
+      "word_count_min": 120,
+      "word_count_max": 150,
+      "sentence_count_min": 7,
+      "sentence_count_max": 9
+    },
+    "bullets": {
+      "word_count_min": 25,
+      "word_count_max": 40,
+      "word_count_acceptable_min": 21,
+      "word_count_acceptable_max": 44
+    },
+    "competencies": {
+      "bullet_count_min": 5,
+      "bullet_count_max": 7
+    },
+    "skills": {
+      "count_min": 8,
+      "count_max": 12
+    },
+    "cover_letter": {
+      "p1_word_count_min": 80,
+      "p1_word_count_max": 120
+    },
+    "total_resume": {
+      "word_count_min": 900,
+      "word_count_max": 1200
+    },
+    "section_specific": {
+      "unify_overview": {
+        "word_count_min": 25,
+        "word_count_max": 40
+      },
+      "ibm_overview": {
+        "word_count_min": 25,
+        "word_count_max": 40
+      },
+      "tradersense_narrative": {
+        "word_count_min": 50,
+        "word_count_max": 70
+      },
+      "ey_narrative": {
+        "word_count_min": 60,
+        "word_count_max": 80
+      },
+      "early_career_narrative": {
+        "word_count_min": 50,
+        "word_count_max": 70
+      }
+    },
+    "generation_requirements": {
+      "k1_min_differentiators": 4,
+      "min_jd_keywords": 6
+    }
+  },
+  "signal_constraints": {
+    "MIN_SIGNAL_SCORE": 0.75,
+    "MIN_JD_ALIGNMENT": 0.7,
+    "MIN_THEMATIC_OVERLAP": 0.6,
+    "MAX_CROSS_SECTION_SIMILARITY": 0.6
+  },
+  "llm_config": {
+    "defaults": {
+      "max_retries": 3,
+      "retry_delay_sec": 2,
+      "default_generation_temperature": 0.7,
+      "default_synthesis_temperature": 0.9,
+      "default_max_output_tokens": 2048,
+      "safety_threshold": 0.85
+    },
+    "gemini": {
+      "model": "gemini-1.5-pro",
+      "temperature": 0.7,
+      "max_output_tokens": 2048
+    },
+    "claude": {
+      "model": "claude-sonnet-4-20250514",
+      "temperature": 0.8,
+      "max_tokens": 4096
+    },
+    "gpt4": {
+      "model": "gpt-4-turbo",
+      "temperature": 0.9,
+      "max_tokens": 4096
+    },
+    "tier3_speed_cost": {
+      "model": "gemini-2.5-flash-lite",
+      "temperature": 0.5,
+      "max_tokens": 2048
+    },
+    "tier2_workhorse": {
+      "model": "gemini-2.5-flash",
+      "temperature": 0.7,
+      "max_tokens": 4096
+    },
+    "tier1_flagship_gemini": {
+      "model": "gemini-2.5-pro",
+      "temperature": 0.7,
+      "max_tokens": 4096
+    },
+    "tier1_flagship_claude": {
+      "model": "claude-4.1-opus",
+      "temperature": 0.8,
+      "max_tokens": 4096
+    },
+    "tier1_flagship_openai": {
+      "model": "gpt-5",
+      "temperature": 0.8,
+      "max_tokens": 4096
+    }
+  },
+  "cost_config": {
+    "enable_cost_tracking": true,
+    "cost_ceiling_per_workflow": 5.0,
+    "cost_per_1k_tokens": {
+      "gemini_input": 0.00015,
+      "gemini_output": 0.0006,
+      "claude_input": 0.003,
+      "claude_output": 0.015,
+      "gemini-2.5-flash-lite_input": 0.00005,
+      "gemini-2.5-flash-lite_output": 0.0001,
+      "gemini-2.5-flash_input": 0.0001,
+      "gemini-2.5-flash_output": 0.0003,
+      "gemini-2.5-pro_input": 0.001,
+      "gemini-2.5-pro_output": 0.003,
+      "claude-4.1-opus_input": 0.01,
+      "claude-4.1-opus_output": 0.02,
+      "gpt-5_input": 0.02,
+      "gpt-5_output": 0.04
+    },
+    "alert_threshold_percent": 80
+  },
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "structured_logging": true,
+    "log_format": "json",
+    "log_file": "workflow.log.jsonl",
+    "log_rotation": {
+      "max_bytes": 10485760,
+      "backup_count": 5
+    },
+    "correlation_ids": true,
+    "telemetry": {
+      "enabled": true
+    }
+  },
+  "crew_config_defaults": {
+    "max_complexity": 100,
+    "parallel_execution": false,
+    "validation_threshold": 0.8,
+    "enable_caching": true,
+    "debug_mode": false,
+    "enable_conductor": true,
+    "enable_reflection": true,
+    "enable_moe": true,
+    "enable_react": true
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json",
+    "fallback_search_paths": [
+      "master_resume.json",
+      "data/master_resume.json",
+      "/mnt/user-data/uploads/master_resume.json"
+    ],
+    "empty_master_resume_template": {
+      "owner": {
+        "name": "User",
+        "contact": {}
+      },
+      "professional_experience": [],
+      "education": [],
+      "certifications": [],
+      "skills": []
+    }
+  },
+  "tool_configs": {
+    "duplicate_detector": {
+      "threshold": 0.85
+    },
+    "circuit_breaker": {
+      "failure_threshold": 5,
+      "success_threshold": 2,
+      "timeout_duration": 60,
+      "half_open_timeout": 30
+    },
+    "text_utils": {
+      "min_keyword_len": 4
+    }
+  },
+  "resume_structure": {
+    "K0_NAME": "K.0_Name",
+    "K0_HEADLINE": "K.0_Headline",
+    "K0_CONTACT": "K.0_Contact",
+    "K0_EXECUTIVE_SUMMARY_HEADER": "K.0_Executive_Summary_Header",
+    "K0_EXPERIENCE_HEADER": "K.0_Experience_Header",
+    "K0_EDUCATION_HEADER": "K.0_Education_Header",
+    "K0_CERTIFICATIONS_HEADER": "K.0_Certifications_Header",
+    "K0_COMPETENCIES_HEADER": "K.0_Competencies_Header",
+    "K1_EXECUTIVE_SUMMARY": "K.1_Executive_Summary",
+    "K2_UNIFY_OVERVIEW": "K.2_Unify_Overview",
+    "K2_UNIFY_BULLETS": "K.2_Unify_Bullets",
+    "K3_IBM_OVERVIEW": "K.3_IBM_Overview",
+    "K3_IBM_BULLETS": "K.3_IBM_Bullets",
+    "K4_TRADERSENSE_NARRATIVE": "K.4_TraderSense_Narrative",
+    "K5_EY_NARRATIVE": "K.5_EY_Narrative",
+    "K6_EARLY_CAREER_NARRATIVE": "K.6_Early_Career_NARRATIVE",
+    "K7_EDUCATION": "K.7_Education",
+    "K8_CERTIFICATIONS": "K.8_Certifications",
+    "K9_COMPETENCIES": "K.9_Competencies",
+    "K10_SKILLS": "K.10_Skills",
+    "K11_COVER_LETTER": "K.11_Cover_Letter"
+  },
+  "rules": {
+    "jd_enforcement": {
+      "E1_JD_MIN_LENGTH": {
+        "id": "E1_JD_MIN_LENGTH",
+        "message": "JD must be non-empty (min 100 characters)",
+        "value": 100
+      },
+      "E2_JD_NON_NULL": {
+        "id": "E2_JD_NON_NULL",
+        "message": "JD must be provided to workflow (not None/empty)"
+      },
+      "E3_JD_PARSING_SUCCESS": {
+        "id": "E3_JD_PARSING_SUCCESS",
+        "message": "JD must parse successfully"
+      },
+      "E4_THEMES_EXTRACTED": {
+        "id": "E4_THEMES_EXTRACTED",
+        "message": "JD-derived themes must be extracted"
+      },
+      "E5_SKILLS_EXTRACTED": {
+        "id": "E5_SKILLS_EXTRACTED",
+        "message": "JD-derived skills must be extracted (min 5)",
+        "value": 5
+      },
+      "E6_IMPACT_PHRASES": {
+        "id": "E6_IMPACT_PHRASES",
+        "message": "JD-derived impact phrases must be captured (min 8)",
+        "value": 8
+      },
+      "E7_EXPERTISE_MAPPING": {
+        "id": "E7_EXPERTISE_MAPPING",
+        "message": "JD expertise areas must map to resume (min 3 overlaps)",
+        "value": 3
+      },
+      "E8_NO_DEFAULT_PLACEHOLDERS": {
+        "id": "E8_NO_DEFAULT_PLACEHOLDERS",
+        "message": "No '[JOB TITLE]' or '[COMPANY]' placeholders in JD"
+      }
+    },
+    "linguistic_validators": {
+      "forbidden_verbs": [
+        "helped",
+        "assisted",
+        "worked on",
+        "participated in",
+        "involved in",
+        "responsible for",
+        "duties included",
+        "tasked with"
+      ],
+      "biased_terms": [
+        "young",
+        "old",
+        "senior citizen",
+        "millennial",
+        "gen-z",
+        "he",
+        "she",
+        "his",
+        "her",
+        "hers",
+        "him",
+        "crazy",
+        "insane",
+        "OCD",
+        "bipolar"
+      ],
+      "weak_intros": [
+        "I am",
+        "I was",
+        "I have",
+        "I had",
+        "I helped",
+        "I assisted",
+        "My role",
+        "My responsibility",
+        "In my position"
+      ]
+    },
+    "section_presence": {
+      "required_sections": [
+        "K.1_Executive_Summary",
+        "K.2_Unify_Overview",
+        "K.2_Unify_Bullets"
+      ]
+    },
+    "jd_skills_validator": {
+      "min_overlap": 3
+    },
+    "signal_score": {
+      "jd_keyword_top_n": 30,
+      "text_keyword_top_n": 20
+    }
+  },
+  "agent_definitions": {
+    "validation_agents": {
+      "ForbiddenVerbValidator": {
+        "agent_id": "forbidden_verb",
+        "agent_type": "ForbiddenVerbValidator",
+        "complexity": 10,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "QA1_LINGUISTIC"
+      },
+      "GrammarTokenCount": {
+        "agent_id": "grammar_token",
+        "agent_type": "GrammarTokenCount",
+        "complexity": 15,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "QA1_LINGUISTIC"
+      },
+      "FormatCompliance": {
+        "agent_id": "format_compliance",
+        "agent_type": "FormatCompliance",
+        "complexity": 25,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "QA1_LINGUISTIC"
+      },
+      "BiasScrubber": {
+        "agent_id": "bias_scrubber",
+        "agent_type": "BiasScrubber",
+        "complexity": 65,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "QA1_LINGUISTIC"
+      },
+      "IntroPhraseValidator": {
+        "agent_id": "intro_phrase",
+        "agent_type": "IntroPhraseValidator",
+        "complexity": 10,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "QA1_LINGUISTIC"
+      },
+      "MetricValidator": {
+        "agent_id": "metric_validator",
+        "agent_type": "MetricValidator",
+        "complexity": 25,
+        "classification": "CLASS_2_FACTUAL_MEDIUM",
+        "veto_level": "QA2_FACTUAL"
+      },
+      "TenureValidator": {
+        "agent_id": "tenure_validator",
+        "agent_type": "TenureValidator",
+        "complexity": 60,
+        "classification": "CLASS_2_FACTUAL_MEDIUM",
+        "veto_level": "QA2_FACTUAL"
+      },
+      "EntityValidator": {
+        "agent_id": "entity_validator",
+        "agent_type": "EntityValidator",
+        "complexity": 25,
+        "classification": "CLASS_2_FACTUAL_MEDIUM",
+        "veto_level": "QA2_FACTUAL"
+      },
+      "ClaimValidator": {
+        "agent_id": "claim_validator",
+        "agent_type": "ClaimValidator",
+        "complexity": 70,
+        "classification": "CLASS_2_FACTUAL_MEDIUM",
+        "veto_level": "QA2_FACTUAL"
+      },
+      "ToneValidator": {
+        "agent_id": "tone_validator",
+        "agent_type": "ToneValidator",
+        "complexity": 65,
+        "classification": "CLASS_3_SEMANTIC_EXPENSIVE",
+        "veto_level": "QA3_SEMANTIC"
+      },
+      "ThematicAlignmentValidator": {
+        "agent_id": "thematic_alignment",
+        "agent_type": "ThematicAlignmentValidator",
+        "complexity": 60,
+        "classification": "CLASS_3_SEMANTIC_EXPENSIVE",
+        "veto_level": "QA3_SEMANTIC"
+      },
+      "SemanticEntailmentValidator": {
+        "agent_id": "semantic_entailment",
+        "agent_type": "SemanticEntailmentValidator",
+        "complexity": 70,
+        "classification": "CLASS_3_SEMANTIC_EXPENSIVE",
+        "veto_level": "QA3_SEMANTIC"
+      },
+      "NarrativeThread": {
+        "agent_id": "narrative_thread",
+        "agent_type": "NarrativeThread",
+        "complexity": 65,
+        "classification": "CLASS_4_HOLISTIC_DEEP",
+        "veto_level": "HOLISTIC"
+      },
+      "AdversarialReviewer": {
+        "agent_id": "adversarial_reviewer",
+        "agent_type": "AdversarialReviewer",
+        "complexity": 70,
+        "classification": "CLASS_5_ADVERSARIAL",
+        "veto_level": "ADVERSARIAL"
+      },
+      "SectionPresence": {
+        "agent_id": "section_presence",
+        "agent_type": "SectionPresence",
+        "complexity": 5,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "NONE"
+      },
+      "WordCount": {
+        "agent_id": "word_count",
+        "agent_type": "WordCount",
+        "complexity": 5,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "NONE"
+      },
+      "SentenceCount": {
+        "agent_id": "sentence_count",
+        "agent_type": "SentenceCount",
+        "complexity": 5,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "NONE"
+      },
+      "Structure": {
+        "agent_id": "structure",
+        "agent_type": "Structure",
+        "complexity": 15,
+        "classification": "CLASS_1_LINGUISTIC_CHEAP",
+        "veto_level": "NONE"
+      },
+      "Similarity": {
+        "agent_id": "similarity",
+        "agent_type": "Similarity",
+        "complexity": 40,
+        "classification": "CLASS_3_SEMANTIC_EXPENSIVE",
+        "veto_level": "NONE"
+      },
+      "JDSkillsValidator": {
+        "agent_id": "jd_skills",
+        "agent_type": "JDSkillsValidator",
+        "complexity": 50,
+        "classification": "CLASS_2_FACTUAL_MEDIUM",
+        "veto_level": "STRATEGY"
+      },
+      "SignalScoreValidator": {
+        "agent_id": "signal_score",
+        "agent_type": "SignalScoreValidator",
+        "complexity": 50,
+        "classification": "CLASS_2_FACTUAL_MEDIUM",
+        "veto_level": "STRATEGY"
+      }
+    },
+    "swarm_agents": {
+      "ChiefStrategyAgent": 200,
+      "ChiefArchitectAgent": 200,
+      "ConductorAgent": 100,
+      "VoteAgent": 50,
+      "JDParserAgent": 30,
+      "ThemeIdentifierAgent": 60,
+      "ThemeRankerAgent": 50,
+      "GapAnalysisAgent": 50,
+      "DifferentiatorAgent": 50,
+      "StrategyBriefAssemblerAgent": 20,
+      "StrategyCritiqueAgent": 60,
+      "StrategyValidatorAgent": 80,
+      "RAG_QueryGeneratorAgent": 75,
+      "RAG_SearchAgent": 90,
+      "RAG_ChunkingAgent": 30,
+      "RAG_RankingAgent": 50,
+      "RAG_FilterAgent": 30,
+      "RAG_CrossReferenceAgent": 65,
+      "RAG_DraftingAgent": 70,
+      "RAG_CritiqueAgent": 85,
+      "ExampleQueryGeneratorAgent": 40,
+      "ExampleSearchAgent": 40,
+      "ExampleRankerAgent": 50,
+      "RAGContextAgent": 20,
+      "ConstraintInjectorAgent": 20,
+      "MasterDataContextAgent": 20,
+      "PromptFormatterAgent": 20,
+      "PromptCritiqueAgent": 45,
+      "ProvenanceRouterAgent": 45,
+      "VerbatimBulletAgent": 15,
+      "CustomizedBulletAgent": 30,
+      "SyntheticBulletBrainstormAgent": 50,
+      "SyntheticBulletDrafterAgent": 50,
+      "SyntheticBulletValidatorAgent": 60,
+      "BulletAssemblerAgent": 20,
+      "BulletReorderAgent": 30,
+      "AdversarialDraftingRouter": 75,
+      "Gemini_Drafter": 30,
+      "Claude_Drafter": 30,
+      "Muse_Drafter": 30,
+      "SynthesisCritiqueAgent": 60,
+      "WorkflowPlannerAgent": 90,
+      "WorkflowCritiqueAgent": 80,
+      "WorkflowRePlannerAgent": 70,
+      "FeedbackLoggerAgent": 30,
+      "PatternFinderAgent": 70,
+      "MetaPlannerAgent": 90,
+      "RetryPolicyAgent": 50,
+      "CostEstimatorAgent": 50,
+      "CostTrackerAgent": 35,
+      "ThemeClassifierAgent": 20
+    }
+  },
+  "prompts": {
+    "validation_base": "Validate the following content according to {validation_type} criteria:\n\nContent:\n{content}\n\nCriteria:\n{criteria}\n\nProvide a detailed validation report.",
+    "rag_extraction": "Extract relevant information for: {objective}\n\nContext:\n{context}\n\nConstraints:\n{constraints}\n\nSuccess Criteria:\n{success_criteria}",
+    "rag_enrichment": "Enrich the following context: {context}\n\nObjective: {objective}",
+    "rag_synthesis": "Synthesize the following information: {context}\n\nObjective: {objective}",
+    "rag_validation": "Validate the synthesized content: {content}\n\nCriteria: {criteria}",
+    "rag_generic": "Objective: {objective}\n\nContext:\n{context}\n\nConstraints:\n{constraints}\n\nSuccess Criteria:\n{success_criteria}",
+    "specialist_library": "Task: {task}\n\nUse ChromaDB to persist and retrieve memories.\n\nContext:\n{context}",
+    "specialist_web": "Task: {task}\n\nImplement circuit breaker pattern for fault tolerance.\n\nContext:\n{context}",
+    "specialist_governor": "Task: {task}\n\nContext:\n{context}",
+    "specialist_rag": "Task: {task}\n\nContext:\n{context}",
+    "specialist_qa": "Task: {task}\n\nContext:\n{context}",
+    "specialist_generic": "Task: {task}\n\nContext:\n{context}"
+  },
+  "schema_version": "v6.5",
+  "circuit_breaker_config": {
+    "enable_circuit_breaker": true,
+    "failure_threshold": 3,
+    "success_threshold": 2,
+    "timeout_sec": 60,
+    "half_open_max_requests": 1
+  }
+}

@@ -1,0 +1,442 @@
+{
+  "patch_metadata": {
+    "patch_id": "V1.6.1-CLERK-VALIDATION",
+    "patch_version": "v1.6.1",
+    "base_version": "v1.6.0",
+    "patch_date": "2025-10-15",
+    "severity": "CRITICAL",
+    "breaking_changes": false,
+    "description": "Adds VG_CLERK_FACTUAL_DATA_INTEGRITY validation gate to detect extraction errors in contact info, dates, company names, and education data. Prevents silent data corruption bugs like phone number truncation. Adds QA Report Section 0 for factual data validation.",
+    "bug_fixed": "Phone number truncation (917-239-3830 → 917-23-3830)",
+    "root_cause": "Zero validation of Clerk-extracted factual data; workflow assumed deterministic extraction = infallible extraction",
+    "test_validation": {
+      "smoke_tests": "PENDING",
+      "integration_tests": "PENDING",
+      "end_to_end_tests": "PENDING"
+    }
+  },
+  "patch_contents": {
+    "new_validation_gate": {
+      "gate_id": "VG_CLERK_FACTUAL_DATA_INTEGRITY",
+      "execution_point": "POST_CLERK_PRE_ARTIST",
+      "blocking": true,
+      "severity": "CRITICAL",
+      "philosophy": "Validate extracted factual data before Artist phase consumes it. Deterministic extraction does not guarantee correctness.",
+      "halt_on_failure": true,
+      "execution_timeout_seconds": 30,
+      "validation_categories": {
+        "contact_information": {
+          "priority": "P0",
+          "fields": [
+            {
+              "field": "name",
+              "required": true,
+              "min_length": 2,
+              "max_length": 100,
+              "on_fail": "HALT_WITH_MESSAGE: 'Name field missing or invalid length'"
+            },
+            {
+              "field": "phone",
+              "required": true,
+              "regex": "^\\+1-\\d{3}-\\d{3}-\\d{4}$",
+              "char_count": 16,
+              "example": "+1-917-239-3830",
+              "on_fail": "HALT_WITH_MESSAGE: 'Phone number format invalid. Expected: +1-XXX-XXX-XXXX (16 characters)'"
+            },
+            {
+              "field": "email",
+              "required": true,
+              "regex": "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$",
+              "min_length": 5,
+              "max_length": 100,
+              "on_fail": "HALT_WITH_MESSAGE: 'Email format invalid'"
+            },
+            {
+              "field": "linkedin",
+              "required": false,
+              "pattern_contains": "linkedin.com/in/",
+              "on_fail": "WARNING: 'LinkedIn URL missing or malformed'"
+            }
+          ]
+        },
+        "professional_experience": {
+          "priority": "P0",
+          "min_experience_entries": 2,
+          "per_entry_checks": [
+            {
+              "field": "company",
+              "required": true,
+              "min_length": 2,
+              "max_length": 100,
+              "on_fail": "HALT_WITH_MESSAGE: 'Company name missing or invalid for entry {index}'"
+            },
+            {
+              "field": "title",
+              "required": true,
+              "min_length": 3,
+              "max_length": 150,
+              "on_fail": "HALT_WITH_MESSAGE: 'Job title missing or invalid for entry {index}'"
+            },
+            {
+              "field": "dates.start",
+              "required": true,
+              "format": "MMMM YYYY",
+              "regex": "^(January|February|March|April|May|June|July|August|September|October|November|December)\\s\\d{4}$",
+              "on_fail": "HALT_WITH_MESSAGE: 'Start date format invalid for {company}. Expected: MMMM YYYY'"
+            },
+            {
+              "field": "dates.end",
+              "required": true,
+              "format": "MMMM YYYY|Present",
+              "regex": "^((January|February|March|April|May|June|July|August|September|October|November|December)\\s\\d{4}|Present)$",
+              "on_fail": "HALT_WITH_MESSAGE: 'End date format invalid for {company}. Expected: MMMM YYYY or Present'"
+            },
+            {
+              "field": "overview",
+              "required": false,
+              "min_words": 10,
+              "on_fail": "WARNING: 'Overview missing or too short for {company}'"
+            },
+            {
+              "field": "bullet_pool",
+              "required": true,
+              "min_bullets": 2,
+              "on_fail": "HALT_WITH_MESSAGE: 'Bullet pool has <2 bullets for {company}'"
+            }
+          ],
+          "chronology_validation": {
+            "enabled": true,
+            "check": "Validate dates are in reverse chronological order",
+            "detect_overlaps": true,
+            "on_overlap": "WARNING: 'Date overlap detected between {company1} and {company2}'",
+            "on_chronology_violation": "HALT_WITH_MESSAGE: 'Experience entries not in reverse chronological order'"
+          }
+        },
+        "education": {
+          "priority": "P1",
+          "min_education_entries": 1,
+          "per_entry_checks": [
+            {
+              "field": "degree",
+              "required": true,
+              "min_length": 3,
+              "on_fail": "HALT_WITH_MESSAGE: 'Degree field missing or invalid for entry {index}'"
+            },
+            {
+              "field": "institution",
+              "required": true,
+              "min_length": 3,
+              "on_fail": "HALT_WITH_MESSAGE: 'Institution field missing or invalid for entry {index}'"
+            }
+          ]
+        },
+        "certifications": {
+          "priority": "P2",
+          "required": false,
+          "per_entry_checks": [
+            {
+              "field": "text",
+              "min_length": 5,
+              "on_fail": "WARNING: 'Certification text too short at index {index}'"
+            }
+          ]
+        }
+      },
+      "output_on_success": {
+        "log_message": "✅ VG_CLERK_FACTUAL_DATA_INTEGRITY: All factual data validated successfully",
+        "store_validation_results": true,
+        "results_key": "clerk_validation_results"
+      },
+      "output_on_failure": {
+        "halt_workflow": true,
+        "generate_error_report": true,
+        "error_report_format": "markdown",
+        "error_report_sections": [
+          "Failed Validation Checks",
+          "Expected vs Actual Values",
+          "Remediation Guidance"
+        ]
+      }
+    },
+    "qa_report_enhancement": {
+      "new_section": "Section_0_Clerk_Factual_Data_Validation",
+      "position": "BEFORE_Section_1_Word_Count_Validation",
+      "mandatory": true,
+      "section_structure": {
+        "title": "0. CLERK FACTUAL DATA INTEGRITY",
+        "subsections": [
+          {
+            "subsection_id": "0.1",
+            "title": "Contact Information Validation",
+            "format": "markdown_table",
+            "columns": ["Field", "Expected Format", "Actual Value", "Char Count", "Status"],
+            "rows": [
+              ["Name", "String (2-100 chars)", "{actual_name}", "{char_count}", "✅/❌"],
+              ["Phone", "+1-XXX-XXX-XXXX (16 chars)", "{actual_phone}", "{char_count}", "✅/❌"],
+              ["Email", "valid@domain.com", "{actual_email}", "{char_count}", "✅/❌"],
+              ["LinkedIn", "Contains /in/", "{actual_linkedin}", "N/A", "✅/⚠️"]
+            ]
+          },
+          {
+            "subsection_id": "0.2",
+            "title": "Professional Experience Validation",
+            "format": "markdown_table",
+            "columns": ["Check", "Expected", "Actual", "Status"],
+            "rows": [
+              ["Entry Count", "≥2", "{count}", "✅/❌"],
+              ["Company Names", "All 2-100 chars", "{validation_result}", "✅/❌"],
+              ["Job Titles", "All 3-150 chars", "{validation_result}", "✅/❌"],
+              ["Date Formats", "MMMM YYYY", "{validation_result}", "✅/❌"],
+              ["Chronological Order", "Reverse chrono", "{validation_result}", "✅/❌"],
+              ["Date Overlaps", "None detected", "{validation_result}", "✅/⚠️"],
+              ["Bullet Pools", "All ≥2 bullets", "{validation_result}", "✅/❌"]
+            ]
+          },
+          {
+            "subsection_id": "0.3",
+            "title": "Education Validation",
+            "format": "markdown_table",
+            "columns": ["Check", "Expected", "Actual", "Status"],
+            "rows": [
+              ["Entry Count", "≥1", "{count}", "✅/❌"],
+              ["Degree Fields", "All ≥3 chars", "{validation_result}", "✅/❌"],
+              ["Institution Fields", "All ≥3 chars", "{validation_result}", "✅/❌"]
+            ]
+          },
+          {
+            "subsection_id": "0.4",
+            "title": "Certification Validation",
+            "format": "markdown_table",
+            "columns": ["Check", "Expected", "Actual", "Status"],
+            "rows": [
+              ["Entry Count", "≥0 (optional)", "{count}", "✅/⚠️"],
+              ["Text Length", "All ≥5 chars", "{validation_result}", "✅/⚠️"]
+            ]
+          },
+          {
+            "subsection_id": "0.5",
+            "title": "Factual Data Integrity Summary",
+            "format": "text",
+            "content": [
+              "**Total Checks Performed:** {total_checks}",
+              "**Checks Passed:** {passed_checks}",
+              "**Checks Failed:** {failed_checks}",
+              "**Warnings Issued:** {warning_count}",
+              "**Overall Status:** ✅ PASS / ❌ FAIL"
+            ]
+          }
+        ]
+      }
+    },
+    "integration_points": {
+      "update_validation_gates_array": {
+        "section": "2.task.validation_gates.pre_generation",
+        "action": "INSERT_AFTER_VG_BASELINE_EXTRACTION",
+        "new_entry": "VG_CLERK_FACTUAL_DATA_INTEGRITY"
+      },
+      "update_workflow_phases": {
+        "section": "1.role.phases",
+        "phase_1_enhancement": {
+          "on_failure": "If VG_CLERK_FACTUAL_DATA_INTEGRITY fails, HALT_WORKFLOW_AND_GENERATE_CLERK_ERROR_REPORT (not standard failure report)"
+        }
+      },
+      "update_output_section": {
+        "section": "5.output.qa_report_generation.sections",
+        "action": "INSERT_SECTION_0",
+        "position": "BEFORE_1_overview"
+      }
+    }
+  },
+  "test_suite_v1_6_1": {
+    "total_tests": 21,
+    "test_categories": {
+      "smoke_tests": {
+        "description": "Fast validation that patch doesn't break existing functionality",
+        "test_count": 6,
+        "tests": [
+          {
+            "test_id": "SMOKE_001",
+            "name": "Valid Master Resume Passes Clerk Gate",
+            "input": "Master_Resume_V2_13.json with correct phone format",
+            "expected": "VG_CLERK_FACTUAL_DATA_INTEGRITY passes, workflow continues",
+            "execution_time_target": "<5 seconds"
+          },
+          {
+            "test_id": "SMOKE_002",
+            "name": "Phone Number Format Validation",
+            "input": "Phone: +1-917-239-3830 (correct format)",
+            "expected": "Phone validation passes, char count = 16",
+            "validation": "Regex matches, no halt"
+          },
+          {
+            "test_id": "SMOKE_003",
+            "name": "Email Format Validation",
+            "input": "Email: amitayer1@gmail.com",
+            "expected": "Email validation passes",
+            "validation": "Regex matches, no halt"
+          },
+          {
+            "test_id": "SMOKE_004",
+            "name": "Experience Entry Count Check",
+            "input": "5 professional experience entries",
+            "expected": "Count >= 2, validation passes",
+            "validation": "No halt"
+          },
+          {
+            "test_id": "SMOKE_005",
+            "name": "Date Format Check",
+            "input": "Start: February 2023, End: Present",
+            "expected": "Date formats valid, validation passes",
+            "validation": "Regex matches MMMM YYYY pattern"
+          },
+          {
+            "test_id": "SMOKE_006",
+            "name": "QA Report Section 0 Renders",
+            "input": "Valid master resume",
+            "expected": "QA Report includes Section 0 with all validation results",
+            "validation": "Section 0 present, all tables rendered"
+          }
+        ]
+      },
+      "integration_tests": {
+        "description": "Validate Clerk gate integrates correctly with existing workflow phases",
+        "test_count": 8,
+        "tests": [
+          {
+            "test_id": "INT_001",
+            "name": "Clerk Gate Executes Before Artist",
+            "scenario": "Workflow with valid master resume",
+            "expected": "Clerk gate runs POST_CLERK_PRE_ARTIST, validation completes before K.0 executes",
+            "validation": "Log shows: Clerk → VG_CLERK_FACTUAL_DATA_INTEGRITY → Artist"
+          },
+          {
+            "test_id": "INT_002",
+            "name": "Invalid Phone Halts Before Artist",
+            "scenario": "Phone: +1-917-23-3830 (missing digit)",
+            "expected": "Workflow halts, error report generated, Artist never executes",
+            "validation": "No K.0-K.12 output files, only Clerk error report"
+          },
+          {
+            "test_id": "INT_003",
+            "name": "Validation Results Stored for QA",
+            "scenario": "Valid master resume",
+            "expected": "clerk_validation_results stored in workflow state, accessible to QA Report generator",
+            "validation": "QA Section 0 reads from clerk_validation_results"
+          },
+          {
+            "test_id": "INT_004",
+            "name": "Chronology Validation Detects Overlaps",
+            "scenario": "Experience 1: Feb 2020 - Present, Experience 2: Jan 2021 - Dec 2022",
+            "expected": "Warning issued for date overlap, workflow continues",
+            "validation": "QA Report Section 0.2 shows ⚠️ for Date Overlaps"
+          },
+          {
+            "test_id": "INT_005",
+            "name": "Missing Education Halts Workflow",
+            "scenario": "Master resume with no education entries",
+            "expected": "Clerk gate fails, workflow halts with education error",
+            "validation": "Error report: 'Education entries < 1 (minimum required)'"
+          },
+          {
+            "test_id": "INT_006",
+            "name": "Backward Compatibility Check",
+            "scenario": "Run v1.6.0 golden path test with v1.6.1 patch",
+            "expected": "All 82 v1.6.0 tests still pass, plus 21 new Clerk validation tests",
+            "validation": "Total: 103/103 tests passing"
+          },
+          {
+            "test_id": "INT_007",
+            "name": "Clerk Error Report Format",
+            "scenario": "Invalid phone + invalid email",
+            "expected": "Clerk error report in markdown with Failed Checks, Expected vs Actual, Remediation sections",
+            "validation": "Error report structure matches spec"
+          },
+          {
+            "test_id": "INT_008",
+            "name": "Performance Impact Measurement",
+            "scenario": "Valid master resume with 5 experience entries",
+            "expected": "Clerk validation adds <5 seconds to total workflow time",
+            "validation": "Measure total time with/without VG_CLERK_FACTUAL_DATA_INTEGRITY"
+          }
+        ]
+      },
+      "end_to_end_tests": {
+        "description": "Full workflow execution with Clerk validation enabled",
+        "test_count": 7,
+        "tests": [
+          {
+            "test_id": "E2E_001",
+            "name": "Golden Path with Clerk Validation",
+            "scenario": "Master_Resume_V2_13.json + VP Customer Success JD",
+            "expected": "All gates pass including VG_CLERK_FACTUAL_DATA_INTEGRITY, 4 output files generated, QA Report has Section 0",
+            "validation": "Resume phone: +1-917-239-3830 (16 chars), Section 0 all ✅"
+          },
+          {
+            "test_id": "E2E_002",
+            "name": "Phone Truncation Bug Prevented",
+            "scenario": "Simulate Clerk extraction bug that truncates phone to +1-917-23-3830",
+            "expected": "VG_CLERK_FACTUAL_DATA_INTEGRITY detects char count = 15 (not 16), halts workflow",
+            "validation": "No resume generated, error report shows phone validation failure"
+          },
+          {
+            "test_id": "E2E_003",
+            "name": "Invalid Email Format Detected",
+            "scenario": "Email extracted as 'amitayer1@gmail' (missing .com)",
+            "expected": "Clerk gate fails email regex, workflow halts",
+            "validation": "Error report: 'Email format invalid'"
+          },
+          {
+            "test_id": "E2E_004",
+            "name": "Malformed Date Format Caught",
+            "scenario": "Start date extracted as '02/2023' instead of 'February 2023'",
+            "expected": "Date format validation fails, workflow halts",
+            "validation": "Error report: 'Start date format invalid. Expected: MMMM YYYY'"
+          },
+          {
+            "test_id": "E2E_005",
+            "name": "Missing Company Name Detected",
+            "scenario": "Experience entry with company: '' (empty string)",
+            "expected": "Clerk gate fails company length check (min 2 chars), workflow halts",
+            "validation": "Error report: 'Company name missing or invalid for entry 2'"
+          },
+          {
+            "test_id": "E2E_006",
+            "name": "Insufficient Bullet Pool Caught",
+            "scenario": "Experience entry with only 1 bullet in pool (min 2 required)",
+            "expected": "Clerk gate fails bullet pool check, workflow halts",
+            "validation": "Error report: 'Bullet pool has <2 bullets for {company}'"
+          },
+          {
+            "test_id": "E2E_007",
+            "name": "QA Report Section 0 Completeness",
+            "scenario": "Valid master resume, full workflow execution",
+            "expected": "QA Report Section 0 includes all 5 subsections (0.1-0.5) with complete validation data",
+            "validation": "Subsections rendered: Contact (0.1), Experience (0.2), Education (0.3), Certifications (0.4), Summary (0.5)"
+          }
+        ]
+      }
+    },
+    "test_execution_matrix": {
+      "total_tests": 21,
+      "smoke_tests": 6,
+      "integration_tests": 8,
+      "end_to_end_tests": 7,
+      "execution_order": ["smoke_tests", "integration_tests", "end_to_end_tests"],
+      "halt_on_smoke_failure": true,
+      "parallel_execution": false
+    }
+  },
+  "deployment_instructions": {
+    "step_1": "Merge patch JSON into Job_Workflow_v1_6_0.json",
+    "step_2": "Update metadata.version to 'v1.6.1'",
+    "step_3": "Add VG_CLERK_FACTUAL_DATA_INTEGRITY to validation_gates.pre_generation array",
+    "step_4": "Add Section 0 to qa_report_generation.sections",
+    "step_5": "Run test_suite_v1_6_1 (21 tests)",
+    "step_6": "Verify backward compatibility (all 82 v1.6.0 tests still pass)",
+    "step_7": "Deploy to production"
+  },
+  "remediation_guidance": {
+    "for_users": "If Clerk validation fails, check master resume file for data format errors. Common issues: phone number typos, missing email domain, dates not in 'MMMM YYYY' format.",
+    "for_developers": "VG_CLERK_FACTUAL_DATA_INTEGRITY failures indicate extraction bugs in Clerk phase. Check regex patterns, JSON parsing logic, and string manipulation functions."
+  }
+}

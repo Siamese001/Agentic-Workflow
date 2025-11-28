@@ -1,0 +1,68 @@
+{
+  "forbidden_verbs": [
+    "spearheaded",
+    "leveraged",
+    "utilized",
+    "facilitated",
+    "orchestrated",
+    "championed",
+    "pioneered",
+    "revolutionized",
+    "transformed",
+    "optimized",
+    "enhanced",
+    "streamlined",
+    "synergized",
+    "enabled",
+    "empowered",
+    "drove"
+  ],
+  "required_sections": [
+    "K0_NAME",
+    "K0_CONTACT",
+    "K0_HEADLINE",
+    "K1_EXECUTIVE_SUMMARY",
+    "K2_UNIFY_BULLETS",
+    "K2_UNIFY_OVERVIEW",
+    "K3_IBM_BULLETS",
+    "K3_IBM_OVERVIEW",
+    "K4_TRADERSENSE_NARRATIVE",
+    "K5_EY_NARRATIVE",
+    "K6_EARLY_CAREER_NARRATIVE",
+    "K7_EDUCATION",
+    "K8_CERTIFICATIONS",
+    "K9_COMPETENCIES",
+    "K10_SKILLS",
+    "K11_COVER_LETTER"
+  ],
+  "bullet_word_count_sections_to_check": [
+    "K2_UNIFY_BULLETS",
+    "K3_IBM_BULLETS",
+    "K9_COMPETENCIES"
+  ],
+  "provenance_split_targets": {
+    "K2_UNIFY_BULLETS": {
+      "Verbatim": 2,
+      "Customized": 3,
+      "Synthetic": 2
+    },
+    "K3_IBM_BULLETS": {
+      "Verbatim": 2,
+      "Customized": 2,
+      "Synthetic": 2
+    },
+    "K9_COMPETENCIES": {
+      "Verbatim": 2,
+      "Customized": 2,
+      "Synthetic": 2
+    }
+  },
+  "pipeline_status_enum": [
+    "Applied",
+    "Follow-Up",
+    "Interview",
+    "Rejected",
+    "Closed",
+    "Waiting"
+  ]
+}

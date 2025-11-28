@@ -1,0 +1,270 @@
+{
+  "schema_version": "master_config_v9.9",
+  "description": "v9.9 Security & Error Handling Hardening",
+  "version_notes": {
+    "v9.9_changes": [
+      "SECURITY: PIISanitizerAgent now uses local Presidio processing",
+      "SECURITY: BiasDetectorAgent now uses local regex-based detection",
+      "ERROR_HANDLING: Replaced broad Exception catches with specific error types",
+      "ERROR_HANDLING: Added ModelAPIError, JSONParsingError, FileIOError",
+      "RELIABILITY: Improved error messages and fail-fast behavior"
+    ]
+  },
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "log_file": "./logs/workflow_v9_9.log",
+    "log_format": "json",
+    "correlation_ids": true,
+    "log_rotation": {
+      "max_bytes": 10485760,
+      "backup_count": 5
+    }
+  },
+  "redis_config": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "description": "Redis persistence for LangGraph checkpointing"
+  },
+  "cost_config": {
+    "cost_ceiling_per_workflow": 5.0,
+    "cost_ceiling_per_agent": 0.5,
+    "enable_cost_tracking": true,
+    "enable_in_flight_tracking": true,
+    "cost_warning_threshold": 4.0,
+    "description": "P2: In-flight cost tracking per agent"
+  },
+  "batch_config": {
+    "max_parallel_workers": 4,
+    "enable_circuit_breaker": true,
+    "circuit_breaker_failure_threshold": 3,
+    "description": "Batch processing configuration"
+  },
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "max_meta_replan_loops": 3,
+    "feedback_log_path": "./logs/feedback_log.jsonl",
+    "preference_log_path": "./logs/preference_log.jsonl",
+    "proposed_rules_path": "./logs/proposed_rules.jsonl",
+    "description": "Meta-learning configuration"
+  },
+  "tracing_config": {
+    "langsmith_enabled": false,
+    "langsmith_api_key": null,
+    "description": "Distributed tracing configuration"
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json",
+    "description": "Default file paths"
+  },
+  "agent_stacks": {
+    "description": "P0/P1/P2 Enhancement: Stack-based agent organization",
+    "safety_stack_enabled": true,
+    "bias_detection_threshold": 0.7,
+    "pii_detection_enabled": true,
+    "use_presidio_for_pii": true,
+    "use_local_bias_detection": true,
+    "safety_stack_description": "P0: SafetyGuardStack - local processing only (v9.9 security hardening)",
+    "strategy_tot_enabled": true,
+    "strategy_tot_branching_factor": 3,
+    "strategy_tot_depth": 2,
+    "strategy_tot_description": "P0: Tree-of-Thoughts Strategist",
+    "prompt_llm_driven": true,
+    "prompt_temperature": 0.7,
+    "prompt_llm_description": "P0: LLM-Driven Prompting",
+    "enable_local_retries": true,
+    "max_local_retries": 2,
+    "local_retries_description": "P0: Local Self-Correction",
+    "enable_react_conductors": true,
+    "conductor_max_steps": 10,
+    "conductor_temperature": 0.6,
+    "react_conductors_description": "P1: True ReAct conductors with step-by-step reasoning",
+    "enable_dynamic_tooling": true,
+    "max_tools_per_task": 5,
+    "enable_tool_generation": false,
+    "dynamic_tooling_description": "P1: Dynamic tool selection, execution, and generation (generation not yet implemented)",
+    "enable_hil_stack": true,
+    "ambiguity_confidence_threshold": 0.8,
+    "hil_stack_description": "P1: Proactive ambiguity detection and feedback routing",
+    "enable_hyde": true,
+    "enable_reranking": true,
+    "reranking_top_k": 5,
+    "rag_enhancements_description": "P2: HyDE generation and cross-encoder reranking",
+    "enable_dynamic_selection": true,
+    "agent_selection_strategy": "reliability",
+    "dynamic_selection_description": "P2: Dynamic agent selection based on reliability scores from feedback log"
+  },
+  "model_config": {
+    "strategy_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.8,
+      "description": "High-temp for creative strategy generation (ToT)"
+    },
+    "prompt_engineer_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "Medium-temp for dynamic prompt engineering"
+    },
+    "bullet_generator_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "Medium-temp for bullet generation"
+    },
+    "critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.2,
+      "description": "Low-temp for consistent critique"
+    },
+    "qa_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.3,
+      "description": "Low-temp for QA validation"
+    },
+    "bias_detector_model": {
+      "provider": "local",
+      "model_name": "regex",
+      "temperature": 0.0,
+      "description": "v9.9: Local regex-based bias detection (no external API)"
+    },
+    "pii_sanitizer_model": {
+      "provider": "local",
+      "model_name": "presidio",
+      "temperature": 0.0,
+      "description": "v9.9: Local Presidio PII detection (no external API)"
+    },
+    "react_conductor_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.6,
+      "description": "P1: Medium-temp for ReAct reasoning"
+    },
+    "hyde_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.6,
+      "description": "P2: Medium-temp for hypothetical document generation"
+    },
+    "reranker_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.2,
+      "description": "P2: Low-temp for consistent reranking"
+    }
+  },
+  "p0_p1_p2_enhancements_summary": {
+    "version": "9.9.0-security-error-hardening",
+    "v9_9_security_fixes": [
+      {
+        "priority": "CRITICAL",
+        "item": "Local PII Detection",
+        "description": "PIISanitizerAgent now uses Presidio locally - NO external API calls with resume data",
+        "agents": ["PIISanitizerAgent"]
+      },
+      {
+        "priority": "CRITICAL",
+        "item": "Local Bias Detection",
+        "description": "BiasDetectorAgent now uses regex patterns locally - NO external API calls with resume data",
+        "agents": ["BiasDetectorAgent"]
+      }
+    ],
+    "v9_9_error_handling_fixes": [
+      {
+        "priority": "HIGH",
+        "item": "Specific Exception Types",
+        "description": "Replaced broad 'except Exception' with ModelAPIError, JSONParsingError, FileIOError, etc.",
+        "affected_modules": ["core_v9_9", "agent_swarm_v9_9", "main_v9_9", "run_batch_v9_9", "run_learning_v9_9"]
+      },
+      {
+        "priority": "HIGH",
+        "item": "Fail-Fast Behavior",
+        "description": "Errors now propagate correctly instead of being silently caught",
+        "benefit": "Easier debugging and root cause analysis"
+      }
+    ],
+    "p0_implemented": [
+      {
+        "priority": "P0",
+        "item": "SafetyGuardStack",
+        "description": "Architectural separation of safety concerns with LOCAL processing only (v9.9)",
+        "agents": ["BiasDetectorAgent", "PIISanitizerAgent"]
+      },
+      {
+        "priority": "P0",
+        "item": "Tree-of-Thoughts Strategist",
+        "description": "Multi-path strategic reasoning",
+        "agents": ["ToTStrategistAgent"]
+      },
+      {
+        "priority": "P0",
+        "item": "LLM-Driven Prompt Engineer",
+        "description": "Dynamic prompt generation",
+        "agents": ["DynamicPromptEngineerAgent"]
+      },
+      {
+        "priority": "P0",
+        "item": "Local Self-Correction Loops",
+        "description": "Bullet-level critique before proceeding",
+        "agents": ["BulletCritiqueAgent"]
+      }
+    ],
+    "p1_implemented": [
+      {
+        "priority": "P1",
+        "item": "True ReAct Conductors",
+        "description": "DraftingConductor and QAConductor upgraded to true ReAct agents with step-by-step reasoning",
+        "agents": ["DraftingReActConductor", "QAReActConductor"],
+        "config_key": "agent_stacks.enable_react_conductors"
+      },
+      {
+        "priority": "P1",
+        "item": "DynamicToolingStack",
+        "description": "Dynamic tool selection and execution (generation placeholder for future)",
+        "agents": ["ToolSelectorAgent"],
+        "config_key": "agent_stacks.enable_dynamic_tooling"
+      },
+      {
+        "priority": "P1",
+        "item": "HIL_InteractionStack",
+        "description": "Proactive ambiguity detection and feedback routing",
+        "agents": ["HILAmbiguityDetectorAgent"],
+        "config_key": "agent_stacks.enable_hil_stack"
+      }
+    ],
+    "p2_implemented": [
+      {
+        "priority": "P2",
+        "item": "RAGStack Enhancements",
+        "description": "HyDE generation and cross-encoder reranking",
+        "agents": ["HyDEGeneratorAgent", "RAG_ReRankerAgent", "RAG_SearchAgent (enhanced)"],
+        "config_key": "agent_stacks.enable_hyde, agent_stacks.enable_reranking"
+      },
+      {
+        "priority": "P2",
+        "item": "Dynamic Agent Selection",
+        "description": "Conductors read feedback_log.jsonl to select agents based on reliability",
+        "agents": ["DraftingReActConductor", "QAReActConductor"],
+        "config_key": "agent_stacks.enable_dynamic_selection"
+      },
+      {
+        "priority": "P2",
+        "item": "In-flight Cost Tracking",
+        "description": "Per-agent cost tracking during execution",
+        "agents": ["All agents via BaseAgent.record_cost()"],
+        "config_key": "cost_config.enable_in_flight_tracking"
+      }
+    ],
+    "remaining_roadmap": [
+      "Complete tool generation (P1 partially implemented)",
+      "Close meta-loop with full dynamic agent selection",
+      "Advanced RAG with vector databases and embeddings",
+      "Add comprehensive test suite (pytest)"
+    ]
+  }
+}

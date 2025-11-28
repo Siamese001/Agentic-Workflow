@@ -1,0 +1,211 @@
+{
+  "$schema_version": "artist_specs_v2.1_V2_Clean",
+  "$description": "Configuration-driven Artist specifications for V2 Governor. This file defines *what* to generate. The *how* (prompts, logic) is handled by the ContextRelayLayer (prompts_RES_v2.py) and the Governor (workflow_RES_v3_8.py).",
+  
+  "K0_NAME": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "owner.name",
+    "description": "Candidate's full name from master resume",
+    "complexity": "LOW"
+  },
+  
+  "K0_CONTACT": {
+    "generation_method": "_copy_k0_contact",
+    "description": "Contact information block (phone, email, LinkedIn)",
+    "complexity": "LOW"
+  },
+  
+  "K0_HEADLINE": {
+    "generation_method": "_generate_section_macro_tot",
+    "description": "Three-part headline (Role | Skill | Value) optimized via Macro Tree-of-Thought",
+    "complexity": "HIGH"
+  },
+  
+  "K0_EXECUTIVE_SUMMARY_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'EXECUTIVE SUMMARY'",
+    "complexity": "LOW"
+  },
+  
+  "K0_EXPERIENCE_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'PROFESSIONAL EXPERIENCE'",
+    "complexity": "LOW"
+  },
+  
+  "K0_EDUCATION_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'EDUCATION'",
+    "complexity": "LOW"
+  },
+  
+  "K0_CERTIFICATIONS_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'CERTIFICATIONS & CREDENTIALS'",
+    "complexity": "LOW"
+  },
+  
+  "K0_COMPETENCIES_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'STRATEGIC & TECHNICAL COMPETENCIES'",
+    "complexity": "LOW"
+  },
+  
+  "K1_EXECUTIVE_SUMMARY": {
+    "generation_method": "_generate_section_macro_tot",
+    "generation_strategy": "adversarial_v3_8",
+    "description": "v3_8: Adversarial generation (Gemini vs. Claude -> GPT-4 Synthesis)",
+    "complexity": "HIGH"
+  },
+  
+  "K2_UNIFY_BULLETS": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "generation_strategy": "standard_v3_7",
+    "extra_args": {
+      "company_name": "Unify Consulting"
+    },
+    "description": "Tailored bullets for Unify Consulting experience (Verbatim/Customized/Synthetic mix)",
+    "complexity": "MEDIUM"
+  },
+  
+  "K2_UNIFY_OVERVIEW": {
+    "generation_method": "_generate_tailored_overview_for_experience",
+    "depends_on": "K2_UNIFY_BULLETS",
+    "description": "Role overview generated from K2_UNIFY_BULLETS content",
+    "complexity": "MEDIUM"
+  },
+  
+  "K3_IBM_BULLETS": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "IBM"
+    },
+    "description": "Tailored bullets for IBM experience (Verbatim/Customized/Synthetic mix)",
+    "complexity": "MEDIUM"
+  },
+  
+  "K3_IBM_OVERVIEW": {
+    "generation_method": "_generate_tailored_overview_for_experience",
+    "depends_on": "K3_IBM_BULLETS",
+    "description": "Role overview generated from K3_IBM_BULLETS content",
+    "complexity": "MEDIUM"
+  },
+  
+  "K4_TRADERSENSE_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "extra_args": {
+      "company_match": "TraderSense",
+      "section_enum": "K4_TRADERSENSE_NARRATIVE"
+    },
+    "description": "2-3 sentence narrative for TraderSense CTO role",
+    "complexity": "MEDIUM"
+  },
+  
+  "K5_EY_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "extra_args": {
+      "company_match": "Ernst & Young",
+      "section_enum": "K5_EY_NARRATIVE"
+    },
+    "description": "2-3 sentence narrative for Ernst & Young Principal role",
+    "complexity": "MEDIUM"
+  },
+  
+  "K6_EARLY_CAREER_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "extra_args": {
+      "company_match": "Early Career",
+      "section_enum": "K6_EARLY_CAREER_NARRATIVE"
+    },
+    "description": "2-3 sentence narrative for Early Career actuarial roles",
+    "complexity": "MEDIUM"
+  },
+  
+  "K7_EDUCATION": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "education",
+    "description": "Education credentials from master resume",
+    "complexity": "LOW"
+  },
+  
+  "K8_CERTIFICATIONS": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "certifications_and_credentials",
+    "description": "Certifications list from master resume",
+    "complexity": "LOW"
+  },
+  
+  "K9_COMPETENCIES": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "Strategic Competencies Section",
+      "is_competencies": true
+    },
+    "description": "Strategic competencies bullets (Verbatim/Customized/Synthetic mix)",
+    "complexity": "MEDIUM"
+  },
+  
+  "K10_SKILLS": {
+    "generation_method": "_generate_section_generic",
+    "description": "12 strategic/technical competencies as bulleted list",
+    "complexity": "LOW"
+  },
+  
+  "K11_COVER_LETTER": {
+    "generation_method": "_generate_section_macro_tot",
+    "generation_strategy": "adversarial_v3_8",
+    "description": "v3_8: Adversarial generation for full-page cover letter",
+    "complexity": "HIGH"
+  },
+  
+  "narrative_config": {
+    "K4_TRADERSENSE_NARRATIVE": {
+      "rag_signals": [
+        "high-frequency trading",
+        "low-latency",
+        "risk controls",
+        "backtesting",
+        "FIX protocol",
+        "cloud infrastructure",
+        "Machine Learning",
+        "quantitative analysis",
+        "algorithmic trading",
+        "system architecture"
+      ],
+      "focus": "Emphasize the early adoption of cloud, low-latency systems, HFT, risk management, and Machine Learning/quantitative analysis, linking them to broader technical leadership and algorithmic/system design capabilities relevant today.",
+      "k0_themes": []
+    },
+    "K5_EY_NARRATIVE": {
+      "rag_signals": [],
+      "focus": "Focus on transferable executive themes and how this consulting experience built foundational capabilities relevant to current target role requirements.",
+      "k0_themes": [
+        "Leadership",
+        "Strategic Vision",
+        "Executive Communication",
+        "Risk Management",
+        "Client Advisory",
+        "Stakeholder Management",
+        "Business Transformation",
+        "Change Management"
+      ]
+    },
+    "K6_EARLY_CAREER_NARRATIVE": {
+      "rag_signals": ["quantitative analysis", "modeling", "data-driven", "problem-solving", "analytical foundation"],
+      "focus": "Emphasize how early quantitative and actuarial work built analytical foundations that enabled transition to technology career.",
+      "k0_themes": ["Analytical Acumen", "Statistical Analysis", "Financial Modeling", "Data Interpretation", "Quantitative Reasoning"]
+    }
+  },
+
+  "_metadata": {
+    "narrative_sections": ["K4_TRADERSENSE_NARRATIVE", "K5_EY_NARRATIVE", "K6_EARLY_CAREER_NARRATIVE"],
+    "bullet_sections": ["K2_UNIFY_BULLETS", "K3_IBM_BULLETS", "K9_COMPETENCIES"],
+    "copy_sections": ["K0_NAME", "K7_EDUCATION", "K8_CERTIFICATIONS"],
+    "version": "2.1",
+    "last_updated": "2025-11-04",
+    "design_principles": [
+      "Configuration over code: Specs define WHAT, not HOW",
+      "V2 Governor (workflow_RES_v3_8.py) implements the 'how'",
+      "V2 Context Relay Layer (prompts_RES_v2.py) builds all prompts"
+    ]
+  }
+}
