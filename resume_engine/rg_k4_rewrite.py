@@ -8,7 +8,7 @@ K1 Extract → K2 Clean → K3 Quantify → K4 Rewrite → K5 Skillmap → K6 As
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 import logging
 import re
 
@@ -175,12 +175,14 @@ class RGK4Rewrite:
         self,
         *,
         quantification_output: Any,  # From K3 quantification
+        job_requirements: Optional[Dict[str, Any]] = None,  # Job context for goal alignment
         rewriting_params: Optional[Dict[str, Any]] = None
     ) -> RewritingOutput:
-        """Execute resume content rewriting.
+        """Execute resume content rewriting with goal-alignment.
         
         Args:
             quantification_output: Output from K3 quantification phase
+            job_requirements: Target job requirements for goal-aligned rewriting
             rewriting_params: Rewriting strategy and parameters
             
         Returns:
@@ -190,8 +192,8 @@ class RGK4Rewrite:
         processing_trace = []
         
         try:
-            # 1. Initialize rewriting strategy
-            strategy = self._initialize_rewriting_strategy(rewriting_params)
+            # 1. Initialize rewriting strategy with goal alignment
+            strategy = self._initialize_rewriting_strategy(rewriting_params, job_requirements)
             processing_trace.append({
                 "step": "strategy_initialization",
                 "strategy": strategy,
@@ -206,12 +208,12 @@ class RGK4Rewrite:
                 "timestamp": "2024-01-01T00:00:02Z"
             })
             
-            # 3. Apply rewriting operations to each section
+            # 3. Apply goal-aligned rewriting operations to each section
             rewritten_sections = []
             all_operations = []
             
             for section in sections:
-                rewritten_section, operations = self._rewrite_section(section, strategy)
+                rewritten_section, operations = self._rewrite_section_with_goals(section, strategy, job_requirements)
                 rewritten_sections.append(rewritten_section)
                 all_operations.extend(operations)
             
@@ -280,17 +282,166 @@ class RGK4Rewrite:
             
             return error_output
     
-    def _initialize_rewriting_strategy(self, params: Dict[str, Any]) -> Dict[str, Any]:
-        """Initialize rewriting strategy based on parameters."""
-        return {
+    def _initialize_rewriting_strategy(self, params: Dict[str, Any], job_requirements: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+        """Initialize rewriting strategy with goal-alignment based on parameters and job requirements."""
+        strategy = {
             "style": params.get("style", "professional"),
             "enhance_achievements": params.get("enhance_achievements", True),
             "optimize_for_ats": params.get("optimize_for_ats", True),
             "strengthen_verbs": params.get("strengthen_verbs", True),
             "improve_tone": params.get("improve_tone", True),
             "target_role": params.get("target_role", ""),
-            "target_industry": params.get("target_industry", "technology")
+            "target_industry": params.get("target_industry", "technology"),
+            "goal_alignment": params.get("goal_alignment", True)
         }
+        
+        # Add job-specific goal alignment if job requirements provided
+        if job_requirements:
+            strategy.update({
+                "job_title": job_requirements.get("title", ""),
+                "job_skills": job_requirements.get("skills", []),
+                "job_requirements": job_requirements.get("requirements", []),
+                "company_focus": job_requirements.get("company_focus", ""),
+                "experience_level": job_requirements.get("experience_level", ""),
+                "industry_keywords": self._extract_industry_keywords(job_requirements)
+            })
+        
+        return strategy
+    
+    def _extract_industry_keywords(self, job_requirements: Dict[str, Any]) -> List[str]:
+        """Extract industry-specific keywords from job requirements for goal alignment."""
+        keywords = []
+        
+        # Extract from job title
+        title = job_requirements.get("title", "").lower()
+        if "software" in title or "developer" in title:
+            keywords.extend(["developed", "implemented", "engineered", "coded", "programmed"])
+        elif "manager" in title or "lead" in title:
+            keywords.extend(["led", "managed", "directed", "coordinated", "oversaw"])
+        elif "analyst" in title or "data" in title:
+            keywords.extend(["analyzed", "interpreted", "modeled", "visualized", "reported"])
+        
+        # Extract from skills requirements
+        skills = job_requirements.get("skills", [])
+        for skill in skills:
+            if isinstance(skill, str):
+                # Convert skill names to action verbs
+                skill_lower = skill.lower()
+                if "python" in skill_lower:
+                    keywords.append("developed")
+                elif "aws" in skill_lower or "cloud" in skill_lower:
+                    keywords.append("deployed")
+                elif "sql" in skill_lower or "database" in skill_lower:
+                    keywords.append("managed")
+                elif "react" in skill_lower or "frontend" in skill_lower:
+                    keywords.append("designed")
+        
+        # Extract from requirements text
+        requirements_text = " ".join(job_requirements.get("requirements", [])).lower()
+        if "team" in requirements_text:
+            keywords.append("collaborated")
+        if "project" in requirements_text:
+            keywords.append("delivered")
+        if "client" in requirements_text:
+            keywords.append("supported")
+        
+        return list(set(keywords))  # Remove duplicates
+    
+    def _rewrite_section_with_goals(self, section: Dict[str, Any], strategy: Dict[str, Any], job_requirements: Optional[Dict[str, Any]] = None) -> Tuple[RewrittenSection, List[RewritingOperation]]:
+        """Rewrite section with goal-alignment based on job requirements."""
+        content = section["content"]
+        operations: List[RewritingOperation] = []
+        
+        # 1. Apply standard rewriting operations
+        enhanced_content, standard_ops = self._rewrite_section(section, strategy)
+        operations.extend(standard_ops)
+        content = enhanced_content.rewritten_content
+        
+        # 2. Apply goal-aligned enhancements if job requirements provided
+        if job_requirements and strategy.get("goal_alignment", True):
+            goal_aligned_content = self._apply_goal_alignment(content, strategy, job_requirements)
+            if goal_aligned_content != content:
+                goal_op = RewritingOperation(
+                    operation_id=f"goal_align_{len(operations)}",
+                    operation_type="goal_alignment",
+                    original_text=content,
+                    rewritten_text=goal_aligned_content,
+                    confidence_score=0.85,
+                    improvement_score=0.3,
+                    metadata={
+                        "job_title": strategy.get("job_title", ""),
+                        "alignment_keywords": strategy.get("industry_keywords", [])
+                    }
+                )
+                operations.append(goal_op)
+                content = goal_aligned_content
+        
+        # 3. Build final rewritten section
+        rewritten_section = RewrittenSection(
+            section_id=section["section_id"],
+            section_name=section["section_name"],
+            original_content=section["content"],
+            rewritten_content=content,
+            rewriting_operations=operations,
+            enhancement_score=self._calculate_enhancement_score(content, operations),
+            confidence_score=self._calculate_rewriting_confidence(content, operations),
+            metadata={
+                "goal_aligned": job_requirements is not None,
+                "job_title": strategy.get("job_title", "")
+            }
+        )
+        
+        return rewritten_section, operations
+    
+    def _apply_goal_alignment(self, content: str, strategy: Dict[str, Any], job_requirements: Dict[str, Any]) -> str:
+        """Apply goal-aligned enhancements to content based on job requirements."""
+        aligned_content = content
+        
+        # 1. Inject industry-specific keywords
+        industry_keywords = strategy.get("industry_keywords", [])
+        for keyword in industry_keywords:
+            # Replace generic verbs with industry-specific ones
+            generic_patterns = {
+                "worked on": f"{keyword}",
+                "responsible for": f"{keyword}",
+                "handled": f"{keyword}",
+                "did": f"{keyword}",
+                "made": f"{keyword}",
+            }
+            
+            for generic, specific in generic_patterns.items():
+                aligned_content = re.sub(rf'\b{generic}\b', specific, aligned_content, flags=re.IGNORECASE)
+        
+        # 2. Emphasize skills mentioned in job requirements
+        job_skills = strategy.get("job_skills", [])
+        for skill in job_skills:
+            if isinstance(skill, str) and len(skill) > 3:
+                # Highlight existing mentions of required skills
+                skill_pattern = rf'\b({skill.lower()})\b'
+                aligned_content = re.sub(skill_pattern, r'**\1**', aligned_content, flags=re.IGNORECASE)
+        
+        # 3. Add job-specific achievement quantification
+        if "senior" in strategy.get("job_title", "").lower():
+            # Emphasize leadership and impact for senior roles
+            aligned_content = re.sub(
+                r'\b(managed|led|coordinated)\s+(\w+)',
+                r'\1 \2, delivering measurable business impact',
+                aligned_content,
+                flags=re.IGNORECASE
+            )
+        
+        # 4. Optimize for experience level
+        experience_level = strategy.get("experience_level", "").lower()
+        if "entry" in experience_level or "junior" in experience_level:
+            # Emphasize learning and growth for junior roles
+            aligned_content = re.sub(
+                r'\b(developed|created|built)\s+(\w+)',
+                r'\1 \2, rapidly acquiring new skills and best practices',
+                aligned_content,
+                flags=re.IGNORECASE
+            )
+        
+        return aligned_content
     
     def _extract_sections_from_output(self, quantification_output: Any) -> List[Dict[str, Any]]:
         """Extract sections from K3 quantification output."""

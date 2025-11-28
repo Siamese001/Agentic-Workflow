@@ -298,11 +298,18 @@ class RGOrchestrator:
             
             return error_result
     
-    def _execute_k1_extract(self, input_data: Any, plan: ResumeProcessingPlan, request: ResumeGenerationRequest) -> ExtractionOutput:
-        """Execute K1 extraction phase."""
-        return self.k1_extract.extract_resume_content(
+    def _execute_k1_extract(self, input_data: Dict[str, Any], plan: ResumeProcessingPlan, request: ResumeGenerationRequest) -> ExtractionOutput:
+        """Execute K1 extraction phase with HyDE expansion."""
+        # Update extraction params with job requirements
+        extraction_params = plan.extraction_params.copy()
+        extraction_params.update({
+            "hyde_expansion": True  # Enable HyDE expansion for MEDIUM complexity
+        })
+        
+        return self.k1_extract.extract_resume_sections(
             resume_input=input_data,
-            extraction_params=plan.extraction_params
+            job_requirements=request.job_input,  # Pass job requirements for HyDE
+            extraction_params=extraction_params
         )
     
     def _execute_k2_clean(self, input_data: ExtractionOutput, plan: ResumeProcessingPlan, request: ResumeGenerationRequest) -> CleaningOutput:
@@ -313,23 +320,32 @@ class RGOrchestrator:
         )
     
     def _execute_k3_quantify(self, input_data: CleaningOutput, plan: ResumeProcessingPlan, request: ResumeGenerationRequest) -> QuantificationOutput:
-        """Execute K3 quantification phase."""
+        """Execute K3 quantification phase with evidence ranking."""
+        # Update quantification params with job requirements
+        quantification_params = plan.quantification_params.copy()
+        quantification_params.update({
+            "evidence_ranking": True  # Enable evidence ranking for MEDIUM complexity
+        })
+        
         return self.k3_quantify.quantify_resume_content(
             cleaning_output=input_data,
-            quantification_params=plan.quantification_params
+            job_requirements=request.job_input,  # Pass job requirements for evidence ranking
+            quantification_params=quantification_params
         )
     
     def _execute_k4_rewrite(self, input_data: QuantificationOutput, plan: ResumeProcessingPlan, request: ResumeGenerationRequest) -> RewritingOutput:
-        """Execute K4 rewriting phase."""
+        """Execute K4 rewriting phase with goal-alignment."""
         # Update rewriting params with job requirements
         rewriting_params = plan.rewriting_params.copy()
         rewriting_params.update({
             "target_role": request.job_input.get("title", ""),
-            "target_industry": request.job_input.get("industry", "general")
+            "target_industry": request.job_input.get("industry", "general"),
+            "goal_alignment": True  # Enable goal-alignment for MEDIUM complexity
         })
         
         return self.k4_rewrite.rewrite_resume_content(
             quantification_output=input_data,
+            job_requirements=request.job_input,  # Pass job requirements for goal alignment
             rewriting_params=rewriting_params
         )
     
