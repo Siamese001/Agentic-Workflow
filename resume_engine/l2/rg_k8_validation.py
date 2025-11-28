@@ -5,9 +5,8 @@ Atomic validation and quality assurance
 """
 
 from typing import Dict, Any, List, Optional, Tuple
-import sys
-sys.path.append(r'C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_workflow\RG_capabilities')
-from rg_atomic_spec import ATOMIC_RG_SPEC
+# RG_capabilities is now at root level - no sys.path manipulation needed
+from RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
 
 class K8Validator:
     """K8 Validation - Atomic validation and quality assurance"""
