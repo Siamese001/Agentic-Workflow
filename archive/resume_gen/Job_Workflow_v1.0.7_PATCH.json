@@ -1,3 +1,7 @@
+DEPRECATED — This file is part of the legacy Resume Generator architecture.
+Preserved for archival and zero-loss historical reconstruction only.
+NOT used in RG v10_12 runtime.
+
 {
   "patch_metadata": {
     "patch_id": "JW_v1.0.7_FULL_OVERWRITE",
