@@ -320,7 +320,7 @@ class K2Cleaner:
         Returns:
             Complete cleaning results
         """
-        result = {
+        result: Dict[str, Any] = {
             "step": "K2_CLEAN",
             "status": "completed",
             "cleaned_data": {}
