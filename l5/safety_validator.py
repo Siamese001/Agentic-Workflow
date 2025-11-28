@@ -46,6 +46,11 @@ class SafetyResult:
     violations: List[SafetyViolation]
     severity: str                    # overall severity (max of violations)
     metadata: Dict[str, Any]         # including failure_type, escalation, etc.
+    
+    @property
+    def findings(self) -> List[SafetyViolation]:
+        """Alias for violations to maintain test compatibility."""
+        return self.violations
 
 
 class ArchetypeType(str, Enum):
@@ -54,6 +59,15 @@ class ArchetypeType(str, Enum):
     SENIOR_TA = "senior_ta"
     RECRUITER = "recruiter"
     C_LEVEL = "c_level"
+
+
+class SafetyConstraintType(str, Enum):
+    """Safety constraint types for test compatibility."""
+    CONTENT = "content"
+    PERSONA = "persona"
+    CTA = "cta"
+    SAFETY = "safety"
+    FACTUAL = "factual"
 
 
 @dataclass
@@ -191,6 +205,10 @@ class SafetyValidator:
         self.telemetry_bus = telemetry_bus
         self.rules = self._build_rule_registry()
         
+        # Legacy API attributes for test compatibility
+        self.constraints = self.rules
+        self.violation_history = []
+        
     def evaluate(
         self,
         message: Union[str, Any],
@@ -245,6 +263,79 @@ class SafetyValidator:
         else:
             # New API - direct message string
             return self._evaluate_new_api(message, context, domain, archetype)
+    
+    def validate(
+        self,
+        message: Union[str, Any],
+        context: Optional[Dict[str, Any]] = None,
+        domain: str = "outreach",
+        archetype: Optional[str] = None,
+    ) -> Union[SafetyResult, PolicyDecision, Awaitable]:
+        """Validate message for safety violations (alias for evaluate)."""
+        return self.evaluate(message, context, domain, archetype)
+    
+    def validate_layer_input(
+        self,
+        layer: str,
+        content: Union[str, Any],
+        context: Optional[Dict[str, Any]] = None,
+    ) -> PolicyDecision:
+        """Validate layer input using legacy API format."""
+        # Extract domain from context metadata
+        domain = "outreach"
+        archetype = None
+        
+        if context and hasattr(context, 'metadata'):
+            metadata = getattr(context, 'metadata', {})
+            domain = metadata.get('domain', 'outreach')
+            archetype = metadata.get('archetype')
+        elif isinstance(context, dict):
+            domain = context.get('domain', 'outreach')
+            archetype = context.get('archetype')
+        
+        # Call validate method
+        result = self.validate(content, context, domain, archetype)
+        
+        # Track violation history
+        if isinstance(result, SafetyResult) and result.violations:
+            self.violation_history.extend(result.violations)
+        
+        # Convert SafetyResult to PolicyDecision for test compatibility
+        if isinstance(result, SafetyResult):
+            verdict = Verdict.BLOCK if not result.passes else Verdict.ALLOW
+            
+            # Convert violations to findings
+            findings = []
+            for violation in result.violations:
+                finding = type('Finding', (), {
+                    'rule': violation.message,
+                    'severity': violation.severity,
+                    'category': violation.category,
+                    'message': violation.message,
+                    'details': violation.metadata,
+                    'metadata': violation.metadata
+                })()
+                findings.append(finding)
+            
+            return PolicyDecision(
+                policy_id="safety_validator_policy",
+                verdict=verdict,
+                findings=findings,
+                metadata={
+                    "domain": domain,
+                    "layer": layer,
+                    "escalation_level": result.metadata.get("escalation_level", "ALLOW"),
+                    "archetype": archetype
+                }
+            )
+        
+        # Return error PolicyDecision if something went wrong
+        return PolicyDecision(
+            policy_id="safety_validator_policy",
+            verdict=Verdict.BLOCK,
+            findings=[],
+            metadata={"error": "Safety validation failed"}
+        )
     
     def _evaluate_new_api(
         self,
