@@ -1,368 +1,235 @@
-"""LIC Vector Memory - L4 Memory/State Layer
+"""LIC Vector Memory - L4 memory/state adapter for vector database operations.
 
-Implements vector memory abstraction aligned with Temporal KG.
-Provides interface to vector stores for cached intelligence retrieval.
+Implements nuclear prompt requirements for deterministic vector memory:
+- Provide typed adapter over existing vector DB client for LIC research
+- L4 only: memory/state, no planning or orchestration
+- Async interface using existing vector client abstractions
 """
 
-from __future__ import annotations
-
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
 import logging
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
-from datetime import datetime
-import hashlib
-
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass
-class VectorQueryResult:
-    """Result from vector memory query"""
-    id: str
-    text: str
-    metadata: Dict[str, Any]
-    distance: float
-    relevance_score: float
-
-
-@dataclass
-class VectorMemoryStats:
-    """Vector memory statistics"""
-    total_documents: int
-    query_count: int
-    avg_query_time_ms: float
-    cache_hit_rate: float
-
-
-class VectorMemoryStore:
-    """
-    L4 Vector Memory Store for LIC Intelligence
+class LICVectorMemory:
+    """L4 memory adapter for vector database operations in LIC research.
     
-    Provides vector-based memory abstraction for cached research
-    and intelligence data. Aligned with Temporal KG architecture.
+    Provides typed interface over existing vector client abstractions
+    for research signal storage and retrieval.
     """
     
-    def __init__(
-        self,
-        collection_name: str = "lic_intelligence",
-        persist_directory: str = "./chroma_db",
-        config: Optional[Dict[str, Any]] = None
-    ):
-        """
-        Initialize vector memory store
+    def __init__(self, vector_client: Optional[Any] = None) -> None:
+        """Initialize LIC vector memory with vector client."""
+        self.vector_client = vector_client
+        
+        if not self.vector_client:
+            logger.warning("No vector client provided to LICVectorMemory - operations will be no-ops")
+    
+    async def query(self, query_text: str, *, top_k: int = 10) -> List[Dict[str, Any]]:
+        """Query vector database for relevant documents.
         
         Args:
-            collection_name: Name of vector collection
-            persist_directory: Directory for persistent storage
-            config: Optional configuration
-        """
-        self.collection_name = collection_name
-        self.persist_directory = persist_directory
-        self.config = config or self._get_default_config()
-        
-        # Initialize mock storage for now (would integrate with actual vector DB)
-        self._mock_storage: Dict[str, VectorQueryResult] = {}
-        self._stats = VectorMemoryStats(
-            total_documents=0,
-            query_count=0,
-            avg_query_time_ms=0.0,
-            cache_hit_rate=0.0
-        )
-        
-        logger.info(f"VectorMemoryStore initialized for collection '{collection_name}'")
-    
-    def _get_default_config(self) -> Dict[str, Any]:
-        """Get default configuration"""
-        return {
-            "query": {
-                "default_n_results": 20,
-                "similarity_threshold": 0.7,
-                "max_query_time_ms": 5000
-            },
-            "storage": {
-                "max_documents": 10000,
-                "retention_days": 365
-            }
-        }
-    
-    async def query_memory(
-        self,
-        query_text: str,
-        n_results: int = 20,
-        filter_metadata: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
-        """
-        Query vector memory for relevant documents
-        
-        Args:
-            query_text: Query string
-            n_results: Number of results to return
-            filter_metadata: Optional metadata filters
+            query_text: The query text to search for
+            top_k: Maximum number of results to return
             
         Returns:
-            List of query results as dictionaries
+            List of document results with metadata
         """
-        start_time = datetime.now()
+        if not self.vector_client:
+            logger.debug("No vector client available - returning empty results")
+            return []
         
         try:
-            # Simulate vector query with mock data
-            results = await self._execute_mock_query(query_text, n_results, filter_metadata)
+            # Use existing vector client query interface
+            # This assumes the client has a query method with similar signature
+            results = await self.vector_client.query(
+                query_text=query_text,
+                top_k=top_k,
+                include_metadata=True,
+            )
             
-            # Update statistics
-            query_time = int((datetime.now() - start_time).total_seconds() * 1000)
-            self._update_stats(query_time)
+            # Normalize results to expected format
+            normalized_results = []
+            for result in results:
+                normalized_result = {
+                    "id": result.get("id", ""),
+                    "text": result.get("text", result.get("content", "")),
+                    "metadata": result.get("metadata", {}),
+                    "score": result.get("score", result.get("similarity", 0.0)),
+                    "source": result.get("source", "vector_db"),
+                }
+                normalized_results.append(normalized_result)
             
-            logger.info(f"Vector query completed in {query_time}ms with {len(results)} results")
-            
-            return results
+            logger.debug(f"Vector query returned {len(normalized_results)} results")
+            return normalized_results
             
         except Exception as e:
-            logger.error(f"Vector query failed: {str(e)}")
+            logger.error(f"Vector query failed: {e}")
             return []
     
-    async def query_by_company(
-        self,
-        company_name: str,
-        query_text: str,
-        n_results: int = 20
-    ) -> List[Dict[str, Any]]:
-        """
-        Query vector memory by company name
+    async def upsert_signals(self, signals: List[Dict[str, Any]]) -> None:
+        """Upsert research signals to vector database.
         
         Args:
-            company_name: Company name to filter by
-            query_text: Query string
-            n_results: Number of results to return
-            
-        Returns:
-            List of company-specific query results
+            signals: List of signals to store with embeddings
         """
-        filter_metadata = {"company_name": company_name}
-        return await self.query_memory(query_text, n_results, filter_metadata)
+        if not self.vector_client:
+            logger.debug("No vector client available - skipping upsert")
+            return
+        
+        if not signals:
+            logger.debug("No signals to upsert")
+            return
+        
+        try:
+            # Prepare signals for vector client
+            vector_documents = []
+            for signal in signals:
+                document = {
+                    "id": signal.get("id", ""),
+                    "text": signal.get("text", signal.get("content", "")),
+                    "metadata": {
+                        "signal_type": signal.get("signal_type", "unknown"),
+                        "source": signal.get("source", "lic_research"),
+                        "timestamp": signal.get("timestamp", ""),
+                        "company_name": signal.get("company_name", ""),
+                        "role_title": signal.get("role_title", ""),
+                        **signal.get("metadata", {}),
+                    },
+                }
+                vector_documents.append(document)
+            
+            # Use existing vector client upsert interface
+            await self.vector_client.upsert(documents=vector_documents)
+            
+            logger.debug(f"Upserted {len(vector_documents)} signals to vector database")
+            
+        except Exception as e:
+            logger.error(f"Vector upsert failed: {e}")
     
-    async def add_document(
-        self,
-        text: str,
-        embedding: List[float],
-        metadata: Dict[str, Any],
-        document_id: Optional[str] = None
-    ) -> str:
-        """
-        Add document to vector memory
+    async def delete_signals(self, signal_ids: List[str]) -> None:
+        """Delete signals from vector database.
         
         Args:
-            text: Document text
-            embedding: Document embedding vector
-            metadata: Document metadata
-            document_id: Optional document ID
-            
-        Returns:
-            Document ID
+            signal_ids: List of signal IDs to delete
         """
-        if document_id is None:
-            # Generate ID from content hash
-            content_string = f"{text}_{metadata.get('source_url', '')}_{datetime.now().isoformat()}"
-            document_id = hashlib.md5(content_string.encode()).hexdigest()
+        if not self.vector_client:
+            logger.debug("No vector client available - skipping delete")
+            return
         
-        # Create vector query result
-        result = VectorQueryResult(
-            id=document_id,
-            text=text,
-            metadata=metadata,
-            distance=0.0,  # Not applicable for storage
-            relevance_score=1.0  # Not applicable for storage
-        )
+        if not signal_ids:
+            logger.debug("No signal IDs to delete")
+            return
         
-        # Store in mock storage
-        self._mock_storage[document_id] = result
-        self._stats.total_documents += 1
-        
-        logger.debug(f"Added document {document_id} to vector memory")
-        
-        return document_id
+        try:
+            # Use existing vector client delete interface
+            await self.vector_client.delete(ids=signal_ids)
+            
+            logger.debug(f"Deleted {len(signal_ids)} signals from vector database")
+            
+        except Exception as e:
+            logger.error(f"Vector delete failed: {e}")
     
-    async def update_document(
-        self,
-        document_id: str,
-        text: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
-    ) -> bool:
-        """
-        Update existing document in vector memory
+    async def get_signal_by_id(self, signal_id: str) -> Optional[Dict[str, Any]]:
+        """Get a specific signal by ID from vector database.
         
         Args:
-            document_id: Document ID to update
-            text: Optional new text
-            metadata: Optional new metadata
+            signal_id: The ID of the signal to retrieve
             
         Returns:
-            True if updated successfully
+            Signal data if found, None otherwise
         """
-        if document_id not in self._mock_storage:
-            logger.warning(f"Document {document_id} not found for update")
-            return False
-        
-        existing = self._mock_storage[document_id]
-        
-        if text is not None:
-            existing.text = text
-        
-        if metadata is not None:
-            existing.metadata.update(metadata)
-        
-        logger.debug(f"Updated document {document_id} in vector memory")
-        
-        return True
-    
-    async def delete_document(self, document_id: str) -> bool:
-        """
-        Delete document from vector memory
-        
-        Args:
-            document_id: Document ID to delete
-            
-        Returns:
-            True if deleted successfully
-        """
-        if document_id not in self._mock_storage:
-            logger.warning(f"Document {document_id} not found for deletion")
-            return False
-        
-        del self._mock_storage[document_id]
-        self._stats.total_documents -= 1
-        
-        logger.debug(f"Deleted document {document_id} from vector memory")
-        
-        return True
-    
-    async def get_document(self, document_id: str) -> Optional[Dict[str, Any]]:
-        """
-        Get document by ID
-        
-        Args:
-            document_id: Document ID
-            
-        Returns:
-            Document data or None if not found
-        """
-        if document_id not in self._mock_storage:
+        if not self.vector_client:
+            logger.debug("No vector client available - cannot get signal by ID")
             return None
         
-        result = self._mock_storage[document_id]
-        
-        return {
-            "id": result.id,
-            "text": result.text,
-            "metadata": result.metadata,
-            "distance": result.distance,
-            "relevance_score": result.relevance_score
-        }
+        try:
+            # Use existing vector client get interface
+            result = await self.vector_client.get(id=signal_id)
+            
+            if result:
+                normalized_result = {
+                    "id": result.get("id", signal_id),
+                    "text": result.get("text", result.get("content", "")),
+                    "metadata": result.get("metadata", {}),
+                    "score": 1.0,  # Exact match gets perfect score
+                    "source": result.get("source", "vector_db"),
+                }
+                return normalized_result
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Get signal by ID failed: {e}")
+            return None
     
-    async def list_documents(
-        self,
-        filter_metadata: Optional[Dict[str, Any]] = None,
-        limit: int = 100
-    ) -> List[Dict[str, Any]]:
-        """
-        List documents with optional filtering
+    async def list_signals_by_type(self, signal_type: str, limit: int = 100) -> List[Dict[str, Any]]:
+        """List signals of a specific type from vector database.
         
         Args:
-            filter_metadata: Optional metadata filters
-            limit: Maximum number of documents to return
+            signal_type: The type of signals to list
+            limit: Maximum number of signals to return
             
         Returns:
-            List of documents
+            List of signals of the specified type
         """
-        documents = []
+        if not self.vector_client:
+            logger.debug("No vector client available - returning empty list")
+            return []
         
-        for result in self._mock_storage.values():
-            # Apply metadata filter if provided
-            if filter_metadata:
-                matches = True
-                for key, value in filter_metadata.items():
-                    if result.metadata.get(key) != value:
-                        matches = False
-                        break
-                if not matches:
-                    continue
+        try:
+            # Use existing vector client filter interface
+            # This assumes the client supports metadata filtering
+            results = await self.vector_client.filter(
+                metadata_filter={"signal_type": signal_type},
+                limit=limit,
+            )
             
-            documents.append({
-                "id": result.id,
-                "text": result.text,
-                "metadata": result.metadata
-            })
+            # Normalize results
+            normalized_results = []
+            for result in results:
+                normalized_result = {
+                    "id": result.get("id", ""),
+                    "text": result.get("text", result.get("content", "")),
+                    "metadata": result.get("metadata", {}),
+                    "score": result.get("score", 1.0),
+                    "source": result.get("source", "vector_db"),
+                }
+                normalized_results.append(normalized_result)
             
-            if len(documents) >= limit:
-                break
-        
-        return documents
+            logger.debug(f"Listed {len(normalized_results)} signals of type {signal_type}")
+            return normalized_results
+            
+        except Exception as e:
+            logger.error(f"List signals by type failed: {e}")
+            return []
     
-    def get_stats(self) -> VectorMemoryStats:
-        """Get vector memory statistics"""
-        return self._stats
-    
-    async def clear_collection(self) -> bool:
-        """Clear all documents from collection"""
-        self._mock_storage.clear()
-        self._stats.total_documents = 0
+    async def health_check(self) -> Dict[str, Any]:
+        """Check the health of the vector memory connection.
         
-        logger.info("Cleared vector memory collection")
+        Returns:
+            Health status information
+        """
+        health_status = {
+            "available": self.vector_client is not None,
+            "connected": False,
+            "error": None,
+        }
         
-        return True
-    
-    async def _execute_mock_query(
-        self,
-        query_text: str,
-        n_results: int,
-        filter_metadata: Optional[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        """Execute mock vector query (simulates vector DB behavior)"""
-        # Generate mock results based on query
-        mock_results = []
+        if not self.vector_client:
+            health_status["error"] = "No vector client configured"
+            return health_status
         
-        # Create some mock results for demonstration
-        for i in range(min(n_results, 5)):  # Limit to 5 mock results
-            document_id = f"mock_doc_{i}_{hashlib.md5(query_text.encode()).hexdigest()[:8]}"
+        try:
+            # Attempt a simple query to check connectivity
+            await self.vector_client.query(query_text="health_check", top_k=1)
+            health_status["connected"] = True
             
-            # Simulate relevance based on query keywords
-            relevance_score = 0.9 - (i * 0.1)  # Decreasing relevance
-            
-            mock_result = {
-                "id": document_id,
-                "text": f"Mock document {i} relevant to '{query_text}' containing strategic information about company priorities and initiatives.",
-                "metadata": {
-                    "source_type": "company_intelligence",
-                    "company_name": "Example Corp",
-                    "retrieved_at": datetime.now().isoformat(),
-                    "quality_score": relevance_score
-                },
-                "distance": 1.0 - relevance_score,  # Convert to distance
-                "relevance_score": relevance_score
-            }
-            
-            # Apply filter if provided
-            if filter_metadata:
-                matches = True
-                for key, value in filter_metadata.items():
-                    if mock_result["metadata"].get(key) != value:
-                        matches = False
-                        break
-                if not matches:
-                    continue
-            
-            mock_results.append(mock_result)
+        except Exception as e:
+            health_status["connected"] = False
+            health_status["error"] = str(e)
+            logger.error(f"Vector memory health check failed: {e}")
         
-        return mock_results
-    
-    def _update_stats(self, query_time_ms: int):
-        """Update query statistics"""
-        self._stats.query_count += 1
-        
-        # Update average query time
-        total_time = self._stats.avg_query_time_ms * (self._stats.query_count - 1) + query_time_ms
-        self._stats.avg_query_time_ms = total_time / self._stats.query_count
-        
-        # Update cache hit rate (mock calculation)
-        if self._stats.total_documents > 0:
-            self._stats.cache_hit_rate = min(0.8, self._stats.query_count / (self._stats.total_documents + self._stats.query_count))
+        return health_status
