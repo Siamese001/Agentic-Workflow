@@ -1,399 +1,250 @@
-"""
-LIC Orchestrator Compatibility Layer for 10_12
+from typing import Dict, Any, List
+from dataclasses import dataclass, asdict
+from l1.lic_planner import LICPlanner
+from l2.lic_k1_research import LIC_K1_Research
+from l2.lic_k2_insights import LIC_K2_Insights
+from l2.lic_k3_draft import LIC_K3_Draft
+from l2.lic_k4_regen import LIC_K4_Regen
+from l2.lic_k5_validation import LIC_K5_Validation
+from l2.lic_k6_cta import LIC_K6_CTA
+from l2.lic_k7_assembly import LIC_K7_Assembly
 
-Provides backward compatibility for regression tests expecting LICOrchestrator.
-This is a thin wrapper around OutreachOrchestrator to maintain API compatibility.
-"""
+@dataclass
+class OrchestratorOutput:
+    final_message: str
+    execution_trace: List[Dict[str, Any]]
+    k_node_outputs: Dict[str, Any]
+    success: bool
+    error_message: str
 
-from typing import Dict, Any, Optional, List
-from l3.outreach_orchestrator import OutreachOrchestrator
-
-
-class RecipientProfile:
-    """Mock recipient profile for LIC compatibility."""
-    
-    def __init__(self, name: str = "", role: str = "", company: str = ""):
-        self.name = name
-        self.role = role
-        self.company = company
-
-
-class LICPipelineResult:
-    """Mock pipeline result for LIC compatibility."""
-    
-    def __init__(self, success: bool = True, message: str = ""):
-        self.success = success
-        self.message = message
-
-
-class LICOrchestrator(OutreachOrchestrator):
-    """
-    Compatibility wrapper for legacy LIC orchestrator functionality.
-    
-    Inherits from OutreachOrchestrator to maintain full API compatibility.
-    """
-    
-    def __init__(self, *args, **kwargs):
-        """Initialize using OutreachOrchestrator constructor."""
-        super().__init__(*args, **kwargs)
-    
-    def run_single_outreach(self, mission, recipient, config: Optional[Dict[str, Any]] = None):
-        """
-        Legacy compatibility method for single outreach execution.
+class LICOrchestrator:
+    def __init__(self, atomic_spec: Dict[str, Any]):
+        self.spec = atomic_spec
+        self.planner = LICPlanner(atomic_spec)
         
-        Returns simple mock result for safety integration test compatibility.
-        """
-        # Convert dict result to object format expected by tests
-        from types import SimpleNamespace
-        result = SimpleNamespace()
-        result.success = True  # Simple success for safety integration test
-        result.message = "Mock outreach message for safety integration"
-        result.metadata = {
-            "archetype": "executive",
-            "safety_passed": True,
-            "workflow_type": "outreach"
-        }
-        return result
-    
-    async def analyze_resume_job_alignment(self, resume_data: Dict[str, Any], job_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume job alignment analysis.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "alignment_score": 0.8,
-            "matched_skills": ["Python", "Leadership"],
-            "missing_skills": [],
-            "recommendation": "Strong match",
-            "success": True
-        }
-    
-    def process_resume_for_job_matching(self, resume_data: Dict[str, Any], target_roles: List[str], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume job matching processing.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "resume_processed": True,
-            "candidate_profile": {
-                "name": "John Doe",
-                "experience_level": "Senior",
-                "key_skills": ["Python", "AWS", "Docker", "Kubernetes"],
-                "career_trajectory": "Engineer -> Senior Engineer -> Lead"
-            },
-            "job_matching": {
-                "matches_found": 5,
-                "top_match_score": 0.92,
-                "recommended_positions": [
-                    "Senior Software Engineer",
-                    "Cloud Platform Engineer",
-                    "DevOps Engineer"
-                ]
-            },
-            "temporal_analysis": {
-                "career_progression_detected": True,
-                "skill_recency_validated": True,
-                "experience_timeline_consistent": True
-            }
-        }
-    
-    def run_resume_job_alignment_pipeline(self, resume_data: Dict[str, Any], job_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume job alignment pipeline.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "pipeline_stage": "resume_job_alignment",
-            "input_data": {
-                "resume": resume_data,
-                "job": job_data
-            },
-            "processing_results": {
-                "skills_extracted": ["Python", "AWS", "Docker", "Kubernetes"],
-                "experience_parsed": True,
-                "education_verified": True,
-                "alignment_calculated": True
-            },
-            "output_data": {
-                "alignment_score": 0.89,
-                "match_confidence": "high",
-                "recommended_action": "proceed_with_outreach",
-                "personalization_points": [
-                    "3+ years of cloud infrastructure experience",
-                    "Python and AWS expertise matches requirements",
-                    "Senior level experience suitable for role"
-                ]
-            },
-            "temporal_enrichments": {
-                "recency_weighting_applied": True,
-                "career_timeline_analyzed": True,
-                "skill_freshness_validated": True
-            },
-            "pipeline_success": True,
-            "processing_time_ms": 1250
-        }
-    
-    def legacy_resume_workflow(self, resume_data: Dict[str, Any], job_data: Dict[str, Any], options: Optional[Dict[str, Any]] = None, **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for existing resume workflows.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "resume_data": resume_data,
-            "job_data": job_data,
-            "options": options or {},
-            "alignment_result": {
-                "score": 0.85,
-                "matches": ["Python", "AWS"],
-                "recommendation": "Good fit"
-            }
-        }
-    
-    def process_resume_with_temporal(self, resume_data: Dict[str, Any], job_data: Dict[str, Any], enable_temporal: bool = True, **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume processing with temporal features.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        if enable_temporal:
+    def _execute_k1_research(self, k1_research, message_context: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            recipient = message_context.get("recipient", {})
+            research_output = k1_research.execute(recipient, message_context)
+            
             return {
-                "alignment_score": 0.88,
-                "temporal_features": {
-                    "recency_analysis": True,
-                    "career_progression": True,
-                    "skill_freshness": True
-                },
-                "enhanced_personalization": [
-                    "Recent cloud infrastructure experience (2020-2023)",
-                    "Progressive career growth demonstrated",
-                    "Current skills match market demands"
-                ]
+                "k1_research": asdict(research_output),
+                "status": "SUCCESS",
+                "error": None
             }
-        else:
+        except Exception as e:
             return {
-                "alignment_score": 0.85,
-                "temporal_features": {
-                    "recency_analysis": False,
-                    "career_progression": False,
-                    "skill_freshness": False
-                },
-                "standard_personalization": [
-                    "Cloud infrastructure experience",
-                    "Career growth demonstrated",
-                    "Skills match requirements"
-                ]
+                "k1_research": None,
+                "status": "FAILED",
+                "error": str(e)
             }
     
-    def process_resume_job_alignment(self, resume_data: Dict[str, Any], job_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume job alignment processing.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "alignment_processed": True,
-            "resume_data": resume_data,
-            "job_data": job_data,
-            "alignment_result": {
-                "score": 0.9,
-                "matches": ["Python", "AWS", "Docker"],
-                "recommendation": "Excellent fit"
+    def _execute_k2_insights(self, k2_insights, k1_output: Dict[str, Any], message_context: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            if k1_output.get("status") != "SUCCESS":
+                return {
+                    "k2_insights": None,
+                    "status": "SKIPPED",
+                    "error": "K1 research failed"
+                }
+                
+            research_data = k1_output.get("k1_research", {})
+            insight_output = k2_insights.execute(research_data)
+            
+            return {
+                "k2_insights": asdict(insight_output),
+                "status": "SUCCESS",
+                "error": None
             }
-        }
-    
-    def validate_resume_pipeline_performance(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume pipeline performance validation.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "performance_validated": True,
-            "input_data": input_data,
-            "performance_metrics": {
-                "processing_time_ms": 850,
-                "memory_usage_mb": 128,
-                "cpu_usage_percent": 15.5
-            },
-            "performance_passed": True
-        }
-    
-    def validate_resume_pipeline_data_contract(self, pipeline_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume pipeline data contract validation.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "contract_validated": True,
-            "pipeline_data": pipeline_data,
-            "validation_result": {
-                "schema_compliant": True,
-                "required_fields_present": True,
-                "data_types_correct": True
-            },
-            "contract_passed": True
-        }
-    
-    def process_resume_with_performance_metrics(self, resume_data: Dict[str, Any], job_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume processing with performance metrics.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "resume_processed": True,
-            "performance_metrics": {
-                "processing_time_ms": 750,
-                "memory_usage_mb": 95,
-                "cpu_usage_percent": 12.3,
-                "api_calls_count": 3
-            },
-            "resume_data": resume_data,
-            "job_data": job_data,
-            "processing_successful": True
-        }
-    
-    def validate_resume_pipeline_data_consistency(self, pipeline_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume pipeline data consistency validation.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "consistency_validated": True,
-            "pipeline_data": pipeline_data,
-            "consistency_checks": {
-                "data_integrity": True,
-                "schema_consistency": True,
-                "temporal_coherence": True
-            },
-            "consistency_passed": True
-        }
-    
-    def process_resume_with_contract(self, resume_data: Dict[str, Any], job_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume processing with contract validation.
-        
-        Returns simple mock result for regression test compatibility.
-        """
-        return {
-            "resume_processed": True,
-            "contract_validated": True,
-            "resume_data": resume_data,
-            "job_data": job_data,
-            "contract_result": {
-                "schema_compliant": True,
-                "required_fields_present": True,
-                "data_types_correct": True,
-                "validation_passed": True
+        except Exception as e:
+            return {
+                "k2_insights": None,
+                "status": "FAILED",
+                "error": str(e)
             }
-        }
     
-    async def execute_outreach_workflow(self, mission_id: str, **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for outreach workflow execution.
+    def _execute_k3_draft(self, k3_draft, k1_output: Dict[str, Any], k2_output: Dict[str, Any], message_context: Dict[str, Any], sender_info: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            if k1_output.get("status") != "SUCCESS":
+                return {
+                    "k3_draft": None,
+                    "status": "SKIPPED",
+                    "error": "K1 research failed"
+                }
+                
+            research_data = k1_output.get("k1_research", {})
+            draft_output = k3_draft.execute(research_data, message_context, sender_info)
+            
+            return {
+                "k3_draft": asdict(draft_output),
+                "status": "SUCCESS",
+                "error": None
+            }
+        except Exception as e:
+            return {
+                "k3_draft": None,
+                "status": "FAILED",
+                "error": str(e)
+            }
+    
+    def _execute_k4_regen(self, k4_regen, k3_output: Dict[str, Any], k2_output: Dict[str, Any], message_context: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            if k3_output.get("status") != "SUCCESS":
+                return {
+                    "k4_regen": None,
+                    "status": "SKIPPED",
+                    "error": "K3 draft failed"
+                }
+                
+            draft_data = k3_output.get("k3_draft", {})
+            insight_data = k2_output.get("k2_insights", {})
+            archetype = message_context.get("recipient_type", "EXECUTIVE")
+            
+            regen_output = k4_regen.execute(draft_data, insight_data, archetype)
+            
+            return {
+                "k4_regen": asdict(regen_output),
+                "status": "SUCCESS",
+                "error": None
+            }
+        except Exception as e:
+            return {
+                "k4_regen": None,
+                "status": "FAILED",
+                "error": str(e)
+            }
+    
+    def _execute_k5_validation(self, k5_validation, k3_output: Dict[str, Any], k4_output: Dict[str, Any], k2_output: Dict[str, Any], k1_output: Dict[str, Any], message_context: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            if k3_output.get("status") != "SUCCESS":
+                return {
+                    "k5_validation": None,
+                    "status": "SKIPPED",
+                    "error": "K3 draft failed"
+                }
+                
+            draft_data = k3_output.get("k3_draft", {})
+            regen_data = k4_output.get("k4_regen", {})
+            insight_data = k2_output.get("k2_insights", {})
+            research_data = k1_output.get("k1_research", {})
+            
+            if regen_data and regen_data.get("regenerated_draft"):
+                final_draft = regen_data["regenerated_draft"]
+            else:
+                final_draft = draft_data
+                
+            validation_output = k5_validation.execute(final_draft, insight_data, research_data, message_context)
+            
+            return {
+                "k5_validation": asdict(validation_output),
+                "status": "SUCCESS",
+                "error": None
+            }
+        except Exception as e:
+            return {
+                "k5_validation": None,
+                "status": "FAILED",
+                "error": str(e)
+            }
+    
+    def _execute_k6_cta(self, k6_cta, message_context: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            archetype = message_context.get("recipient_type", "EXECUTIVE")
+            cta_output = k6_cta.execute(message_context, archetype)
+            
+            return {
+                "k6_cta": asdict(cta_output),
+                "status": "SUCCESS",
+                "error": None
+            }
+        except Exception as e:
+            return {
+                "k6_cta": None,
+                "status": "FAILED",
+                "error": str(e)
+            }
+    
+    def _execute_k7_assembly(self, k7_assembly, all_k_outputs: Dict[str, Any]) -> Dict[str, Any]:
+        try:
+            assembly_output = k7_assembly.execute(all_k_outputs)
+            
+            return {
+                "k7_assembly": assembly_output,
+                "status": "SUCCESS",
+                "error": None
+            }
+        except Exception as e:
+            return {
+                "k7_assembly": None,
+                "status": "FAILED",
+                "error": str(e)
+            }
+    
+    def execute_full_pipeline(self, message_type: str, message_context: Dict[str, Any], sender_info: Dict[str, Any]) -> OrchestratorOutput:
+        execution_trace = []
+        k_node_outputs = {}
         
-        Delegates to OutreachOrchestrator's execute_outreach_workflow method.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=mission_id,
-            **kwargs
-        )
-    
-    async def run_single_outreach_success(self, mission_id: str, **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for single outreach execution.
-        
-        Delegates to OutreachOrchestrator's execute_outreach_workflow method.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=mission_id,
-            **kwargs
-        )
-    
-    async def resume_job_alignment_workflow(self, resume_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for resume job alignment.
-        
-        Maps to OutreachOrchestrator's workflow execution.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=resume_data.get("mission_id", "resume_alignment"),
-            resume_data=resume_data,
-            **kwargs
-        )
-    
-    async def end_to_end_resume_pipeline_regression(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for end-to-end pipeline testing.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=input_data.get("mission_id", "e2e_test"),
-            **input_data,
-            **kwargs
-        )
-    
-    async def backward_compatibility_existing_resume_workflows(self, workflow_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for existing workflow compatibility.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=workflow_data.get("mission_id", "compat_test"),
-            **workflow_data,
-            **kwargs
-        )
-    
-    async def resume_pipeline_temporal_feature_flag(self, test_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for temporal feature testing.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=test_data.get("mission_id", "temporal_test"),
-            **test_data,
-            **kwargs
-        )
-    
-    async def resume_pipeline_error_handling_preserved(self, error_scenario: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for error handling testing.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=error_scenario.get("mission_id", "error_test"),
-            **error_scenario,
-            **kwargs
-        )
-    
-    async def resume_pipeline_performance_regression(self, perf_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for performance regression testing.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=perf_data.get("mission_id", "perf_test"),
-            **perf_data,
-            **kwargs
-        )
-    
-    async def resume_pipeline_data_contract_consistency(self, contract_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for data contract consistency testing.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=contract_data.get("mission_id", "contract_test"),
-            **contract_data,
-            **kwargs
-        )
-    
-    async def sequential_outreach_workflow_functional_equivalence(self, workflow_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
-        """
-        Legacy compatibility method for sequential workflow testing.
-        """
-        return await self._orchestrator.execute_outreach_workflow(
-            mission_id=workflow_data.get("mission_id", "sequential_test"),
-            **workflow_data,
-            **kwargs
-        )
+        try:
+            plan = self.planner.build_complete_plan(message_type, message_context)
+            
+            k1_research = LIC_K1_Research(asdict(plan.retrieval))
+            k1_result = self._execute_k1_research(k1_research, message_context)
+            execution_trace.append({"node": "K1", "status": k1_result["status"], "error": k1_result.get("error")})
+            k_node_outputs.update(k1_result)
+            
+            k2_insights = LIC_K2_Insights(asdict(plan.insights))
+            k2_result = self._execute_k2_insights(k2_insights, k1_result, message_context)
+            execution_trace.append({"node": "K2", "status": k2_result["status"], "error": k2_result.get("error")})
+            k_node_outputs.update(k2_result)
+            
+            k3_draft = LIC_K3_Draft(asdict(plan.templates), asdict(plan.tone))
+            k3_result = self._execute_k3_draft(k3_draft, k1_result, k2_result, message_context, sender_info)
+            execution_trace.append({"node": "K3", "status": k3_result["status"], "error": k3_result.get("error")})
+            k_node_outputs.update(k3_result)
+            
+            k4_regen = LIC_K4_Regen(asdict(plan.validators), asdict(plan.constraints))
+            k4_result = self._execute_k4_regen(k4_regen, k3_result, k2_result, message_context)
+            execution_trace.append({"node": "K4", "status": k4_result["status"], "error": k4_result.get("error")})
+            k_node_outputs.update(k4_result)
+            
+            k5_validation = LIC_K5_Validation(asdict(plan.validators), asdict(plan.constraints))
+            k5_result = self._execute_k5_validation(k5_validation, k3_result, k4_result, k2_result, k1_result, message_context)
+            execution_trace.append({"node": "K5", "status": k5_result["status"], "error": k5_result.get("error")})
+            k_node_outputs.update(k5_result)
+            
+            k6_cta = LIC_K6_CTA(asdict(plan.cta))
+            k6_result = self._execute_k6_cta(k6_cta, message_context)
+            execution_trace.append({"node": "K6", "status": k6_result["status"], "error": k6_result.get("error")})
+            k_node_outputs.update(k6_result)
+            
+            k7_assembly = LIC_K7_Assembly(asdict(plan.k_nodes), asdict(plan.validators))
+            k7_result = self._execute_k7_assembly(k7_assembly, k_node_outputs)
+            execution_trace.append({"node": "K7", "status": k7_result["status"], "error": k7_result.get("error")})
+            k_node_outputs.update(k7_result)
+            
+            final_assembly = k7_result.get("k7_assembly")
+            if final_assembly and final_assembly.validation_status == "VALID":
+                return OrchestratorOutput(
+                    final_message=final_assembly.final_message,
+                    execution_trace=execution_trace,
+                    k_node_outputs=k_node_outputs,
+                    success=True,
+                    error_message=""
+                )
+            else:
+                return OrchestratorOutput(
+                    final_message="",
+                    execution_trace=execution_trace,
+                    k_node_outputs=k_node_outputs,
+                    success=False,
+                    error_message="Final validation failed"
+                )
+                
+        except Exception as e:
+            return OrchestratorOutput(
+                final_message="",
+                execution_trace=execution_trace,
+                k_node_outputs=k_node_outputs,
+                success=False,
+                error_message=f"Pipeline execution failed: {str(e)}"
+            )
