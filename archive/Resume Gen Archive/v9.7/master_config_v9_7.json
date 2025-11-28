@@ -1,0 +1,159 @@
+{
+  "schema_version": "master_config_v9.7",
+  "description": "v9.7 Production Configuration with P0 Enhancements",
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "log_file": "./logs/workflow_v9_7.log",
+    "log_format": "json",
+    "correlation_ids": true,
+    "log_rotation": {
+      "max_bytes": 10485760,
+      "backup_count": 5
+    }
+  },
+  "redis_config": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "description": "Redis persistence for LangGraph checkpointing"
+  },
+  "cost_config": {
+    "cost_ceiling_per_workflow": 5.0,
+    "cost_ceiling_per_agent": 0.5,
+    "enable_cost_tracking": true,
+    "description": "Cost management and circuit breaker thresholds"
+  },
+  "batch_config": {
+    "max_parallel_workers": 4,
+    "enable_circuit_breaker": true,
+    "circuit_breaker_failure_threshold": 3,
+    "description": "Batch processing configuration for run_batch_v9_7.py"
+  },
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "max_meta_replan_loops": 3,
+    "feedback_log_path": "./logs/feedback_log.jsonl",
+    "preference_log_path": "./logs/preference_log.jsonl",
+    "proposed_rules_path": "./logs/proposed_rules.jsonl",
+    "description": "Meta-learning configuration for run_learning_v9_7.py"
+  },
+  "tracing_config": {
+    "langsmith_enabled": false,
+    "langsmith_api_key": null,
+    "description": "Distributed tracing configuration (LangSmith integration)"
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json",
+    "description": "Default file paths for input data"
+  },
+  "agent_stacks": {
+    "description": "P0 Enhancement: Stack-based agent organization and configuration",
+    "safety_stack_enabled": true,
+    "bias_detection_threshold": 0.7,
+    "pii_detection_enabled": true,
+    "safety_stack_description": "P0 Item #1: SafetyGuardStack - architectural separation of safety concerns from QA validation",
+    "strategy_tot_enabled": true,
+    "strategy_tot_branching_factor": 3,
+    "strategy_tot_depth": 2,
+    "strategy_tot_description": "P0 Item #2: Tree-of-Thoughts Strategist - replaces ThemeClassifierAgent with multi-path reasoning",
+    "prompt_llm_driven": true,
+    "prompt_temperature": 0.7,
+    "prompt_llm_description": "P0 Item #3: LLM-Driven Prompting - replaces PromptStackAgent with dynamic prompt engineering",
+    "enable_local_retries": true,
+    "max_local_retries": 2,
+    "local_retries_description": "P0 Item #4: Local Self-Correction - bullet-level critique loops before proceeding downstream"
+  },
+  "model_config": {
+    "strategy_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.8,
+      "description": "High-temp for creative strategy generation (ToT)"
+    },
+    "prompt_engineer_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "Medium-temp for dynamic prompt engineering"
+    },
+    "bullet_generator_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "Medium-temp for bullet generation"
+    },
+    "critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.2,
+      "description": "Low-temp for consistent critique evaluation"
+    },
+    "qa_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.3,
+      "description": "Low-temp for deterministic QA validation"
+    },
+    "bias_detector_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.3,
+      "description": "Low-temp for consistent bias detection"
+    },
+    "pii_sanitizer_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.1,
+      "description": "Very low-temp for deterministic PII handling"
+    }
+  },
+  "p0_enhancements_summary": {
+    "version": "9.7.0-p0-enhancements",
+    "implemented": [
+      {
+        "priority": "P0",
+        "item": "SafetyGuardStack",
+        "description": "Architectural separation of safety concerns (bias detection, PII sanitization) from QA validation",
+        "config_key": "agent_stacks.safety_stack_enabled",
+        "agents": ["BiasDetectorAgent", "PIISanitizerAgent (enhanced)"]
+      },
+      {
+        "priority": "P0",
+        "item": "Tree-of-Thoughts Strategist",
+        "description": "Replaces ThemeClassifierAgent with multi-path strategic reasoning and evaluation",
+        "config_key": "agent_stacks.strategy_tot_enabled",
+        "agents": ["ToTStrategistAgent"],
+        "improvement": "Evolves StrategyStack from score 11 to target 90+"
+      },
+      {
+        "priority": "P0",
+        "item": "LLM-Driven Prompt Engineer",
+        "description": "Replaces PromptStackAgent (string formatter) with dynamic, LLM-crafted prompt generation",
+        "config_key": "agent_stacks.prompt_llm_driven",
+        "agents": ["DynamicPromptEngineerAgent"],
+        "improvement": "Evolves PromptStack from score 5 to target 85+"
+      },
+      {
+        "priority": "P0",
+        "item": "Local Self-Correction Loops",
+        "description": "Adds bullet-level critique and local retry loops before proceeding downstream",
+        "config_key": "agent_stacks.enable_local_retries",
+        "agents": ["BulletCritiqueAgent"],
+        "improvement": "Reduces cost/latency by catching errors locally vs. full replanning"
+      }
+    ],
+    "p1_roadmap": [
+      "Upgrade DraftingConductor and QAConductor to true ReAct agents",
+      "Build DynamicToolingStack with tool selection, execution, and generation",
+      "Build HIL_InteractionStack with proactive ambiguity detection",
+      "Implement dynamic agent selection based on feedback_log.jsonl reliability scores",
+      "Add in-flight cost tracking per agent"
+    ],
+    "p2_roadmap": [
+      "Evolve RAGStack with HyDE and cross-encoder re-ranking",
+      "Close meta-loop with dynamic agent selection"
+    ]
+  }
+}

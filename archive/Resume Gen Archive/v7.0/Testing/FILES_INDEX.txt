@@ -1,0 +1,42 @@
+V7.0 RESUME GENERATION ENGINE - FILES INDEX
+============================================
+
+DOCUMENTATION
+-------------
+📄 QUICK_START.md              - Quick start guide for v7.0
+📄 V7.0_REFACTOR_SUMMARY.md    - Complete technical refactor summary
+📄 FILES_INDEX.txt             - This file
+
+CORE APPLICATION FILES
+----------------------
+🔧 requirements.txt            - Python dependencies (includes LangGraph, Redis)
+⚙️  master_config_v7_0.json     - Configuration (Redis + LangSmith settings)
+🎯 core_v7_0.py                - Core models and utilities (+GraphState TypedDict)
+🤖 agent_swarm_v7_0.py         - All agents + LangGraph orchestrator
+🚀 main_v7_0.py                - Main entry point (Redis + LangSmith setup)
+
+BATCH & LEARNING
+----------------
+📦 run_batch_v7_0.py           - Parallel batch processing
+🧠 run_learning_v7_0.py        - Meta-learning feedback loop
+
+KEY CHANGES FROM V6.5
+---------------------
+✅ Added: LangGraph StateGraph orchestration
+✅ Added: Redis persistence for resumable workflows
+✅ Added: LangSmith tracing for observability
+❌ Deleted: Governor class (replaced by LangGraph)
+❌ Deleted: CrewOrchestrator class (replaced by graph_app)
+❌ Deleted: WorkflowV65 class (replaced by graph invocation)
+
+USAGE
+-----
+1. Install: pip install -r requirements.txt
+2. Start Redis: docker run -d -p 6379:6379 redis:latest
+3. Run: python main_v7_0.py -j job_input.json -m master_resume.json
+
+See QUICK_START.md for detailed instructions.
+See V7.0_REFACTOR_SUMMARY.md for complete technical details.
+
+Architecture Version: 7.0.0-langgraph-redis
+Generated: November 8, 2025

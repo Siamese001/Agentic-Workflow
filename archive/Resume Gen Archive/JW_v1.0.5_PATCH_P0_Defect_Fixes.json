@@ -1,0 +1,975 @@
+{
+  "patch_metadata": {
+    "patch_id": "JW_v1.0.5_P0_DEFECT_FIXES",
+    "version": "1.0.5",
+    "release_date": "2025-10-14",
+    "base_version": "1.0.3",
+    "patch_type": "CRITICAL_DEFECT_FIX",
+    "severity": "P0_BLOCKING",
+    "author": "System Validation Team",
+    "validation_status": "HARDENED_WITH_TEST_COVERAGE",
+    "test_coverage": {
+      "unit_tests": 15,
+      "regression_tests": 10,
+      "e2e_tests": 5,
+      "total_tests": 30,
+      "required_pass_rate": 1.0
+    },
+    "changes_summary": "Fixes 3 P0 blocking defects identified in validation checkpoint analysis: (1) Missing deduplication matrix validation (13 overview-to-bullet checks), (2) Missing baseline similarity validation (K.5B/K.6B to master overviews), (3) Missing K.1 sentence structure validation (6-sentence arc enforcement). Excludes K.1 word count issue (deferred to v1.0.6 enhancement).",
+    "execution_instructions": "Apply patches in sequence C001 → C002 → C003. Run unit tests after each patch. Run regression suite after all 3 patches. Run E2E suite as final validation. All tests must pass before deployment."
+  },
+
+  "defects_addressed": [
+    {
+      "defect_id": "P0-001",
+      "title": "Missing Deduplication Matrix Validation",
+      "severity": "BLOCKING",
+      "description": "QA Report states 'Deduplication matrix thresholds MUST be enforced' but provides no similarity scores for 13 required checks (7 K.5B-to-K.5A bullets + 6 K.6B-to-K.6A bullets)",
+      "impact": "Cannot verify paraphrasing vs synthesis in overviews, may generate redundant content",
+      "root_cause": "Validation gate VG_OVERVIEW_DEDUPLICATION exists in workflow but does not output validation table in QA report",
+      "fix_scope": "Add QA report table generation for overview-bullet deduplication scores"
+    },
+    {
+      "defect_id": "P0-002",
+      "title": "Missing Baseline Similarity Validation",
+      "severity": "BLOCKING",
+      "description": "v1.0.5 requires strict <0.75 cosine similarity between K.5B/K.6B and master baselines, but QA report does not include this validation table",
+      "impact": "Excessive similarity to original resume undetected, reduces customization effectiveness",
+      "root_cause": "Baseline comparison logic missing from QA report generation despite being in validation gates",
+      "fix_scope": "Add QA report table for overview-to-baseline similarity checks"
+    },
+    {
+      "defect_id": "P0-003",
+      "title": "Missing K.1 Sentence Structure Validation",
+      "severity": "BLOCKING",
+      "description": "v1.0.5 requires 6-sentence narrative arc in executive summary, but QA report only validates 'Industry-first opening compliant' without sentence-level structure check",
+      "impact": "Executive summary may use bullet-like content vs narrative synthesis, reduces persuasive power",
+      "root_cause": "Sentence structure enforcement exists in creative_brief but not validated in QA report",
+      "fix_scope": "Add sentence structure validation to K.1 QA checks"
+    }
+  ],
+
+  "patches": [
+    {
+      "change_id": "C001_DEDUPLICATION_MATRIX_VALIDATION",
+      "change_type": "ENHANCEMENT_APPEND",
+      "severity": "CRITICAL",
+      "section": "6.metrics.qa_report.overview_deduplication_detail",
+      "description": "Adds comprehensive deduplication matrix validation table to QA report showing all 13 overview-to-bullet similarity checks",
+      "rationale": "Current QA report omits overview-bullet deduplication scores despite workflow requiring this validation. Without these scores, cannot verify that overviews are thematic syntheses rather than paraphrased bullets.",
+      
+      "current_state": {
+        "location": "Job_Workflow_v1.0.3.json → 6.metrics → qa_report → overview_deduplication_detail",
+        "existing_config": {
+          "enabled": true,
+          "reporting_policy": "ALWAYS_SHOW_TOP_3",
+          "description": "Shows 3 highest similarity scores between overview and bullets as proof of thematic distinction",
+          "show_all_if_violation": true,
+          "violation_threshold": 0.6
+        },
+        "problem": "Only shows top 3 scores, not all 13 required checks. Does not enforce MUST validation per v1.0.5 spec."
+      },
+
+      "new_state": {
+        "overview_deduplication_detail": {
+          "enabled": true,
+          "reporting_policy": "SHOW_ALL_CHECKS_WITH_STATUS",
+          "description": "Validates all overview-to-bullet similarity checks per v1.0.5 deduplication matrix requirements",
+          "table_columns": [
+            "section",
+            "overview_vs_bullet",
+            "cosine_score",
+            "threshold",
+            "margin",
+            "status"
+          ],
+          "checks": {
+            "K.5B_Unify": {
+              "check_count": 7,
+              "check_labels": ["K.5B vs K.5A[1]", "K.5B vs K.5A[2]", "K.5B vs K.5A[3]", "K.5B vs K.5A[4]", "K.5B vs K.5A[5]", "K.5B vs K.5A[6]", "K.5B vs K.5A[7]"],
+              "threshold": 0.60,
+              "boundary_policy": "STRICT_LESS_THAN",
+              "pass_condition": "cosine_score < 0.60"
+            },
+            "K.6B_IBM": {
+              "check_count": 6,
+              "check_labels": ["K.6B vs K.6A[1]", "K.6B vs K.6A[2]", "K.6B vs K.6A[3]", "K.6B vs K.6A[4]", "K.6B vs K.6A[5]", "K.6B vs K.6A[6]"],
+              "threshold": 0.60,
+              "boundary_policy": "STRICT_LESS_THAN",
+              "pass_condition": "cosine_score < 0.60"
+            }
+          },
+          "display_format": {
+            "sort_by": "cosine_score_desc",
+            "highlight_violations": true,
+            "show_margin_column": true,
+            "margin_calculation": "threshold - cosine_score",
+            "margin_warning_threshold": 0.05
+          },
+          "validation_enforcement": {
+            "blocking": true,
+            "on_violation": "HALT_WITH_DETAILED_ERROR",
+            "error_message_template": "Overview-bullet deduplication FAILED: {section} {overview_vs_bullet} similarity {cosine_score} exceeds threshold {threshold} by {excess}. Overview appears to be paraphrasing bullet content rather than providing thematic synthesis."
+          },
+          "show_all_if_violation": true,
+          "violation_threshold": 0.6
+        }
+      },
+
+      "validation_checkpoint": {
+        "checkpoint_id": "CFG-C001-001",
+        "checkpoint_name": "Deduplication Matrix Table Present",
+        "severity": "CRITICAL",
+        "validation_logic": "QA report MUST contain overview_deduplication_detail table with 13 rows (7 K.5B + 6 K.6B)",
+        "pass_criteria": "Table exists AND row_count == 13 AND all cosine_scores < 0.60",
+        "on_fail_action": "HALT_WORKFLOW",
+        "recovery_steps": [
+          "Verify K.5A generated 7 bullets",
+          "Verify K.6A generated 6 bullets",
+          "Verify K.5B and K.6B overviews exist",
+          "Re-run deduplication analysis with verbose logging",
+          "Check for cosine similarity calculation errors"
+        ]
+      },
+
+      "rollback_instructions": {
+        "procedure": "Revert to showing top 3 only",
+        "steps": [
+          "1. Change reporting_policy back to 'ALWAYS_SHOW_TOP_3'",
+          "2. Remove checks.K.5B_Unify and checks.K.6B_IBM objects",
+          "3. Remove validation_enforcement object",
+          "4. Restore original show_all_if_violation behavior"
+        ],
+        "data_loss_risk": "NONE - only affects QA report display"
+      }
+    },
+
+    {
+      "change_id": "C002_BASELINE_SIMILARITY_VALIDATION",
+      "change_type": "ENHANCEMENT_APPEND",
+      "severity": "CRITICAL",
+      "section": "6.metrics.qa_report.overview_baseline_similarity",
+      "description": "Adds overview-to-master-baseline similarity validation table to QA report enforcing <0.75 strict boundary",
+      "rationale": "v1.0.5 introduced strict <0.75 (not ≤0.75) boundary for overview similarity to master baselines. QA report must validate this to ensure customization effectiveness.",
+
+      "current_state": {
+        "location": "Job_Workflow_v1.0.3.json → 6.metrics → qa_report",
+        "problem": "No overview_baseline_similarity table exists despite validation gate requiring it",
+        "validation_gate_exists": "Yes - in 6.core_workflow.error_handling.on_fail strategies",
+        "gap": "Validation gate exists but QA report does not display results"
+      },
+
+      "new_state": {
+        "overview_baseline_similarity": {
+          "enabled": true,
+          "reporting_policy": "ALWAYS",
+          "description": "Validates K.5B and K.6B similarity to master resume baseline overviews per v1.0.5 strict boundary requirement",
+          "table_columns": [
+            "section",
+            "customized_overview",
+            "master_baseline",
+            "cosine_score",
+            "threshold",
+            "boundary_policy",
+            "margin",
+            "status"
+          ],
+          "checks": {
+            "K.5B_to_Unify_Baseline": {
+              "source": "K.5B customized overview",
+              "baseline": "master_baseline_unify_overview",
+              "baseline_min_length": 15,
+              "threshold": 0.75,
+              "boundary_policy": "STRICT_LESS_THAN",
+              "pass_condition": "cosine_score < 0.75",
+              "pass_note": "Score of exactly 0.75 is TOO SIMILAR and FAILS"
+            },
+            "K.6B_to_IBM_Baseline": {
+              "source": "K.6B customized overview",
+              "baseline": "master_baseline_ibm_overview",
+              "baseline_min_length": 15,
+              "threshold": 0.75,
+              "boundary_policy": "STRICT_LESS_THAN",
+              "pass_condition": "cosine_score < 0.75",
+              "pass_note": "Score of exactly 0.75 is TOO SIMILAR and FAILS"
+            }
+          },
+          "display_format": {
+            "show_baseline_text_preview": true,
+            "preview_length": 50,
+            "show_margin_column": true,
+            "margin_calculation": "threshold - cosine_score",
+            "margin_warning_threshold": 0.05,
+            "highlight_violations": true
+          },
+          "validation_enforcement": {
+            "blocking": true,
+            "on_violation": "HALT_WITH_REGENERATION_GUIDANCE",
+            "error_message_template": "Overview-baseline similarity FAILED: {section} similarity {cosine_score} violates strict <{threshold} boundary. Overview is too similar to master resume. Regenerate with higher differentiation.",
+            "on_missing_baseline": "HALT_WITH_CLERK_ERROR",
+            "missing_baseline_message": "Cannot validate overview customization: Master baseline not extracted. Clerk phase must extract original overview text for comparison."
+          },
+          "boundary_clarification": "Similarity score of exactly 0.75 (75%) is considered TOO SIMILAR and will FAIL validation. Must be strictly less than 0.75."
+        }
+      },
+
+      "validation_checkpoint": {
+        "checkpoint_id": "CFG-C002-001",
+        "checkpoint_name": "Baseline Similarity Table Present",
+        "severity": "CRITICAL",
+        "validation_logic": "QA report MUST contain overview_baseline_similarity table with 2 rows (K.5B + K.6B)",
+        "pass_criteria": "Table exists AND row_count == 2 AND all cosine_scores < 0.75 (strict)",
+        "on_fail_action": "HALT_WORKFLOW",
+        "recovery_steps": [
+          "Verify Clerk extracted master_baseline_unify_overview (min 15 words)",
+          "Verify Clerk extracted master_baseline_ibm_overview (min 15 words)",
+          "Verify K.5B and K.6B overviews exist",
+          "Re-run baseline similarity calculation with verbose logging",
+          "If baselines missing, halt and request master resume re-upload"
+        ]
+      },
+
+      "rollback_instructions": {
+        "procedure": "Remove overview_baseline_similarity table from QA report",
+        "steps": [
+          "1. Delete entire overview_baseline_similarity object from qa_report config",
+          "2. Validation gates will still enforce boundary but won't display in report",
+          "3. No other config changes needed"
+        ],
+        "data_loss_risk": "NONE - validation still occurs, just not displayed"
+      }
+    },
+
+    {
+      "change_id": "C003_K1_SENTENCE_STRUCTURE_VALIDATION",
+      "change_type": "ENHANCEMENT_APPEND",
+      "severity": "CRITICAL",
+      "section": "6.metrics.qa_report.k1_narrative_structure",
+      "description": "Adds K.1 executive summary 6-sentence narrative arc validation to QA report",
+      "rationale": "v1.0.5 creative_brief mandates specific 6-sentence structure for executive summary to ensure narrative synthesis vs bullet-like content. QA report must validate this structure.",
+
+      "current_state": {
+        "location": "Job_Workflow_v1.0.3.json → 4.reasoning → creative_brief → K.1",
+        "existing_requirement": {
+          "narrative_structure": "6 sentences following prescribed arc",
+          "sentence_1": "Industry + years + outcomes + through technology",
+          "sentences_2_3": "Quantified business impact (umbrella statements)",
+          "sentences_4_5": "Leadership scope and organizational impact",
+          "sentence_6": "Advanced capability with business application"
+        },
+        "problem": "Creative brief defines structure but QA report only checks 'Industry-first opening compliant' without sentence-level validation"
+      },
+
+      "new_state": {
+        "k1_narrative_structure": {
+          "enabled": true,
+          "reporting_policy": "ALWAYS",
+          "description": "Validates K.1 executive summary follows 6-sentence narrative arc per v1.0.5 creative brief",
+          "table_columns": [
+            "sentence_number",
+            "prescribed_content",
+            "actual_sentence_preview",
+            "word_count",
+            "structure_compliance",
+            "status"
+          ],
+          "validation_logic": {
+            "sentence_count": {
+              "target": 6,
+              "tolerance": 0,
+              "pass_condition": "sentence_count == 6",
+              "error_if_not_6": "K.1 must contain exactly 6 sentences per narrative arc requirement"
+            },
+            "sentence_structure_checks": [
+              {
+                "sentence_number": 1,
+                "prescribed_pattern": "Industry + years + outcomes + through technology",
+                "validation_keywords": {
+                  "industry_sector_terms": ["financial services", "technology", "healthcare", "manufacturing", "retail", "insurance", "payments"],
+                  "years_experience": ["years", "decades"],
+                  "outcomes_terms": ["delivering", "driving", "achieving", "transforming"],
+                  "technology_subordination": ["through", "via", "leveraging", "using"]
+                },
+                "industry_first_check": {
+                  "enabled": true,
+                  "requirement": "Industry/sector term MUST appear before any technology term",
+                  "pass_condition": "position(industry_term) < position(technology_term)"
+                }
+              },
+              {
+                "sentence_number": 2,
+                "prescribed_pattern": "Quantified business impact - umbrella statement 1",
+                "validation_keywords": {
+                  "quantified_metrics": ["$", "%", "M", "B", "revenue", "cost", "efficiency", "growth"],
+                  "business_impact_verbs": ["increased", "reduced", "improved", "optimized", "generated"]
+                }
+              },
+              {
+                "sentence_number": 3,
+                "prescribed_pattern": "Quantified business impact - umbrella statement 2",
+                "validation_keywords": {
+                  "quantified_metrics": ["$", "%", "M", "B", "revenue", "cost", "efficiency", "growth"],
+                  "business_impact_verbs": ["increased", "reduced", "improved", "optimized", "generated"]
+                }
+              },
+              {
+                "sentence_number": 4,
+                "prescribed_pattern": "Leadership scope and organizational impact 1",
+                "validation_keywords": {
+                  "leadership_terms": ["led", "directed", "managed", "oversaw", "guided", "spearheaded"],
+                  "scope_indicators": ["team", "organization", "department", "division", "business unit", "cross-functional"]
+                }
+              },
+              {
+                "sentence_number": 5,
+                "prescribed_pattern": "Leadership scope and organizational impact 2",
+                "validation_keywords": {
+                  "organizational_scale": ["teams", "stakeholders", "executives", "partners", "clients"],
+                  "impact_scope": ["enterprise", "organizational", "strategic", "corporate"]
+                }
+              },
+              {
+                "sentence_number": 6,
+                "prescribed_pattern": "Advanced capability with business application",
+                "validation_keywords": {
+                  "capability_terms": ["expertise", "proficiency", "specialization", "mastery"],
+                  "business_application": ["business", "strategic", "commercial", "operational", "value"]
+                }
+              }
+            ]
+          },
+          "display_format": {
+            "show_sentence_preview": true,
+            "preview_length": 80,
+            "show_word_count_per_sentence": true,
+            "highlight_violations": true
+          },
+          "validation_enforcement": {
+            "blocking": true,
+            "on_violation": "HALT_WITH_REGENERATION_GUIDANCE",
+            "error_message_template": "K.1 narrative structure FAILED: {violation_description}. Executive summary must follow 6-sentence arc per creative brief. Regenerate with explicit sentence structure enforcement.",
+            "regeneration_max_attempts": 3
+          }
+        }
+      },
+
+      "validation_checkpoint": {
+        "checkpoint_id": "CFG-C003-001",
+        "checkpoint_name": "K.1 Sentence Structure Validation",
+        "severity": "CRITICAL",
+        "validation_logic": "QA report MUST contain k1_narrative_structure table with 6 rows (one per sentence)",
+        "pass_criteria": "Table exists AND sentence_count == 6 AND all structure_compliance == PASS",
+        "on_fail_action": "HALT_WORKFLOW",
+        "recovery_steps": [
+          "Parse K.1 executive summary into sentences",
+          "Count actual sentence count",
+          "If count ≠ 6, regenerate K.1 with explicit 6-sentence instruction",
+          "Validate sentence 1 industry-first compliance",
+          "Validate sentences 2-3 contain quantified metrics",
+          "Validate sentences 4-5 contain leadership/scope indicators",
+          "Validate sentence 6 contains capability + business application"
+        ]
+      },
+
+      "rollback_instructions": {
+        "procedure": "Remove K.1 sentence structure validation from QA report",
+        "steps": [
+          "1. Delete entire k1_narrative_structure object from qa_report config",
+          "2. K.1 will still be generated per creative_brief but structure won't be validated",
+          "3. Industry-first opening check remains active"
+        ],
+        "data_loss_risk": "NONE - only affects QA validation detail"
+      }
+    }
+  ],
+
+  "test_suites": {
+    "unit_tests": {
+      "description": "5 test cases per patch validating individual fix functionality",
+      
+      "C001_deduplication_matrix_tests": [
+        {
+          "test_id": "UT_C001_T01_TABLE_GENERATION",
+          "test_name": "Deduplication Matrix Table Generated",
+          "test_type": "POSITIVE",
+          "description": "Verifies QA report generates overview_deduplication_detail table with correct structure",
+          "test_data": {
+            "K.5A_bullets": 7,
+            "K.6A_bullets": 6,
+            "K.5B_overview": "Sample Unify overview text with business scope indicators",
+            "K.6B_overview": "Sample IBM overview text with client engagement focus"
+          },
+          "expected_result": {
+            "table_exists": true,
+            "table_name": "overview_deduplication_detail",
+            "row_count": 13,
+            "columns": ["section", "overview_vs_bullet", "cosine_score", "threshold", "margin", "status"],
+            "K.5B_checks": 7,
+            "K.6B_checks": 6
+          },
+          "assertion": "QA report contains table with 13 rows (7 K.5B + 6 K.6B)",
+          "pass_criteria": "Table exists AND row_count == 13"
+        },
+        {
+          "test_id": "UT_C001_T02_COSINE_CALCULATION",
+          "test_name": "Cosine Similarity Scores Calculated",
+          "test_type": "POSITIVE",
+          "description": "Verifies all 13 cosine similarity scores are calculated and within valid range [0.0, 1.0]",
+          "test_data": {
+            "K.5B_overview": "Led strategic transformation initiatives across financial services sector",
+            "K.5A_bullet_1": "Spearheaded digital transformation program for retail banking division"
+          },
+          "expected_result": {
+            "all_scores_calculated": true,
+            "score_range_valid": true,
+            "min_score": 0.0,
+            "max_score": 1.0,
+            "no_null_scores": true
+          },
+          "assertion": "All 13 cosine scores are numeric values between 0.0 and 1.0",
+          "pass_criteria": "All scores ≥ 0.0 AND ≤ 1.0 AND no null values"
+        },
+        {
+          "test_id": "UT_C001_T03_THRESHOLD_ENFORCEMENT",
+          "test_name": "0.60 Threshold Strictly Enforced",
+          "test_type": "NEGATIVE",
+          "description": "Verifies workflow halts when any overview-bullet similarity ≥ 0.60",
+          "test_data": {
+            "K.5B_overview": "Delivered $50M cost reduction through supply chain optimization",
+            "K.5A_bullet_3": "Achieved $50M in cost savings via supply chain process improvements",
+            "expected_cosine": 0.72
+          },
+          "expected_result": {
+            "workflow_halted": true,
+            "violation_detected": true,
+            "error_message_contains": "Overview-bullet deduplication FAILED",
+            "violating_pair": "K.5B vs K.5A[3]",
+            "cosine_score": 0.72,
+            "threshold": 0.60
+          },
+          "assertion": "Workflow halts with error when cosine ≥ 0.60",
+          "pass_criteria": "Workflow status == HALTED AND error message contains 'deduplication FAILED'"
+        },
+        {
+          "test_id": "UT_C001_T04_MARGIN_WARNING",
+          "test_name": "Margin Warning for Close Scores",
+          "test_type": "EDGE_CASE",
+          "description": "Verifies margin column shows warning when score within 0.05 of threshold (0.55-0.59)",
+          "test_data": {
+            "K.6B_overview": "Managed enterprise client relationships across 8 industry verticals",
+            "K.6A_bullet_2": "Cultivated strategic partnerships with C-suite executives in 10+ sectors",
+            "expected_cosine": 0.57
+          },
+          "expected_result": {
+            "margin_calculated": true,
+            "margin_value": 0.03,
+            "warning_threshold": 0.05,
+            "warning_highlighted": true,
+            "status": "PASS_WITH_WARNING"
+          },
+          "assertion": "Margin < 0.05 triggers visual warning but still passes",
+          "pass_criteria": "Status == PASS AND margin < 0.05 AND warning_highlighted == true"
+        },
+        {
+          "test_id": "UT_C001_T05_MISSING_BULLETS_ERROR",
+          "test_name": "Error Handling for Missing Bullets",
+          "test_type": "ERROR_CASE",
+          "description": "Verifies graceful error when K.5A or K.6A bullets missing (prerequisite failure)",
+          "test_data": {
+            "K.5A_bullets": 0,
+            "K.6A_bullets": 6,
+            "K.5B_overview": "Sample overview text"
+          },
+          "expected_result": {
+            "workflow_halted": true,
+            "error_type": "PREREQUISITE_FAILURE",
+            "error_message_contains": "K.5B cannot synthesize overview: K.5A bullets missing",
+            "recovery_guidance": "Re-run K.5A bullet generation phase"
+          },
+          "assertion": "Workflow halts with prerequisite error when bullets missing",
+          "pass_criteria": "Error type == PREREQUISITE_FAILURE AND message mentions missing bullets"
+        }
+      ],
+
+      "C002_baseline_similarity_tests": [
+        {
+          "test_id": "UT_C002_T01_BASELINE_TABLE_GENERATION",
+          "test_name": "Baseline Similarity Table Generated",
+          "test_type": "POSITIVE",
+          "description": "Verifies QA report generates overview_baseline_similarity table with 2 rows",
+          "test_data": {
+            "master_baseline_unify_overview": "Led digital transformation initiatives for Fortune 500 financial services clients",
+            "master_baseline_ibm_overview": "Managed enterprise technology implementations across banking sector",
+            "K.5B_customized": "Spearheaded strategic modernization programs for global payments institutions",
+            "K.6B_customized": "Directed cloud migration projects for multinational insurance companies"
+          },
+          "expected_result": {
+            "table_exists": true,
+            "table_name": "overview_baseline_similarity",
+            "row_count": 2,
+            "columns": ["section", "customized_overview", "master_baseline", "cosine_score", "threshold", "boundary_policy", "margin", "status"],
+            "checks": ["K.5B_to_Unify_Baseline", "K.6B_to_IBM_Baseline"]
+          },
+          "assertion": "QA report contains baseline similarity table with 2 rows",
+          "pass_criteria": "Table exists AND row_count == 2"
+        },
+        {
+          "test_id": "UT_C002_T02_STRICT_BOUNDARY_ENFORCEMENT",
+          "test_name": "Strict <0.75 Boundary Enforced",
+          "test_type": "NEGATIVE",
+          "description": "Verifies workflow halts when similarity score equals exactly 0.75 (boundary violation)",
+          "test_data": {
+            "master_baseline": "Architected cloud infrastructure for financial services applications",
+            "K.5B_customized": "Designed cloud architecture for banking sector technology platforms",
+            "expected_cosine": 0.75
+          },
+          "expected_result": {
+            "workflow_halted": true,
+            "violation_detected": true,
+            "error_message_contains": "violates strict <0.75 boundary",
+            "cosine_score": 0.75,
+            "threshold": 0.75,
+            "boundary_policy": "STRICT_LESS_THAN"
+          },
+          "assertion": "Workflow halts when cosine == 0.75 (not allowed)",
+          "pass_criteria": "Workflow status == HALTED AND error contains 'strict <0.75 boundary'"
+        },
+        {
+          "test_id": "UT_C002_T03_PASSING_CUSTOMIZATION",
+          "test_name": "Sufficient Customization Passes",
+          "test_type": "POSITIVE",
+          "description": "Verifies workflow continues when similarity < 0.75 with comfortable margin",
+          "test_data": {
+            "master_baseline": "Led enterprise software development teams across multiple business units",
+            "K.6B_customized": "Spearheaded agile transformation initiatives for retail technology division",
+            "expected_cosine": 0.62
+          },
+          "expected_result": {
+            "workflow_continues": true,
+            "validation_passed": true,
+            "cosine_score": 0.62,
+            "threshold": 0.75,
+            "margin": 0.13,
+            "status": "PASS"
+          },
+          "assertion": "Workflow continues when cosine < 0.75 with healthy margin",
+          "pass_criteria": "Status == PASS AND cosine_score < 0.75"
+        },
+        {
+          "test_id": "UT_C002_T04_MISSING_BASELINE_ERROR",
+          "test_name": "Error Handling for Missing Baseline",
+          "test_type": "ERROR_CASE",
+          "description": "Verifies workflow halts with clear error when Clerk fails to extract baseline",
+          "test_data": {
+            "master_baseline_unify_overview": null,
+            "K.5B_customized": "Valid overview text"
+          },
+          "expected_result": {
+            "workflow_halted": true,
+            "error_type": "CLERK_EXTRACTION_FAILURE",
+            "error_message_contains": "Master baseline not extracted",
+            "recovery_guidance": "Clerk phase must extract original overview text for comparison"
+          },
+          "assertion": "Workflow halts with Clerk error when baseline missing",
+          "pass_criteria": "Error type == CLERK_EXTRACTION_FAILURE AND message mentions baseline extraction"
+        },
+        {
+          "test_id": "UT_C002_T05_BASELINE_LENGTH_VALIDATION",
+          "test_name": "Baseline Minimum Length Enforced",
+          "test_type": "ERROR_CASE",
+          "description": "Verifies workflow halts when baseline < 15 words (insufficient for comparison)",
+          "test_data": {
+            "master_baseline_ibm_overview": "Led technology projects",
+            "baseline_word_count": 3,
+            "minimum_required": 15
+          },
+          "expected_result": {
+            "workflow_halted": true,
+            "error_type": "BASELINE_TOO_SHORT",
+            "error_message_contains": "Baseline must be at least 15 words",
+            "actual_length": 3,
+            "required_length": 15
+          },
+          "assertion": "Workflow halts when baseline < 15 words",
+          "pass_criteria": "Error type == BASELINE_TOO_SHORT AND message specifies 15 word minimum"
+        }
+      ],
+
+      "C003_k1_structure_tests": [
+        {
+          "test_id": "UT_C003_T01_SENTENCE_COUNT_VALIDATION",
+          "test_name": "Exactly 6 Sentences Required",
+          "test_type": "POSITIVE",
+          "description": "Verifies K.1 executive summary contains exactly 6 sentences per narrative arc requirement",
+          "test_data": {
+            "K.1_text": "Financial services executive with 20+ years driving digital transformation across banking sector. Delivered $150M revenue growth through strategic technology initiatives. Reduced operational costs by 35% via process automation and AI integration. Led cross-functional teams of 50+ spanning 8 business units. Partnered with C-suite to align technology roadmap with corporate strategy. Expertise in AI governance and regulatory compliance for financial services."
+          },
+          "expected_result": {
+            "sentence_count": 6,
+            "table_row_count": 6,
+            "all_sentences_validated": true,
+            "status": "PASS"
+          },
+          "assertion": "K.1 contains exactly 6 sentences validated in QA report",
+          "pass_criteria": "Sentence count == 6 AND table row count == 6"
+        },
+        {
+          "test_id": "UT_C003_T02_INDUSTRY_FIRST_SENTENCE_1",
+          "test_name": "Sentence 1 Industry-First Compliance",
+          "test_type": "POSITIVE",
+          "description": "Verifies sentence 1 opens with industry/sector term before any technology keyword",
+          "test_data": {
+            "sentence_1": "Financial services and technology executive with 20+ years delivering transformative business outcomes through AI and cloud platforms"
+          },
+          "expected_result": {
+            "industry_term_detected": "Financial services",
+            "industry_term_position": 0,
+            "technology_term_detected": "AI",
+            "technology_term_position": 13,
+            "industry_first": true,
+            "structure_compliance": "PASS"
+          },
+          "assertion": "Industry term appears before technology term in sentence 1",
+          "pass_criteria": "industry_term_position < technology_term_position"
+        },
+        {
+          "test_id": "UT_C003_T03_QUANTIFIED_IMPACT_SENTENCES_2_3",
+          "test_name": "Sentences 2-3 Quantified Metrics Present",
+          "test_type": "POSITIVE",
+          "description": "Verifies sentences 2-3 contain quantified business impact metrics",
+          "test_data": {
+            "sentence_2": "Increased enterprise revenue by $200M through strategic data monetization programs",
+            "sentence_3": "Improved operational efficiency by 40% via AI-driven process optimization"
+          },
+          "expected_result": {
+            "sentence_2_quantified": true,
+            "sentence_2_metrics": ["$200M"],
+            "sentence_3_quantified": true,
+            "sentence_3_metrics": ["40%"],
+            "structure_compliance_s2": "PASS",
+            "structure_compliance_s3": "PASS"
+          },
+          "assertion": "Sentences 2-3 both contain quantified metrics",
+          "pass_criteria": "Both sentences contain at least one quantified metric"
+        },
+        {
+          "test_id": "UT_C003_T04_WRONG_SENTENCE_COUNT_ERROR",
+          "test_name": "Error When Sentence Count ≠ 6",
+          "test_type": "NEGATIVE",
+          "description": "Verifies workflow halts when K.1 does not contain exactly 6 sentences",
+          "test_data": {
+            "K.1_text": "Financial services executive with 20+ years. Delivered revenue growth. Led teams. Expert in AI.",
+            "actual_sentence_count": 4
+          },
+          "expected_result": {
+            "workflow_halted": true,
+            "error_type": "SENTENCE_COUNT_VIOLATION",
+            "error_message_contains": "K.1 must contain exactly 6 sentences",
+            "actual_count": 4,
+            "required_count": 6
+          },
+          "assertion": "Workflow halts when sentence count ≠ 6",
+          "pass_criteria": "Workflow status == HALTED AND error mentions '6 sentences'"
+        },
+        {
+          "test_id": "UT_C003_T05_MISSING_LEADERSHIP_INDICATORS",
+          "test_name": "Error When Sentences 4-5 Lack Leadership Terms",
+          "test_type": "NEGATIVE",
+          "description": "Verifies validation detects missing leadership/scope indicators in sentences 4-5",
+          "test_data": {
+            "sentence_4": "Worked on various technology projects with different stakeholders",
+            "sentence_5": "Contributed to organizational goals through technical expertise"
+          },
+          "expected_result": {
+            "sentence_4_leadership_detected": false,
+            "sentence_5_scope_detected": false,
+            "structure_compliance_s4": "FAIL",
+            "structure_compliance_s5": "FAIL",
+            "violation_count": 2
+          },
+          "assertion": "Validation flags missing leadership/scope terms in sentences 4-5",
+          "pass_criteria": "Both sentences flagged with FAIL status for missing required keywords"
+        }
+      ]
+    },
+
+    "regression_tests": {
+      "description": "10 tests validating no breakage of existing v1.0.3 functionality",
+      
+      "tests": [
+        {
+          "test_id": "REG_T01_EXISTING_QA_TABLES_INTACT",
+          "test_name": "Existing QA Report Tables Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies all existing QA report tables still generate correctly after patches applied",
+          "tables_to_validate": [
+            "validation_summary",
+            "gate_results",
+            "k_node_tracking",
+            "k5_bullet_detail",
+            "k6_bullet_detail",
+            "k8_competency_detail",
+            "critical_validation_gates"
+          ],
+          "pass_criteria": "All 7 existing tables present with correct structure"
+        },
+        {
+          "test_id": "REG_T02_WORD_COUNT_ENFORCEMENT_INTACT",
+          "test_name": "Word Count Validation Still Functions",
+          "test_type": "REGRESSION",
+          "description": "Verifies VG_MANDATORY_WORD_COUNT_COMPLIANCE gate still enforces all word count thresholds",
+          "validations_to_check": [
+            "K.1: 150-165 words",
+            "K.4: 8-12 words, ≤90 chars",
+            "K.5A bullets: 28-33 words each",
+            "K.5B overview: 28-34 words",
+            "K.6A bullets: 24-30 words each",
+            "K.6B overview: 25-30 words"
+          ],
+          "pass_criteria": "All word count validations execute and enforce correctly"
+        },
+        {
+          "test_id": "REG_T03_INDUSTRY_FIRST_GATES_INTACT",
+          "test_name": "Industry-First Validation Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies VG_INDUSTRY_FIRST_COMPLIANCE gate still checks headline/summary/competency ordering",
+          "checks_to_validate": [
+            "K.4 headline segment 1 industry-only",
+            "K.1 summary industry-first opening",
+            "K.8 competencies 1-2 industry/leadership"
+          ],
+          "pass_criteria": "All industry-first checks execute correctly"
+        },
+        {
+          "test_id": "REG_T04_PROVENANCE_VALIDATION_INTACT",
+          "test_name": "Bullet Provenance Requirements Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies K.5A (3V-3T-1S) and K.6A (2V-3T-1S) provenance still validated",
+          "pass_criteria": "Provenance validation gates execute and report correctly"
+        },
+        {
+          "test_id": "REG_T05_INTER_BULLET_DEDUP_INTACT",
+          "test_name": "Inter-Bullet Deduplication Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies within-K.5A and within-K.6A bullet deduplication (0.70 threshold) still enforced",
+          "pass_criteria": "Inter-bullet dedup checks execute with correct 0.70 threshold"
+        },
+        {
+          "test_id": "REG_T06_AI_DETECTION_DEFENSE_INTACT",
+          "test_name": "AI Detection Gates Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies verb rotation, round number detection, and AI probability checks still function",
+          "pass_criteria": "All AI detection defense gates execute correctly"
+        },
+        {
+          "test_id": "REG_T07_SYNTHETIC_PLAUSIBILITY_INTACT",
+          "test_name": "Synthetic Bullet Grounding Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies synthetic bullet plausibility validation (≥0.75) still enforced",
+          "pass_criteria": "Synthetic plausibility checks execute with correct threshold"
+        },
+        {
+          "test_id": "REG_T08_TAG_SANITIZATION_INTACT",
+          "test_name": "Debug Tag Removal Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies tag sanitization still removes all debug markers before file write",
+          "pass_criteria": "Final output contains zero debug tags"
+        },
+        {
+          "test_id": "REG_T09_FILE_OUTPUT_INTACT",
+          "test_name": "4-File Output Generation Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies workflow still generates 4 files (Resume, Cover Letter, QA Report, App Tracker)",
+          "pass_criteria": "All 4 files generated with correct content and naming"
+        },
+        {
+          "test_id": "REG_T10_SILENT_EXECUTION_INTACT",
+          "test_name": "Silent Processing Mode Unaffected",
+          "test_type": "REGRESSION",
+          "description": "Verifies workflow still executes silently with no status messages during processing",
+          "pass_criteria": "Only final 4 files displayed, no intermediate status output"
+        }
+      ]
+    },
+
+    "e2e_integration_tests": {
+      "description": "5 end-to-end tests validating complete workflow with patches integrated",
+      
+      "tests": [
+        {
+          "test_id": "E2E_T01_FULL_WORKFLOW_MASTERCARD_JD",
+          "test_name": "Complete Workflow Execution with Mastercard JD",
+          "test_type": "E2E_INTEGRATION",
+          "description": "Executes full workflow from Clerk → K-nodes → QA Report with actual Mastercard VP JD",
+          "test_inputs": {
+            "master_resume": "Amit_Ayer_Master_Resume.docx",
+            "jd_file": "Mastercard_VP_Data_AI_JD.pdf",
+            "company": "Mastercard",
+            "title": "Vice President, Data & AI Strategy"
+          },
+          "expected_outputs": {
+            "files_generated": 4,
+            "qa_report_contains": [
+              "overview_deduplication_detail table (13 rows)",
+              "overview_baseline_similarity table (2 rows)",
+              "k1_narrative_structure table (6 rows)"
+            ],
+            "all_validations_pass": true,
+            "workflow_status": "SUCCESS"
+          },
+          "pass_criteria": "All 4 files generated AND all P0 validations PASS AND no HALT errors"
+        },
+        {
+          "test_id": "E2E_T02_DEDUPLICATION_VIOLATION_HANDLING",
+          "test_name": "Workflow Halts on Overview-Bullet Similarity Violation",
+          "test_type": "E2E_NEGATIVE",
+          "description": "Tests workflow properly halts when overview too similar to bullet",
+          "test_scenario": "Inject high-similarity K.5B overview that paraphrases K.5A bullet",
+          "expected_result": {
+            "workflow_halted": true,
+            "halt_reason": "Overview-bullet deduplication FAILED",
+            "qa_report_shows_violation": true,
+            "files_generated": 1,
+            "only_qa_report_generated": true
+          },
+          "pass_criteria": "Workflow halts AND only QA report generated with violation details"
+        },
+        {
+          "test_id": "E2E_T03_BASELINE_VIOLATION_HANDLING",
+          "test_name": "Workflow Halts on Baseline Similarity Violation",
+          "test_type": "E2E_NEGATIVE",
+          "description": "Tests workflow properly halts when overview similarity ≥ 0.75 to master baseline",
+          "test_scenario": "Inject K.6B overview with 0.76 cosine to master baseline",
+          "expected_result": {
+            "workflow_halted": true,
+            "halt_reason": "Overview-baseline similarity FAILED",
+            "qa_report_shows_violation": true,
+            "error_mentions_strict_boundary": true
+          },
+          "pass_criteria": "Workflow halts AND error message contains 'strict <0.75 boundary'"
+        },
+        {
+          "test_id": "E2E_T04_K1_STRUCTURE_VIOLATION_HANDLING",
+          "test_name": "Workflow Halts on K.1 Sentence Structure Violation",
+          "test_type": "E2E_NEGATIVE",
+          "description": "Tests workflow properly halts when K.1 does not follow 6-sentence arc",
+          "test_scenario": "Inject K.1 with 4 sentences instead of 6",
+          "expected_result": {
+            "workflow_halted": true,
+            "halt_reason": "K.1 narrative structure FAILED",
+            "qa_report_shows_violation": true,
+            "sentence_count_reported": 4
+          },
+          "pass_criteria": "Workflow halts AND error specifies '6 sentences required'"
+        },
+        {
+          "test_id": "E2E_T05_ALL_PATCHES_INTEGRATED",
+          "test_name": "All 3 Patches Execute Simultaneously",
+          "test_type": "E2E_INTEGRATION",
+          "description": "Validates all 3 patches work together without conflicts in single workflow execution",
+          "test_inputs": {
+            "master_resume": "Amit_Ayer_Master_Resume.docx",
+            "jd_file": "Generic_Tech_Executive_JD.pdf"
+          },
+          "expected_result": {
+            "deduplication_matrix_generated": true,
+            "baseline_similarity_validated": true,
+            "k1_structure_validated": true,
+            "no_patch_conflicts": true,
+            "all_validations_pass": true,
+            "workflow_completes": true
+          },
+          "pass_criteria": "All 3 new validation tables present AND workflow completes successfully"
+        }
+      ]
+    }
+  },
+
+  "execution_plan": {
+    "phase_1_unit_testing": {
+      "steps": [
+        "1. Apply patch C001_DEDUPLICATION_MATRIX_VALIDATION",
+        "2. Run 5 C001 unit tests",
+        "3. Verify all 5 tests PASS",
+        "4. Apply patch C002_BASELINE_SIMILARITY_VALIDATION",
+        "5. Run 5 C002 unit tests",
+        "6. Verify all 5 tests PASS",
+        "7. Apply patch C003_K1_SENTENCE_STRUCTURE_VALIDATION",
+        "8. Run 5 C003 unit tests",
+        "9. Verify all 5 tests PASS"
+      ],
+      "exit_criteria": "All 15 unit tests PASS (100% pass rate required)"
+    },
+    "phase_2_regression_testing": {
+      "steps": [
+        "1. Run all 10 regression tests",
+        "2. Verify no existing functionality broken",
+        "3. Document any unexpected behavior",
+        "4. Fix any regressions before proceeding"
+      ],
+      "exit_criteria": "All 10 regression tests PASS (100% pass rate required)"
+    },
+    "phase_3_e2e_testing": {
+      "steps": [
+        "1. Run E2E_T01 (Mastercard full workflow)",
+        "2. Run E2E_T02 (dedup violation)",
+        "3. Run E2E_T03 (baseline violation)",
+        "4. Run E2E_T04 (K.1 structure violation)",
+        "5. Run E2E_T05 (all patches integrated)",
+        "6. Verify all error handling behaves correctly",
+        "7. Verify all success paths complete"
+      ],
+      "exit_criteria": "All 5 E2E tests PASS (100% pass rate required)"
+    },
+    "phase_4_deployment": {
+      "steps": [
+        "1. Generate final JW_v1.0.5_INTEGRATED.json with all 3 patches",
+        "2. Run full smoke test with 3 different JDs",
+        "3. Document all test results in TEST_RESULTS_v1.0.5.json",
+        "4. Release v1.0.5 to production",
+        "5. Update changelog and documentation"
+      ],
+      "exit_criteria": "All smoke tests PASS AND documentation complete"
+    }
+  },
+
+  "success_criteria": {
+    "critical_requirements": [
+      "All 15 unit tests must PASS (100%)",
+      "All 10 regression tests must PASS (100%)",
+      "All 5 E2E tests must PASS (100%)",
+      "Total: 30/30 tests PASS",
+      "No existing v1.0.3 functionality broken",
+      "All 3 P0 defects resolved",
+      "QA report generates all 3 new validation tables",
+      "Error handling works correctly for all violation scenarios"
+    ],
+    "deployment_blockers": [
+      "Any unit test failure",
+      "Any regression test failure",
+      "Any E2E test failure",
+      "Patch conflicts detected",
+      "Existing validation gates broken"
+    ]
+  },
+
+  "rollback_strategy": {
+    "if_any_test_fails": {
+      "immediate_action": "Halt deployment, do not release v1.0.5",
+      "analysis_steps": [
+        "1. Identify which patch caused failure",
+        "2. Review test failure details",
+        "3. Determine if fix is trivial or requires redesign",
+        "4. If trivial: fix and re-run tests",
+        "5. If redesign needed: rollback to v1.0.3 and reassess"
+      ],
+      "rollback_procedure": [
+        "1. Revert to Job_Workflow_v1.0.3.json",
+        "2. Remove all 3 patches",
+        "3. Document failure reasons",
+        "4. Schedule patch redesign",
+        "5. Communicate delay to stakeholders"
+      ]
+    }
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "schema_version": "master_config_v10.0",
+  "description": "v10.0 Modularity, Caching, Async Performance",
+  "version_notes": {
+    "v10_0_changes": [
+      "ROW 4: Modularity - Decomposed monolithic state, dependency injection via WorkflowContext",
+      "ROW 4: Modularity - Removed global singletons (COST_TRACKER, HIL_MANAGER, TOOL_REGISTRY)",
+      "ROW 5: Caching - Added Redis-based LLM response caching with CacheManager",
+      "ROW 5: Caching - Shared cache across batch jobs for cost reduction",
+      "ROW 6: Performance - Async LLM clients with asyncio.gather for parallel operations",
+      "ROW 6: Performance - Async batch processing with controlled concurrency",
+      "ROW 6: Performance - Parallel bullet critique (major speedup)",
+      "PRESERVED: v9.9 security fixes (local PII/bias detection)",
+      "PRESERVED: v9.9 error handling (specific exception types)"
+    ]
+  },
+  "logging_config": {
+    "log_level": "INFO",
+    "debug_log_level": "DEBUG",
+    "log_file": "./logs/workflow_v10_0.log",
+    "log_format": "json",
+    "correlation_ids": true,
+    "log_rotation": {
+      "max_bytes": 10485760,
+      "backup_count": 5
+    }
+  },
+  "redis_config": {
+    "host": "localhost",
+    "port": 6379,
+    "db": 0,
+    "description": "Redis for LangGraph checkpoints and LLM caching"
+  },
+  "caching_config": {
+    "enable_llm_caching": true,
+    "cache_ttl_seconds": 3600,
+    "cache_db": 1,
+    "description": "v10.0 ROW 5: LLM response caching for cost reduction"
+  },
+  "performance_config": {
+    "enable_async_llm": true,
+    "max_concurrent_llm_calls": 10,
+    "llm_timeout_seconds": 30,
+    "description": "v10.0 ROW 6: Async LLM calls with concurrency control"
+  },
+  "cost_config": {
+    "cost_ceiling_per_workflow": 5.0,
+    "cost_ceiling_per_agent": 0.5,
+    "enable_cost_tracking": true,
+    "enable_in_flight_tracking": true,
+    "cost_warning_threshold": 4.0,
+    "description": "Cost tracking via injected CostTracker"
+  },
+  "batch_config": {
+    "max_parallel_workers": 4,
+    "enable_circuit_breaker": true,
+    "circuit_breaker_failure_threshold": 3,
+    "description": "v10.0: Async batch processing with semaphore-based concurrency"
+  },
+  "meta_loop_config": {
+    "enable_meta_learning": true,
+    "max_meta_replan_loops": 3,
+    "feedback_log_path": "./logs/feedback_log.jsonl",
+    "preference_log_path": "./logs/preference_log.jsonl",
+    "proposed_rules_path": "./logs/proposed_rules.jsonl",
+    "description": "v10.0: Async meta-learning with caching"
+  },
+  "tracing_config": {
+    "langsmith_enabled": false,
+    "langsmith_api_key": null,
+    "description": "Distributed tracing configuration"
+  },
+  "file_paths": {
+    "default_job_input": "job_input.json",
+    "default_master_resume": "master_resume.json",
+    "description": "Default file paths"
+  },
+  "agent_stacks": {
+    "description": "v10.0: All stacks use dependency injection",
+    "safety_stack_enabled": true,
+    "bias_detection_threshold": 0.7,
+    "pii_detection_enabled": true,
+    "use_presidio_for_pii": true,
+    "use_local_bias_detection": true,
+    "safety_stack_description": "SafetyGuardStack - local processing only (v9.9 security preserved)",
+    "strategy_tot_enabled": true,
+    "strategy_tot_branching_factor": 3,
+    "strategy_tot_depth": 2,
+    "strategy_tot_description": "Tree-of-Thoughts Strategist (async)",
+    "prompt_llm_driven": true,
+    "prompt_temperature": 0.7,
+    "prompt_llm_description": "LLM-Driven Prompting (async)",
+    "enable_local_retries": true,
+    "max_local_retries": 2,
+    "local_retries_description": "Local Self-Correction (async)",
+    "enable_react_conductors": true,
+    "conductor_max_steps": 10,
+    "conductor_temperature": 0.6,
+    "react_conductors_description": "ReAct conductors with async execution",
+    "enable_dynamic_tooling": true,
+    "max_tools_per_task": 5,
+    "enable_tool_generation": false,
+    "dynamic_tooling_description": "Dynamic tool selection (async)",
+    "enable_hil_stack": true,
+    "ambiguity_confidence_threshold": 0.8,
+    "hil_stack_description": "Proactive ambiguity detection",
+    "enable_hyde": true,
+    "enable_reranking": true,
+    "reranking_top_k": 5,
+    "rag_enhancements_description": "HyDE generation and reranking (async)",
+    "enable_dynamic_selection": true,
+    "agent_selection_strategy": "reliability",
+    "dynamic_selection_description": "Dynamic agent selection via injected ReliabilityTracker"
+  },
+  "model_config": {
+    "strategy_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.8,
+      "description": "v10.0: Async client with caching"
+    },
+    "prompt_engineer_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "v10.0: Async client with caching"
+    },
+    "bullet_generator_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.7,
+      "description": "v10.0: Async client with caching"
+    },
+    "critique_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.2,
+      "description": "v10.0: Async client with caching (parallel critique)"
+    },
+    "qa_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.3,
+      "description": "v10.0: Async client with caching"
+    },
+    "bias_detector_model": {
+      "provider": "local",
+      "model_name": "regex",
+      "temperature": 0.0,
+      "description": "v9.9 preserved: Local regex-based bias detection"
+    },
+    "pii_sanitizer_model": {
+      "provider": "local",
+      "model_name": "presidio",
+      "temperature": 0.0,
+      "description": "v9.9 preserved: Local Presidio PII detection"
+    },
+    "react_conductor_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.6,
+      "description": "v10.0: Async ReAct with caching"
+    },
+    "hyde_model": {
+      "provider": "anthropic",
+      "model_name": "claude-sonnet-4-20250514",
+      "temperature": 0.6,
+      "description": "v10.0: Async HyDE with caching"
+    },
+    "reranker_model": {
+      "provider": "google",
+      "model_name": "gemini-2.0-flash-exp",
+      "temperature": 0.2,
+      "description": "v10.0: Async reranker with caching"
+    }
+  },
+  "v10_0_improvements_summary": {
+    "version": "10.0.0-modularity-caching-async",
+    "row_4_modularity": [
+      {
+        "priority": "CRITICAL",
+        "item": "State Decomposition",
+        "description": "Broke down monolithic MainGraphState into 11 focused state objects (ResumeContext, JobContext, etc.)",
+        "benefit": "Easier to test, maintain, and understand"
+      },
+      {
+        "priority": "CRITICAL",
+        "item": "Dependency Injection",
+        "description": "Removed global singletons (COST_TRACKER, HIL_MANAGER, TOOL_REGISTRY) in favor of WorkflowContext",
+        "benefit": "Testable, mockable, no hidden dependencies"
+      },
+      {
+        "priority": "HIGH",
+        "item": "Clean Interfaces",
+        "description": "All agents receive WorkflowContext via constructor, access dependencies via context",
+        "benefit": "Decoupled components, easier to unit test"
+      }
+    ],
+    "row_5_caching": [
+      {
+        "priority": "CRITICAL",
+        "item": "LLM Response Caching",
+        "description": "Redis-based CacheManager with SHA256 cache keys (provider+model+prompt+temp)",
+        "benefit": "Major cost reduction for repeated prompts"
+      },
+      {
+        "priority": "HIGH",
+        "item": "Shared Cache Across Batch",
+        "description": "All jobs in batch share same CacheManager instance",
+        "benefit": "Cross-job cache hits for similar prompts"
+      },
+      {
+        "priority": "MEDIUM",
+        "item": "Cache Performance Tracking",
+        "description": "CacheManager tracks hits/misses, provides hit rate statistics",
+        "benefit": "Visibility into cache effectiveness"
+      }
+    ],
+    "row_6_performance": [
+      {
+        "priority": "CRITICAL",
+        "item": "Async LLM Clients",
+        "description": "All model clients (Anthropic, Gemini) use async/await with AsyncBaseModelClient",
+        "benefit": "Non-blocking I/O for LLM calls"
+      },
+      {
+        "priority": "CRITICAL",
+        "item": "Parallel Bullet Critique",
+        "description": "AsyncBulletCritiqueAgent uses asyncio.gather to critique all bullets in parallel",
+        "benefit": "N bullets critiqued in time of 1 (vs sequential)"
+      },
+      {
+        "priority": "HIGH",
+        "item": "Async Batch Processing",
+        "description": "run_batch uses asyncio with semaphore-based concurrency control",
+        "benefit": "Process multiple jobs concurrently (controlled by max_concurrent_llm_calls)"
+      },
+      {
+        "priority": "MEDIUM",
+        "item": "Async Meta-Learning",
+        "description": "All meta-learning agents use async execution",
+        "benefit": "Faster pattern finding, hypothesis generation"
+      }
+    ],
+    "preserved_from_v9_9": [
+      {
+        "item": "Security Fixes",
+        "description": "Local PII detection (Presidio) and bias detection (regex) preserved"
+      },
+      {
+        "item": "Error Handling",
+        "description": "Specific exception types (ModelAPIError, JSONParsingError, FileIOError) preserved"
+      }
+    ],
+    "performance_gains": {
+      "bullet_critique": "Up to 5x faster (5 bullets critiqued in parallel vs sequential)",
+      "batch_processing": "Up to 10x faster (max_concurrent_llm_calls=10)",
+      "cost_reduction": "30-70% via LLM caching (depends on prompt repetition)",
+      "cache_hit_rate": "Expected 40-60% in batch processing"
+    },
+    "migration_impact": {
+      "breaking_changes": [
+        "Agents now require WorkflowContext instead of blackboard dict",
+        "State is now MainGraphState dataclass instead of TypedDict",
+        "LLM clients are async (require await)"
+      ],
+      "migration_effort": "HIGH - requires code changes in custom agents",
+      "backwards_compatibility": "NONE - v10.0 is a breaking refactor"
+    }
+  }
+}
