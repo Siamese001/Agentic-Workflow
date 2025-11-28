@@ -4,10 +4,10 @@ Runtime Layer - Resume Generator v10_12 Integration
 Thin facade providing stable public API for the L1-L5 engine
 """
 
-from agentic_workflow.resume_engine.l1.rg_planner import RGPlanner
-from agentic_workflow.resume_engine.l3.rg_orchestrator import RGOrchestrator
-from agentic_workflow.resume_engine.l4.rg_state import RGStateManager
-from agentic_workflow.resume_engine.l5.rg_safety_validator import RGSafetyValidator
+from resume_engine.l1.rg_planner import RGPlanner
+from resume_engine.l3.rg_orchestrator import RGOrchestrator
+from resume_engine.l4.rg_state import RGStateManager
+from resume_engine.l5.rg_safety_validator import RGSafetyValidator
 
 
 class ResumeGeneratorRuntime:

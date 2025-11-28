@@ -9,20 +9,20 @@ import time
 import logging
 from datetime import datetime
 
-from agentic_workflow.RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
+from RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
 
 # Import L1 planning
-from agentic_workflow.resume_engine.l1.rg_planner import RGPlanner
+from resume_engine.l1.rg_planner import RGPlanner
 
 # Import L2 executors
-from agentic_workflow.resume_engine.l2.rg_k1_extract import K1Extractor
-from agentic_workflow.resume_engine.l2.rg_k2_clean import K2Cleaner
-from agentic_workflow.resume_engine.l2.rg_k3_quant import K3Quantifier
-from agentic_workflow.resume_engine.l2.rg_k4_rewrite import K4Rewriter
-from agentic_workflow.resume_engine.l2.rg_k5_skillmap import K5SkillMapper
-from agentic_workflow.resume_engine.l2.rg_k6_section_assembly import K6SectionAssembler
-from agentic_workflow.resume_engine.l2.rg_k7_format import K7Formatter
-from agentic_workflow.resume_engine.l2.rg_k8_validation import K8Validator
+from resume_engine.l2.rg_k1_extract import K1Extractor
+from resume_engine.l2.rg_k2_clean import K2Cleaner
+from resume_engine.l2.rg_k3_quant import K3Quantifier
+from resume_engine.l2.rg_k4_rewrite import K4Rewriter
+from resume_engine.l2.rg_k5_skillmap import K5SkillMapper
+from resume_engine.l2.rg_k6_section_assembly import K6SectionAssembler
+from resume_engine.l2.rg_k7_format import K7Formatter
+from resume_engine.l2.rg_k8_validation import K8Validator
 
 class RGOrchestrator:
     """Resume Generator Orchestrator - L3 orchestration layer"""

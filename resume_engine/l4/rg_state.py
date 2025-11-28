@@ -10,8 +10,8 @@ from pydantic import BaseModel, Field
 import uuid
 
 import sys
-sys.path.append(r'C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_workflow\RG_capabilities')
-from agentic_workflow.RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
+sys.path.append(r'C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\RG_capabilities')
+from RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
 
 class K1State(BaseModel):
     """State for K1 Extract step"""
