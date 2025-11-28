@@ -18,7 +18,97 @@ from .models import (
     ValidationSeverity
 )
 
-# Routing engine
+# L1 Planners - Hop-based Planning Layer
+from .fusion_planner import (
+    FusionPlanner,
+    ValueProposition,
+    MessageSectionPlan,
+    FusionPlan
+)
+
+from .grounding_planner import (
+    GroundingPlanner,
+    GroundingPlan,
+    Claim,
+    Entity
+)
+
+from .persona_planner import (
+    PersonaPlanner,
+    PersonaPlan,
+    ToneParameters,
+    StyleGuidelines
+)
+
+from .profile_planner import (
+    ProfilePlanner,
+    ProfilePlan,
+    ProfileSignals,
+    ArchetypeInference
+)
+
+from .research_planner import (
+    ResearchPlanner,
+    ResearchPlan,
+    QueryPlan,
+    VectorParams
+)
+
+from .message_planner import (
+    MessagePlanner,
+    MessagePlan,
+    MessageContent,
+    SectionTemplate
+)
+
+# K Executors - Hop-based Execution Layer
+from .k1_research import (
+    K1ResearchExecutor,
+    ResearchOutput
+)
+
+from .k2_insights import (
+    K2InsightsExecutor,
+    InsightOutput,
+    ClaimScore
+)
+
+from .k3_draft import (
+    K3DraftExecutor,
+    DraftOutput,
+    DraftSection
+)
+
+from .k4_regen import (
+    K4RegenExecutor,
+    RegenOutput,
+    RegenViolation
+)
+
+from .k5_validation import (
+    K5ValidationExecutor,
+    ValidationOutput,
+    ValidationViolation
+)
+
+from .k6_cta import (
+    K6CTAExecutor,
+    CTAOutput,
+    CTAOption
+)
+
+from .k7_assembly import (
+    K7AssemblyExecutor,
+    AssemblyOutput,
+    MessageComponent
+)
+
+# L3 Orchestrator - Hop-based Coordination Layer
+from .orchestrator import (
+    OutreachOrchestrator,
+    OrchestratorOutput
+)
+
 from .routing import (
     RoutingEngine,
     RouteClassifier
