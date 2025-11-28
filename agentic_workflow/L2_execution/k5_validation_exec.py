@@ -1,3 +1,8 @@
+"""DEPRECATED: Legacy LIC implementation.
+This file is preserved only for archival/reference.
+All runtime LIC behavior now uses the atomic engine under l1/l2/l3/l4/l5.
+Do NOT import from this module in new code."""
+
 """
 K5ExecutionValidator (L2 Execution Layer)
 

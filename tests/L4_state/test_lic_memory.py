@@ -1,4 +1,4 @@
-from agentic_workflow.L4_state.lic_memory import LICMemory
+from l4.lic_memory import LICMemory
 
 def test_memory_structure():
     m = LICMemory()

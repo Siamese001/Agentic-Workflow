@@ -1,3 +1,20 @@
+"""DEPRECATED: Legacy LIC implementation.
+This file is preserved only for archival/reference.
+All runtime LIC behavior now uses the atomic engine under l1/l2/l3/l4/l5.
+Do NOT import from this module in new code."""
+
+from l2.lic_k1_research import LIC_K1_Research
+from l2.lic_k2_insights import LIC_K2_Insights
+from l2.lic_k3_draft import LIC_K3_Draft
+from l2.lic_k4_regen import LIC_K4_Regen
+from l2.lic_k5_validation import LIC_K5_Validation
+from l2.lic_k6_cta import LIC_K6_CTA
+from l2.lic_k7_assembly import LIC_K7_Assembly
+
+from l5.lic_safety_validator import LICSafetyValidator
+from l4.lic_state import LICState
+from l1.lic_plan_schema import LICPlan
+
 """
 LICOrchestrator (L3 Execution Controller)
 -----------------------------------------
@@ -25,19 +42,6 @@ STRICT FORBIDDEN IN THIS FILE:
     • No parameter tuning
 """
 
-from agentic_workflow.L2_execution.k1_research import K1ResearchExecutor
-from agentic_workflow.L2_execution.k2_insights import K2InsightExecutor
-from agentic_workflow.L2_execution.k3_draft import K3DraftExecutor
-from agentic_workflow.L2_execution.k4_regen import K4RegenerationExecutor
-from agentic_workflow.L2_execution.k5_validation_exec import K5ExecutionValidator
-from agentic_workflow.L2_execution.k6_cta import K6CTAExecutor
-from agentic_workflow.L2_execution.k7_assembly import K7AssemblyExecutor
-
-from agentic_workflow.L5_safety.lic_safety_validator import LICSafetyValidator
-from agentic_workflow.L4_state.lic_state import LICState
-from agentic_workflow.L1_planning.lic_plan_schema import LICPlan
-
-
 class LICOrchestrator:
     """
     Central orchestrator for the LIC v10_12 pipeline.
@@ -57,13 +61,13 @@ class LICOrchestrator:
     def __init__(self, max_retries: int = 2):
         """Initialize orchestrator with retry budget and executors."""
         self.max_retries = max_retries
-        self.k1 = K1ResearchExecutor()
-        self.k2 = K2InsightExecutor()
-        self.k3 = K3DraftExecutor()
-        self.k4 = K4RegenerationExecutor()
-        self.k5 = K5ExecutionValidator()
-        self.k6 = K6CTAExecutor()
-        self.k7 = K7AssemblyExecutor()
+        self.k1 = LIC_K1_Research({})
+        self.k2 = LIC_K2_Insights({})
+        self.k3 = LIC_K3_Draft({}, {})
+        self.k4 = LIC_K4_Regen({}, {})
+        self.k5 = LIC_K5_Validation({}, {})
+        self.k6 = LIC_K6_CTA({})
+        self.k7 = LIC_K7_Assembly({}, {})
         self.safety = LICSafetyValidator()
 
     def run(self, plan: LICPlan, state: LICState):
