@@ -127,12 +127,14 @@ class RGK1Extract:
         self,
         *,
         resume_input: Dict[str, Any],
+        job_requirements: Optional[Dict[str, Any]] = None,  # Job context for HyDE
         extraction_params: Optional[Dict[str, Any]] = None
     ) -> ExtractionOutput:
-        """Execute resume content extraction.
+        """Execute resume content extraction with HyDE expansion.
         
         Args:
             resume_input: Raw resume content and metadata
+            job_requirements: Job requirements for hypothetical document generation
             extraction_params: Extraction strategy and parameters
             
         Returns:
@@ -160,7 +162,18 @@ class RGK1Extract:
                 "timestamp": "2024-01-01T00:00:02Z"
             })
             
-            # 3. Execute extraction based on strategy
+            # 3. Generate hypothetical content using HyDE (if job requirements provided)
+            hypothetical_content = ""
+            if job_requirements and strategy.get("hyde_expansion", False):
+                hypothetical_content = self._generate_hypothetical_content(job_requirements, strategy)
+                processing_trace.append({
+                    "step": "hyde_generation",
+                    "hypothetical_length": len(hypothetical_content),
+                    "job_title": job_requirements.get("title", ""),
+                    "timestamp": "2024-01-01T00:00:03Z"
+                })
+            
+            # 4. Execute extraction based on strategy
             if strategy == "section_based":
                 sections = self._extract_sections_rule_based(preprocessed_content)
                 extraction_method = "rule_based"
@@ -175,7 +188,7 @@ class RGK1Extract:
                 "step": "section_extraction",
                 "method": extraction_method,
                 "sections_found": len(sections),
-                "timestamp": "2024-01-01T00:00:03Z"
+                "timestamp": "2024-01-01T00:00:04Z"
             })
             
             # 4. Normalize extracted content
@@ -242,6 +255,47 @@ class RGK1Extract:
         """Initialize extraction strategy based on parameters."""
         return params.get("strategy", "section_based")
     
+    def _generate_hypothetical_content(self, job_requirements: Dict[str, Any], strategy: str) -> str:
+        """Generate hypothetical ideal resume content using HyDE based on job requirements."""
+        title = job_requirements.get("title", "Professional").lower()
+        skills = job_requirements.get("skills", [])
+        requirements = job_requirements.get("requirements", [])
+        industry = job_requirements.get("industry", "general")
+        
+        # Generate ideal professional summary
+        summary = f"Results-oriented {title} with expertise in "
+        if skills:
+            summary += f"{', '.join(skills[:3])}"
+        else:
+            summary += f"industry best practices and innovation"
+        summary += f". Proven track record of delivering measurable business impact in the {industry} sector."
+        
+        # Generate ideal experience section with quantifiable achievements
+        experience = f"## Professional Experience\n\n"
+        experience += f"Senior {title.title()} | Leading Company | 2020-Present\n"
+        experience += f"• Drove strategic initiatives resulting in 25% improvement in operational efficiency\n"
+        experience += f"• Led cross-functional teams to deliver projects 15% ahead of schedule\n"
+        experience += f"• Implemented innovative solutions that reduced costs by $500K annually\n"
+        
+        # Add skills section
+        skills_section = f"## Skills\n\n"
+        if skills:
+            skills_section += f"• Technical: {', '.join(skills[:5])}\n"
+        skills_section += f"• Leadership: Team management, strategic planning, stakeholder communication\n"
+        skills_section += f"• Business: Process optimization, budget management, quality assurance\n"
+        
+        # Generate achievements based on requirements
+        achievements = f"## Key Achievements\n\n"
+        if requirements:
+            achievements += f"• Successfully addressed core requirements: {', '.join(requirements[:3])}\n"
+        achievements += f"• Recognized for exceptional performance and innovation\n"
+        achievements += f"• Consistently exceeded performance targets by 20%+ annually\n"
+        
+        hypothetical_content = f"{summary}\n\n{experience}\n\n{skills_section}\n\n{achievements}"
+        
+        logger.debug(f"Generated hypothetical content for {title}: {len(hypothetical_content)} characters")
+        return hypothetical_content
+    
     def _preprocess_content(self, content: str) -> str:
         """Preprocess resume content for better extraction."""
         # Normalize whitespace
@@ -265,11 +319,11 @@ class RGK1Extract:
             start_pattern = patterns["start"]
             end_pattern = patterns["end"]
             
-            matches = list(re.finditer(start_pattern, content))
+            matches = list(re.finditer(str(start_pattern), content))
             
             for match in matches:
                 start_pos = match.start()
-                end_pos = self._find_section_end(content, start_pos, end_pattern)
+                end_pos = self._find_section_end(content, start_pos, str(end_pattern))
                 
                 section_content = content[start_pos:end_pos].strip()
                 
@@ -437,7 +491,7 @@ class RGK1Extract:
         
         for section_name, patterns in self.section_patterns.items():
             start_pattern = patterns["start"]
-            if re.search(start_pattern, header_lower):
+            if re.search(str(start_pattern), header_lower):
                 return section_name
         
         return "general"
