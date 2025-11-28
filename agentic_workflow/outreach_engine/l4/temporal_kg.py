@@ -13,7 +13,7 @@ import hashlib
 import logging
 
 try:
-    from graph_store_neo4j import Neo4jGraphStore as _Neo4jGraphStore
+    from agentic_workflow.outreach_engine.utils.graph_store_neo4j import Neo4jGraphStore as _Neo4jGraphStore
     _NEO4J_AVAILABLE = True
 except ImportError:
     _Neo4jGraphStore = object  # type: ignore
@@ -402,7 +402,6 @@ class TemporalKG:
     
     def compute_temporal_weight(self, timestamp: datetime) -> float:
         """Compute temporal weight based on age of the timestamp."""
-        from datetime import timedelta
         
         now = datetime.now(UTC)
         age_days = (now - timestamp).days
