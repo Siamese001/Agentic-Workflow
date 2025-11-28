@@ -1,4 +1,9 @@
 {
+  "_deprecated": {
+    "notice": "DEPRECATED — This file is part of the legacy Resume Generator architecture.",
+    "purpose": "Preserved for archival and zero-loss historical reconstruction only.",
+    "status": "NOT used in RG v10_12 runtime."
+  },
   "instructions": [
     "Do NOT run or emit Section 1 (Role) or Section 2 (Task).",
     "Run Section 3 (Context) only ONCE at the start. Pause after rendering toggles.",
