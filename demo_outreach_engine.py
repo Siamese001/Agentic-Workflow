@@ -17,7 +17,10 @@ from outreach_engine import (
     # Main engines
     RoutingEngine, RAGPipelineV75, InsightsEngine,
     ToneEngine, ConstraintEngine,
-    TemplateEngine, KNodeAssemblyEngine, SeniorityEngine
+    TemplateEngine, KNodeAssemblyEngine, SeniorityEngine,
+    
+    # Fusion planning
+    FusionPlanner
 )
 
 def load_lic_capabilities() -> Dict[str, Any]:
@@ -585,6 +588,7 @@ def demo_complete_workflow():
     routing_engine = RoutingEngine(lic_capabilities.get("routing_rules", {}))
     rag_engine = RAGPipelineV75(lic_capabilities)
     insights_engine = InsightsEngine(lic_capabilities)
+    fusion_planner = FusionPlanner()
     tone_engine = ToneEngine(lic_capabilities)
     constraint_engine = ConstraintEngine(lic_capabilities)
     template_engine = TemplateEngine(lic_capabilities)
@@ -657,6 +661,25 @@ def demo_complete_workflow():
         print(f"📈 Signal Quality: {insights_results['signal_quality']['score']:.3f}")
         print(f"🎯 Claim Confidence: {insights_results['claim_confidence']['aggregate_score']:.3f}")
         print(f"✅ Overall Quality: {insights_results['overall_quality']['can_proceed']}")
+        
+        # Step 4.5: Fusion Planning (NEW)
+        print_subsection("4.5. Fusion Planning")
+        fusion_plan = fusion_planner.plan(
+            role_title=job_context["title"],
+            company_name=job_context["company"],
+            archetype=context.archetype.value,
+            resume_features=sender_profile,
+            research_signals={
+                "company_info": f"Company: {job_context['company']}",
+                "market_context": f"Industry: {job_context.get('industry', 'Technology')}",
+                "product_info": f"Role: {job_context['title']}"
+            },
+            rag_evidence=rag_result.evidence
+        )
+        fusion_summary = fusion_planner.get_fusion_summary(fusion_plan)
+        print(f"🎯 Fusion Plan: {fusion_summary['value_proposition_count']} value propositions")
+        print(f"📊 Confidence Score: {fusion_summary['confidence_score']:.3f}")
+        print(f"🔧 Top Angles: {', '.join(fusion_summary['top_angles'])}")
         
         # Step 5: Template Generation
         print_subsection("5. Template Component Generation")
