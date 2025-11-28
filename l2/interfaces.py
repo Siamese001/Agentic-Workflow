@@ -7,8 +7,8 @@ consistent resume improvement and job alignment workflows.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, TypeVar
 
 from core.models.models import (
     StrategyResult,
@@ -20,6 +20,8 @@ from core.models.models import (
     LLMRequest,
     LLMResponse,
 )
+
+T = TypeVar('T')
 
 
 @dataclass
@@ -46,6 +48,35 @@ class L2ExecutionResult:
     data: Any
     metadata: Dict[str, Any]
     errors: Optional[List[str]] = None
+    
+    @classmethod
+    def success_result(cls, data: T, message: str = "Execution completed successfully") -> L2ExecutionResult:
+        """Create a successful result"""
+        return cls(
+            success=True,
+            data=data,
+            metadata={"message": message}
+        )
+    
+    @classmethod
+    def failure_result(cls, message: str, error_code: Optional[str] = None) -> L2ExecutionResult:
+        """Create a failure result"""
+        return cls(
+            success=False,
+            data=None,
+            metadata={"message": message, "error_code": error_code},
+            errors=[message] if message else None
+        )
+    
+    @classmethod
+    def timeout_result(cls, message: str = "Execution timed out") -> L2ExecutionResult:
+        """Create a timeout result"""
+        return cls(
+            success=False,
+            data=None,
+            metadata={"message": message, "error_code": "TIMEOUT"},
+            errors=[message]
+        )
 
 
 class L2ExecutorInterface(ABC):
