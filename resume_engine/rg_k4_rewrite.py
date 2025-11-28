@@ -8,7 +8,7 @@ K1 Extract → K2 Clean → K3 Quantify → K4 Rewrite → K5 Skillmap → K6 As
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 import logging
 import re
 
@@ -189,7 +189,7 @@ class RGK4Rewrite:
             Complete rewriting output with enhanced content and metrics
         """
         rewriting_params = rewriting_params or {}
-        processing_trace = []
+        processing_trace: List[Dict[str, Union[str, int]]] = []
         
         try:
             # 1. Initialize rewriting strategy with goal alignment
@@ -451,7 +451,7 @@ class RGK4Rewrite:
             achievements = quantification_output.quantified_achievements
             
             # Group achievements by impact category
-            by_category = {}
+            by_category: Dict[str, List[str]] = {}
             for achievement in achievements:
                 category = achievement.impact_category
                 if category not in by_category:
@@ -548,7 +548,7 @@ class RGK4Rewrite:
     
     def _enhance_achievements(self, content: str) -> Tuple[str, List[RewritingOperation]]:
         """Enhance achievement descriptions."""
-        operations = []
+        operations: List[RewritingOperation] = []
         enhanced_content = content
         
         for enhancement_type, patterns in self.achievement_patterns.items():
@@ -575,7 +575,7 @@ class RGK4Rewrite:
     
     def _improve_tone(self, content: str) -> Tuple[str, List[RewritingOperation]]:
         """Improve professional tone."""
-        operations = []
+        operations: List[RewritingOperation] = []
         improved_content = content
         
         for improvement_type, patterns in self.tone_improvements.items():
@@ -602,7 +602,7 @@ class RGK4Rewrite:
     
     def _optimize_for_ats(self, content: str, strategy: Dict[str, Any]) -> Tuple[str, List[RewritingOperation]]:
         """Optimize content for ATS systems."""
-        operations = []
+        operations: List[RewritingOperation] = []
         optimized_content = content
         
         # Add relevant keywords based on target role/industry
