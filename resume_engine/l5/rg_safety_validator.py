@@ -4,13 +4,12 @@ L5 Safety Layer - Resume Generator Safety Validator
 Enforces safety constraints and validation rules from ATOMIC_RG_SPEC
 """
 
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional
 from datetime import datetime
 from pydantic import BaseModel, Field
 import re
 import uuid
 
-import sys
 # RG_capabilities is now at root level - no sys.path manipulation needed
 from RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
 
@@ -28,8 +27,8 @@ class SafetyViolation(BaseModel):
 class SafetyReport(BaseModel):
     """Comprehensive safety validation report"""
     report_id: str = Field(default_factory=lambda: f"safety_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    overall_safety_score: float = Field(ge=0.0, le=1.0)
-    is_safe: bool = False
+    overall_safety_score: float = Field(default=1.0, ge=0.0, le=1.0)
+    is_safe: bool = Field(default=True)
     violations: List[SafetyViolation] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
     compliance_status: Dict[str, bool] = Field(default_factory=dict)
@@ -468,11 +467,10 @@ class RGSafetyValidator:
         # Personal information safety validation
         violations.extend(self.content_validator.validate_personal_information_safety(resume_content))
         
-        # Categorize violations
+        # Group violations by severity
         critical_violations = [v for v in violations if v.severity == "critical"]
         high_violations = [v for v in violations if v.severity == "high"]
         medium_violations = [v for v in violations if v.severity == "medium"]
-        low_violations = [v for v in violations if v.severity == "low"]
         
         # Calculate safety score
         safety_report.violations = violations

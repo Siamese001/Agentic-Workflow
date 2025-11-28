@@ -247,3 +247,73 @@ class ValidationContext:
             }
             for r in self.validation_results
         ]
+
+
+class RGStateManager:
+    """Resume Generation State Manager - compatibility wrapper for runtime layer"""
+    
+    def __init__(self):
+        """Initialize state manager with staging buffer and validation context"""
+        self.staging_buffer = ImmutableStagingBuffer()
+        self.validation_context = ValidationContext()
+        self.workflow_states = {}
+        self.logger = logging.getLogger(__name__)
+    
+    def create_workflow_state(self, workflow_id: str, input_parameters: Dict[str, Any]) -> Dict[str, Any]:
+        """Create a new workflow state"""
+        workflow_state = {
+            "workflow_id": workflow_id,
+            "input_parameters": input_parameters,
+            "status": "created",
+            "created_at": datetime.now().isoformat(),
+            "staging_buffer": self.staging_buffer,
+            "validation_context": self.validation_context
+        }
+        
+        self.workflow_states[workflow_id] = workflow_state
+        self.staging_buffer.set(f"workflow_{workflow_id}", workflow_state)
+        
+        self.logger.info(f"Created workflow state: {workflow_id}")
+        return workflow_state
+    
+    def update_workflow_state(self, workflow_id: str, phase: str, data: Any) -> None:
+        """Update workflow state with new phase data"""
+        if workflow_id not in self.workflow_states:
+            raise ValueError(f"Workflow {workflow_id} not found")
+        
+        workflow_state = self.workflow_states[workflow_id]
+        workflow_state["current_phase"] = phase
+        workflow_state["phase_data"] = data
+        workflow_state["updated_at"] = datetime.now().isoformat()
+        
+        # Store phase data in staging buffer
+        self.staging_buffer.set(f"{workflow_id}_{phase}", data)
+        
+        self.logger.info(f"Updated workflow state {workflow_id} for phase: {phase}")
+    
+    def complete_workflow(self, workflow_id: str) -> Dict[str, Any]:
+        """Mark workflow as completed and return final state"""
+        if workflow_id not in self.workflow_states:
+            raise ValueError(f"Workflow {workflow_id} not found")
+        
+        workflow_state = self.workflow_states[workflow_id]
+        workflow_state["status"] = "completed"
+        workflow_state["completed_at"] = datetime.now().isoformat()
+        
+        # Lock the staging buffer to prevent further modifications
+        self.staging_buffer.lock()
+        
+        self.logger.info(f"Completed workflow: {workflow_id}")
+        return workflow_state
+    
+    def get_workflow_state(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+        """Get current workflow state"""
+        return self.workflow_states.get(workflow_id)
+    
+    def get_validation_summary(self, workflow_id: str) -> Optional[Dict[str, Any]]:
+        """Get validation summary for workflow"""
+        if workflow_id in self.workflow_states:
+            validation_context = self.workflow_states[workflow_id].get("validation_context")
+            if validation_context:
+                return validation_context.get_validation_summary()
+        return None

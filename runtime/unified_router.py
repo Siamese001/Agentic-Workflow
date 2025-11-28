@@ -22,9 +22,9 @@ class UnifiedRouter:
     def __init__(self):
         """Initialize both specialized engines"""
         # Import resume engine
-        from resume_engine.l1.rg_planner import RGPlanner
-        from resume_engine.l3.rg_orchestrator import RGOrchestrator
-        from resume_engine.l4.rg_state import RGStateManager
+        from resume_engine.rg_planner import RGPlanner
+        from resume_engine.rg_orchestrator import RGOrchestrator
+        from resume_engine.state import RGStateManager
         from resume_engine.l5.rg_safety_validator import RGSafetyValidator
         
         # Initialize resume engine components
