@@ -1,6 +1,6 @@
-from agentic_workflow.L3_orchestration.lic_orchestrator import LICOrchestrator
-from agentic_workflow.L4_state.lic_state import LICState
-from agentic_workflow.L1_planning.lic_plan_schema import LICPlan
+from l3.lic_orchestrator import LICOrchestrator
+from l4.lic_state import LICState
+from l1.lic_plan_schema import LICPlan
 
 def test_safety_check_stub():
     o = LICOrchestrator()

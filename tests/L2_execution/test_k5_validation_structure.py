@@ -1,9 +1,9 @@
 import inspect
-from agentic_workflow.L2_execution.k5_validation_exec import K5ExecutionValidator
+from l2.lic_k5_validation import LIC_K5_Validation
 
 def test_class_exists():
-    assert inspect.isclass(K5ExecutionValidator)
+    assert inspect.isclass(LIC_K5_Validation)
 
 def test_required_methods():
     for m in ["execute", "check_structure", "check_semantics"]:
-        assert hasattr(K5ExecutionValidator, m)
+        assert hasattr(LIC_K5_Validation, m)

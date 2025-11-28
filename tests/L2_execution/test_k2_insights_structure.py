@@ -1,15 +1,16 @@
 import inspect
-from agentic_workflow.L2_execution.k2_insights import K2InsightExecutor
+from l2.lic_k2_insights import LIC_K2_Insights
 
 def test_class_exists():
-    assert inspect.isclass(K2InsightExecutor)
+    assert inspect.isclass(LIC_K2_Insights)
 
 def test_required_methods():
     required = [
         "execute",
-        "select_insight_templates",
-        "extract_key_points",
-        "assemble_insights",
+        "score_individual_claim",
+        "calculate_aggregate_confidence",
+        "validate_confidence_thresholds",
+        "extract_key_insights",
     ]
     for m in required:
-        assert hasattr(K2InsightExecutor, m)
+        assert hasattr(LIC_K2_Insights, m)

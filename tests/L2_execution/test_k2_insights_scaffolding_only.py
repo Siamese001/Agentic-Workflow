@@ -1,8 +1,8 @@
-from agentic_workflow.L2_execution.k2_insights import K2InsightExecutor
+from l2.lic_k2_insights import LIC_K2_Insights
 
 def test_methods_return_none():
-    k2 = K2InsightExecutor()
-    assert k2.execute(None, None) is None
-    assert k2.select_insight_templates(None) is None
-    assert k2.extract_key_points(None) is None
-    assert k2.assemble_insights(None, None) is None
+    k2 = LIC_K2_Insights({})
+    assert k2.execute(None) is None
+    assert k2.score_individual_claim(None, None) is None
+    assert k2.calculate_aggregate_confidence(None) is None
+    assert k2.validate_confidence_thresholds(None, None) is None
