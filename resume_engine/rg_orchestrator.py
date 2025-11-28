@@ -8,7 +8,7 @@ L1 Planning (RGPlanner) → K1 Extract → K2 Clean → K3 Quantify → K4 Rewri
 """
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Dict, Any, List, Optional
 import logging
 from datetime import datetime
 
@@ -259,8 +259,21 @@ class RGOrchestrator:
             
             # 3. Extract final results
             validation_output = k_node_outputs.get("k8_validate")
-            if not validation_output or not validation_output.success:
-                final_content = k_node_outputs.get("k7_format", {}).get("formatted_content", "")
+            
+            if not validation_output or not validation_output.success or not hasattr(validation_output, 'validated_content') or not validation_output.validated_content.strip():
+                # Extract final content from K7 format output (handle both dict and object)
+                k7_output = k_node_outputs.get("k7_format")
+                if k7_output:
+                    if hasattr(k7_output, 'formatted_content'):
+                        # K7 returned a FormattingOutput object
+                        final_content = k7_output.formatted_content
+                    elif isinstance(k7_output, dict):
+                        # K7 returned a dict
+                        final_content = k7_output.get("formatted_content", "")
+                    else:
+                        final_content = str(k7_output)
+                else:
+                    final_content = ""
             else:
                 final_content = validation_output.validated_content
             
@@ -318,9 +331,8 @@ class RGOrchestrator:
             "hyde_expansion": True  # Enable HyDE expansion for MEDIUM complexity
         })
         
-        return self.k1_extract.extract_resume_sections(
+        return self.k1_extract.extract_resume_content(
             resume_input=input_data,
-            job_requirements=request.job_input,  # Pass job requirements for HyDE
             extraction_params=extraction_params
         )
     
@@ -407,7 +419,7 @@ class RGOrchestrator:
             # Simple recovery strategy: create a minimal valid output
             if node_name == "k1_extract":
                 # Create minimal extraction output
-                from .rg_k1_extract import ExtractionOutput, ExtractionMetrics, ExtractedSection
+                from .rg_k1_extract import ExtractionOutput, ExtractionMetrics
                 return ExtractionOutput(
                     extracted_sections=[],
                     raw_content=str(input_data),
