@@ -1,0 +1,86 @@
+{
+  "headline": {
+    "word_count_min": 7,
+    "word_count_max": 12,
+    "component_words_min": 2,
+    "component_words_max": 4
+  },
+  "executive_summary": {
+    "word_count_min": 120,
+    "word_count_max": 150,
+    "sentence_count_min": 7,
+    "sentence_count_max": 9
+  },
+  "bullets": {
+    "word_count_min": 25,
+    "word_count_max": 40,
+    "word_count_acceptable_min": 21,
+    "word_count_acceptable_max": 44
+  },
+  "competencies": {
+    "bullet_count_min": 5,
+    "bullet_count_max": 7
+  },
+  "skills": {
+    "count_min": 8,
+    "count_max": 12,
+    "word_count_min": 1,
+    "word_count_max": 3
+  },
+  "cover_letter": {
+    "p1_word_count_min": 80,
+    "p1_word_count_max": 120,
+    "p2_word_count_min": 90,
+    "p2_word_count_max": 130,
+    "p3_word_count_min": 80,
+    "p3_word_count_max": 120,
+    "jd_relevance_threshold": 0.7
+  },
+  "total_resume": {
+    "word_count_min": 900,
+    "word_count_max": 1200
+  },
+  "section_specific": {
+    "unify_overview": {
+      "word_count_min": 25,
+      "word_count_max": 40
+    },
+    "ibm_overview": {
+      "word_count_min": 25,
+      "word_count_max": 40
+    },
+    "tradersense_narrative": {
+      "word_count_min": 50,
+      "word_count_max": 70
+    },
+    "ey_narrative": {
+      "word_count_min": 60,
+      "word_count_max": 80
+    },
+    "early_career_narrative": {
+      "word_count_min": 50,
+      "word_count_max": 70
+    }
+  },
+  "generation_requirements": {
+    "k1_min_differentiators": 4,
+    "min_jd_keywords": 6
+  },
+  "provenance_split_targets": {
+    "K2_UNIFY_BULLETS": {
+      "Verbatim": 2,
+      "Customized": 3,
+      "Synthetic": 2
+    },
+    "K3_IBM_BULLETS": {
+      "Verbatim": 2,
+      "Customized": 2,
+      "Synthetic": 2
+    },
+    "K9_COMPETENCIES": {
+      "Verbatim": 2,
+      "Customized": 2,
+      "Synthetic": 2
+    }
+  }
+}

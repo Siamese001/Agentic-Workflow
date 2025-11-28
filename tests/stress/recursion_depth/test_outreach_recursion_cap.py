@@ -92,7 +92,8 @@ class TestOutreachRecursionCap:
             metadata={"location": "San Francisco"}
         )
     
-    def test_meta_loop_respects_depth_cap(self):
+    @pytest.mark.asyncio
+    async def test_meta_loop_respects_depth_cap(self):
         """Test that meta-loop fallback respects maximum depth limit."""
         # Configure with low depth cap
         config = {
@@ -111,7 +112,7 @@ class TestOutreachRecursionCap:
         )
         
         # Should attempt fallback but respect depth cap
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, recipient, config)
         
         # Should not crash and should provide failure result
         assert result is not None
@@ -125,7 +126,8 @@ class TestOutreachRecursionCap:
         # Should be called for each archetype attempt (C_LEVEL, EXECUTIVE)
         assert self.mock_safety_validator.evaluate.call_count <= config["max_fallback_attempts"]
     
-    def test_depth_cap_zero_immediate_failure(self):
+    @pytest.mark.asyncio
+    async def test_depth_cap_zero_immediate_failure(self):
         """Test that depth cap of 1 causes immediate failure after one attempt."""
         config = {
             "max_fallback_attempts": 1,  # Only one attempt allowed
@@ -143,7 +145,7 @@ class TestOutreachRecursionCap:
         )
         
         # Should fail immediately without any fallback attempts
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, recipient, config)
         
         assert result is not None
         assert not result.success
@@ -154,7 +156,8 @@ class TestOutreachRecursionCap:
         # Safety validator should only be called once (no fallbacks)
         assert self.mock_safety_validator.evaluate.call_count == 1
     
-    def test_successful_execution_ignores_depth_cap(self):
+    @pytest.mark.asyncio
+    async def test_successful_execution_ignores_depth_cap(self):
         """Test that depth cap doesn't affect successful executions."""
         config = {
             "max_fallback_attempts": 1,  # Very low limit
@@ -172,7 +175,7 @@ class TestOutreachRecursionCap:
         )
         
         # Should succeed normally without hitting depth cap
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, recipient, config)
         
         assert result is not None
         assert result.success
@@ -180,7 +183,8 @@ class TestOutreachRecursionCap:
         # Safety validator should only be called once (no fallbacks needed)
         assert self.mock_safety_validator.evaluate.call_count == 1
     
-    def test_depth_cap_with_partial_success(self):
+    @pytest.mark.asyncio
+    async def test_depth_cap_with_partial_success(self):
         """Test depth cap behavior when some archetypes succeed."""
         config = {
             "max_fallback_attempts": 3,  # Allow 3 attempts
@@ -204,7 +208,7 @@ class TestOutreachRecursionCap:
         self.mock_safety_validator.evaluate.side_effect = safety_side_effect
         
         # Should succeed on 3rd attempt within depth limit
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, recipient, config)
         
         assert result is not None
         assert result.success
@@ -212,7 +216,8 @@ class TestOutreachRecursionCap:
         # Should have made exactly 3 attempts
         assert self.mock_safety_validator.evaluate.call_count == 3
     
-    def test_infinite_fallback_prevention(self):
+    @pytest.mark.asyncio
+    async def test_infinite_fallback_prevention(self):
         """Test that system prevents infinite fallback loops."""
         config = {
             "max_fallback_attempts": 10,  # Reasonable limit
@@ -230,7 +235,7 @@ class TestOutreachRecursionCap:
         )
         
         # Should not enter infinite loop
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        result = await orchestrator.orchestrate_outreach(mission, recipient, config)
         
         assert result is not None
         assert not result.success
@@ -242,7 +247,8 @@ class TestOutreachRecursionCap:
         # If this test hangs, it indicates infinite recursion
         assert True  # Test reaching this point means no infinite loop
     
-    def test_depth_tracking_across_concurrent_workflows(self):
+    @pytest.mark.asyncio
+    async def test_depth_tracking_across_concurrent_workflows(self):
         """Test that depth tracking works correctly across concurrent workflows."""
         config = {
             "max_fallback_attempts": 2,
@@ -265,7 +271,7 @@ class TestOutreachRecursionCap:
         # Run multiple workflows
         results = []
         for mission, recipient in zip(missions, recipients):
-            result = orchestrator.orchestrate_outreach(mission, recipient, config)
+            result = await orchestrator.orchestrate_outreach(mission, recipient, config)
             results.append(result)
         
         # All should fail gracefully

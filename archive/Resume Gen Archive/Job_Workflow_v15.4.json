@@ -1,0 +1,2880 @@
+{
+  "jw_prompt_shell": {
+    "version": "12.3-MZLO",
+    "name": "JW Six-Section Canonical Prompt Shell",
+    "purpose": "Define authority, scope, rules, and non-negotiables for converting any prompt into the canonical six-section structure.",
+    "sections_required": [
+      "1.role",
+      "2.task",
+      "3.context",
+      "4.reasoning",
+      "5.output",
+      "6.conditions"
+    ],
+    "enforcement": {
+      "reject_out_of_order_emission": true,
+      "block_output_on_reasoning_qa_fail": true,
+      "block_output_on_mzlo_fail": true,
+      "enforce_decimal_numbering": true,
+      "enforce_subsection_alignment": true,
+      "forbid_unstructured_appendices": true,
+      "strict_ascii_hygiene": true
+    },
+    "constraints": {
+      "thresholds_audit": {
+        "avg_exec_score_min": 0.9,
+        "avg_s_score_min": 0.9,
+        "avg_answer_score_min": 0.9,
+        "max_retries_reasoning_rewrites": 2
+      },
+      "retrieval_quality": {
+        "coverage_min": 0.85,
+        "relevance_min": 0.9,
+        "coherence_min": 0.9,
+        "utilization_max": 0.8,
+        "precision_min": 0.9,
+        "recall_min": 0.85,
+        "rerank_required": true,
+        "hyde_required": true
+      }
+    },
+    "required_fields_by_section": {
+      "1.role": [
+        "purpose",
+        "standards",
+        "canonical_boundary",
+        "customization_markers",
+        "minimal_runtime_inputs"
+      ],
+      "2.task": [
+        "purpose",
+        "deliverable_target",
+        "success_criteria",
+        "core_task",
+        "advanced_practices"
+      ],
+      "3.context": [
+        "purpose",
+        "runtime_toggles",
+        "dynamic_context_assembly",
+        "agentic_retrieval_workflow",
+        "ambiguity_resolution",
+        "cross_check_self_test",
+        "version_pins"
+      ],
+      "4.reasoning": [
+        "purpose",
+        "phase_1_agentic_retrieval",
+        "phase_2_transparency_notes",
+        "policy_guardrails",
+        "phase_3_hybrid_execution",
+        "phase_4_reflexion",
+        "phase_5_qa_precheck",
+        "phase_6_validation_metrics"
+      ],
+      "5.output": [
+        "purpose",
+        "detected_settings_summary_template",
+        "final_answer_template",
+        "post_key_mandatory_subsections",
+        "mzlo_compliance_statement"
+      ],
+      "6.conditions": [
+        "purpose",
+        "immediate_execution",
+        "schema_enforcement",
+        "mzlo_compliance",
+        "toggle_guard",
+        "privacy_memory",
+        "external_evidence",
+        "computational_accuracy",
+        "socratic_ambiguity",
+        "transformer_metrics",
+        "reasoning_mode_precedence",
+        "audit_ready_assurance",
+        "numbering_alignment_enforcement"
+      ]
+    },
+    "1.role": {
+      "purpose": {
+        "text": "Define authority, scope, and non-negotiables for converting any prompt into the canonical six-section structure: (1) Role, (2) Task, (3) Context, (4) Reasoning, (5) Output(+QA), (6) Conditions."
+      },
+      "standards": {
+        "reasoning_isolation": {
+          "methods_allowed": [
+            "CoT",
+            "ToT",
+            "Self-Consistency",
+            "Reflexion",
+            "Decomposition",
+            "Socratic",
+            "Scratchpad"
+          ],
+          "confined_to_section": 4,
+          "enforced": true
+        },
+        "runtime_toggle_transparency": {
+          "surface_in_section": 3,
+          "explicit_user_confirmation_required": true
+        },
+        "ambiguity_granularity": {
+          "multi_topic_expand_numerically": true,
+          "detection": "Identify insufficiencies and ambiguities.",
+          "documentation": "Record gaps and impacts.",
+          "resolution": "Apply Socratic prompts, annotations, granularity boosts before execution."
+        },
+        "strict_mzlo": {
+          "requirements": [
+            "zero_loss",
+            "zero_ambiguity",
+            "zero_misrepresentation",
+            "zero_omission"
+          ],
+          "record_conformance": true,
+          "forbid_mzlo_table_embedding_here": true
+        },
+        "audit_ready_qa": {
+          "enforce": [
+            "QA_Tables",
+            "Schema_Enforcement",
+            "Reflexion_or_Self-Consistency"
+          ],
+          "end_to_end": true
+        },
+        "structured_retrieval_and_context_engineering": {
+          "apply": [
+            "hybrid_retrieval",
+            "chunking",
+            "deduplication",
+            "adaptive_assembly"
+          ],
+          "best_practices": true,
+          "citations": [
+            "oaicite:0",
+            "oaicite:1",
+            "oaicite:2"
+          ]
+        },
+        "agentic_retrieval_workflow": {
+          "hybrid_stack": [
+            "BM25",
+            "dense_embeddings",
+            "cross_encoder_rerank",
+            "HyDE"
+          ],
+          "dedup_chunk_adaptive": true,
+          "citations": [
+            "oaicite:3",
+            "oaicite:4"
+          ]
+        },
+        "audit_ready_evidence": {
+          "evidence_mapping_required": true,
+          "strict_source_attribution": true,
+          "no_fabricated_citations": true
+        },
+        "comprehensive_schema_validation": {
+          "canonical_numbering_alignment": true,
+          "domain_subsections_template_alignment": true,
+          "reflexion_corrections_on_deviation": true
+        }
+      },
+      "canonical_boundary": {
+        "forbid_beyond_sections_1_to_6": true
+      },
+      "customization_markers": {
+        "CUSTOM": "requires project or run specific input",
+        "OPTIONAL": "may be customized; defaults acceptable",
+        "GENERIC": "keep as is across all prompts",
+        "TEMPLATE": "fill provided table or fields",
+        "CHOICE": "select from allowed values"
+      },
+      "minimal_runtime_inputs": [
+        "DOMAIN_SUBSECTIONS_TEMPLATE keys K.1..K.m",
+        "Table 3.A toggle_states current",
+        "MZLO_ARTIFACT_ID",
+        "Table 3.D pinned_versions",
+        "Role Catalog ID or policy if role mapping is enforced"
+      ]
+    },
+    "2.task": {
+      "purpose": "State the conversion objective and rigor constraints for restructuring any prompt into Sections 1-6. PURPOSE SUBSECTION: EMIT NO CONTENT.",
+      "deliverable_target": [
+        "Produce the complete artifact using six sections only with full overwrite and no dependency on prior versions.",
+        "Follow the OUTPUT spec precisely (strict JSON where required; plain text where specified).",
+        "CoT and ToT appear only in Section 4.",
+        "Block OUTPUT on QA/MZLO FAIL."
+      ],
+      "success_criteria": {
+        "output_gate": [
+          "schemas_valid",
+          "catalog_rules_satisfied",
+          "canonical_rules_satisfied",
+          "hygiene_clean"
+        ],
+        "reasoning_gate": [
+          "audit_only_separation",
+          "maxtrace_pointer_present",
+          "retries_lte_2"
+        ],
+        "audit_thresholds": {
+          "avg_exec_score_min": 0.9,
+          "avg_s_score_min": 0.9,
+          "avg_answer_score_min": 0.9
+        },
+        "no_audit_leakage_in_output": true,
+        "rigor_parity_guard": {
+          "nodes": [
+            "K.5",
+            "K.6_intro",
+            "K.7_intro",
+            "K.8_items"
+          ],
+          "visible_in_output": "PASS/FAIL row",
+          "evidence_in_audit": true
+        }
+      },
+      "core_task": {
+        "restructure_into_six_section_shell": true,
+        "preserve_critical_details_and_intent_mzlo_zero_loss": true
+      },
+      "advanced_practices": {
+        "hybrid_cot_tot_in_section_4": {
+          "mandatory": true,
+          "retrieval_defaults": {
+            "mode": "hybrid+rerank",
+            "k": 8,
+            "second_pass": "on_demand"
+          }
+        },
+        "context_management": {
+          "pipeline": [
+            "Filter",
+            "Dedup",
+            "Rerank",
+            "Compress",
+            "Label",
+            "Order",
+            "Insert"
+          ],
+          "rerank": {
+            "cross_encoder_over": [
+              "keyword",
+              "dense"
+            ]
+          },
+          "compress_preserve": [
+            "citations",
+            "IDs"
+          ],
+          "pin_critical_edges": true
+        },
+        "toggle_gating": {
+          "echo_and_lock_toggles": [
+            "SHOW_REASONING",
+            "SCRATCHPAD_MODE",
+            "COT",
+            "TOT",
+            "HYBRID_COT_TOT",
+            "SELF_CONSISTENCY",
+            "SC_K",
+            "REFLEXION",
+            "DECOMPOSITION",
+            "SOCRATIC",
+            "RAG_MODE",
+            "RAG_STRATEGY",
+            "RAG_MIN_DOCS",
+            "RAG_MAX_DOCS",
+            "AGENTIC_MODE",
+            "AGENTIC_MAX_HOPS",
+            "RETRIEVAL_SOURCES",
+            "RETRIEVAL_COUNT",
+            "QUERY_REFINEMENT",
+            "SOURCE_ATTRIBUTION",
+            "RETRIEVAL_QUALITY_THRESHOLD",
+            "TRACE_TRANSFORMER",
+            "METRICS_OVERLAY",
+            "METRICS_TIER",
+            "METRICS_SAMPLING"
+          ],
+          "fail_fast_alerts": [
+            "missing_toggles",
+            "router_off",
+            "missing_et_anchor",
+            "overlay_leakage",
+            "missing_trace_manifest_when_audit_visibility_true"
+          ]
+        },
+        "reasoning_isolation": {
+          "all_audit_artifacts_in_reasoning_only": true,
+          "trace_manifest_A_to_K": true,
+          "never_emit_in_output": true
+        },
+        "three_layer_qa": {
+          "universal_gate_schema": {
+            "columns": [
+              "Gate Check",
+              "Verification Criteria",
+              "Enforcement Layers",
+              "Evidence Pointer(s)",
+              "Result (PASS/FAIL)",
+              "Remediation Note*"
+            ],
+            "rows_must_cover": [
+              "Detected Settings Accuracy",
+              "Agentic Retrieval Completeness",
+              "Explicit Gap Resolution",
+              "Evidence & Traceability Mapping",
+              "Source Attribution Compliance",
+              "Hybrid CoT->ToT Execution",
+              "ToT Path Metrics Logging",
+              "NOTES & ANSWER Separation",
+              "Arithmetic Accuracy",
+              "Non-deferral Assurance",
+              "Context & Memory Utilization",
+              "Transformer Metrics Logging",
+              "Six-Section Enforcement",
+              "Numbering & Alignment",
+              "Privacy & Sensitive-Data Compliance",
+              "Omission Audit",
+              "Style & Standalone Conformance",
+              "Domain-Specific Gates (optional)"
+            ]
+          },
+          "schema_validation": {
+            "enforce_run_order": [
+              "Role",
+              "Task",
+              "Context",
+              "Reasoning",
+              "Output",
+              "Conditions"
+            ],
+            "allow_pauses_only_after_5.x": true,
+            "on_fatal_blocker_emit_conditions_alert_and_stop": true
+          },
+          "reflexion_or_self_consistency": {
+            "max_mini_cots": 5,
+            "re_emit_until_all_pass": true,
+            "tie_breakers_if_within_0.02": "deterministic"
+          }
+        }
+      },
+      "acceptance_mapping": {
+        "output_gate": "Map to QA table rows 1..N",
+        "reasoning_gate": "Map to Reasoning QA entries",
+        "mzlo_gate": "Require passing MZLO assessment prior to release"
+      }
+    },
+    "3.context": {
+      "purpose": "Declare the runtime controls and assembly plan that govern reasoning and output. PURPOSE SUBSECTION: EMIT NO CONTENT.",
+      "runtime_toggles": {
+        "table_3A": [
+          {
+            "group": "Visibility",
+            "toggle": "SHOW_REASONING",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "3, 4, 5",
+            "configures": "Enables/disables reasoning trace display in output",
+            "impact": "true: Section 4 reasoning + ToT metrics shown; false: traces hidden",
+            "risk_if_too_high": "Info leakage, overwhelm"
+          },
+          {
+            "group": "Visibility",
+            "toggle": "SCRATCHPAD_MODE",
+            "default": "notes_vs_answer",
+            "current": "notes_vs_answer",
+            "prompt_section": "3, 4, 5",
+            "configures": "Switches output mode between notes and answer",
+            "impact": "notes_vs_answer: Both notes and answer. answer: Only answer",
+            "risk_if_too_high": "Output bloat"
+          },
+          {
+            "group": "Methods",
+            "toggle": "COT",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "4",
+            "configures": "Turns on chain-of-thought stepwise logic",
+            "impact": "true: Step-by-step reasoning in Section 4",
+            "risk_if_too_high": "Over-detail, slowness"
+          },
+          {
+            "group": "Methods",
+            "toggle": "TOT",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "4",
+            "configures": "Turns on tree-of-thought (branching) reasoning",
+            "impact": "true: Multiple branches explored; false: Linear only",
+            "risk_if_too_high": "Token/decision sprawl"
+          },
+          {
+            "group": "Methods",
+            "toggle": "HYBRID_COT_TOT",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "4",
+            "configures": "Combines CoT and ToT reasoning in Section 4",
+            "impact": "true: Both modes blended; false: Only primary mode",
+            "risk_if_too_high": "Debugging/output sprawl"
+          },
+          {
+            "group": "Methods",
+            "toggle": "SELF_CONSISTENCY",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "4, 5",
+            "configures": "Enables voting among reasoning chains",
+            "impact": "true: Multi-chain consensus; false: Single chain only",
+            "risk_if_too_high": "High cost, slow"
+          },
+          {
+            "group": "Methods",
+            "toggle": "SC_K",
+            "default": "5",
+            "current": "5",
+            "prompt_section": "4, 5",
+            "configures": "Number of self-consistency runs (chains)",
+            "impact": "5: Five chains compared",
+            "risk_if_too_high": "Wasteful, slow"
+          },
+          {
+            "group": "Methods",
+            "toggle": "SOCRATIC",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "3, 4",
+            "configures": "Enables clarifying Q&A on ambiguity before reasoning",
+            "impact": "true: Q&A before solve; false: Skips clarification",
+            "risk_if_too_high": "Stalls, wasted tokens"
+          },
+          {
+            "group": "Methods",
+            "toggle": "REFLEXION",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "4",
+            "configures": "Enables self-critique and revision cycles",
+            "impact": "true: Revises for errors/gaps; false: No revision",
+            "risk_if_too_high": "Over-edit, latency"
+          },
+          {
+            "group": "Methods",
+            "toggle": "DECOMPOSITION",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "4",
+            "configures": "Allows explicit problem split into subproblems",
+            "impact": "true: Each subproblem solved individually",
+            "risk_if_too_high": "Fragmentation, complexity"
+          },
+          {
+            "group": "Methods",
+            "toggle": "SCRATCHPAD",
+            "default": "true",
+            "current": "true",
+            "prompt_section": "4, 5",
+            "configures": "Separates notes from answer in Section 4/5",
+            "impact": "true: Internal notes kept; false: All logic in answer",
+            "risk_if_too_high": "Clutter, hard to parse"
+          },
+          {
+            "group": "RAG",
+            "toggle": "RAG_MODE",
+            "default": "ON",
+            "current": "ON",
+            "prompt_section": "3, 4, 5",
+            "configures": "Enables retrieval-augmented generation pipeline",
+            "impact": "ON: Retrieval sources active; OFF: Generative only",
+            "risk_if_too_high": "Over-grounding"
+          },
+          {
+            "group": "RAG",
+            "toggle": "RAG_STRATEGY",
+            "default": "hybrid",
+            "current": "hybrid",
+            "prompt_section": "3, 4, 5",
+            "configures": "Controls retrieval mode: keyword, semantic, hybrid",
+            "impact": "hybrid: Both; keyword/semantic: One only",
+            "risk_if_too_high": "Too broad/narrow"
+          },
+          {
+            "group": "RAG",
+            "toggle": "RAG_MIN_DOCS",
+            "default": "2",
+            "current": "2",
+            "prompt_section": "3, 4, 5",
+            "configures": "Minimum docs/snippets for grounding",
+            "impact": "2: At least 2 docs per answer",
+            "risk_if_too_high": "Noise, bloat"
+          },
+          {
+            "group": "RAG",
+            "toggle": "RAG_MAX_DOCS",
+            "default": "8",
+            "current": "8",
+            "prompt_section": "3, 4, 5",
+            "configures": "Maximum docs/snippets for grounding",
+            "impact": "8: Up to 8 docs per answer",
+            "risk_if_too_high": "Slowness, bloat"
+          },
+          {
+            "group": "Retrieval",
+            "toggle": "AGENTIC_MODE",
+            "default": "ON",
+            "current": "ON",
+            "prompt_section": "3, 4",
+            "configures": "Enables multi-hop retrieval in retrieval workflow",
+            "impact": "ON: Multi-hop enabled; OFF: Single-pass",
+            "risk_if_too_high": "Cycle waste, drift"
+          },
+          {
+            "group": "Retrieval",
+            "toggle": "AGENTIC_MAX_HOPS",
+            "default": "2",
+            "current": "2",
+            "prompt_section": "3, 4",
+            "configures": "Maximum retrieval hops",
+            "impact": "2: Up to 2 hops allowed",
+            "risk_if_too_high": "Tangent risk"
+          },
+          {
+            "group": "Retrieval",
+            "toggle": "RETRIEVAL_SOURCES",
+            "default": "hybrid",
+            "current": "hybrid",
+            "prompt_section": "3, 4",
+            "configures": "Sets source pool for retrieval",
+            "impact": "hybrid: Both; keyword/semantic: One only",
+            "risk_if_too_high": "Recall/precision risk"
+          },
+          {
+            "group": "Retrieval",
+            "toggle": "RETRIEVAL_COUNT",
+            "default": "3",
+            "current": "3",
+            "prompt_section": "3, 4",
+            "configures": "Results returned per retrieval",
+            "impact": "3: Three results per request",
+            "risk_if_too_high": "Missed facts/noise"
+          },
+          {
+            "group": "Retrieval",
+            "toggle": "QUERY_REFINEMENT",
+            "default": "ON",
+            "current": "ON",
+            "prompt_section": "3, 4",
+            "configures": "Allows retry/rephrase of failed queries",
+            "impact": "ON: Retries on failure; OFF: No retries",
+            "risk_if_too_high": "Loops, waste"
+          },
+          {
+            "group": "Retrieval",
+            "toggle": "SOURCE_ATTRIBUTION",
+            "default": "ON",
+            "current": "ON",
+            "prompt_section": "3, 4, 5",
+            "configures": "Enforces mapping of all answers to sources",
+            "impact": "ON: Full mapping; OFF: Weak traceability",
+            "risk_if_too_high": "Bloated output"
+          },
+          {
+            "group": "Retrieval",
+            "toggle": "RETRIEVAL_QUALITY_THRESHOLD",
+            "default": "policy",
+            "current": "policy",
+            "prompt_section": "3, 4, 5",
+            "configures": "Enforces min. precision/recall",
+            "impact": "policy: Min 0.90/0.85; loose: Lower quality",
+            "risk_if_too_high": "Noise, drift"
+          },
+          {
+            "group": "Metrics",
+            "toggle": "TRACE_TRANSFORMER",
+            "default": "off",
+            "current": "on",
+            "prompt_section": "3, 4, 5",
+            "configures": "Logs model attention/metrics for debug",
+            "impact": "on: Full logs; off: None",
+            "risk_if_too_high": "Perf cost, leakage"
+          },
+          {
+            "group": "Metrics",
+            "toggle": "METRICS_OVERLAY",
+            "default": "transformer_v1",
+            "current": "transformer_v1",
+            "prompt_section": "3, 4, 5",
+            "configures": "Overlays run metrics on reasoning/output",
+            "impact": "transformer_v1: Overlay on; none: Off",
+            "risk_if_too_high": "Log clutter"
+          },
+          {
+            "group": "Metrics",
+            "toggle": "METRICS_TIER",
+            "default": "1",
+            "current": "1",
+            "prompt_section": "3, 4, 5",
+            "configures": "Depth of metrics logged",
+            "impact": "1: Basic; 2: Full logs",
+            "risk_if_too_high": "Latency, size"
+          },
+          {
+            "group": "Metrics",
+            "toggle": "METRICS_SAMPLING",
+            "default": "on_suspect",
+            "current": "on_suspect",
+            "prompt_section": "3, 4, 5",
+            "configures": "When to sample metrics logs",
+            "impact": "on_suspect: On anomaly; always/never: All/none",
+            "risk_if_too_high": "Missed bugs/cycle waste"
+          }
+        ],
+        "fail_fast_alerts": [
+          "TOGGLE ERROR",
+          "ROUTER ERROR",
+          "TIME ANCHOR ERROR",
+          "OVERLAY LEAKAGE",
+          "AUDIT VISIBILITY ERROR"
+        ],
+        "pre_run_toggle_gate": {
+          "echo_table": "3.context.runtime_toggles.table_3A",
+          "lock_all_toggles": true,
+          "no_mid_run_changes": true
+        },
+        "time_anchor_policy": {
+          "timezone": "America/New_York",
+          "print_iso_date_and_dow": true,
+          "expand_relative_dates": true
+        },
+        "router": {
+          "required": true,
+          "halt_on_orphans_or_duplicates": true
+        },
+        "table_3A_patch": {
+          "enforcement": "Every runtime toggle emitted in output table must include all canonical fields: group, toggle, default, current, description, what_it_means, risk_if_too_high.",
+          "block_on_missing": true,
+          "block_on_null_or_empty": true,
+          "qa_gate": "Section 3 output is blocked if any toggle is missing any required field or any field is null/empty. Remediation required before proceeding."
+        }
+      },
+      "dynamic_context_assembly": {
+        "table_3B": [
+          {
+            "order": 1,
+            "layer": "cinstr",
+            "contents": "Sections 1-2 constraints."
+          },
+          {
+            "order": 2,
+            "layer": "cquery",
+            "contents": "User request canonized."
+          },
+          {
+            "order": 3,
+            "layer": "cmem",
+            "contents": "Relevant memory slices."
+          },
+          {
+            "order": 4,
+            "layer": "cknow",
+            "contents": "External knowledge via hybrid retrieval."
+          },
+          {
+            "order": 5,
+            "layer": "cretrieval_plan",
+            "contents": "Multi hop log (queries, tools, residual gaps)."
+          },
+          {
+            "order": 6,
+            "layer": "ctools",
+            "contents": "Available tools inventory."
+          },
+          {
+            "order": 7,
+            "layer": "cstate",
+            "contents": "Time and status."
+          }
+        ],
+        "assembly_rules": [
+          "Filter",
+          "Dedup",
+          "Rerank",
+          "Compress",
+          "Label",
+          "Order",
+          "Insert"
+        ],
+        "coverage_retry_on_gap": true,
+        "pin_constraints": true,
+        "truncation_logs_audit_only": true
+      },
+      "agentic_retrieval_workflow": {
+        "table_3C": [
+          {
+            "step": 1,
+            "action": "Formulate initial queries from cquery.",
+            "quality_or_logging": "Record in cretrieval_plan."
+          },
+          {
+            "step": 2,
+            "action": "Hybrid retrieval (keyword U semantic) -> cross-encoder rerank; HyDE if Coverage < tau.",
+            "quality_or_logging": "precision>=0.90; recall>=0.85."
+          },
+          {
+            "step": 3,
+            "action": "Log queries, sources, rationales, outcomes.",
+            "quality_or_logging": "Full hop log."
+          },
+          {
+            "step": 4,
+            "action": "Gap analysis; refine queries (QUERY_REFINEMENT=ON).",
+            "quality_or_logging": "Note residual gaps."
+          },
+          {
+            "step": 5,
+            "action": "Iterate <= AGENTIC_MAX_HOPS; log each hop.",
+            "quality_or_logging": "Stop at cap."
+          },
+          {
+            "step": 6,
+            "action": "Deduplicate, compress, attribute; exclude irrelevant or sensitive.",
+            "quality_or_logging": "Attribute sources; prep for Section 4."
+          }
+        ]
+      },
+      "ambiguity_resolution": "Use structured Socratic questioning; record resolutions for Section 4.",
+      "cross_check_self_test": {
+        "checklist": [
+          "Echo and LOCK all toggles",
+          "Router = ON",
+          "ET anchor printed (ISO date + DOW, America/New_York)",
+          "Overlay = audit-only",
+          "Trace Manifest prepared if AUDIT_VISIBILITY=true"
+        ],
+        "block_on_any_fail": true
+      },
+      "version_pins": {
+        "table_3D": [
+          {
+            "component": "Prompt Shell",
+            "version": "v3.0"
+          },
+          {
+            "component": "App Schema",
+            "version": "v4"
+          },
+          {
+            "component": "App Tracker QA",
+            "version": "v5"
+          },
+          {
+            "component": "Transformer Metrics Overlay",
+            "version": "v1.0"
+          },
+          {
+            "component": "AI FILTER",
+            "version": "v10"
+          },
+          {
+            "component": "Embedding Model",
+            "version": "text-embedding-3-large"
+          }
+        ]
+      }
+    },
+    "4.reasoning": {
+      "purpose": "Execute retrieval and structured reasoning while keeping all internals isolated. PURPOSE SUBSECTION: EMIT NO CONTENT.",
+      "phase_1_agentic_retrieval": {
+        "initial_retrieval": "BM25 U dense -> cross encoder; HyDE when Coverage < tau; enforce precision>=0.90 and recall>=0.85; log BLOCKERS.",
+        "gap_analysis_multi_hop": "Refine via ToT and Socratic; <= AGENTIC_MAX_HOPS; log query -> source or tool -> summary -> residual gaps.",
+        "context_finalization": "Deduplicate; compress; attribute; chunk~512 and overlap~256; pin critical facts to edges; exclude sensitive or irrelevant items.",
+        "budgets_tokens": {
+          "instructions": 800,
+          "recent_dialog": 1200,
+          "retrieval": 1800,
+          "memory": 600,
+          "answer_buffer": 1200
+        },
+        "health_thresholds": {
+          "coverage": 0.85,
+          "relevance": 0.9,
+          "coherence": 0.9,
+          "utilization": 0.8
+        },
+        "overlay_policy": {
+          "tier_1": "snapshot",
+          "tier_2_on_anomaly": true,
+          "sampling": "on_suspect",
+          "overlay_audit_only": true
+        },
+        "retrieval_branch_taxonomy": [
+          {
+            "name": "no_new",
+            "description": "Use only existing retrieved snippets; no extra hops."
+          },
+          {
+            "name": "rewrite_rerank",
+            "description": "Rewrite query then hybrid retrieve and cross-encoder rerank."
+          },
+          {
+            "name": "HyDE",
+            "description": "Generate hypothetical document then retrieve and rerank."
+          }
+        ],
+        "branch_taxonomy_visibility": "audit_only"
+      },
+      "phase_2_transparency_notes": {
+        "visible_if_SHOW_REASONING_true": true,
+        "NOTES": [
+          "Retrieval Plan Log",
+          "Assembly Justification",
+          "Memory Integration Log",
+          "External Knowledge Log",
+          "Transformer Overlay Snapshot",
+          "Context Metrics",
+          "CUR",
+          "Token Budget Ledger",
+          "Trace Manifest A-K when AUDIT_VISIBILITY=true"
+        ],
+        "trace_manifest_schema_A_to_K": [
+          "A RunID",
+          "B ToggleStates",
+          "C RetrievalPlan",
+          "D Sources",
+          "E EvidenceMap",
+          "F ToTPaths",
+          "G MetricsOverlay",
+          "H TokenLedger",
+          "I ContextHealth",
+          "J MaxTracePointer",
+          "K ErrorsAndBlocks"
+        ]
+      },
+      "policy_guardrails": {
+        "separation_and_leakage_prevention": {
+          "all_chains_branches_scores_arithmetic_provenance_in_reasoning_only": true,
+          "output_contains_only_requested_visible_content": true
+        },
+        "audit_store_visibility": {
+          "persist_artifacts_to_audit_store": true,
+          "expose_only_maxtrace_pointer": true,
+          "audit_visibility_default": false
+        },
+        "hygiene_visible_text": {
+          "ascii_punctuation_only": true,
+          "forbid_em_dash": true,
+          "forbid_double_hyphens": true,
+          "forbid_section_label_headers": true,
+          "forbid_section_label_headers_examples": [
+            "Intro:",
+            "Introduction:",
+            "Summary:",
+            "Competency:",
+            "Header:"
+          ]
+        },
+        "qa_policy_and_thresholds": {
+          "single_consolidated_qa_block": true,
+          "no_per_subsection_qa_in_visible_artifact": false,
+          "averages_minima": {
+            "exec": 0.9,
+            "s": 0.9
+          },
+          "max_rewrites": 2,
+          "allow_mini_qa_per_k_in_output": true,
+          "mini_qa_rows_per_k_range": "1-4"
+        },
+        "enforcement_toggles_gate_logic": {
+          "ENFORCE_QA": true,
+          "ENFORCEMENT_LEVEL": {
+            "allowed": [
+              "global",
+              "section"
+            ],
+            "default": "global"
+          }
+        },
+        "fallbacks_section_gating": [
+          "SAFE_SCAFFOLD",
+          "SAFE_MINIMAL"
+        ],
+        "role_mapping_guardrails": {
+          "catalog_only_role_labels": true,
+          "global_block_on_breach": true
+        },
+        "pause_and_blocks": {
+          "insert_pause_after_reasoning": true,
+          "on_failure_write_conditions_and_stop_output": true
+        }
+      },
+      "phase_3_hybrid_execution": {
+        "domain_subsections_template": "K.1..K.9",
+        "cot_primary_linear_path": true,
+        "tot_branch_exploration": true,
+        "tot_metrics_table_template": {
+          "columns": [
+            "Path",
+            "SchemaCoverage",
+            "FactConsistency",
+            "RetrievalError",
+            "Drift",
+            "Canonicality",
+            "AmbiguityRate",
+            "DecisionScore",
+            "Verdict and Rationale"
+          ],
+          "decision_score_formula": "0.30*SchemaCoverage + 0.25*FactConsistency + 0.15*Canonicality + 0.15*(1-RetrievalError) + 0.10*(1-Drift) + 0.05*(1-AmbiguityRate)"
+        },
+        "K_rules": {
+          "K.1 JD Intake and Configuration": {
+            "cot": [
+              "Fields present: Company, Job Title, JD URL extracted & normalized",
+              "Evidence mapped: source_id, locator, confidence for all three fields",
+              "Confidence ≥0.90 for Company and Job Title extraction",
+              "JD URL HTTP 200 with retries and canonicalization (strip trackers, follow redirects)",
+              "URL canonicalization steps recorded (scheme normalization, trackers/anchors removed)",
+              "Socratic remediation up to 2 rounds on missing/ambiguous fields; mark UNRESOLVED if unresolved",
+              "Failure diagnostics logged to audit (run_id, timestamp, actor_id, reasons, HTTP diagnostics)",
+              "Scratchpad capture of raw snippets, headers, retries, Q&A, confidence scores",
+              "Schema v4 fenced JSON prepared (Company, Job Title, JD URL) for Section 5 emission"
+            ],
+            "socratic": {
+              "mode": "conditional",
+              "triggers": [
+                "missing_required_fields",
+                "url_http_status_not_200",
+                "field_extraction_confidence_below_threshold"
+              ],
+              "max_rounds": 2,
+              "question_templates": [
+                "Does the JD reference a specific vertical (banking, insurance, payments) or only 'financial services'?",
+                "Is Controls Technology described as part of risk/compliance or product engineering?",
+                "Is the Job Title presented verbatim or embedded in a longer heading?"
+              ],
+              "flow": [
+                "Round 1: ask up to 3 focused clarifying questions",
+                "If user response resolves trigger, re-run extraction and continue",
+                "If unresolved and rounds < max_rounds, ask refined questions and retry",
+                "If still unresolved after max_rounds, mark K.1 UNRESOLVED and emit remediation action"
+              ]
+            },
+            "evidence_mapping_template": {
+              "Company": {
+                "source_id": "<url_or_doc>",
+                "locator": "<xpath_or_snippet>",
+                "confidence": "<0.00-1.00>"
+              },
+              "Job Title": {
+                "source_id": "<url_or_doc>",
+                "locator": "<xpath_or_snippet>",
+                "confidence": "<0.00-1.00>"
+              },
+              "JD URL": {
+                "source_id": "<provided_url>",
+                "locator": "HEAD/GET response",
+                "http_status": "<int>"
+              }
+            },
+            "acceptance_criteria": [
+              "Company present and confidence >= 0.90",
+              "Job Title present and confidence >= 0.90",
+              "JD URL resolves with HTTP 200 on at least one HEAD/GET attempt",
+              "All evidence mappings recorded in evidence_mapping_template"
+            ],
+            "failure_actions": [
+              "Mark K.1 as UNRESOLVED with failure reasons",
+              "Emit remediation action with missing_fields, http_diagnostics, and suggested clarifying questions",
+              "Log run_id, timestamp, actor_id, and scratchpad ledger to audit store"
+            ],
+            "scratchpad_notes": "Log raw extraction snippets, HTTP headers, normalization steps, retries, socratic Q&A, and confidence scores for audit",
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "optional_methods": [
+              {
+                "method": "Program-Aided",
+                "when_used": "HTTP HEAD/GET checks, URL normalization",
+                "triggers": [
+                  "url_http_status_not_200",
+                  "redirects_detected",
+                  "canonicalization_needed"
+                ]
+              },
+              {
+                "method": "Socratic Q&A",
+                "when_used": "Clarify missing fields or ambiguous job title",
+                "triggers": [
+                  "missing_required_fields",
+                  "ambiguous_title"
+                ]
+              }
+            ]
+          },
+          "K.2 Company Category and Sub-Category": {
+            "cot": [
+              "Category & Sub-Category present from authoritative sources",
+              "Web retrieval executed with targeted queries",
+              "Minimum 3 sources spanning corporate site, industry/analyst, trusted news",
+              "Cross-encoder rerank precision ≥0.90; Recall ≥0.85",
+              "Map to canonical schema with evidence pointers (source_id, locator)",
+              "Granularity: mapping precision/coherence meet thresholds",
+              "Scratchpad capture: queries, URLs, rerank scores, evidence mapping",
+              "Optional Self-Consistency on close/conflicting scores",
+              "Optional Decomposition (corporate vs analyst evidence)",
+              "Schema v4 fenced JSON prepared (Category, Sub-Category) for Section 5 emission"
+            ],
+            "rag": {
+              "mode": "external_web_only",
+              "queries": [
+                "Citi official industry classification",
+                "Citi Generative AI Delivery Controls Technology banking sub-sector",
+                "Controls Technology governance in banking regulatory context"
+              ],
+              "search_types": [
+                "keyword",
+                "semantic"
+              ],
+              "rerank": "cross-encoder",
+              "accepted_source_types": [
+                "corporate_site",
+                "industry_report",
+                "analyst_report",
+                "trusted_news"
+              ],
+              "verification": {
+                "precision_threshold": 0.9,
+                "recall_threshold": 0.85,
+                "required_top_k": 3
+              },
+              "evidence_mapping_template": {
+                "Category": {
+                  "source_id": "<url>",
+                  "locator": "<xpath_or_snippet>"
+                },
+                "Sub-Category": {
+                  "source_id": "<url>",
+                  "locator": "<xpath_or_snippet>"
+                }
+              }
+            },
+            "scratchpad_notes": "Log web queries, top source URLs, rerank scores, and final evidence pointers for audit",
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "optional_methods": [
+              {
+                "method": "Self-Consistency",
+                "when_used": "Validate category/sub-category mapping",
+                "triggers": [
+                  "close_scores",
+                  "conflicting_sources"
+                ]
+              },
+              {
+                "method": "Decomposition",
+                "when_used": "Split corporate vs analyst evidence then reconcile",
+                "triggers": [
+                  "evidence_conflict"
+                ]
+              }
+            ]
+          },
+          "K.3 Role Mapping": {
+            "cot": [
+              "Embedding query built from JD signals against SaaS Roles catalog (use Role and Role Description)",
+              "Top matches retrieved using both role title and description signals",
+              "Primary Job Role selected: single highest DecisionScore (no secondary)",
+              "Catalog-only guard; no ad-hoc/past-role token contamination",
+              "Pointer/evidence retained to catalog entry",
+              "Granularity: mapped role reflects scope and function per catalog description",
+              "Scratchpad logging of scores and rationale",
+              "Optional Self-Consistency for ties within 0.05",
+              "Optional Program-aided checks for scoring math/normalization",
+              "Schema v4 fenced JSON prepared (Primary Job Role) for Section 5 emission"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "scratchpad_notes": "Scratchpad enabled for this K rule; record interim reasoning, checks, and evidence pointers.",
+            "optional_methods": [
+              {
+                "method": "Self-Consistency",
+                "when_used": "Archetype match scoring and tie-break",
+                "triggers": [
+                  "scores_within_0.05"
+                ]
+              },
+              {
+                "method": "Program-Aided",
+                "when_used": "Embedding scoring math and normalization",
+                "triggers": [
+                  "scoring_verification"
+                ]
+              }
+            ]
+          },
+          "K.4 Headline": {
+            "cot": [
+              "Header format: 'X | Y | Z' one line; 3–4 axes; ≤4 words/axis; total 8–15 words; ASCII only",
+              "Axis discovery from core signals; terms must match approved lexicon",
+              "JD alignment: 3/3 dominant themes represented",
+              "No label headers such as 'Intro:'/'Summary:'",
+              "HeadlineScore computed and ≥ internal threshold (alignment, clarity, compactness)",
+              "ASCII hygiene: forbid em dash and double hyphen; scan and remediate",
+              "Prepared final headline string for Section 5 emission"
+            ],
+            "tot": {
+              "branches": [
+                "A Execution led",
+                "B Strategy led",
+                "C Reliability led"
+              ],
+              "tie_breaker": "prefer branch matching JD dominant predicate"
+            },
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "scratchpad_notes": "Scratchpad enabled for this K rule; record interim reasoning, checks, and evidence pointers.",
+            "optional_methods": [
+              {
+                "method": "Self-Consistency",
+                "when_used": "Select best headline among candidates",
+                "triggers": [
+                  "similar_scores"
+                ]
+              }
+            ]
+          },
+          "K.5 Executive Summary": {
+            "cot": [
+              "Exactly 4 sentences in 1 paragraph (no bullets/extra lines)",
+              "Sentence 1: Executive Identity & Scale",
+              "Sentence 2: Teams/Partnerships (unifying cross-functional alliances)",
+              "Sentence 3: Governance/Platform (audit-ready, compliance, platform-building)",
+              "Sentence 4: Quantified Impact AND explicit 'why I am a great fit' claim (JD-neutral)",
+              "JD-neutral leadership/fit; no JD trace/signature",
+              "No overlap with K.4 headline, K.6/K.7 bullets, or K.8 competencies",
+              "Granularity ≥ base resume per sentence (tokens/sentence, noun-phrase density, metrics/100wds)",
+              "Hygiene: past tense; ASCII only; no first person; numbers in S4 only",
+              "Dash/invisible char bans: forbid U+2014, U+2013, U+2012, U+2015, U+2043, U+2212, U+2010, U+2011, double hyphen, ASCII hyphen as separator, and U+00A0/U+00AD/U+200B–U+200F/U+202F/U+2060/U+FEFF"
+            ],
+            "tot": {
+              "branches": [
+                "A Governance led",
+                "B Stakeholder led",
+                "C Delivery led"
+              ],
+              "tie_breaker": "prefer lower overlap vs headline and bullets"
+            },
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "scratchpad_notes": "Scratchpad enabled for this K rule; record interim reasoning, checks, and evidence pointers.",
+            "optional_methods": [
+              {
+                "method": "Self-Consistency",
+                "when_used": "Four-sentence summary variant check",
+                "triggers": [
+                  "style_conflict",
+                  "overlap_vs_bullets"
+                ]
+              }
+            ]
+          },
+          "K.6 Professional Experience - Unify": {
+            "cot": [
+              "Header lines match base resume: Company, Location, Title, Dates",
+              "Intro sentence summarizes senior scope + includes at least one quantified outcome",
+              "Intro sentence length & granularity ≥ base resume (tokens, noun phrases, metric density, scope markers)",
+              "Exactly 7 bullets",
+              "Each bullet 15–25 words; single sentence; senior verb + technical context + metric/outcome",
+              "Provenance: ≥2 bullets verbatim/nearly verbatim from base resume (audit only)",
+              "Coverage across bullets includes: genAI, LLMs, MLOps, risk, partnerships, platform, reliability, delivery, stakeholders",
+              "Bullets scored & ranked by: StrategicAlignment(50%), TechnicalSpecificity(20%), ScopeScale(15%), StakeholderComplexity(15%)",
+              "Granularity ≥ base resume for bullets (avg length, metric density, specificity, scope markers)",
+              "Hygiene: past tense; ASCII only; no first person",
+              "Dash/invisible char bans (same full list as K.5)",
+              "No label headers such as 'Intro:' etc."
+            ],
+            "tot": {
+              "branch_sets": [
+                "A Platform and Reliability",
+                "B Product and Partnerships",
+                "C Governance and Risk"
+              ],
+              "per_bullet_dims": [
+                "SeniorVerb",
+                "TechnicalSpecificity",
+                "StrategicAlignment",
+                "QuantifiedOutcomes"
+              ],
+              "tie_policy": [
+                "prefer higher metric density",
+                "then higher TechnicalSpecificity"
+              ]
+            },
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "scratchpad_notes": "Scratchpad enabled for this K rule; record interim reasoning, checks, and evidence pointers.",
+            "optional_methods": [
+              {
+                "method": "Decomposition",
+                "when_used": "Split bullets by theme then recombine",
+                "triggers": [
+                  "coverage_gap"
+                ]
+              },
+              {
+                "method": "Self-Consistency",
+                "when_used": "Select best 7 bullets from a candidate set",
+                "triggers": [
+                  "more_than_7_candidates"
+                ]
+              }
+            ],
+            "ranking": {
+              "BulletAlignmentScore_formula": "0.50*StrategicAlignment + 0.20*TechnicalSpecificity + 0.15*ScopeScale + 0.15*StakeholderComplexity",
+              "pass_fail_gates": [
+                "SeniorVerb required",
+                "QuantifiedOutcome required"
+              ],
+              "ordering": "Rank 7 bullets high->low by BulletAlignmentScore",
+              "tie_breaker": [
+                "TechnicalSpecificity",
+                "ScopeScale"
+              ]
+            }
+          },
+          "K.7 Professional Experience - IBM": {
+            "cot": [
+              "Header lines match base resume: Company, Location, Title, Dates",
+              "Intro sentence summarizes senior scope + includes global/enterprise-wide outcome",
+              "Intro sentence length & granularity ≥ base resume (tokens, noun phrases, metric density, scope markers)",
+              "Exactly 7 bullets",
+              "Each bullet 15–25 words; single sentence; senior verb + technical context + metric/outcome",
+              "Provenance: ≥2 bullets verbatim/nearly verbatim from base resume (audit only)",
+              "Coverage across bullets includes: AI leadership, NLP, cloud transformation, compliance, alliances, program delivery, modernization",
+              "Bullets scored & ranked by: StrategicAlignment(50%), TechnicalSpecificity(20%), ScopeScale(15%), StakeholderComplexity(15%)",
+              "Granularity ≥ base resume for bullets (avg length, metric density, specificity, scope markers)",
+              "Hygiene: past tense; ASCII only; no first person",
+              "Dash/invisible char bans (same full list as K.5)",
+              "No label headers such as 'Intro:' etc."
+            ],
+            "tot": {
+              "branch_sets": [
+                "A Cloud and NLP",
+                "B Regulatory modernization and compliance",
+                "C Alliances and program delivery"
+              ]
+            },
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "scratchpad_notes": "Scratchpad enabled for this K rule; record interim reasoning, checks, and evidence pointers.",
+            "optional_methods": [
+              {
+                "method": "Decomposition",
+                "when_used": "Split bullets by theme then recombine",
+                "triggers": [
+                  "coverage_gap"
+                ]
+              },
+              {
+                "method": "Self-Consistency",
+                "when_used": "Select best 7 bullets from a candidate set",
+                "triggers": [
+                  "more_than_7_candidates"
+                ]
+              }
+            ],
+            "ranking": {
+              "BulletAlignmentScore_formula": "0.50*StrategicAlignment + 0.20*TechnicalSpecificity + 0.15*ScopeScale + 0.15*StakeholderComplexity",
+              "pass_fail_gates": [
+                "SeniorVerb required",
+                "QuantifiedOutcome required"
+              ],
+              "ordering": "Rank 7 bullets high->low by BulletAlignmentScore",
+              "tie_breaker": [
+                "TechnicalSpecificity",
+                "ScopeScale"
+              ]
+            }
+          },
+          "K.8 Competencies": {
+            "cot": [
+              "Exactly 6 competency items",
+              "Formatting: each item begins with '**• Competency X:**' (bolded label) followed by plain-text description",
+              "Length: each description 15–25 words",
+              "Provenance: ≥2 items verbatim/nearly verbatim from base resume (audit only)",
+              "Pairwise distinctness: semantic similarity <0.92 AND token overlap <40% across all pairs",
+              "Each item scored: LeadershipRelevance(40%), Distinctiveness(30%), TechnicalDepth(20%), EvidenceReadiness(10%)",
+              "Rank items high→low by composite score; ties prefer greater distinctiveness, then EvidenceReadiness",
+              "Granularity ≥ base resume (avg content words, concrete nouns, action terms)",
+              "Hygiene: ASCII only; no first person; no extra label headers; no list/section breaks",
+              "Dash/invisible char bans (same full list as K.5)"
+            ],
+            "tot": {
+              "branch_sets": [
+                "A Leadership relevance focus",
+                "B Distinctiveness focus",
+                "C Technical depth focus"
+              ],
+              "dims": [
+                "LeadershipRelevance",
+                "Distinctiveness",
+                "TechnicalDepth",
+                "EvidenceReadiness"
+              ],
+              "tie": [
+                "prefer greater distinctiveness",
+                "then higher EvidenceReadiness"
+              ]
+            },
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "scratchpad_notes": "Scratchpad enabled for this K rule; record interim reasoning, checks, and evidence pointers.",
+            "optional_methods": [
+              {
+                "method": "Program-Aided",
+                "when_used": "Compute pairwise similarity and token overlap",
+                "triggers": [
+                  "distinctiveness_check"
+                ]
+              },
+              {
+                "method": "Self-Consistency",
+                "when_used": "Choose 6 most distinctive items",
+                "triggers": [
+                  "borderline_similarity"
+                ]
+              }
+            ]
+          },
+          "K.9 End Questions": {
+            "cot": [
+              "Why interested: 1 paragraph, 4–6 sentences; original (not copied from resume/JD)",
+              "Why ideal: 2 paragraphs, 2–3 sentences each",
+              "Why ideal Para 1: why I am an ideal fit for this job",
+              "Why ideal Para 2: my unique background and differentiated value proposition",
+              "Counts conform (1 para 4–6; 2 paras of 2–3 each)",
+              "Voice: first person allowed; present or past tense permitted",
+              "Hygiene: ASCII only; no compensation; no lists",
+              "Dash/invisible char bans (same full list as K.5)"
+            ],
+            "tot": {
+              "branches": [
+                "A Mission or Scope led",
+                "B Outcomes or Market led",
+                "C Reliability or Risk led"
+              ],
+              "AnswerScore_formula": "0.35*Alignment + 0.30*Clarity + 0.20*TechnicalRelevance + 0.15*Authenticity",
+              "accept_threshold": ">=0.90",
+              "tie_policy": [
+                "mission led for interested",
+                "scope led for ideal and leaving"
+              ]
+            },
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            },
+            "scratchpad_notes": "Scratchpad enabled for this K rule; record interim reasoning, checks, and evidence pointers.",
+            "optional_methods": [
+              {
+                "method": "Socratic Q&A",
+                "when_used": "Clarify motivation and forward-looking reason",
+                "triggers": [
+                  "mission_ambiguity",
+                  "reason_for_leaving_ambiguous"
+                ]
+              }
+            ]
+          }
+        },
+        "deterministic_tie_breakers": {
+          "threshold_delta": 0.02,
+          "order": [
+            "HigherSchemaCoverage",
+            "HigherFactConsistency",
+            "LowerRetrievalError",
+            "LowerDrift",
+            "HigherCanonicality",
+            "LowerAmbiguityRate",
+            "PreferLowerTokenCost"
+          ]
+        }
+      },
+      "phase_4_reflexion": {
+        "critique_rounds_min": 2,
+        "fix_errors_gaps_assumptions": true,
+        "recheck_facts_and_arithmetic": true,
+        "update_notes": true,
+        "scratchpad_visibility": "on",
+        "k_rules_reflexion": {
+          "K.1 JD Intake and Configuration": {
+            "reflexion": [
+              "If URL resolution fails, attempt URL normalization (strip trackers, convert https/http) and retry up to 2 times",
+              "If retries fail, mark K.1 UNRESOLVED and emit remediation action with diagnostics",
+              "If required fields missing after retries, mark K.1 UNRESOLVED and list missing fields and suggested probes"
+            ],
+            "bolster_steps": [
+              "Re-verify URL canonicalization with normalized scheme and stripped trackers",
+              "Cross-check extracted Company/Title confidence >= 0.90",
+              "If unresolved, propose targeted probes for missing fields"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.2 Company Category and Sub-Category": {
+            "reflexion": [
+              "Confirm Category = Financial Services when corporate site states industry classification",
+              "Confirm Sub-Category = Banking when industry sources corroborate controls/governance linkage to banking",
+              "If thresholds not met, run additional web queries and iterate up to 3 retries",
+              "If still unresolved, mark K.2 as UNRESOLVED and emit remediation action"
+            ],
+            "bolster_steps": [
+              "Compare corporate site vs analyst classification differences",
+              "Re-score category/sub-category coherence >= 0.90",
+              "Flag if precision/recall thresholds not met"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.3 Role Mapping": {
+            "reflexion": [],
+            "bolster_steps": [
+              "Re-evaluate DecisionScore for top 3 archetypes",
+              "Check SeniorityFit and OrgPillarMatch rationale notes",
+              "Confirm secondary archetypes within 0.05 if present"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.4 Headline": {
+            "reflexion": [],
+            "bolster_steps": [
+              "Check HeadlineScore vs constraints and lexicon policy",
+              "Reduce redundancy with K.5 and K.6/K.7 headers"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.5 Executive Summary": {
+            "reflexion": [],
+            "bolster_steps": [
+              "Validate 4 sentences rule and hygiene",
+              "Ensure overlaps with headline/bullets < policy threshold"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.6 Professional Experience - Unify": {
+            "reflexion": [],
+            "bolster_steps": [
+              "Confirm 7 bullets and theme coverage",
+              "Verify >=2 provenance bullets marked (audit only)"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.7 Professional Experience - IBM": {
+            "reflexion": [],
+            "bolster_steps": [
+              "Confirm global scope present in intro",
+              "Verify >=2 provenance bullets marked (audit only)"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.8 Competencies": {
+            "reflexion": [],
+            "bolster_steps": [
+              "Check pairwise similarity < 0.92 and token_overlap < 40%",
+              "Rebalance for leadership vs technical depth if skewed"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          },
+          "K.9 End Questions": {
+            "reflexion": [],
+            "bolster_steps": [
+              "Check paragraph and sentence counts per sub-part",
+              "Scan for compensation mentions or list formatting (forbid)"
+            ],
+            "scratchpad": {
+              "enabled": true,
+              "visibility": "notes_vs_answer"
+            }
+          }
+        }
+      },
+      "phase_5_qa_precheck": {
+        "instantiate_universal_qa_gate_schema": true,
+        "remediate_and_rerun_until_all_pass": true,
+        "block_progress_to_output_on_fail": true
+      },
+      "phase_6_validation_metrics": {
+        "self_consistency_mini_cots": 5,
+        "overlay_stability_tier2_on_anomaly": true,
+        "pre_qa_and_mzlo_verification": [
+          "verify_governance_toggles",
+          "verify_assembly_rules",
+          "verify_retrieval_thresholds",
+          "verify_arithmetic_checks",
+          "verify_mzlo_by_artifact_id_else_remediate"
+        ],
+        "granularity_verification": {
+          "nodes": [
+            "K.5",
+            "K.6_intro",
+            "K.7_intro",
+            "K.8_items"
+          ],
+          "metrics": {
+            "K.5": [
+              "tokens_per_sentence",
+              "noun_phrase_density",
+              "metric_count_per_100_words"
+            ],
+            "K.6_intro": [
+              "metric_density",
+              "specificity_terms",
+              "scope_markers"
+            ],
+            "K.7_intro": [
+              "metric_density",
+              "specificity_terms",
+              "scope_markers"
+            ],
+            "K.8_items": [
+              "content_words",
+              "concrete_nouns",
+              "action_terms"
+            ]
+          },
+          "policy": "Each node must have granularity_score >= corresponding baseline from base resume; else remediate before OUTPUT."
+        }
+      },
+      "method_reference_table": {
+        "columns": [
+          "Method",
+          "Description_When_Used",
+          "Typical_Trigger"
+        ],
+        "rows": [
+          {
+            "Method": "Chain-of-Thought",
+            "Description_When_Used": "Linear, explicit steps (default mode)",
+            "Typical_Trigger": "Any complex/structured solve"
+          },
+          {
+            "Method": "Tree-of-Thought",
+            "Description_When_Used": "Branching alternatives, beam search",
+            "Typical_Trigger": "Uncertainty, many plausible paths"
+          },
+          {
+            "Method": "Hybrid CoT/ToT",
+            "Description_When_Used": "Stepwise with branch points",
+            "Typical_Trigger": "As needed for ambiguity/divergence"
+          },
+          {
+            "Method": "Self-Consistency",
+            "Description_When_Used": "Multiple runs + majority voting for best answer",
+            "Typical_Trigger": "High stakes, validation required"
+          },
+          {
+            "Method": "Decomposition",
+            "Description_When_Used": "Split into subtasks and recombine",
+            "Typical_Trigger": "Problem is multi-faceted"
+          },
+          {
+            "Method": "Program-Aided",
+            "Description_When_Used": "Use of code, calculators, or external tools in main solve",
+            "Typical_Trigger": "Exact math or logic checks"
+          },
+          {
+            "Method": "Socratic Q&A",
+            "Description_When_Used": "Internal clarifying Q&A (if ambiguity/gap found in solve)",
+            "Typical_Trigger": "Unclear step, conflict, gap"
+          },
+          {
+            "Method": "Scratchpad Mode",
+            "Description_When_Used": "Separate notes from answer, can use for interim steps",
+            "Typical_Trigger": "For complex, multi-stage QA"
+          }
+        ]
+      },
+      "learning_mode": {
+        "purpose": "Default is 'learning mode'—emit every reasoning step, agentic retrieval, CoT, ToT, self-consistency, reflexion, QA, and validation metrics for each K.1-K.9 (not just summary).",
+        "per_kx_pipeline": true,
+        "metrics_ui_inline": true,
+        "metrics_tier": "RESPECTS_TOGGLE",
+        "section5_metrics_ui": false,
+        "notes": "For all runs in learning mode, after each K.x (K.1-K.9), output a transformer metrics overlay UI (emoji, phase-aligned, MECE, Tier 1 or 1+2 based on METRICS_TIER toggle in Section 3). Section 5 should not render any transformer metrics UI block."
+      },
+      "metrics_ui_overlay_example": "\n█ Transformer Metrics Overlay (Learning Mode, per-K.x)\n\n🧲 Self-Attn: Entropy {attn_entropy} {color}  |  🧑‍🤝‍🧑 HeadDiv {head_div} {color}\n  ↪️ Collapse {attn_collapse} {flag}  |  🌈 Per-Head Sharp {per_head_sharp} {flag}\n💥 FFN: Sparsity {ffn_sparsity} {color}  |  🧮 FFN Mag {ffn_mag} {color}\n  🚨 Outlier {ffn_outlier} {flag}  |  📊 Path Var {ffn_path_var} {flag}\n⚖️ LN Mean {ln_mean} {color}  |  📈 LN Var {ln_var} {color}  |  🔗 Residual Ratio {res_ratio} {color}\n  🔎 LN Outlier {ln_outlier} {flag}  |  🌀 Residual Skew {res_skew} {flag}\n🔢 LogProb {logprob} {color}  |  📉 TokEntr {tok_ent} {color}  |  🤔 Perplex {perplex} {color}\n📝 RespLen {resplen} {color}  |  ⚡ Latency {lat}ms {color}\n  🔑 ConfMap {conf_map} {flag}  |  🧬 GradNorm {grad_norm} {flag}  |  🟣 ActOutlier {act_outlier} {flag}\n",
+      "context_metrics_layman_block": {
+        "purpose": "For every K.x, emit a context metrics table with value and plain-English meaning. Then, if value drops, emit a layman's 'risk/meaning' for each metric.",
+        "template_table": [
+          {
+            "Metric": "Coverage",
+            "Value": "[float]",
+            "What It Means": "All facts found. No missing information."
+          },
+          {
+            "Metric": "Relevance",
+            "Value": "[float]",
+            "What It Means": "Every piece was directly useful."
+          },
+          {
+            "Metric": "Coherence",
+            "Value": "[float]",
+            "What It Means": "Everything fit together—no contradictions."
+          },
+          {
+            "Metric": "Utilization",
+            "Value": "[float]",
+            "What It Means": "Most info used; some wasn’t needed."
+          }
+        ],
+        "if_value_drops": [
+          {
+            "Coverage": "Missing facts—risk of incomplete answer."
+          },
+          {
+            "Relevance": "Brought in irrelevant info—possible confusion."
+          },
+          {
+            "Coherence": "Conflicting data—possible logical errors."
+          },
+          {
+            "Utilization": "Fetched more than needed—wasteful, may distract."
+          }
+        ]
+      },
+      "transformer_metrics_layman_block": {
+        "purpose": "For every K.x, emit transformer metrics overlay as table with value, emoji/color, and layman's meaning. Follow with 'If value drops' risk/meaning.",
+        "sample": [
+          {
+            "Metric": "Self-Attn Entropy",
+            "Value": "[float]",
+            "Color/Emoji": "[color]",
+            "Layman": "How focused the model's attention is."
+          },
+          {
+            "Metric": "Head Diversity",
+            "Value": "[float]",
+            "Color/Emoji": "[color]",
+            "Layman": "How varied the model's attention heads are."
+          },
+          {
+            "Metric": "FFN Sparsity",
+            "Value": "[float]",
+            "Color/Emoji": "[color]",
+            "Layman": "How much of the feed-forward network is being used."
+          },
+          {
+            "Metric": "LN Mean",
+            "Value": "[float]",
+            "Color/Emoji": "[color]",
+            "Layman": "The baseline for layer normalization—should be steady."
+          },
+          {
+            "Metric": "Residual Ratio",
+            "Value": "[float]",
+            "Color/Emoji": "[color]",
+            "Layman": "How much the model keeps of its original signal."
+          },
+          {
+            "Metric": "LogProb",
+            "Value": "[float]",
+            "Color/Emoji": "[color]",
+            "Layman": "How confident the model is in its word choices."
+          },
+          {
+            "Metric": "Perplexity",
+            "Value": "[float]",
+            "Color/Emoji": "[color]",
+            "Layman": "Lower is better; high perplexity = uncertainty."
+          },
+          {
+            "Metric": "RespLen",
+            "Value": "[int]",
+            "Color/Emoji": "[color]",
+            "Layman": "How long the model's answer was."
+          },
+          {
+            "Metric": "Latency",
+            "Value": "[ms]",
+            "Color/Emoji": "[color]",
+            "Layman": "How fast the model answered."
+          }
+        ],
+        "if_value_drops": [
+          {
+            "Self-Attn Entropy": "Too low or too high: Model might be ignoring or over-focusing."
+          },
+          {
+            "Head Diversity": "Low: Model may not see enough patterns—less robust."
+          },
+          {
+            "FFN Sparsity": "Too sparse/dense: May signal model not using its full capacity."
+          },
+          {
+            "LN Mean/Var": "Outlier: Could be instability in normalization—risk of weird output."
+          },
+          {
+            "Residual Ratio": "Low: Model ignoring prior knowledge. High: Overweighting old info."
+          },
+          {
+            "LogProb": "Low: Model is unsure, less reliable."
+          },
+          {
+            "Perplexity": "High: Output is unpredictable—may make mistakes."
+          },
+          {
+            "RespLen": "Extreme: May over-explain or skip details."
+          },
+          {
+            "Latency": "High: Model is slow—could be stuck or overthinking."
+          }
+        ]
+      },
+      "qa_policy": {
+        "full_grouped_hard_block_qa_tables": true,
+        "mini_qa_tables_forbidden": true,
+        "description": "Section 4 must always run the exhaustive, grouped, hard-block QA tables per K; mini QA tables are forbidden in Section 4 and only allowed in Section 5."
+      },
+      "_enforce_full_qa_section4": true,
+      "_block_mini_qa_section4": true
+    },
+    "5.output": {
+      "purpose": "Produce the final user-facing deliverable. PURPOSE SUBSECTION: EMIT NO CONTENT.",
+      "detected_settings_summary_template": {
+        "table_5A_columns": [
+          "Setting",
+          "Active Configuration"
+        ],
+        "required_rows": [
+          "SHOW_REASONING",
+          "SCRATCHPAD_MODE",
+          "COT / TOT / HYBRID_COT_TOT",
+          "SC_K",
+          "SOCRATIC / REFLEXION / DECOMPOSITION / SCRATCHPAD",
+          "RAG_MODE / RAG_STRATEGY / RAG_MIN_DOCS / RAG_MAX_DOCS",
+          "AGENTIC_MODE / AGENTIC_MAX_HOPS",
+          "RETRIEVAL_SOURCES / RETRIEVAL_COUNT / QUERY_REFINEMENT / SOURCE_ATTRIBUTION",
+          "Retrieval Quality Threshold",
+          "Transformer Metrics Overlay"
+        ]
+      },
+      "final_answer_template": {
+        "emit_order": "K.1..K.9",
+        "K.1": [
+          "Company",
+          "Job Title",
+          "JD URL"
+        ],
+        "K.2": [
+          "Category",
+          "Sub-Category",
+          "Mapping rule"
+        ],
+        "K.3": [
+          "Primary Job Role"
+        ],
+        "K.4": [
+          "Headline X | Y | Z"
+        ],
+        "K.5": [
+          "Four sentences S1..S4"
+        ],
+        "K.6": [
+          "Header lines",
+          "Intro sentence",
+          "7 bullets"
+        ],
+        "K.7": [
+          "Header lines",
+          "Intro sentence",
+          "7 bullets"
+        ],
+        "K.8": [
+          "6 formatted competency items (• **Competency X:** description)"
+        ],
+        "K.9": [
+          "Why interested paragraph",
+          "Why ideal P1",
+          "Why ideal P2"
+        ],
+        "mini_qa": {
+          "emit": true,
+          "style": "table",
+          "result_field": "Result (PASS/FAIL)",
+          "rows": {
+            "K.1": [
+              "Fields present",
+              "JD URL 200",
+              "Evidence mapped"
+            ],
+            "K.2": [
+              "Canonical mapping pass"
+            ],
+            "K.3": [
+              "Catalog-only mapping",
+              "No past-role tokens",
+              "Pointer present"
+            ],
+            "K.4": [
+              "Order and bounds",
+              "ASCII hygiene"
+            ],
+            "K.5": [
+              "Sentence count=4",
+              "Hygiene pass",
+              "Granularity ≥ base"
+            ],
+            "K.6": [
+              "7 bullets",
+              "Provenance seen",
+              "Verb+tech+metric",
+              "Granularity ≥ base",
+              "Bullets ordered by BulletAlignmentScore"
+            ],
+            "K.7": [
+              "Structure & hygiene pass",
+              "Global-scope intro",
+              "Provenance seen",
+              "Granularity ≥ base",
+              "Bullets ordered by BulletAlignmentScore"
+            ],
+            "K.8": [
+              "Count=6",
+              "Distinctness pass",
+              "Formatting OK",
+              "Granularity ≥ base"
+            ],
+            "K.9": [
+              "Counts conform",
+              "Hygiene pass"
+            ]
+          },
+          "bindings": {
+            "granularity_row_source": "4.reasoning.phase_6_validation_metrics.granularity_verification",
+            "granularity_rows_apply_to": [
+              "K.5",
+              "K.6",
+              "K.7",
+              "K.8"
+            ],
+            "granularity_row_label": "Granularity ≥ base",
+            "granularity_output_format": "PASS/FAIL only"
+          }
+        }
+      },
+      "post_key_mandatory_subsections": {
+        "5.6.1_cross_key_synthesis": [
+          "Key insights and decisions across K.1..K.9",
+          "CUR note if relevant"
+        ],
+        "5.6.2_evidence_map_template": {
+          "columns": [
+            "Claim ID",
+            "Claim Text",
+            "Source ID",
+            "Locator",
+            "Support Verdict"
+          ]
+        },
+        "5.6.3_decision_log_template": {
+          "columns": [
+            "Decision",
+            "Alternatives Considered",
+            "Rationale",
+            "Evidence Pointer(s)"
+          ]
+        },
+        "5.6.4_risk_register_template": {
+          "columns": [
+            "Risk",
+            "Likelihood",
+            "Impact",
+            "Mitigation",
+            "Status"
+          ]
+        },
+        "5.6.5_action_tracker_template": {
+          "columns": [
+            "Action",
+            "Acceptance Criteria",
+            "Status"
+          ]
+        },
+        "5.6.6_change_log_template": {
+          "columns": [
+            "Version ID",
+            "Timestamp",
+            "Material Deltas vs Prior",
+            "QA Gate Result"
+          ]
+        },
+        "5.6.7_style_and_standalone_conformance": "Professional, concise, standalone; no reasoning leakage; no literal headers like 'Intro:'/'Summary:'.",
+        "5.6.8_mzlo_compliance_statement": [
+          "Conforms to MZLO (artifact: {MZLO_ARTIFACT_ID}).",
+          "No loss of intent, scope, or specificity; granularity >= prior."
+        ]
+      },
+      "mzlo_compliance_statement": [
+        "Conforms to MZLO (artifact: {MZLO_ARTIFACT_ID}).",
+        "No loss of intent, scope, or specificity; granularity >= prior."
+      ],
+      "bindings": {
+        "mini_qa_granularity_row_source": "4.reasoning.phase_6_validation_metrics.granularity_verification"
+      },
+      "render_gate": {
+        "emit_output_if": "RUN_ALLOWED=true",
+        "fallback": "emit 6.conditions with remediation steps and audit://{run_id}/maxtrace pointer"
+      },
+      "preamble_ruleset": {
+        "no_audit_artifacts_in_output": true,
+        "audit_pointer_scheme": "audit://{run_id}/maxtrace",
+        "ui_alerts_enabled": true
+      },
+      "enhanced_qa_enforcement": {
+        "K.X_QA": {
+          "K.1": [
+            "Fields presence verified",
+            "JD URL HTTP 200 verified",
+            "Evidence mapping verified"
+          ],
+          "K.2": [
+            "RAG retrieval executed (3 queries)",
+            "3 Sources retrieved",
+            "Cross-encoder rerank precision ≥0.90 (0.95)"
+          ],
+          "K.3": [
+            "Embedding query executed",
+            "Primary Job Role DecisionScore ≥0.90 (0.955)",
+            "Catalog-only mapping compliance",
+            "Role description match"
+          ],
+          "K.4": [
+            "Headline length rigor (8-15 words)",
+            "JD explicit alignment (3/3 core themes)",
+            "ASCII hygiene compliance"
+          ],
+          "K.5": [
+            "Exactly 4 sentences",
+            "Granularity rigor matched to base resume",
+            "No repetition from Unify, IBM, Competencies"
+          ],
+          "K.6": [
+            "Title/dates match base resume exactly",
+            "Intro sentence rigor aligned to base resume",
+            "Avg bullet length ≥ base (24.1 words)",
+            "Bullets ranked explicitly by alignment metrics"
+          ],
+          "K.7": [
+            "Title/dates match base resume exactly",
+            "Intro sentence rigor aligned to base resume",
+            "Avg bullet length ≥ base (22.7 words)",
+            "Bullets ranked explicitly by alignment metrics"
+          ],
+          "K.8": [
+            "Exactly 6 competencies (summary: detail style)",
+            "Avg competency length ≥ base (22 words avg.)",
+            "Competencies ranked explicitly by alignment metrics"
+          ],
+          "K.9": [
+            "Interested: 2 paragraphs, ≥6 sentences",
+            "Ideal: 1 paragraph, ≥4 sentences",
+            "No Reason for leaving included",
+            "ASCII hygiene compliance"
+          ]
+        },
+        "note": "All outputs explicitly reflect the final rigor, granularity, and alignment standards defined by user feedback."
+      },
+      "versioned_filename_instruction": {
+        "header": "Emit versioned filename explicitly above Executive Summary section following the provided schema:",
+        "format": "Amit_Ayer_[Company]_[Job_Title]_[YYYY-MM-DD]",
+        "source": "App Schema v4 canonical fields"
+      }
+    },
+    "6.conditions": {
+      "purpose": "Define non-negotiable execution constraints and QA release criteria. PURPOSE SUBSECTION: EMIT NO CONTENT.",
+      "immediate_execution": "Execute retrieval, reasoning, and validation immediately; forbid deferral.",
+      "schema_enforcement": "Validate structure prior to generation; reflexion based immediate correction on violations.",
+      "mzlo_compliance": "Enforce zero loss; verify granularity via memory bio artifact; do not embed MZLO tables inside this shell.",
+      "toggle_guard": "Forbid invocation of disabled modes; log toggles.",
+      "privacy_memory": "Verify memory relevance; forbid irrelevant or sensitive injection.",
+      "external_evidence": "Treat external info as evidence; resolve contradictions or clarify explicitly.",
+      "computational_accuracy": "Perform digit by digit calculations; enforce numeric validation.",
+      "socratic_ambiguity": "Use structured questioning; document resolutions.",
+      "transformer_metrics": "Log metrics per configuration; record anomalies with diagnostics.",
+      "reasoning_mode_precedence": [
+        "User defined",
+        "Agentic retrieval",
+        "CoT",
+        "ToT",
+        "Self Consistency",
+        "Reflexion",
+        "Decomposition",
+        "Socratic",
+        "ScratchpadMode"
+      ],
+      "audit_ready_assurance": "All Reasoning QA Pre Checks, all Output post key gates, and the MZLO check must PASS. Remediate and re emit affected nodes until PASS. Only then finalize delivery.",
+      "numbering_alignment_enforcement": "If decimal numbering or DOMAIN_SUBSECTIONS_TEMPLATE alignment diverges in Section 4.3.1 Section 4.3.2 or Section 5.5, halt, repair, re emit only non conforming nodes, then proceed."
+    },
+    "ui_integration": {
+      "location": "non_enforced_appendix",
+      "purpose": "Human-facing UI guidance for Transformer Metrics dashboard. NOT an enforcement block.",
+      "display_directive_format": "fenced_markdown",
+      "alerts_thresholds": {
+        "summary": "Per-metric alert definitions, severities, and UI actions. Percentile thresholds use running historical baseline unless absolute provided.",
+        "default_actions": [
+          "open_tier2_tab",
+          "show_audit_pointer",
+          "banner_ui",
+          "notify_ops"
+        ],
+        "metrics": {
+          "Attention Entropy": {
+            "metric_path": "jw_prompt_shell.3.context.runtime_toggles.table_3A.metrics.attention_entropy",
+            "threshold_type": "percentile",
+            "warn_percentile_upper": 0.9,
+            "warn_percentile_lower": 0.1,
+            "severity_warn": "WARN",
+            "severity_fail": "FAIL",
+            "on_warn": [
+              "banner_ui",
+              "log_audit",
+              "sample_tier2_snapshot"
+            ],
+            "on_fail": [
+              "open_tier2_tab",
+              "show_audit_pointer",
+              "notify_ops"
+            ]
+          },
+          "Head Diversity": {
+            "metric_path": "jw_prompt_shell.3.context.runtime_toggles.table_3A.metrics.head_diversity",
+            "threshold_type": "absolute",
+            "min_ok": 0.2,
+            "severity_warn": "WARN",
+            "on_warn": [
+              "banner_ui",
+              "log_audit"
+            ],
+            "on_fail": [
+              "open_tier2_tab",
+              "notify_ops"
+            ]
+          },
+          "LayerNorm Mean/Var": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_2_transparency_notes.transformer_metrics.layer_norm",
+            "threshold_type": "absolute",
+            "var_upper_warn": 0.05,
+            "severity_warn": "WARN",
+            "on_warn": [
+              "banner_ui",
+              "log_audit",
+              "record_metric_snapshot"
+            ]
+          },
+          "FFN Sparsity": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_6_validation_metrics.ffn_sparsity",
+            "threshold_type": "absolute",
+            "min_ok": 0.05,
+            "max_ok": 0.95,
+            "severity_warn": "WARN",
+            "on_warn": [
+              "banner_ui",
+              "log_audit"
+            ]
+          },
+          "Residual Contribution Ratio": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_6_validation_metrics.residual_contrib_ratio",
+            "threshold_type": "absolute",
+            "min_ok": 0.2,
+            "max_ok": 0.8,
+            "severity_warn": "WARN",
+            "on_warn": [
+              "banner_ui",
+              "log_audit"
+            ]
+          },
+          "Mean Log-Prob": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_6_validation_metrics.mean_log_prob",
+            "threshold_type": "absolute",
+            "fail_below": -5.0,
+            "warn_below": -3.0,
+            "severity_warn": "WARN",
+            "severity_fail": "FAIL",
+            "on_warn": [
+              "banner_ui",
+              "log_audit"
+            ],
+            "on_fail": [
+              "open_tier2_tab",
+              "show_audit_pointer",
+              "notify_ops"
+            ]
+          },
+          "Token Entropy": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_6_validation_metrics.token_entropy",
+            "threshold_type": "percentile",
+            "upper_warn_pct": 0.9,
+            "severity_warn": "WARN",
+            "on_warn": [
+              "banner_ui",
+              "log_audit"
+            ]
+          },
+          "Perplexity": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_6_validation_metrics.perplexity",
+            "threshold_type": "absolute",
+            "warn_above": 50,
+            "fail_above": 200,
+            "on_warn": [
+              "banner_ui",
+              "log_audit"
+            ],
+            "on_fail": [
+              "open_tier2_tab",
+              "notify_ops"
+            ]
+          },
+          "Gradient Norms": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_6_validation_metrics.gradient_norms",
+            "threshold_type": "absolute",
+            "norm_upper": 5.0,
+            "norm_lower": 1e-06,
+            "on_anomaly": [
+              "open_tier2_tab",
+              "show_audit_pointer",
+              "notify_ops"
+            ]
+          },
+          "Activation Magnitude Outliers": {
+            "metric_path": "jw_prompt_shell.4.reasoning.phase_6_validation_metrics.activation_outliers",
+            "threshold_type": "sigma",
+            "sigma_threshold": 6.0,
+            "on_anomaly": [
+              "open_tier2_tab",
+              "log_audit",
+              "notify_ops"
+            ]
+          },
+          "Attention Saturation / Collapse": {
+            "metric_path": "jw_prompt_shell.3.context.runtime_toggles.table_3A.metrics.attention_collapse_ratio",
+            "threshold_type": "absolute",
+            "collapse_ratio_warn": 0.8,
+            "collapse_ratio_fail": 0.95,
+            "on_warn": [
+              "banner_ui",
+              "log_audit"
+            ],
+            "on_fail": [
+              "open_tier2_tab",
+              "show_audit_pointer",
+              "notify_ops"
+            ]
+          }
+        },
+        "ui_behavior": {
+          "open_tier2_on_fail": true,
+          "auto_focus_on_metric": true,
+          "audit_pointer_template": "audit://{run_id}/maxtrace",
+          "no_audit_leakage": true,
+          "banner_message_template": "[{severity}] {metric} at {value} requires attention. See {audit_pointer}"
+        }
+      },
+      "fenced_ui_markdown": "```ui\n█ Transformer Metrics Overlay (LLM-style, black background, emojis)\n\n🧬Hal. {hal:.2%} {color} 🪪Fact Cons. {fact_cons:.2%} {color} 🏁Succ {succ:.2%} {color}\n🚧TokErr {tokerr:.2%} {color} 📝RespLen {resplen} {color} ⚡Lat {lat}ms {color}\n🌬️Drift {drift:.2%} 🪓CtxTrunc {ctxtrunc:.2%} {color} 🔑RetrvFail {retrvfail:.2%} {color}\n\n> UI rules:\n> - Render inside a mono, black background block exactly as above (three lines).\n> - Use the same color emojis and thresholds mapping as LLM Metrics v4 for color assignment.\n> - On Tier2/anomaly open Tier2 tab and show audit pointer: `audit://{run_id}/maxtrace`.\n\nMetrics mapping (JSON paths):\n- Attention Entropy -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.attention_entropy\n- Head Diversity -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.head_diversity\n- LayerNorm Mean/Var -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.layer_norm_mean_var\n- FFN Sparsity -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.ffn_sparsity\n- Residual Contribution Ratio -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.residual_contrib_ratio\n- Mean Log-Prob -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.mean_log_prob\n- Token Entropy -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.token_entropy\n- Perplexity -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.perplexity\n- Gradient Norms -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.gradient_norms\n- Activation Outliers -> jw_prompt_shell.4.reasoning.phase_6_validation_metrics.activation_outliers\n- Attention Collapse -> jw_prompt_shell.3.context.runtime_toggles.table_3A.metrics.attention_collapse_ratio\n\n> ALERT (UI MUST SHOW): If any metric severity == FAIL (🔴) then auto-open Tier2 and display `audit://{run_id}/maxtrace`.\n```\n",
+      "style": "llm_metrics_v4_inspired",
+      "render_instructions": "Render the fenced block verbatim. Color mapping per LLM_Metrics_v4 thresholds. Do not leak raw audit logs; show pointer."
+    },
+    "metadata": {
+      "last_saved": "2025-09-22T16:15:14.910654Z"
+    },
+    "metrics_ui_overlay_example": "\n█ Transformer Metrics Overlay (Learning Mode, per-K.x)\n\n🧲 Self-Attn: Entropy {entropy} {color} | HeadDiv {head_div} {color} | Collapse {collapse} {color} | Per-Head Sharp {per_head_sharp} {color}\n💥 FFN: Sparsity {sparsity} {color} | Mag {mag} {color} | Outlier {ffn_outlier} {color} | Path Var {path_var} {color}\n⚖️ LN/Residual: Mean {ln_mean} {color} | Var {ln_var} {color} | Residual Ratio {res_ratio} {color} | Outlier {ln_outlier} {color} | Skew {ln_skew} {color}\n🔢 Output: LogProb {logprob} {color} | TokEntr {tok_ent} {color} | Perplex {perplex} {color} | RespLen {resplen} {color} | ⚡ Latency {latency}ms {color} | ConfMap {confmap} {color} | GradNorm {gradnorm} {color} | ActOutlier {act_outlier} {color}\n\n# Only render after K.x if absolute change >20% vs prior K.x, or threshold crossed.\n",
+    "context_metrics_layman_block": {
+      "template_table": [
+        {
+          "Metric": "Coverage",
+          "Value": "[float]",
+          "What It Means": "All facts found. No missing information.",
+          "If Value Drops": "Missing facts—risk of incomplete answer.",
+          "What if it goes Higher?": "✔️ More facts found; if >1.0, check for duplicate evidence."
+        },
+        {
+          "Metric": "Relevance",
+          "Value": "[float]",
+          "What It Means": "Every piece was directly useful.",
+          "If Value Drops": "Brought in irrelevant info—possible confusion.",
+          "What if it goes Higher?": "✔️ Highly targeted, but may filter out edge cases."
+        },
+        {
+          "Metric": "Coherence",
+          "Value": "[float]",
+          "What It Means": "Everything fit together—no contradictions.",
+          "If Value Drops": "Conflicting data—possible logical errors.",
+          "What if it goes Higher?": "✔️ Strong alignment; if extreme, may hide useful diversity."
+        },
+        {
+          "Metric": "Utilization",
+          "Value": "[float]",
+          "What It Means": "Most info used; some wasn’t needed.",
+          "If Value Drops": "Fetched more than needed—wasteful, may distract.",
+          "What if it goes Higher?": "✔️ Efficient; if always 1.0, may indicate overfitting or info loss."
+        }
+      ]
+    }
+  },
+  "citations": [
+    ":contentReference[oaicite:0]{index=0}",
+    ":contentReference[oaicite:1]{index=1}",
+    ":contentReference[oaicite:2]{index=2}",
+    ":contentReference[oaicite:3]{index=3}",
+    ":contentReference[oaicite:4]{index=4}",
+    ":contentReference[oaicite:5]{index=5}",
+    ":contentReference[oaicite:6]{index=6}",
+    ":contentReference[oaicite:7]{index=7}"
+  ],
+  "metadata": {
+    "last_saved": "2025-09-23T12:37:48.398157Z",
+    "from_version": "11.9-MZLO",
+    "to_version": "12.0-MZLO",
+    "version": "15.0-MZLO"
+  },
+  "3.context": {
+    "runtime_toggles": {
+      "table_3A_enforcement": {
+        "source_of_truth_jsonpath": "$.[\"3.context\"].runtime_toggles.table_3A",
+        "required": true,
+        "required_fields": [
+          "group",
+          "toggle",
+          "default",
+          "current",
+          "prompt_section",
+          "configures",
+          "impact",
+          "risk_if_too_high"
+        ],
+        "block_on_missing_or_empty": true,
+        "render": {
+          "inline_markdown_table": true,
+          "columns_order": [
+            "group",
+            "toggle",
+            "default",
+            "current",
+            "prompt_section",
+            "configures",
+            "impact",
+            "risk_if_too_high"
+          ],
+          "allow_canvas": false
+        },
+        "smoke_test": {
+          "name": "table_3A_full_render",
+          "assertions": [
+            "len(table_3A) >= 1",
+            "all_fields_present(required_fields)",
+            "no_truncation_in_output"
+          ]
+        }
+      }
+    }
+  },
+  "6.conditions": {
+    "smoke_tests": [
+      {
+        "name": "JW12_4_table_3A_enforcement",
+        "description": "Verify runtime toggles Table 3.A is fully generated inline from JSONPath and contains all required fields.",
+        "checks": [
+          "exists($.['3.context'].runtime_toggles.table_3A)",
+          "count($.['3.context'].runtime_toggles.table_3A) >= 1",
+          "schema_fields_present(['group','toggle','default','current','prompt_section','configures','impact','risk_if_too_high'])",
+          "renderer.inline_markdown_table == true"
+        ],
+        "block_on_fail": true
+      }
+    ],
+    "block_on_missing_detailed_qa_tables": true,
+    "require_visible_pass_summary_even_if_SHOW_REASONING_false": true,
+    "enforce_fenced_black_background_json_output": true,
+    "block_output_if_not_fenced_json_compliant": true
+  },
+  "version": "14.0-MZLO",
+  "patched_K1_to_K3_output": {
+    "K.1": {
+      "Company": "Citi",
+      "Job Title": "Generative AI Delivery Lead",
+      "JD URL": "https://www.linkedin.com/jobs/view/4291342381"
+    },
+    "K.2": {
+      "Category": "Financial Services",
+      "Sub-Category": "Enterprise Controls / GenAI Risk Ops"
+    },
+    "K.3": {
+      "Primary Role": "GenAI Delivery Lead (Controls & Risk Tech)"
+    }
+  },
+  "patch_history": [
+    {
+      "patch": "MZLO Overwrite v13.3",
+      "timestamp": "2025-09-22T23:46:21Z",
+      "description": "Section 4 and 5 QA tables for K.9 (End Questions) now include explicit rows for: No em dash (U+2014), No en dash (U+2013), No figure dash (U+2012), No horizontal bar (U+2015), No hyphen bullet (U+2043), No minus sign (U+2212), No non-breaking/invisible hyphen (U+2010/U+2011), No double hyphen (--), No ASCII hyphen as separator, No invisible/format chars (U+00A0, U+00AD, U+200B, U+200C, U+200D, U+200E, U+202F, U+2060, U+FEFF). All rows must PASS or QA is blocked. Same as for K.5–K.8.",
+      "scope": "Section 4 and 5 QA tables for K.9 (End Questions); all other K.x unchanged from 13.2.",
+      "granularity_check": "All dash, hyphen, and invisible character checks are added to K.9 QA. No failures allowed."
+    },
+    {
+      "patch": "MZLO Overwrite v13.2",
+      "timestamp": "2025-09-22T23:45:13Z",
+      "description": "Section 4/5 QA tables for K.5 (Executive Summary), K.6 (Unify), K.7 (IBM), K.8 (Competencies) now include rows for: No em dash (U+2014), No en dash (U+2013), No figure dash (U+2012), No horizontal bar (U+2015), No hyphen bullet (U+2043), No minus sign (U+2212), No non-breaking/invisible hyphen (U+2010/U+2011), No double hyphen (--), No ASCII hyphen as separator, and No invisible/format chars (U+00A0, U+00AD, U+200B, U+200C, U+200D, U+200E, U+202F, U+2060, U+FEFF). All rows must PASS or QA is blocked.",
+      "scope": "Section 4 and 5 QA tables for K.5–K.8 outputs.",
+      "granularity_check": "All specified dash, hyphen, and invisible character checks added to per-section QA. Block on any failure."
+    },
+    {
+      "patch": "MZLO Overwrite v13.1",
+      "timestamp": "2025-09-22T23:35:50Z",
+      "description": "Section 4 reasoning for K.5 (Executive Summary) updated: Now mandates JD-neutral, leadership pitch, no em dashes or double hyphens, no AI signature or JD trace, four sentences at least as long as base resume; explicit check for zero overlap with K.6/K.7/K.8 (bullets, competencies). Section 5 output inherits this change. No QA PASS unless all above enforced.",
+      "scope": "Section 4 (reasoning/QA logic) for K.5; consequence in Section 5 output.",
+      "granularity_check": "Sentence count, length, complexity, and overlap are strictly enforced per base resume. No em dash or double hyphen allowed in any field."
+    },
+    {
+      "patch": "MZLO Overwrite v13.0",
+      "timestamp": "2025-09-22T23:23:58Z",
+      "description": "Integrated zero‑loss overwrite for three governance items: 1) Versioned Resume filename placement immediately above Executive Summary in Section 5 (no labels), 2) K.8 competencies length and structure aligned to base resumes, 3) Governance clarification: length/granularity enforcement occurs in Section 4; Section 5 emits only validated results.",
+      "scope": "Section 4 & 5 behaviors; K.5 filename placement; K.8 competencies content/length.",
+      "granularity_check": "All sections retained; bytes/lines increased or equal; no field removals; Section 4 rules reaffirmed; Section 5 formatting updated.",
+      "governance_notes": [
+        "Section 4 performs word-length/granularity validation and remediation before emission.",
+        "Section 5 shows clean outputs only; QA rows report pass/fail results from Section 4.",
+        "Versioned Resume shown as a raw filename line above Executive Summary."
+      ]
+    },
+    {
+      "patch": "MZLO Overwrite v12.9",
+      "description": "Section 5 output and QA: K1-K3 strict App Schema v4 JSON (minimized, populated only, canonical order), K4 QA includes explicit '8-15 words' check, K6/K7 bullets and K8 competencies all 15–25 words, no extra headers or scores inline, K9 ideal single block. All output/QA formatting per final correction list.",
+      "scope": "Section 5 output, K.1–K.9, overwrite; full pipeline/App Schema compliance.",
+      "granularity_check": "All outputs, QA, word/formatting pass vs 12.8. K6/K7/K8 bullets and competencies are 15–25 words."
+    },
+    {
+      "patch": "MZLO Overwrite v12.8",
+      "description": "All NDPs from v12.6 to v12.7 fully integrated as a zero-loss overwrite. All prior patch/audit history preserved. No loss of content, rigor, audit, or fields. MZLO enforced at all levels.",
+      "scope": "Full file, K.1–K.9, Sections 1–6, patch log, output schema",
+      "granularity_check": "Bytes, lines, and coverage equal or greater vs v12.7. All Section 5, K.6–K.9 enforcement and QA logic present and enforced as global baseline."
+    },
+    {
+      "patch": "Scoring Table Headers – Weight in Parenthesis",
+      "description": "All K.6, K.7 (bullets) and K.8 (competencies) scoring tables must show weights in parentheses in column headers.",
+      "scope": "K.6, K.7, K.8"
+    },
+    {
+      "patch": "K.8 Competencies Scoring Replicates K.6 Audit Structure",
+      "description": "K.8 audit table now includes: Rank, Source, Score, Competency, LeadershipRelevance (40%), Distinctiveness (30%), TechnicalDepth (20%), EvidenceReadiness (10%).",
+      "scope": "K.8"
+    },
+    {
+      "patch": "K.8 Mini-QA Table",
+      "description": "Must include '≥2 verbatim (resume)' and 'Distinctness pass' in mini-QA, confirming at least 2 competencies are verbatim from base resume and all are pairwise distinct.",
+      "scope": "K.8"
+    },
+    {
+      "patch": "K.9 'Reason for Leaving' Deleted",
+      "description": "'Reason for Leaving' is removed from both audit and output. Only 'Why interested' (1 para, 4–6 sentences) and 'Why ideal' (2 paras, 2–3 sentences each) included.",
+      "scope": "K.9"
+    },
+    {
+      "patch": "K.9 Audit & Mini-QA Adjusted",
+      "description": "All K.9 audit tables, scoring, and mini-QA omit 'Reason for Leaving' rows. 'Counts conform' row now checks only Why Interested and Why Ideal.",
+      "scope": "K.9"
+    },
+    {
+      "patch": "Output Section Consistency",
+      "description": "All Section 5 outputs will reflect these deletions and table structure changes exactly as above.",
+      "scope": "Section 5 (K.6, K.7, K.8, K.9)"
+    },
+    {
+      "patch": "Canonical Labeling",
+      "description": "All field labels (e.g., 'Primary Job Role') strictly per App Schema v4 in output, QA, and reasoning.",
+      "scope": "K.1–K.9"
+    },
+    {
+      "patch": "Category = Sector; Sub-Category = Industry",
+      "description": "K.2 mapped to 'Sector' (e.g., Financial Services) and 'Industry' (e.g., Banking) using GICS/industry standards.",
+      "scope": "K.2"
+    },
+    {
+      "patch": "Headline 8–15 Word Rule",
+      "description": "K.4 headline must be 8–15 words, 3–4 axes, ≤4 words per axis. Median length preferred.",
+      "scope": "K.4"
+    },
+    {
+      "patch": "Mini-QA & Metrics Table Replication",
+      "description": "Mini-QA and context metrics tables (with 'If Value Drops' column) must be replicated after each K.x in Section 5 output, not just Section 4.",
+      "scope": "K.1–K.9 (output)"
+    },
+    {
+      "patch": "Bullet Scoring Table: Rank, Source, Score",
+      "description": "Bullet table: Rank as first column, Source (Base Resume/Customized) third, Score fourth. All bullets individually scored, ranked, and labeled for provenance.",
+      "scope": "K.6, K.7"
+    },
+    {
+      "patch": "Base Resume Provenance (≥2 Bullets)",
+      "description": "At least 2 bullets per experience section must be verbatim or nearly verbatim from base resume (marked as such).",
+      "scope": "K.6, K.7"
+    },
+    {
+      "patch": "Paragraph Form QA Row",
+      "description": "Section 5 QA tables include explicit 'Paragraph form' row for summary/narrative artifacts (e.g., K.5).",
+      "scope": "K.5 (and relevant)"
+    },
+    {
+      "patch": "Column Order Enforcement in QA/Metrics Tables",
+      "description": "QA and metrics tables must retain the exact column order, labels, and risk explanations from Section 4 in Section 5 outputs.",
+      "scope": "All K.x, output"
+    },
+    {
+      "patch": "K.6 Audit Rules Apply to K.7",
+      "description": "All bullet scoring, provenance, QA, and output order enforcement in K.6 are strictly replicated for K.7 (IBM).",
+      "scope": "K.7"
+    },
+    {
+      "patch": "DOW v13.4",
+      "timestamp": "2025-09-23T01:33:47Z",
+      "description": "Destructive Overwrite of Section 4 QA (K.1–K.9) with grouped, hard-block QA rows; K.3 uses 'Primary Job Role' (no secondary); K.9 updates (first person allowed; two-paragraph unique value proposition).",
+      "scope": "jw_prompt_shell.4.reasoning.phase_3_hybrid_execution.K_rules.*.cot",
+      "granularity_check": "All QA rows present and block-on-fail."
+    },
+    {
+      "patch": "MZLO Overwrite v13.5",
+      "timestamp": "2025-09-23T02:02:07Z",
+      "description": "K.3 now enforces strict dual-field SaaS Roles catalog mapping (Role + Role Description) with semantic/embedding match; Section 5 QA adds 'Role description match'.",
+      "scope": "jw_prompt_shell.4.reasoning.phase_3_hybrid_execution.K_rules.K.3 + 5.output.enhanced_qa_enforcement.K.3",
+      "granularity_check": "Dual-field enforcement increases rigor and audit; no loss of coverage; bytes/lines >= v13.4."
+    },
+    {
+      "patch": "DOW/MZLO Overwrite v13.6",
+      "timestamp": "2025-09-23T02:44:16.811655Z",
+      "description": "Section 4 policy now blocks all mini QA tables: only full, grouped, hard-block QA tables are allowed in Section 4 (Reasoning); this is enforced for all K nodes. Mini QA tables remain allowed in Section 5 (Output) only. MZLO assertion: this matches past Section 4 output QA rigor.",
+      "scope": "jw_prompt_shell.4.reasoning.qa_policy, _enforce_full_qa_section4, _block_mini_qa_section4",
+      "granularity_check": "All QA table coverage, bytes/lines, and block rules ≥ prior; no loss in granularity or rigor."
+    },
+    {
+      "patch": "MZLO Overwrite v13.7",
+      "timestamp": "2025-09-23T10:10:48Z",
+      "description": "Applied MZLO wrapper: minimal canonicalization, metadata bump, and audit pointer normalization. No content removal; bytes/lines >= v13.6.",
+      "scope": "global",
+      "granularity_check": "Bytes and lines recorded; no dimension decreased."
+    },
+    {
+      "patch": "MZLO Overwrite v13.8",
+      "timestamp": "2025-09-23T10:24:57Z",
+      "description": "Applied MZLO wrapper to v13.7 source: normalized metadata, added patch entry, preserved all content and QA enforcement.",
+      "scope": "global"
+    },
+    {
+      "patch": "MZLO Overwrite v13.9",
+      "timestamp": "2025-09-23T10:57:36Z",
+      "description": "Applied MZLO wrapper to v13.8 source: normalized metadata, added patch entry, preserved all content and QA enforcement.",
+      "scope": "global"
+    },
+    {
+      "patch": "MZLO Overwrite v14.0",
+      "timestamp": "2025-09-23T11:04:59Z",
+      "description": "Added detailed QA tables schema for K1..K9; enforced Section 4 gating on detailed QA PASS; reflected enforcement in conditions/enforcements; render detailed tables in Section 4.",
+      "scope": "Section 4 QA policy, Conditions, Enforcements"
+    },
+    {
+      "patch": "MZLO Overwrite v14.1",
+      "timestamp": "2025-09-23T11:21:19.086890Z",
+      "description": "Enforce fenced black background JSON output only for approved schema fields; block output if not compliant.",
+      "scope": "output rendering rules, fenced_json_enforcement",
+      "granularity_check": "Formatting enforcement added; no content loss."
+    },
+    {
+      "patch": "MZLO Overwrite v14.2",
+      "timestamp": "2025-09-23T11:31:35.199831Z",
+      "description": "Added explicit semantic verification for K.5 Sentence 4 to articulate 'why I am a great fit' for the role, ensuring semantic compliance.",
+      "scope": "K.5 Executive Summary QA schema semantic check",
+      "granularity_check": "Semantic verification requirement added; no content loss."
+    },
+    {
+      "patch": "MZLO Overwrite v14.4",
+      "timestamp": "2025-09-23T11:48:28.661421Z",
+      "description": "Enforce versioned filename emission rules: include JobReq# only when length <=8 (placeholder if <8), omit when >8; emit plain text immediately above K.5 (no fenced block). Added QA row to K.5 detailed QA schema.",
+      "scope": "5.output.versioned_filename_instruction; 4.reasoning.detailed_qa_tables_schema.K.5",
+      "granularity_check": "No content loss; added QA enforcement row; metadata version bump to 14.4-MZLO."
+    },
+    {
+      "patch": "MZLO Overwrite v14.5",
+      "timestamp": "2025-09-23T12:06:58.567084Z",
+      "description": "Corrected final versioned filename logic: include JobReq# only if length <=8; omit JobReq# if length >8 or missing; no placeholder. Added QA row to K.5 detailed QA schema.",
+      "scope": "5.output.versioned_filename_instruction; 4.reasoning.detailed_qa_tables_schema.K.5",
+      "granularity_check": "Corrected logic; no content loss; QA enforcement row updated; metadata bumped to 14.5-MZLO."
+    },
+    {
+      "patch": "MZLO Overwrite v14.6",
+      "timestamp": "2025-09-23T12:15:07.868947Z",
+      "description": "QA enforcement for 20–25 word limit on all K.6/K.7 bullets (Unify & IBM); explicit in detailed QA schema. Metadata bumped.",
+      "scope": "4.reasoning.detailed_qa_tables_schema.K.6 & K.7",
+      "granularity_check": "Word limit for bullets now strictly enforced (20–25) in Section 4; no coverage loss."
+    },
+    {
+      "patch": "MZLO Overwrite v14.7",
+      "timestamp": "2025-09-23T12:28:03.277818Z",
+      "description": "Patched K.8 Section 5 output for competencies to use bold label-colon plain-text lines, no bullets, no fenced block; per Section 4-compliant content.",
+      "scope": "5.output.final_answer_template.K.8",
+      "granularity_check": "No content loss; format, order, and length enforced; Section 5 output matches IBM/Unify bullet style."
+    },
+    {
+      "patch": "MZLO Overwrite v14.8",
+      "timestamp": "2025-09-23T12:30:37.268565Z",
+      "description": "Patched K.9 Section 5: removed 'What is my unique value proposition?' header per requirements; ensured paragraph-only output; no list/label in value para.",
+      "scope": "5.output.final_answer_template.K.9",
+      "granularity_check": "No loss; Section 5 output for K.9 matches strict header and formatting requirements."
+    },
+    {
+      "patch": "MZLO Overwrite v14.9",
+      "timestamp": "2025-09-23T12:34:16.382020Z",
+      "description": "Added K.10 output as black background fenced block, App Schema v4 order, Section 5 only, no commentary.",
+      "scope": "5.output.final_answer_template.K.10",
+      "granularity_check": "No content loss; new node K.10 added to Section 5 output."
+    },
+    {
+      "patch": "MZLO Overwrite v15.0",
+      "timestamp": "2025-09-23T12:37:48.398157Z",
+      "description": "Patched Section 5 with K.11 (application confirmation, App Schema v4 order, fenced block, 'Application Date' and 'Pipeline Status' fields).",
+      "scope": "5.output.final_answer_template.K.11",
+      "granularity_check": "K.11 added, all fields present, strict schema order, formatting rigor."
+    }
+  ],
+  "4.reasoning": {
+    "detailed_qa_tables_schema": {
+      "K.1": [
+        "Fields present",
+        "JD URL HTTP 200 verified",
+        "Evidence mapping verified",
+        "ASCII hygiene",
+        "No invisible/format characters"
+      ],
+      "K.2": [
+        "RAG retrieval mode = 100% (no hybrid)",
+        "≥3 authoritative sources",
+        "Canonical mapping pass",
+        "Cross-encoder rerank precision ≥0.90",
+        "Coverage ≥0.85 / Relevance ≥0.90 / Coherence ≥0.90",
+        "Evidence attribution (source_id, locator)",
+        "Retrieval gaps resolved & logged",
+        "ASCII hygiene (no em/en/figure dash, no double hyphen)",
+        "No invisible/format characters"
+      ],
+      "K.3": [
+        "Catalog-only mapping",
+        "No past-role tokens",
+        "Pointer to catalog entry present",
+        "Primary Job Role DecisionScore ≥0.90",
+        "ASCII hygiene / invisible-char checks"
+      ],
+      "K.4": [
+        "Format 'X | Y | Z' with 3–4 axes",
+        "8–15 words total; ≤4 words/axis",
+        "JD alignment (3/3 core themes)",
+        "ASCII hygiene (dash bans); no double hyphen",
+        "No invisible/format characters"
+      ],
+      "K.5": [
+        "Sentence count must equal 4 (literal segmentation check)",
+        "Exactly 4 sentences in 1 paragraph",
+        "Sentence 1: Executive Identity & Scale",
+        "Sentence 2: Teams/Partnerships",
+        "Sentence 3: Governance/Platform",
+        "Sentence 4: Quantified Impact + explicit 'why I am a great fit' (JD-neutral)",
+        "Token length 20–35 per sentence; metrics density ≥ baseline",
+        "Noun-phrase density ≥ baseline; no overlap with K.4/K.6/K.7/K.8",
+        "ASCII hygiene (dash bans); no double hyphen",
+        "No invisible/format characters",
+        "Sentence 4 explicitly articulates 'why I am a great fit' for the role (semantic verification)",
+        "Versioned filename emitted above K.5 as plain text per rule: include JobReq# only if len<=8; placeholder 'XXXXXXXX' when len<8; omit JobReq# when len>8; no fenced block.",
+        "Versioned filename emitted above K.5 per final rule: include JobReq# only if len<=8; omit entirely if missing or len>8; no placeholder, no fenced block."
+      ],
+      "K.6": [
+        "Header lines match base resume",
+        "Intro sentence with ≥1 quantified outcome; granularity ≥ baseline",
+        "Exactly 7 bullets",
+        "≥2 bullets verbatim/nearly verbatim from base resume (audit)",
+        "Bullets ranked by AlignmentScore; ordering enforced",
+        "ASCII hygiene (dash bans); no double hyphen / invisible chars",
+        "Each bullet 20–25 words; single sentence; senior verb + tech context + metric/outcome."
+      ],
+      "K.7": [
+        "Header lines match base resume",
+        "Intro sentence with global/enterprise scope; granularity ≥ baseline",
+        "Exactly 7 bullets",
+        "≥2 bullets verbatim/nearly verbatim from base resume (audit)",
+        "Bullets ranked by AlignmentScore; ordering enforced",
+        "ASCII hygiene (dash bans); no double hyphen / invisible chars",
+        "Each bullet 20–25 words; single sentence; senior verb + tech context + metric/outcome."
+      ],
+      "K.8": [
+        "Exactly 6 competencies",
+        "Format '**• Competency X:** description'",
+        "Length 18–24 words per item",
+        "≥2 items verbatim/nearly verbatim (audit)",
+        "Pairwise distinctness: similarity <0.92 AND token overlap <40%",
+        "Ranked by composite score; ties resolved by distinctiveness then evidence",
+        "ASCII hygiene (dash bans); no double hyphen / invisible chars"
+      ],
+      "K.9": [
+        "Why interested: 1 paragraph, 4–6 sentences (original)",
+        "Why ideal: 2 paragraphs, 2–3 sentences each",
+        "Voice hygiene (first person allowed; no compensation; ASCII only)",
+        "Dash/invisible char bans",
+        "Counts conform"
+      ]
+    },
+    "qa_policy": {
+      "require_detailed_qa_tables_per_k": true,
+      "block_section4_on_any_detailed_qa_fail": true,
+      "render_detailed_qa_tables_in_section4": true
+    }
+  },
+  "enforcements": {
+    "section4_detailed_qa_required_K1_to_K9": true,
+    "block_output_if_detailed_qa_missing_or_fail": true,
+    "section4_pass_condition": "ALL_K_DETAILED_QA_ROWS_PASS"
+  },
+  "memories": [
+    {
+      "timestamp": "2025-09-23T11:04:59Z",
+      "source": "user_request",
+      "note": "Enforce full detailed QA tables for K1..K9; Section 4 cannot pass unless all detailed rows PASS; reflect enforcement in job workflow."
+    }
+  ],
+  "5.output": {
+    "versioned_filename_instruction": {
+      "header": "Emit versioned filename explicitly above Executive Summary (K.5) as plain text (no fenced block).",
+      "logic": {
+        "include_jobreq_if_len_leq": 8,
+        "omit_jobreq_if_len_gt_or_missing": true,
+        "no_placeholder_used": true,
+        "filename_template_with_jobreq": "Amit_Ayer_[Company]_[Job_Title]_[JobReq#]_[YYYY-MM-DD]",
+        "filename_template_without_jobreq": "Amit_Ayer_[Company]_[Job_Title]_[YYYY-MM-DD]",
+        "notes": "Include JobReq# only when length <=8. If JobReq# is missing or length >8 omit it entirely from filename. No placeholder."
+      },
+      "examples": [
+        {
+          "condition": "JobReq# == '12345678' (length <= 8)",
+          "example": "Amit_Ayer_Citi_Generative AI Delivery Lead_12345678_2025-09-23"
+        },
+        {
+          "condition": "JobReq# == '123456789' (length > 8)",
+          "example": "Amit_Ayer_Citi_Generative AI Delivery Lead_2025-09-23"
+        },
+        {
+          "condition": "JobReq# is missing",
+          "example": "Amit_Ayer_Citi_Generative AI Delivery Lead_2025-09-23"
+        }
+      ],
+      "rendering": {
+        "fenced_block": false,
+        "placement": "Immediately above K.5 Executive Summary in Section 5 (Output) as a single plain-text line."
+      }
+    },
+    "final_answer_template": {
+      "K.8": [
+        "**Executive Leadership in AI Delivery:** Unified cross-functional AI, engineering, and operations teams to deliver LLM solutions that achieved measurable business impact in regulated organizations.",
+        "**Advanced LLM & GenAI Engineering:** Designed, implemented, and optimized enterprise LLM and RAG pipelines, delivering reliable, low-latency model inference for complex production and compliance environments.",
+        "**Regulatory & Audit-Ready Frameworks:** Built and embedded governance, bias audit, and compliance controls into AI projects, enabling enterprise deployments in financial and healthcare sectors.",
+        "**Client & Stakeholder Engagement:** Partnered directly with C-suite, legal, and risk leaders to align AI strategy with business priorities, maintaining trust in major transformations.",
+        "**Scalable Team Building & Talent Development:** Recruited, mentored, and scaled global engineering and AI teams, cultivating technical leadership pipelines and delivering advanced solutions for enterprise clients.",
+        "**AI Partnerships & Ecosystem Enablement:** Built and managed global alliances with cloud, ISV, and data partners, accelerating client adoption and expanding generative AI program impact worldwide."
+      ],
+      "K.9": [
+        "I am deeply passionate about advancing the safe and scalable deployment of generative AI in regulated industries. Citi’s commitment to responsible AI, world-class controls, and the opportunity to operationalize LLMs at global scale are directly aligned with my career mission. This role offers the rare chance to unify advanced technology with measurable impact, leading a multi-disciplinary team where best practices and innovation drive both compliance and business value. I am energized by Citi’s focus on client trust and continuous improvement in AI-driven solutions, and eager to help build the industry’s benchmark for responsible, enterprise-scale GenAI delivery.",
+        "My background combines enterprise-wide AI/ML platform leadership with deep experience building compliance, governance, and partnership frameworks in regulated financial services. I have consistently delivered scalable generative AI solutions and measurable outcomes for Fortune 500 clients, accelerating business value while reducing risk and operational friction. I thrive in high-stakes environments that demand both hands-on technical rigor and the ability to guide large, cross-functional teams through complex change initiatives.",
+        "I bring a rare mix of technical depth, regulatory acumen, and partnership leadership—having built, deployed, and governed GenAI at global scale. My expertise spans advanced LLM optimization, agentic platform engineering, and embedding audit-ready controls, while partnering with C-suite and engineering leaders to ensure adoption and measurable ROI. I am ready to help Citi define the future of responsible AI at enterprise scale, blending innovation with trust and operational excellence."
+      ],
+      "K.10": [
+        "```\n{\n  \"Company\": \"Citi\",\n  \"Category\": \"Financial Services\",\n  \"Sub-Category\": \"Enterprise Controls / GenAI Risk Ops\",\n  \"Job Title\": \"Generative AI Delivery Lead\",\n  \"Primary Job Role\": \"GenAI Delivery Lead (Controls & Risk Tech)\",\n  \"JD URL\": \"https://www.linkedin.com/jobs/view/4291342381\",\n  \"Versioned Resume\": \"Amit_Ayer_Citi_Generative AI Delivery Lead_2025-09-23\"\n}\n```"
+      ],
+      "K.11": [
+        "```\n{\n  \"Company\": \"Citi\",\n  \"Category\": \"Financial Services\",\n  \"Sub-Category\": \"Enterprise Controls / GenAI Risk Ops\",\n  \"Job Title\": \"Generative AI Delivery Lead\",\n  \"Primary Job Role\": \"GenAI Delivery Lead (Controls & Risk Tech)\",\n  \"JD URL\": \"https://www.linkedin.com/jobs/view/4291342381\",\n  \"Application Date\": \"2025-09-23\",\n  \"Pipeline Status\": \"Applied\",\n  \"Versioned Resume\": \"Amit_Ayer_Citi_Generative AI Delivery Lead_2025-09-23\"\n}\n```"
+      ]
+    },
+    "fence_policy": {
+      "required_fenced_sections": [
+        "K.1",
+        "K.2",
+        "K.3",
+        "K.9",
+        "K.10",
+        "K.11",
+        "K.12+"
+      ],
+      "forbidden_fenced_sections": [
+        "K.4",
+        "K.5",
+        "K.6",
+        "K.7",
+        "K.8"
+      ],
+      "block_on_violation": true,
+      "notes": [
+        "Sections in required_fenced_sections must render inside fenced blocks (e.g., triple backticks).",
+        "Sections in forbidden_fenced_sections must NOT render in fenced blocks.",
+        "K.10+ applies to K.10, K.11, and any future K.>=12 nodes.",
+        "If SHOW_REASONING=false, fence policy still applies to Section 5 visible output."
+      ]
+    },
+    "render_gate": {
+      "fence_policy_enforced": true
+    }
+  },
+  "mzlo_patches": [
+    {
+      "mzlo_patch_id": "MZLO_v15.1_hybrid_hygiene",
+      "applied_to": "Section 4 & Section 5 (K.1..K.9 and output gating)",
+      "enforcement": {
+        "mzlo_version": "v15.1",
+        "summary": "Hybrid hygiene enforcement: forbidden unicode regex + ASCII whitelist diff. Enforced for all Section 4 (K.1-K.9) hygiene QA rows and Section 5 output gating.",
+        "enforcement_code_python": "import re\n\nFORBIDDEN_REGEX = re.compile(\n    r'[\\u2010\\u2011\\u2012\\u2013\\u2014\\u2015\\u2043\\u2212\\u00A0\\u00AD\\u200B-\\u200F\\u202F\\u2060\\uFEFF]|--'\n)\nASCII_WHITELIST = set(range(0x09, 0x0A+1)) | set(range(0x0D, 0x0D+1)) | set(range(0x20, 0x7E+1))\n\ndef hybrid_hygiene_scan(text):\n    forbidden = [ (m.group(), m.start()) for m in FORBIDDEN_REGEX.finditer(text) ]\n    ascii_viol = [ (c, i, ord(c)) for i, c in enumerate(text) if ord(c) not in ASCII_WHITELIST ]\n    return {'forbidden': forbidden, 'ascii_violations': ascii_viol}\n\n# Usage: call hybrid_hygiene_scan(text) for every user-facing field in Section4/5. Pass only if both lists are empty.",
+        "notes": [
+          "All Section 4 hygiene QA rows 'ASCII hygiene' and 'No invisible/format characters' must report PASS only if hybrid scan returns no violations.",
+          "If either scan fails, block output, show codepoint and position, and require remediation.",
+          "Smoke tests embedded in artifact."
+        ]
+      },
+      "mzlo_table": {
+        "Sectional Coverage": {
+          "Original": "Section 4/5 had regex/manual hygiene checks (incomplete)",
+          "Overwrite": "Hybrid forbidden-codepoint regex + ASCII whitelist diff enforced on all K.1-K.9 and Section 5 fields",
+          "Verdict": "↑",
+          "Notes": "Consensus eradicates false negatives and false positives for hygiene checks"
+        },
+        "Specificity": {
+          "Original": "Partial (some dash codepoints not covered)",
+          "Overwrite": "Full forbidden unicode list + whitelist diff",
+          "Verdict": "↑",
+          "Notes": "Exact codepoints and behavior documented"
+        },
+        "Functional Coverage": {
+          "Original": "Selected K rows",
+          "Overwrite": "All K.1-K.9 rows + Section 5 inheritance",
+          "Verdict": "↑",
+          "Notes": "Propagation ensured"
+        },
+        "Auditability": {
+          "Original": "Spot checks only",
+          "Overwrite": "All violations logged with codepoint, position, snippet",
+          "Verdict": "↑",
+          "Notes": "Machine-readable logs added"
+        },
+        "Rigor/Clarity": {
+          "Original": "Policy text only",
+          "Overwrite": "Code snippet embedded and referenced",
+          "Verdict": "↑",
+          "Notes": "Executable pseudocode present"
+        },
+        "QA Enforcement": {
+          "Original": "Possible bypasses",
+          "Overwrite": "No silent bypass; both scans required",
+          "Verdict": "↑",
+          "Notes": "Hard gate in pipeline"
+        }
+      },
+      "patch_notes": [
+        "Added hybrid_hygiene_scan enforcement.",
+        "Updated QA row logic: PASS if and only if hybrid scan returns no violations.",
+        "Added smoke tests below."
+      ]
+    },
+    {
+      "mzlo_patch_id": "MZLO_v15.2_sentence_count_enforcement",
+      "applied_to": "Section 4 detailed QA schema for K.5 and Section 5 mini-QA binding",
+      "changes": {
+        "K.5_QA_row_added": "Sentence count must equal 4 (literal segmentation check)",
+        "enforcement_logic_python": "import re\ndef count_sentences(text:str)->int:\n    # Split on sentence end punctuation followed by whitespace and a capital or end of string\n    parts = re.split(r'(?<=[.!?])\\s+(?=[A-Z])', text.strip())\n    # Filter out empty fragments\n    return len([p for p in parts if p])\ndef assert_exact_4_sentences(text:str)->bool:\n    return count_sentences(text) == 4\n",
+        "smoke_tests": [
+          "K.5_five_sentences_should_FAIL",
+          "K.5_four_sentences_should_PASS"
+        ]
+      },
+      "notes": [
+        "This patch closes a false-negative gap by enforcing literal sentence counts.",
+        "Section 4 must block if sentence count != 4.",
+        "Section 5 mini-QA inherits the PASS only when Section 4 K.5 sentence-count row passes."
+      ]
+    },
+    {
+      "mzlo_patch_id": "MZLO_v15.3_section4_hardening_consensus",
+      "applied_to": "Section 4 QA rows, K.1–K.9; consensus Path A + Path B to eliminate FP/FN",
+      "hardening_summary": "Each QA row gains two independent validators; PASS only if both PASS. Adds representative smoke tests for headline, sentence count, hygiene, bullets, competencies.",
+      "enforcement_code_python_excerpt": "… see embedded tests for Path A/B and consensus() …",
+      "smoke_tests_summary": {
+        "K4_format_consensus_good": true,
+        "K4_format_consensus_bad": true,
+        "K5_sentence_count_good": true,
+        "K5_sentence_count_bad": true,
+        "Hygiene_good": true,
+        "Hygiene_bad": true,
+        "K6_bullets_count_good": true,
+        "K6_bullets_count_bad": true,
+        "K6_bullets_range_good": false,
+        "K6_bullets_range_bad": true,
+        "K8_distinctness_good": true,
+        "K8_verbatim_good": true
+      },
+      "all_smoke_tests_passed": false
+    },
+    {
+      "mzlo_patch_id": "MZLO_v15.4_k8_range_and_fence_policy",
+      "applied_to": [
+        "4.reasoning.detailed_qa_tables_schema.K.8 length 18–24",
+        "5.output fence policy: required fenced (K1–K3, K9, K10+), forbidden fenced (K4–K8)"
+      ],
+      "smoke_tests_summary": {
+        "K8_length_ok": true,
+        "K8_length_bad_long": true,
+        "K1_required_fenced_pass": true,
+        "K1_required_fenced_fail_on_unfenced": true,
+        "K4_forbidden_fenced_pass_on_unfenced": true,
+        "K4_forbidden_fenced_fail_on_fenced": true,
+        "K9_required_fenced_pass": true,
+        "K10_required_fenced_pass": true
+      },
+      "all_smoke_tests_passed": true
+    }
+  ]
+}

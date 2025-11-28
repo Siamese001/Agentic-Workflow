@@ -1,0 +1,220 @@
+{
+  "$schema_version": "artist_specs_v2.0_clean_rr",
+  "$description": "Configuration-driven Artist specifications implementing Clean R&R: 'What' (this file) vs 'How' (workflow_RES.py). Each section defines WHAT to generate and HOW to build context, delegating implementation details to Python.",
+  
+  "K0_NAME": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "owner.name",
+    "description": "Candidate's full name from master resume"
+  },
+  
+  "K0_CONTACT": {
+    "generation_method": "_copy_k0_contact",
+    "description": "Contact information block (phone, email, LinkedIn)"
+  },
+  
+  "K0_HEADLINE": {
+    "generation_method": "_generate_section_macro_tot",
+    "context_builder": "_build_context_k0_headline",
+    "prompt_template": "artist_headline",
+    "system_prompt": "You are an expert resume headline crafter specializing in concise, impactful, keyword-rich headlines without using job titles.",
+    "reasoning_config": "K0_HEADLINE_CONFIG",
+    "post_processor": null,
+    "macro_tot_config": {
+      "enabled": true,
+      "num_drafts": 3,
+      "evaluator_criteria": {
+        "word_count_min": 8,
+        "word_count_max": 15,
+        "required_keywords": ["theme_keywords"],
+        "forbidden_patterns": ["^Director", "^Manager", "^VP", "^Chief", ","]
+      },
+      "selection_method": "code_interpreter"
+    },
+    "description": "Three-part headline (Role | Skill | Value) optimized via Macro Tree-of-Thought"
+  },
+  
+  "K0_EXECUTIVE_SUMMARY_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'EXECUTIVE SUMMARY'"
+  },
+  
+  "K0_EXPERIENCE_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'PROFESSIONAL EXPERIENCE'"
+  },
+  
+  "K0_EDUCATION_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'EDUCATION'"
+  },
+  
+  "K0_CERTIFICATIONS_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'CERTIFICATIONS & CREDENTIALS'"
+  },
+  
+  "K0_COMPETENCIES_HEADER": {
+    "generation_method": "_generate_dummy_header",
+    "description": "Static header: 'STRATEGIC & TECHNICAL COMPETENCIES'"
+  },
+  
+  "K1_EXECUTIVE_SUMMARY": {
+    "generation_method": "_generate_section_macro_tot",
+    "context_builder": "_build_context_k1_summary",
+    "prompt_template": "artist_executive_summary",
+    "system_prompt": "You are an expert resume writer specializing in crafting concise, forward-looking Executive Value Propositions tailored to specific job descriptions.",
+    "reasoning_config": "K1_EXECUTIVE_SUMMARY_CONFIG",
+    "post_processor": null,
+    "macro_tot_config": {
+      "enabled": true,
+      "num_drafts": 3,
+      "evaluator_criteria": {
+        "sentence_count_range": [3, 5],
+        "word_count_min": 75,
+        "word_count_max": 125,
+        "required_keywords": ["primary_theme", "differentiator_keywords"],
+        "forbidden_patterns": ["^I ", "^My ", "^The candidate"]
+      },
+      "selection_method": "code_interpreter"
+    },
+    "description": "Executive summary paragraph (3-5 sentences) optimized via Macro ToT"
+  },
+  
+  "K2_UNIFY_BULLETS": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "Unify Consulting"
+    },
+    "description": "Tailored bullets for Unify Consulting experience (Verbatim/Customized/Synthetic mix)"
+  },
+  
+  "K2_UNIFY_OVERVIEW": {
+    "generation_method": "_generate_tailored_overview_for_experience",
+    "depends_on": "K2_UNIFY_BULLETS",
+    "description": "Role overview generated from K2_UNIFY_BULLETS content"
+  },
+  
+  "K3_IBM_BULLETS": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "IBM"
+    },
+    "description": "Tailored bullets for IBM experience (Verbatim/Customized/Synthetic mix)"
+  },
+  
+  "K3_IBM_OVERVIEW": {
+    "generation_method": "_generate_tailored_overview_for_experience",
+    "depends_on": "K3_IBM_BULLETS",
+    "description": "Role overview generated from K3_IBM_BULLETS content"
+  },
+  
+  "K4_TRADERSENSE_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_narrative",
+    "extra_args": {
+      "company_match": "TraderSense",
+      "section_enum": "K4_TRADERSENSE_NARRATIVE"
+    },
+    "prompt_template": "artist_narrative",
+    "system_prompt": "You are an expert resume writer crafting concise narratives that bridge past technical leadership to current capabilities.",
+    "reasoning_config": "K4_TRADERSENSE_NARRATIVE_CONFIG",
+    "post_processor": "_post_process_narrative",
+    "description": "2-3 sentence narrative for TraderSense CTO role"
+  },
+  
+  "K5_EY_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_narrative",
+    "extra_args": {
+      "company_match": "Ernst & Young",
+      "section_enum": "K5_EY_NARRATIVE"
+    },
+    "prompt_template": "artist_narrative",
+    "system_prompt": "You are an expert resume writer crafting concise narratives that bridge past consulting experience to current executive capabilities.",
+    "reasoning_config": "K5_EY_NARRATIVE_CONFIG",
+    "post_processor": "_post_process_narrative",
+    "description": "2-3 sentence narrative for Ernst & Young Principal role"
+  },
+  
+  "K6_EARLY_CAREER_NARRATIVE": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_narrative",
+    "extra_args": {
+      "company_match": "Early Career",
+      "section_enum": "K6_EARLY_CAREER_NARRATIVE"
+    },
+    "prompt_template": "artist_narrative",
+    "system_prompt": "You are an expert resume writer crafting concise narratives that bridge early quantitative experience to a technology career path.",
+    "reasoning_config": "K6_EARLY_CAREER_NARRATIVE_CONFIG",
+    "post_processor": "_post_process_narrative",
+    "description": "2-3 sentence narrative for Early Career actuarial roles"
+  },
+  
+  "K7_EDUCATION": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "education",
+    "description": "Education credentials from master resume"
+  },
+  
+  "K8_CERTIFICATIONS": {
+    "generation_method": "_copy_from_master",
+    "master_data_key": "certifications_and_credentials",
+    "description": "Certifications list from master resume"
+  },
+  
+  "K9_COMPETENCIES": {
+    "generation_method": "_generate_tailored_bullets_for_experience",
+    "extra_args": {
+      "company_name": "Strategic Competencies Section",
+      "is_competencies": true
+    },
+    "description": "Strategic competencies bullets (Verbatim/Customized/Synthetic mix)"
+  },
+  
+  "K10_SKILLS": {
+    "generation_method": "_generate_section_generic",
+    "context_builder": "_build_context_k10_skills",
+    "prompt_template": "artist_skills",
+    "system_prompt": "You are an expert HR data analyst specializing in extracting concise, relevant skills from job requirements.",
+    "reasoning_config": "K10_SKILLS_CONFIG",
+    "post_processor": "_post_process_k10_skills",
+    "description": "12 strategic/technical competencies as bulleted list"
+  },
+  
+  "K11_COVER_LETTER": {
+    "generation_method": "_generate_section_macro_tot",
+    "context_builder": "_build_context_k11_cover_letter",
+    "prompt_template": "artist_cover_letter",
+    "system_prompt": "You are an expert executive ghostwriter crafting tailored cover letters.",
+    "reasoning_config": "K11_COVER_LETTER_CONFIG",
+    "post_processor": "_post_process_k11_cover_letter",
+    "macro_tot_config": {
+      "enabled": true,
+      "num_drafts": 3,
+      "evaluator_criteria": {
+        "word_count_min": 275,
+        "word_count_max": 375,
+        "required_keywords": ["primary_theme", "problem_solution_narrative"],
+        "forbidden_patterns": ["\\[Company Name\\]", "\\[.*?\\]", "^I am writing to apply"]
+      },
+      "selection_method": "code_interpreter"
+    },
+    "description": "Full-page cover letter (3-4 paragraphs) optimized via Macro ToT"
+  },
+  
+  "_metadata": {
+    "macro_tot_sections": ["K0_HEADLINE", "K1_EXECUTIVE_SUMMARY", "K11_COVER_LETTER"],
+    "narrative_sections": ["K4_TRADERSENSE_NARRATIVE", "K5_EY_NARRATIVE", "K6_EARLY_CAREER_NARRATIVE"],
+    "bullet_sections": ["K2_UNIFY_BULLETS", "K3_IBM_BULLETS", "K9_COMPETENCIES"],
+    "copy_sections": ["K0_NAME", "K7_EDUCATION", "K8_CERTIFICATIONS"],
+    "version": "2.0",
+    "last_updated": "2025-11-01",
+    "design_principles": [
+      "Configuration over code: Specs define WHAT, not HOW",
+      "Macro ToT for high-stakes sections (K0, K1, K11)",
+      "Code Interpreter for deterministic evaluation",
+      "Reasoning configs externalized to config_RES.py"
+    ]
+  }
+}

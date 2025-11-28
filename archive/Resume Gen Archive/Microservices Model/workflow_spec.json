@@ -1,0 +1,127 @@
+{
+  "name": "resume_generation_pipeline",
+  "version": "16.0-winner",
+  "hops": [
+    {
+      "id": "hop_0_rag",
+      "script": "hop_0_rag_v1_2.py",
+      "description": "Job Description Analysis & RAG.",
+      "inputs": [
+        { "arg_name": "jd", "artifact_id": "static_jd" },
+        { "arg_name": "master-resume-path", "artifact_id": "static_master_resume" }
+      ],
+      "outputs": [
+        { "arg_name": "thematic-analysis", "artifact_id": "hop_0_thematic_analysis" }
+      ],
+      "retry_policy": { "attempts": 3, "delay_seconds": 10, "backoff_multiplier": 2.0 },
+      "extra_args": []
+    },
+    {
+      "id": "hop_1_clerk",
+      "script": "hop_1_clerk.py",
+      "description": "Master Resume Pre-processing.",
+      "inputs": [
+        { "arg_name": "master-resume-path", "artifact_id": "static_master_resume" }
+      ],
+      "outputs": [
+        { "arg_name": "clerk-output", "artifact_id": "hop_1_clerk_output" }
+      ],
+      "retry_policy": { "attempts": 2, "delay_seconds": 3, "backoff_multiplier": 1.5 },
+      "extra_args": []
+    },
+    {
+      "id": "hop_2_enrichment",
+      "script": "hop_2_enrichment.py",
+      "description": "Data Enrichment and duplicate detection.",
+      "inputs": [
+        { "arg_name": "clerk-output", "artifact_id": "hop_1_clerk_output" },
+        { "arg_name": "thematic-analysis", "artifact_id": "hop_0_thematic_analysis" }
+      ],
+      "outputs": [
+        { "arg_name": "enriched-scaffold", "artifact_id": "hop_2_enriched_scaffold" }
+      ],
+      "retry_policy": { "attempts": 1, "delay_seconds": 1, "backoff_multiplier": 1.0 },
+      "extra_args": []
+    },
+    {
+      "id": "hop_3_artist",
+      "script": "hop_3_artist.py",
+      "description": "Content Generation (Artist).",
+      "inputs": [
+        { "arg_name": "enriched-scaffold", "artifact_id": "hop_2_enriched_scaffold" },
+        { "arg_name": "thematic-analysis", "artifact_id": "hop_0_thematic_analysis" },
+        { "arg_name": "jd", "artifact_id": "static_jd" },
+        { "arg_name": "master-resume-path", "artifact_id": "static_master_resume" },
+        { "arg_name": "artist-specs-path", "artifact_id": "static_artist_specs" }
+      ],
+      "outputs": [
+        { "arg_name": "artist-output", "artifact_id": "hop_3_artist_output" }
+      ],
+      "retry_policy": { "attempts": 3, "delay_seconds": 10, "backoff_multiplier": 2.0 },
+      "extra_args": []
+    },
+    {
+      "id": "hop_4_staging",
+      "script": "hop_4_staging.py",
+      "description": "Staging and Sanitization.",
+      "inputs": [
+        { "arg_name": "artist-output", "artifact_id": "hop_3_artist_output" },
+        { "arg_name": "artist-specs-path", "artifact_id": "static_artist_specs" }
+      ],
+      "outputs": [
+        { "arg_name": "staging-buffer", "artifact_id": "hop_4_staging_buffer" }
+      ],
+      "retry_policy": { "attempts": 1, "delay_seconds": 1, "backoff_multiplier": 1.0 },
+      "extra_args": []
+    },
+    {
+      "id": "hop_5_validation",
+      "script": "hop_5_validation.py",
+      "description": "Comprehensive Validation.",
+      "inputs": [
+        { "arg_name": "staging-buffer", "artifact_id": "hop_4_staging_buffer" },
+        { "arg_name": "thematic-analysis", "artifact_id": "hop_0_thematic_analysis" },
+        { "arg_name": "jd", "artifact_id": "static_jd" }
+      ],
+      "outputs": [
+        { "arg_name": "validation-results", "artifact_id": "hop_5_validation_results" }
+      ],
+      "retry_policy": { "attempts": 1, "delay_seconds": 1, "backoff_multiplier": 1.0 },
+      "extra_args": []
+    },
+    {
+      "id": "hop_6_gate",
+      "script": "hop_6_gate.py",
+      "description": "Gate Decision.",
+      "inputs": [
+        { "arg_name": "validation-results", "artifact_id": "hop_5_validation_results" }
+      ],
+      "outputs": [
+        { "arg_name": "gate-decision", "artifact_id": "hop_6_gate_decision" }
+      ],
+      "retry_policy": { "attempts": 1, "delay_seconds": 1, "backoff_multiplier": 1.0 },
+      "extra_args": []
+    },
+    {
+      "id": "hop_7_rendering",
+      "script": "hop_7_rendering.py",
+      "description": "Document Rendering.",
+      "inputs": [
+        { "arg_name": "staging-buffer", "artifact_id": "hop_4_staging_buffer" },
+        { "arg_name": "thematic-analysis", "artifact_id": "hop_0_thematic_analysis" },
+        { "arg_name": "validation-results", "artifact_id": "hop_5_validation_results" },
+        { "arg_name": "gate-decision", "artifact_id": "hop_6_gate_decision" }
+      ],
+      "outputs": [
+        { "arg_name": "resume-md", "artifact_id": "final_resume_md" },
+        { "arg_name": "app-tracker", "artifact_id": "final_app_tracker_json" }
+      ],
+      "retry_policy": { "attempts": 1, "delay_seconds": 1, "backoff_multiplier": 1.0 },
+      "extra_args": [
+        "--company-name", "{company_name}",
+        "--job-title", "{job_title}",
+        "--jd-url", "{jd_url}"
+      ]
+    }
+  ]
+}

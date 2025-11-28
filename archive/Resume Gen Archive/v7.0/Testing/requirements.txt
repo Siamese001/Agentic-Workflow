@@ -1,0 +1,16 @@
+# File: requirements.txt
+# v7.0 Dependencies
+
+# --- Core Libraries ---
+google-generativeai
+anthropic
+openai
+scikit-learn
+numpy
+pandas
+
+# --- Phase 1 Additions (v7.0) ---
+langgraph
+langchain-redis
+langsmith
+redis
