@@ -1,8 +1,8 @@
 import inspect
-from agentic_workflow.L2_execution.k4_regen import K4RegenerationExecutor
+from l2.lic_k4_regen import LIC_K4_Regen
 
 def test_class_exists():
-    assert inspect.isclass(K4RegenerationExecutor)
+    assert inspect.isclass(LIC_K4_Regen)
 
 def test_required_methods():
     required = [
@@ -12,4 +12,4 @@ def test_required_methods():
         "finalize_regeneration",
     ]
     for m in required:
-        assert hasattr(K4RegenerationExecutor, m)
+        assert hasattr(LIC_K4_Regen, m)

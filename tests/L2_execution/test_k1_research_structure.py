@@ -1,15 +1,17 @@
 import inspect
-from agentic_workflow.L2_execution.k1_research import K1ResearchExecutor
+from l2.lic_k1_research import LIC_K1_Research
 
 def test_class_exists():
-    assert inspect.isclass(K1ResearchExecutor)
+    assert inspect.isclass(LIC_K1_Research)
 
 def test_required_methods():
     required = [
         "execute",
-        "run_single_hop",
-        "aggregate_results",
-        "finalize_research",
+        "execute_hyde_enrichment",
+        "execute_hybrid_recall",
+        "execute_cross_encoder_reranking",
+        "execute_self_rag",
+        "calculate_signal_quality",
     ]
     for m in required:
-        assert hasattr(K1ResearchExecutor, m)
+        assert hasattr(LIC_K1_Research, m)
