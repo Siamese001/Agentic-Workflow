@@ -1,0 +1,62 @@
+{
+  "metadata": {
+    "run_id": "b4067536",
+    "timestamp": "2025-11-29T19:22:20Z"
+  },
+  "validation_keys": {
+    "circular_imports": {
+      "no_circular_imports": true
+    },
+    "engine_isolation": {
+      "no_cross_engine_imports": true
+    },
+    "layer_purity": {
+      "l1_planning_purity": false,
+      "l2_execution_purity": false,
+      "l3_orchestration_purity": false,
+      "l4_governance_exists": false,
+      "l5_meta_exists": false
+    },
+    "prompt_governance": {
+      "no_inline_prompts": true,
+      "prompts_have_schemas": true
+    },
+    "structure": {
+      "max_depth_respected": true,
+      "no_empty_directories": false
+    },
+    "tooling": {
+      "mypy_zero_errors": false,
+      "pytest_zero_errors": false,
+      "ruff_zero_errors": false
+    },
+    "unimplemented": {
+      "authn_authz_enforced": false,
+      "cost_tracking_enabled": false,
+      "environment_separation_valid": false,
+      "error_taxonomy_applied": false,
+      "golden_datasets_loaded": false,
+      "hallucination_detector_active": false,
+      "injection_detector_active": false,
+      "kg_lookups_are_deterministic": false,
+      "latency_tracking_enabled": false,
+      "llm_as_judge_runs_successfully": false,
+      "mcp_access_respects_acls": false,
+      "mcp_tools_define_input_output_schemas": false,
+      "mcp_used_for_external_calls": false,
+      "model_versions_pinned": false,
+      "pii_filter_active": false,
+      "rag_calls_are_deterministic": false,
+      "regression_tests_all_pass": false,
+      "reliability_scores_updated": false,
+      "rest_endpoints_secure": false,
+      "safety_runs_on_all_mutating_actions": false,
+      "safety_runs_on_all_outbound_content": false,
+      "temporal_validity_enforced_on_events": false,
+      "toolpath_evaluation_passed": false
+    },
+    "zero_loss": {
+      "dag_execution_completes": false
+    }
+  }
+}
