@@ -11,16 +11,16 @@ from pathlib import Path
 # Comprehensive mapping dictionary (sorted by path length - longest first)
 IMPORT_MAPPING = {
     # Granular subdirectory mappings (longest paths first)
-    'apps.outreach_engine.l1.cms': 'engine.l1_planning.draft_planning.cms',
-    'apps.outreach_engine.l1.builders': 'engine.l1_planning.draft_planning.builders',
+    'apps.outreach_engine.l1.cms': 'engine.l1_planning.planners.cms',
+    'apps.outreach_engine.l1.builders': 'engine.l1_planning.planners.builders',
     'apps.outreach_engine.l1.rag_planning': 'engine.l1_planning.rag_planning',
     'apps.outreach_engine.l1.safety_planning': 'engine.l1_planning.safety_planning',
     'apps.outreach_engine.l1.persona_planning': 'engine.l1_planning.safety_planning',
     'apps.outreach_engine.l1.strategy_planning': 'engine.l1_planning.strategy_planning',
     
-    'apps.outreach_engine.l2.kg': 'engine.l2_execution.rag_execution.kg',
-    'apps.outreach_engine.l2.vector': 'engine.l2_execution.rag_execution.vector',
-    'apps.outreach_engine.l2.outreach': 'engine.l2_execution.draft_execution.outreach',
+    'apps.outreach_engine.l2.kg': 'engine.l2_execution.engines.kg',
+    'apps.outreach_engine.l2.vector': 'engine.l2_execution.engines.vector',
+    'apps.outreach_engine.l2.outreach': 'engine.l2_execution.engines.outreach',
     
     'apps.outreach_engine.l3.safety': 'engine.l3_orchestration.rag_orchestration',
     

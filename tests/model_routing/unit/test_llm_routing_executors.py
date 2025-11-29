@@ -10,13 +10,13 @@ import pytest
 from unittest.mock import Mock, patch
 
 from agentic_core.l2_execution.engines.outreach.lic_outreach_llm_caller import OutreachLLMCaller
-from agentic_core.l2_execution.rag_execution.message_generation_executor import MessageGenerationExecutor, GenerationContext
+from agentic_core.l2_execution.engines.message_generation_executor import MessageGenerationExecutor, GenerationContext
 from runtime.infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
 from runtime.runtime_utils import SandboxConfig
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 from config.LIC.lic_profile import create_custom_profile
-from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_factory import create_message_executor_with_routing
+from agentic_core.l3_orchestration.framework.lic_outreach_factory import create_message_executor_with_routing
 
 
 class TestLLMRoutingExecutors:

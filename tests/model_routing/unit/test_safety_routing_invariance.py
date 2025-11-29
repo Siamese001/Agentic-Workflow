@@ -12,7 +12,7 @@ from typing import Optional
 
 from runtime.infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 from core.models.models import ComplexityLevel
 
 

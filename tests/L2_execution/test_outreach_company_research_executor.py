@@ -11,7 +11,7 @@ from agentic_core.l2_execution.engines.outreach.company_research_executor import
 from agentic_core.l4_memory_state.temporal.hybrid_search import HybridSearchExecutor, SearchResult
 from agentic_core.l4_memory_state.schema.outreach_schema import OutreachRAGResult
 from l4 import PineconeAdapter, TripletStore, Triplet
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 
 
 class TestCompanyResearchExecutor:

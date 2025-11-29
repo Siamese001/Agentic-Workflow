@@ -30,7 +30,7 @@ from agentic_core.l4_memory_state.temporal.entity_resolution import (
 )
 
 # L1 Components
-from agentic_core.l1_planning.rag_planning.lic_kg_retrieval_planning import (
+from agentic_core.l1_planning.planners.lic_kg_retrieval_planning import (
     KGRetrievalPlanner,
     KGQueryPlan,
     QueryType,
@@ -44,7 +44,7 @@ from agentic_core.l2_execution.engines.outreach.lic_kg_retrieval_executor import
     KGRetrievalResult,
     execute_entity_query,
 )
-from agentic_core.l2_execution.rag_execution.triplet_extraction_executor import (
+from agentic_core.l2_execution.engines.triplet_extraction_executor import (
     TripletExtractionExecutor,
     ExtractionPlan,
     create_extraction_plan,
