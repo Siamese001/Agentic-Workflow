@@ -9,6 +9,9 @@ exclude = [
     "runtime",
 ]
 
+# Cache directory
+cache-dir = "runtime/cache/.ruff_cache"
+
 # Line length configuration
 line-length = 150
 
