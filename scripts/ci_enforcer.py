@@ -1,35 +1,24 @@
 #!/usr/bin/env python3
 """
 ci_enforcer.py
-Runs all agentic enforcement validators in a single orchestrated pass.
+Runs all enforcement validators in one pass and aggregates results.
 
-Validators expected:
-    manifest_validator.py
-    ast_purity_scanner.py
-    contract_registry_validator.py
-    test_matrix_validator.py
-    golden_trace_auditor.py
-
-Behavior:
-    - Runs validators sequentially.
-    - Logs stdout/stderr for each.
-    - Aggregates pass/fail statuses.
-    - Produces a final compliance report.
-    - Exits 0 if ALL pass, else exits 1.
+Validators:
+- manifest_validator.py
+- ast_purity_scanner.py
+- contract_registry_validator.py
+- test_matrix_validator.py
+- golden_trace_auditor.py
 """
 
-import subprocess
 import os
 import sys
+import subprocess
 from datetime import datetime
-
-# ============================================================
-# CONFIG
-# ============================================================
 
 REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
 
-VALIDATOR_SCRIPTS = [
+VALIDATORS = [
     "manifest_validator.py",
     "ast_purity_scanner.py",
     "contract_registry_validator.py",
@@ -37,91 +26,67 @@ VALIDATOR_SCRIPTS = [
     "golden_trace_auditor.py",
 ]
 
-FAIL_FAST = False  # If True, stops on first failure; else continues and aggregates
+FAIL_FAST = False  # set True if you want stop-on-first-failure
 
-# ============================================================
-# UTILITIES
-# ============================================================
 
-def run_script(path):
-    """
-    Run a Python validator script and return:
-        (passed: bool, stdout: str, stderr: str, exit_code: int)
-    """
-
-    if not os.path.exists(path):
-        return False, "", f"SCRIPT NOT FOUND: {path}", 999
-
+def run_script(script_path: str):
     proc = subprocess.Popen(
-        [sys.executable, path],
+        [sys.executable, script_path],
+        cwd=REPO_ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        cwd=os.path.dirname(path) or REPO_ROOT,
-        text=True
+        text=True,
     )
-
     out, err = proc.communicate()
-    passed = proc.returncode == 0
+    return proc.returncode, out, err
 
-    return passed, out.strip(), err.strip(), proc.returncode
-
-
-def banner(title):
-    print("\n" + "=" * 80)
-    print(title)
-    print("=" * 80 + "\n")
-
-
-# ============================================================
-# MAIN ORCHESTRATION
-# ============================================================
 
 def main():
-    banner("AGENTIC WORKFLOW – FULL CI ENFORCER INITIATED")
-    print(f"Repo: {REPO_ROOT}")
-    print(f"Timestamp: {datetime.now()}")
-    print(f"Fail-Fast Mode: {FAIL_FAST}")
-    print("\nValidators queued:")
-    for v in VALIDATOR_SCRIPTS:
-        print(f"  - {v}")
+    print("=" * 80)
+    print("AGENTIC WORKFLOW – CI ENFORCER")
+    print("Repo:", REPO_ROOT)
+    print("Timestamp:", datetime.now())
+    print("Fail Fast:", FAIL_FAST)
+    print("=" * 80, "\n")
 
     results = []
-    print("\nRunning validators...\n")
+    all_pass = True
 
-    for script in VALIDATOR_SCRIPTS:
+    for script in VALIDATORS:
         full_path = os.path.join(REPO_ROOT, script)
-        banner(f"Running: {script}")
+        print(f"\n--- Running {script} ---")
+        if not os.path.exists(full_path):
+            print(f"[CI] SCRIPT NOT FOUND: {full_path}")
+            results.append((script, 999))
+            all_pass = False
+            if FAIL_FAST:
+                break
+            continue
 
-        passed, out, err, code = run_script(full_path)
+        code, out, err = run_script(full_path)
+        if out.strip():
+            print(out)
+        if err.strip():
+            print("[stderr]")
+            print(err)
 
-        print(f"[STDOUT]\n{out}\n")
-        if err:
-            print(f"[STDERR]\n{err}\n")
+        results.append((script, code))
+        if code != 0:
+            all_pass = False
+            if FAIL_FAST:
+                print(f"[CI] {script} failed; stopping (fail-fast enabled).")
+                break
 
-        results.append((script, passed, code))
+    print("\n=== CI ENFORCER SUMMARY ===")
+    for script, code in results:
+        status = "PASS" if code == 0 else f"FAIL ({code})"
+        print(f"{script:<30} {status}")
 
-        if not passed and FAIL_FAST:
-            banner("CI ENFORCER STOPPED (FAIL-FAST MODE ENABLED)")
-            print(f"❌ {script} failed with exit code {code}")
-            sys.exit(1)
-
-    # Final summary
-    banner("CI ENFORCER – FINAL SUMMARY")
-
-    all_passed = all(p for (_, p, _) in results)
-
-    for script, passed, code in results:
-        status = "PASS" if passed else f"FAIL (exit={code})"
-        print(f"{script:<35} → {status}")
-
-    if all_passed:
-        banner("ALL VALIDATIONS PASSED")
-        print("✔ Full structural, AST, contract, coverage, and behavioral integrity confirmed.")
+    if all_pass:
+        print("\nALL VALIDATIONS PASSED.")
         sys.exit(0)
     else:
-        banner("VALIDATION FAILURES DETECTED")
-        print("❌ One or more validators failed.")
-        print("Fix issues above before merge or deployment.")
+        print("\nVALIDATION FAILURES DETECTED.")
         sys.exit(1)
 
 
