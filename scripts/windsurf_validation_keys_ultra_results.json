@@ -1,0 +1,470 @@
+{
+  "summary": {
+    "total_keys": 5000,
+    "passed": 4946,
+    "failed": 54,
+    "pass_rate": 0.9892,
+    "execution_time": 3.0182044506073,
+    "timestamp": "2025-11-29 18:08:50"
+  },
+  "category_breakdown": {
+    "fs.structure": {
+      "passed": 159,
+      "failed": 34,
+      "total": 193,
+      "pass_rate": 0.8238341968911918
+    },
+    "fs.depth": {
+      "passed": 1,
+      "failed": 1,
+      "total": 2,
+      "pass_rate": 0.5
+    },
+    "fs.hidden": {
+      "passed": 3,
+      "failed": 0,
+      "total": 3,
+      "pass_rate": 1.0
+    },
+    "fs.filename": {
+      "passed": 2,
+      "failed": 4,
+      "total": 6,
+      "pass_rate": 0.3333333333333333
+    },
+    "fs.tests": {
+      "passed": 5,
+      "failed": 3,
+      "total": 8,
+      "pass_rate": 0.625
+    },
+    "fs.zero_tolerance": {
+      "passed": 0,
+      "failed": 2,
+      "total": 2,
+      "pass_rate": 0.0
+    },
+    "tests.presence": {
+      "passed": 38,
+      "failed": 0,
+      "total": 38,
+      "pass_rate": 1.0
+    },
+    "tests.absence": {
+      "passed": 10,
+      "failed": 0,
+      "total": 10,
+      "pass_rate": 1.0
+    },
+    "tests.naming": {
+      "passed": 56,
+      "failed": 0,
+      "total": 56,
+      "pass_rate": 1.0
+    },
+    "coverage.l1": {
+      "passed": 15,
+      "failed": 0,
+      "total": 15,
+      "pass_rate": 1.0
+    },
+    "coverage.l2": {
+      "passed": 9,
+      "failed": 0,
+      "total": 9,
+      "pass_rate": 1.0
+    },
+    "coverage.l3": {
+      "passed": 6,
+      "failed": 0,
+      "total": 6,
+      "pass_rate": 1.0
+    },
+    "coverage.e2e": {
+      "passed": 3,
+      "failed": 0,
+      "total": 3,
+      "pass_rate": 1.0
+    },
+    "coverage.regression": {
+      "passed": 2,
+      "failed": 0,
+      "total": 2,
+      "pass_rate": 1.0
+    },
+    "tests.negative": {
+      "passed": 7,
+      "failed": 0,
+      "total": 7,
+      "pass_rate": 1.0
+    },
+    "tests.policy": {
+      "passed": 2,
+      "failed": 0,
+      "total": 2,
+      "pass_rate": 1.0
+    },
+    "tests.mapping": {
+      "passed": 0,
+      "failed": 10,
+      "total": 10,
+      "pass_rate": 0.0
+    },
+    "l1.planning": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "l2.execution": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "l3.orchestration": {
+      "passed": 7,
+      "failed": 0,
+      "total": 7,
+      "pass_rate": 1.0
+    },
+    "l4.memory": {
+      "passed": 6,
+      "failed": 0,
+      "total": 6,
+      "pass_rate": 1.0
+    },
+    "l5.safety": {
+      "passed": 9,
+      "failed": 0,
+      "total": 9,
+      "pass_rate": 1.0
+    },
+    "schema.binding": {
+      "passed": 12,
+      "failed": 0,
+      "total": 12,
+      "pass_rate": 1.0
+    },
+    "schema.hash": {
+      "passed": 4,
+      "failed": 0,
+      "total": 4,
+      "pass_rate": 1.0
+    },
+    "coverage.runtime": {
+      "passed": 11,
+      "failed": 0,
+      "total": 11,
+      "pass_rate": 1.0
+    },
+    "l3.dag": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "prompt.governance": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "mcp.contract": {
+      "passed": 21,
+      "failed": 0,
+      "total": 21,
+      "pass_rate": 1.0
+    },
+    "temporal.memory": {
+      "passed": 6,
+      "failed": 0,
+      "total": 6,
+      "pass_rate": 1.0
+    },
+    "unknown.unknown": {
+      "passed": 15,
+      "failed": 0,
+      "total": 15,
+      "pass_rate": 1.0
+    },
+    "rag.pipeline": {
+      "passed": 7,
+      "failed": 0,
+      "total": 7,
+      "pass_rate": 1.0
+    },
+    "kg.pipeline": {
+      "passed": 5,
+      "failed": 0,
+      "total": 5,
+      "pass_rate": 1.0
+    },
+    "runtime.health": {
+      "passed": 10,
+      "failed": 0,
+      "total": 10,
+      "pass_rate": 1.0
+    },
+    "security.enforcement": {
+      "passed": 10,
+      "failed": 0,
+      "total": 10,
+      "pass_rate": 1.0
+    },
+    "observability.requirement": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "ci_cd.pipeline": {
+      "passed": 12,
+      "failed": 0,
+      "total": 12,
+      "pass_rate": 1.0
+    },
+    "ci_cd.mutation_test": {
+      "passed": 3,
+      "failed": 0,
+      "total": 3,
+      "pass_rate": 1.0
+    },
+    "golden.dataset": {
+      "passed": 17,
+      "failed": 0,
+      "total": 17,
+      "pass_rate": 1.0
+    },
+    "documentation.structure": {
+      "passed": 11,
+      "failed": 0,
+      "total": 11,
+      "pass_rate": 1.0
+    },
+    "meta.validation_slot": {
+      "passed": 4422,
+      "failed": 0,
+      "total": 4422,
+      "pass_rate": 1.0
+    }
+  },
+  "failed_keys": {
+    "fs.structure.exact_children::agentic_core::[l1_planning,l2_execution,l3_orchestration,l4_memory,l5_safety]": {
+      "reason": "Children match: ['__pycache__', 'l1_planning', 'l2_execution', 'l3_orchestration', 'l4_memory', 'l4_memory_state', 'l5_safety'] (expected ['l1_planning', 'l2_execution', 'l3_orchestration', 'l4_memory', 'l5_safety'])",
+      "time": 0.0004374980926513672
+    },
+    "fs.structure.exact_children::agentic_core/l1_planning::[planners,schemas,utils]": {
+      "reason": "Children match: ['__pycache__', 'planners', 'schemas', 'utils'] (expected ['planners', 'schemas', 'utils'])",
+      "time": 0.0002257823944091797
+    },
+    "fs.structure.exact_children::agentic_core/l1_planning/planners::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.0002665519714355469
+    },
+    "fs.structure.exact_children::agentic_core/l1_planning/schemas::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.0001461505889892578
+    },
+    "fs.structure.exact_children::agentic_core/l1_planning/utils::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00013899803161621094
+    },
+    "fs.structure.exact_children::agentic_core/l2_execution::[executors,schemas,utils]": {
+      "reason": "Children match: ['__pycache__', 'engines', 'executors', 'outreach', 'resume', 'schemas', 'tools', 'utils', 'wrappers'] (expected ['executors', 'schemas', 'utils'])",
+      "time": 0.0003082752227783203
+    },
+    "fs.structure.exact_children::agentic_core/l2_execution/utils::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00017762184143066406
+    },
+    "fs.structure.exact_children::agentic_core/l3_orchestration::[engines,framework,utils]": {
+      "reason": "Children match: ['__pycache__', 'engines', 'framework', 'orchestration', 'outreach', 'resume', 'utils'] (expected ['engines', 'framework', 'utils'])",
+      "time": 0.0003986358642578125
+    },
+    "fs.structure.exact_children::agentic_core/l3_orchestration/engines::[]": {
+      "reason": "Children match: ['__pycache__', 'outreach', 'resume'] (expected [])",
+      "time": 0.00032806396484375
+    },
+    "fs.structure.exact_children::agentic_core/l3_orchestration/framework::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.0002033710479736328
+    },
+    "fs.structure.exact_children::agentic_core/l3_orchestration/utils::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00018310546875
+    },
+    "fs.structure.exact_children::agentic_core/l5_safety::[filters,policies,validators]": {
+      "reason": "Children match: ['L5', '__pycache__', 'filters', 'policies', 'safety', 'validators'] (expected ['filters', 'policies', 'validators'])",
+      "time": 0.00025272369384765625
+    },
+    "fs.structure.exact_children::agentic_core/l5_safety/filters::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00016808509826660156
+    },
+    "fs.structure.exact_children::agentic_core/l5_safety/policies::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.000164031982421875
+    },
+    "fs.structure.exact_children::agentic_core/l5_safety/validators::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00021147727966308594
+    },
+    "fs.structure.exact_children::apps::[outreach_engine,resume_engine]": {
+      "reason": "Children match: ['config', 'deployment', 'docs', 'evaluation', 'outreach', 'outreach_engine', 'resume', 'resume_engine'] (expected ['outreach_engine', 'resume_engine'])",
+      "time": 0.00030517578125
+    },
+    "fs.structure.exact_children::apps/resume_engine::[l1,l2,l3,l4,l5]": {
+      "reason": "Children match: ['__pycache__', 'adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines', 'production_inputs'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
+      "time": 0.0004184246063232422
+    },
+    "fs.structure.exact_children::apps/outreach_engine::[l1,l2,l3,l4,l5]": {
+      "reason": "Children match: ['__pycache__', 'adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
+      "time": 0.00038123130798339844
+    },
+    "fs.structure.exact_children::tests::[data,e2e,fixtures,integration,l1,l2,l3,l4,l5,regression]": {
+      "reason": "Children match: ['L1_planning', 'L2_execution', 'L3_orchestration', 'L4_memory_state', 'L5_safety', '__pycache__', 'architecture', 'contracts', 'control_plane', 'dag', 'data', 'e2e', 'fixtures', 'golden', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'metacognition', 'misc', 'model_routing', 'modularity', 'observability', 'regression', 'runtime', 'sandbox', 'shared', 'simulation', 'stress', 'unit', 'vertical_slice'] (expected ['data', 'e2e', 'fixtures', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'regression'])",
+      "time": 0.0016722679138183594
+    },
+    "fs.structure.exact_children::tests/l1/unit::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.0002772808074951172
+    },
+    "fs.structure.exact_children::tests/l1/integration::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.0001919269561767578
+    },
+    "fs.structure.exact_children::tests/l2/unit::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.0002231597900390625
+    },
+    "fs.structure.exact_children::tests/l2/integration::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00019216537475585938
+    },
+    "fs.structure.exact_children::tests/l3/orchestration::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.0002586841583251953
+    },
+    "fs.structure.exact_children::tests/l4/memory::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00022673606872558594
+    },
+    "fs.structure.exact_children::tests/l5/safety::[]": {
+      "reason": "Children match: ['__pycache__'] (expected [])",
+      "time": 0.00028586387634277344
+    },
+    "fs.structure.exact_children::tests/e2e::[]": {
+      "reason": "Children match: ['__pycache__', 'full_agent_workflows', 'multi-agent_scenarios', 'multi_agent_scenarios', 'outreach', 'resume', 'safety_enforced_paths'] (expected [])",
+      "time": 0.0003783702850341797
+    },
+    "fs.structure.exact_children::tests/integration::[]": {
+      "reason": "Children match: ['__pycache__', 'outreach', 'resume'] (expected [])",
+      "time": 0.0003254413604736328
+    },
+    "fs.structure.exact_children::tests/regression::[]": {
+      "reason": "Children match: ['__pycache__', 'outreach', 'resume'] (expected [])",
+      "time": 0.00035953521728515625
+    },
+    "fs.structure.exact_children::tests/fixtures::[]": {
+      "reason": "Children match: ['lic_golden'] (expected [])",
+      "time": 0.00018286705017089844
+    },
+    "fs.structure.exact_children::schemas::[]": {
+      "reason": "Children match: ['L1', 'L2', 'L3', 'L4', 'L4_memory_state', 'L5', 'agents', 'l1_planning', 'l2_execution', 'l3_orchestration', 'l4_memory', 'l5_safety', 'memory', 'plans', 'shared', 'tools'] (expected [])",
+      "time": 0.00064849853515625
+    },
+    "fs.structure.exact_children::runtime::[]": {
+      "reason": "Children match: ['__pycache__', 'cache', 'config', 'core', 'data', 'environment', 'eval', 'infra', 'logs', 'meta', 'ops', 'router', 'telemetry'] (expected [])",
+      "time": 0.0008387565612792969
+    },
+    "fs.structure.exact_children::observability::[]": {
+      "reason": "Children match: ['cost', 'logs', 'metrics', 'trace', 'traces'] (expected [])",
+      "time": 0.0003058910369873047
+    },
+    "fs.structure.exact_children::prompt_governance::[]": {
+      "reason": "Children match: ['Domains', 'InjectionPolicies', 'PromptACLs', 'PromptDefinitions', 'PromptVersions', 'acls', 'bundles', 'definitions', 'governance_metadata', 'guards', 'manifests', 'metadata', 'policies', 'prompts', 'schemas', 'templates', 'versions'] (expected [])",
+      "time": 0.0007112026214599609
+    },
+    "fs.depth.max_depth::8": {
+      "reason": "Max depth: 9 (allowed 8)",
+      "time": 0.39339637756347656
+    },
+    "fs.filename.forbidden_substring::old": {
+      "reason": "Forbidden substring 'old' found in 35 files",
+      "time": 0.2695460319519043
+    },
+    "fs.filename.forbidden_substring::backup": {
+      "reason": "Forbidden substring 'backup' found in 2 files",
+      "time": 0.26836419105529785
+    },
+    "fs.filename.forbidden_substring::copy": {
+      "reason": "Forbidden substring 'copy' found in 2 files",
+      "time": 0.30631184577941895
+    },
+    "fs.filename.forbidden_substring::draft": {
+      "reason": "Forbidden substring 'draft' found in 12 files",
+      "time": 0.2234487533569336
+    },
+    "fs.tests.forbidden_extension::.md": {
+      "reason": "Forbidden extension '.md' found in 17 files",
+      "time": 0.12526607513427734
+    },
+    "fs.tests.forbidden_extension::.json": {
+      "reason": "Forbidden extension '.json' found in 445 files",
+      "time": 0.14168047904968262
+    },
+    "fs.tests.forbidden_extension::.log": {
+      "reason": "Forbidden extension '.log' found in 7 files",
+      "time": 0.11715149879455566
+    },
+    "fs.zero_tolerance.empty_directories::true": {
+      "reason": "Unknown filesystem rule",
+      "time": 1.6689300537109375e-06
+    },
+    "fs.zero_tolerance.case_collisions::true": {
+      "reason": "Unknown filesystem rule",
+      "time": 9.5367431640625e-07
+    },
+    "tests.mapping.module_has_test_mapping::strategy_planner": {
+      "reason": "Unknown tests category: mapping",
+      "time": 4.76837158203125e-07
+    },
+    "tests.mapping.module_has_test_mapping::message_planner": {
+      "reason": "Unknown tests category: mapping",
+      "time": 4.76837158203125e-07
+    },
+    "tests.mapping.module_has_test_mapping::research_planner": {
+      "reason": "Unknown tests category: mapping",
+      "time": 2.384185791015625e-07
+    },
+    "tests.mapping.module_has_test_mapping::refinement_planner": {
+      "reason": "Unknown tests category: mapping",
+      "time": 2.384185791015625e-07
+    },
+    "tests.mapping.module_has_test_mapping::safety_planner": {
+      "reason": "Unknown tests category: mapping",
+      "time": 4.76837158203125e-07
+    },
+    "tests.mapping.module_has_test_mapping::company_research_executor": {
+      "reason": "Unknown tests category: mapping",
+      "time": 2.384185791015625e-07
+    },
+    "tests.mapping.module_has_test_mapping::contact_research_executor": {
+      "reason": "Unknown tests category: mapping",
+      "time": 2.384185791015625e-07
+    },
+    "tests.mapping.module_has_test_mapping::message_generation_executor": {
+      "reason": "Unknown tests category: mapping",
+      "time": 2.384185791015625e-07
+    },
+    "tests.mapping.module_has_test_mapping::resume_engine_dag": {
+      "reason": "Unknown tests category: mapping",
+      "time": 2.384185791015625e-07
+    },
+    "tests.mapping.module_has_test_mapping::outreach_engine_dag": {
+      "reason": "Unknown tests category: mapping",
+      "time": 2.384185791015625e-07
+    }
+  }
+}
