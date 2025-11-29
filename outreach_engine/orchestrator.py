@@ -26,13 +26,13 @@ from .research_planner import ResearchPlanner, ResearchPlan
 from .message_planner import MessagePlanner, MessagePlan
 
 # Import all K executors
-from .k1_research import K1ResearchExecutor, ResearchOutput
-from .k2_insights import K2InsightsExecutor, InsightOutput
-from .k3_draft import K3DraftExecutor, DraftOutput
-from .k4_regen import K4RegenExecutor, RegenOutput
-from .k5_validation import K5ValidationExecutor, ValidationOutput
-from .k6_cta import K6CTAExecutor, CTAOutput
-from .k7_assembly import K7AssemblyExecutor, AssemblyOutput
+from .l2.lic_k1_research import K1ResearchExecutor, ResearchOutput
+from .l2.lic_k2_insights import K2InsightsExecutor, InsightOutput
+from .l2.lic_k3_draft import K3DraftExecutor, DraftOutput
+from .l2.lic_k4_regen import K4RegenExecutor, RegenOutput
+from .l2.lic_k5_validation import K5ValidationExecutor, ValidationOutput
+from .l2.lic_k6_cta import K6CTAExecutor, CTAOutput
+from .l2.lic_k7_assembly import K7AssemblyExecutor, AssemblyOutput
 
 
 @dataclass
