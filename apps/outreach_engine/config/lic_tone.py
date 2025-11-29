@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Any, Tuple
 import re
 from collections import Counter
 
-from .models import (
+from ..models import (
     Archetype, ValidationResult, ValidationSeverity, ToneProfile
 )
 

@@ -7,7 +7,7 @@ Parameter presets, context management, and adaptive controls
 from typing import Dict, List, Optional, Any, Union
 import math
 
-from .models import (
+from ..models import (
     Route, Archetype, ValidationResult, ValidationSeverity
 )
 
