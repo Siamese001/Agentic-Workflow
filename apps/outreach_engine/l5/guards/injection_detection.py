@@ -13,7 +13,7 @@ from dataclasses import dataclass
 from enum import Enum
 import logging
 
-from .types import SafetyContext, SafetyFinding, PolicyDecision, Verdict, Severity
+from ..types import SafetyContext, SafetyFinding, PolicyDecision, Verdict, Severity
 
 logger = logging.getLogger(__name__)
 
@@ -431,6 +431,3 @@ __all__ = [
     'InjectionSafetyPolicy',
     'create_injection_safety_policy',
 ]
-
-
-
