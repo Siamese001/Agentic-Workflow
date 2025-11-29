@@ -11,8 +11,8 @@ import re
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
-from .models import ThematicAnalysis, ValidationResult, ValidationSeverity
-from .state import ImmutableStagingBuffer
+from .rg_models import ThematicAnalysis, ValidationResult, ValidationSeverity
+from .rg_state import ImmutableStagingBuffer
 
 
 class FileRenderer:
