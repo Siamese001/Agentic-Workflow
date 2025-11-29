@@ -1,87 +1,201 @@
-# ast_purity_scanner.py
-# Enforces L1–L5 purity principles via AST.
+#!/usr/bin/env python3
+"""
+ast_purity_scanner.py
+AST-based purity & safety validator.
+
+Covers:
+- L1–L5 forbidden imports
+- Inline prompts in forbidden layers
+- Dangerous builtins: eval, exec
+- Suspicious subprocess.run without timeout
+- Debug prints in core modules
+- Simple secret-pattern detection in string literals
+- Missing type hints for functions in agentic_core/*
+"""
 
 import os
-import ast
 import sys
+import ast
+import re
 
 REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
 
 FORBIDDEN_IMPORTS = {
-    "agentic_core/l1_planning": ["agentic_core.l2_execution", "agentic_core.l3_orchestration",
-                                 "agentic_core.l4_memory", "agentic_core.l5_safety"],
-    "agentic_core/l2_execution": ["agentic_core.l1_planning", "agentic_core.l3_orchestration",
-                                  "agentic_core.l4_memory", "agentic_core.l5_safety"],
-    "agentic_core/l3_orchestration": ["agentic_core.l4_memory", "agentic_core.l5_safety"],
-    "agentic_core/l4_memory": ["agentic_core.l1_planning", "agentic_core.l2_execution",
-                               "agentic_core.l3_orchestration"],
-    "agentic_core/l5_safety": ["agentic_core.l1_planning", "agentic_core.l2_execution",
-                               "agentic_core.l3_orchestration", "agentic_core.l4_memory"],
+    "agentic_core/l1_planning": [
+        "agentic_core.l2_execution",
+        "agentic_core.l3_orchestration",
+        "agentic_core.l4_memory",
+        "agentic_core.l5_safety",
+    ],
+    "agentic_core/l2_execution": [
+        "agentic_core.l1_planning",
+        "agentic_core.l3_orchestration",
+        "agentic_core.l4_memory",
+        "agentic_core.l5_safety",
+    ],
+    "agentic_core/l3_orchestration": [
+        "agentic_core.l4_memory",
+        "agentic_core.l5_safety",
+    ],
+    "agentic_core/l4_memory": [
+        "agentic_core.l1_planning",
+        "agentic_core.l2_execution",
+        "agentic_core.l3_orchestration",
+    ],
+    "agentic_core/l5_safety": [
+        "agentic_core.l1_planning",
+        "agentic_core.l2_execution",
+        "agentic_core.l3_orchestration",
+        "agentic_core.l4_memory",
+    ],
 }
 
 NO_INLINE_PROMPTS_IN = {
-    "agentic_core/l1_planning": True,
-    "agentic_core/l5_safety": True,
+    "agentic_core/l1_planning",
+    "agentic_core/l5_safety",
 }
 
-def is_inline_prompt(node):
-    if isinstance(node, ast.Constant) and isinstance(node.value, str):
-        return len(node.value.split()) > 10
-    return False
+SECRET_PATTERNS = [
+    re.compile(r"api[_-]?key", re.IGNORECASE),
+    re.compile(r"secret", re.IGNORECASE),
+    re.compile(r"token", re.IGNORECASE),
+    re.compile(r"password", re.IGNORECASE),
+]
 
-def walk_python_files(root):
-    py_files = []
+CORE_CODE_PREFIXES_FOR_DEBUG = (
+    "agentic_core/",
+    "apps/",
+)
+
+CORE_CODE_PREFIXES_FOR_TYPE_HINTS = (
+    "agentic_core/",
+    "apps/",
+)
+
+
+def walk_py_files(root):
+    out = []
     for dirpath, _, filenames in os.walk(root):
         for f in filenames:
             if f.endswith(".py"):
-                py_files.append(os.path.join(dirpath, f))
-    return py_files
+                out.append(os.path.join(dirpath, f))
+    return out
 
-def check_forbidden_imports(filepath, tree, errors):
-    rel = os.path.relpath(filepath, REPO_ROOT).replace("\\", "/")
+
+def relpath(path: str) -> str:
+    return os.path.relpath(path, REPO_ROOT).replace("\\", "/")
+
+
+def is_long_string(node):
+    return isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value.split()) > 10
+
+
+def check_forbidden_imports(rel, tree, errors):
     for prefix, forbidden_list in FORBIDDEN_IMPORTS.items():
         if rel.startswith(prefix):
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         if any(alias.name.startswith(bad) for bad in forbidden_list):
-                            errors.append(f"Forbidden import in {rel}: {alias.name}")
+                            errors.append(f"[IMPORT] Forbidden import in {rel}: {alias.name}")
                 elif isinstance(node, ast.ImportFrom):
-                    fullname = f"{node.module}"
-                    if any(fullname.startswith(bad) for bad in forbidden_list):
-                        errors.append(f"Forbidden import-from in {rel}: {fullname}")
+                    if node.module and any(node.module.startswith(bad) for bad in forbidden_list):
+                        errors.append(f"[IMPORT] Forbidden import-from in {rel}: {node.module}")
 
-def check_inline_prompts(filepath, tree, errors):
-    rel = os.path.relpath(filepath, REPO_ROOT).replace("\\", "/")
-    for prefix in NO_INLINE_PROMPTS_IN:
-        if rel.startswith(prefix):
-            for node in ast.walk(tree):
-                if is_inline_prompt(node):
-                    errors.append(f"Inline prompt violation in {rel}")
+
+def check_inline_prompts(rel, tree, errors):
+    if any(rel.startswith(p) for p in NO_INLINE_PROMPTS_IN):
+        for node in ast.walk(tree):
+            if is_long_string(node):
+                errors.append(f"[PROMPT] Inline prompt not allowed in {rel}")
+
+
+def check_dangerous_builtins(rel, tree, errors):
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            if node.func.id in ("eval", "exec"):
+                errors.append(f"[DANGER] Use of {node.func.id} in {rel}")
+
+
+def check_subprocess_without_timeout(rel, tree, errors):
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            func = node.func
+            if isinstance(func, ast.Attribute) and func.attr == "run":
+                if isinstance(func.value, ast.Name) and func.value.id == "subprocess":
+                    has_timeout = any(
+                        isinstance(kw.arg, str) and kw.arg == "timeout" for kw in node.keywords
+                    )
+                    if not has_timeout:
+                        errors.append(f"[RUNTIME] subprocess.run without timeout in {rel}")
+
+
+def check_debug_prints(rel, tree, errors):
+    if not any(rel.startswith(p) for p in CORE_CODE_PREFIXES_FOR_DEBUG):
+        return
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "print":
+            errors.append(f"[DEBUG] print() call in core code {rel}")
+
+
+def check_simple_secrets(rel, tree, errors):
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Constant) and isinstance(node.value, str):
+            s = node.value
+            if any(p.search(s) for p in SECRET_PATTERNS):
+                errors.append(f"[SECRET] Suspicious secret-like string in {rel}: {s[:80]!r}")
+
+
+def check_type_hints(rel, tree, errors):
+    if not any(rel.startswith(p) for p in CORE_CODE_PREFIXES_FOR_TYPE_HINTS):
+        return
+
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef):
+            # Skip dunder methods / small helpers if you like, but here we go strict.
+            missing = []
+            for arg in node.args.args:
+                if arg.arg in ("self", "cls"):
+                    continue
+                if arg.annotation is None:
+                    missing.append(arg.arg)
+            if missing:
+                errors.append(f"[TYPEHINT] Function {node.name} in {rel} missing type hints for args: {missing}")
+            # Return annotation
+            if node.returns is None:
+                errors.append(f"[TYPEHINT] Function {node.name} in {rel} missing return type hint")
+
 
 def main():
     errors = []
-    files = walk_python_files(REPO_ROOT)
+    files = walk_py_files(REPO_ROOT)
 
     for f in files:
+        rel = relpath(f)
         with open(f, "r", encoding="utf-8") as src:
             try:
-                tree = ast.parse(src.read(), filename=f)
+                tree = ast.parse(src.read(), filename=rel)
             except SyntaxError as e:
-                errors.append(f"Syntax error in {f}: {e}")
+                errors.append(f"[SYNTAX] {rel}: {e}")
                 continue
 
-        check_forbidden_imports(f, tree, errors)
-        check_inline_prompts(f, tree, errors)
+        check_forbidden_imports(rel, tree, errors)
+        check_inline_prompts(rel, tree, errors)
+        check_dangerous_builtins(rel, tree, errors)
+        check_subprocess_without_timeout(rel, tree, errors)
+        check_debug_prints(rel, tree, errors)
+        check_simple_secrets(rel, tree, errors)
+        check_type_hints(rel, tree, errors)
 
     if errors:
-        print("\n=== AST PURITY SCAN FAILED ===")
+        print("\n=== AST PURITY / SAFETY SCAN FAILED ===")
         for e in errors:
             print(e)
         sys.exit(2)
 
-    print("AST purity validation PASSED.")
+    print("AST purity / safety validation PASSED.")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
