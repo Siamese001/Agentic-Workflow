@@ -5,7 +5,7 @@ Provides DAG creation, validation, and execution capabilities.
 
 import time
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Set, Tuple
+from typing import Dict, Any, List, Optional, Set, Tuple
 from enum import Enum
 import logging
 
@@ -23,7 +23,7 @@ class DAGNode:
     """Represents a single node in a DAG."""
 
     def __init__(self, node_id: str, node_type: str, input_schema: Dict[str, Any],
-                 output_schema: Dict[str, Any], failure_modes: List[str] = None):
+                 output_schema: Dict[str, Any], failure_modes: Optional[List[str]] = None):
         self.node_id = node_id
         self.node_type = node_type
         self.input_schema = input_schema
@@ -176,9 +176,9 @@ class DAG:
 
         return result
 
-    def execute(self, initial_data: Dict[str, Any] = None) -> Dict[str, Any]:
+    def execute(self, initial_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Execute the DAG."""
-        execution_result = {
+        execution_result: Dict[str, Any] = {
             "dag_id": self.dag_id,
             "status": "running",
             "start_time": datetime.utcnow().isoformat(),
@@ -203,7 +203,7 @@ class DAG:
                 execution_result["node_results"][node_id] = {
                     "status": node.status.value,
                     "result": result,
-                    "execution_time": (node.end_time or 0) - (node.start_time or 0)
+                    "execution_time": float((node.end_time or 0) - (node.start_time or 0))
                 }
 
                 if node.status == NodeStatus.COMPLETED:
