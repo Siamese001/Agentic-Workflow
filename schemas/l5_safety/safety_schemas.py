@@ -4,12 +4,12 @@ Safety Schemas
 Section 10: Schema Layer - Schemas for L5 safety/policy operations
 """
 
-from typing import Dict, Any, Optional, List, Union
-from pydantic import BaseModel, Field, validator
+from typing import Dict, Any, Optional, List
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 
-from .base_schemas import BaseRequest, BaseResponse, ProcessingStatus
+from .base_schemas import BaseRequest, BaseResponse
 
 class SafetyLevel(str, Enum):
     """Safety level enumeration"""

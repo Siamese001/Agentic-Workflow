@@ -326,8 +326,6 @@ class TestStateManagerOutreachIsolation:
     
     def test_concurrent_outreach_state_access(self):
         """Test concurrent state access and thread safety for outreach workflows."""
-        import threading
-        import time
         
         results = []
         errors = []

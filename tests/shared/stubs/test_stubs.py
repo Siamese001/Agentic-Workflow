@@ -2,14 +2,14 @@
 
 class StubSafetyEngine:
     """Stub safety engine for testing."""
-    
+
     def evaluate(self, context):
         """Stub evaluate method."""
         return StubPolicyResult()
 
 class StubPolicyResult:
     """Stub policy result for testing."""
-    
+
     def __init__(self):
         self.blocking_findings = []
         self.warnings = []

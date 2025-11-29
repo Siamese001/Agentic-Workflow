@@ -4,9 +4,7 @@ Tests for temporal rank fusion functionality - Phase 6 L4 expansion.
 Tests deterministic fusion, mixed hybrid + KG paths, and KG-only fallback.
 """
 
-import pytest
 from datetime import datetime, timedelta, UTC
-from typing import List, Dict, Any
 from agentic_core.l4_memory_state.temporal.temporal_kg import TemporalKG, TemporalNodeMetadata
 from agentic_core.l4_memory_state.temporal.temporal_fusion import TemporalRankFusion
 

@@ -4,12 +4,11 @@ Orchestration Schemas
 Section 10: Schema Layer - Schemas for L3 orchestration operations
 """
 
-from typing import Dict, Any, Optional, List, Union
-from pydantic import BaseModel, Field, validator
-from datetime import datetime
+from typing import Dict, Any, Optional, List
+from pydantic import BaseModel, Field
 from enum import Enum
 
-from .base_schemas import BaseRequest, BaseResponse, ProcessingStatus
+from .base_schemas import BaseRequest, BaseResponse
 
 class OrchestrationType(str, Enum):
     """Orchestration type enumeration"""

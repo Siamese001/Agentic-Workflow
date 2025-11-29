@@ -254,7 +254,7 @@ class TestOutreachErrorCodes:
         policy = OutreachSafetyPolicy()
         
         # All error codes should follow LIC-E### format
-        expected_codes = [f"LIC-E{str(i).zfill(3)}" for i in range(1, 14)]
+        [f"LIC-E{str(i).zfill(3)}" for i in range(1, 14)]
         
         # Implementation will validate error code formatting
         assert hasattr(policy, 'error_codes')

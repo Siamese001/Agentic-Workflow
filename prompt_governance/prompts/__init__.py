@@ -9,15 +9,15 @@ import os
 
 class PromptRegistry:
     """Registry for managing prompts with schemas and versions"""
-    
+
     def __init__(self):
         self.prompts = {}
         self._load_prompts()
-    
+
     def _load_prompts(self):
         """Load all prompts from the governance directory"""
         prompt_dir = os.path.dirname(__file__)
-        
+
         for filename in os.listdir(prompt_dir):
             if filename.endswith('.json') and filename != '__init__.py':
                 prompt_name = filename[:-5]  # Remove .json extension
@@ -27,21 +27,21 @@ class PromptRegistry:
                     self.prompts[prompt_name] = prompt_data
                 except Exception as e:
                     print(f"Failed to load prompt {filename}: {e}")
-    
+
     def get_prompt(self, name: str, version: Optional[str] = None) -> Optional[Dict[str, Any]]:
         """Get a prompt by name and optional version"""
         prompt = self.prompts.get(name)
         if prompt is None:
             return None
-        
+
         if version is not None:
             # Return specific version if available
             versions = prompt.get('versions', {})
             return versions.get(version)
-        
+
         # Return latest version
         return prompt.get('latest', prompt)
-    
+
     def list_prompts(self) -> list:
         """List all available prompt names"""
         return list(self.prompts.keys())

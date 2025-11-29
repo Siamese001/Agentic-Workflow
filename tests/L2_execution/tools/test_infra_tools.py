@@ -5,7 +5,6 @@ Section 3: Canonical Repository Tree - L2 Execution Tools Tests
 """
 
 import pytest
-from typing import Dict, Any, List
 import logging
 import json
 import hashlib
@@ -17,7 +16,6 @@ class TestInfraTools:
     
     def test_embedding_tool_text_embedding(self):
         """Test embedding tool for text embedding generation"""
-        text = "Python software engineer with AWS experience"
         
         # Simulate embedding generation
         embedding_size = 384
@@ -45,7 +43,6 @@ class TestInfraTools:
     
     def test_search_tool_web_search(self):
         """Test search tool for web search functionality"""
-        query = "Python software engineer jobs"
         
         # Simulate search results
         search_results = [
@@ -60,7 +57,6 @@ class TestInfraTools:
     
     def test_search_tool_internal_search(self):
         """Test search tool for internal document search"""
-        query = "resume skills section"
         internal_docs = [
             {"content": "Skills section should include technical abilities", "path": "/docs/resume_guide.md"},
             {"content": "Resume formatting for skills presentation", "path": "/docs/resume_format.md"}
@@ -74,7 +70,6 @@ class TestInfraTools:
     
     def test_http_tool_get_request(self):
         """Test HTTP tool for GET requests"""
-        url = "https://api.example.com/user/profile"
         
         # Simulate HTTP GET response
         response = {
@@ -89,8 +84,6 @@ class TestInfraTools:
     
     def test_http_tool_post_request(self):
         """Test HTTP tool for POST requests"""
-        url = "https://api.example.com/resume/submit"
-        payload = {"name": "John Doe", "skills": ["Python", "AWS"]}
         
         # Simulate HTTP POST response
         response = {
@@ -104,8 +97,6 @@ class TestInfraTools:
     
     def test_sql_tool_query_execution(self):
         """Test SQL tool for parameterized query execution"""
-        query = "SELECT * FROM candidates WHERE skills LIKE %s"
-        params = ["%Python%"]
         
         # Simulate SQL query results
         results = [
@@ -120,7 +111,6 @@ class TestInfraTools:
         """Test SQL tool parameterized query safety"""
         # Test parameterization prevents SQL injection
         user_input = "'; DROP TABLE candidates; --"
-        safe_params = [f"%{user_input}%"]
         query = "SELECT * FROM candidates WHERE name LIKE %s"
         
         # Simulate safe query execution
@@ -129,7 +119,6 @@ class TestInfraTools:
     
     def test_file_tool_read_operation(self):
         """Test file tool for file read operations"""
-        file_path = "/resumes/john_doe_resume.json"
         
         # Simulate file read
         file_content = {
@@ -183,7 +172,7 @@ class TestInfraTools:
         yaml_string = f"resume:\n  name: {data['resume']['name']}\n  format: {data['resume']['format']}"
         
         # Simulate YAML parsing
-        parsed_lines = yaml_string.strip().split('\n')
+        yaml_string.strip().split('\n')
         assert "name: John Doe" in yaml_string
         assert "format: professional" in yaml_string
     

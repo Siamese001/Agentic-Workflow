@@ -4,7 +4,6 @@ Tests for temporal scoring functionality - Phase 6 L4 expansion.
 Tests recency weighting, weight clamping, normalization, and hop distance effects.
 """
 
-import pytest
 from datetime import datetime, timedelta, UTC
 from agentic_core.l4_memory_state.temporal.temporal_kg import TemporalKG, TemporalFact, TemporalNodeMetadata
 

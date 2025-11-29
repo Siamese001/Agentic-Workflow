@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 class PromptACL:
     """Access control list for prompt permissions and security"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.acl_id = self.config.get("acl_id", "")
         self.prompt_id = self.config.get("prompt_id", "")
         self.permissions = self.config.get("permissions", {})
         self.created_at = self.config.get("created_at", datetime.now().isoformat())
-    
+
     def create_acl(self, prompt_id: str, permissions: Dict[str, Any]) -> Dict[str, Any]:
         """Create access control list for a prompt"""
         try:
@@ -38,14 +38,14 @@ class PromptACL:
                 "updated_at": datetime.now().isoformat(),
                 "active": True
             }
-            
+
             logger.info(f"Created ACL for prompt: {prompt_id}")
             return acl
-            
+
         except Exception as e:
             logger.error(f"Failed to create ACL: {e}")
             return {"error": str(e)}
-    
+
     def check_permission(self, acl_id: str, user_role: str, action: str) -> Dict[str, Any]:
         """Check if user role has permission for specific action"""
         try:
@@ -60,12 +60,12 @@ class PromptACL:
                     }
                 }
             }
-            
+
             acl = mock_acls.get(acl_id, {})
             allowed_roles = acl.get("permissions", {}).get(action, [])
-            
+
             is_allowed = user_role in allowed_roles
-            
+
             result = {
                 "acl_id": acl_id,
                 "user_role": user_role,
@@ -73,14 +73,14 @@ class PromptACL:
                 "allowed": is_allowed,
                 "checked_at": datetime.now().isoformat()
             }
-            
+
             logger.info(f"ACL check: {user_role} {action} on {acl_id} -> {is_allowed}")
             return result
-            
+
         except Exception as e:
             logger.error(f"ACL permission check failed: {e}")
             return {"allowed": False, "error": str(e)}
-    
+
     def update_permissions(self, acl_id: str, new_permissions: Dict[str, List[str]]) -> Dict[str, Any]:
         """Update ACL permissions"""
         try:
@@ -90,14 +90,14 @@ class PromptACL:
                 "updated_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Updated permissions for ACL: {acl_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to update ACL permissions: {e}")
             return {"success": False, "error": str(e)}
-    
+
     def revoke_access(self, acl_id: str, user_role: str, action: str) -> Dict[str, Any]:
         """Revoke specific access from user role"""
         try:
@@ -108,10 +108,10 @@ class PromptACL:
                 "revoked_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Revoked access: {user_role} {action} on {acl_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to revoke access: {e}")
             return {"success": False, "error": str(e)}

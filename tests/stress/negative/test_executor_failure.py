@@ -5,19 +5,15 @@ Tests graceful failure handling when executor operations fail,
 timeout scenarios, and resilience under executor stress.
 """
 
-import pytest
 import asyncio
 import threading
 import time
-from typing import Dict, Any
-from unittest.mock import Mock, patch
 
 from runtime.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetLimits,
     get_budget_manager
 )
-from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 
 
 class TestExecutorFailure:
@@ -286,7 +282,7 @@ class TestExecutorFailure:
     def test_executor_failure_resource_cleanup(self):
         """Test proper resource cleanup after executor failures."""
         # Get initial state
-        initial_usage = self.budget_manager.current_usage()
+        self.budget_manager.current_usage()
         
         # Simulate failure scenarios
         for _ in range(10):

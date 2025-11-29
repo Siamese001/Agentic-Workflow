@@ -5,13 +5,10 @@ Tests archetype tolerance rules: C_LEVEL most permissive, EXECUTIVE moderate,
 SENIOR_TA low, RECRUITER extremely conservative.
 """
 
-import pytest
-from unittest.mock import Mock
-from typing import List, Dict, Any
 
 from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyValidator
-from agentic_core.l5_safety.safety_policy.types import SafetyContext, Severity
-from agentic_core.l5_safety.safety_policy.interfaces import PolicyDecision, Action, Verdict
+from agentic_core.l5_safety.safety_policy.types import SafetyContext
+from agentic_core.l5_safety.safety_policy.interfaces import Verdict
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeType
 
 

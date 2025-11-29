@@ -22,12 +22,12 @@ class L4MemoryBundle:
     prompt_type: MemoryPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_memory_guidance(self, base_prompt: str, memory_context: Dict[str, Any]) -> str:
         """Inject L4 memory guidance into prompt"""
         guidance = self._generate_memory_guidance(memory_context)
         return f"{base_prompt}\n\nMemory Guidance:\n{guidance}"
-    
+
     def _generate_memory_guidance(self, context: Dict[str, Any]) -> str:
         """Generate memory-specific guidance"""
         if self.prompt_type == MemoryPromptType.STATE_RETRIEVAL:

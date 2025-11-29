@@ -4,12 +4,12 @@ Memory Schemas
 Section 10: Schema Layer - Schemas for L4 memory/state operations
 """
 
-from typing import Dict, Any, Optional, List, Union
-from pydantic import BaseModel, Field, validator
+from typing import Dict, Any, Optional, List
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 
-from .base_schemas import BaseRequest, BaseResponse, ProcessingStatus
+from .base_schemas import BaseRequest, BaseResponse
 
 class MemoryType(str, Enum):
     """Memory type enumeration"""

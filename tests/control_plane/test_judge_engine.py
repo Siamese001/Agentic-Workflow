@@ -1,6 +1,5 @@
 from agentic_core.l3_orchestration.control_plane import (
     SafetyContext,
-    PolicyRule,
     RulesEngineResult,
     RuleMatch,
     evaluate_with_guard_model,

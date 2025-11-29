@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 class PromptDomain:
     """Domain-specific prompt specializations and configurations"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.domain_id = self.config.get("domain_id", "")
         self.domain_name = self.config.get("domain_name", "")
         self.specialization = self.config.get("specialization", "")
-    
+
     def create_domain(self, domain_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new prompt domain"""
         try:
@@ -34,14 +34,14 @@ class PromptDomain:
                 "updated_at": datetime.now().isoformat(),
                 "active": True
             }
-            
+
             logger.info(f"Created prompt domain: {domain['domain_name']}")
             return domain
-            
+
         except Exception as e:
             logger.error(f"Failed to create prompt domain: {e}")
             return {"error": str(e)}
-    
+
     def get_resume_domain_prompts(self) -> List[Dict[str, Any]]:
         """Get resume-specific domain prompts"""
         try:
@@ -71,14 +71,14 @@ class PromptDomain:
                     "specialization": "experience_enhancement"
                 }
             ]
-            
+
             logger.info(f"Retrieved {len(resume_prompts)} resume domain prompts")
             return resume_prompts
-            
+
         except Exception as e:
             logger.error(f"Failed to get resume domain prompts: {e}")
             return []
-    
+
     def get_outreach_domain_prompts(self) -> List[Dict[str, Any]]:
         """Get outreach-specific domain prompts"""
         try:
@@ -108,14 +108,14 @@ class PromptDomain:
                     "specialization": "social_networking"
                 }
             ]
-            
+
             logger.info(f"Retrieved {len(outreach_prompts)} outreach domain prompts")
             return outreach_prompts
-            
+
         except Exception as e:
             logger.error(f"Failed to get outreach domain prompts: {e}")
             return []
-    
+
     def get_domain_by_name(self, domain_name: str) -> Dict[str, Any]:
         """Get domain configuration by name"""
         try:
@@ -147,30 +147,30 @@ class PromptDomain:
                     }
                 }
             }
-            
+
             domain = domains.get(domain_name, {})
-            
+
             if not domain:
                 return {"error": f"Domain '{domain_name}' not found"}
-            
+
             logger.info(f"Retrieved domain configuration: {domain_name}")
             return domain
-            
+
         except Exception as e:
             logger.error(f"Failed to get domain by name: {e}")
             return {"error": str(e)}
-    
+
     def create_domain_specific_prompt(self, domain_name: str, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a prompt specific to a domain"""
         try:
             domain_config = self.get_domain_by_name(domain_name)
-            
+
             if "error" in domain_config:
                 return domain_config
-            
+
             # Apply domain-specific validation rules
             validation_rules = domain_config.get("validation_rules", {})
-            
+
             domain_prompt = {
                 "prompt_id": f"{domain_name}_{hash(str(prompt_data)) % 1000}",
                 "domain": domain_name,
@@ -181,14 +181,14 @@ class PromptDomain:
                 "created_at": datetime.now().isoformat(),
                 "specialization": domain_config.get("specialization", "")
             }
-            
+
             logger.info(f"Created domain-specific prompt for {domain_name}")
             return domain_prompt
-            
+
         except Exception as e:
             logger.error(f"Failed to create domain-specific prompt: {e}")
             return {"error": str(e)}
-    
+
     def list_all_domains(self) -> List[Dict[str, Any]]:
         """List all available prompt domains"""
         try:
@@ -215,10 +215,10 @@ class PromptDomain:
                     "active": True
                 }
             ]
-            
+
             logger.info(f"Listed {len(all_domains)} domains")
             return all_domains
-            
+
         except Exception as e:
             logger.error(f"Failed to list domains: {e}")
             return []

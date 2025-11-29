@@ -4,12 +4,11 @@ Planning Schemas
 Section 10: Schema Layer - Schemas for L1 planning operations
 """
 
-from typing import Dict, Any, Optional, List, Union
-from pydantic import BaseModel, Field, validator
-from datetime import datetime
+from typing import Dict, Any, Optional, List
+from pydantic import BaseModel, Field
 from enum import Enum
 
-from .base_schemas import BaseRequest, BaseResponse, ProcessingStatus
+from .base_schemas import BaseRequest, BaseResponse
 
 class PlanType(str, Enum):
     """Plan type enumeration"""

@@ -28,10 +28,10 @@ class GoldenDataset:
 
 class GoldenDatasetManager:
     """Manages golden datasets for evaluation"""
-    
+
     def __init__(self):
         self.datasets: Dict[str, GoldenDataset] = {}
-    
+
     def register_dataset(self, dataset: GoldenDataset) -> bool:
         """Register golden dataset"""
         try:
@@ -41,7 +41,7 @@ class GoldenDatasetManager:
         except Exception as e:
             logger.error(f"Failed to register dataset: {e}")
             return False
-    
+
     def get_dataset(self, dataset_id: str) -> Optional[GoldenDataset]:
         """Get golden dataset by ID"""
         return self.datasets.get(dataset_id)

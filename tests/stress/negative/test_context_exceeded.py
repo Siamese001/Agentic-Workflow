@@ -6,15 +6,12 @@ across all orchestration paths and large content scenarios.
 """
 
 import pytest
-import asyncio
-from typing import Dict, Any
 
 from runtime.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetLimits,
     get_budget_manager
 )
-from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 
 
 class TestContextExceeded:
@@ -207,7 +204,7 @@ class TestContextExceeded:
         for case in edge_cases:
             try:
                 # Should handle gracefully or raise appropriate error
-                result = self.budget_manager.check_context_size(case)
+                self.budget_manager.check_context_size(case)
                 # If it doesn't crash, that's acceptable behavior
             except (TypeError, ValueError):
                 # Expected error types for invalid input

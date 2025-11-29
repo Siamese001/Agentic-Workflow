@@ -5,11 +5,9 @@ Tests real concurrent execution scenarios with budget limits, async cancellation
 and the interaction between concurrency control and resilience mechanisms.
 """
 
-import pytest
 import asyncio
 import threading
 import time
-from typing import Dict, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from runtime.execution_budget_manager import (
