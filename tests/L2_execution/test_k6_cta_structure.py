@@ -1,5 +1,5 @@
 import inspect
-from l2.lic_k6_cta import LIC_K6_CTA
+from agentic_core.l2_execution.lic_k6_cta import LIC_K6_CTA
 
 def test_class_exists():
     assert inspect.isclass(LIC_K6_CTA)

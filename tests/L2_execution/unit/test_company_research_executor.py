@@ -7,11 +7,11 @@ fallback conditions, and output mapping to OutreachRAGResult list.
 
 from unittest.mock import Mock
 
-from l2.company_research_executor import CompanyResearchExecutor, CompanySearchConfig, CompanyResearchResult, KG_FALLBACK_ARCHETYPES
-from l4.hybrid_search import HybridSearchExecutor, SearchResult
-from l4.schema.outreach_schema import OutreachRAGResult
+from agentic_core.l2_execution.company_research_executor import CompanyResearchExecutor, CompanySearchConfig, CompanyResearchResult, KG_FALLBACK_ARCHETYPES
+from agentic_core.l4_memory.hybrid_search import HybridSearchExecutor, SearchResult
+from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult
 from l4 import PineconeAdapter, TripletStore, Triplet
-from l1.outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
 
 
 class TestCompanyResearchExecutor:
@@ -25,7 +25,7 @@ class TestCompanyResearchExecutor:
         self.mock_telemetry_bus = Mock()
         
         # Patch telemetry bus to avoid potential exceptions
-        import l2.company_research_executor
+        import agentic_core.l2_execution.company_research_executor
         self.original_get_telemetry_bus = l2.company_research_executor.get_telemetry_bus
         l2.company_research_executor.get_telemetry_bus = lambda: self.mock_telemetry_bus
         
@@ -38,7 +38,7 @@ class TestCompanyResearchExecutor:
     def teardown_method(self):
         """Clean up test fixtures."""
         # Restore original telemetry bus function to prevent test isolation issues
-        import l2.company_research_executor
+        import agentic_core.l2_execution.company_research_executor
         l2.company_research_executor.get_telemetry_bus = self.original_get_telemetry_bus
     
     def test_search_company_context_returns_company_research_result(self):

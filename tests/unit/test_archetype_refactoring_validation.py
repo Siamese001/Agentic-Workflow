@@ -6,7 +6,7 @@ recruiter, senior_ta, executive, c_level, and all old archetype references
 have been eliminated from the active codebase.
 """
 
-from l1.outreach_dataclasses import ArchetypeType, ARCHETYPE_REGISTRY
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType, ARCHETYPE_REGISTRY
 
 
 class TestArchetypeRefactoringValidation:
@@ -61,7 +61,7 @@ class TestArchetypeRefactoringValidation:
     def test_archetype_system_integration(self):
         """Test archetype system works end-to-end."""
         # Test basic archetype system functionality
-        from l1.outreach_dataclasses import ArchetypeType, ARCHETYPE_REGISTRY
+        from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType, ARCHETYPE_REGISTRY
         
         # Test enum values are accessible
         assert ArchetypeType.RECRUITER.value == "recruiter"
@@ -83,7 +83,7 @@ class TestArchetypeRefactoringValidation:
     
     def test_archetype_parameter_completeness(self):
         """Test all archetype definitions have complete parameter sets."""
-        from l1.outreach_dataclasses import ARCHETYPE_REGISTRY
+        from agentic_core.l1_planning.outreach_dataclasses import ARCHETYPE_REGISTRY
         
         required_params = [
             'tone_params', 'cta_params', 'signal_params', 
@@ -100,7 +100,7 @@ class TestArchetypeRefactoringValidation:
     
     def test_temperature_schedules_are_reasonable(self):
         """Test archetype temperature schedules have reasonable values."""
-        from l1.outreach_dataclasses import ARCHETYPE_REGISTRY
+        from agentic_core.l1_planning.outreach_dataclasses import ARCHETYPE_REGISTRY
         
         for archetype, definition in ARCHETYPE_REGISTRY.items():
             temp_schedule = definition.temperature_schedule

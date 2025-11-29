@@ -1,4 +1,4 @@
-from l2.lic_k3_draft import LIC_K3_Draft
+from agentic_core.l2_execution.lic_k3_draft import LIC_K3_Draft
 
 def test_stub_returns_none():
     k3 = LIC_K3_Draft({}, {})

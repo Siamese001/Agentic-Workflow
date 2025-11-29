@@ -1,4 +1,4 @@
-from l2.lic_k2_insights import LIC_K2_Insights
+from agentic_core.l2_execution.lic_k2_insights import LIC_K2_Insights
 
 def test_methods_return_none():
     k2 = LIC_K2_Insights({})

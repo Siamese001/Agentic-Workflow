@@ -15,15 +15,15 @@ from datetime import datetime
 # Import L1 planner
 from .rg_planner import RGPlanner, ResumeProcessingPlan
 
-# Import K-node executors
-from ..l2.rg_k1_extract import RGK1Extract, ExtractionOutput
-from ..l2.rg_k2_clean import RGK2Clean, CleaningOutput
-from ..l2.rg_k3_quantify import RGK3Quantify, QuantificationOutput
-from ..l2.rg_k4_rewrite import RGK4Rewrite, RewritingOutput
-from ..l2.rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput
-from ..l2.rg_k6_assemble import RGK6Assemble, AssemblyOutput
-from ..l2.rg_k7_format import RGK7Format, FormattingOutput
-from ..l2.rg_k8_validate import RGK8Validate, ValidationOutput
+# Import K-node executors - Now from agentic_core
+from agentic_core.l2_execution.draft_execution.rg_k1_extract import RGK1Extract, ExtractionOutput
+from agentic_core.l2_execution.draft_execution.rg_k2_clean import RGK2Clean, CleaningOutput
+from agentic_core.l2_execution.draft_execution.rg_k3_quantify import RGK3Quantify, QuantificationOutput
+from agentic_core.l2_execution.draft_execution.rg_k4_rewrite import RGK4Rewrite, RewritingOutput
+from agentic_core.l2_execution.draft_execution.rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput
+from agentic_core.l2_execution.draft_execution.rg_k6_assemble import RGK6Assemble, AssemblyOutput
+from agentic_core.l2_execution.draft_execution.rg_k7_format import RGK7Format, FormattingOutput
+from agentic_core.l2_execution.draft_execution.rg_k8_validate import RGK8Validate, ValidationOutput
 
 # Import LOW complexity utilities
 from ..utils.rg_low_complexity_utils import LowComplexityUtils

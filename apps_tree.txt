@@ -42,13 +42,11 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   lic_fusion_planner.py
 |   |   |   lic_grounding_planner.py
 |   |   |   lic_instructional_injection_v6.py
-|   |   |   lic_kg_rag_fusion_planning.py
 |   |   |   lic_kg_retrieval_planning.py
 |   |   |   lic_many_shot_examples.py
 |   |   |   lic_message_planning.py
 |   |   |   lic_outreach_archetype_planning.py
 |   |   |   lic_outreach_dataclasses.py
-|   |   |   lic_persona_planner.py
 |   |   |   lic_planner.py
 |   |   |   lic_plan_schema.py
 |   |   |   lic_plan_schema_legacy.py
@@ -60,7 +58,6 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   rag_planning.py
 |   |   |   research_planning.py
 |   |   |   result_parser.py
-|   |   |   safety_planning.py
 |   |   |   self_correction_injection.py
 |   |   |   strategy_planning.py
 |   |   |   temporal_kg_injection.py
@@ -79,8 +76,25 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   |   store.py
 |   |   |   |   
 |   |   +---docs
+|   |   +---persona_planning
+|   |   |       .keep
+|   |   |       lic_persona_planner.py
+|   |   |       
+|   |   +---planning
+|   |   |       .keep
+|   |   |       
+|   |   +---rag_planning
+|   |   |       .keep
+|   |   |       lic_kg_rag_fusion_planning.py
+|   |   |       
+|   |   +---safety_planning
+|   |   |       .keep
+|   |   |       safety_planning.py
+|   |   |       
+|   |   +---style_planning
+|   |   |       .keep
+|   |   |       
 |   +---l2
-|   |   |   kg_writer.py
 |   |   |   lic_agents.py
 |   |   |   lic_company_research_executor.py
 |   |   |   lic_contact_research_executor.py
@@ -104,20 +118,24 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   message_generation_executor.py
 |   |   |   outreach_llm_caller.py
 |   |   |   qa_executor.py
-|   |   |   safety_executor.py
 |   |   |   strategy_executor.py
 |   |   |   tool_output_validator.py
 |   |   |   triplet_extraction_executor.py
-|   |   |   vector_search_executor.py
 |   |   |   __init__.py
 |   |   |   
 |   |   +---docs
+|   |   +---kg
+|   |   |       kg_writer.py
+|   |   |       
 |   |   +---outreach
 |   |   |   |   company_research_executor.py
 |   |   |   |   contact_research_executor.py
 |   |   |   |   message_generation_executor.py
 |   |   |   |   outreach_batch_executor.py
 |   |   |   |   
+|   |   +---vector
+|   |   |       vector_search_executor.py
+|   |   |       
 |   |           execution.cpython-312.pyc
 |   |           lic_execution.cpython-312.pyc
 |   |           lic_k1_research.cpython-312.pyc
@@ -125,9 +143,7 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |           
 |   +---l3
 |   |   |   lic_adapters.py
-|   |   |   lic_circuit_breaker.py
 |   |   |   lic_draft_orchestrator.py
-|   |   |   lic_fallback_tree.py
 |   |   |   lic_interfaces.py
 |   |   |   lic_meta_loop.py
 |   |   |   lic_orchestrator.py
@@ -142,9 +158,12 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   __init__.py
 |   |   |   
 |   |   +---docs
+|   |   +---safety
+|   |   |       lic_circuit_breaker.py
+|   |   |       lic_fallback_tree.py
+|   |   |       
 |   +---l4
 |   |   |   adapters.py
-|   |   |   entity_resolution.py
 |   |   |   high_signal.py
 |   |   |   hybrid_search.py
 |   |   |   interfaces.py
@@ -160,13 +179,15 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   state_manager.py
 |   |   |   state_validation.py
 |   |   |   temporal_fusion.py
-|   |   |   temporal_kg.py
 |   |   |   temporal_schemas.py
 |   |   |   triplet_store.py
 |   |   |   types.py
 |   |   |   __init__.py
 |   |   |   
 |   |   +---docs
+|   |   +---entity
+|   |   |       entity_resolution.py
+|   |   |       
 |   |   +---rag
 |   |   |   |   lic_rag_policies.py
 |   |   |   |   rag_engine.py
@@ -175,9 +196,11 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   |   outreach_schema.py
 |   |   |   |   __init__.py
 |   |   |   |   
+|   |   +---temporal_kg
+|   |   |       temporal_kg.py
+|   |   |       
 |   +---l5
 |   |   |   adapters.py
-|   |   |   injection_detection.py
 |   |   |   interfaces.py
 |   |   |   lic_failure_classifier.py
 |   |   |   lic_safety_validator.py
@@ -188,6 +211,10 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   __init__.py
 |   |   |   
 |   |   +---docs
+|   |   +---guards
+|   |   |       injection_detection.py
+|   |   |       safety_executor.py
+|   |   |       
 |   +---legacy
 |   |   |   .keep
 |   |   |   lic_demo.py
@@ -243,6 +270,9 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   rg_planner.py
 |   |   |   rg_plan_schema.py
 |   |   |   
+|   |   +---subatomic
+|   |   |       .keep
+|   |   |       
 |   |           rg_planner.cpython-312.pyc
 |   |           rg_plan_schema.cpython-312.pyc
 |   |           
@@ -259,6 +289,9 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   rg_k8_validation.py
 |   |   |   __init__.py
 |   |   |   
+|   |   +---subatomic
+|   |   |       .keep
+|   |   |       
 |   |           extraction.cpython-312.pyc
 |   |           rg_extraction.cpython-312.pyc
 |   |           rg_k1_extract.cpython-312.pyc
@@ -277,12 +310,18 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   +---l3
 |   |   |   rg_orchestrator.py
 |   |   |   
+|   |   +---subatomic
+|   |   |       .keep
+|   |   |       
 |   |           rg_orchestrator.cpython-312.pyc
 |   |           
 |   +---l4
 |   |   |   rg_memory.py
 |   |   |   rg_state.py
 |   |   |   
+|   |   +---subatomic
+|   |   |       .keep
+|   |   |       
 |   |           rg_state.cpython-312.pyc
 |   |           
 |   +---l5
@@ -293,6 +332,9 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   validation_engine.py
 |   |   |   __init__.py
 |   |   |   
+|   |   +---subatomic
+|   |   |       .keep
+|   |   |       
 |   |           rg_failure_classifier.cpython-312.pyc
 |   |           rg_injection_detection.cpython-312.pyc
 |   |           rg_safety_validator.cpython-312.pyc

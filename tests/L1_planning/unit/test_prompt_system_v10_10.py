@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 
 # Import actual prompt system components
 try:
-    from l1.prompt_system_v10_10 import (
+    from agentic_core.l1_planning.prompt_system_v10_10 import (
         PromptActorRole,
         PromptACL,
         PromptDiff,

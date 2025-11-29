@@ -1,5 +1,5 @@
 import inspect
-from l2.lic_k7_assembly import LIC_K7_Assembly
+from agentic_core.l2_execution.lic_k7_assembly import LIC_K7_Assembly
 
 def test_k7_structure():
     assert inspect.isclass(LIC_K7_Assembly)

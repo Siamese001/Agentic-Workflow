@@ -9,14 +9,14 @@ Tests for MessageGenerationExecutor routing integration:
 import pytest
 from unittest.mock import Mock, patch
 
-from l2.outreach_llm_caller import OutreachLLMCaller
-from l2.message_generation_executor import MessageGenerationExecutor, GenerationContext
+from agentic_core.l2_execution.outreach_llm_caller import OutreachLLMCaller
+from agentic_core.l2_execution.message_generation_executor import MessageGenerationExecutor, GenerationContext
 from infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
 from runtime.runtime_utils import SandboxConfig
-from l1.outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
 from config.LIC.lic_profile import create_custom_profile
-from l3.outreach_factory import create_message_executor_with_routing
+from agentic_core.l3_orchestration.outreach_factory import create_message_executor_with_routing
 
 
 class TestLLMRoutingExecutors:

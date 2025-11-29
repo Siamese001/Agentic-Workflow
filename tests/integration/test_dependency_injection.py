@@ -15,8 +15,8 @@ from infra.di_container import (
     initialize_default_services,
     inject_dependencies
 )
-from l4.pinecone_adapter import PineconeAdapter, PineconeConfig
-from l5.policy import SafetyEngine
+from agentic_core.l4_memory.pinecone_adapter import PineconeAdapter, PineconeConfig
+from agentic_core.l5_safety.policy import SafetyEngine
 
 
 class TestSimpleDIContainer:
@@ -150,7 +150,7 @@ class TestLayerDIIntegration:
     
     def test_pinecone_adapter_di_interface(self):
         """Test that PineconeAdapter provides DI-compatible interface."""
-        from l4.pinecone_adapter import PineconeConfig
+        from agentic_core.l4_memory.pinecone_adapter import PineconeConfig
         
         config = PineconeConfig(
             api_key="test_key",
@@ -176,7 +176,7 @@ class TestDIAtomicityCompliance:
     
     def test_no_direct_imports_in_l2(self):
         """Test that L2 doesn't directly import services."""
-        import l2.execution
+        import agentic_core.l2_execution.execution
         
         # Should import from DI container, not direct services
         source_lines = []

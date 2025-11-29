@@ -11,9 +11,9 @@ Tests temporal data flow and integration at component level:
 from datetime import datetime, UTC, timedelta
 from unittest.mock import Mock, patch
 
-from l4.temporal_kg import TemporalKG, TemporalNodeMetadata
-from l4.temporal_fusion import TemporalRankFusion
-from l4.high_signal import HighSignalScorer
+from agentic_core.l4_memory.temporal_kg import TemporalKG, TemporalNodeMetadata
+from agentic_core.l4_memory.temporal_fusion import TemporalRankFusion
+from agentic_core.l4_memory.high_signal import HighSignalScorer
 
 
 class TestL3TemporalDataFlow:

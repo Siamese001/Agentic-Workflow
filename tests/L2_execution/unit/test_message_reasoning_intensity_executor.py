@@ -7,19 +7,19 @@ exported by L1 MessagePlan, including prompt construction and temperature usage.
 
 import pytest
 from unittest.mock import Mock
-from l2.message_generation_executor import (
+from agentic_core.l2_execution.message_generation_executor import (
     MessageGenerationExecutor,
     GenerationContext,
     MessageSection,
     MessageResult
 )
-from l1.outreach_dataclasses import (
+from agentic_core.l1_planning.outreach_dataclasses import (
     ArchetypeType,
     EXECUTIVE_REASONING_PROFILES,
     reasoning_intensity_metadata
 )
-from l1.message_planning import MessagePlanner, MessageContent
-from l1.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
+from agentic_core.l1_planning.message_planning import MessagePlanner, MessageContent
+from agentic_core.l1_planning.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
 
 
 class TestMessageReasoningIntensityExecutor:

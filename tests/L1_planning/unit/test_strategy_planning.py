@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 
 # Import actual strategy planning components
 try:
-    from l1.strategy_planning import (
+    from agentic_core.l1_planning.strategy_planning import (
         generate_latent_thinking_plan,
         StrategyPlan,
         DraftPlan,
