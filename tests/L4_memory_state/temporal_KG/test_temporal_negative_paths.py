@@ -9,7 +9,6 @@ Tests robustness of temporal components under failure conditions:
 - Component failures
 """
 
-import pytest
 from datetime import datetime, UTC
 from unittest.mock import Mock, patch
 

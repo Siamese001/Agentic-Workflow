@@ -22,12 +22,12 @@ class SafetyBundle:
     prompt_type: SafetyPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_safety_protocols(self, base_prompt: str, safety_context: Dict[str, Any]) -> str:
         """Inject safety protocols into prompt"""
         protocols = self._generate_safety_protocols(safety_context)
         return f"{base_prompt}\n\nSafety Protocols:\n{protocols}"
-    
+
     def _generate_safety_protocols(self, context: Dict[str, Any]) -> str:
         """Generate safety-specific protocols"""
         if self.prompt_type == SafetyPromptType.HARM_PREVENTION:

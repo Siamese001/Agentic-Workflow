@@ -16,14 +16,14 @@ import uuid
 
 class ComplexityLevel(str, Enum):
     """Complexity levels for tasks and operations."""
-    
+
     SIMPLE = "simple"
     BASIC = "basic"
     INTERMEDIATE = "intermediate"
     ADVANCED = "advanced"
     COMPLEX = "complex"
     EXPERT = "expert"
-    
+
     def __lt__(self, other: ComplexityLevel) -> bool:
         """Allow comparison of complexity levels."""
         order = [
@@ -35,19 +35,19 @@ class ComplexityLevel(str, Enum):
             ComplexityLevel.EXPERT
         ]
         return order.index(self) < order.index(other)
-    
+
     def __le__(self, other: ComplexityLevel) -> bool:
         """Allow comparison of complexity levels."""
         return self == other or self < other
-    
+
     def __gt__(self, other: ComplexityLevel) -> bool:
         """Allow comparison of complexity levels."""
         return not self <= other
-    
+
     def __ge__(self, other: ComplexityLevel) -> bool:
         """Allow comparison of complexity levels."""
         return not self < other
-    
+
     @classmethod
     def from_string(cls, value: str) -> ComplexityLevel:
         """Create ComplexityLevel from string, case-insensitive."""
@@ -55,7 +55,7 @@ class ComplexityLevel(str, Enum):
             return cls(value.lower())
         except ValueError:
             return cls.BASIC  # Default fallback
-    
+
     def get_numeric_value(self) -> int:
         """Get numeric representation for calculations."""
         mapping = {
@@ -71,7 +71,7 @@ class ComplexityLevel(str, Enum):
 
 class TaskType(str, Enum):
     """Types of tasks in the agentic system."""
-    
+
     PLANNING = "planning"
     EXECUTION = "execution"
     ANALYSIS = "analysis"
@@ -83,7 +83,7 @@ class TaskType(str, Enum):
 
 class ExecutionStatus(str, Enum):
     """Status of task execution."""
-    
+
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -95,7 +95,7 @@ class ExecutionStatus(str, Enum):
 @dataclass
 class TaskContext:
     """Context information for task execution."""
-    
+
     task_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     session_id: Optional[str] = None
     user_id: Optional[str] = None
@@ -103,7 +103,7 @@ class TaskContext:
     environment: str = "development"
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=lambda: datetime.now(UTC))
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -120,14 +120,14 @@ class TaskContext:
 @dataclass
 class ResourceRequirement:
     """Resource requirements for task execution."""
-    
+
     cpu_cores: float = 1.0
     memory_mb: int = 512
     disk_mb: int = 100
     network_required: bool = False
     gpu_required: bool = False
     max_execution_time_seconds: int = 300
-    
+
     def validate(self) -> List[str]:
         """Validate resource requirements."""
         errors = []
@@ -145,7 +145,7 @@ class ResourceRequirement:
 @dataclass
 class TaskSpecification:
     """Specification for a task to be executed."""
-    
+
     name: str
     task_type: TaskType
     complexity_level: ComplexityLevel
@@ -157,34 +157,34 @@ class TaskSpecification:
     estimated_duration_seconds: Optional[int] = None
     retry_count: int = 3
     timeout_seconds: int = 300
-    
+
     def validate(self) -> List[str]:
         """Validate task specification."""
         errors = []
-        
+
         if not self.name or not self.name.strip():
             errors.append("Task name is required")
-        
+
         if not isinstance(self.task_type, TaskType):
             errors.append("Invalid task type")
-        
+
         if not isinstance(self.complexity_level, ComplexityLevel):
             errors.append("Invalid complexity level")
-        
+
         resource_errors = self.resource_requirements.validate()
         errors.extend(resource_errors)
-        
+
         if self.estimated_duration_seconds is not None and self.estimated_duration_seconds <= 0:
             errors.append("Estimated duration must be positive")
-        
+
         if self.retry_count < 0:
             errors.append("Retry count cannot be negative")
-        
+
         if self.timeout_seconds <= 0:
             errors.append("Timeout must be positive")
-        
+
         return errors
-    
+
     def get_priority_score(self) -> float:
         """Calculate priority score based on complexity and requirements."""
         complexity_score = self.complexity_level.get_numeric_value()
@@ -199,7 +199,7 @@ class TaskSpecification:
 @dataclass
 class ExecutionResult:
     """Result of task execution."""
-    
+
     task_id: str
     status: ExecutionStatus
     result_data: Optional[Dict[str, Any]] = None
@@ -210,11 +210,11 @@ class ExecutionResult:
     metrics: Dict[str, Any] = field(default_factory=dict)
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
-    
+
     def is_successful(self) -> bool:
         """Check if execution was successful."""
         return self.status == ExecutionStatus.COMPLETED and self.error_message is None
-    
+
     def get_duration(self) -> Optional[float]:
         """Get actual execution duration."""
         if self.started_at and self.completed_at:
@@ -250,24 +250,24 @@ def estimate_task_resources(
         ComplexityLevel.COMPLEX: ResourceRequirement(cpu_cores=8.0, memory_mb=4096, max_execution_time_seconds=1200),
         ComplexityLevel.EXPERT: ResourceRequirement(cpu_cores=16.0, memory_mb=8192, max_execution_time_seconds=2400)
     }
-    
+
     resources = base_resources.get(complexity, base_resources[ComplexityLevel.BASIC])
-    
+
     # Adjust based on task type
     if task_type in [TaskType.GENERATION, TaskType.ANALYSIS]:
         resources.memory_mb = int(resources.memory_mb * 1.5)
         resources.network_required = True
-    
+
     if estimated_duration:
         resources.max_execution_time_seconds = max(estimated_duration * 2, resources.max_execution_time_seconds)
-    
+
     return resources
 
 
 def get_complexity_from_description(description: str) -> ComplexityLevel:
     """Estimate complexity level from task description."""
     description_lower = description.lower()
-    
+
     if any(word in description_lower for word in ["simple", "basic", "quick", "easy"]):
         return ComplexityLevel.SIMPLE
     elif any(word in description_lower for word in ["complex", "advanced", "detailed", "comprehensive"]):

@@ -4,11 +4,8 @@ Tests for L2 executor temporal research pathways - Phase 6 L4 expansion.
 Tests L2 executor consumption of enriched Evidence objects, C-Level weighting, and graceful fallback.
 """
 
-import pytest
-from datetime import datetime, timedelta, UTC
-from typing import List, Dict, Any, Optional
-from agentic_core.l4_memory_state.temporal.temporal_kg import TemporalKG, TemporalNodeMetadata
-from agentic_core.l4_memory_state.temporal.high_signal import HighSignalScore
+from datetime import datetime, UTC
+from agentic_core.l4_memory_state.temporal.temporal_kg import TemporalKG
 from agentic_core.l4_memory_state.temporal.temporal_fusion import TemporalRankFusion
 from agentic_core.l4_memory_state.rag.rag_engine import RAGEngine, OutreachRAGResult
 from agentic_core.l2_execution.engines.outreach.company_research_executor import CompanyResearchExecutor
@@ -76,7 +73,7 @@ class TestTemporalResearchPathways:
     def test_l2_can_consume_enriched_evidence_objects(self):
         """Test that L2 executors can safely consume enriched Evidence objects."""
         # Test CompanyResearchExecutor with enriched data
-        company_executor = CompanyResearchExecutor(
+        CompanyResearchExecutor(
             hybrid_search=None,
             pinecone_adapter=self.mock_adapter
         )
@@ -109,7 +106,7 @@ class TestTemporalResearchPathways:
     
     def test_l2_can_consume_enriched_contact_evidence(self):
         """Test that ContactResearchExecutor can consume enriched contact data."""
-        contact_executor = ContactResearchExecutor(
+        ContactResearchExecutor(
             hybrid_search=None,
             pinecone_adapter=self.mock_adapter
         )
@@ -171,12 +168,11 @@ class TestTemporalResearchPathways:
     def test_c_level_temporal_signal_prioritization(self):
         """Test that C-Level research prioritizes temporal signals appropriately."""
         # C-Level should prioritize high signal scores over contact signals
-        recent_company_signals = [
+        [
             r for r in self.enriched_company_results 
             if hasattr(r, 'signal_score') and r.signal_score > 0.8
         ]
         
-        contact_signals = self.enriched_contact_results
         
         # Mock C-Level research prioritization
         def mock_c_level_prioritization(company_results, contact_results):
@@ -328,7 +324,7 @@ class TestTemporalResearchPathways:
     def test_temporal_research_preserves_l2_boundaries(self):
         """Test that temporal research preserves L1-L5 boundaries."""
         # Test that L2 executors don't directly modify L4 components
-        company_executor = CompanyResearchExecutor(
+        CompanyResearchExecutor(
             hybrid_search=None,
             pinecone_adapter=self.mock_adapter
         )

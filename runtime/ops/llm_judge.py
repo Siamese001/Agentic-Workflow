@@ -4,7 +4,7 @@ LLM Judge
 Section 17: Evaluation Framework - LLM-as-Judge evaluation
 """
 
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 import logging
@@ -29,11 +29,11 @@ class EvaluationResult:
 
 class LLMJudge:
     """LLM-based evaluation system"""
-    
+
     def __init__(self):
         self.evaluation_configs: Dict[str, Dict[str, Any]] = {}
-    
-    def evaluate(self, input_data: Dict[str, Any], expected_output: Dict[str, Any], 
+
+    def evaluate(self, input_data: Dict[str, Any], expected_output: Dict[str, Any],
                 judgment_type: JudgmentType = JudgmentType.SCORING) -> EvaluationResult:
         """Evaluate output using LLM judge"""
         # Simplified evaluation implementation

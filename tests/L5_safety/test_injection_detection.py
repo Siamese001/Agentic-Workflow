@@ -5,16 +5,12 @@ to ensure security mechanisms work correctly.
 """
 
 import pytest
-from unittest.mock import Mock, patch, AsyncMock
-from datetime import datetime
 
 from agentic_core.l5_safety.safety_policy.injection_detection import (
     InjectionDetector,
-    InjectionType,
-    InjectionSafetyPolicy,
     create_injection_safety_policy
 )
-from agentic_core.l5_safety.safety_policy.types import SafetyContext, SafetyFinding, Severity, Verdict
+from agentic_core.l5_safety.safety_policy.types import SafetyContext, Severity, Verdict
 
 
 class TestInjectionDetector:

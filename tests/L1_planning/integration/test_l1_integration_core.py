@@ -17,7 +17,6 @@ class TestL1PlanningIntegration:
     
     def test_planning_to_safety_integration(self):
         """Test planning to safety integration."""
-        plan = {"content": "resume text"}
         safety_check = {"plan_id": "p1", "validated": True}
         assert safety_check["validated"] is True
     

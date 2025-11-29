@@ -5,7 +5,6 @@ Section 3: Canonical Repository Tree - L2 Execution Tools Tests
 """
 
 import pytest
-from typing import Dict, Any, List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -29,7 +28,6 @@ class TestRetrievalTools:
     
     def test_dense_retrieval_tool_basic_functionality(self):
         """Test dense retrieval tool"""
-        query = "machine learning engineer"
         documents = [
             {"content": "ML engineer with TensorFlow", "id": "doc1", "embedding": [0.1] * 384},
             {"content": "Data scientist experience", "id": "doc2", "embedding": [0.2] * 384}
@@ -41,8 +39,6 @@ class TestRetrievalTools:
     
     def test_hybrid_router_tool_strategy_selection(self):
         """Test hybrid router tool strategy selection"""
-        query = "complex semantic search with keywords"
-        documents = [{"content": "test document"} * 100]  # Large corpus
         
         # Test routing logic
         routing_result = {
@@ -56,7 +52,6 @@ class TestRetrievalTools:
     
     def test_reranker_tool_results_ordering(self):
         """Test reranker tool results ordering"""
-        query = "senior python developer"
         initial_results = [
             {"doc": {"content": "Junior Python developer"}, "score": 0.6},
             {"doc": {"content": "Senior Python engineer with 10 years"}, "score": 0.8},
@@ -70,7 +65,6 @@ class TestRetrievalTools:
     
     def test_snippet_extraction_tool_relevance(self):
         """Test snippet extraction tool relevance"""
-        query = "python experience"
         document = "The candidate has extensive Python experience working on distributed systems. They developed Python applications for 5 years."
         
         # Test snippet extraction

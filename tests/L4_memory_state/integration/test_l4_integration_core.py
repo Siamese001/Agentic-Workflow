@@ -5,13 +5,11 @@ class TestL4MemoryStateIntegration:
     
     def test_state_persistence_flow(self):
         """Test state persistence flow."""
-        state = {"data": "test"}
         persisted = True
         assert persisted is True
     
     def test_memory_retrieval_integration(self):
         """Test memory retrieval integration."""
-        query = "find skills"
         results = ["Python", "AWS"]
         assert len(results) > 0
     

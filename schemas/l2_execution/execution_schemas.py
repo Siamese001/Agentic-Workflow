@@ -4,8 +4,8 @@ Execution Schemas
 Section 10: Schema Layer - Schemas for L2 execution operations
 """
 
-from typing import Dict, Any, Optional, List, Union
-from pydantic import BaseModel, Field, validator
+from typing import Dict, Any, Optional, List
+from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 

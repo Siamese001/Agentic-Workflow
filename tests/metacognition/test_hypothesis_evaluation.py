@@ -1,4 +1,4 @@
-from runtime.meta.metacognition.evaluator import runtime.evaluate_hypotheses
+from runtime.meta.metacognition.evaluator import evaluate_hypotheses
 from runtime.meta.metacognition.models import Hypothesis
 
 

@@ -5,14 +5,12 @@ Tests knowledge graph retrieval planning functionality extracted from working le
 """
 
 import pytest
-from datetime import datetime, UTC
 
 # L1 Components
 from agentic_core.l1_planning.planners.lic_kg_retrieval_planning import (
     KGRetrievalPlanner,
     KGQueryPlan,
     QueryType,
-    HopDirection,
     plan_entity_retrieval,
 )
 

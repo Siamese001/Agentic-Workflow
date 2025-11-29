@@ -8,7 +8,6 @@ Tests recency_days and within_window metadata fields:
 - Edge cases for recency calculations
 """
 
-import pytest
 from datetime import datetime, UTC, timedelta
 from unittest.mock import Mock, patch
 

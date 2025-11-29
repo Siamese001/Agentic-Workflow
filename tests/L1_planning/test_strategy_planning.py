@@ -6,7 +6,7 @@ including strategy plan creation, drafting plan generation, and latent thinking 
 """
 
 import pytest
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 # Import actual strategy planning components
 try:

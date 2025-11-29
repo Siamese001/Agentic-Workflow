@@ -5,16 +5,12 @@ Tests graceful failure handling when recursion depth limits are exceeded
 across all orchestration paths and meta-loop scenarios.
 """
 
-import pytest
-import asyncio
-from typing import Dict, Any
 
 from runtime.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetLimits,
     get_budget_manager
 )
-from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 
 
 class TestDepthExceeded:

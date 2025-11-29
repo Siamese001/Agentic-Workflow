@@ -6,8 +6,7 @@ and doesn't enter infinite recursion scenarios.
 """
 
 import pytest
-from unittest.mock import Mock, patch
-from typing import List, Any
+from unittest.mock import Mock
 
 from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType

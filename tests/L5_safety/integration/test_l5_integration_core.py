@@ -5,7 +5,6 @@ class TestL5SafetyPolicyIntegration:
     
     def test_policy_enforcement_flow(self):
         """Test policy enforcement flow."""
-        content = "resume content"
         policies = ["pii", "bias", "injection"]
         results = {p: "pass" for p in policies}
         assert all(v == "pass" for v in results.values())

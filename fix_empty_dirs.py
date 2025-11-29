@@ -14,7 +14,7 @@ if __name__ == "__main__":
     print(f"Found {len(empty_dirs)} empty directories:")
     for d in empty_dirs:
         print(f"  {d}")
-    
+
     # Fix by adding .gitkeep files
     for d in empty_dirs:
         gitkeep_path = os.path.join(d, '.gitkeep')

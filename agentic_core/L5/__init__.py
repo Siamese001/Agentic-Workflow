@@ -27,6 +27,6 @@ class ContentValidator:
 
 __all__ = [
     "SafetyFilter", "PIIFilter", "InjectionShield",
-    "SafetyPolicy", "ContentPolicy", 
+    "SafetyPolicy", "ContentPolicy",
     "SafetyValidator", "ContentValidator"
 ]

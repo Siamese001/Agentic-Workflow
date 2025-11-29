@@ -182,7 +182,6 @@ class TestContactResearchExecutor:
     def test_no_l1_l3_l4_l5_imports_violation(self):
         """Test executor has no L1/L3/L4/L5 imports (pure L2)."""
         # This is a structural test - verify the module imports
-        import agentic_core.l2_execution.contact_research_executor
         
         # The module should only import L4 components (HybridSearchExecutor, PineconeAdapter)
         # and L1 dataclasses (ArchetypeType) but no L1 planning logic

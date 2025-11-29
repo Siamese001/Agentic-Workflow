@@ -11,7 +11,7 @@ from .config import DeploymentConfig, Environment
 
 __all__ = [
     "create_app",
-    "AuthManager", 
+    "AuthManager",
     "User",
     "DeploymentConfig",
     "Environment"

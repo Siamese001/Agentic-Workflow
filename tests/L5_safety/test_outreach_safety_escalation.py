@@ -5,8 +5,7 @@ Tests severity-to-action mapping and escalation thresholds.
 """
 
 from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyValidator
-from agentic_core.l5_safety.safety_policy.types import SafetyContext, Severity
-from agentic_core.l5_safety.safety_policy.interfaces import Action
+from agentic_core.l5_safety.safety_policy.types import SafetyContext
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeType
 
 

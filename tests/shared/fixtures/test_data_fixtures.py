@@ -6,11 +6,8 @@ Ensures consistency and reduces duplication in test implementations.
 """
 
 import pytest
-from typing import Dict, Any, List, Optional, Tuple
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-import json
-import uuid
+from typing import Dict, Any, List, Optional
+from dataclasses import dataclass
 
 # Mark all tests in this module as shared fixtures
 pytestmark = [pytest.mark.shared, pytest.mark.fixture]
@@ -53,7 +50,7 @@ class WorkflowTestData:
 
 class TestResumeFixtures:
     """Test resume data fixtures."""
-    
+
     @pytest.fixture
     def sample_resume_software_engineer(self):
         """Sample software engineer resume for testing."""
@@ -108,7 +105,7 @@ class TestResumeFixtures:
                 }
             ]
         )
-    
+
     @pytest.fixture
     def sample_resume_data_scientist(self):
         """Sample data scientist resume for testing."""
@@ -152,7 +149,7 @@ class TestResumeFixtures:
                 }
             ]
         )
-    
+
     @pytest.fixture
     def sample_resume_career_changer(self):
         """Sample career changer resume for testing."""
@@ -207,7 +204,7 @@ class TestResumeFixtures:
 
 class TestJobDescriptionFixtures:
     """Test job description data fixtures."""
-    
+
     @pytest.fixture
     def sample_job_software_engineer(self):
         """Sample software engineer job description for testing."""
@@ -240,7 +237,7 @@ class TestJobDescriptionFixtures:
             You will be responsible for developing high-quality software solutions, 
             working with modern technologies, and contributing to our product roadmap."""
         )
-    
+
     @pytest.fixture
     def sample_job_data_scientist(self):
         """Sample data scientist job description for testing."""
@@ -273,7 +270,7 @@ class TestJobDescriptionFixtures:
             in fraud detection and customer analytics. You'll have the opportunity 
             to work with cutting-edge ML technologies and large-scale datasets."""
         )
-    
+
     @pytest.fixture
     def sample_job_product_manager(self):
         """Sample product manager job description for testing."""
@@ -310,7 +307,7 @@ class TestJobDescriptionFixtures:
 
 class TestWorkflowFixtures:
     """Test workflow data fixtures."""
-    
+
     @pytest.fixture
     def sample_workflow_resume_analysis(self):
         """Sample resume analysis workflow for testing."""
@@ -324,7 +321,7 @@ class TestWorkflowFixtures:
             },
             expected_steps=[
                 "extract_job_requirements",
-                "parse_resume_content", 
+                "parse_resume_content",
                 "analyze_skill_match",
                 "identify_gaps",
                 "generate_improvements"
@@ -336,7 +333,7 @@ class TestWorkflowFixtures:
                 "telemetry_enabled": True
             }
         )
-    
+
     @pytest.fixture
     def sample_workflow_batch_processing(self):
         """Sample batch processing workflow for testing."""
@@ -369,7 +366,7 @@ class TestWorkflowFixtures:
 
 class TestMockResponseFixtures:
     """Test mock response fixtures for external services."""
-    
+
     @pytest.fixture
     def mock_llm_responses(self):
         """Mock LLM responses for testing."""
@@ -397,7 +394,7 @@ class TestMockResponseFixtures:
                 "recommendations": ["Standard review sufficient"]
             }
         }
-    
+
     @pytest.fixture
     def mock_api_responses(self):
         """Mock API responses for external services."""
@@ -412,7 +409,7 @@ class TestMockResponseFixtures:
                 "confidence": 0.92
             },
             "resume_parsing_api": {
-                "status": "success", 
+                "status": "success",
                 "parsed_resume": {
                     "personal_info": {"name": "John Doe", "contact": "john@email.com"},
                     "experience": [{"title": "Software Engineer", "years": 6}],
@@ -437,7 +434,7 @@ class TestMockResponseFixtures:
 
 class TestConfigurationFixtures:
     """Test configuration fixtures."""
-    
+
     @pytest.fixture
     def test_configurations(self):
         """Standard test configurations."""
@@ -467,7 +464,7 @@ class TestConfigurationFixtures:
                 "cost_tracking": True
             }
         }
-    
+
     @pytest.fixture
     def edge_case_configurations(self):
         """Edge case test configurations."""
@@ -494,7 +491,7 @@ class TestConfigurationFixtures:
 
 class TestErrorScenarioFixtures:
     """Test error scenario fixtures."""
-    
+
     @pytest.fixture
     def error_scenarios(self):
         """Common error scenarios for testing."""
@@ -544,7 +541,7 @@ def generate_test_resume(customizations: Optional[Dict[str, Any]] = None) -> Res
         certifications=[],
         projects=[]
     )
-    
+
     if customizations:
         # Apply customizations (simplified for example)
         if "skills" in customizations:
@@ -558,7 +555,7 @@ def generate_test_resume(customizations: Optional[Dict[str, Any]] = None) -> Res
                     "bullet_points": ["Test experience"]
                 }]
             )
-    
+
     return base_resume
 
 
@@ -573,7 +570,7 @@ def generate_test_job(difficulty: str = "medium") -> JobDescriptionTestData:
     else:  # medium
         requirements = ["3-5 years experience", "Bachelor's degree"]
         qualifications = {"min_experience_years": 3, "required_skills": ["Python", "SQL"]}
-    
+
     return JobDescriptionTestData(
         job_id=f"test_job_{difficulty}",
         title=f"Test Position ({difficulty})",

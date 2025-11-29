@@ -2,7 +2,7 @@
 
 class JobFactory:
     """Factory for creating Job test objects."""
-    
+
     @staticmethod
     def create(
         title="Software Engineer",
@@ -20,7 +20,7 @@ class JobFactory:
 
 class ResumeFactory:
     """Factory for creating Resume test objects."""
-    
+
     @staticmethod
     def create(
         name="John Doe",

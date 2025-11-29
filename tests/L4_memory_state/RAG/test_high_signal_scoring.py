@@ -4,9 +4,7 @@ Tests for high signal scoring functionality - Phase 6 L4 expansion.
 Tests HighSignalScore correctness, signal detection, and rationale generation.
 """
 
-import pytest
 from datetime import datetime, timedelta, UTC
-from typing import List, Dict, Any
 from agentic_core.l4_memory_state.temporal.temporal_kg import TemporalKG, TemporalNodeMetadata
 from agentic_core.l4_memory_state.temporal.high_signal import HighSignalScore, HighSignalScorer
 
