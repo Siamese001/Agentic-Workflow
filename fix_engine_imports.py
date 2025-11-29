@@ -10,46 +10,46 @@ from pathlib import Path
 # Mapping of expected flat imports to actual nested paths
 IMPORT_MAPPING = {
     # L1 Planning imports - draft_planning modules
-    'from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import': 
-        'from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import',
-    'from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import': 
-        'from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import',
-    'from agentic_core.l1_planning.draft_planning.lic_fusion_planner import': 
-        'from agentic_core.l1_planning.draft_planning.lic_fusion_planner import',
-    'from agentic_core.l1_planning.draft_planning.lic_grounding_planner import': 
-        'from agentic_core.l1_planning.draft_planning.lic_grounding_planner import',
-    'from agentic_core.l1_planning.draft_planning.lic_persona_planner import': 
-        'from agentic_core.l1_planning.draft_planning.lic_persona_planner import',
-    'from agentic_core.l1_planning.draft_planning.lic_profile_planner import': 
-        'from agentic_core.l1_planning.draft_planning.lic_profile_planner import',
-    'from agentic_core.l1_planning.draft_planning.lic_research_planner import': 
-        'from agentic_core.l1_planning.draft_planning.lic_research_planner import',
-    'from agentic_core.l1_planning.draft_planning.lic_message_planning import': 
-        'from agentic_core.l1_planning.draft_planning.lic_message_planning import',
-    'from agentic_core.l1_planning.draft_planning.lic_draft_planning import': 
-        'from agentic_core.l1_planning.draft_planning.lic_draft_planning import',
-    'from agentic_core.l1_planning.draft_planning.lic_plan_schema import': 
-        'from agentic_core.l1_planning.draft_planning.lic_plan_schema import',
-    'from agentic_core.l1_planning.draft_planning.lic_planner import': 
-        'from agentic_core.l1_planning.draft_planning.lic_planner import',
-    'from agentic_core.l1_planning.draft_planning.lic_prompt_builder import': 
-        'from agentic_core.l1_planning.draft_planning.lic_prompt_builder import',
-    'from agentic_core.l1_planning.draft_planning.lic_prompt_system_v10_10 import': 
-        'from agentic_core.l1_planning.draft_planning.lic_prompt_system_v10_10 import',
-    'from agentic_core.l1_planning.draft_planning.lic_instructional_injection_v6 import': 
-        'from agentic_core.l1_planning.draft_planning.lic_instructional_injection_v6 import',
-    'from agentic_core.l1_planning.draft_planning.lic_many_shot_examples import': 
-        'from agentic_core.l1_planning.draft_planning.lic_many_shot_examples import',
+    'from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import': 
+        'from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import',
+    'from agentic_core.l1_planning.planners.lic_outreach_dataclasses import': 
+        'from agentic_core.l1_planning.planners.lic_outreach_dataclasses import',
+    'from agentic_core.l1_planning.planners.lic_fusion_planner import': 
+        'from agentic_core.l1_planning.planners.lic_fusion_planner import',
+    'from agentic_core.l1_planning.planners.lic_grounding_planner import': 
+        'from agentic_core.l1_planning.planners.lic_grounding_planner import',
+    'from agentic_core.l1_planning.planners.lic_persona_planner import': 
+        'from agentic_core.l1_planning.planners.lic_persona_planner import',
+    'from agentic_core.l1_planning.planners.lic_profile_planner import': 
+        'from agentic_core.l1_planning.planners.lic_profile_planner import',
+    'from agentic_core.l1_planning.planners.lic_research_planner import': 
+        'from agentic_core.l1_planning.planners.lic_research_planner import',
+    'from agentic_core.l1_planning.planners.lic_message_planning import': 
+        'from agentic_core.l1_planning.planners.lic_message_planning import',
+    'from agentic_core.l1_planning.planners.lic_draft_planning import': 
+        'from agentic_core.l1_planning.planners.lic_draft_planning import',
+    'from agentic_core.l1_planning.planners.lic_plan_schema import': 
+        'from agentic_core.l1_planning.planners.lic_plan_schema import',
+    'from agentic_core.l1_planning.planners.lic_planner import': 
+        'from agentic_core.l1_planning.planners.lic_planner import',
+    'from agentic_core.l1_planning.planners.lic_prompt_builder import': 
+        'from agentic_core.l1_planning.planners.lic_prompt_builder import',
+    'from agentic_core.l1_planning.planners.lic_prompt_system_v10_10 import': 
+        'from agentic_core.l1_planning.planners.lic_prompt_system_v10_10 import',
+    'from agentic_core.l1_planning.planners.lic_instructional_injection_v6 import': 
+        'from agentic_core.l1_planning.planners.lic_instructional_injection_v6 import',
+    'from agentic_core.l1_planning.planners.lic_many_shot_examples import': 
+        'from agentic_core.l1_planning.planners.lic_many_shot_examples import',
     
     # L1 Planning imports - rag_planning modules
-    'from agentic_core.l1_planning.rag_planning.lic_kg_rag_fusion_planning import': 
-        'from agentic_core.l1_planning.rag_planning.lic_kg_rag_fusion_planning import',
-    'from agentic_core.l1_planning.rag_planning.lic_kg_retrieval_planning import': 
-        'from agentic_core.l1_planning.rag_planning.lic_kg_retrieval_planning import',
+    'from agentic_core.l1_planning.planners.lic_kg_rag_fusion_planning import': 
+        'from agentic_core.l1_planning.planners.lic_kg_rag_fusion_planning import',
+    'from agentic_core.l1_planning.planners.lic_kg_retrieval_planning import': 
+        'from agentic_core.l1_planning.planners.lic_kg_retrieval_planning import',
     
     # L1 Planning imports - strategy_planning modules
-    'from agentic_core.l1_planning.strategy_planning.persona_planning.lic_persona_planner import': 
-        'from agentic_core.l1_planning.strategy_planning.persona_planning.lic_persona_planner import',
+    'from agentic_core.l1_planning.planners.persona_planning.lic_persona_planner import': 
+        'from agentic_core.l1_planning.planners.persona_planning.lic_persona_planner import',
     
     # L2 Execution imports (K nodes)
     'from agentic_core.l2_execution.engines.outreach.lic_k1_research import': 
@@ -86,14 +86,14 @@ IMPORT_MAPPING = {
         'from agentic_core.l2_execution.engines.resume.rg_k8_validate import',
     
     # L3 Orchestration imports
-    'from agentic_core.l3_orchestration.draft_orchestration.lic_orchestrator import': 
-        'from agentic_core.l3_orchestration.draft_orchestration.lic_orchestrator import',
-    'from agentic_core.l3_orchestration.draft_orchestration.lic_enhanced_orchestrator import': 
-        'from agentic_core.l3_orchestration.draft_orchestration.lic_enhanced_orchestrator import',
-    'from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_factory import': 
-        'from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_factory import',
-    'from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import': 
-        'from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import',
+    'from agentic_core.l3_orchestration.engines.resume.lic_orchestrator import': 
+        'from agentic_core.l3_orchestration.engines.resume.lic_orchestrator import',
+    'from agentic_core.l3_orchestration.engines.resume.lic_enhanced_orchestrator import': 
+        'from agentic_core.l3_orchestration.engines.resume.lic_enhanced_orchestrator import',
+    'from agentic_core.l3_orchestration.framework.lic_outreach_factory import': 
+        'from agentic_core.l3_orchestration.framework.lic_outreach_factory import',
+    'from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import': 
+        'from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import',
     
     # L4 State imports (memory -> state rename)
     'from agentic_core.l4_memory_state.': 'from agentic_core.l4_memory_state.',
@@ -119,8 +119,8 @@ def fix_imports_in_file(file_path):
         # Apply regex-based patterns for systematic fixes
         patterns = [
             # L1 Planning - missing modules
-            (r'from engine\.l1_planning\.(\w+) import', r'from agentic_core.l1_planning.draft_planning.lic_\1 import'),
-            (r'from engine\.l1_planning\.(\w+)_planning import', r'from agentic_core.l1_planning.draft_planning.lic_\1_planning import'),
+            (r'from engine\.l1_planning\.(\w+) import', r'from agentic_core.l1_planning.planners.lic_\1 import'),
+            (r'from engine\.l1_planning\.(\w+)_planning import', r'from agentic_core.l1_planning.planners.lic_\1_planning import'),
             
             # L2 Execution - K nodes directly under l2_execution
             (r'from engine\.l2_execution\.lic_(k\d+_\w+) import', r'from agentic_core.l2_execution.engines.outreach.lic_\1 import'),
@@ -130,8 +130,8 @@ def fix_imports_in_file(file_path):
             (r'from engine\.l2_execution\.rg_(k\d+_\w+) import', r'from agentic_core.l2_execution.engines.resume.rg_\1 import'),
             
             # L3 Orchestration
-            (r'from engine\.l3_orchestration\.lic_(\w+) import', r'from agentic_core.l3_orchestration.draft_orchestration.lic_\1 import'),
-            (r'from engine\.l3_orchestration\.(\w+)_orchestrator import', r'from agentic_core.l3_orchestration.agent_orchestration.lic_\1_orchestrator import'),
+            (r'from engine\.l3_orchestration\.lic_(\w+) import', r'from agentic_core.l3_orchestration.engines.resume.lic_\1 import'),
+            (r'from engine\.l3_orchestration\.(\w+)_orchestrator import', r'from agentic_core.l3_orchestration.framework.lic_\1_orchestrator import'),
             
             # L4 State - temporal modules
             (r'from engine\.l4_state\.(\w+_\w+) import', r'from agentic_core.l4_memory_state.temporal.\1 import'),

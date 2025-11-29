@@ -10,7 +10,7 @@ from unittest.mock import Mock
 
 # Import actual safety planning components
 try:
-    from agentic_core.l1_planning.draft_planning.lic_safety_planning import (
+    from agentic_core.l1_planning.planners.lic_safety_planning import (
         SafetyPlan,
     )
 except ImportError:

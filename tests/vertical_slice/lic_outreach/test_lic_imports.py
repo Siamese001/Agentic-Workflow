@@ -21,7 +21,7 @@ def test_lic_workflow_entry_imports():
 def test_lic_orchestrator_imports():
     """Test that the LIC orchestrator imports successfully."""
     try:
-        from agentic_core.l3_orchestration.draft_orchestration.lic_orchestrator import LICOrchestrator, RecipientProfile, LICPipelineResult
+        from agentic_core.l3_orchestration.engines.resume.lic_orchestrator import LICOrchestrator, RecipientProfile, LICPipelineResult
         assert LICOrchestrator is not None
         assert RecipientProfile is not None
         assert LICPipelineResult is not None
@@ -85,8 +85,8 @@ def test_lic_end_to_end_import_chain():
         assert callable(run_batch_high_volume)
         
         # Verify we can create basic objects
-        from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import RecipientProfile
-        from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission
+        from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import RecipientProfile
+        from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission
         
         recipient = RecipientProfile(
             name="Test",

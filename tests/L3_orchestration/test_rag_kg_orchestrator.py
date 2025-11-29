@@ -8,7 +8,7 @@ import pytest
 from datetime import datetime, UTC
 
 # L3 Components
-from agentic_core.l3_orchestration.agent_orchestration.lic_unified_workflow_orchestrator import (
+from agentic_core.l3_orchestration.framework.lic_unified_workflow_orchestrator import (
     UnifiedWorkflowOrchestrator,
 )
 

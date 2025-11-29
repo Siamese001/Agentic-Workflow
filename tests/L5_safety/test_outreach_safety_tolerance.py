@@ -12,7 +12,7 @@ from typing import List, Dict, Any
 from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyValidator
 from agentic_core.l5_safety.safety_policy.types import SafetyContext, Severity
 from agentic_core.l5_safety.safety_policy.interfaces import PolicyDecision, Action, Verdict
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeType
 
 
 class TestOutreachArchetypeTolerance:

@@ -8,8 +8,8 @@ Tests MUST NOT import L2 or L4 modules.
 
 from unittest.mock import Mock
 
-from agentic_core.l1_planning.draft_planning.lic_message_planning import MessagePlanner, MessageContent
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import MessagePlan, ArchetypeContext
+from agentic_core.l1_planning.planners.lic_message_planning import MessagePlanner, MessageContent
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import MessagePlan, ArchetypeContext
 
 
 class TestMessagePlannerStructure:

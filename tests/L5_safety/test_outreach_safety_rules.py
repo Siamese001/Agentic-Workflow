@@ -7,7 +7,7 @@ Tests domain-aware routing and outreach-specific constraint categories.
 from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyValidator
 from agentic_core.l5_safety.safety_policy.types import SafetyContext
 from agentic_core.l5_safety.safety_policy.interfaces import Verdict
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeType
 
 
 class TestOutreachSafetyRules:
