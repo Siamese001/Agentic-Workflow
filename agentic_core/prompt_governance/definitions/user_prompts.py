@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 User Prompts
-Section 6: Prompt Governance - User-facing prompt templates
+Section 3: Prompt Governance - User-facing prompt templates
 """
 
 # This directory contains user-facing prompt templates including:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 System Prompts
-Section 6: Prompt Governance - System-level prompt templates
+Section 3: Prompt Governance - System-level prompt templates
 """
 
 # This directory contains system-level prompt templates including:
