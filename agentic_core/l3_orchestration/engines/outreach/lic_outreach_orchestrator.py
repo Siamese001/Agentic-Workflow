@@ -14,21 +14,21 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any, Union
 
 # L1 components (pure planning)
-from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile
-from agentic_core.l1_planning.draft_planning.lic_research_planning import ResearchRefinementPlanner
-from agentic_core.l1_planning.draft_planning.lic_message_planning import MessagePlanner, MessageContent
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import (
+from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile
+from agentic_core.l1_planning.planners.lic_research_planning import ResearchRefinementPlanner
+from agentic_core.l1_planning.planners.lic_message_planning import MessagePlanner, MessageContent
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import (
     OutreachMission,
     ArchetypeContext,
     ArchetypeType,
 )
 
 # LIC-specific L1 planners
-from agentic_core.l1_planning.draft_planning.lic_lic_profile_planner import LICProfilePlanner
-from agentic_core.l1_planning.draft_planning.lic_lic_research_planner import LICResearchPlanner
-from agentic_core.l1_planning.draft_planning.lic_lic_grounding_planner import LICGroundingPlanner
-from agentic_core.l1_planning.draft_planning.lic_lic_fusion_planner import LICFusionPlanner
-from agentic_core.l1_planning.draft_planning.lic_lic_persona_planner import LICPersonaPlanner
+from agentic_core.l1_planning.planners.lic_lic_profile_planner import LICProfilePlanner
+from agentic_core.l1_planning.planners.lic_lic_research_planner import LICResearchPlanner
+from agentic_core.l1_planning.planners.lic_lic_grounding_planner import LICGroundingPlanner
+from agentic_core.l1_planning.planners.lic_lic_fusion_planner import LICFusionPlanner
+from agentic_core.l1_planning.planners.lic_lic_persona_planner import LICPersonaPlanner
 
 # L2 components (pure execution)
 from agentic_core.l2_execution.engines.outreach.lic_company_research_executor import CompanyResearchExecutor

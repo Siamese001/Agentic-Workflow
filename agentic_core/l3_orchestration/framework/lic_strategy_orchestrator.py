@@ -5,7 +5,7 @@ Coordinates strategy planning and execution for resume enhancement.
 """
 
 from typing import Any
-from agentic_core.l1_planning.draft_planning.lic_strategy_planning import plan_strategy
+from agentic_core.l1_planning.planners.lic_strategy_planning import plan_strategy
 from agentic_core.l2_execution.engines.outreach.lic_strategy_executor import StrategyExecutor
 from runtime.observability import record_event
 
