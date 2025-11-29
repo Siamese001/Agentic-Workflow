@@ -1,5 +1,14 @@
-# test_matrix_validator.py
-# Ensures module <-> test relationships from test_matrix.yaml are strict & symmetrical.
+#!/usr/bin/env python3
+"""
+test_matrix_validator.py
+Ensures strict module <-> test mappings from test_matrix.yaml.
+
+Covers:
+- Every module in matrix exists
+- Every test in matrix exists
+- All tests in tests/ are mapped (no orphans)
+- Every module has >=1 test mapping
+"""
 
 import os
 import sys
@@ -7,6 +16,7 @@ import yaml
 
 REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
 TEST_MATRIX_PATH = os.path.join(REPO_ROOT, "test_matrix.yaml")
+
 
 def walk_py_files(root):
     files = []
@@ -17,9 +27,10 @@ def walk_py_files(root):
                 files.append(rel)
     return files
 
+
 def main():
     if not os.path.exists(TEST_MATRIX_PATH):
-        print(f"Missing {TEST_MATRIX_PATH}")
+        print(f"[TEST-MATRIX] Missing {TEST_MATRIX_PATH}")
         sys.exit(1)
 
     with open(TEST_MATRIX_PATH, "r", encoding="utf-8") as f:
@@ -28,33 +39,30 @@ def main():
     errors = []
 
     all_modules = set(matrix.keys())
-    all_tests = set()
-    for mod, tests in matrix.items():
-        for t in tests:
-            all_tests.add(t)
+    all_mapped_tests = {t for tests in matrix.values() for t in tests}
 
     repo_files = walk_py_files(REPO_ROOT)
+    repo_tests = [f for f in repo_files if f.startswith("tests/") and f.startswith("tests/")]
 
-    # Check modules exist
+    # Modules exist
     for mod in all_modules:
         if mod not in repo_files:
-            errors.append(f"Module in matrix missing from repo: {mod}")
+            errors.append(f"[TEST-MATRIX] Module listed but missing in repo: {mod}")
 
-    # Check tests exist
-    for t in all_tests:
+    # Tests exist
+    for t in all_mapped_tests:
         if t not in repo_files:
-            errors.append(f"Test in matrix missing from repo: {t}")
+            errors.append(f"[TEST-MATRIX] Test listed but missing in repo: {t}")
 
-    # Check for orphan tests
-    repo_test_files = [f for f in repo_files if f.startswith("tests/")]
-    orphan_tests = set(repo_test_files) - all_tests
-    for ot in orphan_tests:
-        errors.append(f"Orphan test not mapped: {ot}")
+    # Orphan tests
+    orphan_tests = set(repo_tests) - all_mapped_tests
+    for o in sorted(orphan_tests):
+        errors.append(f"[TEST-MATRIX] Orphan test not mapped in matrix: {o}")
 
-    # Check untested modules
-    untested = [m for m in all_modules if len(matrix.get(m, [])) == 0]
-    for ut in untested:
-        errors.append(f"Module lacks tests: {ut}")
+    # Untested modules
+    for mod in all_modules:
+        if len(matrix.get(mod, [])) == 0:
+            errors.append(f"[TEST-MATRIX] Module has no tests mapped: {mod}")
 
     if errors:
         print("\n=== TEST MATRIX VALIDATION FAILED ===")
@@ -64,6 +72,7 @@ def main():
 
     print("Test matrix validation PASSED.")
     sys.exit(0)
+
 
 if __name__ == "__main__":
     main()
