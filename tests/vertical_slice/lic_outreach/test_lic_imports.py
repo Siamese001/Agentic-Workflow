@@ -21,7 +21,7 @@ def test_lic_workflow_entry_imports():
 def test_lic_orchestrator_imports():
     """Test that the LIC orchestrator imports successfully."""
     try:
-        from l3.lic_orchestrator import LICOrchestrator, RecipientProfile, LICPipelineResult
+        from agentic_core.l3_orchestration.lic_orchestrator import LICOrchestrator, RecipientProfile, LICPipelineResult
         assert LICOrchestrator is not None
         assert RecipientProfile is not None
         assert LICPipelineResult is not None
@@ -32,8 +32,8 @@ def test_lic_orchestrator_imports():
 def test_lic_rag_engine_imports():
     """Test that the LIC RAG engine imports successfully."""
     try:
-        from l4.rag.rag_engine import RAGEngine
-        from l4.rag.lic_rag_policies import get_rag_policy
+        from agentic_core.l4_memory.rag.rag_engine import RAGEngine
+        from agentic_core.l4_memory.rag.lic_rag_policies import get_rag_policy
         assert RAGEngine is not None
         assert callable(get_rag_policy)
     except ImportError as e:
@@ -43,10 +43,10 @@ def test_lic_rag_engine_imports():
 def test_lic_outreach_shims_import():
     """Test that the L2 outreach shims import successfully."""
     try:
-        from l2.outreach.company_research_executor import CompanyResearchExecutor
-        from l2.outreach.contact_research_executor import ContactResearchExecutor
-        from l2.outreach.message_generation_executor import MessageGenerationExecutor
-        from l2.outreach.outreach_batch_executor import OutreachBatchExecutor
+        from agentic_core.l2_execution.outreach.company_research_executor import CompanyResearchExecutor
+        from agentic_core.l2_execution.outreach.contact_research_executor import ContactResearchExecutor
+        from agentic_core.l2_execution.outreach.message_generation_executor import MessageGenerationExecutor
+        from agentic_core.l2_execution.outreach.outreach_batch_executor import OutreachBatchExecutor
         assert CompanyResearchExecutor is not None
         assert ContactResearchExecutor is not None
         assert MessageGenerationExecutor is not None
@@ -85,8 +85,8 @@ def test_lic_end_to_end_import_chain():
         assert callable(run_batch_high_volume)
         
         # Verify we can create basic objects
-        from l1.outreach_archetype_planning import RecipientProfile
-        from l1.outreach_dataclasses import OutreachMission
+        from agentic_core.l1_planning.outreach_archetype_planning import RecipientProfile
+        from agentic_core.l1_planning.outreach_dataclasses import OutreachMission
         
         recipient = RecipientProfile(
             name="Test",

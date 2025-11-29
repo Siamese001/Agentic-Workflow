@@ -7,12 +7,12 @@ Tests L2 executor consumption of enriched Evidence objects, C-Level weighting, a
 import pytest
 from datetime import datetime, timedelta, UTC
 from typing import List, Dict, Any, Optional
-from l4.temporal_kg import TemporalKG, TemporalNodeMetadata
-from l4.high_signal import HighSignalScore
-from l4.temporal_fusion import TemporalRankFusion
-from l4.rag.rag_engine import RAGEngine, OutreachRAGResult
-from l2.company_research_executor import CompanyResearchExecutor
-from l2.contact_research_executor import ContactResearchExecutor
+from agentic_core.l4_memory.temporal_kg import TemporalKG, TemporalNodeMetadata
+from agentic_core.l4_memory.high_signal import HighSignalScore
+from agentic_core.l4_memory.temporal_fusion import TemporalRankFusion
+from agentic_core.l4_memory.rag.rag_engine import RAGEngine, OutreachRAGResult
+from agentic_core.l2_execution.company_research_executor import CompanyResearchExecutor
+from agentic_core.l2_execution.contact_research_executor import ContactResearchExecutor
 
 
 class TestTemporalResearchPathways:

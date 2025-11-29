@@ -1,6 +1,6 @@
-from l3.lic_orchestrator import LICOrchestrator
-from l4.lic_state import LICState
-from l1.lic_plan_schema import LICPlan
+from agentic_core.l3_orchestration.lic_orchestrator import LICOrchestrator
+from agentic_core.l4_memory.lic_state import LICState
+from agentic_core.l1_planning.lic_plan_schema import LICPlan
 
 def test_safety_check_stub():
     o = LICOrchestrator()

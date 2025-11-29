@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, call
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
-from l3.lic_meta_loop import (
+from agentic_core.l3_orchestration.lic_meta_loop import (
     LICMetaLoopRouter,
     LICMetaLoopConfig,
     LICFallbackHop,
@@ -17,8 +17,8 @@ from l3.lic_meta_loop import (
     LICCircuitBreaker,
     OutreachOrchestratorInterface,
 )
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext
 
 
 @pytest.fixture

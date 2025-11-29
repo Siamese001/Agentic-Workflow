@@ -4,10 +4,10 @@ Unit tests for outreach safety rules - Phase 5 L5 SafetyValidator expansion.
 Tests domain-aware routing and outreach-specific constraint categories.
 """
 
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext
-from l5.interfaces import Verdict
-from l1.outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext
+from agentic_core.l5_safety.interfaces import Verdict
+from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeType
 
 
 class TestOutreachSafetyRules:
@@ -67,7 +67,7 @@ class TestOutreachSafetyRules:
     def test_outreach_constraint_categories_exist(self):
         """Test that outreach constraint categories are properly defined."""
         # This will test the actual implementation once created
-        from l5.safety_validator import OutreachSafetyPolicy
+        from agentic_core.l5_safety.safety_validator import OutreachSafetyPolicy
         
         policy = OutreachSafetyPolicy()
         
@@ -86,7 +86,7 @@ class TestOutreachSafetyRules:
     
     def test_outreach_safety_policy_initialization(self):
         """Test OutreachSafetyPolicy can be initialized properly."""
-        from l5.safety_validator import OutreachSafetyPolicy
+        from agentic_core.l5_safety.safety_validator import OutreachSafetyPolicy
         
         policy = OutreachSafetyPolicy()
         

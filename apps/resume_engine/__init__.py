@@ -25,15 +25,15 @@ __description__ = "Complete 8-node resume generation pipeline with L1-L3 archite
 # L1 Planning Layer
 from .legacy.rg_planner import RGPlanner, ResumeProcessingPlan, ResumeAnalysisPlan, ResumeSectionConfig
 
-# L2 Execution Layer - K-node Executors
-from .l2.rg_k1_extract import RGK1Extract, ExtractionOutput, ExtractedSection, ExtractionMetrics
-from .l2.rg_k2_clean import RGK2Clean, CleaningOutput, CleaningOperation, CleaningMetrics
-from .l2.rg_k3_quantify import RGK3Quantify, QuantificationOutput, QuantifiedMetric, QuantifiedAchievement, QuantificationMetrics
-from .l2.rg_k4_rewrite import RGK4Rewrite, RewritingOutput, RewritingOperation, RewrittenSection, RewritingMetrics
-from .l2.rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput, SkillMapping, SkillGap, SkillMappingMetrics
-from .l2.rg_k6_assemble import RGK6Assemble, AssemblyOutput, SectionAssembly, AssemblyMetrics
-from .l2.rg_k7_format import RGK7Format, FormattingOutput, FormattingRule, FormattedSection, FormattingMetrics
-from .l2.rg_k8_validate import RGK8Validate, ValidationOutput, ValidationResult, ValidationRule, ValidationMetrics
+# L2 Execution Layer - Now from agentic_core
+from agentic_core.l2_execution.draft_execution.rg_k1_extract import RGK1Extract, ExtractionOutput, ExtractedSection, ExtractionMetrics
+from agentic_core.l2_execution.draft_execution.rg_k2_clean import RGK2Clean, CleaningOutput, CleaningOperation, CleaningMetrics
+from agentic_core.l2_execution.draft_execution.rg_k3_quantify import RGK3Quantify, QuantificationOutput, QuantifiedMetric, QuantifiedAchievement, QuantificationMetrics
+from agentic_core.l2_execution.draft_execution.rg_k4_rewrite import RGK4Rewrite, RewritingOutput, RewritingOperation, RewrittenSection, RewritingMetrics
+from agentic_core.l2_execution.draft_execution.rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput, SkillMapping, SkillGap, SkillMappingMetrics
+from agentic_core.l2_execution.draft_execution.rg_k6_assemble import RGK6Assemble, AssemblyOutput, SectionAssembly, AssemblyMetrics
+from agentic_core.l2_execution.draft_execution.rg_k7_format import RGK7Format, FormattingOutput, FormattingRule, FormattedSection, FormattingMetrics
+from agentic_core.l2_execution.draft_execution.rg_k8_validate import RGK8Validate, ValidationOutput, ValidationResult, ValidationRule, ValidationMetrics
 
 # L3 Orchestration Layer
 from .legacy.rg_orchestrator import RGOrchestrator, ResumeGenerationRequest, ResumeGenerationResult, OrchestratorMetrics

@@ -1,5 +1,5 @@
 import inspect
-from l2.lic_k3_draft import LIC_K3_Draft
+from agentic_core.l2_execution.lic_k3_draft import LIC_K3_Draft
 
 def test_class_exists():
     assert inspect.isclass(LIC_K3_Draft)

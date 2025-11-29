@@ -24,7 +24,7 @@ import pytest
 from datetime import datetime, UTC
 from unittest.mock import patch
 
-from l3.lic_orchestrator import LICOrchestrator
+from agentic_core.l3_orchestration.lic_orchestrator import LICOrchestrator
 from runtime.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetLimits,

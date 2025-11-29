@@ -7,8 +7,8 @@ Tests HighSignalScore correctness, signal detection, and rationale generation.
 import pytest
 from datetime import datetime, timedelta, UTC
 from typing import List, Dict, Any
-from l4.temporal_kg import TemporalKG, TemporalNodeMetadata
-from l4.high_signal import HighSignalScore, HighSignalScorer
+from agentic_core.l4_memory.temporal_kg import TemporalKG, TemporalNodeMetadata
+from agentic_core.l4_memory.high_signal import HighSignalScore, HighSignalScorer
 
 
 class TestHighSignalScoring:

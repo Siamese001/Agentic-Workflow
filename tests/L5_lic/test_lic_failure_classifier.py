@@ -5,11 +5,11 @@ from unittest.mock import MagicMock
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from l5.lic_failure_classifier import (
+from agentic_core.l5_safety.lic_failure_classifier import (
     LICFailureClassifier,
     LICFailureClassifierConfig,
 )
-from l5.safety_validator import SafetyResult, SafetyViolation, Severity
+from agentic_core.l5_safety.safety_validator import SafetyResult, SafetyViolation, Severity
 
 
 @pytest.fixture
