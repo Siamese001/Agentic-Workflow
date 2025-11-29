@@ -26,14 +26,14 @@ __description__ = "Complete 8-node resume generation pipeline with L1-L3 archite
 from .rg_planner import RGPlanner, ResumeProcessingPlan, ResumeAnalysisPlan, ResumeSectionConfig
 
 # L2 Execution Layer - K-node Executors
-from .rg_k1_extract import RGK1Extract, ExtractionOutput, ExtractedSection, ExtractionMetrics
-from .rg_k2_clean import RGK2Clean, CleaningOutput, CleaningOperation, CleaningMetrics
-from .rg_k3_quantify import RGK3Quantify, QuantificationOutput, QuantifiedMetric, QuantifiedAchievement, QuantificationMetrics
-from .rg_k4_rewrite import RGK4Rewrite, RewritingOutput, RewritingOperation, RewrittenSection, RewritingMetrics
-from .rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput, SkillMapping, SkillGap, SkillMappingMetrics
-from .rg_k6_assemble import RGK6Assemble, AssemblyOutput, SectionAssembly, AssemblyMetrics
-from .rg_k7_format import RGK7Format, FormattingOutput, FormattingRule, FormattedSection, FormattingMetrics
-from .rg_k8_validate import RGK8Validate, ValidationOutput, ValidationResult, ValidationRule, ValidationMetrics
+from .l2.rg_k1_extract import RGK1Extract, ExtractionOutput, ExtractedSection, ExtractionMetrics
+from .l2.rg_k2_clean import RGK2Clean, CleaningOutput, CleaningOperation, CleaningMetrics
+from .l2.rg_k3_quantify import RGK3Quantify, QuantificationOutput, QuantifiedMetric, QuantifiedAchievement, QuantificationMetrics
+from .l2.rg_k4_rewrite import RGK4Rewrite, RewritingOutput, RewritingOperation, RewrittenSection, RewritingMetrics
+from .l2.rg_k5_skillmap import RGK5Skillmap, SkillMappingOutput, SkillMapping, SkillGap, SkillMappingMetrics
+from .l2.rg_k6_assemble import RGK6Assemble, AssemblyOutput, SectionAssembly, AssemblyMetrics
+from .l2.rg_k7_format import RGK7Format, FormattingOutput, FormattingRule, FormattedSection, FormattingMetrics
+from .l2.rg_k8_validate import RGK8Validate, ValidationOutput, ValidationResult, ValidationRule, ValidationMetrics
 
 # L3 Orchestration Layer
 from .rg_orchestrator import RGOrchestrator, ResumeGenerationRequest, ResumeGenerationResult, OrchestratorMetrics
@@ -113,8 +113,8 @@ __all__ = [
 def generate_resume(
     job_input: dict,
     resume_input: dict,
-    processing_options: dict = None,
-    config: dict = None
+    processing_options: dict | None = None,
+    config: dict | None = None
 ) -> ResumeGenerationResult:
     """Convenience function to generate a resume with default orchestrator.
     
