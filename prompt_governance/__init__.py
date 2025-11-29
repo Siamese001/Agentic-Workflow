@@ -10,16 +10,16 @@ import logging
 # Import prompt governance components
 from .manifests import create_prompt_manifest, PromptManifest
 from .PromptACLs import create_prompt_acl, PromptACL
-from .definitions import (
+from .PromptDefinitions import (
     create_prompt_definition, PromptDefinition,
     get_system_prompt, initialize_system_prompts, update_system_template,
     get_developer_prompt, list_developer_templates, create_custom_prompt,
     get_user_prompt, format_user_query, generate_response_template
 )
-from .metadata import create_prompt_metadata, PromptMetadata
-from .versions import create_prompt_version, PromptVersion
-from .domains import create_prompt_domain, PromptDomain
-from .injection_policies import (
+from .governance_metadata import create_prompt_metadata, PromptMetadata
+from .PromptVersions import create_prompt_version, PromptVersion
+from .Domains import create_prompt_domain, PromptDomain
+from .InjectionPolicies import (
     create_injection_policy, InjectionPolicy,
     get_injection_prompt, apply_injection, list_injection_types,
     ContextBundle, FramingBundle, L1PlanningBundle,
