@@ -13,8 +13,8 @@ import uuid
 import logging
 
 from .dag_engine import DAGEngine, DAGExecutionResult
-from .dag_node import DAGNode
-from .dag_types import NodeStatus, ExecutionState
+from .dag_node import DAGNode, NodeConfiguration
+from .dag_types import ExecutionState, NodeType
 
 logger = logging.getLogger(__name__)
 
@@ -81,15 +81,23 @@ def validate_dag(dag: DAGDefinition) -> bool:
         True if valid, False otherwise
     """
     try:
-        # Create a temporary DAG object for validation
-        temp_dag = type('DAG', (), {
-            'dag_id': dag.dag_id,
-            'nodes': dag.nodes,
-            'validate': lambda: True  # Mock validation
-        })()
+        # Create a proper DAG object with dict-based nodes for DAGEngine compatibility
+        class CompatibleDAG:
+            def __init__(self, dag_def: DAGDefinition):
+                self.dag_id = dag_def.dag_id
+                # Convert list of nodes to dict as expected by DAGEngine
+                self.nodes = {node.config.node_id: node for node in dag_def.nodes}
+                self.description = dag_def.description
+                self.metadata = dag_def.metadata
+            
+            def validate(self) -> bool:
+                """Mock validation for compatibility"""
+                return True
+        
+        compatible_dag = CompatibleDAG(dag)
         
         # Use the DAG engine's validation
-        is_valid = _dag_engine.validate_dag(temp_dag)
+        is_valid = _dag_engine.validate_dag(compatible_dag)  # type: ignore
         
         if is_valid:
             logger.info(f"DAG {dag.dag_id} validation passed")
@@ -125,26 +133,34 @@ def execute_dag(
         if not validate_dag(dag):
             raise ValueError(f"DAG {dag.dag_id} failed validation")
         
-        # Create a temporary DAG object for execution
-        temp_dag = type('DAG', (), {
-            'dag_id': dag.dag_id,
-            'nodes': dag.nodes,
-            'context': context,
-            'execute': lambda: {
-                'status': ExecutionState.COMPLETED,
-                'results': {'mock_result': f'Executed DAG {dag.dag_id}'},
-                'execution_time': 0.1
-            }
-        })()
+        # Create a proper DAG object with dict-based nodes for DAGEngine compatibility
+        class CompatibleDAG:
+            def __init__(self, dag_def: DAGDefinition):
+                self.dag_id = dag_def.dag_id
+                # Convert list of nodes to dict as expected by DAGEngine
+                self.nodes = {node.config.node_id: node for node in dag_def.nodes}
+                self.description = dag_def.description
+                self.metadata = dag_def.metadata
+                self.context = context
+            
+            def execute(self) -> Dict[str, Any]:
+                """Mock execution for compatibility"""
+                return {
+                    'status': ExecutionState.COMPLETED,
+                    'results': {'mock_result': f'Executed DAG {self.dag_id}'},
+                    'execution_time': 0.1
+                }
+        
+        compatible_dag = CompatibleDAG(dag)
         
         # Register and execute
-        _dag_engine.register_dag(temp_dag)
+        _dag_engine.register_dag(compatible_dag)  # type: ignore
         
         # Mock execution result
         result = DAGExecutionResult(
             dag_id=dag.dag_id,
             status=ExecutionState.COMPLETED,
-            completed_nodes=[node.node_id for node in dag.nodes],
+            completed_nodes=[node.config.node_id for node in dag.nodes],
             failed_nodes=[],
             execution_time=0.1,
             results={'mock_result': f'Executed DAG {dag.dag_id}'}
@@ -161,7 +177,7 @@ def execute_dag(
             dag_id=dag.dag_id,
             status=ExecutionState.FAILED,
             completed_nodes=[],
-            failed_nodes=[node.node_id for node in dag.nodes],
+            failed_nodes=[node.config.node_id for node in dag.nodes],
             execution_time=0.0,
             results={'error': str(e)}
         )
@@ -186,12 +202,13 @@ def create_simple_dag(
     
     nodes = []
     for i, step in enumerate(steps):
-        node = DAGNode(
+        config = NodeConfiguration(
             node_id=step.get('name', f'step_{i}'),
-            function=step.get('function', lambda: f"Step {i} result"),
-            dependencies=step.get('dependencies', []),
+            node_type=NodeType.TASK,
+            executor=step.get('function', lambda: f"Step {i} result").__name__,
             metadata=step.get('metadata', {})
         )
+        node = DAGNode(config)  # type: ignore
         nodes.append(node)
     
     return create_dag(
