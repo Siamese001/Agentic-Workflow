@@ -172,7 +172,7 @@ class SafetyLayer:
         confidence = 1.0 - (len(detected_issues) * 0.2)
         confidence = max(confidence, 0.0)
         
-        is_safe = len(detected_issues) == 0 or (has_pii and not has_hallucination and not has_injection)
+        is_safe = len(detected_issues) == 0
         
         result = SafetyResult(
             is_safe=is_safe,

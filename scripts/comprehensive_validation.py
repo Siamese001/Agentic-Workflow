@@ -415,8 +415,22 @@ def validate_observability():
     results['metrics_written_correctly'] = os.path.exists(os.path.join(project_root, 'runtime/metrics.py')) and os.path.exists(os.path.join(project_root, 'runtime/metrics.json'))
     results['cost_tracking_enabled'] = os.path.exists(os.path.join(project_root, 'runtime/cost_tracking.json'))
     results['latency_tracking_enabled'] = os.path.exists(os.path.join(project_root, 'runtime/metrics.json'))
-    results['error_taxonomy_applied'] = False  # Needs implementation
-    results['reliability_scores_updated'] = False  # Needs implementation
+    # Test error taxonomy and reliability functions
+    try:
+        from runtime.metrics import apply_error_taxonomy, update_reliability_scores
+        
+        # Test error taxonomy
+        test_error = {"type": "validation_error", "severity": "low"}
+        error_taxonomy_result = apply_error_taxonomy(test_error)
+        results['error_taxonomy_applied'] = error_taxonomy_result
+        
+        # Test reliability scores
+        reliability_result = update_reliability_scores("validation_engine", 0.95)
+        results['reliability_scores_updated'] = reliability_result
+        
+    except ImportError:
+        results['error_taxonomy_applied'] = False
+        results['reliability_scores_updated'] = False
 
     return results
 
@@ -425,9 +439,9 @@ def validate_safety():
     results = {}
 
     # Check if safety layer exists and is functional
-    if os.path.exists(os.path.join(project_root, 'AGENTIC_CORE/L5_SAFETY/SAFETY/SAFETY_LAYER.PY')):
+    if os.path.exists(os.path.join(project_root, 'agentic_core/L5_safety/safety/safety_layer.py')):
         try:
-            from AGENTIC_CORE.L5_SAFETY.SAFETY.SAFETY_LAYER import check_outbound_content_safety, check_mutating_action_safety
+            from agentic_core.L5_safety.safety.safety_layer import check_outbound_content_safety, check_mutating_action_safety
 
             # Test outbound content safety
             safe_content = "This is a safe message"
