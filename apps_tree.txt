@@ -8,16 +8,15 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   README.md
 |   |   __init__.py
 |   |   
+|   +---adapters
+|   |       __init__.py
+|   |       
 |   +---config
 |   |       .keep
 |   |       lic_assembly.py
-|   |       lic_config.py
-|   |       lic_constraints.py
 |   |       lic_cta.py
 |   |       lic_routing.py
-|   |       lic_schemas.py
 |   |       lic_seniority.py
-|   |       lic_templates.py
 |   |       lic_tone.py
 |   |       lic_validation.py
 |   |       __init__.py
@@ -36,185 +35,6 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |       safety_enhancements.py
 |   |       __init__.py
 |   |       
-|   +---l1
-|   |   |   interfaces.py
-|   |   |   lic_draft_planning.py
-|   |   |   lic_fusion_planner.py
-|   |   |   lic_grounding_planner.py
-|   |   |   lic_instructional_injection_v6.py
-|   |   |   lic_kg_retrieval_planning.py
-|   |   |   lic_many_shot_examples.py
-|   |   |   lic_message_planning.py
-|   |   |   lic_outreach_archetype_planning.py
-|   |   |   lic_outreach_dataclasses.py
-|   |   |   lic_planner.py
-|   |   |   lic_plan_schema.py
-|   |   |   lic_plan_schema_legacy.py
-|   |   |   lic_profile_planner.py
-|   |   |   lic_prompt_builder.py
-|   |   |   lic_prompt_system_v10_10.py
-|   |   |   lic_research_planner.py
-|   |   |   qa_planning.py
-|   |   |   rag_planning.py
-|   |   |   research_planning.py
-|   |   |   result_parser.py
-|   |   |   self_correction_injection.py
-|   |   |   strategy_planning.py
-|   |   |   temporal_kg_injection.py
-|   |   |   v6_prompt_adapter.py
-|   |   |   v6_prompt_integration.py
-|   |   |   vector_search_planning.py
-|   |   |   workflow_planning.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---builders
-|   |   |   |   prompt_builder.py
-|   |   |   |   
-|   |   +---cms
-|   |   |   |   compiler.py
-|   |   |   |   schemas.py
-|   |   |   |   store.py
-|   |   |   |   
-|   |   +---docs
-|   |   +---persona_planning
-|   |   |       .keep
-|   |   |       lic_persona_planner.py
-|   |   |       
-|   |   +---planning
-|   |   |       .keep
-|   |   |       
-|   |   +---rag_planning
-|   |   |       .keep
-|   |   |       lic_kg_rag_fusion_planning.py
-|   |   |       
-|   |   +---safety_planning
-|   |   |       .keep
-|   |   |       safety_planning.py
-|   |   |       
-|   |   +---style_planning
-|   |   |       .keep
-|   |   |       
-|   +---l2
-|   |   |   lic_agents.py
-|   |   |   lic_company_research_executor.py
-|   |   |   lic_contact_research_executor.py
-|   |   |   lic_draft_executor.py
-|   |   |   lic_execution.py
-|   |   |   lic_factual_qa.py
-|   |   |   lic_fusion_executor.py
-|   |   |   lic_interfaces.py
-|   |   |   lic_invalidation_executor.py
-|   |   |   lic_k1_research.py
-|   |   |   lic_k2_insights.py
-|   |   |   lic_k3_draft.py
-|   |   |   lic_k4_regen.py
-|   |   |   lic_k5_validation.py
-|   |   |   lic_k6_cta.py
-|   |   |   lic_k7_assembly.py
-|   |   |   lic_kg_retrieval_executor.py
-|   |   |   lic_message_executor.py
-|   |   |   lic_research_executor.py
-|   |   |   llm_caller.py
-|   |   |   message_generation_executor.py
-|   |   |   outreach_llm_caller.py
-|   |   |   qa_executor.py
-|   |   |   strategy_executor.py
-|   |   |   tool_output_validator.py
-|   |   |   triplet_extraction_executor.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---docs
-|   |   +---kg
-|   |   |       kg_writer.py
-|   |   |       
-|   |   +---outreach
-|   |   |   |   company_research_executor.py
-|   |   |   |   contact_research_executor.py
-|   |   |   |   message_generation_executor.py
-|   |   |   |   outreach_batch_executor.py
-|   |   |   |   
-|   |   +---vector
-|   |   |       vector_search_executor.py
-|   |   |       
-|   |           execution.cpython-312.pyc
-|   |           lic_execution.cpython-312.pyc
-|   |           lic_k1_research.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   +---l3
-|   |   |   lic_adapters.py
-|   |   |   lic_draft_orchestrator.py
-|   |   |   lic_interfaces.py
-|   |   |   lic_meta_loop.py
-|   |   |   lic_orchestrator.py
-|   |   |   lic_orchestrator_legacy.py
-|   |   |   lic_outreach_factory.py
-|   |   |   lic_outreach_orchestrator.py
-|   |   |   lic_persona_drift_controller.py
-|   |   |   lic_qa_orchestrator.py
-|   |   |   lic_safety_orchestrator.py
-|   |   |   lic_strategy_orchestrator.py
-|   |   |   lic_unified_workflow_orchestrator.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---docs
-|   |   +---safety
-|   |   |       lic_circuit_breaker.py
-|   |   |       lic_fallback_tree.py
-|   |   |       
-|   +---l4
-|   |   |   adapters.py
-|   |   |   high_signal.py
-|   |   |   hybrid_search.py
-|   |   |   interfaces.py
-|   |   |   journal.py
-|   |   |   lic_briefs_store.py
-|   |   |   lic_memory.py
-|   |   |   lic_memory_legacy.py
-|   |   |   lic_signal_scoring.py
-|   |   |   lic_state.py
-|   |   |   lic_vector_memory.py
-|   |   |   manager.py
-|   |   |   pinecone_adapter.py
-|   |   |   state_manager.py
-|   |   |   state_validation.py
-|   |   |   temporal_fusion.py
-|   |   |   temporal_schemas.py
-|   |   |   triplet_store.py
-|   |   |   types.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---docs
-|   |   +---entity
-|   |   |       entity_resolution.py
-|   |   |       
-|   |   +---rag
-|   |   |   |   lic_rag_policies.py
-|   |   |   |   rag_engine.py
-|   |   |   |   
-|   |   +---schema
-|   |   |   |   outreach_schema.py
-|   |   |   |   __init__.py
-|   |   |   |   
-|   |   +---temporal_kg
-|   |   |       temporal_kg.py
-|   |   |       
-|   +---l5
-|   |   |   adapters.py
-|   |   |   interfaces.py
-|   |   |   lic_failure_classifier.py
-|   |   |   lic_safety_validator.py
-|   |   |   lic_validation_toolkit.py
-|   |   |   policy.py
-|   |   |   safety_validator.py
-|   |   |   types.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---docs
-|   |   +---guards
-|   |   |       injection_detection.py
-|   |   |       safety_executor.py
-|   |   |       
 |   +---legacy
 |   |   |   .keep
 |   |   |   lic_demo.py
@@ -239,10 +59,14 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |           lic_research_planner.cpython-312.pyc
 |   |           __init__.cpython-312.pyc
 |   |           
+|   +---pipelines
+|   |       __init__.py
+|   |       
+|   +---tests
+|   |       __init__.py
+|   |       
 |   +---utils
 |   |       .keep
-|   |       graph_query.py
-|   |       graph_store_neo4j.py
 |   |       __init__.py
 |   |       
 |           fusion_planner.cpython-312.pyc
@@ -257,89 +81,15 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 +---resume_engine
 |   |   __init__.py
 |   |   
+|   +---adapters
+|   |       __init__.py
+|   |       
 |   +---config
 |   |   |   .keep
 |   |   |   rg_config.py
-|   |   |   rg_constants.py
 |   |   |   __init__.py
 |   |   |   
 |   |           rg_constants.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   +---l1
-|   |   |   rg_planner.py
-|   |   |   rg_plan_schema.py
-|   |   |   
-|   |   +---subatomic
-|   |   |       .keep
-|   |   |       
-|   |           rg_planner.cpython-312.pyc
-|   |           rg_plan_schema.cpython-312.pyc
-|   |           
-|   +---l2
-|   |   |   rg_extraction.py
-|   |   |   rg_k1_extract.py
-|   |   |   rg_k2_clean.py
-|   |   |   rg_k3_quantify.py
-|   |   |   rg_k4_rewrite.py
-|   |   |   rg_k5_skillmap.py
-|   |   |   rg_k6_assemble.py
-|   |   |   rg_k7_format.py
-|   |   |   rg_k8_validate.py
-|   |   |   rg_k8_validation.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---subatomic
-|   |   |       .keep
-|   |   |       
-|   |           extraction.cpython-312.pyc
-|   |           rg_extraction.cpython-312.pyc
-|   |           rg_k1_extract.cpython-312.pyc
-|   |           rg_k2_clean.cpython-312.pyc
-|   |           rg_k3_quant.cpython-312.pyc
-|   |           rg_k3_quantify.cpython-312.pyc
-|   |           rg_k4_rewrite.cpython-312.pyc
-|   |           rg_k5_skillmap.cpython-312.pyc
-|   |           rg_k6_assemble.cpython-312.pyc
-|   |           rg_k6_section_assembly.cpython-312.pyc
-|   |           rg_k7_format.cpython-312.pyc
-|   |           rg_k8_validate.cpython-312.pyc
-|   |           rg_k8_validation.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   +---l3
-|   |   |   rg_orchestrator.py
-|   |   |   
-|   |   +---subatomic
-|   |   |       .keep
-|   |   |       
-|   |           rg_orchestrator.cpython-312.pyc
-|   |           
-|   +---l4
-|   |   |   rg_memory.py
-|   |   |   rg_state.py
-|   |   |   
-|   |   +---subatomic
-|   |   |       .keep
-|   |   |       
-|   |           rg_state.cpython-312.pyc
-|   |           
-|   +---l5
-|   |   |   rg_failure_classifier.py
-|   |   |   rg_injection_detection.py
-|   |   |   rg_safety_validator.py
-|   |   |   rg_validation_toolkit.py
-|   |   |   validation_engine.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---subatomic
-|   |   |       .keep
-|   |   |       
-|   |           rg_failure_classifier.cpython-312.pyc
-|   |           rg_injection_detection.cpython-312.pyc
-|   |           rg_safety_validator.cpython-312.pyc
-|   |           rg_validation_toolkit.cpython-312.pyc
-|   |           validation_engine.cpython-312.pyc
 |   |           __init__.cpython-312.pyc
 |   |           
 |   +---legacy
@@ -353,12 +103,14 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |           rg_planner.cpython-312.pyc
 |   |           __init__.cpython-312.pyc
 |   |           
+|   +---pipelines
+|   |       __init__.py
+|   |       
+|   +---tests
+|   |       __init__.py
+|   |       
 |   +---utils
 |   |   |   .keep
-|   |   |   rg_demo.py
-|   |   |   rg_low_complexity_utils.py
-|   |   |   rg_models.py
-|   |   |   rg_rendering.py
 |   |   |   __init__.py
 |   |   |   
 |   |           rg_low_complexity_utils.cpython-312.pyc
