@@ -33,10 +33,10 @@ IMPORT_MAPPINGS = {
     'import agentic_core.l2_execution.engines.outreach.': 'import agentic_core.l2_execution.engines.outreach.',
     
     # L1 planning (draft_planning stays as-is for now)
-    'from agentic_core.l1_planning.draft_planning.': 'from agentic_core.l1_planning.draft_planning.',
+    'from agentic_core.l1_planning.planners.': 'from agentic_core.l1_planning.planners.',
     
     # L3 orchestration (will need engines/ vs framework/ split later)
-    'from agentic_core.l3_orchestration.draft_orchestration.': 'from agentic_core.l3_orchestration.draft_orchestration.',
+    'from agentic_core.l3_orchestration.engines.resume.': 'from agentic_core.l3_orchestration.engines.resume.',
     
     # L4 state (memory_state rename and internal restructuring)
     'from agentic_core.l4_memory_state.': 'from agentic_core.l4_memory_state.',

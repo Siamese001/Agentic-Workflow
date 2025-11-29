@@ -17,7 +17,7 @@ from runtime.execution_budget_manager import (
     BudgetLimits,
     get_budget_manager
 )
-from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import OutreachOrchestrator
+from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 
 
 class TestExecutorFailure:

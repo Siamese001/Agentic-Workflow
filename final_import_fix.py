@@ -20,7 +20,7 @@ ADDITIONAL_MAPPINGS = {
     'from agentic_core.l3_orchestration.': 'from agentic_core.l3_orchestration.',
     
     # Specific remaining engine path issues
-    'from agentic_core.l1_planning.draft_planning.lic_': 'from agentic_core.l1_planning.draft_planning.lic_',
+    'from agentic_core.l1_planning.planners.lic_': 'from agentic_core.l1_planning.planners.lic_',
     'from agentic_core.l4_memory_state.temporal.': 'from agentic_core.l4_memory_state.temporal.',
     'from agentic_core.l5_safety.safety_validator.': 'from agentic_core.l5_safety.safety_validator.',
 }
@@ -57,7 +57,7 @@ def fix_imports_in_file(file_path):
         # Additional regex patterns for edge cases
         patterns = [
             # Handle remaining engine path variations
-            (r'from engine\.l1_planning\.draft_planning\.lic_(\w+)', r'from agentic_core.l1_planning.draft_planning.lic_\1'),
+            (r'from engine\.l1_planning\.draft_planning\.lic_(\w+)', r'from agentic_core.l1_planning.planners.lic_\1'),
             (r'from engine\.l4_state\.temporal_agents\.(\w+)', r'from agentic_core.l4_memory_state.temporal.\1'),
             (r'from engine\.l5_safety\.safety_validator\.(\w+)', r'from agentic_core.l5_safety.safety_validator.\1'),
             
