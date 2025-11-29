@@ -12,7 +12,7 @@ import pytest
 from datetime import datetime, UTC, timedelta
 from unittest.mock import Mock, patch
 
-from l4.temporal_kg import TemporalKG, TemporalNodeMetadata
+from agentic_core.l4_memory.temporal_kg import TemporalKG, TemporalNodeMetadata
 
 
 class TestTemporalRecencyMetadata:

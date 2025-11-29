@@ -8,8 +8,8 @@ Tests MUST NOT import L2 or L4 modules.
 
 from unittest.mock import Mock
 
-from l1.research_planning import ResearchRefinementPlanner, ResearchResult, FailureContext
-from l1.outreach_dataclasses import ArchetypeContext, RefinementPlan, AgentType
+from agentic_core.l1_planning.research_planning import ResearchRefinementPlanner, ResearchResult, FailureContext
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeContext, RefinementPlan, AgentType
 
 
 class TestResearchRefinementPlanner:

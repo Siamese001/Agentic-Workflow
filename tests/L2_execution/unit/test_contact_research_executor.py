@@ -8,9 +8,9 @@ namespace building via pinecone_adapter, and pure L2 execution without L1/L3/L4/
 import pytest
 from unittest.mock import Mock
 
-from l2.contact_research_executor import ContactResearchExecutor, ContactSearchConfig, ContactResearchResult
-from l4.hybrid_search import HybridSearchExecutor, SearchResult
-from l4.schema.outreach_schema import OutreachRAGResult
+from agentic_core.l2_execution.contact_research_executor import ContactResearchExecutor, ContactSearchConfig, ContactResearchResult
+from agentic_core.l4_memory.hybrid_search import HybridSearchExecutor, SearchResult
+from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult
 from l4 import PineconeAdapter
 
 
@@ -182,11 +182,11 @@ class TestContactResearchExecutor:
     def test_no_l1_l3_l4_l5_imports_violation(self):
         """Test executor has no L1/L3/L4/L5 imports (pure L2)."""
         # This is a structural test - verify the module imports
-        import l2.contact_research_executor
+        import agentic_core.l2_execution.contact_research_executor
         
         # The module should only import L4 components (HybridSearchExecutor, PineconeAdapter)
         # and L1 dataclasses (ArchetypeType) but no L1 planning logic
-        from l2.contact_research_executor import ContactResearchExecutor
+        from agentic_core.l2_execution.contact_research_executor import ContactResearchExecutor
         
         # Verify the class exists and has expected methods
         assert hasattr(ContactResearchExecutor, 'search_contact_profile')

@@ -9,10 +9,10 @@ import pytest
 from unittest.mock import Mock
 from typing import List, Dict, Any
 
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext, Severity
-from l5.interfaces import PolicyDecision, Action, Verdict
-from l1.outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext, Severity
+from agentic_core.l5_safety.interfaces import PolicyDecision, Action, Verdict
+from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeType
 
 
 class TestOutreachArchetypeTolerance:
@@ -202,7 +202,7 @@ class TestOutreachArchetypeTolerance:
     def test_archetype_tolerance_configurable(self):
         """Test that archetype tolerance levels are configurable."""
         # This will test configurability once implemented
-        from l5.safety_validator import OutreachSafetyPolicy
+        from agentic_core.l5_safety.safety_validator import OutreachSafetyPolicy
         
         policy = OutreachSafetyPolicy()
         

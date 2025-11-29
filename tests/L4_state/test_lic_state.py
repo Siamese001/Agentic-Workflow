@@ -1,4 +1,4 @@
-from l4.lic_state import LICState
+from agentic_core.l4_memory.lic_state import LICState
 
 def test_state_structure():
     s = LICState()

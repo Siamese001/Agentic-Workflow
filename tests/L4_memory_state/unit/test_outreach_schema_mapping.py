@@ -8,8 +8,8 @@ Tests MUST NOT import L1 or L2 modules.
 
 from datetime import datetime, timezone, timedelta
 
-from l4.hybrid_search import SearchResult
-from l4.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
+from agentic_core.l4_memory.hybrid_search import SearchResult
+from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
 
 
 class TestOutreachSchemaMapping:

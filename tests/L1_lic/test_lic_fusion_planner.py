@@ -3,7 +3,7 @@
 import pytest
 from unittest.mock import MagicMock
 
-from l1.lic_fusion_planner import (
+from agentic_core.l1_planning.lic_fusion_planner import (
     LICFusionPlanner,
     LICFusionPlan,
     LICValueProposition,

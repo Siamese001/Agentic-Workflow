@@ -11,7 +11,7 @@ import pytest
 from datetime import datetime, timedelta, timezone
 from unittest.mock import Mock, patch
 
-from l4.state_manager import TemporalContext, EpisodicMemory
+from agentic_core.l4_memory.state_manager import TemporalContext, EpisodicMemory
 
 
 class TestStateManagerOutreachIsolation:
