@@ -9,3 +9,8 @@ class TestObservabilityCostBudget:
         remaining = budget["max_usd"] - budget["spent_usd"]
         assert remaining == 0.75
         assert remaining > 0
+
+
+
+
+

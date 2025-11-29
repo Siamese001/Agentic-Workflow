@@ -15,3 +15,8 @@ def test_required_methods():
     ]
     for m in required:
         assert hasattr(LIC_K1_Research, m)
+
+
+
+
+

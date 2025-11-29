@@ -37,3 +37,8 @@ class TestSafetyPlanning:
         assert hasattr(safety_plan, 'prompt')
         assert safety_plan.prompt == prompt
         assert isinstance(safety_plan.prompt, Mock)
+
+
+
+
+

@@ -420,3 +420,8 @@ class TestMessagePlannerStructure:
             cta_params=mock_cta_params,
             metadata={"test_archetype": archetype}
         )
+
+
+
+
+

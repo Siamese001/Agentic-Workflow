@@ -281,3 +281,8 @@ class LICSignalScoring:
         except Exception:
             # Telemetry failures should never break scoring logic
             logger.debug("Failed to record telemetry for LIC signal scoring")
+
+
+
+
+

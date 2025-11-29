@@ -522,3 +522,8 @@ class TestTelemetryThreadSafety:
         for event in events:
             assert "layer" not in event.payload
             assert len(event.payload["large_data"]) == 1000
+
+
+
+
+

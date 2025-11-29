@@ -8,3 +8,8 @@ def test_required_methods():
     required = ["execute", "generate_date_window", "generate_cta_content"]
     for m in required:
         assert hasattr(LIC_K6_CTA, m)
+
+
+
+
+

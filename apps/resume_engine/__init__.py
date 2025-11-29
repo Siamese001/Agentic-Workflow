@@ -8,3 +8,8 @@ from .adapters.resume_adapter import ResumeAdapter
 from .pipelines.resume_pipeline import ResumePipeline
 
 __all__ = ['ResumeAdapter', 'ResumePipeline']
+
+
+
+
+

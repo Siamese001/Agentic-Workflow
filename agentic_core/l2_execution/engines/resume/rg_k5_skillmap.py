@@ -759,3 +759,8 @@ class RGK5Skillmap:
             "coverage_percentage": mapping_output.metrics.coverage_percentage,
             "success": mapping_output.success
         }
+
+
+
+
+

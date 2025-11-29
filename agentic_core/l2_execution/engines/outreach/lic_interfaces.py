@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, TypeVar
 
-from core.models.models import (
+from runtime.core.models.models import (
     StrategyResult,
     DraftingResult,
     QAResult,
@@ -260,3 +260,8 @@ class L2ToolOutputValidatorInterface(ABC):
         Identifies threats to protect resume improvement workflows.
         """
         pass
+
+
+
+
+

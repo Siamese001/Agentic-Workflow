@@ -184,3 +184,8 @@ class TestRoutingPolicyBasic:
         model2 = self.routing_policy.select_model(stage, archetype, self.mock_budget_manager)
         
         assert model1 == model2, "Model selection should be deterministic"
+
+
+
+
+

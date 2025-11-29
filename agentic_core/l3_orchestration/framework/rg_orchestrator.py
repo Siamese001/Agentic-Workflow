@@ -305,3 +305,8 @@ class RGOrchestrator:
             validation_result["issues"].append("Master resume must be a dictionary")
         
         return validation_result
+
+
+
+
+

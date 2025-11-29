@@ -454,3 +454,8 @@ class K7AssemblyExecutor:
             formatted["metadata"]["delivery_type"] = "plain_text"
         
         return formatted
+
+
+
+
+

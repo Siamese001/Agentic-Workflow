@@ -15,3 +15,8 @@ class ResumePipeline:
     def execute_pipeline(self, input_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Execute resume generation pipeline"""
         return {"status": "stub", "message": "Resume pipeline stub implementation"}
+
+
+
+
+

@@ -19,3 +19,8 @@ class CompanyResearchExecutor:
 
 # Alias for backward compatibility with tests
 LICCompanyResearchExecutor = CompanyResearchExecutor
+
+
+
+
+

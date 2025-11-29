@@ -361,3 +361,8 @@ class KNodeAssemblyEngine:
             "has_subject_line": k2_subject_line is not None,
             "component_count": sum(1 for comp in [k1_greeting, k2_subject_line, k3_message_body, k4_cta, k5_signature] if comp)
         }
+
+
+
+
+

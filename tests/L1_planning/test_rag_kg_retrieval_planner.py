@@ -96,3 +96,8 @@ class TestKGRetrievalPlanning:
         assert isinstance(plan, KGQueryPlan)
         assert plan.start_entities == ["entity_1"]
         assert plan.query_type == QueryType.ENTITY_FACTS
+
+
+
+
+

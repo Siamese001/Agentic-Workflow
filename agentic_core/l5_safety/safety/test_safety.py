@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from safety.safety_layer import (
+from agentic_core.l5_safety.safety_layer import (
     check_outbound_content_safety, 
     check_mutating_action_safety,
     is_content_safe,
@@ -116,3 +116,8 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
+
+
+
+
+

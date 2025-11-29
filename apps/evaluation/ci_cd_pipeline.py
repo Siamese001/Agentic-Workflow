@@ -106,7 +106,7 @@ class CICDPipeline:
                 {
                     'name': 'toolpath_evaluation',
                     'description': 'Run toolpath performance evaluation',
-                    'command': 'python -c "from evaluation.toolpath_evaluator import run_toolpath_evaluation; run_toolpath_evaluation()"',
+                    'command': 'python -c "from apps.evaluation.toolpath_evaluator import run_toolpath_evaluation; run_toolpath_evaluation()"',
                     'timeout_seconds': 240,
                     'required': True
                 },
@@ -449,3 +449,8 @@ def evaluate_ci_cd_pipeline() -> bool:
     else:
         logger.warning(f"CI/CD pipeline evaluation: {health['status']} ({health['pass_rate']:.1%} pass rate)")
         return False
+
+
+
+
+

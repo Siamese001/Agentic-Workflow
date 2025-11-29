@@ -512,3 +512,8 @@ class LICValidationToolkit:
         except Exception:
             # Telemetry failures should never break validation logic
             logger.debug("Failed to record telemetry for LIC message validation")
+
+
+
+
+

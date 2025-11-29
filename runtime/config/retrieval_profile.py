@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
-from core.models.models import RetrievalConfig
+from runtime.core.models.models import RetrievalConfig
 
 
 class RetrievalProfile(BaseModel):
@@ -13,6 +13,11 @@ class RetrievalProfile(BaseModel):
     """
 
     retrieval: RetrievalConfig = Field(default_factory=RetrievalConfig)
+
+
+
+
+
 
 
 

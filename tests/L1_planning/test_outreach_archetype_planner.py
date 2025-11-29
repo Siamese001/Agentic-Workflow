@@ -445,3 +445,8 @@ class TestArchetypePlannerOutputs:
         assert isinstance(context.reasoning, str)
         assert len(context.reasoning) > 0
         assert "classified" in context.reasoning.lower()
+
+
+
+
+

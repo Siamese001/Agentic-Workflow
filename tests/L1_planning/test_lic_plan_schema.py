@@ -5,3 +5,8 @@ def test_schema_initialization():
     assert p.message_type == 1
     assert p.cta_style == 9
     assert p.assembly_plan == 10
+
+
+
+
+

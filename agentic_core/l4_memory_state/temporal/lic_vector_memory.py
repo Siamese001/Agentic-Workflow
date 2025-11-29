@@ -233,3 +233,8 @@ class LICVectorMemory:
             logger.error(f"Vector memory health check failed: {e}")
         
         return health_status
+
+
+
+
+

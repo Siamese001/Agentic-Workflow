@@ -182,3 +182,8 @@ class HighSignalScorer:
             return base_weight * 0.5
         else:
             return base_weight * 0.3  # Maximum penalty for >3 hops
+
+
+
+
+

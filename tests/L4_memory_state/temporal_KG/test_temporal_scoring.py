@@ -193,3 +193,8 @@ class TestTemporalScoring:
         weight3 = self.temporal_kg.compute_temporal_weight(timestamp)
         
         assert weight1 == weight2 == weight3 == 0.6
+
+
+
+
+

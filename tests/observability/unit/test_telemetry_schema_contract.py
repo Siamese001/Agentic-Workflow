@@ -351,3 +351,8 @@ class TestTelemetrySchemaContract:
         for event in events:
             assert "layer" not in event.payload
             assert event.layer.startswith("L")
+
+
+
+
+
