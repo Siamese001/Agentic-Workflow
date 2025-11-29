@@ -37,8 +37,7 @@ def test_dag_creation():
 def test_safety_layer():
     """Test safety layer functionality"""
     try:
-        sys.path.append('safety')
-        from safety_layer import check_outbound_content_safety
+        from agentic_core.l5_safety.safety.safety_layer import check_outbound_content_safety
         
         result = check_outbound_content_safety("This is safe content")
         assert result is not None, "Safety check should return result"
@@ -61,8 +60,7 @@ def test_mcp_client():
 def test_evaluation_framework():
     """Test evaluation framework functionality"""
     try:
-        sys.path.append('evaluation')
-        from toolpath_evaluator import get_toolpath_evaluator
+        from apps.evaluation.toolpath_evaluator import get_toolpath_evaluator
         
         evaluator = get_toolpath_evaluator()
         assert evaluator is not None, "Evaluator should be created"
