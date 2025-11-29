@@ -22,12 +22,12 @@ class ReasoningBundle:
     prompt_type: ReasoningPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_reasoning_guidance(self, base_prompt: str, reasoning_context: Dict[str, Any]) -> str:
         """Inject reasoning guidance into prompt"""
         guidance = self._generate_reasoning_guidance(reasoning_context)
         return f"{base_prompt}\n\nReasoning Approach:\n{guidance}"
-    
+
     def _generate_reasoning_guidance(self, context: Dict[str, Any]) -> str:
         """Generate reasoning-specific guidance"""
         if self.prompt_type == ReasoningPromptType.LOGICAL_INFERENCE:

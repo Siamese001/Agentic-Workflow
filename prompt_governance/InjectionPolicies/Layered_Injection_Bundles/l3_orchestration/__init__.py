@@ -22,12 +22,12 @@ class L3OrchestrationBundle:
     prompt_type: OrchestrationPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_orchestration_guidance(self, base_prompt: str, orchestration_context: Dict[str, Any]) -> str:
         """Inject L3 orchestration guidance into prompt"""
         guidance = self._generate_orchestration_guidance(orchestration_context)
         return f"{base_prompt}\n\nOrchestration Guidance:\n{guidance}"
-    
+
     def _generate_orchestration_guidance(self, context: Dict[str, Any]) -> str:
         """Generate orchestration-specific guidance"""
         if self.prompt_type == OrchestrationPromptType.WORKFLOW_COORDINATION:

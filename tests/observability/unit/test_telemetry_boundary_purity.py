@@ -10,11 +10,9 @@ Tests that telemetry respects L1-L5 architectural boundaries:
 - Boundary violation detection and prevention
 """
 
-import pytest
 import threading
 import time
-from unittest.mock import patch, Mock
-from typing import Dict, Any
+from unittest.mock import Mock
 
 from runtime.telemetry import TelemetryBus, get_telemetry_bus
 
@@ -139,11 +137,11 @@ class TestTelemetryBoundaryPurity:
     def test_no_circular_dependencies_through_telemetry(self):
         """Test that telemetry doesn't create circular dependencies."""
         # Mock layer components to test for circular dependencies
-        l1_component = Mock()
-        l2_component = Mock()
-        l3_component = Mock()
-        l4_component = Mock()
-        l5_component = Mock()
+        Mock()
+        Mock()
+        Mock()
+        Mock()
+        Mock()
         
         # Use verbose mode to preserve all test fields
         self.bus.configure(detail_level="verbose")

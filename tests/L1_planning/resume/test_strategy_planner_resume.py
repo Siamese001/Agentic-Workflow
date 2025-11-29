@@ -5,7 +5,7 @@ Section 3: Canonical Repository Tree - L1 Planning Tests
 """
 
 import pytest
-from typing import Dict, Any, List
+from typing import List
 import logging
 
 logger = logging.getLogger(__name__)

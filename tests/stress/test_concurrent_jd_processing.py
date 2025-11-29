@@ -10,13 +10,11 @@ import asyncio
 import threading
 import time
 import random
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
-from unittest.mock import Mock, patch, AsyncMock
 
 # Import telemetry for stress monitoring
-from tests.observability.test_telemetry_collection import TelemetryCollector, ExecutionMetrics, MetricType
+from tests.observability.test_telemetry_collection import TelemetryCollector, ExecutionMetrics
 
 
 @dataclass(frozen=True, slots=True)
@@ -126,7 +124,7 @@ class TestConcurrentJDProcessing:
         start_time = time.time()
         
         # Record initial system state
-        initial_metrics = self.telemetry.get_system_metrics()
+        self.telemetry.get_system_metrics()
         
         completed_tasks = []
         failed_tasks = []
@@ -154,7 +152,7 @@ class TestConcurrentJDProcessing:
                     
                     return result
                     
-                except Exception as e:
+                except Exception:
                     task_end = time.time()
                     
                     # Record failure metrics
@@ -364,8 +362,7 @@ class TestConcurrentJDProcessing:
     @pytest.mark.stress
     async def test_memory_leak_detection_under_stress(self):
         """Test for memory leaks during sustained concurrent processing."""
-        initial_metrics = self.telemetry.get_system_metrics()
-        initial_memory = initial_metrics.memory_peak
+        self.telemetry.get_system_metrics()
         
         # Run multiple batches of concurrent processing
         for batch in range(5):
@@ -416,7 +413,7 @@ class TestPerformanceDegradation:
         start_time = time.time()
         
         # Record initial system state
-        initial_metrics = self.telemetry.get_system_metrics()
+        self.telemetry.get_system_metrics()
         
         completed_tasks = []
         failed_tasks = []
@@ -444,7 +441,7 @@ class TestPerformanceDegradation:
                     
                     return result
                     
-                except Exception as e:
+                except Exception:
                     task_end = time.time()
                     
                     # Record failure metrics
@@ -522,7 +519,6 @@ class TestPerformanceDegradation:
             self.telemetry.clear_metrics()
             
             # Execute performance test
-            from tests.stress.test_concurrent_jd_processing import StressTestResult
             result = await self.process_tasks_concurrent(tasks, workers)
             
             performance_results.append({

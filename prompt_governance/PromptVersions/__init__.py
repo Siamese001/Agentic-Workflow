@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 class PromptVersion:
     """Version management for prompt evolution and tracking"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.version_id = self.config.get("version_id", "")
         self.prompt_id = self.config.get("prompt_id", "")
         self.version_number = self.config.get("version_number", "1.0.0")
         self.changelog = self.config.get("changelog", [])
-    
+
     def create_version(self, prompt_id: str, version_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new version of a prompt"""
         try:
@@ -36,14 +36,14 @@ class PromptVersion:
                 "status": "active",
                 "is_latest": True
             }
-            
+
             logger.info(f"Created version {version['version_number']} for prompt: {prompt_id}")
             return version
-            
+
         except Exception as e:
             logger.error(f"Failed to create prompt version: {e}")
             return {"error": str(e)}
-    
+
     def get_version_history(self, prompt_id: str) -> List[Dict[str, Any]]:
         """Get version history for a prompt"""
         try:
@@ -78,14 +78,14 @@ class PromptVersion:
                     "changelog": ["Major redesign", "Updated security policies"]
                 }
             ]
-            
+
             logger.info(f"Retrieved version history for prompt: {prompt_id}")
             return mock_versions
-            
+
         except Exception as e:
             logger.error(f"Failed to get version history: {e}")
             return []
-    
+
     def compare_versions(self, version_id_1: str, version_id_2: str) -> Dict[str, Any]:
         """Compare two versions of a prompt"""
         try:
@@ -110,14 +110,14 @@ class PromptVersion:
                 },
                 "similarity_score": 0.75
             }
-            
+
             logger.info(f"Compared versions: {version_id_1} vs {version_id_2}")
             return comparison
-            
+
         except Exception as e:
             logger.error(f"Failed to compare versions: {e}")
             return {"error": str(e)}
-    
+
     def rollback_to_version(self, prompt_id: str, target_version: str) -> Dict[str, Any]:
         """Rollback prompt to specific version"""
         try:
@@ -129,14 +129,14 @@ class PromptVersion:
                 "success": True,
                 "new_version_id": f"ver_{hash(str(datetime.now())) % 10000}"
             }
-            
+
             logger.info(f"Rolled back prompt {prompt_id} to version {target_version}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to rollback version: {e}")
             return {"success": False, "error": str(e)}
-    
+
     def get_latest_version(self, prompt_id: str) -> Dict[str, Any]:
         """Get the latest version of a prompt"""
         try:
@@ -149,14 +149,14 @@ class PromptVersion:
                 "status": "active",
                 "is_latest": True
             }
-            
+
             logger.info(f"Retrieved latest version for prompt: {prompt_id}")
             return latest_version
-            
+
         except Exception as e:
             logger.error(f"Failed to get latest version: {e}")
             return {"error": str(e)}
-    
+
     def deprecate_version(self, version_id: str, reason: str) -> Dict[str, Any]:
         """Deprecate a specific version"""
         try:
@@ -167,10 +167,10 @@ class PromptVersion:
                 "deprecated_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Deprecated version: {version_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to deprecate version: {e}")
             return {"success": False, "error": str(e)}

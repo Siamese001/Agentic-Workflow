@@ -4,15 +4,9 @@ Unit tests for TelemetryBus core functionality.
 Tests event capture, error recording, and configuration management.
 """
 
-import pytest
-import time
-from unittest.mock import patch
 
 from runtime.telemetry import (
     TelemetryBus, 
-    TelemetryEvent, 
-    TelemetryError, 
-    TelemetryTrace,
     get_telemetry_bus
 )
 
@@ -257,7 +251,7 @@ class TestTelemetryBus:
         assert summary["total_events"] == 2
         assert summary["total_errors"] == 1
         assert summary["total_traces"] == 1
-        assert summary["enabled"] == True
+        assert summary["enabled"] is True
         assert summary["detail_level"] == "standard"
         assert set(summary["layers"]) == {"L3", "L2", "L5"}
         assert set(summary["event_names"]) == {"phase_start", "phase_end"}

@@ -7,9 +7,6 @@ Tests knowledge graph retrieval execution functionality extracted from working l
 import pytest
 
 # L2 Components
-from agentic_core.l2_execution.tools.kg_retrieval.kg_retrieval_executor import (
-    KGRetrievalExecutor,
-)
 
 # L4 Components (for storage)
 from agentic_core.l4_memory_state.temporal.triplet_store import (

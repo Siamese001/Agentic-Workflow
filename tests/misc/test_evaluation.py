@@ -10,11 +10,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from toolpath_evaluator import (
     evaluate_toolpath,
-    run_toolpath_evaluation,
-    get_toolpath_evaluator
+    run_toolpath_evaluation
 )
 from ci_cd_pipeline import (
-    run_ci_cd_pipeline,
     evaluate_ci_cd_pipeline,
     get_ci_cd_pipeline,
     get_pipeline_health

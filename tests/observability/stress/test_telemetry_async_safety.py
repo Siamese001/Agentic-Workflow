@@ -14,7 +14,6 @@ import asyncio
 import time
 import random
 from concurrent.futures import ThreadPoolExecutor
-from typing import Dict, Any
 
 from runtime.telemetry import TelemetryBus, get_telemetry_bus
 

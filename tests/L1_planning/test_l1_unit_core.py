@@ -1,5 +1,4 @@
 """L1 Planning Unit Tests - Core."""
-import pytest
 
 class TestL1PlanningUnitCore:
     """Core unit tests for L1 planning layer."""

@@ -22,12 +22,12 @@ class L5SafetyBundle:
     prompt_type: SafetyPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_safety_guidance(self, base_prompt: str, safety_context: Dict[str, Any]) -> str:
         """Inject L5 safety guidance into prompt"""
         guidance = self._generate_safety_guidance(safety_context)
         return f"{base_prompt}\n\nSafety Guidelines:\n{guidance}"
-    
+
     def _generate_safety_guidance(self, context: Dict[str, Any]) -> str:
         """Generate safety-specific guidance"""
         if self.prompt_type == SafetyPromptType.CONTENT_FILTERING:

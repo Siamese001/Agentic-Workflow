@@ -14,7 +14,7 @@
     "valid_runtime_tree": true,
     "valid_observability_tree": true,
     "no_code_at_root": false,
-    "no_tests_at_root": true,
+    "no_tests_at_root": false,
     "no_caches_at_root": false
   },
   "cache_policy": {
@@ -193,8 +193,8 @@
     "tests_data_folder_exists": true,
     "tests_helpers_file_present": true,
     "no_tests_in_agentic_core": true,
-    "no_tests_in_apps": false,
-    "no_tests_at_root": true,
+    "no_tests_in_apps": true,
+    "no_tests_at_root": false,
     "no_alternate_test_trees": true
   },
   "tests_L1": {
@@ -277,7 +277,7 @@
   },
   "import_and_lint": {
     "no_import_errors": true,
-    "ruff_zero_errors": false,
+    "ruff_zero_errors": true,
     "mypy_zero_blockers": false,
     "no_circular_imports": true,
     "import_dag_respected": true,

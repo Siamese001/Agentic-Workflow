@@ -8,7 +8,7 @@ and contextual information.
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional, List, Union
+from typing import Any, Dict, Optional, List
 from dataclasses import dataclass, field
 from datetime import datetime, UTC
 from enum import Enum
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 class ProfileType(str, Enum):
     """Types of user profiles."""
-    
+
     INDIVIDUAL = "individual"
     ORGANIZATION = "organization"
     SYSTEM = "system"
@@ -30,7 +30,7 @@ class ProfileType(str, Enum):
 
 class CapabilityLevel(str, Enum):
     """User capability levels."""
-    
+
     BASIC = "basic"
     INTERMEDIATE = "intermediate"
     ADVANCED = "advanced"
@@ -41,7 +41,7 @@ class CapabilityLevel(str, Enum):
 @dataclass
 class UserPreferences:
     """User preferences and settings."""
-    
+
     preferred_models: List[str] = field(default_factory=list)
     language: str = "en"
     timezone: str = "UTC"
@@ -54,7 +54,7 @@ class UserPreferences:
 @dataclass
 class UserProfile:
     """Comprehensive user profile."""
-    
+
     user_id: str
     profile_type: ProfileType = ProfileType.INDIVIDUAL
     capability_level: CapabilityLevel = CapabilityLevel.BASIC
@@ -67,11 +67,11 @@ class UserProfile:
     metadata: Dict[str, Any] = field(default_factory=dict)
     tags: List[str] = field(default_factory=list)
     is_active: bool = True
-    
+
     def update_timestamp(self) -> None:
         """Update the last modified timestamp."""
         self.updated_at = datetime.now(UTC)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -101,7 +101,7 @@ class UserProfile:
 @dataclass
 class MetaProfileSnapshot:
     """Snapshot of meta-profile state for configuration management."""
-    
+
     snapshot_id: str = field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     profile_id: Optional[str] = None
@@ -110,7 +110,7 @@ class MetaProfileSnapshot:
     system_state: Dict[str, Any] = field(default_factory=dict)
     version: str = "1.0.0"
     checksum: Optional[str] = None
-    
+
     def __init__(self, data: Optional[Dict[str, Any]] = None):
         """Initialize from optional data dictionary."""
         if data:
@@ -118,27 +118,27 @@ class MetaProfileSnapshot:
             self.environment_context = data.get("environment", {})
             self.system_state = data.get("system_state", {})
             self.profile_id = data.get("profile_id")
-    
+
     def calculate_checksum(self) -> str:
         """Calculate checksum for configuration integrity."""
         import hashlib
-        
+
         config_json = json.dumps(self.configuration_data, sort_keys=True)
         env_json = json.dumps(self.environment_context, sort_keys=True)
-        
+
         combined = f"{config_json}{env_json}{self.version}"
         self.checksum = hashlib.sha256(combined.encode()).hexdigest()[:16]
-        
+
         return self.checksum
-    
+
     def is_valid(self) -> bool:
         """Check if snapshot is valid and consistent."""
         if not self.configuration_data:
             return False
-        
+
         calculated_checksum = self.calculate_checksum()
         return self.checksum == calculated_checksum
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization."""
         return {
@@ -155,11 +155,11 @@ class MetaProfileSnapshot:
 
 class MetaProfileManager:
     """Manages user profiles and meta-profile snapshots."""
-    
+
     def __init__(self, max_profiles: int = 1000, max_snapshots: int = 5000):
         """
         Initialize meta-profile manager.
-        
+
         Args:
             max_profiles: Maximum number of profiles to keep in memory
             max_snapshots: Maximum number of snapshots to keep in memory
@@ -168,7 +168,7 @@ class MetaProfileManager:
         self.snapshots: List[MetaProfileSnapshot] = []
         self.max_profiles = max_profiles
         self.max_snapshots = max_snapshots
-    
+
     def create_profile(
         self,
         user_id: str,
@@ -183,7 +183,7 @@ class MetaProfileManager:
     ) -> UserProfile:
         """
         Create a new user profile.
-        
+
         Args:
             user_id: Unique user identifier
             profile_type: Type of profile
@@ -194,13 +194,13 @@ class MetaProfileManager:
             preferences: User preferences
             metadata: Additional metadata
             tags: Profile tags
-            
+
         Returns:
             Created user profile
         """
         if user_id in self.profiles:
             raise ValueError(f"Profile already exists for user: {user_id}")
-        
+
         profile = UserProfile(
             user_id=user_id,
             profile_type=profile_type,
@@ -212,16 +212,16 @@ class MetaProfileManager:
             metadata=metadata or {},
             tags=tags or []
         )
-        
+
         self.profiles[user_id] = profile
         logger.info(f"Created profile for user: {user_id}")
-        
+
         return profile
-    
+
     def get_profile(self, user_id: str) -> Optional[UserProfile]:
         """Get user profile by ID."""
         return self.profiles.get(user_id)
-    
+
     def update_profile(
         self,
         user_id: str,
@@ -229,32 +229,32 @@ class MetaProfileManager:
     ) -> Optional[UserProfile]:
         """
         Update user profile.
-        
+
         Args:
             user_id: User identifier
             updates: Dictionary of updates to apply
-            
+
         Returns:
             Updated profile or None if not found
         """
         if user_id not in self.profiles:
             logger.warning(f"Profile not found for user: {user_id}")
             return None
-        
+
         profile = self.profiles[user_id]
-        
+
         # Apply updates
         for key, value in updates.items():
             if hasattr(profile, key):
                 setattr(profile, key, value)
             elif hasattr(profile.preferences, key):
                 setattr(profile.preferences, key, value)
-        
+
         profile.update_timestamp()
         logger.info(f"Updated profile for user: {user_id}")
-        
+
         return profile
-    
+
     def delete_profile(self, user_id: str) -> bool:
         """Delete user profile."""
         if user_id in self.profiles:
@@ -262,7 +262,7 @@ class MetaProfileManager:
             logger.info(f"Deleted profile for user: {user_id}")
             return True
         return False
-    
+
     def create_snapshot(
         self,
         profile_id: Optional[str] = None,
@@ -272,13 +272,13 @@ class MetaProfileManager:
     ) -> MetaProfileSnapshot:
         """
         Create a meta-profile snapshot.
-        
+
         Args:
             profile_id: Associated profile ID
             configuration_data: Configuration data
             environment_context: Environment context
             system_state: System state information
-            
+
         Returns:
             Created snapshot
         """
@@ -288,16 +288,16 @@ class MetaProfileManager:
         snapshot.environment_context = environment_context or {}
         snapshot.system_state = system_state or {}
         snapshot.calculate_checksum()
-        
+
         self.snapshots.append(snapshot)
-        
+
         # Maintain max size
         if len(self.snapshots) > self.max_snapshots:
             self.snapshots = self.snapshots[-int(self.max_snapshots * 0.8):]
-        
+
         logger.info(f"Created snapshot: {snapshot.snapshot_id}")
         return snapshot
-    
+
     def get_snapshots(
         self,
         profile_id: Optional[str] = None,
@@ -305,27 +305,27 @@ class MetaProfileManager:
     ) -> List[MetaProfileSnapshot]:
         """
         Get snapshots with optional filtering.
-        
+
         Args:
             profile_id: Filter by profile ID
             limit: Maximum number of snapshots to return
-            
+
         Returns:
             Filtered list of snapshots
         """
         filtered = self.snapshots
-        
+
         if profile_id:
             filtered = [s for s in filtered if s.profile_id == profile_id]
-        
+
         # Sort by timestamp (newest first)
         filtered.sort(key=lambda s: s.timestamp, reverse=True)
-        
+
         if limit:
             filtered = filtered[:limit]
-        
+
         return filtered
-    
+
     def get_latest_snapshot(
         self,
         profile_id: Optional[str] = None
@@ -333,31 +333,31 @@ class MetaProfileManager:
         """Get the latest snapshot for a profile."""
         snapshots = self.get_snapshots(profile_id, limit=1)
         return snapshots[0] if snapshots else None
-    
+
     def validate_snapshot(self, snapshot: MetaProfileSnapshot) -> bool:
         """Validate snapshot integrity."""
         return snapshot.is_valid()
-    
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get profile and snapshot statistics."""
         total_profiles = len(self.profiles)
         total_snapshots = len(self.snapshots)
-        
+
         # Profile type distribution
-        profile_types = {}
+        profile_types: dict[str, int] = {}
         for profile in self.profiles.values():
             profile_type = profile.profile_type.value
             profile_types[profile_type] = profile_types.get(profile_type, 0) + 1
-        
+
         # Capability level distribution
-        capability_levels = {}
+        capability_levels: dict[str, int] = {}
         for profile in self.profiles.values():
             level = profile.capability_level.value
             capability_levels[level] = capability_levels.get(level, 0) + 1
-        
+
         # Active profiles
         active_profiles = sum(1 for p in self.profiles.values() if p.is_active)
-        
+
         return {
             "total_profiles": total_profiles,
             "active_profiles": active_profiles,

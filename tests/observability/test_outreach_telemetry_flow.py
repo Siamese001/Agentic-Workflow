@@ -5,16 +5,14 @@ Tests that L3 and L2 components emit telemetry events in correct order
 and with appropriate payloads.
 """
 
-import pytest
 import time
 import asyncio
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 from runtime.telemetry import get_telemetry_bus
 from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
 from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import RecipientProfile
-from config.LIC.lic_profile import LICHyperparameters
 
 
 class TestOutreachTelemetryFlow:
@@ -119,7 +117,7 @@ class TestOutreachTelemetryFlow:
         recipient = self.create_sample_recipient()
         
         # Execute outreach workflow
-        result = orchestrator.orchestrate_outreach(mission, recipient)
+        orchestrator.orchestrate_outreach(mission, recipient)
         
         # Get telemetry events
         bus = get_telemetry_bus()
@@ -154,7 +152,7 @@ class TestOutreachTelemetryFlow:
         recipient = self.create_sample_recipient()
         
         # Execute outreach workflow with disabled telemetry config
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        orchestrator.orchestrate_outreach(mission, recipient, config)
         
         # Verify no telemetry was recorded
         bus = get_telemetry_bus()
@@ -179,7 +177,7 @@ class TestOutreachTelemetryFlow:
         recipient = self.create_sample_recipient()
         
         # Execute outreach workflow (should fail)
-        result = orchestrator.orchestrate_outreach(mission, recipient)
+        orchestrator.orchestrate_outreach(mission, recipient)
         
         # Get telemetry errors
         bus = get_telemetry_bus()
@@ -204,7 +202,7 @@ class TestOutreachTelemetryFlow:
         recipient = self.create_sample_recipient()
         
         # Execute outreach workflow
-        result = orchestrator.orchestrate_outreach(mission, recipient)
+        orchestrator.orchestrate_outreach(mission, recipient)
         
         # Get telemetry events
         bus = get_telemetry_bus()
@@ -234,7 +232,7 @@ class TestOutreachTelemetryFlow:
         recipient = self.create_sample_recipient()
         
         # Execute outreach workflow with minimal detail level
-        result = orchestrator.orchestrate_outreach(mission, recipient, config)
+        orchestrator.orchestrate_outreach(mission, recipient, config)
         
         # Get telemetry events
         bus = get_telemetry_bus()
@@ -270,7 +268,7 @@ class TestOutreachTelemetryFlow:
         recipient = self.create_sample_recipient()
         
         # Execute concurrent outreach workflow
-        result = asyncio.run(orchestrator.orchestrate_outreach_concurrent(mission, recipient, config))
+        asyncio.run(orchestrator.orchestrate_outreach_concurrent(mission, recipient, config))
         
         # Get telemetry events
         bus = get_telemetry_bus()
@@ -295,7 +293,7 @@ class TestOutreachTelemetryFlow:
         recipient = self.create_sample_recipient()
         
         # Execute outreach workflow
-        result = orchestrator.orchestrate_outreach(mission, recipient)
+        orchestrator.orchestrate_outreach(mission, recipient)
         
         # Get telemetry events
         events = bus.get_events()

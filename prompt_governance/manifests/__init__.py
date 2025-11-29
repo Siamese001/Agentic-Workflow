@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class PromptManifest:
     """Structured prompt manifest for governance and management"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.manifest_id = self.config.get("manifest_id", "")
@@ -23,7 +23,7 @@ class PromptManifest:
         self.description = self.config.get("description", "")
         self.created_at = self.config.get("created_at", datetime.now().isoformat())
         self.updated_at = self.config.get("updated_at", datetime.now().isoformat())
-    
+
     def create_manifest(self, prompt_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new prompt manifest"""
         try:
@@ -42,14 +42,14 @@ class PromptManifest:
                 "updated_at": datetime.now().isoformat(),
                 "status": "active"
             }
-            
+
             logger.info(f"Created prompt manifest: {manifest['manifest_id']}")
             return manifest
-            
+
         except Exception as e:
             logger.error(f"Failed to create prompt manifest: {e}")
             return {"error": str(e)}
-    
+
     def validate_manifest(self, manifest: Dict[str, Any]) -> Dict[str, Any]:
         """Validate prompt manifest structure"""
         try:
@@ -59,23 +59,23 @@ class PromptManifest:
                 "errors": [],
                 "warnings": []
             }
-            
+
             for field in required_fields:
                 if field not in manifest or not manifest[field]:
                     validation_result["is_valid"] = False
                     validation_result["errors"].append(f"Missing required field: {field}")
-            
+
             # Validate version format
             version = manifest.get("version", "")
             if not re.match(r'^\d+\.\d+\.\d+$', version):
                 validation_result["warnings"].append(f"Invalid version format: {version}")
-            
+
             return validation_result
-            
+
         except Exception as e:
             logger.error(f"Manifest validation failed: {e}")
             return {"is_valid": False, "errors": [str(e)]}
-    
+
     def update_manifest(self, manifest_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
         """Update existing prompt manifest"""
         try:
@@ -86,10 +86,10 @@ class PromptManifest:
                 "changes": list(updates.keys()),
                 "status": "updated"
             }
-            
+
             logger.info(f"Updated prompt manifest: {manifest_id}")
             return updated_manifest
-            
+
         except Exception as e:
             logger.error(f"Failed to update prompt manifest: {e}")
             return {"error": str(e)}

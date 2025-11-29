@@ -21,13 +21,13 @@ logger = logging.getLogger(__name__)
 
 class InjectionPolicy:
     """Injection prevention and security policies for prompt governance"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.policy_id = self.config.get("policy_id", "")
         self.policy_name = self.config.get("policy_name", "")
         self.policy_type = self.config.get("policy_type", "prevention")
-    
+
     def create_policy(self, policy_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create a new injection prevention policy"""
         try:
@@ -44,14 +44,14 @@ class InjectionPolicy:
                 "updated_at": datetime.now().isoformat(),
                 "active": True
             }
-            
+
             logger.info(f"Created injection policy: {policy['policy_name']}")
             return policy
-            
+
         except Exception as e:
             logger.error(f"Failed to create injection policy: {e}")
             return {"error": str(e)}
-    
+
     def get_default_policies(self) -> List[Dict[str, Any]]:
         """Get default injection prevention policies"""
         try:
@@ -141,14 +141,14 @@ class InjectionPolicy:
                     }
                 }
             ]
-            
+
             logger.info(f"Retrieved {len(default_policies)} default injection policies")
             return default_policies
-            
+
         except Exception as e:
             logger.error(f"Failed to get default policies: {e}")
             return []
-    
+
     def validate_input_against_policies(self, input_text: str, policies: List[str]) -> Dict[str, Any]:
         """Validate input against specified policies"""
         try:
@@ -158,50 +158,50 @@ class InjectionPolicy:
                 "risk_score": 0.0,
                 "applied_policies": policies
             }
-            
+
             # Get policy rules
             default_policies = self.get_default_policies()
             applicable_policies = [p for p in default_policies if p["policy_id"] in policies]
-            
+
             for policy in applicable_policies:
                 policy_violations = self._check_policy_violations(input_text, policy)
                 if policy_violations:
                     validation_result["is_safe"] = False
                     validation_result["violations"].extend(policy_violations)
                     validation_result["risk_score"] += 0.3
-            
+
             # Normalize risk score
             validation_result["risk_score"] = min(1.0, validation_result["risk_score"])
-            
+
             logger.info(f"Input validation: risk_score={validation_result['risk_score']:.2f}, safe={validation_result['is_safe']}")
             return validation_result
-            
+
         except Exception as e:
             logger.error(f"Input validation failed: {e}")
             return {"is_safe": False, "error": str(e), "risk_score": 1.0}
-    
+
     def _check_policy_violations(self, input_text: str, policy: Dict[str, Any]) -> List[str]:
         """Check for violations against a specific policy"""
         violations = []
-        
+
         try:
             import re
-            
+
             for pattern in policy.get("detection_patterns", []):
                 if re.search(pattern, input_text, re.IGNORECASE):
                     violations.append(f"Violation of {policy['policy_name']}: pattern matched")
                     break  # One violation per policy is enough
-            
+
             for rule in policy.get("rules", []):
                 if rule.lower() in input_text.lower():
                     violations.append(f"Violation of {policy['policy_name']}: {rule}")
                     break
-            
+
         except Exception as e:
             logger.error(f"Policy violation check failed: {e}")
-        
+
         return violations
-    
+
     def apply_prevention_measures(self, input_text: str, policy_id: str) -> Dict[str, Any]:
         """Apply prevention measures for a specific policy"""
         try:
@@ -218,14 +218,14 @@ class InjectionPolicy:
                 "applied_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Applied prevention measures for policy: {policy_id}")
             return prevention_result
-            
+
         except Exception as e:
             logger.error(f"Failed to apply prevention measures: {e}")
             return {"success": False, "error": str(e)}
-    
+
     def update_policy(self, policy_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
         """Update an existing injection policy"""
         try:
@@ -235,14 +235,14 @@ class InjectionPolicy:
                 "updated_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Updated injection policy: {policy_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to update policy: {e}")
             return {"success": False, "error": str(e)}
-    
+
     def get_policy_compliance_report(self, policies: List[str]) -> Dict[str, Any]:
         """Generate compliance report for specified policies"""
         try:
@@ -269,10 +269,10 @@ class InjectionPolicy:
                 ],
                 "generated_at": datetime.now().isoformat()
             }
-            
+
             logger.info(f"Generated compliance report for {len(policies)} policies")
             return compliance_report
-            
+
         except Exception as e:
             logger.error(f"Failed to generate compliance report: {e}")
             return {"error": str(e)}

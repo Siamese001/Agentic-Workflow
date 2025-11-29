@@ -1,6 +1,6 @@
 from runtime.eval.golden_state.datasets import load_golden_cases
-from runtime.eval.golden_state.evaluator import runtime.evaluate_case_output
-from runtime.eval.golden_state.models import GoldenCase, GoldenOutput
+from runtime.eval.golden_state.evaluator import evaluate_case_output
+from runtime.eval.golden_state.models import GoldenOutput
 
 
 def test_evaluate_case_output_basic():

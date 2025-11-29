@@ -22,12 +22,12 @@ class ContextBundle:
     context_type: ContextType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_context(self, base_prompt: str, context_data: Dict[str, Any]) -> str:
         """Inject context into base prompt"""
         context_str = self._format_context(context_data)
         return f"{base_prompt}\n\nContext: {context_str}"
-    
+
     def _format_context(self, context_data: Dict[str, Any]) -> str:
         """Format context data for injection"""
         formatted_items = []

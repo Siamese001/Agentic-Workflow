@@ -5,7 +5,6 @@ Section 3: Canonical Repository Tree - L2 Execution Tools Tests
 """
 
 import pytest
-from typing import Dict, Any, List
 import logging
 
 logger = logging.getLogger(__name__)

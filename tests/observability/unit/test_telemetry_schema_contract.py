@@ -8,16 +8,9 @@ Tests that ensure telemetry payloads follow the correct schema:
 - Schema violations are properly detected and handled
 """
 
-import pytest
-from unittest.mock import patch
-from typing import Dict, Any
 
 from runtime.telemetry import (
-    TelemetryBus,
-    TelemetryEvent,
-    TelemetryError,
-    TelemetryTrace,
-    get_telemetry_bus
+    TelemetryBus
 )
 
 
@@ -296,7 +289,7 @@ class TestTelemetrySchemaContract:
         # Validate end event
         assert end_event.name == "workflow_end"
         assert end_event.layer == "L3"
-        assert end_event.payload["success"] == True
+        assert end_event.payload["success"] is True
         
         # Validate duration can be calculated
         duration = end_event.timestamp - start_event.timestamp

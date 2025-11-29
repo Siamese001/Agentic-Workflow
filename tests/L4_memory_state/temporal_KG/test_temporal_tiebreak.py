@@ -9,9 +9,7 @@ Tests deterministic tie-break rules in TemporalRankFusion:
 - Edge cases for tie-breaking
 """
 
-import pytest
 from datetime import datetime, UTC, timedelta
-from unittest.mock import Mock, patch
 
 from agentic_core.l4_memory_state.temporal.temporal_fusion import TemporalRankFusion
 

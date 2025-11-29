@@ -4,7 +4,7 @@ Cost Tracker
 Section 13: Agent Ops - Cost tracking for operations
 """
 
-from typing import Dict, Any, List
+from typing import List
 from dataclasses import dataclass
 from enum import Enum
 import logging
@@ -29,11 +29,11 @@ class OperationMetrics:
 
 class CostTracker:
     """Tracks costs for agentic operations"""
-    
+
     def __init__(self):
         self.metrics: List[OperationMetrics] = []
         self.total_cost: float = 0.0
-    
+
     def track_cost(self, operation_id: str, cost_type: CostType, amount: float) -> None:
         """Track operation cost"""
         metric = OperationMetrics(
@@ -43,7 +43,7 @@ class CostTracker:
         )
         self.metrics.append(metric)
         self.total_cost += amount
-    
+
     def get_total_cost(self) -> float:
         """Get total tracked cost"""
         return self.total_cost

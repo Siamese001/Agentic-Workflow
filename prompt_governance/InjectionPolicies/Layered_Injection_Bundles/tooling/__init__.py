@@ -22,12 +22,12 @@ class ToolingBundle:
     prompt_type: ToolingPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_tooling_guidance(self, base_prompt: str, tooling_context: Dict[str, Any]) -> str:
         """Inject tooling guidance into prompt"""
         guidance = self._generate_tooling_guidance(tooling_context)
         return f"{base_prompt}\n\nTooling Guidance:\n{guidance}"
-    
+
     def _generate_tooling_guidance(self, context: Dict[str, Any]) -> str:
         """Generate tooling-specific guidance"""
         if self.prompt_type == ToolingPromptType.TOOL_SELECTION:

@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 class PromptMetadata:
     """Prompt metadata and tagging system"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.metadata_id = self.config.get("metadata_id", "")
         self.prompt_id = self.config.get("prompt_id", "")
         self.tags = self.config.get("tags", [])
         self.attributes = self.config.get("attributes", {})
-    
+
     def create_metadata(self, prompt_id: str, metadata_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create metadata for a prompt"""
         try:
@@ -34,14 +34,14 @@ class PromptMetadata:
                 "created_at": datetime.now().isoformat(),
                 "updated_at": datetime.now().isoformat()
             }
-            
+
             logger.info(f"Created metadata for prompt: {prompt_id}")
             return metadata
-            
+
         except Exception as e:
             logger.error(f"Failed to create prompt metadata: {e}")
             return {"error": str(e)}
-    
+
     def add_tags(self, metadata_id: str, new_tags: List[str]) -> Dict[str, Any]:
         """Add tags to prompt metadata"""
         try:
@@ -53,14 +53,14 @@ class PromptMetadata:
                 "updated_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Added tags to metadata: {metadata_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to add tags: {e}")
             return {"success": False, "error": str(e)}
-    
+
     def search_by_tags(self, tags: List[str]) -> List[Dict[str, Any]]:
         """Search prompts by tags"""
         try:
@@ -73,26 +73,26 @@ class PromptMetadata:
                     "metadata_id": "meta_123"
                 },
                 {
-                    "prompt_id": "prompt_456", 
+                    "prompt_id": "prompt_456",
                     "name": "Outreach Message",
                     "tags": ["outreach", "email", "professional"],
                     "metadata_id": "meta_456"
                 }
             ]
-            
+
             # Filter by tags
             matching_prompts = []
             for prompt in mock_prompts:
                 if any(tag in prompt["tags"] for tag in tags):
                     matching_prompts.append(prompt)
-            
+
             logger.info(f"Found {len(matching_prompts)} prompts matching tags: {tags}")
             return matching_prompts
-            
+
         except Exception as e:
             logger.error(f"Tag search failed: {e}")
             return []
-    
+
     def update_attributes(self, metadata_id: str, new_attributes: Dict[str, Any]) -> Dict[str, Any]:
         """Update prompt attributes"""
         try:
@@ -102,14 +102,14 @@ class PromptMetadata:
                 "updated_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Updated attributes for metadata: {metadata_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to update attributes: {e}")
             return {"success": False, "error": str(e)}
-    
+
     def get_metadata_summary(self, metadata_id: str) -> Dict[str, Any]:
         """Get summary of prompt metadata"""
         try:
@@ -129,12 +129,12 @@ class PromptMetadata:
                     }
                 }
             }
-            
+
             metadata = mock_metadata.get(metadata_id, {})
-            
+
             if not metadata:
                 return {"error": f"Metadata {metadata_id} not found"}
-            
+
             summary = {
                 "metadata_id": metadata_id,
                 "prompt_id": metadata["prompt_id"],
@@ -144,14 +144,14 @@ class PromptMetadata:
                 "success_rate": metadata["usage_stats"]["success_rate"],
                 "last_updated": datetime.now().isoformat()
             }
-            
+
             logger.info(f"Retrieved metadata summary: {metadata_id}")
             return summary
-            
+
         except Exception as e:
             logger.error(f"Failed to get metadata summary: {e}")
             return {"error": str(e)}
-    
+
     def classify_prompt(self, metadata_id: str, classification: Dict[str, Any]) -> Dict[str, Any]:
         """Classify prompt with categories and labels"""
         try:
@@ -167,14 +167,14 @@ class PromptMetadata:
                 "classified_at": datetime.now().isoformat(),
                 "success": True
             }
-            
+
             logger.info(f"Classified prompt metadata: {metadata_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to classify prompt: {e}")
             return {"success": False, "error": str(e)}
-    
+
     def track_usage(self, metadata_id: str, usage_data: Dict[str, Any]) -> Dict[str, Any]:
         """Track prompt usage statistics"""
         try:
@@ -194,10 +194,10 @@ class PromptMetadata:
                 },
                 "success": True
             }
-            
+
             logger.info(f"Tracked usage for metadata: {metadata_id}")
             return result
-            
+
         except Exception as e:
             logger.error(f"Failed to track usage: {e}")
             return {"success": False, "error": str(e)}

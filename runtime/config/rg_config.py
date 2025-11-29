@@ -5,7 +5,6 @@ Configuration dataclasses for all L1-L5 components
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import Dict, List, Set
 
 
@@ -73,15 +72,15 @@ class WebRagConfig:
 class EnricherConfig:
     """Data enrichment configuration with canonical verb mapping"""
     canonical_verbs: Dict = field(default_factory=lambda: {
-        "led": ["led", "lead", "leading"], 
+        "led": ["led", "lead", "leading"],
         "built": ["built", "build", "building"],
-        "drove": ["drove", "drive", "driving"], 
+        "drove": ["drove", "drive", "driving"],
         "launched": ["launched", "launch", "launching"],
-        "scaled": ["scaled", "scale", "scaling"], 
+        "scaled": ["scaled", "scale", "scaling"],
         "delivered": ["delivered", "deliver", "delivering"],
-        "achieved": ["achieved", "achieve", "achieving"], 
+        "achieved": ["achieved", "achieve", "achieving"],
         "established": ["established", "establish", "establishing"],
-        "managed": ["managed", "manage", "managing"], 
+        "managed": ["managed", "manage", "managing"],
         "developed": ["developed", "develop", "developing"]
     })
     enable_verb_canonicalization: bool = True
@@ -92,7 +91,7 @@ class EnricherConfig:
 @dataclass
 class ContentConstraintsConfig:
     """Content constraints for word counts and structure"""
-    
+
     # Total resume constraints
     TOTAL_WORD_COUNT_MIN: int = 870
     TOTAL_WORD_COUNT_MAX: int = 1030

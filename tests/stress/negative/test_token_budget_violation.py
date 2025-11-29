@@ -6,15 +6,12 @@ across all orchestration paths and high token usage scenarios.
 """
 
 import pytest
-import asyncio
-from typing import Dict, Any
 
 from runtime.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetLimits,
     get_budget_manager
 )
-from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 
 
 class TestTokenBudgetViolation:
@@ -79,7 +76,7 @@ class TestTokenBudgetViolation:
     
     def test_token_recording_negative_input(self):
         """Test token recording with negative input."""
-        initial_tokens = self.budget_manager.current_usage()['tokens_used']
+        self.budget_manager.current_usage()['tokens_used']
         
         # Negative token recording should be handled gracefully
         self.budget_manager.record_tokens("test", -100)
@@ -116,7 +113,7 @@ class TestTokenBudgetViolation:
         self.budget_manager.configure(BudgetLimits(max_tokens=500))
         
         # Should now be able to check budget (though tokens still used)
-        budget_ok = self.budget_manager.check_budget("test")
+        self.budget_manager.check_budget("test")
         # Still false because tokens are still used, but limit is higher
         
         # Verify new limit is applied
