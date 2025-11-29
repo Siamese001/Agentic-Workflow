@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """
-L5 Safety Layer - Re-exports for flat import interface
+Security Layer
+Section 14: Security Layer - Identity, policy, isolation
 """
 
-# Re-export from subdirectories to maintain backward compatibility
-from .constitutional_engine import *
-from .safety_policy import *
-from .safety_validator import *
+from .identity_manager import IdentityManager, SecurityContext, IdentityType
+from .policy_enforcer import PolicyEnforcer, SecurityPolicy, PolicyType
+from .isolation_manager import IsolationManager, IsolationContext, IsolationLevel
+
+__all__ = [
+    'IdentityManager', 'SecurityContext', 'IdentityType',
+    'PolicyEnforcer', 'SecurityPolicy', 'PolicyType',
+    'IsolationManager', 'IsolationContext', 'IsolationLevel'
+]
