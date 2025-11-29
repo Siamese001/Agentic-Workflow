@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
 from enum import Enum
 
-from .kg_retrieval_planning import (
+from ..lic_kg_retrieval_planning import (
     QueryType,
     KGQueryPlan,
     KGRetrievalPlanner,
@@ -854,25 +854,12 @@ def plan_recursive_reasoning(
     """
     Creates deep résumé analysis plans with multi-level reasoning for complex career questions.
 
-    Improves résumé depth by thoroughly analyzing career decisions and their impact on job qualifications.
+    Improves résumé persuasiveness by building compelling career stories that demonstrate growth and expertise.
     """
     planner = KGRAGFusionPlanner()
     return planner.plan_fusion_query(
         user_question=question,
         start_entities=start_entities,
-        fusion_template="recursive_reasoning",
         max_recursion_depth=max_depth,
+        fusion_template="recursive_reasoning",
     )
-
-
-__all__ = [
-    "RetrievalStepType",
-    "QueryComplexity",
-    "RAGRetrievalStep",
-    "FusionPlanStep",
-    "KGRAGFusionPlan",
-    "KGRAGFusionPlanner",
-    "plan_temporal_entity_facts",
-    "plan_career_path_analysis",
-    "plan_recursive_reasoning",
-]
