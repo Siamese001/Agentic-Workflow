@@ -1,0 +1,141 @@
+{
+  "timestamp": "2025-11-29T12:13:29.023988",
+  "summary": {
+    "total_evaluations": 3,
+    "passed_evaluations": 3,
+    "failed_evaluations": 0,
+    "warning_evaluations": 0,
+    "pass_rate": 1.0,
+    "average_score": 0.9590767447916667,
+    "average_execution_time_ms": 401.0,
+    "status": "GOOD"
+  },
+  "detailed_results": [
+    {
+      "toolpath_id": "4757452e16c7",
+      "status": "passed",
+      "total_tools": 3,
+      "successful_tools": 3,
+      "failed_tools": 0,
+      "total_execution_time_ms": 351,
+      "tool_metrics": [
+        {
+          "tool_name": "draft_executor",
+          "execution_time_ms": 100,
+          "success": true,
+          "error_message": null,
+          "input_size": 27,
+          "output_size": 23,
+          "memory_usage_mb": 45.2
+        },
+        {
+          "tool_name": "model_call",
+          "execution_time_ms": 200,
+          "success": true,
+          "error_message": null,
+          "input_size": 25,
+          "output_size": 24,
+          "memory_usage_mb": 128.5
+        },
+        {
+          "tool_name": "file_operation",
+          "execution_time_ms": 50,
+          "success": true,
+          "error_message": null,
+          "input_size": 18,
+          "output_size": 24,
+          "memory_usage_mb": 12.3
+        }
+      ],
+      "score": 0.96761125,
+      "recommendations": [
+        "Reduce memory usage for 1 tools: model_call"
+      ],
+      "timestamp": "2025-11-29T12:13:28.171138"
+    },
+    {
+      "toolpath_id": "d0fca877aab2",
+      "status": "passed",
+      "total_tools": 2,
+      "successful_tools": 2,
+      "failed_tools": 0,
+      "total_execution_time_ms": 351,
+      "tool_metrics": [
+        {
+          "tool_name": "data_processing",
+          "execution_time_ms": 150,
+          "success": true,
+          "error_message": null,
+          "input_size": 23,
+          "output_size": 27,
+          "memory_usage_mb": 89.7
+        },
+        {
+          "tool_name": "model_call",
+          "execution_time_ms": 200,
+          "success": true,
+          "error_message": null,
+          "input_size": 29,
+          "output_size": 24,
+          "memory_usage_mb": 128.5
+        }
+      ],
+      "score": 0.9457128124999999,
+      "recommendations": [
+        "Reduce memory usage for 1 tools: model_call"
+      ],
+      "timestamp": "2025-11-29T12:13:28.522329"
+    },
+    {
+      "toolpath_id": "c573e5dcc29e",
+      "status": "passed",
+      "total_tools": 4,
+      "successful_tools": 4,
+      "failed_tools": 0,
+      "total_execution_time_ms": 501,
+      "tool_metrics": [
+        {
+          "tool_name": "draft_executor",
+          "execution_time_ms": 100,
+          "success": true,
+          "error_message": null,
+          "input_size": 30,
+          "output_size": 23,
+          "memory_usage_mb": 45.2
+        },
+        {
+          "tool_name": "data_processing",
+          "execution_time_ms": 150,
+          "success": true,
+          "error_message": null,
+          "input_size": 25,
+          "output_size": 27,
+          "memory_usage_mb": 89.7
+        },
+        {
+          "tool_name": "model_call",
+          "execution_time_ms": 200,
+          "success": true,
+          "error_message": null,
+          "input_size": 28,
+          "output_size": 24,
+          "memory_usage_mb": 128.5
+        },
+        {
+          "tool_name": "file_operation",
+          "execution_time_ms": 50,
+          "success": true,
+          "error_message": null,
+          "input_size": 18,
+          "output_size": 24,
+          "memory_usage_mb": 12.3
+        }
+      ],
+      "score": 0.963906171875,
+      "recommendations": [
+        "Reduce memory usage for 1 tools: model_call"
+      ],
+      "timestamp": "2025-11-29T12:13:29.023959"
+    }
+  ]
+}
