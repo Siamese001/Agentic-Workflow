@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Prompt Injections
-Section 6: Prompt Governance - Injection prompt templates
+Section 3: Prompt Governance - Injection prompt templates
 """
 
 # This directory contains prompt injection templates including:

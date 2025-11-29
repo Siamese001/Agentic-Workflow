@@ -4,9 +4,14 @@ Prompt Definitions
 Section 3: Canonical Repository Tree - Prompt Governance Definitions
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 import logging
 from datetime import datetime
+
+# Import additional prompt definitions components
+from .system_prompts import get_system_prompt, initialize_system_prompts, update_system_template
+from .developer_prompts import get_developer_prompt, list_developer_templates, create_custom_prompt
+from .user_prompts import get_user_prompt, format_user_query, generate_response_template
 
 logger = logging.getLogger(__name__)
 
@@ -164,5 +169,8 @@ def create_prompt_definition(config: Optional[Dict[str, Any]] = None) -> PromptD
 
 # Re-export components
 __all__ = [
-    'PromptDefinition', 'create_prompt_definition'
+    'PromptDefinition', 'create_prompt_definition',
+    'get_system_prompt', 'initialize_system_prompts', 'update_system_template',
+    'get_developer_prompt', 'list_developer_templates', 'create_custom_prompt',
+    'get_user_prompt', 'format_user_query', 'generate_response_template'
 ]
