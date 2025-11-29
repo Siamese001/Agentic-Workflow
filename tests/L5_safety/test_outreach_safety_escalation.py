@@ -227,3 +227,8 @@ class TestOutreachEscalation:
             assert len(result.findings) > 0
             # Should include critical error codes in metadata
             assert any(hasattr(finding, 'metadata') and finding.metadata.get('lic_error_code') == 'LIC-E013' for finding in result.findings)
+
+
+
+
+

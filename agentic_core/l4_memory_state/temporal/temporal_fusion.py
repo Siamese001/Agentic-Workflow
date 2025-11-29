@@ -239,3 +239,8 @@ class TemporalRankFusion:
             "kg_weight": self.kg_weight,
             "temporal_weight": self.temporal_weight
         }
+
+
+
+
+

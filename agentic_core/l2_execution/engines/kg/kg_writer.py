@@ -149,3 +149,8 @@ async def ingest_transcript(
     # Insert events (including invalidations)
     for event in events:
         await insert_event(event)
+
+
+
+
+

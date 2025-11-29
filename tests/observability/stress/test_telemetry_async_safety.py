@@ -565,3 +565,8 @@ class TestTelemetryAsyncSafety:
         # Validate no layer in any payload
         for event in events:
             assert "layer" not in event.payload
+
+
+
+
+

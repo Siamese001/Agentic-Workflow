@@ -31,3 +31,8 @@ class DBInterface:
     def delete(self, table: str, condition: str) -> bool:
         """Delete data from database"""
         return True
+
+
+
+
+

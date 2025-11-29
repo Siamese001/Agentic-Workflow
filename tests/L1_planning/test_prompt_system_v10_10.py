@@ -19,7 +19,7 @@ try:
         get_prompt_acl,
         validate_prompt_definition,
     )
-    from core.models.models import PromptDefinition, PromptVersion
+    from runtime.core.models.models import PromptDefinition, PromptVersion
 except ImportError:
     pytest.skip("Prompt system v10.10 not available", allow_module_level=True)
 
@@ -228,3 +228,8 @@ class TestPromptSystemV10_10:
         # Non-existent prompt should raise KeyError
         with pytest.raises(KeyError):
             get_prompt("non_existent", PromptActorRole.ENGINE)
+
+
+
+
+

@@ -438,3 +438,8 @@ class TestTemporalResearchPathways:
         assert len(result["errors"]) > 0  # Should detect and handle errors
         assert result["success_count"] >= 1  # At least one should succeed
         assert all(0.0 <= p["signal_score"] <= 1.0 for p in result["processed"])
+
+
+
+
+

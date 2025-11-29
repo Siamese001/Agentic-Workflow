@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from runtime.meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores
-from core.models.models import Evidence
+from runtime.core.models.models import Evidence
 
 
 def _make_item(text: str) -> Dict[str, Any]:
@@ -45,6 +45,11 @@ def test_merge_scores_deduplicates_by_source_and_text() -> None:
     assert merged[0].text == "x"
     assert merged[1].source == "resume"
     assert len(merged) == 2
+
+
+
+
+
 
 
 

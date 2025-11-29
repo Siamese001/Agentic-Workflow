@@ -1051,3 +1051,8 @@ class TestScoringHarness:
         # Should handle gracefully
         assert 0.0 <= result.overall_score <= 1.0
         assert result.domain == "job_matching"
+
+
+
+
+

@@ -498,3 +498,8 @@ class TestCompanyResearchExecutor:
         assert len(result.kg_results) == 0
         assert result.total_found == 0
         assert result.kg_found == 0
+
+
+
+
+

@@ -426,3 +426,8 @@ class ValidationEngine:
             "severity_breakdown": severity_counts,
             "can_proceed": failed_count == 0 or all(r.severity != ValidationSeverity.CRITICAL for r in validation_results if not r.passed)
         }
+
+
+
+
+

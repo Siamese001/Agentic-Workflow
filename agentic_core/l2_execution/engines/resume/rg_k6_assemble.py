@@ -703,3 +703,8 @@ class RGK6Assemble:
             "organization_quality": assembly_output.metrics.organization_quality,
             "success": assembly_output.success
         }
+
+
+
+
+

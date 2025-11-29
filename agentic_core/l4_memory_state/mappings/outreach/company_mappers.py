@@ -202,3 +202,8 @@ def map_company_data(raw_data: Dict[str, Any], config: Optional[Dict[str, Any]] 
 __all__ = [
     'CompanyMapper', 'map_company_data'
 ]
+
+
+
+
+

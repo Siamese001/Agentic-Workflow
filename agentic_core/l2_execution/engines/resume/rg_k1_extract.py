@@ -615,3 +615,8 @@ class RGK1Extract:
             "processing_time_ms": extraction_output.metrics.processing_time_ms,
             "success": extraction_output.success
         }
+
+
+
+
+

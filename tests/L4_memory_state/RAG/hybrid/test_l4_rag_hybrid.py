@@ -15,3 +15,8 @@ class TestL4RAGHybrid:
         results = [{"id": "r1", "score": 0.7}, {"id": "r2", "score": 0.9}]
         reranked = sorted(results, key=lambda x: x["score"], reverse=True)
         assert reranked[0]["id"] == "r2"
+
+
+
+
+

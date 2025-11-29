@@ -108,3 +108,8 @@ def trend_analysis(
             lines.append(result)
     
     return "\n".join(lines)
+
+
+
+
+

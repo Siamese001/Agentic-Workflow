@@ -280,3 +280,8 @@ class TestTemporalNegativePaths:
         assert result['temporal_facts_found'] == 0
         assert len(result['results']) == 0  # No results due to max_results=0
         assert 'error' not in result
+
+
+
+
+

@@ -940,3 +940,8 @@ class RGK8Validate:
             "quality_score": validation_output.validation_result.quality_score,
             "success": validation_output.success
         }
+
+
+
+
+

@@ -15,7 +15,7 @@ from agentic_core.l2_execution.outreach.company_research_executor import Company
 from agentic_core.l2_execution.outreach.contact_research_executor import ContactResearchExecutor
 from agentic_core.l2_execution.outreach.message_generation_executor import MessageGenerationExecutor
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeContext
-from core.models.models import ExecutionContext
+from runtime.core.models.models import ExecutionContext
 
 logger = logging.getLogger(__name__)
 
@@ -314,3 +314,8 @@ class OutreachBatchExecutor:
                 success=False,
                 error=str(e)
             )
+
+
+
+
+

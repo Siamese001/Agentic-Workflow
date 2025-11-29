@@ -19,3 +19,8 @@ class ContactResearchExecutor:
 
 # Alias for backward compatibility with tests
 LICContactResearchExecutor = ContactResearchExecutor
+
+
+
+
+

@@ -121,3 +121,8 @@ class TestArchetypeWeightingFullMatrix:
             for section, temp in temp_schedule.items():
                 assert isinstance(temp, (int, float)), f"{archetype} {section} temp should be number"
                 assert -1.0 <= temp <= 2.0, f"{archetype} {section} temp {temp} out of reasonable range"
+
+
+
+
+

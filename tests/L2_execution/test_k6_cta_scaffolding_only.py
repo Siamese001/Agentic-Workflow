@@ -5,3 +5,8 @@ def test_stub_none_returns():
     assert k6.execute(None, None) is None
     assert k6.generate_date_window() is None
     assert k6.generate_cta_content(None, None) is None
+
+
+
+
+

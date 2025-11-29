@@ -462,3 +462,8 @@ class TestStateManagerOutreachIsolation:
         except Exception as e:
             # Accept any validation error including AssertionError
             assert isinstance(e, (ValueError, TypeError, AssertionError))
+
+
+
+
+

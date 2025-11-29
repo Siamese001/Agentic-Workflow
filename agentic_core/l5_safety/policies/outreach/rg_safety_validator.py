@@ -584,3 +584,8 @@ class RGSafetyValidator:
             "warnings_count": len(safety_report.warnings),
             "validation_timestamp": safety_report.validation_timestamp.isoformat()
         }
+
+
+
+
+

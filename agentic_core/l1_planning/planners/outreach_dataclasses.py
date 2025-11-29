@@ -27,3 +27,8 @@ class OutreachProfile:
     profile_id: str
     data: Dict[str, Any]
     preferences: Dict[str, Any]
+
+
+
+
+

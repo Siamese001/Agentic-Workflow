@@ -584,3 +584,8 @@ def generate_test_job(difficulty: str = "medium") -> JobDescriptionTestData:
         qualifications=qualifications,
         description="Test job description"
     )
+
+
+
+
+

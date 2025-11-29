@@ -7,7 +7,7 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from mcp_client import (
+from agentic_core.l2_execution.tools.mcp.mcp_client import (
     call_external_service,
     get_tool_schemas,
     check_mcp_access,
@@ -194,3 +194,8 @@ def main():
 if __name__ == "__main__":
     success = main()
     sys.exit(0 if success else 1)
+
+
+
+
+

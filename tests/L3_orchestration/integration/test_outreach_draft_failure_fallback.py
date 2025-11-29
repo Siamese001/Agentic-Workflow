@@ -363,3 +363,8 @@ class TestOutreachDraftFailureFallback:
                 # Should fallback for empty draft results
                 assert result.success
                 assert result.metadata.get("empty_draft_fallback", False)
+
+
+
+
+

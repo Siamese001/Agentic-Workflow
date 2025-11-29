@@ -310,3 +310,8 @@ class TestOutreachSafetyIntegration:
         if escalation_action == 'block':
             # Should include LIC error codes in metadata
             assert any(hasattr(finding, 'metadata') and finding.metadata.get('lic_error_code') for finding in result.findings)
+
+
+
+
+

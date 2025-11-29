@@ -735,3 +735,8 @@ def reasoning_intensity_metadata(profile: ExecutiveReasoningProfile) -> Dict[str
         "require_deep_research": profile.require_deep_research,
         "executive_profile": profile  # Full dataclass for advanced L2 processing
     }
+
+
+
+
+

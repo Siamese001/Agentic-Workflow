@@ -24,3 +24,8 @@ class LICPlan:
         self.tone_rules = tone_rules
         self.cta_style = cta_style
         self.assembly_plan = assembly_plan
+
+
+
+
+

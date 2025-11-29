@@ -540,3 +540,8 @@ class LICFusionPlanner:
         except Exception:
             # Telemetry failures should never break planning logic
             logger.debug("Failed to record telemetry for LIC fusion plan")
+
+
+
+
+

@@ -6,11 +6,11 @@ L1-L5 architecture for resume enhancement and job alignment.
 """
 
 from typing import Any, Optional, TYPE_CHECKING
-from core.models.models import (
+from runtime.core.models.models import (
     AgentCard,
     AgentRole,
 )
-from core.routing import RoutingPolicy
+from runtime.core.routing import RoutingPolicy
 from runtime.runtime_utils import SandboxConfig
 from config.meta_profile import MetaProfileSnapshot
 
@@ -182,6 +182,11 @@ class LLMBaseAgent:
         from agentic_core.l2_execution.engines.outreach.lic_llm_caller import LLMCaller
         llm_caller = LLMCaller(self.routing_policy, self.sandbox)
         return llm_caller.call_llm(prompt, self.agent_card.role.value)
+
+
+
+
+
 
 
 

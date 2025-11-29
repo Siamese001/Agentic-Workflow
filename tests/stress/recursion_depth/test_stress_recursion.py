@@ -23,3 +23,8 @@ class TestStressRecursion:
             current["child"] = {}
             current = current["child"]
         assert nested["level"] == 0
+
+
+
+
+

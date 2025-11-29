@@ -29,3 +29,8 @@ class KnowledgeGraph:
     def get_neighbors(self, node_id: str) -> Optional[List[str]]:
         """Get neighboring nodes"""
         return ["neighbor1", "neighbor2"]
+
+
+
+
+

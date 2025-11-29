@@ -9,3 +9,8 @@ def test_safety_stub_none_returns():
     s = LICSafetyValidator()
     assert s.validate(None,None) is None
     assert s.classify_violations(None) is None
+
+
+
+
+

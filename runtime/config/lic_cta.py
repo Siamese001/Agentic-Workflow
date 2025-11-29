@@ -337,3 +337,8 @@ class CTAEngine:
             "examples": self.get_cta_examples(route, archetype),
             "date_window_required": route in [Route.INMAIL, Route.SHORT_NEW, Route.LONG_NEW]
         }
+
+
+
+
+
