@@ -8,14 +8,14 @@ import json
 import logging
 from typing import Any, Callable, Dict, List, Optional, Set
 
-from ..rg_models import (
+from ..utils.rg_models import (
     ValidationResult, 
     ValidationSeverity, 
     ResumeSection,
     JDEnforcementRule,
     JDEnforcementResult
 )
-from ..rg_config import (
+from ..config.rg_config import (
     ValidatorConfig,
     ContentConstraintsConfig,
     SignalControlConfig

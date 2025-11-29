@@ -8,7 +8,7 @@ LLM execution for resume enhancement and job alignment.
 from __future__ import annotations
 
 # Re-export execution functions from l2.execution
-from .execution import (
+from .lic_execution import (
     execute_workflow_plans,
     run_l2,
     _execute_strategy,
