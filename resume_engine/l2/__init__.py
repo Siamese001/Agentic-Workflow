@@ -4,7 +4,7 @@ Resume Engine L2 - Extraction and Enrichment Layer
 Core data processing, extraction, and enrichment capabilities
 """
 
-from .extraction import (
+from .rg_extraction import (
     ClerkExtractor,
     DuplicateDetector,
     DataEnricher

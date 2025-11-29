@@ -8,7 +8,7 @@ import os
 import tempfile
 
 # Use direct imports to avoid circular import issues in main package
-from resume_engine.l2.extraction import ClerkExtractor, DataEnricher
+from resume_engine.l2.rg_extraction import ClerkExtractor, DataEnricher
 from resume_engine.rendering import FileRenderer
 from resume_engine.state import ImmutableStagingBuffer
 from resume_engine.l5.validation_engine import ValidationEngine, ValidationRule
