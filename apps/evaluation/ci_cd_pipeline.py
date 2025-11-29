@@ -418,7 +418,7 @@ def get_pipeline_health() -> Dict[str, Any]:
     summary = pipeline.get_pipeline_summary()
     
     if 'message' in summary:
-        return {"status": "NO_DATA", "message": summary['message']}
+        return {"status": "NO_DATA", "message": summary['message'], "pass_rate": 0.0}
     
     pass_rate = summary['pass_rate']
     

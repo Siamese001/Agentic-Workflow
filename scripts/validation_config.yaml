@@ -1,0 +1,195 @@
+# ============================================================================
+# WIND SURF AGENTIC L5 VALIDATION CONFIGURATION
+# ============================================================================
+# This file defines the authoritative policy thresholds, limits, and governance
+# rules for the L5 Validator. These values are NOT arbitrary—they map directly
+# to the compliance requirements for:
+#
+#   - L1–L5 Layer Purity
+#   - Engine Isolation
+#   - Safety Controls
+#   - Observability Standards
+#   - Prompt Governance
+#   - Structural Constraints
+#   - Security Boundaries
+#   - Determinism & Reliability
+#
+# All thresholds MUST be documented with rationale.
+#
+# NOTE:
+# This file feeds the Python validator. Nothing in this file is executed inside
+# Windsurf; Windsurf reads the *output JSON* the validator produces.
+# ============================================================================
+
+
+# ----------------------------------------------------------------------------
+# STRUCTURE & REPO HYGIENE
+# ----------------------------------------------------------------------------
+structure:
+
+  # Maximum allowable directory nesting depth.
+  # Rationale: Deep nesting increases cognitive complexity and violates the
+  # Section-3 constraint for flat agentic structures. L5 systems require a
+  # consistent, predictable layout.
+  max_depth: 12
+
+  # Maximum empty directories allowed.
+  # Rationale: Empty folders indicate incomplete code, abandoned refactors,
+  # or drift from architecture. Zero tolerance in L5 systems.
+  max_empty_dirs: 0
+
+  # Maximum file size allowed to be read/parsed (in bytes).
+  # Rationale: Prevent OOM conditions when scanning large files. 10MB is
+  # generous but still protects the agentic validator.
+  max_file_size_bytes: 10485760  # 10MB
+
+
+# ----------------------------------------------------------------------------
+# SECURITY & SANDBOXING
+# ----------------------------------------------------------------------------
+security:
+
+  # Max runtime for subprocess-based tools (ruff, mypy, pytest)
+  # Rationale: Prevent deadlock in CI, infinite loops, or flaky tests blocking
+  # execution. L5 validation must fail-fast.
+  subprocess_timeout_seconds: 45
+
+  # Max capture size from subprocess output (stdout + stderr)
+  # Rationale: Prevent RAM exhaustion or malicious output flooding.
+  max_subprocess_output_bytes: 3000000  # 3MB
+
+  # Python executable used for subprocess calls
+  # Must be absolute path or inherited from environment.
+  python_executable: "python3"
+
+
+# ----------------------------------------------------------------------------
+# LAYER PURITY (L1–L5) RULES
+# ----------------------------------------------------------------------------
+layer_rules:
+
+  # Defines forbidden imports and forbidden calls for each layer.
+  # Enforces strict downward-only dependencies.
+  hierarchy:
+
+    l1_planning:
+      forbidden_imports:
+        - "l2_"
+        - "l3_"
+        - "l4_"
+        - "l5_"
+      forbidden_calls:
+        - "invoke_model"   # L1 cannot execute tools
+        - "execute_dag"
+
+    l2_execution:
+      forbidden_imports:
+        - "l1_"
+        - "l3_"
+        - "l4_"
+        - "l5_"
+      forbidden_calls: []  # L2 can call tools but cannot plan
+
+    l3_orchestration:
+      forbidden_imports:
+        - "l1_"
+        - "l2_"
+        - "l4_"
+        - "l5_"
+      forbidden_calls:
+        - "invoke_model"   # L3 should not directly call models
+
+    l4_governance:
+      forbidden_imports:
+        - "l1_"
+        - "l2_"
+        - "l3_"
+      forbidden_calls: []
+
+    l5_meta:
+      forbidden_imports:
+        - "l1_"
+        - "l2_"
+        - "l3_"
+        - "l4_"
+      forbidden_calls: []
+
+
+# ----------------------------------------------------------------------------
+# ENGINE ISOLATION RULES (e.g., resume vs outreach engines)
+# ----------------------------------------------------------------------------
+engines:
+  root: "agentic_core/l2_execution/engines"
+
+  # Engines may NOT import each other’s business logic.
+  # Only shared tools are allowed (e.g., agentic_core/shared_tools/**).
+  cross_engine_sharing_allowed: false
+
+
+# ----------------------------------------------------------------------------
+# PROMPT GOVERNANCE
+# ----------------------------------------------------------------------------
+prompts:
+
+  # Max inline prompt string length (in characters)
+  # Inline prompts >200 chars are considered dangerous.
+  max_inline_prompt_length: 200
+
+  # Keywords that indicate a system prompt is embedded inline
+  inline_prompt_indicators:
+    - "you are"
+    - "system:"
+    - "assistant:"
+    - "developer:"
+    - "<instructions>"
+    - "respond as"
+
+  # Required schema directory for validated prompts
+  required_schema_directory: "prompt_governance/schemas"
+
+
+# ----------------------------------------------------------------------------
+# OBSERVABILITY (REQUIRED FOR L5)
+# ----------------------------------------------------------------------------
+observability:
+
+  # Whether structured logging must be validated
+  enforce_structured_logging: true
+
+  # Max milliseconds allowed for each validation phase
+  max_phase_duration_ms: 5000
+
+  # Whether a trace ID is required for each validator run
+  require_trace_id: true
+
+
+# ----------------------------------------------------------------------------
+# CIRCULAR IMPORT DETECTION
+# ----------------------------------------------------------------------------
+circular_imports:
+
+  # Enable/disable circular import scanning of agentic_core/**
+  enabled: true
+
+  # Maximum number of cycles to display in summary (noise reduction)
+  max_cycles_displayed: 5
+
+
+# ----------------------------------------------------------------------------
+# ZERO-LOSS POLICY (CRITICAL FOR WINDSURF)
+# ----------------------------------------------------------------------------
+zeroloss:
+
+  # Whether DAG execution must complete successfully
+  require_dag_execution: true
+
+  # Whether capability matrix comparison is required
+  require_capability_matrix: false  # requires additional infra
+
+  # Whether merge preservation tests must run
+  require_merge_preservation: false
+
+
+# ============================================================================
+# END OF CONFIG
+# ============================================================================
