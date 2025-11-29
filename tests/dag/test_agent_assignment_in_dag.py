@@ -3,8 +3,8 @@ from __future__ import annotations
 import asyncio
 from typing import Any, Dict
 
-from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
-from orchestration.agent_registry import AgentRegistry
+from agentic_core.l3_orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
+from agentic_core.l3_orchestration.agent_registry import AgentRegistry
 from config.agent_profile import AgentCard
 from core.models.models import AgentRole
 

@@ -8,8 +8,8 @@ C-Level gets highest-quality models while other archetypes get appropriate model
 import pytest
 from unittest.mock import Mock
 
-from infra.model_routing.policies import ModelRoutingPolicy
-from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
+from runtime.infra.model_routing.policies import ModelRoutingPolicy
+from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
 from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits
 
 

@@ -1,5 +1,5 @@
-from infra.sandbox.models import ToolCallRequest
-from infra.sandbox.vm_manager import run_in_ephemeral_vm
+from runtime.infra.sandbox.models import ToolCallRequest
+from runtime.infra.sandbox.vm_manager import run_in_ephemeral_vm
 
 
 def test_tool_like_call_runs_in_vm_boundary():

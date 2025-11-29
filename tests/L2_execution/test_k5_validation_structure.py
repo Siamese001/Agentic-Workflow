@@ -1,5 +1,5 @@
 import inspect
-from agentic_core.l2_execution.lic_k5_validation import LIC_K5_Validation
+from agentic_core.l2_execution.engines.outreach.lic_k5_validation import LIC_K5_Validation
 
 def test_class_exists():
     assert inspect.isclass(LIC_K5_Validation)

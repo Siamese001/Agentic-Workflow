@@ -1,5 +1,5 @@
 import inspect
-from agentic_core.l2_execution.lic_k4_regen import LIC_K4_Regen
+from agentic_core.l2_execution.engines.outreach.lic_k4_regen import LIC_K4_Regen
 
 def test_class_exists():
     assert inspect.isclass(LIC_K4_Regen)

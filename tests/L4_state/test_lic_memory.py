@@ -1,4 +1,4 @@
-from agentic_core.l4_memory.lic_memory import LICMemory
+from agentic_core.l4_memory_state.temporal.lic_memory import LICMemory
 
 def test_memory_structure():
     m = LICMemory()

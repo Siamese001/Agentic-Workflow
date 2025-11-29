@@ -1,4 +1,4 @@
-from orchestration.model_routing import RoutingContext, choose_provider_and_model
+from agentic_core.l3_orchestration.model_routing import RoutingContext, choose_provider_and_model
 
 
 def test_policy_selection_honors_requested_model():

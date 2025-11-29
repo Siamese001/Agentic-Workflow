@@ -1,4 +1,4 @@
-from agentic_core.l2_execution.lic_k1_research import LIC_K1_Research
+from agentic_core.l2_execution.engines.outreach.lic_k1_research import LIC_K1_Research
 
 def test_constructor():
     k1 = LIC_K1_Research({})

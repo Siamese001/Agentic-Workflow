@@ -1,5 +1,5 @@
-from meta.metacognition.hypothesis import generate_initial_hypotheses
-from meta.metacognition.models import Hypothesis
+from runtime.meta.metacognition.hypothesis import generate_initial_hypotheses
+from runtime.meta.metacognition.models import Hypothesis
 
 
 class DummyRAG:

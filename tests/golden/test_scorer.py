@@ -1,5 +1,5 @@
-from eval.golden_state.models import JudgeVerdict
-from eval.golden_state.scorer import aggregate_scores
+from runtime.eval.golden_state.models import JudgeVerdict
+from runtime.eval.golden_state.scorer import aggregate_scores
 
 
 def test_aggregate_scores_basic():

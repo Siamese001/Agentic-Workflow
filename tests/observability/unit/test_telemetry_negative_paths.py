@@ -16,7 +16,7 @@ import time
 from unittest.mock import patch, MagicMock
 from typing import Dict, Any
 
-from runtime.telemetry_bus import (
+from runtime.telemetry import (
     TelemetryBus,
     TelemetryEvent,
     TelemetryError,

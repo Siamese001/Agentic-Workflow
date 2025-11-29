@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores
+from runtime.meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores
 from core.models.models import Evidence
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from meta.retrieval.hybrid_ranker import fuse_and_rank
+from runtime.meta.retrieval.hybrid_ranker import fuse_and_rank
 from core.models.models import CouncilVote, Evidence, RetrievalConfig
 
 
