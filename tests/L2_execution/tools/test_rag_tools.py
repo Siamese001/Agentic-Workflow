@@ -5,7 +5,6 @@ Section 3: Canonical Repository Tree - L2 Execution Tools Tests
 """
 
 import pytest
-from typing import Dict, Any, List
 import logging
 
 logger = logging.getLogger(__name__)
@@ -70,10 +69,9 @@ class TestRAGTools:
     
     def test_hyde_tool_synthetic_document_generation(self):
         """Test HYDE tool for synthetic document generation"""
-        query = "experienced python developer with AWS skills"
         
         # Simulate HYDE synthetic document
-        synthetic_doc = f"""
+        synthetic_doc = """
         I am an experienced Python developer with extensive AWS skills. 
         I have worked on cloud infrastructure, deployed applications using EC2, 
         S3, and Lambda. My Python expertise includes Django, Flask, and 

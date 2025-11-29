@@ -25,7 +25,6 @@ class TestCompanyResearchExecutor:
         self.mock_telemetry_bus = Mock()
         
         # Patch telemetry bus to avoid potential exceptions
-        import agentic_core.l2_execution.company_research_executor
         self.original_get_telemetry_bus = l2.company_research_executor.get_telemetry_bus
         l2.company_research_executor.get_telemetry_bus = lambda: self.mock_telemetry_bus
         
@@ -38,7 +37,6 @@ class TestCompanyResearchExecutor:
     def teardown_method(self):
         """Clean up test fixtures."""
         # Restore original telemetry bus function to prevent test isolation issues
-        import agentic_core.l2_execution.company_research_executor
         l2.company_research_executor.get_telemetry_bus = self.original_get_telemetry_bus
     
     def test_search_company_context_returns_company_research_result(self):
@@ -151,7 +149,7 @@ class TestCompanyResearchExecutor:
         for archetype in expected_archetypes:
             self.mock_triplet_store.query.reset_mock()
             
-            result = self.executor.search_company_context(
+            self.executor.search_company_context(
                 mission_id="test_mission",
                 target_company="TestCorp",
                 archetype=archetype,

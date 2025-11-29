@@ -22,12 +22,12 @@ class OutputBundle:
     prompt_type: OutputPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_output_guidance(self, base_prompt: str, output_context: Dict[str, Any]) -> str:
         """Inject output formatting guidance into prompt"""
         guidance = self._generate_output_guidance(output_context)
         return f"{base_prompt}\n\nOutput Format Requirements:\n{guidance}"
-    
+
     def _generate_output_guidance(self, context: Dict[str, Any]) -> str:
         """Generate output-specific guidance"""
         if self.prompt_type == OutputPromptType.STRUCTURED_FORMAT:

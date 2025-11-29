@@ -2,7 +2,7 @@
 
 class JobInputFactory:
     """Factory for creating JobInput test objects."""
-    
+
     @staticmethod
     def create(title="Software Engineer", requirements=None):
         """Create a JobInput dict."""
@@ -13,7 +13,7 @@ class JobInputFactory:
 
 class ResumeInputFactory:
     """Factory for creating ResumeInput test objects."""
-    
+
     @staticmethod
     def create(summary="Experienced developer", skills=None):
         """Create a ResumeInput dict."""

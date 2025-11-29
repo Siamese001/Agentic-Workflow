@@ -5,13 +5,10 @@ Validates that L2 executors consume and respect reasoning-intensity metadata
 exported by L1 MessagePlan, including prompt construction and temperature usage.
 """
 
-import pytest
 from unittest.mock import Mock
 from agentic_core.l2_execution.engines.message_generation_executor import (
     MessageGenerationExecutor,
-    GenerationContext,
-    MessageSection,
-    MessageResult
+    GenerationContext
 )
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import (
     ArchetypeType,
@@ -66,7 +63,7 @@ class TestMessageReasoningIntensityExecutor:
         )
         
         # Generate message
-        result = executor.generate_message(message_plan, ctx, [])
+        executor.generate_message(message_plan, ctx, [])
         
         # Verify LLM was called with reasoning-intensity enhanced prompts
         assert mock_llm_caller.generate.call_count == 5  # 5 sections
@@ -208,12 +205,6 @@ class TestMessageReasoningIntensityExecutor:
         c_level_profile = EXECUTIVE_REASONING_PROFILES[ArchetypeType.C_LEVEL]
         reasoning_metadata = reasoning_intensity_metadata(c_level_profile)
         
-        message_plan = {
-            "value_plan": "Strategic business alignment",
-            "temperature_schedule": {"value": 0.70},
-            "metadata": reasoning_metadata,
-            "generation_strategy": "concise_priority"
-        }
         
         # Create generation context
         ctx = GenerationContext(
@@ -228,7 +219,7 @@ class TestMessageReasoningIntensityExecutor:
         )
         
         # Generate single section to test prompt
-        section = executor._generate_section(
+        executor._generate_section(
             section_name="value",
             plan="Strategic business alignment",
             temperature=0.70,

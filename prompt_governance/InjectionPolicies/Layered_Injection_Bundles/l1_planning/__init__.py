@@ -22,12 +22,12 @@ class L1PlanningBundle:
     prompt_type: PlanningPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_planning_guidance(self, base_prompt: str, planning_context: Dict[str, Any]) -> str:
         """Inject L1 planning guidance into prompt"""
         guidance = self._generate_planning_guidance(planning_context)
         return f"{base_prompt}\n\nPlanning Guidance:\n{guidance}"
-    
+
     def _generate_planning_guidance(self, context: Dict[str, Any]) -> str:
         """Generate planning-specific guidance"""
         if self.prompt_type == PlanningPromptType.STRATEGY:

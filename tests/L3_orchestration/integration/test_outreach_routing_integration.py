@@ -51,7 +51,7 @@ class TestOutreachRoutingIntegration:
     def test_factory_creates_executor_without_routing_by_default(self):
         """Test that factory creates standard executor when routing disabled."""
         # Ensure routing is disabled in profile
-        original_profile = get_lic_profile()
+        get_lic_profile()
         
         # Create executor with factory
         executor = create_message_executor_with_routing(

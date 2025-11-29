@@ -4,7 +4,7 @@ Base Schemas
 Section 10: Schema Layer - Foundation schemas for all agentic layers
 """
 
-from typing import Dict, Any, Optional, List, Union
+from typing import Dict, Any, Optional
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
 from enum import Enum
@@ -22,7 +22,7 @@ class BaseRequest(BaseModel):
     request_id: str = Field(..., description="Unique request identifier")
     session_id: Optional[str] = Field(None, description="Session identifier")
     metadata: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Request metadata")
-    
+
     @validator('request_id')
     def validate_request_id(cls, v):
         if not v or len(v.strip()) == 0:
@@ -62,7 +62,7 @@ class BaseConfig(BaseModel):
 
 # Re-export commonly used types
 __all__ = [
-    'BaseResponse', 'BaseRequest', 'ValidationError', 
+    'BaseResponse', 'BaseRequest', 'ValidationError',
     'ProcessingStatus', 'LogLevel', 'BaseConfig'
 ]
 

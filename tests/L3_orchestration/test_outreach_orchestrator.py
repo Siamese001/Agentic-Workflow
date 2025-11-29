@@ -200,7 +200,7 @@ class TestOutreachOrchestrationUnit:
         self.safety_validator.evaluate.return_value = safety_result
         
         # Execute
-        result = self.orchestrator.run_single_outreach(self.mission, self.recipient)
+        self.orchestrator.run_single_outreach(self.mission, self.recipient)
         
         # Verify structured inputs passed to message_executor (simplified for clean implementation)
         self.message_generation_executor.generate_message.assert_called_once()
@@ -275,7 +275,7 @@ class TestOutreachOrchestrationUnit:
         self.archetype_planner.plan_archetype_influence.return_value = archetype_context
         
         # Should accept L1 output without errors
-        result = self.orchestrator.run_single_outreach(self.mission, self.recipient)
+        self.orchestrator.run_single_outreach(self.mission, self.recipient)
         
         # Verify L1 output was properly consumed
         assert self.archetype_planner.plan_archetype_influence.called
@@ -292,7 +292,7 @@ class TestOutreachOrchestrationUnit:
         self.safety_validator.evaluate.return_value = Mock(passed=True, findings=[])
         
         # Execute
-        result = self.orchestrator.run_single_outreach(self.mission, self.recipient)
+        self.orchestrator.run_single_outreach(self.mission, self.recipient)
         
         # Verify L2 calls have correct parameter names (simplified for clean implementation)
         self.company_research_executor.search_company_context.assert_called_once()

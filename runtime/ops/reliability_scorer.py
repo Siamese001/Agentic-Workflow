@@ -4,7 +4,7 @@ Reliability Scorer
 Section 13: Agent Ops - Reliability scoring for operations
 """
 
-from typing import Dict, Any, List
+from typing import Dict, List
 from dataclasses import dataclass
 from enum import Enum
 import logging
@@ -28,29 +28,29 @@ class ReliabilityScore:
 
 class ReliabilityScorer:
     """Scores reliability of agentic operations"""
-    
+
     def __init__(self):
         self.scores: List[ReliabilityScore] = []
-    
+
     def score_operation(self, operation_id: str, factors: Dict[str, float]) -> ReliabilityScore:
         """Score operation reliability"""
         # Simple scoring logic
         total_score = sum(factors.values()) / len(factors) if factors else 0.0
-        
+
         if total_score >= 0.9:
             level = ReliabilityLevel.HIGH
         elif total_score >= 0.7:
             level = ReliabilityLevel.MEDIUM
         else:
             level = ReliabilityLevel.LOW
-        
+
         score = ReliabilityScore(
             operation_id=operation_id,
             score=total_score,
             level=level,
             factors=factors
         )
-        
+
         self.scores.append(score)
         return score
 

@@ -14,7 +14,6 @@ import threading
 import time
 import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Dict, Any
 
 from runtime.telemetry import (
     TelemetryBus,

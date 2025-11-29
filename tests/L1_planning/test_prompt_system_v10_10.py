@@ -6,7 +6,6 @@ functionality for the v10.10 prompt system.
 """
 
 import pytest
-from unittest.mock import Mock, patch
 
 # Import actual prompt system components
 try:
@@ -145,14 +144,14 @@ class TestPromptSystemV10_10:
     
     def test_prompt_diff_creation(self):
         """Test prompt diff functionality."""
-        old_prompt = PromptDefinition(
+        PromptDefinition(
             id="diff_test",
             text="Old template",
             version=PromptVersion(major=1, minor=0, patch=0),
             metadata={"description": "Old description"}
         )
         
-        new_prompt = PromptDefinition(
+        PromptDefinition(
             id="diff_test",
             text="New template",
             version=PromptVersion(major=2, minor=0, patch=0),

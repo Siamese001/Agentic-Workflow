@@ -13,14 +13,10 @@ Tests telemetry behavior under negative conditions and error scenarios:
 import pytest
 import threading
 import time
-from unittest.mock import patch, MagicMock
-from typing import Dict, Any
+from unittest.mock import patch
 
 from runtime.telemetry import (
-    TelemetryBus,
-    TelemetryEvent,
-    TelemetryError,
-    TelemetryTrace
+    TelemetryBus
 )
 
 

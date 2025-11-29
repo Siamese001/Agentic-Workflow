@@ -8,7 +8,6 @@ Ensures proper fallback behavior when multi-draft generation fails.
 import pytest
 import asyncio
 from unittest.mock import Mock, patch
-from typing import Dict, Any
 from dataclasses import dataclass
 
 from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult

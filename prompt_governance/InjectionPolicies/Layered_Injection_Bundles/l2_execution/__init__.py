@@ -22,20 +22,20 @@ class L2ExecutionBundle:
     prompt_type: ExecutionPromptType
     templates: List[str]
     metadata: Dict[str, Any]
-    
+
     def inject_execution_guidance(self, base_prompt: str, execution_context: Dict[str, Any]) -> str:
         """Inject L2 execution guidance into prompt"""
         guidance = self._generate_execution_guidance(execution_context)
         return f"{base_prompt}\n\nExecution Guidance:\n{guidance}"
-    
+
     def _generate_execution_guidance(self, context: Dict[str, Any]) -> str:
         """Generate execution-specific guidance"""
         if self.prompt_type == ExecutionPromptType.TOOL_SELECTION:
             return f"Tool Selection: Choose appropriate tools from {context.get('available_tools', 'standard toolkit')}"
         elif self.prompt_type == ExecutionPromptType.PARAMETER_BINDING:
-            return f"Parameter Binding: Map inputs to tool parameters with proper validation"
+            return "Parameter Binding: Map inputs to tool parameters with proper validation"
         elif self.prompt_type == ExecutionPromptType.ERROR_HANDLING:
-            return f"Error Handling: Implement robust error handling and fallback mechanisms"
+            return "Error Handling: Implement robust error handling and fallback mechanisms"
         elif self.prompt_type == ExecutionPromptType.OUTPUT_FORMATTING:
             return f"Output Formatting: Structure output according to {context.get('format_spec', 'standard schema')}"
         return ""

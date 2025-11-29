@@ -2,10 +2,10 @@
 
 class StubRAGService:
     """Stub RAG service for testing."""
-    
+
     def __init__(self):
         self.queries = []
-    
+
     def search(self, query, top_k=10):
         """Stub search method."""
         self.queries.append(query)
@@ -13,11 +13,11 @@ class StubRAGService:
 
 class StubLLMService:
     """Stub LLM service for testing."""
-    
+
     def __init__(self, responses=None):
         self.responses = responses or ["Default response"]
         self.call_count = 0
-    
+
     def generate(self, prompt):
         """Stub generate method."""
         response = self.responses[self.call_count % len(self.responses)]
