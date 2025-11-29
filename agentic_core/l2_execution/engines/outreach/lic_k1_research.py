@@ -49,6 +49,10 @@ class K1ResearchExecutor:
             "reranking_threshold": 0.7,
             "max_hops": 3
         }
+
+
+# Alias for backward compatibility with tests
+LIC_K1_Research = K1ResearchExecutor
         
         # Research query templates
         self.query_templates = {
