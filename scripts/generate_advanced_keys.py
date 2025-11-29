@@ -521,3 +521,232 @@ def gen_rag_kg_runtime_security_keys():
     keys = []
 
     rag_rules = [
+        "hybrid_retriever_configured",
+        "dense_and_sparse_retrievers_valid",
+        "rrf_reranker_deterministic",
+        "golden_queries_present",
+        "golden_queries_pass",
+        "source_attribution_required",
+        "retrieval_latency_within_bounds",
+    ]
+    for rule in rag_rules:
+        keys.append(f"rag.pipeline.{rule}::agentic_core/l2_execution")
+
+    kg_rules = [
+        "graph_schema_valid",
+        "nodes_have_ids",
+        "edges_have_types",
+        "temporal_annotations_valid",
+        "lookup_latency_within_bounds",
+    ]
+    for rule in kg_rules:
+        keys.append(f"kg.pipeline.{rule}::agentic_core/l4_memory")
+
+    runtime_rules = [
+        "startup_checks_pass",
+        "shutdown_checks_pass",
+        "health_checks_defined",
+        "state_manager_ready",
+        "tool_registry_ready",
+        "mcp_registry_ready",
+        "prompt_registry_ready",
+        "safety_engine_ready",
+        "observability_ready",
+        "performance_thresholds_met",
+    ]
+    for rule in runtime_rules:
+        keys.append(f"runtime.health.{rule}::runtime")
+
+    security_rules = [
+        "input_validation_present",
+        "output_validation_present",
+        "tool_parameter_validation_present",
+        "no_prompt_injection_allowed",
+        "no_code_execution_allowed",
+        "no_filesystem_access_outside_sandbox",
+        "no_network_access_outside_mcp",
+        "user_roles_validated",
+        "context_constrained",
+        "sandbox_enforced",
+    ]
+    for rule in security_rules:
+        keys.append(f"security.enforcement.{rule}::agentic_core/l5_safety")
+
+    keys.append("security.zero_tolerance_for_direct_secrets_in_repo::true")
+    keys.append("security.zero_tolerance_for_unknown_env_vars::true")
+
+    return keys
+
+
+def gen_observability_keys():
+    keys = []
+    obs_rules = [
+        "traces_cover_all_tool_calls",
+        "traces_cover_all_memory_writes",
+        "traces_cover_all_policy_decisions",
+        "logs_capture_state_transitions",
+        "metrics_capture_latency",
+        "metrics_capture_cost",
+        "metrics_capture_error_rates",
+        "metrics_capture_retries",
+    ]
+    for rule in obs_rules:
+        keys.append(f"observability.requirement.{rule}::observability")
+    keys.append("observability.zero_tolerance_for_missing_traces::true")
+    keys.append("observability.zero_tolerance_for_missing_metrics::true")
+    keys.append("observability.zero_tolerance_for_missing_logs::true")
+    return keys
+
+
+def gen_ci_cd_keys():
+    keys = []
+    cicd_rules = [
+        "tests_run_on_every_commit",
+        "schema_regression_runs_on_every_commit",
+        "prompt_regression_runs_on_every_commit",
+        "safety_regression_runs_on_every_commit",
+        "rag_regression_runs_on_every_commit",
+        "kg_regression_runs_on_every_commit",
+        "blocks_merge_on_failures",
+        "blocks_merge_on_missing_tests",
+        "blocks_merge_on_purity_violation",
+        "enforces_linting",
+        "enforces_mypy",
+        "enforces_security_scan",
+    ]
+    for rule in cicd_rules:
+        keys.append(f"ci_cd.pipeline.{rule}::{CI_WORKFLOW_DIR}")
+
+    keys.append("ci_cd.mutation_test.must_be_enabled::tests")
+    keys.append("ci_cd.mutation_test.score_above_threshold::0.85")
+    keys.append("ci_cd.mutation_test.covers_all_layers::l1_l2_l3_l4_l5")
+    keys.append("ci_cd.zero_tolerance_for_silent_failures::true")
+
+    return keys
+
+
+def gen_golden_dataset_keys():
+    keys = []
+    for path in GOLDEN_DATASETS:
+        keys.append(f"golden.dataset.required::{path}")
+        keys.append(f"golden.dataset.has_positive_cases::{path}")
+        keys.append(f"golden.dataset.has_negative_cases::{path}")
+        keys.append(f"golden.dataset.no_duplicates::{path}")
+        keys.append(f"golden.dataset.schema_valid::{path}")
+    keys.append("golden.dataset.total_minimum_cases::500")
+    keys.append("golden.dataset.zero_tolerance_for_missing_golden_data::true")
+    return keys
+
+
+def gen_documentation_keys():
+    keys = []
+    docs_rules = [
+        "readme_present",
+        "api_docs_present",
+        "prompt_docs_present",
+        "safety_docs_present",
+        "schema_docs_present",
+        "observability_docs_present",
+        "memory_docs_present",
+        "agent_cards_present",
+        "rag_docs_present",
+        "kg_docs_present",
+        "ci_cd_docs_present",
+    ]
+    for rule in docs_rules:
+        keys.append(f"documentation.structure.{rule}::docs")
+    keys.append("documentation.zero_tolerance_for_missing_readme::true")
+    return keys
+
+
+def gen_meta_keys(start_index, count):
+    keys = []
+    for i in range(start_index, start_index + count):
+        keys.append(f"meta.validation_slot.{i:04d}::reserved")
+    return keys
+
+# ============================================================
+# MAIN
+# ============================================================
+
+def main():
+    keys = []
+
+    # 1) Filesystem structure + zero-tolerance policies
+    dir_paths = collect_dir_paths(ROOT_SCHEMA)
+    keys.extend(gen_fs_structure_keys(dir_paths))
+    keys.extend(gen_fs_filecount_keys())
+    keys.extend(gen_fs_children_allowlist_keys())
+    keys.extend(gen_fs_depth_and_hidden_policy_keys())
+
+    # 2) Tests (presence, absence, naming, coverage, negative cases, orphan policy)
+    keys.extend(gen_tests_presence_absence_keys())
+    keys.extend(gen_tests_coverage_keys())
+    keys.extend(gen_negative_test_keys())
+    keys.extend(gen_orphan_and_untested_policy_keys())
+
+    # 3) Layer purity
+    keys.extend(gen_layer_purity_keys())
+
+    # 4) Schema↔test↔hash + runtime bindings
+    keys.extend(gen_schema_binding_keys())
+    keys.extend(gen_runtime_binding_keys())
+
+    # 5) DAG invariants
+    keys.extend(gen_dag_invariant_keys())
+
+    # 6) Prompt governance
+    keys.extend(gen_prompt_governance_keys())
+
+    # 7) MCP contracts
+    keys.extend(gen_mcp_contract_keys())
+
+    # 8) Temporal memory invariants
+    keys.extend(gen_temporal_memory_keys())
+
+    # 9) Safety envelope
+    keys.extend(gen_safety_envelope_keys())
+
+    # 10) RAG / KG / runtime / security
+    keys.extend(gen_rag_kg_runtime_security_keys())
+
+    # 11) Observability
+    keys.extend(gen_observability_keys())
+
+    # 12) CI/CD (incl. mutation testing)
+    keys.extend(gen_ci_cd_keys())
+
+    # 13) Golden datasets
+    keys.extend(gen_golden_dataset_keys())
+
+    # 14) Documentation
+    keys.extend(gen_documentation_keys())
+
+    # De-duplicate while preserving order
+    seen = set()
+    deduped = []
+    for k in keys:
+        if k not in seen:
+            seen.add(k)
+            deduped.append(k)
+    keys = deduped
+
+    # Fill or trim to exactly TARGET_KEY_COUNT
+    if len(keys) < TARGET_KEY_COUNT:
+        remaining = TARGET_KEY_COUNT - len(keys)
+        keys.extend(gen_meta_keys(start_index=0, count=remaining))
+    elif len(keys) > TARGET_KEY_COUNT:
+        keys = keys[:TARGET_KEY_COUNT]
+
+    output = {k: "" for k in keys}
+
+    os.makedirs(os.path.dirname(OUTPUT_PATH), exist_ok=True)
+
+    with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(output, f, indent=2)
+
+    print(f"Generated {len(output)} keys → {OUTPUT_PATH}")
+
+
+if __name__ == "__main__":
+    main()
