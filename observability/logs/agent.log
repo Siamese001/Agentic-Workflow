@@ -1,0 +1,14 @@
+# Agent Logs - Structured Logging Format
+# Format: timestamp|level|agent_id|layer|operation|message|metadata
+
+2025-11-29T08:34:00.000Z|INFO|agent_001|l1_planning|strategy_planning|Starting strategy planning for resume generation|mission:mission_001
+2025-11-29T08:34:00.100Z|DEBUG|agent_001|l1_planning|strategy_planning|Analyzing user requirements and constraints|goals:3,constraints:2
+2025-11-29T08:34:00.500Z|INFO|agent_001|l1_planning|strategy_planning|Strategy plan generated successfully|confidence:0.87,steps:5
+2025-11-29T08:34:01.000Z|INFO|agent_002|l2_execution|rag_retrieval|Executing RAG retrieval for resume content|query_tokens:25
+2025-11-29T08:34:01.600Z|DEBUG|agent_002|l2_execution|rag_retrieval|Retrieved 15 relevant documents|relevance_score:0.82
+2025-11-29T08:34:02.000Z|INFO|agent_003|l3_orchestration|dag_execution|Starting DAG execution workflow|nodes:6,dependencies:8
+2025-11-29T08:34:03.000Z|INFO|agent_003|l3_orchestration|dag_execution|DAG execution completed successfully|duration:1000ms
+2025-11-29T08:34:03.500Z|INFO|agent_004|l4_memory_state|temporal_storage|Storing temporal events and metadata|events:4,triplets:12
+2025-11-29T08:34:04.000Z|INFO|agent_005|l5_safety|content_validation|Performing safety checks on generated content|checks:pii,toxicity,hallucination
+2025-11-29T08:34:04.200Z|INFO|agent_005|l5_safety|content_validation|All safety checks passed|score:0.95,violations:0
+2025-11-29T08:34:04.600Z|INFO|agent_001|l1_planning|strategy_planning|Resume generation workflow completed|total_duration:4600ms
