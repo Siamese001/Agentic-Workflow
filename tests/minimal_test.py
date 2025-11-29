@@ -6,7 +6,7 @@ Minimal test to isolate the circular import issue
 print("Testing minimal import...")
 
 try:
-    from resume_engine.l2.extraction import ClerkExtractor
+    from resume_engine.l2.rg_extraction import ClerkExtractor
     print("✅ ClerkExtractor imported successfully")
     
     # Try to instantiate it
