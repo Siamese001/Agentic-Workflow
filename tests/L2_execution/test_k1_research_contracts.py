@@ -8,3 +8,8 @@ def test_execute_signature():
     k1 = LIC_K1_Research({})
     result = k1.execute(recipient=None, message_context=None)
     assert result is None
+
+
+
+
+

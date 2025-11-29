@@ -54,3 +54,8 @@ class TestTripletExtraction:
         assert result.total_extracted >= 0
         # Verify companies list was processed (even if empty)
         assert isinstance(companies, list)
+
+
+
+
+

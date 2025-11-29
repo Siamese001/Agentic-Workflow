@@ -341,3 +341,8 @@ class LICFailureClassifier:
         except Exception:
             # Telemetry failures should never break classification logic
             logger.debug("Failed to record telemetry for LIC failure classification")
+
+
+
+
+

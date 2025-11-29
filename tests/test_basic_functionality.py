@@ -9,8 +9,8 @@ def test_basic_imports():
         from agentic_core.l2_execution.tools.drafting.draft_executor import DraftExecutor
         from agentic_core.l3_orchestration.framework import create_dag, validate_dag, execute_dag
         from runtime.runtime_utils import invoke_model
-        from core.models import ComplexityLevel
-        from core.routing import RoutingPolicy
+        from runtime.core.models import ComplexityLevel
+        from runtime.core.routing import RoutingPolicy
         from runtime.observability import record_event
         from config.meta_profile import create_user_profile
         assert True  # All imports successful
@@ -35,7 +35,7 @@ def test_dag_functionality():
 def test_core_models():
     """Test core models functionality"""
     try:
-        from core.models import ComplexityLevel, TaskType, ExecutionStatus
+        from runtime.core.models import ComplexityLevel, TaskType, ExecutionStatus
         
         # Test complexity levels
         low = ComplexityLevel.LOW
@@ -76,3 +76,8 @@ def test_config():
         assert snapshot is not None
     except Exception as e:
         assert False, f"Config test failed: {e}"
+
+
+
+
+

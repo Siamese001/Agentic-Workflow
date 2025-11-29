@@ -115,3 +115,8 @@ class TestArchetypeRefactoringValidation:
                     f"Archetype {archetype} section {section} temp should be number"
                 assert -1.0 <= temp <= 2.0, \
                     f"Archetype {archetype} section {section} temp {temp} out of reasonable range"
+
+
+
+
+

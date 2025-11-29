@@ -21,7 +21,7 @@ try:
         _choose_reasoning_mode,
         _to_execution_profile,
     )
-    from core.models.models import (
+    from runtime.core.models.models import (
         JobInput,
         ResumeInput,
         WorkflowConfig,
@@ -446,3 +446,8 @@ class TestWorkflowPlanning:
         assert isinstance(bundle, WorkflowPlanBundle)
         # Meta profile should influence complexity and reasoning mode
         assert hasattr(bundle, 'strategy')
+
+
+
+
+

@@ -364,3 +364,8 @@ class TestTelemetryNegativePaths:
         assert isinstance(error.error, CustomError)
         assert error.error.code == 123
         assert "layer" not in error.context
+
+
+
+
+

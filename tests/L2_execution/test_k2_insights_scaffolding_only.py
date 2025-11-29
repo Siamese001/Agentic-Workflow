@@ -6,3 +6,8 @@ def test_methods_return_none():
     assert k2.score_individual_claim(None, None) is None
     assert k2.calculate_aggregate_confidence(None) is None
     assert k2.validate_confidence_thresholds(None, None) is None
+
+
+
+
+

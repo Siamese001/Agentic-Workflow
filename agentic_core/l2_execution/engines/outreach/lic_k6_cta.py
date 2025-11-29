@@ -502,3 +502,8 @@ class K6CTAExecutor:
             "alternatives_count": len(output.alternative_options),
             "archetype": output.execution_metadata.get("archetype", "unknown")
         }
+
+
+
+
+

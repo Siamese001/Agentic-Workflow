@@ -14,3 +14,8 @@ class TestObservabilityTracing:
         }
         assert span["duration_ms"] == 100
         assert span["end_time"] > span["start_time"]
+
+
+
+
+

@@ -146,3 +146,8 @@ class TestStrategyPlanning:
         assert thinking_plan.depth == 2
         assert thinking_plan.trace == ["step1", "step2"]
         assert isinstance(thinking_plan.trace, list)
+
+
+
+
+

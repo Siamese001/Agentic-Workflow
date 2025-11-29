@@ -6,7 +6,7 @@ from typing import Any, Dict
 from agentic_core.l3_orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
 from agentic_core.l3_orchestration.agent_registry import AgentRegistry
 from config.agent_profile import AgentCard
-from core.models.models import AgentRole
+from runtime.core.models.models import AgentRole
 
 
 async def _noop(ctx: Dict[str, Any]) -> Dict[str, Any]:
@@ -30,6 +30,11 @@ def test_dag_executor_records_agent_assignments():
 
     assignments = result.get("_agent_assignments", {})
     assert assignments.get("n1") == "planner-1"
+
+
+
+
+
 
 
 

@@ -1019,3 +1019,8 @@ def get_validation_summary(report: ValidationReport) -> str:
         errors = report.issues_by_level.get(ValidationLevel.ERROR, 0)
         warnings = report.issues_by_level.get(ValidationLevel.WARNING, 0)
         return f"❌ Resume validation failed (Score: {report.overall_score:.2f}): {critical} critical, {errors} errors, {warnings} warnings"
+
+
+
+
+

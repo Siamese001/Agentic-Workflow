@@ -36,3 +36,8 @@ def test_stub_llm_service():
     llm = StubLLMService(responses=["Response A", "Response B"])
     assert llm.generate("prompt1") == "Response A"
     assert llm.generate("prompt2") == "Response B"
+
+
+
+
+

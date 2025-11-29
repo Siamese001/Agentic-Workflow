@@ -14,8 +14,8 @@ def test_basic_imports():
         from agentic_core.l2_execution.tools.drafting.draft_executor import DraftExecutor
         from agentic_core.l3_orchestration.framework import create_dag, validate_dag, execute_dag
         from runtime.runtime_utils import invoke_model
-        from core.models import ComplexityLevel
-        from core.routing import RoutingPolicy
+        from runtime.core.models import ComplexityLevel
+        from runtime.core.routing import RoutingPolicy
         assert True, "Basic imports successful"
     except ImportError as e:
         pytest.fail(f"Import failed: {e}")
@@ -50,7 +50,7 @@ def test_mcp_client():
     """Test MCP client functionality"""
     try:
         sys.path.append('mcp')
-        from mcp_client import get_tool_schemas
+        from agentic_core.l2_execution.tools.mcp.mcp_client import get_tool_schemas
         
         schemas = get_tool_schemas()
         assert isinstance(schemas, dict), "Tool schemas should be dictionary"
@@ -72,3 +72,8 @@ def test_evaluation_framework():
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+
+
+

@@ -33,3 +33,8 @@ def test_resume_input_factory():
     """Test ResumeInputFactory."""
     resume = ResumeInputFactory.create()
     assert resume["summary"] == "Experienced developer"
+
+
+
+
+

@@ -561,3 +561,8 @@ class K3DraftExecutor:
                 name: section.word_count for name, section in output.sections.items()
             }
         }
+
+
+
+
+

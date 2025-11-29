@@ -334,3 +334,8 @@ class PreFlightValidator:
     def has_critical_failures(self, validation_results: List[ValidationResult]) -> bool:
         """Check if validation results contain critical failures"""
         return self.engine.has_high_or_critical_failures(validation_results)
+
+
+
+
+

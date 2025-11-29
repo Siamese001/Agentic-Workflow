@@ -368,3 +368,8 @@ def run_toolpath_evaluation() -> bool:
     
     # Return True if evaluation passes threshold
     return summary["pass_rate"] >= 0.8 and summary["average_score"] >= 0.7
+
+
+
+
+

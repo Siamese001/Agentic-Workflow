@@ -5,3 +5,8 @@ def test_stub_returns_none():
     assert k3.execute(None, None, None) is None
     assert k3.generate_greeting(None) is None
     assert k3.generate_subject_line(None, None, None) is None
+
+
+
+
+

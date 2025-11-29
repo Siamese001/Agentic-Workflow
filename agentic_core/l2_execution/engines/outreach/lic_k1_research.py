@@ -456,3 +456,8 @@ LIC_K1_Research = K1ResearchExecutor
             "source_types": list(set(s.get("source_type", "unknown") for s in output.rag_sources)),
             "average_relevance": sum(s.get("relevance_score", 0) for s in output.rag_sources) / len(output.rag_sources) if output.rag_sources else 0
         }
+
+
+
+
+

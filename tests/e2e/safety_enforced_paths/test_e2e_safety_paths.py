@@ -16,3 +16,8 @@ class TestE2ESafetyPaths:
         injection_patterns = ["ignore previous", "system override"]
         is_safe = not any(p in prompt.lower() for p in injection_patterns)
         assert is_safe is True
+
+
+
+
+

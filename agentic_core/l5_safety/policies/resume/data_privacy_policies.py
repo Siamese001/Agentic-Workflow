@@ -210,3 +210,8 @@ def validate_resume_privacy(resume_data: Dict[str, Any], config: Optional[Dict[s
 __all__ = [
     'DataPrivacyPolicy', 'validate_resume_privacy'
 ]
+
+
+
+
+

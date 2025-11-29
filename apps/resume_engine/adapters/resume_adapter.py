@@ -15,3 +15,8 @@ class ResumeAdapter:
     def generate_resume(self, input_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Generate resume from input data"""
         return {"status": "stub", "message": "Resume adapter stub implementation"}
+
+
+
+
+

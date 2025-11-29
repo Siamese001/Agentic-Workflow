@@ -55,3 +55,8 @@ class TestKGRetrievalExecutor:
         )
         
         assert result.total_triplets >= 1
+
+
+
+
+

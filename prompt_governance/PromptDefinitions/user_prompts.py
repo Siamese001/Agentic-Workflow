@@ -28,3 +28,8 @@ def format_user_query(query: str, context: dict):
 def generate_response_template(response_type: str, data: dict):
     """Generate response template for user"""
     pass
+
+
+
+
+

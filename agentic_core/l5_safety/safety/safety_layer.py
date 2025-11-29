@@ -440,3 +440,8 @@ def is_action_safe(action: Dict[str, Any], context: Optional[Dict[str, Any]] = N
     """Quick check if action is safe"""
     result = check_mutating_action_safety(action, context)
     return result.is_safe
+
+
+
+
+

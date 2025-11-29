@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel
 
-from core.models.models import PromptDefinition, PromptVersion
+from runtime.core.models.models import PromptDefinition, PromptVersion
 
 
 # ============================================================================
@@ -335,6 +335,11 @@ def _seed_core_prompts() -> None:
 
 # Seed default prompts at import time (purely in-memory).
 _seed_core_prompts()
+
+
+
+
+
 
 
 

@@ -380,3 +380,8 @@ class TestMessageReasoningIntensity:
         # Verify C_LEVEL has more detailed content
         assert "Across 8 key dimensions including:" in c_level_plan.value_plan
         assert "Across 8 key dimensions including:" not in recruiter_plan.value_plan
+
+
+
+
+

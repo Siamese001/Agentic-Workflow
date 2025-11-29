@@ -330,3 +330,8 @@ class TestOutreachSchemaMapping:
         # Should prioritize quantitative (checked first in implementation)
         assert result.signal_type == "quantitative"
         assert result.is_signal_candidate is True
+
+
+
+
+
