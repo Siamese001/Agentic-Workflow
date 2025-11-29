@@ -207,7 +207,5 @@
   "tests/L4_memory_state/temporal_KG/test_temporal_tiebreak.py::TestTemporalTieBreak::test_tie_break_none_timestamps": true,
   "tests/L4_memory_state/temporal_KG/test_temporal_tiebreak.py::TestTemporalTieBreak::test_tie_break_custom_source_priorities": true,
   "tests/L4_memory_state/temporal_KG/test_temporal_tiebreak.py::TestTemporalTieBreak::test_tie_break_mixed_score_sources": true,
-  "tests/L3_orchestration/integration/test_outreach_concurrency.py": true,
-  "tests/L3_orchestration/test_lic_orchestrator_retry_policy.py": true,
-  "tests/L3_orchestration/test_lic_orchestrator_structure.py": true
+  "tests/L3_orchestration/test_lic_orchestrator_structure.py::test_orchestrator_class_exists": true
 }
