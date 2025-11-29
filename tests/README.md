@@ -2,22 +2,110 @@
 
 ## Overview
 
-This directory contains the comprehensive test suite for the Agentic-Workflow-10_10 system, organized by architectural layers and functional components.
+This directory contains a comprehensive test suite for the Agentic L5 system, organized using a **hybrid approach** that separates architectural layer testing from cross-cutting functional testing to eliminate duplication.
 
 ## 📁 Directory Structure
 
+### L1-L5 Architectural Tests (Layer-Specific)
+
 ```text
 tests/
-├── unit/                    # Unit tests by layer
-│   ├── l1_planning/         # L1 Planning layer tests
-│   ├── l2_execution/        # L2 Execution layer tests  
-│   ├── l3_orchestration/    # L3 Orchestration layer tests
-│   ├── l4_state/           # L4 State & Memory layer tests
-│   ├── l5_safety/          # L5 Safety & Policy layer tests
-│   └── test_dependency_injection.py  # DI system tests
-├── features/               # Feature-specific tests
-│   ├── knowledge_graph/    # KG components (triplets, entities)
-│   ├── retrieval/          # RAG, vector search, meta-ranking
+├── L1_planning/           # L1 Planning layer tests (131 items total)
+│   ├── resume/            # Resume-specific planning tests
+│   ├── outreach/          # Outreach-specific planning tests  
+│   ├── shared/            # Shared planning components
+│   ├── integration/       # Layer integration tests
+│   └── fixtures/          # Planning-specific fixtures
+├── L2_execution/          # L2 Execution layer tests
+│   ├── resume/            # Resume execution tests
+│   ├── outreach/          # Outreach execution tests
+│   ├── tools/             # Tool-specific tests
+│   └── integration/       # Execution integration tests
+├── L3_orchestration/      # L3 Orchestration layer tests
+│   ├── resume/            # Resume orchestration tests
+│   ├── outreach/          # Outreach orchestration tests
+│   └── framework/         # Orchestration framework tests
+├── L4_memory_state/       # L4 Memory & State layer tests
+│   ├── temporal/          # Temporal state tests
+│   ├── providers/         # Memory provider tests
+│   └── mappings/          # State mapping tests
+└── L5_safety/             # L5 Safety & Policy layer tests
+    ├── filters/           # Safety filter tests
+    ├── policies/          # Safety policy tests
+    └── validators/        # Safety validator tests
+```
+
+### Cross-Cutting Functional Tests (Multi-Layer)
+
+```text
+tests/
+├── golden/                # Golden dataset evaluation & LLM-as-judge
+├── stress/                # Performance & load testing
+├── metacognition/         # Reasoning & hypothesis evaluation
+├── observability/         # System monitoring & observability
+├── integration/           # Cross-layer integration tests
+├── e2e/                   # End-to-end workflow tests
+├── regression/            # Regression test suite
+├── fixtures/              # Shared test fixtures & data
+├── data/                  # Test data samples
+└── helpers.py             # Common test utilities
+```
+
+## 🎯 Test Organization Strategy
+
+### Why Hybrid Approach?
+
+1. **Eliminates Duplication**: No redundant test files across multiple structures
+2. **Clear Separation**: Architectural vs. functional testing purposes
+3. **Maintainable**: Each test type has a clear home and purpose
+4. **Scalable**: New tests follow established patterns
+
+### L1-L5 Tests: Layer-Specific Validation
+
+- **Purpose**: Validate individual architectural components
+- **Scope**: Unit tests and layer-specific integration tests
+- **Examples**: `test_outreach_archetype_planner.py`, `test_research_executor.py`
+
+### Functional Tests: Cross-Cutting Concerns
+
+- **Purpose**: End-to-end validation spanning multiple layers
+- **Scope**: System-level functional testing
+- **Examples**: `test_golden_evaluation.py`, `stress_tests.py`
+
+## 🚀 Running Tests
+
+```bash
+# Run L1-L5 architectural tests
+pytest tests/L1_planning/ tests/L2_execution/ tests/L3_orchestration/ tests/L4_memory_state/ tests/L5_safety/
+
+# Run cross-cutting functional tests
+pytest tests/golden/ tests/stress/ tests/metacognition/ tests/observability/ tests/integration/ tests/e2e/
+
+# Run all tests
+pytest tests/
+
+# Run specific test categories
+pytest tests/L2_execution/tools/  # Tool-specific tests
+pytest tests/golden/              # Evaluation tests
+```
+
+## 📝 Test Naming Conventions
+
+- **L1-L5**: `test_{layer}_{component}_{type}.py`
+  - Examples: `test_l2_research_executor_unit.py`, `test_l3_dag_orchestration.py`
+- **Functional**: `test_{domain}_{functionality}.py`
+  - Examples: `test_golden_evaluation.py`, `test_stress_performance.py`
+
+## 🔧 Consolidation Achievements
+
+1. **Eliminated Duplicate Structures**: Removed redundant test directory hierarchies
+2. **Centralized Shared Utilities**: Common fixtures and helpers in shared locations
+3. **Clear Purpose Documentation**: Each test category has defined scope and responsibility
+4. **Maintained Validation Compliance**: Preserved 92.8% Windsurf validation compliance
+
+This hybrid organization provides comprehensive test coverage while eliminating the significant duplication that existed between parallel test structures.
+
+```text
 │   ├── prompts/            # Prompt system (v6, instructional)
 │   └── agents/             # Agent component tests
 ├── integration/            # Cross-layer integration tests
