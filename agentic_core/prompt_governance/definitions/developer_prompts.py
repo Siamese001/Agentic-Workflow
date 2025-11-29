@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Developer Prompts
-Section 6: Prompt Governance - Developer-focused prompt templates
+Section 3: Prompt Governance - Developer-focused prompt templates
 """
 
 # This directory contains developer-specific prompt templates including:

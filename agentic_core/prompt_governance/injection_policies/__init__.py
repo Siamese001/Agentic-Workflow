@@ -8,6 +8,15 @@ from typing import Dict, Any, List, Optional
 import logging
 from datetime import datetime
 
+# Import additional injection policy components
+from .injection_templates import get_injection_prompt, apply_injection, list_injection_types
+from .Layered_Injection_Bundles import (
+    ContextBundle, FramingBundle, L1PlanningBundle,
+    L2ExecutionBundle, L3OrchestrationBundle, L4MemoryBundle,
+    L5SafetyBundle, OutputBundle, ReasoningBundle,
+    SafetyBundle, ToolingBundle
+)
+
 logger = logging.getLogger(__name__)
 
 class InjectionPolicy:
@@ -274,5 +283,10 @@ def create_injection_policy(config: Optional[Dict[str, Any]] = None) -> Injectio
 
 # Re-export components
 __all__ = [
-    'InjectionPolicy', 'create_injection_policy'
+    'InjectionPolicy', 'create_injection_policy',
+    'get_injection_prompt', 'apply_injection', 'list_injection_types',
+    'ContextBundle', 'FramingBundle', 'L1PlanningBundle',
+    'L2ExecutionBundle', 'L3OrchestrationBundle', 'L4MemoryBundle',
+    'L5SafetyBundle', 'OutputBundle', 'ReasoningBundle',
+    'SafetyBundle', 'ToolingBundle'
 ]
