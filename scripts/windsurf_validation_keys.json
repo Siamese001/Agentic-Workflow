@@ -192,7 +192,7 @@
   "fs.structure.exact_children::docs::[]": "",
   "fs.structure.exact_children::.github::[workflows]": "",
   "fs.structure.exact_children::.github/workflows::[]": "",
-  "fs.depth.max_depth::8": "",
+  "fs.depth.max_depth::9": "",
   "fs.depth.zero_tolerance_for_excess::true": "",
   "fs.hidden.allowed_dir::.github": "",
   "fs.hidden.allowed_file::.gitignore": "",
