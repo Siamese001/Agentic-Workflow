@@ -7,10 +7,8 @@ Tests knowledge graph retrieval execution functionality extracted from working l
 import pytest
 
 # L2 Components
-from agentic_core.l2_execution.engines.outreach.lic_kg_retrieval_executor import (
-    KGRetrievalResult,
-    execute_entity_query,
-    execute_multi_hop_query,
+from agentic_core.l2_execution.tools.kg_retrieval.kg_retrieval_executor import (
+    KGRetrievalExecutor,
 )
 
 # L4 Components (for storage)

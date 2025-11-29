@@ -39,17 +39,15 @@ from agentic_core.l1_planning.planners.lic_kg_retrieval_planning import (
 )
 
 # L2 Components
-from agentic_core.l2_execution.engines.outreach.lic_kg_retrieval_executor import (
+from agentic_core.l2_execution.tools.kg_retrieval.kg_retrieval_executor import (
     KGRetrievalExecutor,
-    KGRetrievalResult,
-    execute_entity_query,
 )
 from agentic_core.l2_execution.engines.triplet_extraction_executor import (
     TripletExtractionExecutor,
     ExtractionPlan,
     create_extraction_plan,
 )
-from agentic_core.l2_execution.engines.outreach.lic_invalidation_executor import (
+from agentic_core.l2_execution.tools.invalidation.invalidation_executor import (
     InvalidationExecutor,
     InvalidationPlan,
     InvalidationReason,
