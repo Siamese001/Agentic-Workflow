@@ -14,8 +14,8 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Protocol, Tuple, runtime_checkable
 
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext
 
 logger = logging.getLogger(__name__)
 

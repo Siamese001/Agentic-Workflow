@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from l5.interfaces import (
+from agentic_core.l5_safety.interfaces import (
     L5PolicyEnforcerInterface,
     L5SafetyCheckerInterface,
     L5RiskAssessmentInterface,
@@ -24,7 +24,7 @@ from l5.interfaces import (
     PolicyType,
     Action,
 )
-from l5.safety_validator import SafetyValidator, SafetyViolation
+from agentic_core.l5_safety.safety_validator import SafetyValidator, SafetyViolation
 from core.models.models import (
     ExecutionContext,
     SafetyResult,

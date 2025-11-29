@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 import logging
 from datetime import datetime
 
-from shared.prompts.prompt_composer import (
+from agentic_core.shared.prompts.prompt_composer import (
     PromptComposer, 
     AgentProfile,
     create_content_enhancer_profile

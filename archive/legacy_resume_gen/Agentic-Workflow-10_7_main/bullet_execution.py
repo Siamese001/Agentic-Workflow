@@ -68,7 +68,7 @@ class BulletExecutionStack(BaseAgent):
     async def critique_from_state_async(
         self, state: Dict[str, Any], workflow_id: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Extract bullets and critique prompt directly from shared state."""
+        """Extract bullets and critique prompt directly from agentic_core.shared state."""
 
         prompts_bucket = state.get("prompts", {})
         final_prompt = prompts_bucket.get("final_prompt")

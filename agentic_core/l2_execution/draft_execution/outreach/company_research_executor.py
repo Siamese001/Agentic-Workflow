@@ -6,7 +6,7 @@ This allows Phase 5 refinement without touching core L2.
 """
 
 # Re-export the original executor exactly as-is
-from l2.company_research_executor import (
+from agentic_core.l2_execution.company_research_executor import (
     CompanyResearchExecutor,
     CompanySearchConfig,
     CompanyResearchResult,

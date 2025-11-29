@@ -7,9 +7,9 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 from l4 import PineconeAdapter
-from l4.hybrid_search import HybridSearchExecutor, HybridSearchConfig, SearchResult
-from l4.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
-from l1.outreach_dataclasses import ArchetypeType
+from agentic_core.l4_memory.hybrid_search import HybridSearchExecutor, HybridSearchConfig, SearchResult
+from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
 from runtime.telemetry_bus import get_telemetry_bus
 
 

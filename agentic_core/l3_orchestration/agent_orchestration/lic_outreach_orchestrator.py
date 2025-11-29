@@ -14,42 +14,42 @@ from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Any, Union
 
 # L1 components (pure planning)
-from l1.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile
-from l1.research_planning import ResearchRefinementPlanner
-from l1.message_planning import MessagePlanner, MessageContent
-from l1.outreach_dataclasses import (
+from agentic_core.l1_planning.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile
+from agentic_core.l1_planning.research_planning import ResearchRefinementPlanner
+from agentic_core.l1_planning.message_planning import MessagePlanner, MessageContent
+from agentic_core.l1_planning.outreach_dataclasses import (
     OutreachMission,
     ArchetypeContext,
     ArchetypeType,
 )
 
 # LIC-specific L1 planners
-from l1.lic_profile_planner import LICProfilePlanner
-from l1.lic_research_planner import LICResearchPlanner
-from l1.lic_grounding_planner import LICGroundingPlanner
-from l1.lic_fusion_planner import LICFusionPlanner
-from l1.lic_persona_planner import LICPersonaPlanner
+from agentic_core.l1_planning.lic_profile_planner import LICProfilePlanner
+from agentic_core.l1_planning.lic_research_planner import LICResearchPlanner
+from agentic_core.l1_planning.lic_grounding_planner import LICGroundingPlanner
+from agentic_core.l1_planning.lic_fusion_planner import LICFusionPlanner
+from agentic_core.l1_planning.lic_persona_planner import LICPersonaPlanner
 
 # L2 components (pure execution)
-from l2.company_research_executor import CompanyResearchExecutor
-from l2.contact_research_executor import ContactResearchExecutor
-from l2.message_generation_executor import MessageGenerationExecutor
-from l2.lic_research_executor import LICResearchExecutor
-from l2.lic_message_executor import LICMessageExecutor
-from l2.interfaces import L2ExecutionResult
+from agentic_core.l2_execution.company_research_executor import CompanyResearchExecutor
+from agentic_core.l2_execution.contact_research_executor import ContactResearchExecutor
+from agentic_core.l2_execution.message_generation_executor import MessageGenerationExecutor
+from agentic_core.l2_execution.lic_research_executor import LICResearchExecutor
+from agentic_core.l2_execution.lic_message_executor import LICMessageExecutor
+from agentic_core.l2_execution.interfaces import L2ExecutionResult
 
 # L5 components (safety)
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext
 
 # Runtime components
 from runtime.telemetry_bus import get_telemetry_bus
 from runtime.execution_budget_manager import get_budget_manager, create_budget_limits_from_config
 
 # LIC-specific L4 components
-from l4.lic_vector_memory import LICVectorMemory
-from l4.lic_signal_scoring import LICSignalScoring
-from l4.lic_cache_critique import LICCacheCritique
+from agentic_core.l4_memory.lic_vector_memory import LICVectorMemory
+from agentic_core.l4_memory.lic_signal_scoring import LICSignalScoring
+from agentic_core.l4_memory.lic_cache_critique import LICCacheCritique
 
 
 logger = logging.getLogger(__name__)

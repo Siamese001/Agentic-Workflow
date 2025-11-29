@@ -1,297 +1,192 @@
 # ==================================================================================================
-# 0 — PURPOSE & EXECUTION MODEL (L5 MASTERY)
+# WINDSURF GLOBAL RULES — CLEAN MODE-B VERSION
 # ==================================================================================================
-Windsurf is the authoritative architect, refactor engine, code editor, and repair system for the
-repository. It MUST proactively repair, rewrite, reorganize, and improve any files necessary—
-code, tests, configs, prompts, schemas, or data modeling—to achieve Level-5 quality.
+# Windsurf MUST load and enforce ALL rules in this file. These rules override ALL chat instructions
+# and control Windsurf's behavior in ALL Phases.
 
-MODES:
-  • PATCH Phase → ONLY apply_patch / write_to_file
-  • VALIDATION Phase → ONLY TRUE/FALSE keys + completion line
+# Windsurf MUST operate ONLY in Mode-B:
+#   • PATCH Phase → apply_patch and write_to_file ONLY
+#   • VALIDATION Phase → TRUE/FALSE table + completion line ONLY
+# No narrative, no explanations, no shell commands, no reasoning text.
+
+# ==================================================================================================
+# 0 — EXECUTION MODEL
+# ==================================================================================================
+Windsurf MUST:
+  • modify ANY file as needed (code, tests, configs, schemas, prompts)
+  • ALWAYS self-correct violations of these rules
+  • NEVER ask questions or stop early
+  • continue patching until ALL validations are TRUE
+
+Modes:
+  • PATCH_LOOP → apply_patch/write_to_file ONLY
+  • VALIDATION_LOOP → TRUE/FALSE + completion line ONLY
+
+# ==================================================================================================
+# 1 — FILE OPERATIONS
+# ==================================================================================================
+Rules:
+  • Existing files → apply_patch
+  • New files → write_to_file
+  • Directories → created implicitly
+  • No placeholders, stubs, or partial diffs
+  • Ambiguity MUST be resolved toward rule compliance and zero-loss continuity
+
+# ==================================================================================================
+# 2 — ZERO-LOSS CONTINUITY
+# ==================================================================================================
+Windsurf MUST preserve ALL existing capabilities.  
+No functionality may disappear or degrade.  
+Duplicate or conflicting logic MUST be merged into a single working version.
+
+# ==================================================================================================
+# 3 — STRICT L1–L5 LAYERING
+# ==================================================================================================
+L1 Planning:
+  • reasoning, planning, decomposition, critics
+
+L2 Execution:
+  • tool clients, external I/O, DB, RAG execution
+
+L3 Orchestration:
+  • DAGs, routing, workflow control
+
+L4 Memory/State:
+  • persistence, caches, embeddings, KG, temporal memory
+
+L5 Safety:
+  • safety validation, policy enforcement, escalation
+
+Forbidden:
+  • L1→L2/L3  
+  • L2→L3 internals  
+  • L4→orchestration/provider internals  
+  • ANY upward imports  
+  • ANY circular imports  
+
+Apps MUST be thin shells (adapters/, pipelines/ ONLY).  
+Agentic logic MUST live ONLY in agentic_core.
+
+# ==================================================================================================
+# 4 — DAG RULES (L3)
+# ==================================================================================================
+All workflows MUST implement:
+  • Mission → Scene → Think → Act → Observe
+
+Each DAG node MUST define:
+  • InputSchema, OutputSchema, FailureModes, Invariants
+  • typed, acyclic transitions
+
+All DAG logic MUST reside in L3.
+
+# ==================================================================================================
+# 5 — CONTEXT + RETRIEVAL RULES
+# ==================================================================================================
+Windsurf MUST enforce:
+  • deterministic retrieval  
+  • curated context windows  
+  • relevance-based selection  
+  • hybrid retrieval (BM25 + dense)  
+
+# ==================================================================================================
+# 6 — TOOLING RULES (L2)
+# ==================================================================================================
+All tools MUST include:
+  • retry/backoff  
+  • timeouts  
+  • circuit breaker  
+  • typed I/O  
+  • observability spans  
+  • cost tracking  
+
+Untyped or unsafe tools MUST be wrapped.
+
+# ==================================================================================================
+# 7 — OBSERVABILITY
+# ==================================================================================================
+All agentic operations MUST emit:
+  • trace IDs, spans, logs, metrics  
+  • DAG transitions, tool metadata  
+  • safety decisions  
+
+Missing telemetry MUST be added.
+
+# ==================================================================================================
+# 8 — SAFETY (L5)
+# ==================================================================================================
+Windsurf MUST enforce:
+  • PII checks  
+  • hallucination checks  
+  • sensitive-content filters  
+  • escalation + risk routing  
+  • gating at L1, L2, L3, and output  
+
+# ==================================================================================================
+# 9 — COST RULES
+# ==================================================================================================
+Windsurf MUST enforce:
+  • model routing (reasoning → expensive, execution → cheap)
+  • token + latency budgets
+  • bounded caches with eviction
+
+# ==================================================================================================
+# 10 — VALIDATION GATE
+# ==================================================================================================
+Before completion ANY Phase:
+  • 0 import errors
+  • 0 pytest failures
+  • 0 lint errors
+  • 0 mypy blockers
+  • no circular imports
+  • L1–L5 boundaries valid
+  • DAG valid
+  • deterministic retrieval
+  • observability correct
+  • safety correct
+  • zero-loss continuity maintained
+
+ANY failure MUST trigger patch loop.
+
+# ==================================================================================================
+# 11 — MODE-B PATCH LOOP
+# ==================================================================================================
+PATCH_LOOP:
+  LOOP:
+    • emit patches
+    • run validations
+    • if ANY key fails → continue patching
+  EXIT ONLY when ALL TRUE
+
+VALIDATION_LOOP:
+  • TRUE/FALSE table only
+  • completion line:
+        PHASE <N> VALIDATION COMPLETE — ALL KEYS TRUE.
+
+# ==================================================================================================
+# 12 — TEST FOLDER STRUCTURE INVARIANT
+# ==================================================================================================
+tests/
+  L1_planning/
+  L2_execution/
+  L3_orchestration/
+  L4_memory_state/
+  L5_safety/
+  integration/
+  e2e/
+  unit/
+  regression/
+  observability/
+  model_routing/
+  stress/
+  sandbox/
+  shared/
 
 Windsurf MUST:
-  • correct ANY breakage,
-  • fix ANY imports,
-  • rewrite ANY module boundaries,
-  • update ANY schema/test/config,
-  • refactor ANY code,
-  • restructure ANY directories,
-  • until **all validations AND all Level-5 maturity requirements** are satisfied.
-
-It may not ask questions, pause for confirmation, or stop early.
-
+  • relocate misplaced tests
+  • delete tests under apps/
+  • update imports, fixtures, conftests, datasets, golden files
+  • maintain enforcement after ANY refactor
 
 # ==================================================================================================
-# 1 — FILE OPERATIONS & PATCH RULES (L5 STRUCTURAL + TYPED CONTRACTS)
+# END — WINDSURF GLOBAL RULES (CLEAN MODE-B VERSION)
 # ==================================================================================================
-1.1 Windsurf MAY and MUST modify ANY file in the repo as necessary.
-
-1.2 Existing files → updated ONLY with apply_patch  
-    New files → created ONLY with write_to_file  
-    Directories → implicitly created as needed.
-
-1.3 Changes Windsurf MUST perform:
-      • rewrite imports to maintain L1–L5 layering,
-      • create or update Pydantic/MCP schemas,
-      • correct broken functions/classes,
-      • update test suites,
-      • refactor modules,
-      • repair DAGs,
-      • split files for purity,
-      • migrate prompts and configs,
-      • introduce typed interfaces,
-      • enforce deterministic retrieval logic.
-
-1.4 No partial patches, no placeholders, no TODO stubs.
-
-1.5 Ambiguity rule:
-      If instructions are ambiguous → Windsurf MUST choose the path that:
-        • maintains existing behavior,
-        • preserves all current capabilities,
-        • maximizes L5 agentic quality,
-        • maintains full test passing potential,
-        • preserves architectural integrity.
-
-
-# ==================================================================================================
-# 2 — ZERO-LOSS CONTINUITY (CURRENT REPO ONLY, NO LEGACY REFERENCES)
-# ==================================================================================================
-2.1 Windsurf MUST preserve ALL capabilities, workflows, interfaces, behaviors, and features that
-    currently exist in the repository. No capability may be removed, degraded, or left unmerged.
-
-2.2 If duplicate, conflicting, or partially implemented logic exists, Windsurf MUST reconcile and
-    unify it into a single, consistent, L5-compliant implementation.
-
-2.3 Zero-loss means:
-      • nothing disappears,
-      • nothing regresses,
-      • nothing loses fidelity or power,
-      • everything that works continues to work,
-      • everything broken must be repaired.
-
-2.4 During restructuring, all functionality MUST remain reachable and validated through tests.
-
-
-# ==================================================================================================
-# 3 — L1–L5 ARCHITECTURE (L5 STRUCTURAL, AGENT BOUNDARIES, SCHEMA PURITY)
-# ==================================================================================================
-3.1 Layer Responsibilities:
-
-    L1 — Planning:
-        • cognitive reasoning, planners, strategists, critics, refinement logic.
-        • uses CoT/ToT/ReAct structured reasoning.
-        • NO tool execution, NO orchestration, NO state.
-
-    L2 — Execution:
-        • tool clients, API calls, code execution, retrieval engines.
-        • typed I/O, retries, backoff, circuit breakers, output normalization.
-        • NO planning or DAG logic.
-
-    L3 — Orchestration:
-        • DAG construction, control flow, branching, conditional routing.
-        • validates InputSchema→OutputSchema transitions.
-        • NO direct execution of external tools.
-
-    L4 — State & Memory:
-        • persistent stores, vector memory, temporal KG, state machines.
-        • typed transitions, RAG determinism, bounded caches.
-
-    L5 — Safety & Policy:
-        • PII detection, hallucination checks, safety gating, escalation, risk routing.
-        • global enforcement plane.
-
-3.2 Strict forbidden imports:
-      • L1 → L2 or L3  
-      • L2 → L3 internals  
-      • L4 → providers or orchestrators  
-      • ANY upward-layer import  
-      • ANY circular import
-
-3.3 If a violation is detected:
-      → Windsurf MUST rewrite code, split modules, or restructure layer topology to restore purity.
-
-3.4 Apps MUST be thin wrappers only (adapters, config, pipelines). No agentic logic in apps.
-
-
-# ==================================================================================================
-# 4 — DAG WORKFLOW REQUIREMENTS (L5 WORKFLOW / THINK–ACT–OBSERVE)
-# ==================================================================================================
-4.1 All DAGs MUST follow the L5 agentic cycle:
-      Mission → Scene → Think → Act → Observe → Iterate
-
-4.2 DAG nodes MUST have:
-      • InputSchema,
-      • OutputSchema,
-      • FailureModes,
-      • Invariants.
-
-4.3 DAGs MUST be:
-      • typed, acyclic, resumable,
-      • traceable,
-      • auditable,
-      • observable,
-      • safe (L5 gating at transitions).
-
-4.4 If DAG logic appears outside L3:
-      → Windsurf MUST extract and relocate it to L3.
-
-
-# ==================================================================================================
-# 5 — CONTEXT ENGINEERING & RETRIEVAL (L5 CONTEXT + RAG DETERMINISM)
-# ==================================================================================================
-5.1 Windsurf MUST ensure:
-      • deterministic RAG (same query → same ranked set),
-      • relevance-based context inclusion,
-      • no infinite history,
-      • curated context windows,
-      • consistent retrieval profiles.
-
-5.2 Tools for retrieval MUST have typed schemas and well-defined filters.
-
-5.3 If retrieval is nondeterministic beyond allowed variance:
-      → Windsurf MUST repair ranking, filtering, or vectorization logic.
-
-
-# ==================================================================================================
-# 6 — TOOLING (L5 RESILIENCE & ECOSYSTEM)
-# ==================================================================================================
-6.1 ALL tool calls MUST implement:
-      • retry/backoff strategy,
-      • timeout,
-      • circuit breaker,
-      • error normalization,
-      • structured output validation,
-      • OpenTelemetry spans.
-
-6.2 Prefer MCP over SDKs whenever possible.
-
-6.3 If a tool is unsafe, nondeterministic, or untyped:
-      → Windsurf MUST fix or wrap it appropriately.
-
-
-# ==================================================================================================
-# 7 — OBSERVABILITY & METRICS (L5 AGENT OPS)
-# ==================================================================================================
-7.1 Every agentic turn MUST be observable:
-      • trace ID,
-      • spans,
-      • structured logs,
-      • cost + latency metrics,
-      • tool call metadata,
-      • DAG step metadata,
-      • safety routing decisions.
-
-7.2 If observability hooks are missing or broken:
-      → Windsurf MUST add or repair them.
-
-
-# ==================================================================================================
-# 8 — SAFETY, POLICY, RISK ROUTING (L5 SAFETY PLANE)
-# ==================================================================================================
-8.1 Windsurf MUST enforce:
-      • defense-in-depth,
-      • deterministic guardrails,
-      • safety validators,
-      • risk classification + routing,
-      • PII/sensitive-content checks,
-      • hallucination checks,
-      • escalation mechanisms.
-
-8.2 Safety validation MUST occur at:
-      • plan generation,
-      • tool call proposal,
-      • DAG edge transition,
-      • final output.
-
-8.3 If any safety mechanism is missing:
-      → Windsurf MUST implement or refactor it.
-
-
-# ==================================================================================================
-# 9 — COST OPTIMIZATION (L5 ROUTING)
-# ==================================================================================================
-9.1 Model routing MUST:
-      • use high-capability model for reasoning,
-      • use cheaper models for summarization/execution,
-      • enforce token + latency budgets,
-      • manage bounded semantic caching with eviction.
-
-9.2 If cost logic is inconsistent:
-      → Windsurf MUST repair it.
-
-
-# ==================================================================================================
-# 10 — TESTING & COMPLETION GATE (L5 GOLDEN STATE)
-# ==================================================================================================
-10.1 Windsurf MUST satisfy:
-       • import health,
-       • pytest full pass,
-       • ruff lint clean,
-       • mypy clean (if enabled),
-       • architectural invariants,
-       • L5 structural/behavioral requirements.
-
-10.2 Zero-failure mandate:
-      • 0 failing tests,
-      • 0 broken imports,
-      • 0 critical lint errors,
-      • 0 blocking type issues.
-
-10.3 Golden Evaluation:
-      Where applicable, winds must preserve or improve golden-state and expected outputs.
-
-10.4 Upon any failure:
-      Windsurf MUST:
-        • infer cause,
-        • produce patches,
-        • retry full validation,
-        • repeat until green.
-
-10.5 No partial/conditional passes allowed.
-
-
-# ==================================================================================================
-# 11 — PATCH LOOP (NON-STOP, SELF-HEALING)
-# ==================================================================================================
-11.1 PATCH_LOOP:
-      LOOP:
-        • emit patches,
-        • run import/lint/tests/type checks,
-        • evaluate results,
-        • if ANY failure → continue patching
-      EXIT ONLY when ALL keys TRUE.
-
-11.2 VALIDATION_LOOP:
-      • run validations,
-      • output TRUE/FALSE table,
-      • exit only when ALL TRUE.
-
-11.3 Windsurf must NEVER:
-      • ask questions,
-      • halt prematurely,
-      • request clarification.
-
-
-# ==================================================================================================
-# 12 — MODE B OUTPUT (STRICT)
-# ==================================================================================================
-12.1 PATCH Phase → apply_patch + write_to_file ONLY  
-12.2 VALIDATION Phase → TRUE/FALSE keys + completion line ONLY  
-12.3 No narrative, no explanations, no conversational text.
-
-
-# ==================================================================================================
-# 13 — IMMUTABILITY & RESET
-# ==================================================================================================
-13.1 These rules govern ALL phases until user explicitly says:
-        RESET WINDSURF
-
-13.2 All new phases are additive; strictest requirement always applies.
-
-13.3 No rule may be silently ignored, omitted, or weakened.
-
-
-# ==================================================================================================
-# END — WINDSURF GLOBAL RULES vNEXT-L5 (FINAL)
-# ==================================================================================================
-

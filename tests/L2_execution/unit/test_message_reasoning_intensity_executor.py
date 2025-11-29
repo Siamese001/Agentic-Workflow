@@ -7,7 +7,7 @@ exported by L1 MessagePlan, including prompt construction and temperature usage.
 
 import pytest
 from unittest.mock import Mock
-from agentic_core.l2_execution.message_generation_executor import (
+from agentic_core.l2_execution.rag_execution.message_generation_executor import (
     MessageGenerationExecutor,
     GenerationContext,
     MessageSection,

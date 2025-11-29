@@ -5,21 +5,21 @@ Coordinates all atomic layers for resume processing workflows.
 """
 
 from typing import Any, Dict, Protocol, Optional
-from l1.strategy_planning import plan_strategy
-from l1.draft_planning import plan_drafting
-from l1.qa_planning import plan_qa
-from l1.safety_planning import plan_safety
-from l1.result_parser import ResultParser
-from l2.llm_caller import LLMCaller
-from l2.strategy_executor import StrategyExecutor
-from l2.draft_executor import DraftExecutor
-from l2.qa_executor import QAExecutor
-from l2.safety_executor import SafetyExecutor
-from l3.strategy_orchestrator import StrategyOrchestrator
-from l3.draft_orchestrator import DraftOrchestrator
-from l3.qa_orchestrator import QAOrchestrator
-from l3.safety_orchestrator import SafetyOrchestrator
-from l3.outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
+from agentic_core.l1_planning.strategy_planning import plan_strategy
+from agentic_core.l1_planning.draft_planning import plan_drafting
+from agentic_core.l1_planning.qa_planning import plan_qa
+from agentic_core.l1_planning.safety_planning import plan_safety
+from agentic_core.l1_planning.result_parser import ResultParser
+from agentic_core.l2_execution.llm_caller import LLMCaller
+from agentic_core.l2_execution.strategy_executor import StrategyExecutor
+from agentic_core.l2_execution.draft_executor import DraftExecutor
+from agentic_core.l2_execution.qa_executor import QAExecutor
+from agentic_core.l2_execution.safety_executor import SafetyExecutor
+from agentic_core.l3_orchestration.strategy_orchestrator import StrategyOrchestrator
+from agentic_core.l3_orchestration.draft_orchestrator import DraftOrchestrator
+from agentic_core.l3_orchestration.qa_orchestrator import QAOrchestrator
+from agentic_core.l3_orchestration.safety_orchestrator import SafetyOrchestrator
+from agentic_core.l3_orchestration.outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
 from runtime.observability import record_event
 
 # Protocol interfaces for L4/L5 dependency injection
