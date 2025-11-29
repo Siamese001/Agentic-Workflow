@@ -81,6 +81,10 @@ class K2InsightsExecutor:
             "medium": 0.6,
             "low": 0.4
         }
+
+
+# Alias for backward compatibility with tests
+LIC_K2_Insights = K2InsightsExecutor
     
     def execute(
         self,
