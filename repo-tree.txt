@@ -14,17 +14,6 @@ Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE
 |   __init__.py
 |   
-+---config
-|       agent_profile.py
-|       budget_profile.py
-|       config_profiles_v10_10.py
-|       context_profile.py
-|       llm_profile.py
-|       meta_profile.py
-|       retrieval_profile.py
-|       safety_profile.py
-|       __init__.py
-|       
 +---l1_planning
 |   +---draft_planning
 |   |   |   lic_draft_planning.py
@@ -55,15 +44,13 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   __init__.py
 |   |   |   
 |   |   +---builders
-|   |   |   |   prompt_builder.py
-|   |   |   |   
-|   |   |   \---__pycache__
+|   |   |       prompt_builder.py
+|   |   |       
 |   |   +---cms
-|   |   |   |   compiler.py
-|   |   |   |   schemas.py
-|   |   |   |   store.py
-|   |   |   |   
-|   |   |   \---__pycache__
+|   |   |       compiler.py
+|   |   |       schemas.py
+|   |   |       store.py
+|   |   |       
 |   |   \---__pycache__
 |   |           lic_plan_schema.cpython-312.pyc
 |   |           __init__.cpython-312.pyc
@@ -127,13 +114,19 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   |   strategy_executor.py
 |   |   |   __init__.py
 |   |   |   
-|   |   \---outreach
-|   |       |   company_research_executor.py
-|   |       |   contact_research_executor.py
-|   |       |   message_generation_executor.py
-|   |       |   outreach_batch_executor.py
-|   |       |   
-|   |       \---__pycache__
+|   |   +---outreach
+|   |   |   |   company_research_executor.py
+|   |   |   |   contact_research_executor.py
+|   |   |   |   message_generation_executor.py
+|   |   |   |   outreach_batch_executor.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           company_research_executor.cpython-312.pyc
+|   |   |           contact_research_executor.cpython-312.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           __init__.cpython-312.pyc
+|   |           
 |   +---mcp
 |   +---rag_execution
 |   |   |   lic_company_research_executor.py
@@ -147,13 +140,33 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   +---kg
 |   |   |       kg_writer.py
 |   |   |       
-|   |   \---vector
-|   |           vector_search_executor.py
+|   |   +---vector
+|   |   |       vector_search_executor.py
+|   |   |       
+|   |   \---__pycache__
+|   |           message_generation_executor.cpython-312.pyc
+|   |           triplet_extraction_executor.cpython-312.pyc
+|   |           __init__.cpython-312.pyc
 |   |           
 |   +---subatomic
 |   |       content_enhancer.py
 |   |       __init__.py
 |   |       
+|   +---tools
+|   |   |   __init__.py
+|   |   |   
+|   |   +---filesystem
+|   |   |       __init__.py
+|   |   |       
+|   |   +---neo4j
+|   |   |       __init__.py
+|   |   |       
+|   |   +---search
+|   |   |       __init__.py
+|   |   |       
+|   |   \---__pycache__
+|   |           __init__.cpython-312.pyc
+|   |           
 |   \---tool_clients
 |           llm_caller.py
 |           outreach_llm_caller.py
@@ -247,24 +260,40 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |       \---__pycache__
 |               __init__.cpython-312.pyc
 |               
-+---runtime
++---shared
+|   |   rg_constants.py
 |   |   __init__.py
 |   |   
-|   +---runtime
-|   |   |   main.py
-|   |   |   unified_router.py
-|   |   |   __init__.py
-|   |   |   
-|   |   +---observability
-|   |   |   \---__pycache__
-|   |   +---trace
-|   |   |   \---__pycache__
-|   |   \---__pycache__
-|   |           unified_router.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   \---__pycache__
-|           __init__.cpython-312.pyc
+|   +---constants
+|   |       rg_constants.py
+|   |       __init__.py
+|   |       
+|   +---prompts
+|   |       context_layer.py
+|   |       framing_layer.py
+|   |       output_layer.py
+|   |       prompt_composer.py
+|   |       reasoning_layer.py
+|   |       safety_layer.py
+|   |       tooling_layer.py
+|   |       __init__.py
+|   |       
+|   +---schemas
+|   |       lic_config.py
+|   |       lic_constraints.py
+|   |       lic_schemas.py
+|   |       lic_templates.py
+|   |       __init__.py
+|   |       
+|   \---utils
+|           .keep
+|           graph_query.py
+|           graph_store_neo4j.py
+|           rg_demo.py
+|           rg_low_complexity_utils.py
+|           rg_models.py
+|           rg_rendering.py
+|           __init__.py
 |           
 \---__pycache__
         __init__.cpython-312.pyc
@@ -283,142 +312,18 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   +---adapters
 |   |       __init__.py
 |   |       
-|   +---config
-|   |       .keep
-|   |       lic_assembly.py
-|   |       lic_cta.py
-|   |       lic_routing.py
-|   |       lic_seniority.py
-|   |       lic_tone.py
-|   |       lic_validation.py
-|   |       __init__.py
-|   |       
-|   +---extensions
-|   |       .keep
-|   |       constitutional_ai_system.py
-|   |       content_quality_enhancements.py
-|   |       enhanced_semantic_cache.py
-|   |       enhancement_demo.py
-|   |       goal_alignment_engine.py
-|   |       hybrid_scoring.py
-|   |       intelligence_bundles.py
-|   |       meta_learning_system.py
-|   |       README.md
-|   |       retrieval_enhancements.py
-|   |       safety_enhancements.py
-|   |       __init__.py
-|   |       
-|   +---legacy
-|   |   |   .keep
-|   |   |   lic_demo.py
-|   |   |   lic_enhanced_features_demo.py
-|   |   |   lic_enhanced_orchestrator.py
-|   |   |   lic_fusion_planner.py
-|   |   |   lic_grounding_planner.py
-|   |   |   lic_insights.py
-|   |   |   lic_message_planner.py
-|   |   |   lic_orchestrator.py
-|   |   |   lic_persona_planner.py
-|   |   |   lic_profile_planner.py
-|   |   |   lic_rag.py
-|   |   |   lic_research_planner.py
-|   |   |   __init__.py
-|   |   |   
-|   |   \---__pycache__
-|   |           lic_fusion_planner.cpython-312.pyc
-|   |           lic_grounding_planner.cpython-312.pyc
-|   |           lic_message_planner.cpython-312.pyc
-|   |           lic_persona_planner.cpython-312.pyc
-|   |           lic_profile_planner.cpython-312.pyc
-|   |           lic_research_planner.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   +---pipelines
-|   |       __init__.py
-|   |       
-|   +---tests
-|   |       __init__.py
-|   |       
-|   +---utils
-|   |       .keep
-|   |       __init__.py
-|   |       
-|   \---__pycache__
-|           fusion_planner.cpython-312.pyc
-|           grounding_planner.cpython-312.pyc
-|           message_planner.cpython-312.pyc
-|           models.cpython-312.pyc
-|           persona_planner.cpython-312.pyc
-|           profile_planner.cpython-312.pyc
-|           research_planner.cpython-312.pyc
-|           __init__.cpython-312.pyc
+|   \---pipelines
+|           __init__.py
 |           
-+---resume_engine
-|   |   __init__.py
-|   |   
-|   +---adapters
-|   |       __init__.py
-|   |       
-|   +---config
-|   |   |   .keep
-|   |   |   rg_config.py
-|   |   |   __init__.py
-|   |   |   
-|   |   \---__pycache__
-|   |           rg_constants.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   +---legacy
-|   |   |   .keep
-|   |   |   rg_orchestrator.py
-|   |   |   rg_planner.py
-|   |   |   rg_state.py
-|   |   |   __init__.py
-|   |   |   
-|   |   \---__pycache__
-|   |           rg_orchestrator.cpython-312.pyc
-|   |           rg_planner.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   +---pipelines
-|   |       __init__.py
-|   |       
-|   +---tests
-|   |       __init__.py
-|   |       
-|   +---utils
-|   |   |   .keep
-|   |   |   __init__.py
-|   |   |   
-|   |   \---__pycache__
-|   |           rg_low_complexity_utils.cpython-312.pyc
-|   |           rg_models.cpython-312.pyc
-|   |           __init__.cpython-312.pyc
-|   |           
-|   \---__pycache__
-|           config.cpython-312.pyc
-|           constants.cpython-312.pyc
-|           models.cpython-312.pyc
-|           rendering.cpython-312.pyc
-|           rg_constants.cpython-312.pyc
-|           rg_k1_extract.cpython-312.pyc
-|           rg_k2_clean.cpython-312.pyc
-|           rg_k3_quantify.cpython-312.pyc
-|           rg_k4_rewrite.cpython-312.pyc
-|           rg_k5_skillmap.cpython-312.pyc
-|           rg_k6_assemble.cpython-312.pyc
-|           rg_k7_format.cpython-312.pyc
-|           rg_k8_validate.cpython-312.pyc
-|           rg_low_complexity_utils.cpython-312.pyc
-|           rg_models.cpython-312.pyc
-|           rg_orchestrator.cpython-312.pyc
-|           rg_planner.cpython-312.pyc
-|           state.cpython-312.pyc
-|           __init__.cpython-312.pyc
-|           
-\---__pycache__
-        __init__.cpython-312.pyc
-        
+\---resume_engine
+    |   __init__.py
+    |   
+    +---adapters
+    |       __init__.py
+    |       
+    \---pipelines
+            __init__.py
+            
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\data ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -501,8 +406,25 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   __init__.py
 |   
 +---config
+|       .keep
+|       agent_profile.py
+|       budget_profile.py
+|       config_profiles_v10_10.py
+|       context_profile.py
+|       lic_assembly.py
+|       lic_cta.py
+|       lic_routing.py
+|       lic_seniority.py
+|       lic_tone.py
+|       lic_validation.py
+|       llm_profile.py
+|       meta_profile.py
+|       retrieval_profile.py
+|       rg_config.py
+|       safety_profile.py
 |       __init__.py
 |       
++---data
 +---environment
 |       __init__.py
 |       
@@ -514,42 +436,6 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |       
 \---__pycache__
         __init__.cpython-312.pyc
-        
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\shared ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\SHARED
-|   __init__.py
-|   
-+---constants
-|       rg_constants.py
-|       __init__.py
-|       
-+---prompts
-|       context_layer.py
-|       framing_layer.py
-|       output_layer.py
-|       prompt_composer.py
-|       reasoning_layer.py
-|       safety_layer.py
-|       tooling_layer.py
-|       __init__.py
-|       
-+---schemas
-|       lic_config.py
-|       lic_constraints.py
-|       lic_schemas.py
-|       lic_templates.py
-|       __init__.py
-|       
-\---utils
-        graph_query.py
-        graph_store_neo4j.py
-        rg_demo.py
-        rg_low_complexity_utils.py
-        rg_models.py
-        rg_rendering.py
-        __init__.py
         
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\tests ===
 Folder PATH listing
@@ -1350,43 +1236,11 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
         test_resume_engine_integration.cpython-312-pytest-8.3.4.pyc
         __init__.cpython-312.pyc
         
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\tools ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\TOOLS
-+---browser
-|       __init__.py
-|       
-+---filesystem
-|       __init__.py
-|       
-+---neo4j
-|       __init__.py
-|       
-\---search
-        __init__.py
-        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\windsurf_rules ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\WINDSURF_RULES
-    Unified Windsurf Rules 00-10.md
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\config ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\CONFIG
-    agent_profile.py
-    budget_profile.py
-    config_profiles_v10_10.py
-    context_profile.py
-    llm_profile.py
-    meta_profile.py
-    retrieval_profile.py
-    safety_profile.py
-    __init__.py
+    Windsurf Rules.md
     
 No subfolders exist 
 
@@ -1423,15 +1277,13 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   __init__.py
 |   |   
 |   +---builders
-|   |   |   prompt_builder.py
-|   |   |   
-|   |   \---__pycache__
+|   |       prompt_builder.py
+|   |       
 |   +---cms
-|   |   |   compiler.py
-|   |   |   schemas.py
-|   |   |   store.py
-|   |   |   
-|   |   \---__pycache__
+|   |       compiler.py
+|   |       schemas.py
+|   |       store.py
+|   |       
 |   \---__pycache__
 |           lic_plan_schema.cpython-312.pyc
 |           __init__.cpython-312.pyc
@@ -1498,13 +1350,19 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   |   strategy_executor.py
 |   |   __init__.py
 |   |   
-|   \---outreach
-|       |   company_research_executor.py
-|       |   contact_research_executor.py
-|       |   message_generation_executor.py
-|       |   outreach_batch_executor.py
-|       |   
-|       \---__pycache__
+|   +---outreach
+|   |   |   company_research_executor.py
+|   |   |   contact_research_executor.py
+|   |   |   message_generation_executor.py
+|   |   |   outreach_batch_executor.py
+|   |   |   
+|   |   \---__pycache__
+|   |           company_research_executor.cpython-312.pyc
+|   |           contact_research_executor.cpython-312.pyc
+|   |           
+|   \---__pycache__
+|           __init__.cpython-312.pyc
+|           
 +---mcp
 +---rag_execution
 |   |   lic_company_research_executor.py
@@ -1518,13 +1376,33 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   +---kg
 |   |       kg_writer.py
 |   |       
-|   \---vector
-|           vector_search_executor.py
+|   +---vector
+|   |       vector_search_executor.py
+|   |       
+|   \---__pycache__
+|           message_generation_executor.cpython-312.pyc
+|           triplet_extraction_executor.cpython-312.pyc
+|           __init__.cpython-312.pyc
 |           
 +---subatomic
 |       content_enhancer.py
 |       __init__.py
 |       
++---tools
+|   |   __init__.py
+|   |   
+|   +---filesystem
+|   |       __init__.py
+|   |       
+|   +---neo4j
+|   |       __init__.py
+|   |       
+|   +---search
+|   |       __init__.py
+|   |       
+|   \---__pycache__
+|           __init__.cpython-312.pyc
+|           
 \---tool_clients
         llm_caller.py
         outreach_llm_caller.py
@@ -1627,27 +1505,43 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
     \---__pycache__
             __init__.cpython-312.pyc
             
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\runtime ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\shared ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\RUNTIME
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\SHARED
+|   rg_constants.py
 |   __init__.py
 |   
-+---runtime
-|   |   main.py
-|   |   unified_router.py
-|   |   __init__.py
-|   |   
-|   +---observability
-|   |   \---__pycache__
-|   +---trace
-|   |   \---__pycache__
-|   \---__pycache__
-|           unified_router.cpython-312.pyc
-|           __init__.cpython-312.pyc
-|           
-\---__pycache__
-        __init__.cpython-312.pyc
++---constants
+|       rg_constants.py
+|       __init__.py
+|       
++---prompts
+|       context_layer.py
+|       framing_layer.py
+|       output_layer.py
+|       prompt_composer.py
+|       reasoning_layer.py
+|       safety_layer.py
+|       tooling_layer.py
+|       __init__.py
+|       
++---schemas
+|       lic_config.py
+|       lic_constraints.py
+|       lic_schemas.py
+|       lic_templates.py
+|       __init__.py
+|       
+\---utils
+        .keep
+        graph_query.py
+        graph_store_neo4j.py
+        rg_demo.py
+        rg_low_complexity_utils.py
+        rg_models.py
+        rg_rendering.py
+        __init__.py
         
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l1_planning\draft_planning ===
 Folder PATH listing
@@ -1681,15 +1575,13 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   __init__.py
 |   
 +---builders
-|   |   prompt_builder.py
-|   |   
-|   \---__pycache__
+|       prompt_builder.py
+|       
 +---cms
-|   |   compiler.py
-|   |   schemas.py
-|   |   store.py
-|   |   
-|   \---__pycache__
+|       compiler.py
+|       schemas.py
+|       store.py
+|       
 \---__pycache__
         lic_plan_schema.cpython-312.pyc
         __init__.cpython-312.pyc
@@ -1737,18 +1629,20 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\L1_PLANNING\DRAFT_PLANNING\BUILDERS
-|   prompt_builder.py
-|   
-\---__pycache__
+    prompt_builder.py
+    
+No subfolders exist 
+
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l1_planning\draft_planning\cms ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\L1_PLANNING\DRAFT_PLANNING\CMS
-|   compiler.py
-|   schemas.py
-|   store.py
-|   
-\---__pycache__
+    compiler.py
+    schemas.py
+    store.py
+    
+No subfolders exist 
+
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l1_planning\strategy_planning\persona_planning ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -1796,13 +1690,19 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   strategy_executor.py
 |   __init__.py
 |   
-\---outreach
-    |   company_research_executor.py
-    |   contact_research_executor.py
-    |   message_generation_executor.py
-    |   outreach_batch_executor.py
-    |   
-    \---__pycache__
++---outreach
+|   |   company_research_executor.py
+|   |   contact_research_executor.py
+|   |   message_generation_executor.py
+|   |   outreach_batch_executor.py
+|   |   
+|   \---__pycache__
+|           company_research_executor.cpython-312.pyc
+|           contact_research_executor.cpython-312.pyc
+|           
+\---__pycache__
+        __init__.cpython-312.pyc
+        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\mcp ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -1824,8 +1724,13 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 +---kg
 |       kg_writer.py
 |       
-\---vector
-        vector_search_executor.py
++---vector
+|       vector_search_executor.py
+|       
+\---__pycache__
+        message_generation_executor.cpython-312.pyc
+        triplet_extraction_executor.cpython-312.pyc
+        __init__.cpython-312.pyc
         
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\subatomic ===
 Folder PATH listing
@@ -1836,6 +1741,24 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
     
 No subfolders exist 
 
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\tools ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\L2_EXECUTION\TOOLS
+|   __init__.py
+|   
++---filesystem
+|       __init__.py
+|       
++---neo4j
+|       __init__.py
+|       
++---search
+|       __init__.py
+|       
+\---__pycache__
+        __init__.cpython-312.pyc
+        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\tool_clients ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -1857,6 +1780,9 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 |   outreach_batch_executor.py
 |   
 \---__pycache__
+        company_research_executor.cpython-312.pyc
+        contact_research_executor.cpython-312.pyc
+        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\rag_execution\kg ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -1870,6 +1796,30 @@ Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\L2_EXECUTION\RAG_EXECUTION\VECTOR
     vector_search_executor.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\tools\filesystem ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\L2_EXECUTION\TOOLS\FILESYSTEM
+    __init__.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\tools\neo4j ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\L2_EXECUTION\TOOLS\NEO4J
+    __init__.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\l2_execution\tools\search ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\L2_EXECUTION\TOOLS\SEARCH
+    __init__.py
     
 No subfolders exist 
 
@@ -2010,32 +1960,57 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 \---__pycache__
         __init__.cpython-312.pyc
         
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\runtime\runtime ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\shared\constants ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\RUNTIME\RUNTIME
-|   main.py
-|   unified_router.py
-|   __init__.py
-|   
-+---observability
-|   \---__pycache__
-+---trace
-|   \---__pycache__
-\---__pycache__
-        unified_router.cpython-312.pyc
-        __init__.cpython-312.pyc
-        
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\runtime\runtime\observability ===
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\SHARED\CONSTANTS
+    rg_constants.py
+    __init__.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\shared\prompts ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\RUNTIME\RUNTIME\OBSERVABILITY
-\---__pycache__
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\runtime\runtime\trace ===
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\SHARED\PROMPTS
+    context_layer.py
+    framing_layer.py
+    output_layer.py
+    prompt_composer.py
+    reasoning_layer.py
+    safety_layer.py
+    tooling_layer.py
+    __init__.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\shared\schemas ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\RUNTIME\RUNTIME\TRACE
-\---__pycache__
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\SHARED\SCHEMAS
+    lic_config.py
+    lic_constraints.py
+    lic_schemas.py
+    lic_templates.py
+    __init__.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\agentic_core\shared\utils ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\AGENTIC_CORE\SHARED\UTILS
+    .keep
+    graph_query.py
+    graph_store_neo4j.py
+    rg_demo.py
+    rg_low_complexity_utils.py
+    rg_models.py
+    rg_rendering.py
+    __init__.py
+    
+No subfolders exist 
+
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -2047,75 +2022,8 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 +---adapters
 |       __init__.py
 |       
-+---config
-|       .keep
-|       lic_assembly.py
-|       lic_cta.py
-|       lic_routing.py
-|       lic_seniority.py
-|       lic_tone.py
-|       lic_validation.py
-|       __init__.py
-|       
-+---extensions
-|       .keep
-|       constitutional_ai_system.py
-|       content_quality_enhancements.py
-|       enhanced_semantic_cache.py
-|       enhancement_demo.py
-|       goal_alignment_engine.py
-|       hybrid_scoring.py
-|       intelligence_bundles.py
-|       meta_learning_system.py
-|       README.md
-|       retrieval_enhancements.py
-|       safety_enhancements.py
-|       __init__.py
-|       
-+---legacy
-|   |   .keep
-|   |   lic_demo.py
-|   |   lic_enhanced_features_demo.py
-|   |   lic_enhanced_orchestrator.py
-|   |   lic_fusion_planner.py
-|   |   lic_grounding_planner.py
-|   |   lic_insights.py
-|   |   lic_message_planner.py
-|   |   lic_orchestrator.py
-|   |   lic_persona_planner.py
-|   |   lic_profile_planner.py
-|   |   lic_rag.py
-|   |   lic_research_planner.py
-|   |   __init__.py
-|   |   
-|   \---__pycache__
-|           lic_fusion_planner.cpython-312.pyc
-|           lic_grounding_planner.cpython-312.pyc
-|           lic_message_planner.cpython-312.pyc
-|           lic_persona_planner.cpython-312.pyc
-|           lic_profile_planner.cpython-312.pyc
-|           lic_research_planner.cpython-312.pyc
-|           __init__.cpython-312.pyc
-|           
-+---pipelines
-|       __init__.py
-|       
-+---tests
-|       __init__.py
-|       
-+---utils
-|       .keep
-|       __init__.py
-|       
-\---__pycache__
-        fusion_planner.cpython-312.pyc
-        grounding_planner.cpython-312.pyc
-        message_planner.cpython-312.pyc
-        models.cpython-312.pyc
-        persona_planner.cpython-312.pyc
-        profile_planner.cpython-312.pyc
-        research_planner.cpython-312.pyc
-        __init__.cpython-312.pyc
+\---pipelines
+        __init__.py
         
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine ===
 Folder PATH listing
@@ -2126,62 +2034,8 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 +---adapters
 |       __init__.py
 |       
-+---config
-|   |   .keep
-|   |   rg_config.py
-|   |   __init__.py
-|   |   
-|   \---__pycache__
-|           rg_constants.cpython-312.pyc
-|           __init__.cpython-312.pyc
-|           
-+---legacy
-|   |   .keep
-|   |   rg_orchestrator.py
-|   |   rg_planner.py
-|   |   rg_state.py
-|   |   __init__.py
-|   |   
-|   \---__pycache__
-|           rg_orchestrator.cpython-312.pyc
-|           rg_planner.cpython-312.pyc
-|           __init__.cpython-312.pyc
-|           
-+---pipelines
-|       __init__.py
-|       
-+---tests
-|       __init__.py
-|       
-+---utils
-|   |   .keep
-|   |   __init__.py
-|   |   
-|   \---__pycache__
-|           rg_low_complexity_utils.cpython-312.pyc
-|           rg_models.cpython-312.pyc
-|           __init__.cpython-312.pyc
-|           
-\---__pycache__
-        config.cpython-312.pyc
-        constants.cpython-312.pyc
-        models.cpython-312.pyc
-        rendering.cpython-312.pyc
-        rg_constants.cpython-312.pyc
-        rg_k1_extract.cpython-312.pyc
-        rg_k2_clean.cpython-312.pyc
-        rg_k3_quantify.cpython-312.pyc
-        rg_k4_rewrite.cpython-312.pyc
-        rg_k5_skillmap.cpython-312.pyc
-        rg_k6_assemble.cpython-312.pyc
-        rg_k7_format.cpython-312.pyc
-        rg_k8_validate.cpython-312.pyc
-        rg_low_complexity_utils.cpython-312.pyc
-        rg_models.cpython-312.pyc
-        rg_orchestrator.cpython-312.pyc
-        rg_planner.cpython-312.pyc
-        state.cpython-312.pyc
-        __init__.cpython-312.pyc
+\---pipelines
+        __init__.py
         
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\adapters ===
 Folder PATH listing
@@ -2191,90 +2045,10 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\config ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\CONFIG
-    .keep
-    lic_assembly.py
-    lic_cta.py
-    lic_routing.py
-    lic_seniority.py
-    lic_tone.py
-    lic_validation.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\extensions ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\EXTENSIONS
-    .keep
-    constitutional_ai_system.py
-    content_quality_enhancements.py
-    enhanced_semantic_cache.py
-    enhancement_demo.py
-    goal_alignment_engine.py
-    hybrid_scoring.py
-    intelligence_bundles.py
-    meta_learning_system.py
-    README.md
-    retrieval_enhancements.py
-    safety_enhancements.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\legacy ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\LEGACY
-|   .keep
-|   lic_demo.py
-|   lic_enhanced_features_demo.py
-|   lic_enhanced_orchestrator.py
-|   lic_fusion_planner.py
-|   lic_grounding_planner.py
-|   lic_insights.py
-|   lic_message_planner.py
-|   lic_orchestrator.py
-|   lic_persona_planner.py
-|   lic_profile_planner.py
-|   lic_rag.py
-|   lic_research_planner.py
-|   __init__.py
-|   
-\---__pycache__
-        lic_fusion_planner.cpython-312.pyc
-        lic_grounding_planner.cpython-312.pyc
-        lic_message_planner.cpython-312.pyc
-        lic_persona_planner.cpython-312.pyc
-        lic_profile_planner.cpython-312.pyc
-        lic_research_planner.cpython-312.pyc
-        __init__.cpython-312.pyc
-        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\pipelines ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\PIPELINES
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\tests ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\TESTS
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\utils ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\UTILS
-    .keep
     __init__.py
     
 No subfolders exist 
@@ -2287,33 +2061,6 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\config ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\CONFIG
-|   .keep
-|   rg_config.py
-|   __init__.py
-|   
-\---__pycache__
-        rg_constants.cpython-312.pyc
-        __init__.cpython-312.pyc
-        
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\legacy ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\LEGACY
-|   .keep
-|   rg_orchestrator.py
-|   rg_planner.py
-|   rg_state.py
-|   __init__.py
-|   
-\---__pycache__
-        rg_orchestrator.cpython-312.pyc
-        rg_planner.cpython-312.pyc
-        __init__.cpython-312.pyc
-        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\pipelines ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -2322,26 +2069,6 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\tests ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\TESTS
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\utils ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\UTILS
-|   .keep
-|   __init__.py
-|   
-\---__pycache__
-        rg_low_complexity_utils.cpython-312.pyc
-        rg_models.cpython-312.pyc
-        __init__.cpython-312.pyc
-        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\data\production_inputs ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
@@ -2522,8 +2249,30 @@ No subfolders exist
 Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\RUNTIME\CONFIG
+    .keep
+    agent_profile.py
+    budget_profile.py
+    config_profiles_v10_10.py
+    context_profile.py
+    lic_assembly.py
+    lic_cta.py
+    lic_routing.py
+    lic_seniority.py
+    lic_tone.py
+    lic_validation.py
+    llm_profile.py
+    meta_profile.py
+    retrieval_profile.py
+    rg_config.py
+    safety_profile.py
     __init__.py
     
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\runtime\data ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\RUNTIME\DATA
 No subfolders exist 
 
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\runtime\environment ===
@@ -2546,56 +2295,6 @@ No subfolders exist
 Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\RUNTIME\TELEMETRY
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\shared\constants ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\SHARED\CONSTANTS
-    rg_constants.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\shared\prompts ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\SHARED\PROMPTS
-    context_layer.py
-    framing_layer.py
-    output_layer.py
-    prompt_composer.py
-    reasoning_layer.py
-    safety_layer.py
-    tooling_layer.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\shared\schemas ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\SHARED\SCHEMAS
-    lic_config.py
-    lic_constraints.py
-    lic_schemas.py
-    lic_templates.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\shared\utils ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\SHARED\UTILS
-    graph_query.py
-    graph_store_neo4j.py
-    rg_demo.py
-    rg_low_complexity_utils.py
-    rg_models.py
-    rg_rendering.py
     __init__.py
     
 No subfolders exist 
@@ -4235,35 +3934,3 @@ C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES
 \---__pycache__
         test_lic_imports.cpython-312-pytest-8.3.4.pyc
         
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\tools\browser ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\TOOLS\BROWSER
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\tools\filesystem ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\TOOLS\FILESYSTEM
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\tools\neo4j ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\TOOLS\NEO4J
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\tools\search ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\TOOLS\SEARCH
-    __init__.py
-    
-No subfolders exist 
-
