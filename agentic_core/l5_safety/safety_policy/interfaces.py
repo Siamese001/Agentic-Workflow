@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
-from l5.types import Severity
+from agentic_core.l5_safety.types import Severity
 from dataclasses import dataclass
 from enum import Enum
 from datetime import datetime
@@ -233,7 +233,7 @@ class SafetyViolation:
     metadata: Dict[str, Any]
 
 
-from l5.types import Verdict
+from agentic_core.l5_safety.types import Verdict
 
 
 @dataclass

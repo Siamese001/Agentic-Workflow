@@ -23,7 +23,7 @@ __author__ = "Resume Generation Engine"
 __description__ = "Complete 8-node resume generation pipeline with L1-L3 architecture"
 
 # L1 Planning Layer
-from .legacy.rg_planner import RGPlanner, ResumeProcessingPlan, ResumeAnalysisPlan, ResumeSectionConfig
+# REMOVED: Legacy import during Phase 1 consolidationrg_planner import RGPlanner, ResumeProcessingPlan, ResumeAnalysisPlan, ResumeSectionConfig
 
 # L2 Execution Layer - Now from agentic_core
 from agentic_core.l2_execution.draft_execution.rg_k1_extract import RGK1Extract, ExtractionOutput, ExtractedSection, ExtractionMetrics
@@ -36,7 +36,7 @@ from agentic_core.l2_execution.draft_execution.rg_k7_format import RGK7Format, F
 from agentic_core.l2_execution.draft_execution.rg_k8_validate import RGK8Validate, ValidationOutput, ValidationResult, ValidationRule, ValidationMetrics
 
 # L3 Orchestration Layer
-from .legacy.rg_orchestrator import RGOrchestrator, ResumeGenerationRequest, ResumeGenerationResult, OrchestratorMetrics
+# REMOVED: Legacy import during Phase 1 consolidationrg_orchestrator import RGOrchestrator, ResumeGenerationRequest, ResumeGenerationResult, OrchestratorMetrics
 
 # Public API exports
 __all__ = [

@@ -11,10 +11,10 @@ import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from l2.outreach.company_research_executor import CompanyResearchExecutor
-from l2.outreach.contact_research_executor import ContactResearchExecutor
-from l2.outreach.message_generation_executor import MessageGenerationExecutor
-from l1.outreach_dataclasses import OutreachMission, ArchetypeContext
+from agentic_core.l2_execution.outreach.company_research_executor import CompanyResearchExecutor
+from agentic_core.l2_execution.outreach.contact_research_executor import ContactResearchExecutor
+from agentic_core.l2_execution.outreach.message_generation_executor import MessageGenerationExecutor
+from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeContext
 from core.models.models import ExecutionContext
 
 logger = logging.getLogger(__name__)

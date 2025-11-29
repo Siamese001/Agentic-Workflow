@@ -12,7 +12,7 @@ from l2.agents import (
 )
 from core.models.models import AgentCard, AgentRole  # normalized import
 from core.routing import RoutingPolicy
-from tools.runtime_utils import SandboxConfig
+from agentic_core.l2_execution.tools.runtime_utils import SandboxConfig
 
 
 def _make_agent(agent_cls, card: AgentCard | None = None):

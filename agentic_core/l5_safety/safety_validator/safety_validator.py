@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import logging
 import re
-from l5.types import Verdict, Action
+from agentic_core.l5_safety.types import Verdict, Action
 
 logger = logging.getLogger(__name__)
 

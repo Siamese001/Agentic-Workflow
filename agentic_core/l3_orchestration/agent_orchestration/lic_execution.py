@@ -33,7 +33,7 @@ from runtime.observability import start_span, end_span, log_exception, emit_cost
 from meta.schema_validation import validate_schema_version
 import meta.retrieval as _retrieval_module
 from infra.di_container import inject_dependencies, get_service
-from l5.policy import SafetyEngine
+from agentic_core.l5_safety.policy import SafetyEngine
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -477,7 +477,7 @@ async def _execute_safety(
         # Apply additional safety validation via injected SafetyEngine if available
         safety_engine = ctx.safety_engine or get_service(SafetyEngine)
         if safety_engine and result:
-            from l5.types import SafetyContext
+            from agentic_core.l5_safety.types import SafetyContext
             safety_context = SafetyContext(
                 content_type="draft",
                 source="l2_execution",

@@ -15,7 +15,7 @@ from core.models.models import (
     DraftingResult,
     RAGResult,
 )
-from l1.builders.prompt_builder import PromptInstance, build_qa_prompt
+from agentic_core.l1_planning.builders.prompt_builder import PromptInstance, build_qa_prompt
 
 
 @dataclass(frozen=True)

@@ -9,7 +9,7 @@ import pytest
 from typing import Dict, List
 from unittest.mock import Mock
 
-from agentic_core.l2_execution.message_generation_executor import MessageGenerationExecutor, GenerationContext, MessageResult, MessageSection
+from agentic_core.l2_execution.rag_execution.message_generation_executor import MessageGenerationExecutor, GenerationContext, MessageResult, MessageSection
 from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult
 from agentic_core.l1_planning.outreach_dataclasses import MessagePlan
 

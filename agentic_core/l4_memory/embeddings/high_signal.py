@@ -12,7 +12,7 @@ import re
 import logging
 
 if TYPE_CHECKING:
-    from l4.temporal_kg import TemporalNodeMetadata
+    from agentic_core.l4_memory.temporal_kg import TemporalNodeMetadata
 
 logger = logging.getLogger(__name__)
 

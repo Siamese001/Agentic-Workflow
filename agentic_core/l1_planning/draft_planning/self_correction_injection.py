@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import logging
 
-from l1.instructional_injection_v6 import InstructionalExtension, ExtensionContent
+from agentic_core.l1_planning.instructional_injection_v6 import InstructionalExtension, ExtensionContent
 
 
 class CorrectionType(str, Enum):

@@ -17,7 +17,7 @@ import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple, cast
 
-from tools.main_v10_10 import (
+from agentic_core.l2_execution.tools.main_v10_10 import (
     run_workflow,
     RRFStrategy,
     TelemetryRoutingMode,
