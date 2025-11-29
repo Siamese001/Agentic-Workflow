@@ -7,7 +7,7 @@ Tests basic archetype weighting matrix validation for Exec, Senior TA, Recruiter
 - Temporal integration compatibility
 """
 
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ARCHETYPE_REGISTRY, ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ARCHETYPE_REGISTRY, ArchetypeType
 
 
 class TestArchetypeWeightingFullMatrix:

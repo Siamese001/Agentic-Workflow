@@ -5,12 +5,12 @@ Verifies that all archetypes get correct reasoning-intensity parameters
 and that ExecutiveReasoningProfile is properly integrated.
 """
 
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import (
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import (
     ArchetypeType,
     EXECUTIVE_REASONING_PROFILES,
     compute_reasoning_multiplier
 )
-from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
+from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
 
 
 class TestArchetypeReasoningProfiles:

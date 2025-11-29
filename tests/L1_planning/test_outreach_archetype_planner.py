@@ -6,8 +6,8 @@ C-Level shows high-intensity reasoning, company-focused RAG weighting, and strat
 Tests MUST NOT import L2 or L4 modules.
 """
 
-from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeContext, ArchetypeType, ReasoningMode
+from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeContext, ArchetypeType, ReasoningMode
 
 
 class TestArchetypePlannerOutputs:

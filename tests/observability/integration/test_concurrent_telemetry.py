@@ -15,9 +15,9 @@ import asyncio
 import time
 from unittest.mock import Mock, patch
 from runtime.telemetry import TelemetryBus, get_telemetry_bus
-from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
-from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import RecipientProfile
+from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import RecipientProfile
 
 
 class TestConcurrentTelemetry:

@@ -1,4 +1,4 @@
-from agentic_core.l1_planning.draft_planning.lic_plan_schema import LICPlan
+from agentic_core.l1_planning.planners.lic_plan_schema import LICPlan
 
 def test_schema_initialization():
     p = LICPlan(1,2,3,4,5,6,7,8,9,10)

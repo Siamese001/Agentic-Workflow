@@ -10,8 +10,8 @@ import pytest
 from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyValidator
 from agentic_core.l5_safety.safety_policy.types import SafetyContext
 from agentic_core.l5_safety.safety_policy.interfaces import Action, Verdict
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission, ArchetypeType
-from agentic_core.l3_orchestration.draft_orchestration.lic_orchestrator import LICOrchestrator
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l3_orchestration.engines.resume.lic_orchestrator import LICOrchestrator
 
 
 class TestOutreachSafetyIntegration:
@@ -31,7 +31,7 @@ class TestOutreachSafetyIntegration:
         )
         
         # Create test recipient
-        from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import RecipientProfile
+        from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import RecipientProfile
         self.recipient = RecipientProfile(
             name="Jane Smith",
             title="Engineering Manager", 
@@ -237,8 +237,8 @@ class TestOutreachSafetyIntegration:
         try:
             # This should work without circular imports
             from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyValidator
-            from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission
-            from agentic_core.l3_orchestration.draft_orchestration.lic_orchestrator import LICOrchestrator
+            from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission
+            from agentic_core.l3_orchestration.engines.resume.lic_orchestrator import LICOrchestrator
             
             # Should be able to import all components
             assert SafetyValidator is not None

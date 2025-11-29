@@ -14,26 +14,26 @@ def update_test_imports():
     # Import mappings for test files - longest match first
     import_mappings = {
         # L1 specific subdirectories
-        r'from l1\.rag_planning\.': 'from agentic_core.l1_planning.rag_planning.',
-        r'from l1\.strategy_planning\.': 'from agentic_core.l1_planning.strategy_planning.',
-        r'from l1\.safety_planning\.': 'from agentic_core.l1_planning.safety_planning.',
-        r'from l1\.draft_planning\.': 'from agentic_core.l1_planning.draft_planning.',
+        r'from l1\.rag_planning\.': 'from agentic_core.l1_planning.planners.',
+        r'from l1\.strategy_planning\.': 'from agentic_core.l1_planning.planners.',
+        r'from l1\.safety_planning\.': 'from agentic_core.l1_planning.planners.',
+        r'from l1\.draft_planning\.': 'from agentic_core.l1_planning.planners.',
         r'from l1\.': 'from agentic_core.l1_planning.',
         
         # L2 specific subdirectories  
-        r'from l2\.kg\.': 'from agentic_core.l2_execution.rag_execution.kg.',
-        r'from l2\.vector\.': 'from agentic_core.l2_execution.rag_execution.vector.',
+        r'from l2\.kg\.': 'from agentic_core.l2_execution.engines.kg.',
+        r'from l2\.vector\.': 'from agentic_core.l2_execution.engines.vector.',
         r'from l2\.tool_clients\.': 'from agentic_core.l2_execution.tools.',
-        r'from l2\.rag_execution\.': 'from agentic_core.l2_execution.rag_execution.',
+        r'from l2\.rag_execution\.': 'from agentic_core.l2_execution.engines.',
         r'from l2\.draft_execution\.': 'from agentic_core.l2_execution.engines.outreach.',
-        r'from l2\.bullet_execution\.': 'from agentic_core.l2_execution.bullet_execution.',
+        r'from l2\.bullet_execution\.': 'from agentic_core.l2_execution.engines.',
         r'from l2\.mcp\.': 'from agentic_core.l2_execution.mcp.',
         r'from l2\.': 'from agentic_core.l2_execution.',
         
         # L3 specific subdirectories
-        r'from l3\.rag_orchestration\.': 'from agentic_core.l3_orchestration.rag_orchestration.',
-        r'from l3\.draft_orchestration\.': 'from agentic_core.l3_orchestration.draft_orchestration.',
-        r'from l3\.agent_orchestration\.': 'from agentic_core.l3_orchestration.agent_orchestration.',
+        r'from l3\.rag_orchestration\.': 'from agentic_core.l3_orchestration.framework.',
+        r'from l3\.draft_orchestration\.': 'from agentic_core.l3_orchestration.engines.resume.',
+        r'from l3\.agent_orchestration\.': 'from agentic_core.l3_orchestration.framework.',
         r'from l3\.': 'from agentic_core.l3_orchestration.',
         
         # L4 specific subdirectories
@@ -51,24 +51,24 @@ def update_test_imports():
         r'from l5\.': 'from agentic_core.l5_safety.',
         
         # Import statements
-        r'import l1\.rag_planning\.': 'import agentic_core.l1_planning.rag_planning.',
-        r'import l1\.strategy_planning\.': 'import agentic_core.l1_planning.strategy_planning.',
-        r'import l1\.safety_planning\.': 'import agentic_core.l1_planning.safety_planning.',
-        r'import l1\.draft_planning\.': 'import agentic_core.l1_planning.draft_planning.',
+        r'import l1\.rag_planning\.': 'import agentic_core.l1_planning.planners.',
+        r'import l1\.strategy_planning\.': 'import agentic_core.l1_planning.planners.',
+        r'import l1\.safety_planning\.': 'import agentic_core.l1_planning.planners.',
+        r'import l1\.draft_planning\.': 'import agentic_core.l1_planning.planners.',
         r'import l1\.': 'import agentic_core.l1_planning.',
         
-        r'import l2\.kg\.': 'import agentic_core.l2_execution.rag_execution.kg.',
-        r'import l2\.vector\.': 'import agentic_core.l2_execution.rag_execution.vector.',
+        r'import l2\.kg\.': 'import agentic_core.l2_execution.engines.kg.',
+        r'import l2\.vector\.': 'import agentic_core.l2_execution.engines.vector.',
         r'import l2\.tool_clients\.': 'import agentic_core.l2_execution.tools.',
-        r'import l2\.rag_execution\.': 'import agentic_core.l2_execution.rag_execution.',
+        r'import l2\.rag_execution\.': 'import agentic_core.l2_execution.engines.',
         r'import l2\.draft_execution\.': 'import agentic_core.l2_execution.engines.outreach.',
-        r'import l2\.bullet_execution\.': 'import agentic_core.l2_execution.bullet_execution.',
+        r'import l2\.bullet_execution\.': 'import agentic_core.l2_execution.engines.',
         r'import l2\.mcp\.': 'import agentic_core.l2_execution.mcp.',
         r'import l2\.': 'import agentic_core.l2_execution.',
         
-        r'import l3\.rag_orchestration\.': 'import agentic_core.l3_orchestration.rag_orchestration.',
-        r'import l3\.draft_orchestration\.': 'import agentic_core.l3_orchestration.draft_orchestration.',
-        r'import l3\.agent_orchestration\.': 'import agentic_core.l3_orchestration.agent_orchestration.',
+        r'import l3\.rag_orchestration\.': 'import agentic_core.l3_orchestration.framework.',
+        r'import l3\.draft_orchestration\.': 'import agentic_core.l3_orchestration.engines.resume.',
+        r'import l3\.agent_orchestration\.': 'import agentic_core.l3_orchestration.framework.',
         r'import l3\.': 'import agentic_core.l3_orchestration.',
         
         r'import l4\.temporal_agents\.': 'import agentic_core.l4_memory_state.temporal.',
