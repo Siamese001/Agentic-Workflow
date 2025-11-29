@@ -8,7 +8,7 @@ enhancement through semantic retrieval for job alignment.
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
-from ..l4 import PineconeAdapter, VectorQueryResult
+from ..pinecone_adapter import PineconeAdapter, VectorQueryResult
 
 
 @dataclass

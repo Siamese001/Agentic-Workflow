@@ -20,8 +20,8 @@ except ImportError:
     _NEO4J_AVAILABLE = False
 
 # Import L4 temporal components for orchestration
-from .temporal_fusion import TemporalRankFusion
-from .high_signal import HighSignalScorer
+from ..temporal_fusion import TemporalRankFusion
+from ..high_signal import HighSignalScorer
 
 logger = logging.getLogger(__name__)
 
@@ -711,6 +711,3 @@ def create_application_fact(
         timestamp=timestamp,
         metadata={"status": status},
     )
-
-
-
