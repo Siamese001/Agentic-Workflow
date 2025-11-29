@@ -14,7 +14,7 @@ import os
 # Add project root to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from agentic_core.l4_memory.temporal_schemas import (
+from agentic_core.l4_memory_state.temporal.temporal_schemas import (
     TemporalEntity,
     TemporalTriplet,
     TemporalEvent,
@@ -40,13 +40,13 @@ class TestNeo4jIntegration:
 
     def test_factual_qa_imports(self):
         """Test that factual_qa module imports correctly."""
-        from agentic_core.l2_execution.factual_qa import factual_qa, trend_analysis
+        from agentic_core.l2_execution.engines.outreach.lic_factual_qa import factual_qa, trend_analysis
         assert callable(factual_qa)
         assert callable(trend_analysis)
 
     def test_factual_qa_without_neo4j(self):
         """Test factual_qa gracefully handles missing Neo4j."""
-        from agentic_core.l2_execution.factual_qa import factual_qa
+        from agentic_core.l2_execution.engines.outreach.lic_factual_qa import factual_qa
         
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = factual_qa(
@@ -59,7 +59,7 @@ class TestNeo4jIntegration:
 
     def test_trend_analysis_without_neo4j(self):
         """Test trend_analysis gracefully handles missing Neo4j."""
-        from agentic_core.l2_execution.factual_qa import trend_analysis
+        from agentic_core.l2_execution.engines.outreach.lic_factual_qa import trend_analysis
         
         with patch('l2.factual_qa._NEO4J_AVAILABLE', False):
             result = trend_analysis(
@@ -72,7 +72,7 @@ class TestNeo4jIntegration:
 
     def test_kg_writer_imports(self):
         """Test that kg_writer module imports correctly."""
-        from agentic_core.l2_execution.kg_writer import (
+        from agentic_core.l2_execution.engines.outreach.lic_kg_writer import (
             insert_entity,
             insert_triplet,
             insert_event,
@@ -88,7 +88,7 @@ class TestNeo4jIntegration:
     @pytest.mark.asyncio
     async def test_kg_writer_without_neo4j(self):
         """Test kg_writer gracefully handles missing Neo4j."""
-        from agentic_core.l2_execution.kg_writer import insert_entity, insert_triplet, insert_event
+        from agentic_core.l2_execution.engines.outreach.lic_kg_writer import insert_entity, insert_triplet, insert_event
         
         # Create test data
         entity = TemporalEntity(
@@ -138,7 +138,7 @@ class TestNeo4jIntegration:
     def test_ingestion_dag_imports(self):
         """Test that kg_ingestion_dag imports with Neo4j components."""
         try:
-            from orchestration.kg_ingestion_dag import (
+            from agentic_core.l3_orchestration.kg_ingestion_dag import (
                 UnifiedKGIngestionDAG,
                 IngestionStage,
                 ingest_documents
@@ -152,7 +152,7 @@ class TestNeo4jIntegration:
     @pytest.mark.asyncio
     async def test_ingestion_dag_mirroring_methods(self):
         """Test that ingestion DAG mirroring methods exist and are callable."""
-        from orchestration.kg_ingestion_dag import (
+        from agentic_core.l3_orchestration.kg_ingestion_dag import (
             _mirror_entities_to_neo4j,
             _mirror_triplets_to_neo4j,
             _mirror_invalidations_to_neo4j,

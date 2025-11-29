@@ -303,7 +303,7 @@ class TestWorkflowPerformanceAndScaling:
             "L1_planning": 0.5,  # seconds
             "L2_execution": 2.3,
             "L3_orchestration": 0.2,
-            "L4_memory_operations": 0.8,
+            "l4_state_operations": 0.8,
             "L5_safety_checks": 0.1
         }
         

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Comprehensive import path fix script for agentic_core migration.
-Replaces apps.outreach_engine imports with agentic_core paths.
+Comprehensive import path fix script for engine migration.
+Replaces apps.outreach_engine imports with engine paths.
 """
 
 import os
@@ -11,32 +11,32 @@ from pathlib import Path
 # Comprehensive mapping dictionary (sorted by path length - longest first)
 IMPORT_MAPPING = {
     # Granular subdirectory mappings (longest paths first)
-    'apps.outreach_engine.l1.cms': 'agentic_core.l1_planning.draft_planning.cms',
-    'apps.outreach_engine.l1.builders': 'agentic_core.l1_planning.draft_planning.builders',
-    'apps.outreach_engine.l1.rag_planning': 'agentic_core.l1_planning.rag_planning',
-    'apps.outreach_engine.l1.safety_planning': 'agentic_core.l1_planning.safety_planning',
-    'apps.outreach_engine.l1.persona_planning': 'agentic_core.l1_planning.safety_planning',
-    'apps.outreach_engine.l1.strategy_planning': 'agentic_core.l1_planning.strategy_planning',
+    'apps.outreach_engine.l1.cms': 'engine.l1_planning.draft_planning.cms',
+    'apps.outreach_engine.l1.builders': 'engine.l1_planning.draft_planning.builders',
+    'apps.outreach_engine.l1.rag_planning': 'engine.l1_planning.rag_planning',
+    'apps.outreach_engine.l1.safety_planning': 'engine.l1_planning.safety_planning',
+    'apps.outreach_engine.l1.persona_planning': 'engine.l1_planning.safety_planning',
+    'apps.outreach_engine.l1.strategy_planning': 'engine.l1_planning.strategy_planning',
     
-    'apps.outreach_engine.l2.kg': 'agentic_core.l2_execution.rag_execution.kg',
-    'apps.outreach_engine.l2.vector': 'agentic_core.l2_execution.rag_execution.vector',
-    'apps.outreach_engine.l2.outreach': 'agentic_core.l2_execution.draft_execution.outreach',
+    'apps.outreach_engine.l2.kg': 'engine.l2_execution.rag_execution.kg',
+    'apps.outreach_engine.l2.vector': 'engine.l2_execution.rag_execution.vector',
+    'apps.outreach_engine.l2.outreach': 'engine.l2_execution.draft_execution.outreach',
     
-    'apps.outreach_engine.l3.safety': 'agentic_core.l3_orchestration.rag_orchestration',
+    'apps.outreach_engine.l3.safety': 'engine.l3_orchestration.rag_orchestration',
     
-    'apps.outreach_engine.l4.entity': 'agentic_core.l4_memory.knowledge_graph',
-    'apps.outreach_engine.l4.temporal_kg': 'agentic_core.l4_memory.knowledge_graph',
-    'apps.outreach_engine.l4.rag': 'agentic_core.l4_memory.temporal_agents',
-    'apps.outreach_engine.l4.schema': 'agentic_core.l4_memory.temporal_agents',
+    'apps.outreach_engine.l4.entity': 'engine.l4_state.knowledge_graph',
+    'apps.outreach_engine.l4.temporal_kg': 'engine.l4_state.knowledge_graph',
+    'apps.outreach_engine.l4.rag': 'engine.l4_state.temporal_agents',
+    'apps.outreach_engine.l4.schema': 'engine.l4_state.temporal_agents',
     
-    'apps.outreach_engine.l5.guards': 'agentic_core.l5_safety.safety_validator',
+    'apps.outreach_engine.l5.guards': 'engine.l5_safety.safety_validator',
     
     # Layer-level mappings (shorter paths last)
-    'apps.outreach_engine.l1': 'agentic_core.l1_planning',
-    'apps.outreach_engine.l2': 'agentic_core.l2_execution',
-    'apps.outreach_engine.l3': 'agentic_core.l3_orchestration',
-    'apps.outreach_engine.l4': 'agentic_core.l4_memory',
-    'apps.outreach_engine.l5': 'agentic_core.l5_safety',
+    'apps.outreach_engine.l1': 'engine.l1_planning',
+    'apps.outreach_engine.l2': 'engine.l2_execution',
+    'apps.outreach_engine.l3': 'engine.l3_orchestration',
+    'apps.outreach_engine.l4': 'engine.l4_state',
+    'apps.outreach_engine.l5': 'engine.l5_safety',
 }
 
 def fix_imports_in_file(file_path):

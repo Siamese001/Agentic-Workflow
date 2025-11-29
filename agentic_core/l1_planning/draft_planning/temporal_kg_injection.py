@@ -12,7 +12,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone, UTC, timedelta
 from enum import Enum
 
-from agentic_core.l1_planning.instructional_injection_v6 import InstructionalExtension, ExtensionContent
+from agentic_core.l1_planning.draft_planning.lic_instructional_injection_v6 import InstructionalExtension, ExtensionContent
 
 
 class TemporalRelation(str, Enum):

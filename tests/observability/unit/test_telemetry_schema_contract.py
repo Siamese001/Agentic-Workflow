@@ -12,7 +12,7 @@ import pytest
 from unittest.mock import patch
 from typing import Dict, Any
 
-from runtime.telemetry_bus import (
+from runtime.telemetry import (
     TelemetryBus,
     TelemetryEvent,
     TelemetryError,

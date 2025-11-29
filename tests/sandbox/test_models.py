@@ -1,4 +1,4 @@
-from infra.sandbox.models import ToolCallRequest, ToolCallResult, SandboxEvent
+from runtime.infra.sandbox.models import ToolCallRequest, ToolCallResult, SandboxEvent
 
 
 def test_tool_call_request_defaults():

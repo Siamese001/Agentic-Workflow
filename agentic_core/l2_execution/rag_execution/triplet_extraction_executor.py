@@ -13,8 +13,8 @@ from datetime import datetime, UTC
 import json
 import re
 
-from agentic_core.l4_memory.triplet_store import Triplet, TemporalType, create_triplet, PREDICATES
-from agentic_core.l4_memory.entity_resolution import (
+from agentic_core.l4_memory_state.temporal.triplet_store import Triplet, TemporalType, create_triplet, PREDICATES
+from agentic_core.l4_memory_state.temporal.entity_resolution import (
     EntityRegistry,
     EntityType,
     EntityMention,

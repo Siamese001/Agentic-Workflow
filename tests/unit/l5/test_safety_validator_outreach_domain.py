@@ -8,8 +8,8 @@ Tests MUST NOT import L1 or L2 modules.
 from dataclasses import dataclass, field
 from typing import Dict, Any
 
-from agentic_core.l5_safety.safety_validator import SafetyValidator
-from agentic_core.l5_safety.interfaces import SafetyResult, SafetyFinding
+from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyValidator
+from agentic_core.l5_safety.safety_policy.interfaces import SafetyResult, SafetyFinding
 
 
 @dataclass
@@ -351,7 +351,7 @@ class TestSafetyValidatorOutreachDomain:
         assert isinstance(validator.violation_history, list)
         
         # Should have outreach constraints
-        from agentic_core.l5_safety.safety_validator import SafetyConstraintType
+        from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator import SafetyConstraintType
         assert SafetyConstraintType.OUTREACH_CONSTRAINTS in validator.constraints
         
         outreach_constraints = validator.constraints[SafetyConstraintType.OUTREACH_CONSTRAINTS]

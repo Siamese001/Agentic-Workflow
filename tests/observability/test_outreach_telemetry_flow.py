@@ -10,10 +10,10 @@ import time
 import asyncio
 from unittest.mock import Mock, patch
 
-from runtime.telemetry_bus import get_telemetry_bus
-from agentic_core.l3_orchestration.outreach_orchestrator import OutreachOrchestrator
-from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
-from agentic_core.l1_planning.outreach_archetype_planning import RecipientProfile
+from runtime.telemetry import get_telemetry_bus
+from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import OutreachOrchestrator
+from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
+from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import RecipientProfile
 from config.LIC.lic_profile import LICHyperparameters
 
 
