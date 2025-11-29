@@ -209,7 +209,7 @@ DAG_SPECS = {
 }
 
 # Zero-tolerance policy parameters
-MAX_DEPTH = 8
+MAX_DEPTH = 9
 FORBIDDEN_TEST_EXTENSIONS = [
     ".ipynb",
     ".md",
