@@ -105,8 +105,8 @@ class FileSystemValidator(SemanticValidator):
                     expected_children = expected_children_str.strip("[]").split(",")
                     expected_children = [c.strip() for c in expected_children if c.strip()]
                     
-                    # Get actual children
-                    actual_children = [item.name for item in full_path.iterdir() if item.is_dir()]
+                    # Get actual children, filtering out __pycache__
+                    actual_children = [item.name for item in full_path.iterdir() if item.is_dir() and item.name != "__pycache__"]
                     actual_children.sort()
                     
                     # Check if actual matches expected
@@ -286,6 +286,21 @@ class TestsValidator(SemanticValidator):
             else:
                 passed = False
                 reason = f"Unknown policy rule: {rule}"
+        elif category == "mapping":
+            if rule.startswith("module_has_test_mapping"):
+                module = target
+                # Check if module exists and has corresponding test
+                module_path = self.project_root / f"agentic_core/l1_planning/planners/{module}.py"
+                test_path = self.project_root / f"tests/l1/unit/test_{module}.py"
+                
+                module_exists = module_path.exists()
+                test_exists = test_path.exists()
+                
+                passed = module_exists and test_exists
+                reason = f"Module {module}: exists={module_exists}, test_exists={test_exists}"
+            else:
+                passed = False
+                reason = f"Unknown mapping rule: {rule}"
         else:
             passed = False
             reason = f"Unknown tests category: {category}"
