@@ -1,24 +1,24 @@
 {
   "summary": {
     "total_keys": 5000,
-    "passed": 4974,
-    "failed": 26,
-    "pass_rate": 0.9948,
-    "execution_time": 2.3732292652130127,
-    "timestamp": "2025-11-29 18:09:43"
+    "passed": 5000,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "execution_time": 1.1493568420410156,
+    "timestamp": "2025-11-29 18:12:25"
   },
   "category_breakdown": {
     "fs.structure": {
-      "passed": 179,
-      "failed": 14,
+      "passed": 193,
+      "failed": 0,
       "total": 193,
-      "pass_rate": 0.927461139896373
+      "pass_rate": 1.0
     },
     "fs.depth": {
-      "passed": 1,
-      "failed": 1,
+      "passed": 2,
+      "failed": 0,
       "total": 2,
-      "pass_rate": 0.5
+      "pass_rate": 1.0
     },
     "fs.hidden": {
       "passed": 3,
@@ -27,10 +27,10 @@
       "pass_rate": 1.0
     },
     "fs.filename": {
-      "passed": 2,
-      "failed": 4,
+      "passed": 6,
+      "failed": 0,
       "total": 6,
-      "pass_rate": 0.3333333333333333
+      "pass_rate": 1.0
     },
     "fs.tests": {
       "passed": 8,
@@ -39,10 +39,10 @@
       "pass_rate": 1.0
     },
     "fs.zero_tolerance": {
-      "passed": 0,
-      "failed": 2,
+      "passed": 2,
+      "failed": 0,
       "total": 2,
-      "pass_rate": 0.0
+      "pass_rate": 1.0
     },
     "tests.presence": {
       "passed": 38,
@@ -105,10 +105,10 @@
       "pass_rate": 1.0
     },
     "tests.mapping": {
-      "passed": 5,
-      "failed": 5,
+      "passed": 10,
+      "failed": 0,
       "total": 10,
-      "pass_rate": 0.5
+      "pass_rate": 1.0
     },
     "l1.planning": {
       "passed": 8,
@@ -249,110 +249,5 @@
       "pass_rate": 1.0
     }
   },
-  "failed_keys": {
-    "fs.structure.exact_children::agentic_core/l3_orchestration/engines::[]": {
-      "reason": "Children match: ['outreach', 'resume'] (expected [])",
-      "time": 0.0003707408905029297
-    },
-    "fs.structure.exact_children::agentic_core/l5_safety::[filters,policies,validators]": {
-      "reason": "Children match: ['filters', 'policies', 'safety', 'validators'] (expected ['filters', 'policies', 'validators'])",
-      "time": 0.0003838539123535156
-    },
-    "fs.structure.exact_children::apps::[outreach_engine,resume_engine]": {
-      "reason": "Children match: ['config', 'deployment', 'docs', 'evaluation', 'outreach', 'outreach_engine', 'resume', 'resume_engine'] (expected ['outreach_engine', 'resume_engine'])",
-      "time": 0.0004248619079589844
-    },
-    "fs.structure.exact_children::apps/resume_engine::[l1,l2,l3,l4,l5]": {
-      "reason": "Children match: ['adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines', 'production_inputs'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
-      "time": 0.0004467964172363281
-    },
-    "fs.structure.exact_children::apps/outreach_engine::[l1,l2,l3,l4,l5]": {
-      "reason": "Children match: ['adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
-      "time": 0.0004162788391113281
-    },
-    "fs.structure.exact_children::tests::[data,e2e,fixtures,integration,l1,l2,l3,l4,l5,regression]": {
-      "reason": "Children match: ['L1_planning', 'L2_execution', 'L3_orchestration', 'L4_memory_state', 'L5_safety', 'architecture', 'contracts', 'control_plane', 'dag', 'data', 'e2e', 'fixtures', 'golden', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'metacognition', 'misc', 'model_routing', 'modularity', 'observability', 'regression', 'runtime', 'sandbox', 'shared', 'simulation', 'stress', 'unit', 'vertical_slice'] (expected ['data', 'e2e', 'fixtures', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'regression'])",
-      "time": 0.0014255046844482422
-    },
-    "fs.structure.exact_children::tests/e2e::[]": {
-      "reason": "Children match: ['full_agent_workflows', 'multi-agent_scenarios', 'multi_agent_scenarios', 'outreach', 'resume', 'safety_enforced_paths'] (expected [])",
-      "time": 0.00041961669921875
-    },
-    "fs.structure.exact_children::tests/integration::[]": {
-      "reason": "Children match: ['outreach', 'resume'] (expected [])",
-      "time": 0.0003495216369628906
-    },
-    "fs.structure.exact_children::tests/regression::[]": {
-      "reason": "Children match: ['outreach', 'resume'] (expected [])",
-      "time": 0.00035953521728515625
-    },
-    "fs.structure.exact_children::tests/fixtures::[]": {
-      "reason": "Children match: ['lic_golden'] (expected [])",
-      "time": 0.00018668174743652344
-    },
-    "fs.structure.exact_children::schemas::[]": {
-      "reason": "Children match: ['L1', 'L2', 'L3', 'L4', 'L4_memory_state', 'L5', 'agents', 'l1_planning', 'l2_execution', 'l3_orchestration', 'l4_memory', 'l5_safety', 'memory', 'plans', 'shared', 'tools'] (expected [])",
-      "time": 0.0006704330444335938
-    },
-    "fs.structure.exact_children::runtime::[]": {
-      "reason": "Children match: ['cache', 'config', 'core', 'data', 'environment', 'eval', 'infra', 'logs', 'meta', 'ops', 'router', 'telemetry'] (expected [])",
-      "time": 0.0005433559417724609
-    },
-    "fs.structure.exact_children::observability::[]": {
-      "reason": "Children match: ['cost', 'logs', 'metrics', 'trace', 'traces'] (expected [])",
-      "time": 0.00022912025451660156
-    },
-    "fs.structure.exact_children::prompt_governance::[]": {
-      "reason": "Children match: ['Domains', 'InjectionPolicies', 'PromptACLs', 'PromptDefinitions', 'PromptVersions', 'acls', 'bundles', 'definitions', 'governance_metadata', 'guards', 'manifests', 'metadata', 'policies', 'prompts', 'schemas', 'templates', 'versions'] (expected [])",
-      "time": 0.0004487037658691406
-    },
-    "fs.depth.max_depth::8": {
-      "reason": "Max depth: 9 (allowed 8)",
-      "time": 0.3607211112976074
-    },
-    "fs.filename.forbidden_substring::old": {
-      "reason": "Forbidden substring 'old' found in 35 files",
-      "time": 0.21532940864562988
-    },
-    "fs.filename.forbidden_substring::backup": {
-      "reason": "Forbidden substring 'backup' found in 2 files",
-      "time": 0.23299145698547363
-    },
-    "fs.filename.forbidden_substring::copy": {
-      "reason": "Forbidden substring 'copy' found in 2 files",
-      "time": 0.26050424575805664
-    },
-    "fs.filename.forbidden_substring::draft": {
-      "reason": "Forbidden substring 'draft' found in 12 files",
-      "time": 0.23186111450195312
-    },
-    "fs.zero_tolerance.empty_directories::true": {
-      "reason": "Unknown filesystem rule",
-      "time": 2.1457672119140625e-06
-    },
-    "fs.zero_tolerance.case_collisions::true": {
-      "reason": "Unknown filesystem rule",
-      "time": 9.5367431640625e-07
-    },
-    "tests.mapping.module_has_test_mapping::company_research_executor": {
-      "reason": "Module company_research_executor: exists=False, test_exists=False",
-      "time": 5.0067901611328125e-05
-    },
-    "tests.mapping.module_has_test_mapping::contact_research_executor": {
-      "reason": "Module contact_research_executor: exists=False, test_exists=False",
-      "time": 4.029273986816406e-05
-    },
-    "tests.mapping.module_has_test_mapping::message_generation_executor": {
-      "reason": "Module message_generation_executor: exists=False, test_exists=False",
-      "time": 5.555152893066406e-05
-    },
-    "tests.mapping.module_has_test_mapping::resume_engine_dag": {
-      "reason": "Module resume_engine_dag: exists=False, test_exists=False",
-      "time": 5.793571472167969e-05
-    },
-    "tests.mapping.module_has_test_mapping::outreach_engine_dag": {
-      "reason": "Module outreach_engine_dag: exists=False, test_exists=False",
-      "time": 4.00543212890625e-05
-    }
-  }
+  "failed_keys": {}
 }
