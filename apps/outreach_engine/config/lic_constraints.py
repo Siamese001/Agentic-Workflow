@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Any, Tuple
 import re
 import unicodedata
 
-from .models import (
+from ..models import (
     ValidationResult, ValidationSeverity, RouteConstraints, Route
 )
 

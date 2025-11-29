@@ -7,7 +7,7 @@ Recipient classification and seniority mapping
 from typing import Dict, List, Optional, Any, Tuple
 import re
 
-from .models import (
+from ..models import (
     Archetype, SeniorityClassification, ValidationResult, ValidationSeverity
 )
 

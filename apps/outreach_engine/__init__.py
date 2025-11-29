@@ -19,36 +19,36 @@ from .models import (
 )
 
 # L1 Planners - Hop-based Planning Layer
-from .fusion_planner import (
+from .legacy.lic_fusion_planner import (
     FusionPlanner,
     ValueProposition,
     MessageSectionPlan,
     FusionPlan
 )
 
-from .grounding_planner import (
+from .legacy.lic_grounding_planner import (
     GroundingPlanner,
     GroundingPlan
 )
 
-from .persona_planner import (
+from .legacy.lic_persona_planner import (
     PersonaPlanner,
     PersonaPlan
 )
 
-from .profile_planner import (
+from .legacy.lic_profile_planner import (
     ProfilePlanner,
     ProfilePlan,
     ProfileSignal
 )
 
-from .research_planner import (
+from .legacy.lic_research_planner import (
     ResearchPlanner,
     ResearchPlan,
     VectorQueryParams
 )
 
-from .message_planner import (
+from .legacy.lic_message_planner import (
     MessagePlanner,
     MessagePlan,
     MessageContent,
@@ -98,13 +98,13 @@ from .l2.lic_k7_assembly import (
 )
 
 # L3 Orchestrator - Hop-based Coordination Layer
-from .orchestrator import (
+from .legacy.lic_orchestrator import (
     OutreachOrchestrator,
     OrchestratorOutput
 )
 
 # Enhanced Orchestrator - Priority 1 & 2 Features
-from .enhanced_orchestrator import (
+from .legacy.lic_enhanced_orchestrator import (
     EnhancedOutreachOrchestrator,
     EnhancedOrchestratorConfig
 )
@@ -123,7 +123,7 @@ from .config import (
 )
 
 # RAG pipeline v75
-from .rag import (
+from .legacy.lic_rag import (
     RAGPipelineV75,
     HyDEProcessor,
     HybridRecall,
@@ -135,7 +135,7 @@ from .rag import (
 )
 
 # Insight models
-from .insights import (
+from .legacy.lic_insights import (
     SignalQualityScorer,
     ClaimConfidenceScorer,
     InsightsEngine

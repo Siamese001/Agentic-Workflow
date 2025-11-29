@@ -7,7 +7,7 @@ Route determination and constraint application
 from typing import Dict, List, Optional, Tuple, Any
 import re
 
-from .models import (
+from ..models import (
     Route, Archetype, RouteConstraints, MessageContext,
     RoutingError, ValidationResult, ValidationSeverity
 )

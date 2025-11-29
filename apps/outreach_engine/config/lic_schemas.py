@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Union
 
-from .models import (
+from ..models import (
     Route, Archetype, ValidationResult, ValidationSeverity
 )
 
