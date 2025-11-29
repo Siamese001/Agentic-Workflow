@@ -370,3 +370,8 @@ class TestMessageReasoningIntensityExecutor:
         
         # Verify temperature schedule preserved
         assert result.temperature_schedule == l1_plan.temperature_schedule
+
+
+
+
+

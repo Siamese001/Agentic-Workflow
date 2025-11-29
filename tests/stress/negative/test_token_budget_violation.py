@@ -322,3 +322,8 @@ class TestTokenBudgetViolation:
         # Use up remaining budget
         self.budget_manager.record_tokens("final", 300)
         assert self.budget_manager.check_budget("overflow") is False
+
+
+
+
+

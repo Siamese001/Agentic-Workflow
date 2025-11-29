@@ -275,3 +275,8 @@ class TestHighSignalScoring:
         
         avg_time = (end_time - start_time) / 100
         assert avg_time < 0.01, f"Average scoring time should be < 10ms, got {avg_time:.4f}s"
+
+
+
+
+

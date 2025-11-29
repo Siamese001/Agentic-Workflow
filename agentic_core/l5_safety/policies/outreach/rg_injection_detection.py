@@ -276,3 +276,8 @@ def validate_resume_sections(sections: Dict[str, str]) -> Dict[str, InjectionRes
     """Convenience function to validate multiple resume sections."""
     detector = ResumeInjectionDetector()
     return detector.batch_validate_sections(sections)
+
+
+
+
+

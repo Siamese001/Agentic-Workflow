@@ -174,7 +174,7 @@ class PineconeAdapter:
             )
             
             # Convert results to Evidence objects
-            from core.models.models import Evidence
+            from runtime.core.models.models import Evidence
             evidence_list = []
             
             for match in results.get('matches', []):
@@ -399,6 +399,11 @@ class PineconeAdapter:
         
         self.upsert_records(records=records, namespace=namespace)
         return ids
+
+
+
+
+
 
 
 

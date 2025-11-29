@@ -288,3 +288,8 @@ class OutreachArchetypePlanner:
     def get_reasoning_modes() -> List[ReasoningMode]:
         """Get available reasoning modes for L1 planning."""
         return [ReasoningMode.COT, ReasoningMode.TOT, ReasoningMode.REACT]
+
+
+
+
+

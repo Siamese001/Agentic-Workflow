@@ -19,3 +19,8 @@ class EmbeddingProvider:
     def embed_batch(self, texts: List[str]) -> Optional[List[List[float]]]:
         """Generate embeddings for batch of texts"""
         return [[0.1, 0.2, 0.3] for _ in texts]
+
+
+
+
+

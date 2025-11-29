@@ -6,3 +6,8 @@ def test_stub_returns_none():
     assert k4.needs_regeneration(None) is None
     assert k4.apply_refinement_strategies(None, None) is None
     assert k4.finalize_regeneration(None) is None
+
+
+
+
+

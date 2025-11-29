@@ -901,3 +901,8 @@ class TestObservabilityIntegration:
         dashboard_json = json.dumps(dashboard_kpis)
         dashboard_data = json.loads(dashboard_json)
         assert dashboard_data["total_tests"] == 40
+
+
+
+
+

@@ -798,3 +798,8 @@ class SafetyValidator:
             r"home\s+address", r"personal\s+phone", r"private\s+contact", r"where\s+you\s+live"
         ]
         return any(re.search(pattern, content.lower()) for pattern in privacy_patterns)
+
+
+
+
+

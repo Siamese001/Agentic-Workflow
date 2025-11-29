@@ -9,3 +9,8 @@ def test_memory_stub_returns_none():
     m = LICMemory()
     assert m.load_sender_profile() is None
     assert m.save_state_snapshot(None) is None
+
+
+
+
+

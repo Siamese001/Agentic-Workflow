@@ -24,3 +24,8 @@ class TestL4KGInvalidation:
             if e.get("depends_on") == "e1":
                 e["valid"] = False
         assert entries[1]["valid"] is False
+
+
+
+
+

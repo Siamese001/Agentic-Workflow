@@ -518,3 +518,8 @@ class TestLLMRoutingExecutors:
                         assert selected_model in ["gpt-5-mini"], f"Medium budget should use medium model, got {selected_model}"
                     else:  # heavy
                         assert selected_model in ["gpt-5.1"], f"High budget should use heavy model, got {selected_model}"
+
+
+
+
+

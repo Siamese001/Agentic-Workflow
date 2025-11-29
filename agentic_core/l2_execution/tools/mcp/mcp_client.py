@@ -379,3 +379,8 @@ def check_mcp_access(user_id: str, tool_name: str) -> bool:
     if not schema:
         return False
     return client.acl_manager.check_access(user_id, tool_name, schema.required_permissions)
+
+
+
+
+

@@ -292,3 +292,8 @@ class LICCacheCritique:
         except Exception:
             # Telemetry failures should never break evaluation logic
             logger.debug("Failed to record telemetry for LIC cache critique")
+
+
+
+
+

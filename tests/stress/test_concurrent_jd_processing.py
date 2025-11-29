@@ -553,3 +553,8 @@ class TestPerformanceDegradation:
         # Memory and CPU should increase with load but not exponentially
         assert memory_usage[-1] < memory_usage[0] * 5  # Less than 5x increase
         assert cpu_usage[-1] < cpu_usage[0] * 5      # Less than 5x increase
+
+
+
+
+

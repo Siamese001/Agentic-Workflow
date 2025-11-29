@@ -523,3 +523,8 @@ class RGMemoryManager:
             "average_artifacts_per_memory": total_artifacts / total_memories if total_memories > 0 else 0,
             "atomic_spec_buckets": len(self.atomic_spec)
         }
+
+
+
+
+

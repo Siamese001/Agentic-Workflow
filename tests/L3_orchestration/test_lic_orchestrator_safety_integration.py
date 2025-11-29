@@ -9,3 +9,8 @@ def test_safety_check_stub():
     result = o.apply_safety_checks(plan, state, message=None)
     # This should be None because method is stubbed.
     assert result is None
+
+
+
+
+

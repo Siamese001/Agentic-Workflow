@@ -12,3 +12,8 @@ class TestObservabilityTelemetry:
         }
         assert metrics["latency_ms"] > 0
         assert metrics["token_count"] > 0
+
+
+
+
+

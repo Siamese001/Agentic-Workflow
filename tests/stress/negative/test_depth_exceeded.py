@@ -229,3 +229,8 @@ class TestDepthExceeded:
         # Final state should be clean
         usage = self.budget_manager.current_usage()
         assert usage['current_depth'] == 0
+
+
+
+
+

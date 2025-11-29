@@ -376,3 +376,8 @@ class LICGroundingPlanner:
         except Exception:
             # Telemetry failures should never break planning logic
             logger.debug("Failed to record telemetry for LIC grounding plan")
+
+
+
+
+

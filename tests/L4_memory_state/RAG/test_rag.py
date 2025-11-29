@@ -13,3 +13,8 @@ class TestRAG:
         context = ["doc1", "doc2"]
         augmented = " ".join(context)
         assert "doc1" in augmented
+
+
+
+
+

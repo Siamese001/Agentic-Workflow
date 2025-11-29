@@ -34,3 +34,8 @@ def plan_drafting(strategy_result: Any, job: Any, resume: Any) -> DraftPlan:
         focus_areas=["technical_skills", "leadership"],
         reasoning="Align resume with job requirements"
     )
+
+
+
+
+

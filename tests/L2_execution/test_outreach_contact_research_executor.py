@@ -350,3 +350,8 @@ class TestContactResearchExecutor:
         assert custom_config.include_recent_activity is True
         assert custom_config.max_age_days == 90
         assert isinstance(custom_config.source_weights, dict)
+
+
+
+
+

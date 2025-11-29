@@ -7,3 +7,8 @@ def test_class_exists():
 def test_required_methods():
     for m in ["execute", "check_structure", "check_semantics"]:
         assert hasattr(LIC_K5_Validation, m)
+
+
+
+
+

@@ -584,3 +584,8 @@ class K4RegenExecutor:
             "violation_types": list(set(v.violation_type for v in output.violations_found)),
             "strategies_used": output.execution_metadata.get("strategies_used", [])
         }
+
+
+
+
+

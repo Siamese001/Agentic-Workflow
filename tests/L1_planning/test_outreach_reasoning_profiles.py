@@ -164,3 +164,8 @@ class TestArchetypeReasoningProfiles:
         for i in range(1, len(multipliers)):
             assert multipliers[i] > multipliers[i-1]
             assert multipliers[i] >= multipliers[i-1] * 2  # At least 2x increase
+
+
+
+
+
