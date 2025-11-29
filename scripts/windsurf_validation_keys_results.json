@@ -1,0 +1,234 @@
+{
+  "summary": {
+    "total_keys": 3000,
+    "passed": 3000,
+    "failed": 0,
+    "pass_rate": 1.0,
+    "timestamp": "2025-11-29 17:58:16"
+  },
+  "category_breakdown": {
+    "l1_planning": {
+      "passed": 180,
+      "failed": 0,
+      "total": 180,
+      "pass_rate": 1.0
+    },
+    "structure_absence": {
+      "passed": 180,
+      "failed": 0,
+      "total": 180,
+      "pass_rate": 1.0
+    },
+    "tests_absence": {
+      "passed": 360,
+      "failed": 0,
+      "total": 360,
+      "pass_rate": 1.0
+    },
+    "l4_memory": {
+      "passed": 90,
+      "failed": 0,
+      "total": 90,
+      "pass_rate": 1.0
+    },
+    "l3_orchestration": {
+      "passed": 180,
+      "failed": 0,
+      "total": 180,
+      "pass_rate": 1.0
+    },
+    "l5_safety": {
+      "passed": 90,
+      "failed": 0,
+      "total": 90,
+      "pass_rate": 1.0
+    },
+    "structure_presence": {
+      "passed": 180,
+      "failed": 0,
+      "total": 180,
+      "pass_rate": 1.0
+    },
+    "tests_coverage": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120,
+      "pass_rate": 1.0
+    },
+    "tests_presence": {
+      "passed": 450,
+      "failed": 0,
+      "total": 450,
+      "pass_rate": 1.0
+    },
+    "rag_pipeline": {
+      "passed": 60,
+      "failed": 0,
+      "total": 60,
+      "pass_rate": 1.0
+    },
+    "kg_pipeline": {
+      "passed": 60,
+      "failed": 0,
+      "total": 60,
+      "pass_rate": 1.0
+    },
+    "runtime_context": {
+      "passed": 4,
+      "failed": 0,
+      "total": 4,
+      "pass_rate": 1.0
+    },
+    "runtime_policy": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "runtime_tool": {
+      "passed": 9,
+      "failed": 0,
+      "total": 9,
+      "pass_rate": 1.0
+    },
+    "runtime_no": {
+      "passed": 4,
+      "failed": 0,
+      "total": 4,
+      "pass_rate": 1.0
+    },
+    "runtime_token": {
+      "passed": 6,
+      "failed": 0,
+      "total": 6,
+      "pass_rate": 1.0
+    },
+    "runtime_valid": {
+      "passed": 18,
+      "failed": 0,
+      "total": 18,
+      "pass_rate": 1.0
+    },
+    "runtime_latency": {
+      "passed": 5,
+      "failed": 0,
+      "total": 5,
+      "pass_rate": 1.0
+    },
+    "runtime_state": {
+      "passed": 6,
+      "failed": 0,
+      "total": 6,
+      "pass_rate": 1.0
+    },
+    "security_tool": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "security_state": {
+      "passed": 3,
+      "failed": 0,
+      "total": 3,
+      "pass_rate": 1.0
+    },
+    "security_context": {
+      "passed": 7,
+      "failed": 0,
+      "total": 7,
+      "pass_rate": 1.0
+    },
+    "security_valid": {
+      "passed": 15,
+      "failed": 0,
+      "total": 15,
+      "pass_rate": 1.0
+    },
+    "security_policy": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "security_token": {
+      "passed": 5,
+      "failed": 0,
+      "total": 5,
+      "pass_rate": 1.0
+    },
+    "security_no": {
+      "passed": 8,
+      "failed": 0,
+      "total": 8,
+      "pass_rate": 1.0
+    },
+    "security_latency": {
+      "passed": 6,
+      "failed": 0,
+      "total": 6,
+      "pass_rate": 1.0
+    },
+    "misc_valid": {
+      "passed": 204,
+      "failed": 0,
+      "total": 204,
+      "pass_rate": 1.0
+    },
+    "misc_tool": {
+      "passed": 66,
+      "failed": 0,
+      "total": 66,
+      "pass_rate": 1.0
+    },
+    "misc_state": {
+      "passed": 75,
+      "failed": 0,
+      "total": 75,
+      "pass_rate": 1.0
+    },
+    "misc_no": {
+      "passed": 63,
+      "failed": 0,
+      "total": 63,
+      "pass_rate": 1.0
+    },
+    "misc_token": {
+      "passed": 57,
+      "failed": 0,
+      "total": 57,
+      "pass_rate": 1.0
+    },
+    "misc_latency": {
+      "passed": 46,
+      "failed": 0,
+      "total": 46,
+      "pass_rate": 1.0
+    },
+    "misc_policy": {
+      "passed": 65,
+      "failed": 0,
+      "total": 65,
+      "pass_rate": 1.0
+    },
+    "misc_context": {
+      "passed": 54,
+      "failed": 0,
+      "total": 54,
+      "pass_rate": 1.0
+    },
+    "l2_execution": {
+      "passed": 180,
+      "failed": 0,
+      "total": 180,
+      "pass_rate": 1.0
+    },
+    "tests_naming": {
+      "passed": 120,
+      "failed": 0,
+      "total": 120,
+      "pass_rate": 1.0
+    }
+  },
+  "failed_keys": {}
+}
