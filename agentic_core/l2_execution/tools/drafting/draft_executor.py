@@ -1,23 +1,24 @@
 """
-L2 execution layer for resume draft generation.
+Shared drafting tool for resume and outreach engines.
 
-Executes model calls to create compelling resume content
-aligned with job requirements for better applications.
+Generic drafting capability that can be used across engines
+without violating separation of concerns.
 """
 
 from typing import Optional
 from runtime.runtime_utils import invoke_model, SandboxConfig
 from core.routing import RoutingPolicy
-from core.models.models import ComplexityLevel
+from core.models import ComplexityLevel
 from config.meta_profile import MetaProfileSnapshot
 from runtime.observability import record_event, record_exception
 
+
 class DraftExecutor:
     """
-    Executes resume draft generation with optimal model selection.
-
-    Ensures consistent quality and proper formatting for professional
-    resume improvement and job alignment.
+    Shared drafting tool for generating content across engines.
+    
+    Provides generic drafting functionality that can be used by both
+    resume and outreach engines without cross-engine dependencies.
     """
     
     def __init__(self, routing_policy: RoutingPolicy, sandbox: SandboxConfig, meta_profile: Optional[MetaProfileSnapshot] = None):
@@ -27,10 +28,10 @@ class DraftExecutor:
     
     def execute_draft(self, prompt: str) -> str:
         """
-        Generates resume draft content using optimal model.
+        Generates draft content using optimal model selection.
 
-        Creates tailored resume sections that emphasize relevant skills
-        and accomplishments for better job alignment.
+        Creates tailored content that emphasizes relevant information
+        for the specific context (resume or outreach).
         """
         record_event("draft_execution_start", {})
         
