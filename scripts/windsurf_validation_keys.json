@@ -1,7 +1,7 @@
 {
-  "title": "WINDSURF VALIDATION KEYS — ATOMIC L5 (FULL OVERWRITE)",
-  "version": "atomic-l5-v1",
-  "description": "Complete atomic L5 validation keys covering root structure, cache, engines, layers, prompts, tests, schemas, observability, imports, lint, typing, RAG/KG/temporal, safety, evaluation, agent ops, deployment, and zero-loss continuity. Every key is individually checkable.",
+  "title": "WINDSURF VALIDATION KEYS — ATOMIC L5 (DEEP, ~300 KEYS)",
+  "version": "atomic-l5-v2",
+  "description": "Deep atomic L5 validation keys covering root structure, cache, engines, L1–L5 layers, prompts, tests, schemas, observability, imports, lint, typing, safety, RAG/KG/temporal, evaluation, agent ops, deployment, and zero-loss continuity. Every key is individually checkable and intended to guide Windsurf’s design and refactor behavior.",
   "validation_keys": {
     "root_structure": {
       "root_exists_agentic_core": false,
@@ -22,17 +22,52 @@
       "valid_schemas_tree": false,
       "valid_tests_tree": false,
       "valid_runtime_tree": false,
-      "valid_observability_tree": false
+      "valid_observability_tree": false,
+      "no_code_at_root": false,
+      "no_tests_at_root": false,
+      "no_caches_at_root": false
     },
 
     "cache_policy": {
       "runtime_cache_root_exists": false,
+      "runtime_cache_has_pycache": false,
+      "runtime_cache_has_venv": false,
+      "runtime_cache_has_mypy": false,
+      "runtime_cache_has_pytest": false,
+      "runtime_cache_has_ruff": false,
+      "runtime_cache_has_tmp": false,
       "no_cache_outside_canonical_root": false,
-      "cache_alias_mapping_correct": false,
-      "allowed_cache_subdirs_only": false,
       "no_cache_in_agentic_core": false,
       "no_cache_in_apps": false,
-      "no_cache_in_tests": false
+      "no_cache_in_tests": false,
+      "no_cache_in_prompt_governance": false,
+      "cache_alias_mapping_correct": false,
+      "allowed_cache_subdirs_only": false
+    },
+
+    "agentic_core_structure": {
+      "agentic_core_exists": false,
+      "l1_planning_folder_exists": false,
+      "l1_planning_planners_folder_exists": false,
+      "l1_planning_schemas_folder_exists": false,
+      "l1_planning_utils_folder_exists": false,
+      "l2_execution_folder_exists": false,
+      "l2_execution_tools_folder_exists": false,
+      "l2_execution_engines_folder_exists": false,
+      "l2_execution_wrappers_folder_exists": false,
+      "l2_execution_utils_folder_exists": false,
+      "l3_orchestration_folder_exists": false,
+      "l3_orchestration_framework_folder_exists": false,
+      "l3_orchestration_engines_folder_exists": false,
+      "l3_orchestration_utils_folder_exists": false,
+      "l4_memory_state_folder_exists": false,
+      "l4_memory_state_providers_folder_exists": false,
+      "l4_memory_state_temporal_folder_exists": false,
+      "l4_memory_state_mappings_folder_exists": false,
+      "l5_safety_folder_exists": false,
+      "l5_safety_filters_folder_exists": false,
+      "l5_safety_policies_folder_exists": false,
+      "l5_safety_validators_folder_exists": false
     },
 
     "engine_structure": {
@@ -45,7 +80,9 @@
       "no_cross_engine_imports_l2": false,
       "no_cross_engine_imports_l3": false,
       "no_shared_business_logic": false,
-      "engine_folder_naming_correct": false
+      "resume_engine_has_entrypoints": false,
+      "outreach_engine_has_entrypoints": false,
+      "engines_have_clear_adapters": false
     },
 
     "layer_purity_L1": {
@@ -54,9 +91,15 @@
       "L1_no_import_L3": false,
       "L1_no_import_L4": false,
       "L1_no_import_L5": false,
+      "L1_no_import_apps": false,
+      "L1_no_import_runtime": false,
       "L1_no_direct_tool_calls": false,
       "L1_no_state_mutation": false,
-      "L1_no_inline_prompts": false
+      "L1_no_inline_prompts": false,
+      "L1_only_imports_allowed_libraries": false,
+      "L1_planners_folder_has_init": false,
+      "L1_schemas_folder_has_init": false,
+      "L1_utils_folder_has_init": false
     },
 
     "layer_purity_L2": {
@@ -64,56 +107,89 @@
       "L2_no_import_L3": false,
       "L2_no_import_L4": false,
       "L2_no_import_L5": false,
-      "L2_only_calls_tools": false,
+      "L2_no_import_apps": false,
+      "L2_no_import_prompt_governance": false,
+      "L2_tools_only_call_external_apis_or_L4": false,
       "L2_no_planning_logic": false,
-      "L2_functions_idempotent_or_declared": false
+      "L2_no_inline_prompts": false,
+      "L2_engines_no_planning_logic": false,
+      "L2_tools_folder_has_init": false,
+      "L2_engines_folder_has_init": false,
+      "L2_wrappers_folder_has_init": false,
+      "L2_utils_folder_has_init": false
     },
 
     "layer_purity_L3": {
       "L3_exists": false,
       "L3_no_import_L4": false,
       "L3_no_import_L5": false,
+      "L3_no_import_apps": false,
       "L3_no_direct_tool_calls": false,
       "L3_no_planning_logic": false,
-      "L3_dag_framework_present": false,
+      "L3_orchestration_framework_present": false,
+      "L3_dag_nodes_have_clear_schemas": false,
       "L3_self_correction_layer_present": false,
-      "L3_self_correction_deterministic": false
+      "L3_self_correction_deterministic": false,
+      "L3_engines_no_business_logic": false,
+      "L3_framework_folder_has_init": false,
+      "L3_engines_folder_has_init": false,
+      "L3_utils_folder_has_init": false
     },
 
     "layer_purity_L4": {
       "L4_exists": false,
-      "L4_no_upward_imports_L1_L2_L3": false,
+      "L4_no_import_L1_L2_L3": false,
       "L4_providers_structure_valid": false,
       "L4_temporal_structure_valid": false,
       "L4_mappings_structure_valid": false,
       "L4_apis_exposed_for_memory_only": false,
-      "L4_no_tools_or_planning": false
+      "L4_no_direct_tool_calls": false,
+      "L4_no_inline_prompts": false,
+      "L4_providers_folder_has_init": false,
+      "L4_temporal_folder_has_init": false,
+      "L4_mappings_folder_has_init": false
     },
 
     "layer_purity_L5": {
       "L5_exists": false,
-      "L5_no_upward_imports_L1_L2_L3_L4": false,
+      "L5_no_import_L1_L2_L3_L4": false,
       "L5_safety_filters_present": false,
       "L5_safety_policies_present": false,
       "L5_safety_validators_present": false,
-      "L5_no_business_logic": false
+      "L5_no_business_logic": false,
+      "L5_no_inline_prompts": false,
+      "L5_filters_folder_has_init": false,
+      "L5_policies_folder_has_init": false,
+      "L5_validators_folder_has_init": false
     },
 
     "apps_layer": {
       "apps_folder_exists": false,
+      "apps_resume_engine_folder_exists": false,
+      "apps_outreach_engine_folder_exists": false,
+      "apps_resume_engine_has_adapters": false,
+      "apps_outreach_engine_has_adapters": false,
+      "apps_resume_engine_has_pipelines": false,
+      "apps_outreach_engine_has_pipelines": false,
       "no_L1_logic_in_apps": false,
       "no_L2_logic_in_apps": false,
       "no_L3_logic_in_apps": false,
       "no_L4_logic_in_apps": false,
       "no_L5_logic_in_apps": false,
-      "apps_entrypoints_only": false
+      "no_tests_in_apps": false
     },
 
     "prompt_system": {
       "prompt_governance_folder_exists": false,
-      "prompt_structure_correct": false,
+      "prompt_manifests_folder_exists": false,
+      "prompt_acls_folder_exists": false,
+      "prompt_definitions_folder_exists": false,
+      "prompt_governance_metadata_folder_exists": false,
+      "prompt_versions_folder_exists": false,
+      "prompt_layered_injection_bundles_folder_exists": false,
+      "prompt_domains_folder_exists": false,
+      "prompt_injection_policies_folder_exists": false,
       "all_prompts_in_prompt_governance": false,
-      "no_prompts_inline_in_L1_L5": false,
       "prompts_schema_first": false,
       "prompts_versioned": false,
       "prompt_registry_present": false,
@@ -121,12 +197,24 @@
       "prompt_builder_uses_injection_v5": false,
       "prompt_builder_attaches_schemas": false,
       "prompt_builder_attaches_examples": false,
-      "prompt_files_no_duplicates": false
+      "no_inline_prompts_in_L1_L5": false,
+      "no_prompt_files_in_agentic_core": false
     },
 
     "tests_global_tree": {
       "tests_root_exists": false,
       "single_global_tests_tree": false,
+      "tests_L1_planning_folder_exists": false,
+      "tests_L2_execution_folder_exists": false,
+      "tests_L3_orchestration_folder_exists": false,
+      "tests_L4_memory_state_folder_exists": false,
+      "tests_L5_safety_folder_exists": false,
+      "tests_integration_folder_exists": false,
+      "tests_e2e_folder_exists": false,
+      "tests_regression_folder_exists": false,
+      "tests_fixtures_folder_exists": false,
+      "tests_data_folder_exists": false,
+      "tests_helpers_file_present": false,
       "no_tests_in_agentic_core": false,
       "no_tests_in_apps": false,
       "no_tests_at_root": false,
@@ -137,7 +225,8 @@
       "tests_L1_planning_resume_exists": false,
       "tests_L1_planning_outreach_exists": false,
       "tests_L1_planning_shared_exists": false,
-      "every_L1_planner_has_test": false
+      "every_L1_planner_has_test": false,
+      "L1_planning_tests_cover_key_paths": false
     },
 
     "tests_L2": {
@@ -145,7 +234,8 @@
       "tests_L2_execution_outreach_exists": false,
       "tests_L2_execution_tools_exists": false,
       "every_L2_executor_has_test": false,
-      "every_tool_has_test": false
+      "every_tool_has_test": false,
+      "L2_tests_cover_tool_failure_modes": false
     },
 
     "tests_L3": {
@@ -153,21 +243,25 @@
       "tests_L3_orchestration_outreach_exists": false,
       "tests_L3_orchestration_framework_exists": false,
       "every_L3_engine_has_test": false,
-      "every_dag_node_has_test": false
+      "every_dag_node_has_test": false,
+      "L3_tests_cover_self_correction": false
     },
 
     "tests_L4": {
       "tests_L4_memory_state_temporal_exists": false,
       "tests_L4_memory_state_providers_exists": false,
       "tests_L4_memory_state_mappings_exists": false,
-      "every_L4_mapping_has_test": false
+      "every_L4_provider_has_test": false,
+      "every_L4_mapping_has_test": false,
+      "L4_tests_cover_temporal_validity": false
     },
 
     "tests_L5": {
       "tests_L5_safety_filters_exists": false,
       "tests_L5_safety_policies_exists": false,
       "tests_L5_safety_validators_exists": false,
-      "every_L5_policy_has_test": false
+      "every_L5_policy_has_test": false,
+      "L5_tests_cover_blocking_behavior": false
     },
 
     "tests_misc": {
@@ -179,23 +273,24 @@
       "regression_tests_outreach_exists": false,
       "fixtures_structure_valid": false,
       "data_samples_valid": false,
-      "helpers_py_present": false
+      "fixtures_and_data_no_pii": false
     },
 
     "schemas": {
       "schemas_root_exists": false,
+      "schemas_shared_folder_exists": false,
+      "schemas_l1_planning_folder_exists": false,
+      "schemas_l2_execution_folder_exists": false,
+      "schemas_l3_orchestration_folder_exists": false,
+      "schemas_l4_memory_folder_exists": false,
+      "schemas_l5_safety_folder_exists": false,
       "schemas_follow_tree": false,
       "schema_files_have_versions": false,
       "no_schema_breaking_changes": false,
       "all_schemas_valid_jsonschema": false,
       "pydantic_models_match_schemas": false,
       "cross_layer_interfaces_declared": false,
-      "schemas_shared_valid": false,
-      "schemas_l1_valid": false,
-      "schemas_l2_valid": false,
-      "schemas_l3_valid": false,
-      "schemas_l4_valid": false,
-      "schemas_l5_valid": false
+      "every_public_interface_has_schema": false
     },
 
     "observability": {
@@ -204,9 +299,12 @@
       "observability_metrics_folder_exists": false,
       "observability_logs_folder_exists": false,
       "observability_cost_folder_exists": false,
+      "event_model_fields_complete": false,
+      "events_exportable_to_trace": false,
+      "events_exportable_to_metrics": false,
+      "events_exportable_to_logs": false,
       "no_pii_in_logs": false,
-      "otel_trace_compliant": false,
-      "event_model_fields_complete": false
+      "otel_trace_compliant": false
     },
 
     "import_and_lint": {
@@ -214,11 +312,14 @@
       "ruff_zero_errors": false,
       "mypy_zero_blockers": false,
       "no_circular_imports": false,
-      "import_dag_respected": false
+      "import_dag_respected": false,
+      "L4_imports_no_L1_L2_L3": false,
+      "L5_imports_no_L1_L2_L3_L4": false
     },
 
     "pytest": {
-      "pytest_zero_failures": false
+      "pytest_zero_failures": false,
+      "tests_run_fast_enough": false
     },
 
     "zero_loss": {
@@ -226,13 +327,15 @@
       "dags_valid_and_acyclic": false,
       "no_behavior_loss_detected": false,
       "no_capability_loss_detected": false,
-      "conflict_merges_preserved_behavior": false
+      "conflict_merges_preserved_behavior": false,
+      "no_deleted_tests_without_reason": false
     },
 
     "mcp": {
       "mcp_tools_schema_defined": false,
       "mcp_access_respects_acls": false,
-      "mcp_interactions_observable": false
+      "mcp_interactions_observable": false,
+      "no_direct_external_calls_outside_mcp": false
     },
 
     "rag_kg_temporal": {
@@ -241,7 +344,8 @@
       "temporal_kg_valid": false,
       "rag_calls_are_deterministic": false,
       "kg_lookups_are_deterministic": false,
-      "temporal_validity_rules_defined": false
+      "temporal_validity_rules_defined": false,
+      "rag_evaluated_with_golden_queries": false
     },
 
     "safety": {
@@ -250,7 +354,9 @@
       "inj_shield_active": false,
       "hallucination_detector_active": false,
       "safety_runs_on_all_outbound_content": false,
-      "safety_runs_on_all_mutating_actions": false
+      "safety_runs_on_all_mutating_actions": false,
+      "safety_policies_engine_specific": false,
+      "safety_logs_non_sensitive_summaries": false
     },
 
     "agent_ops": {
@@ -259,22 +365,29 @@
       "tool_reliability_metrics_defined": false,
       "model_reliability_metrics_defined": false,
       "error_taxonomy_defined": false,
-      "canary_scenarios_exist": false
+      "canary_scenarios_exist": false,
+      "agent_ops_feeds_metrics": false,
+      "agent_ops_feeds_logs": false
     },
 
     "evaluation": {
       "golden_datasets_present": false,
+      "golden_datasets_cover_core_flows": false,
       "llm_as_judge_defined": false,
+      "llm_as_judge_evaluates_quality": false,
       "regression_suite_defined": false,
-      "toolpath_evaluation_defined": false
+      "regression_tests_all_pass": false,
+      "toolpath_evaluation_defined": false,
+      "toolpath_evaluation_passed": false
     },
 
     "deployment": {
       "rest_endpoints_secure": false,
       "authn_authz_enforced": false,
       "environment_separation_valid": false,
-      "model_versions_pinned": false
+      "model_versions_pinned": false,
+      "rollback_strategy_defined": false,
+      "session_management_defined": false
     }
   }
 }
-
