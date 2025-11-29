@@ -27,6 +27,10 @@ from .InjectionPolicies import (
     L5SafetyBundle, OutputBundle, ReasoningBundle,
     SafetyBundle, ToolingBundle
 )
+from .builder import (
+    PromptBuilder, PromptLayer, PromptComponent, PromptBuildResult,
+    PromptDiff, PromptEvaluation, create_prompt_builder, build_simple_prompt
+)
 
 logger = logging.getLogger(__name__)
 
@@ -66,7 +70,11 @@ __all__ = [
     "ContextBundle", "FramingBundle", "L1PlanningBundle",
     "L2ExecutionBundle", "L3OrchestrationBundle", "L4MemoryBundle",
     "L5SafetyBundle", "OutputBundle", "ReasoningBundle",
-    "SafetyBundle", "ToolingBundle"
+    "SafetyBundle", "ToolingBundle",
+    
+    # Prompt Builder (Section 11)
+    "PromptBuilder", "PromptLayer", "PromptComponent", "PromptBuildResult",
+    "PromptDiff", "PromptEvaluation", "create_prompt_builder", "build_simple_prompt"
 ]
 
 def get_prompt_governance_info() -> Dict[str, Any]:

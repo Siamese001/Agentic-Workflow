@@ -12,7 +12,7 @@ from agentic_core.l1_planning.planners.lic_safety_planning import plan_safety
 from agentic_core.l1_planning.planners.lic_result_parser import ResultParser
 from agentic_core.l2_execution.engines.outreach.lic_llm_caller import LLMCaller
 from agentic_core.l2_execution.engines.outreach.lic_strategy_executor import StrategyExecutor
-from agentic_core.l2_execution.engines.outreach.lic_draft_executor import DraftExecutor
+from agentic_core.l2_execution.tools.drafting.draft_executor import DraftExecutor
 from agentic_core.l2_execution.engines.outreach.lic_qa_executor import QAExecutor
 from agentic_core.l2_execution.engines.outreach.lic_safety_executor import SafetyExecutor
 from agentic_core.l3_orchestration.framework.lic_strategy_orchestrator import StrategyOrchestrator
