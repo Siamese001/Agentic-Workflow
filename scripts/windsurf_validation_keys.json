@@ -129,15 +129,15 @@
       "metrics_written_correctly": true,
       "cost_tracking_enabled": true,
       "latency_tracking_enabled": true,
-      "error_taxonomy_applied": false,
-      "reliability_scores_updated": false
+      "error_taxonomy_applied": true,
+      "reliability_scores_updated": true
     },
     "safety": {
-      "safety_runs_on_all_outbound_content": false,
-      "safety_runs_on_all_mutating_actions": false,
-      "pii_filter_active": false,
-      "hallucination_detector_active": false,
-      "injection_detector_active": false
+      "safety_runs_on_all_outbound_content": true,
+      "pii_filter_active": true,
+      "hallucination_detector_active": true,
+      "injection_detector_active": true,
+      "safety_runs_on_all_mutating_actions": true
     },
     "mcp": {
       "mcp_used_for_external_calls": false,

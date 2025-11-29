@@ -241,6 +241,45 @@ def _initialize_basic_metrics():
 # Initialize on module import
 _initialize_basic_metrics()
 
+def apply_error_taxonomy(error: Dict[str, Any]) -> bool:
+    """Apply error taxonomy classification to errors."""
+    try:
+        collector = get_metrics_collector()
+        
+        # Classify error type
+        error_type = error.get("type", "unknown")
+        error_severity = error.get("severity", "medium")
+        
+        # Record error taxonomy metrics
+        collector.increment_counter("errors_classified", labels={"type": error_type})
+        collector.increment_counter("errors_by_severity", labels={"severity": error_severity})
+        
+        logger.info(f"Applied error taxonomy: {error_type}/{error_severity}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to apply error taxonomy: {e}")
+        return False
+
+def update_reliability_scores(component: str, reliability_score: float) -> bool:
+    """Update reliability scores for system components."""
+    try:
+        collector = get_metrics_collector()
+        
+        # Record reliability score
+        collector.set_gauge(f"reliability_score_{component}", reliability_score)
+        collector.record_histogram("reliability_distribution", reliability_score, labels={"component": component})
+        
+        # Update overall system reliability
+        collector.increment_counter("reliability_updates", labels={"component": component})
+        
+        logger.info(f"Updated reliability score for {component}: {reliability_score}")
+        return True
+        
+    except Exception as e:
+        logger.error(f"Failed to update reliability scores: {e}")
+        return False
+
 
 
 
