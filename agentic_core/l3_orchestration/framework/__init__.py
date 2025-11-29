@@ -12,6 +12,7 @@ from .dag_node import *
 from .recursion_controller import *
 from .dependency_resolver import *
 from .execution_coordinator import *
+from .dag_utils import *
 
 __all__ = [
     # Core DAG components
