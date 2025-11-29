@@ -7,11 +7,11 @@ Core extraction and enrichment capabilities for resume generation
 import re
 from typing import Dict, List, Tuple, Any, Optional
 
-from ..models import (
+from ..rg_models import (
     ValidationResult, 
     BulletProvenance
 )
-from ..constants import CANONICAL_VERBS
+from ..rg_constants import CANONICAL_VERBS
 
 
 class ClerkExtractor:
