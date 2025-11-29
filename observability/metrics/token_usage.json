@@ -1,0 +1,51 @@
+{
+  "token_usage": {
+    "timestamp": "2025-11-29T08:34:00.000Z",
+    "mission_id": "mission_001",
+    "session_id": "session_001",
+    "layer_breakdown": {
+      "l1_planning": {
+        "tokens_in": 150,
+        "tokens_out": 75,
+        "total": 225,
+        "operations": ["strategy_planning", "research_planning"]
+      },
+      "l2_execution": {
+        "tokens_in": 800,
+        "tokens_out": 400,
+        "total": 1200,
+        "operations": ["rag_retrieval", "search_tool", "http_tool"]
+      },
+      "l3_orchestration": {
+        "tokens_in": 200,
+        "tokens_out": 100,
+        "total": 300,
+        "operations": ["dag_execution", "workflow_control"]
+      },
+      "l4_memory_state": {
+        "tokens_in": 300,
+        "tokens_out": 150,
+        "total": 450,
+        "operations": ["temporal_storage", "kg_ingestion"]
+      },
+      "l5_safety": {
+        "tokens_in": 50,
+        "tokens_out": 25,
+        "total": 75,
+        "operations": ["content_validation", "pii_detection"]
+      }
+    },
+    "summary": {
+      "total_tokens_in": 1500,
+      "total_tokens_out": 750,
+      "total_tokens": 2250,
+      "average_tokens_per_operation": 375,
+      "peak_usage_layer": "l2_execution"
+    },
+    "efficiency_metrics": {
+      "tokens_per_dollar": 57402,
+      "operations_per_thousand_tokens": 2.67,
+      "cost_efficiency_score": 0.92
+    }
+  }
+}

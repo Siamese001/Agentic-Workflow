@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-workflow-10-11/schemas/l3_orchestration/orchestration_types.json",
+  "title": "L3 Orchestration Types Schema",
+  "description": "Data types for L3 orchestration layer - DAG control, workflow supervision",
+  "type": "object",
+  "properties": {
+    "dag_node": {
+      "type": "object",
+      "properties": {
+        "node_id": {
+          "type": "string",
+          "description": "Unique identifier for the DAG node"
+        },
+        "node_type": {
+          "type": "string",
+          "enum": ["planning", "execution", "orchestration", "memory", "safety"],
+          "description": "Type of operation this node performs"
+        },
+        "input_schema": {
+          "type": "object",
+          "description": "Expected input schema for this node"
+        },
+        "output_schema": {
+          "type": "object",
+          "description": "Expected output schema for this node"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of node IDs this node depends on"
+        },
+        "failure_modes": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Potential failure modes for this node"
+        }
+      },
+      "required": ["node_id", "node_type", "input_schema", "output_schema"]
+    },
+    "workflow_request": {
+      "type": "object",
+      "properties": {
+        "workflow_type": {
+          "type": "string",
+          "enum": ["resume_generation", "outreach_campaign", "research_analysis"],
+          "description": "Type of workflow to execute"
+        },
+        "dag_definition": {
+          "type": "object",
+          "description": "DAG definition with nodes and edges"
+        },
+        "initial_context": {
+          "type": "object",
+          "description": "Initial context for workflow execution"
+        },
+        "engine": {
+          "type": "string",
+          "enum": ["resume", "outreach"],
+          "description": "Engine context for workflow"
+        }
+      },
+      "required": ["workflow_type", "dag_definition"]
+    }
+  }
+}
