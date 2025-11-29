@@ -27,3 +27,7 @@ faiss-cpu
 opentelemetry-api
 opentelemetry-sdk
 tenacity
+
+# Code quality tools
+ruff
+mypy
