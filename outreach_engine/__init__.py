@@ -109,6 +109,12 @@ from .orchestrator import (
     OrchestratorOutput
 )
 
+# Enhanced Orchestrator - Priority 1 & 2 Features
+from .enhanced_orchestrator import (
+    EnhancedOutreachOrchestrator,
+    EnhancedOrchestratorConfig
+)
+
 from .routing import (
     RoutingEngine,
     RouteClassifier
@@ -284,7 +290,11 @@ __all__: list[str] = [
     'RecipientProfile',
     'JobDescription',
     'MessageSchema',
-    'OutreachCampaign'
+    'OutreachCampaign',
+    
+    # Enhanced Orchestrator - Priority 1 & 2 Features
+    'EnhancedOutreachOrchestrator',
+    'EnhancedOrchestratorConfig'
 ]
 
 def get_outreach_engine_version():
