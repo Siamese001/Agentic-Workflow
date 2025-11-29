@@ -4,10 +4,10 @@ Unit tests for outreach LIC error codes - Phase 5 L5 SafetyValidator expansion.
 Tests all 13 LIC error codes (E001-E013) for outreach-specific safety violations.
 """
 
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext
-from l5.interfaces import Action
-from l1.outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext
+from agentic_core.l5_safety.interfaces import Action
+from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeType
 
 
 class TestOutreachErrorCodes:
@@ -249,7 +249,7 @@ class TestOutreachErrorCodes:
     def test_error_code_formatting(self):
         """Test that all error codes follow proper LIC-E### format."""
         # This will test the actual error code formatting implementation
-        from l5.safety_validator import OutreachSafetyPolicy
+        from agentic_core.l5_safety.safety_validator import OutreachSafetyPolicy
         
         policy = OutreachSafetyPolicy()
         

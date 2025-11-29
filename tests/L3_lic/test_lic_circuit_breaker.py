@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from l3.lic_circuit_breaker import (
+from agentic_core.l3_orchestration.lic_circuit_breaker import (
     LICCircuitBreaker,
     LICBreakerConfig,
     LICBreakerStatus,

@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 
 # Import actual workflow planning components
 try:
-    from l1.workflow_planning import (
+    from agentic_core.l1_planning.workflow_planning import (
         build_workflow_plan_bundle,
         _normalize_text,
         _map_meta_profile_to_routing_hint,

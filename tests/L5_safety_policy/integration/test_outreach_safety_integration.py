@@ -7,11 +7,11 @@ and resume workflow unaffected.
 
 import pytest
 
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext
-from l5.interfaces import Action, Verdict
-from l1.outreach_dataclasses import OutreachMission, ArchetypeType
-from l3.lic_orchestrator import LICOrchestrator
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext
+from agentic_core.l5_safety.interfaces import Action, Verdict
+from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l3_orchestration.lic_orchestrator import LICOrchestrator
 
 
 class TestOutreachSafetyIntegration:
@@ -31,7 +31,7 @@ class TestOutreachSafetyIntegration:
         )
         
         # Create test recipient
-        from l1.outreach_archetype_planning import RecipientProfile
+        from agentic_core.l1_planning.outreach_archetype_planning import RecipientProfile
         self.recipient = RecipientProfile(
             name="Jane Smith",
             title="Engineering Manager", 
@@ -236,9 +236,9 @@ class TestOutreachSafetyIntegration:
         # Test that new outreach safety imports don't create cycles
         try:
             # This should work without circular imports
-            from l5.safety_validator import SafetyValidator
-            from l1.outreach_dataclasses import OutreachMission
-            from l3.lic_orchestrator import LICOrchestrator
+            from agentic_core.l5_safety.safety_validator import SafetyValidator
+            from agentic_core.l1_planning.outreach_dataclasses import OutreachMission
+            from agentic_core.l3_orchestration.lic_orchestrator import LICOrchestrator
             
             # Should be able to import all components
             assert SafetyValidator is not None

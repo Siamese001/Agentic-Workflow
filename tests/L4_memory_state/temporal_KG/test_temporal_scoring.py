@@ -6,7 +6,7 @@ Tests recency weighting, weight clamping, normalization, and hop distance effect
 
 import pytest
 from datetime import datetime, timedelta, UTC
-from l4.temporal_kg import TemporalKG, TemporalFact, TemporalNodeMetadata
+from agentic_core.l4_memory.temporal_kg import TemporalKG, TemporalFact, TemporalNodeMetadata
 
 
 class TestTemporalScoring:

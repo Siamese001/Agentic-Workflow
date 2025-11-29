@@ -6,15 +6,15 @@ content expansion, and exports complete metadata to L2.
 """
 
 import pytest
-from l1.outreach_dataclasses import (
+from agentic_core.l1_planning.outreach_dataclasses import (
     ArchetypeType,
     EXECUTIVE_REASONING_PROFILES,
     SECTION_TEMPERATURE_SCHEDULE,
     adjust_temperature_by_intensity,
     expand_section_by_intensity
 )
-from l1.message_planning import MessagePlanner, MessageContent
-from l1.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
+from agentic_core.l1_planning.message_planning import MessagePlanner, MessageContent
+from agentic_core.l1_planning.outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
 
 
 class TestMessageReasoningIntensity:

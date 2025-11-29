@@ -13,7 +13,7 @@ import pytest
 from datetime import datetime, UTC, timedelta
 from unittest.mock import Mock, patch
 
-from l4.temporal_fusion import TemporalRankFusion
+from agentic_core.l4_memory.temporal_fusion import TemporalRankFusion
 
 
 class TestTemporalTieBreak:

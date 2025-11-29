@@ -55,43 +55,43 @@ from .legacy.lic_message_planner import (
     MessageSection
 )
 
-# K Executors - Hop-based Execution Layer
-from .l2.lic_k1_research import (
+# K Executors - Now from agentic_core
+from agentic_core.l2_execution.draft_execution.lic_k1_research import (
     K1ResearchExecutor,
     ResearchOutput
 )
 
-from .l2.lic_k2_insights import (
+from agentic_core.l2_execution.draft_execution.lic_k2_insights import (
     K2InsightsExecutor,
     InsightOutput,
     ClaimScore
 )
 
-from .l2.lic_k3_draft import (
+from agentic_core.l2_execution.draft_execution.lic_k3_draft import (
     K3DraftExecutor,
     DraftOutput,
     DraftSection
 )
 
-from .l2.lic_k4_regen import (
+from agentic_core.l2_execution.draft_execution.lic_k4_regen import (
     K4RegenExecutor,
     RegenOutput,
     RegenViolation
 )
 
-from .l2.lic_k5_validation import (
+from agentic_core.l2_execution.draft_execution.lic_k5_validation import (
     K5ValidationExecutor,
     ValidationOutput,
     ValidationViolation
 )
 
-from .l2.lic_k6_cta import (
+from agentic_core.l2_execution.draft_execution.lic_k6_cta import (
     K6CTAExecutor,
     CTAOutput,
     CTAOption
 )
 
-from .l2.lic_k7_assembly import (
+from agentic_core.l2_execution.draft_execution.lic_k7_assembly import (
     K7AssemblyExecutor,
     AssemblyOutput,
     MessageComponent

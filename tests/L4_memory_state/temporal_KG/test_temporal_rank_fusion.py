@@ -7,8 +7,8 @@ Tests deterministic fusion, mixed hybrid + KG paths, and KG-only fallback.
 import pytest
 from datetime import datetime, timedelta, UTC
 from typing import List, Dict, Any
-from l4.temporal_kg import TemporalKG, TemporalNodeMetadata
-from l4.temporal_fusion import TemporalRankFusion
+from agentic_core.l4_memory.temporal_kg import TemporalKG, TemporalNodeMetadata
+from agentic_core.l4_memory.temporal_fusion import TemporalRankFusion
 
 
 class TestTemporalRankFusion:

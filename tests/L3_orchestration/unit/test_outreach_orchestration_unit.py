@@ -6,14 +6,14 @@ behavior and proper safety gating. Zero interference with resume orchestration.
 
 from unittest.mock import Mock
 
-from l1.outreach_dataclasses import (
+from agentic_core.l1_planning.outreach_dataclasses import (
     OutreachMission,
     ArchetypeContext,
     ArchetypeType,
     MessagePlan,
 )
-from l1.outreach_archetype_planning import RecipientProfile
-from l3.outreach_orchestrator import (
+from agentic_core.l1_planning.outreach_archetype_planning import RecipientProfile
+from agentic_core.l3_orchestration.outreach_orchestrator import (
     OutreachOrchestrator,
 )
 

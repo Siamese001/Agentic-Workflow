@@ -4,10 +4,10 @@ Unit tests for outreach escalation logic - Phase 5 L5 SafetyValidator expansion.
 Tests severity-to-action mapping and escalation thresholds.
 """
 
-from l5.safety_validator import SafetyValidator
-from l5.types import SafetyContext, Severity
-from l5.interfaces import Action
-from l1.outreach_dataclasses import OutreachMission, ArchetypeType
+from agentic_core.l5_safety.safety_validator import SafetyValidator
+from agentic_core.l5_safety.types import SafetyContext, Severity
+from agentic_core.l5_safety.interfaces import Action
+from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeType
 
 
 class TestOutreachEscalation:
@@ -153,7 +153,7 @@ class TestOutreachEscalation:
     def test_escalation_thresholds_are_configurable(self):
         """Test that escalation thresholds can be configured."""
         # This will test configurability once implemented
-        from l5.safety_validator import OutreachSafetyPolicy
+        from agentic_core.l5_safety.safety_validator import OutreachSafetyPolicy
         
         policy = OutreachSafetyPolicy()
         

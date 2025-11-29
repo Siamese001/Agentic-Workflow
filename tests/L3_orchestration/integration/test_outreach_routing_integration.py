@@ -8,10 +8,10 @@ Tests for OutreachOrchestrator routing integration:
 
 from unittest.mock import Mock, patch
 
-from l3.outreach_factory import create_message_executor_with_routing, create_outreach_orchestrator_with_routing
+from agentic_core.l3_orchestration.outreach_factory import create_message_executor_with_routing, create_outreach_orchestrator_with_routing
 from infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
-from l1.outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
 from config.LIC.lic_profile import get_lic_profile, create_custom_profile
 
 

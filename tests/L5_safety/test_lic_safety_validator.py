@@ -1,4 +1,4 @@
-from l5.lic_safety_validator import LICSafetyValidator
+from agentic_core.l5_safety.lic_safety_validator import LICSafetyValidator
 
 def test_safety_validator_exists():
     s = LICSafetyValidator()

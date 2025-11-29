@@ -1,5 +1,5 @@
 import inspect
-from l3.lic_orchestrator import LICOrchestrator
+from agentic_core.l3_orchestration.lic_orchestrator import LICOrchestrator
 
 def test_orchestrator_class_exists():
     assert inspect.isclass(LICOrchestrator)

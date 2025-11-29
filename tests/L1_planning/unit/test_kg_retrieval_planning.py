@@ -8,7 +8,7 @@ import pytest
 from datetime import datetime, UTC
 
 # L1 Components
-from l1.kg_retrieval_planning import (
+from agentic_core.l1_planning.kg_retrieval_planning import (
     KGRetrievalPlanner,
     KGQueryPlan,
     QueryType,
