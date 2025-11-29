@@ -436,7 +436,7 @@
   "deployment_model_refresh_process_defined": "",
   "deployment_load_balancing_valid": "",
   "deployment_error_budget_defined": "",
-  "deployment_error_budget_not_exceeded": ""
+  "deployment_error_budget_not_exceeded": "",
   "evaluation_golden_datasets_present": "",
   "evaluation_golden_datasets_cover_core_flows": "",
   "evaluation_judge_model_defined": "",
