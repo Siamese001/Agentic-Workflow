@@ -267,7 +267,7 @@ class MessageGenerationExecutor:
         if self.routing_policy:
             try:
                 # Extract context for routing
-                from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
+                from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
                 archetype = getattr(ctx, 'archetype', 'EXECUTIVE')
                 if isinstance(archetype, str):
                     # Convert string to ArchetypeType enum

@@ -5,7 +5,7 @@ Coordinates planning and execution to create comprehensive résumé improvements
 """
 
 from typing import Any
-from agentic_core.l1_planning.draft_planning.lic_draft_planning import plan_drafting
+from agentic_core.l1_planning.planners.lic_draft_planning import plan_drafting
 from agentic_core.l2_execution.engines.outreach.lic_draft_executor import DraftExecutor
 from runtime.observability import record_event
 

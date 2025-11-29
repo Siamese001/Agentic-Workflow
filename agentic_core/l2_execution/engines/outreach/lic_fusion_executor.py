@@ -12,7 +12,7 @@ from typing import Any, Dict, List, Optional
 from datetime import datetime, UTC
 import logging
 
-from agentic_core.l1_planning.rag_planning.lic_kg_rag_fusion_planning import (
+from agentic_core.l1_planning.planners.lic_kg_rag_fusion_planning import (
     RetrievalStepType,
     FusionPlanStep,
     KGRAGFusionPlan,
@@ -609,7 +609,7 @@ async def execute_simple_fusion(
 
     Provides fast analysis for straightforward resume job alignment questions.
     """
-    from agentic_core.l1_planning.rag_planning.lic_kg_rag_fusion_planning import KGRAGFusionPlanner
+    from agentic_core.l1_planning.planners.lic_kg_rag_fusion_planning import KGRAGFusionPlanner
     
     planner = KGRAGFusionPlanner()
     executor = FusionExecutor(kg_adapter=kg_adapter, vector_store=vector_store)
@@ -628,7 +628,7 @@ async def execute_temporal_entity_facts(
 
     Shows career progression within specific time periods for job alignment.
     """
-    from agentic_core.l1_planning.rag_planning.lic_kg_rag_fusion_planning import plan_temporal_entity_facts
+    from agentic_core.l1_planning.planners.lic_kg_rag_fusion_planning import plan_temporal_entity_facts
     
     executor = FusionExecutor(kg_adapter=kg_adapter)
     plan = plan_temporal_entity_facts(entity_id, temporal_range)
