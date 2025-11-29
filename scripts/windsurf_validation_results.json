@@ -1,0 +1,252 @@
+{
+  "title": "WINDSURF VALIDATION KEYS \u00e2\u20ac\u201d ATOMIC L5 (FULL OVERWRITE)",
+  "version": "atomic-l5-v1",
+  "description": "Complete atomic L5 validation keys covering root structure, cache, engines, layers, prompts, tests, schemas, observability, imports, lint, typing, RAG/KG/temporal, safety, evaluation, agent ops, deployment, and zero-loss continuity. Every key is individually checkable.",
+  "validation_keys": {
+    "root_structure": {
+      "root_exists_agentic_core": true,
+      "root_exists_apps": true,
+      "root_exists_prompt_governance": true,
+      "root_exists_observability": true,
+      "root_exists_schemas": true,
+      "root_exists_tests": true,
+      "root_exists_runtime": true,
+      "depth_max_3": false,
+      "no_directory_level_4": false,
+      "no_empty_directories": false,
+      "folders_must_contain_files": false,
+      "no_unexpected_root_folders": true,
+      "valid_agentic_core_tree": true,
+      "valid_apps_tree": true,
+      "valid_prompt_governance_tree": true,
+      "valid_schemas_tree": true,
+      "valid_tests_tree": true,
+      "valid_runtime_tree": true,
+      "valid_observability_tree": true
+    },
+    "cache_policy": {
+      "runtime_cache_root_exists": true,
+      "no_cache_outside_canonical_root": true,
+      "cache_alias_mapping_correct": true,
+      "allowed_cache_subdirs_only": true,
+      "no_cache_in_agentic_core": true,
+      "no_cache_in_apps": true,
+      "no_cache_in_tests": true
+    },
+    "engine_structure": {
+      "l2_resume_engine_exists": true,
+      "l2_outreach_engine_exists": true,
+      "l3_resume_engine_exists": true,
+      "l3_outreach_engine_exists": true,
+      "resume_engine_parallel_to_outreach_engine": true,
+      "engines_use_allowed_shared_sources_only": true,
+      "no_cross_engine_imports_l2": true,
+      "no_cross_engine_imports_l3": true,
+      "no_shared_business_logic": true,
+      "engine_folder_naming_correct": true
+    },
+    "layer_purity_L1": {
+      "L1_exists": true,
+      "L1_no_import_L2": true,
+      "L1_no_import_L3": true,
+      "L1_no_import_L4": true,
+      "L1_no_import_L5": true,
+      "L1_no_direct_tool_calls": true,
+      "L1_no_state_mutation": true,
+      "L1_no_inline_prompts": true
+    },
+    "layer_purity_L2": {
+      "L2_exists": true,
+      "L2_no_import_L3": true,
+      "L2_no_import_L4": true,
+      "L2_no_import_L5": true,
+      "L2_only_calls_tools": true,
+      "L2_no_planning_logic": true,
+      "L2_functions_idempotent_or_declared": true
+    },
+    "layer_purity_L3": {
+      "L3_exists": true,
+      "L3_no_import_L4": true,
+      "L3_no_import_L5": true,
+      "L3_no_direct_tool_calls": true,
+      "L3_no_planning_logic": true,
+      "L3_dag_framework_present": true,
+      "L3_self_correction_layer_present": true,
+      "L3_self_correction_deterministic": true
+    },
+    "layer_purity_L4": {
+      "L4_exists": true,
+      "L4_no_upward_imports_L1_L2_L3": true,
+      "L4_providers_structure_valid": true,
+      "L4_temporal_structure_valid": true,
+      "L4_mappings_structure_valid": true,
+      "L4_apis_exposed_for_memory_only": true,
+      "L4_no_tools_or_planning": true
+    },
+    "layer_purity_L5": {
+      "L5_exists": true,
+      "L5_no_upward_imports_L1_L2_L3_L4": true,
+      "L5_safety_filters_present": true,
+      "L5_safety_policies_present": true,
+      "L5_safety_validators_present": true,
+      "L5_no_business_logic": true
+    },
+    "apps_layer": {
+      "apps_folder_exists": true,
+      "no_L1_logic_in_apps": true,
+      "no_L2_logic_in_apps": true,
+      "no_L3_logic_in_apps": true,
+      "no_L4_logic_in_apps": true,
+      "no_L5_logic_in_apps": true,
+      "apps_entrypoints_only": true
+    },
+    "prompt_system": {
+      "prompt_governance_folder_exists": true,
+      "prompt_structure_correct": true,
+      "all_prompts_in_prompt_governance": true,
+      "no_prompts_inline_in_L1_L5": true,
+      "prompts_schema_first": true,
+      "prompts_versioned": true,
+      "prompt_registry_present": true,
+      "prompt_registry_resolves_all_prompts": true,
+      "prompt_builder_uses_injection_v5": true,
+      "prompt_builder_attaches_schemas": true,
+      "prompt_builder_attaches_examples": true,
+      "prompt_files_no_duplicates": true
+    },
+    "tests_global_tree": {
+      "tests_root_exists": true,
+      "single_global_tests_tree": true,
+      "no_tests_in_agentic_core": true,
+      "no_tests_in_apps": true,
+      "no_tests_at_root": true,
+      "no_alternate_test_trees": true
+    },
+    "tests_L1": {
+      "tests_L1_planning_resume_exists": true,
+      "tests_L1_planning_outreach_exists": true,
+      "tests_L1_planning_shared_exists": true,
+      "every_L1_planner_has_test": true
+    },
+    "tests_L2": {
+      "tests_L2_execution_resume_exists": true,
+      "tests_L2_execution_outreach_exists": true,
+      "tests_L2_execution_tools_exists": true,
+      "every_L2_executor_has_test": true,
+      "every_tool_has_test": true
+    },
+    "tests_L3": {
+      "tests_L3_orchestration_resume_exists": true,
+      "tests_L3_orchestration_outreach_exists": true,
+      "tests_L3_orchestration_framework_exists": true,
+      "every_L3_engine_has_test": true,
+      "every_dag_node_has_test": true
+    },
+    "tests_L4": {
+      "tests_L4_memory_state_temporal_exists": true,
+      "tests_L4_memory_state_providers_exists": true,
+      "tests_L4_memory_state_mappings_exists": true,
+      "every_L4_mapping_has_test": true
+    },
+    "tests_L5": {
+      "tests_L5_safety_filters_exists": true,
+      "tests_L5_safety_policies_exists": true,
+      "tests_L5_safety_validators_exists": true,
+      "every_L5_policy_has_test": true
+    },
+    "tests_misc": {
+      "integration_tests_resume_exists": true,
+      "integration_tests_outreach_exists": true,
+      "e2e_tests_resume_exists": true,
+      "e2e_tests_outreach_exists": true,
+      "regression_tests_resume_exists": true,
+      "regression_tests_outreach_exists": true,
+      "fixtures_structure_valid": true,
+      "data_samples_valid": true,
+      "helpers_py_present": true
+    },
+    "schemas": {
+      "schemas_root_exists": true,
+      "schemas_follow_tree": true,
+      "schema_files_have_versions": true,
+      "no_schema_breaking_changes": true,
+      "all_schemas_valid_jsonschema": true,
+      "pydantic_models_match_schemas": true,
+      "cross_layer_interfaces_declared": true,
+      "schemas_shared_valid": true,
+      "schemas_l1_valid": true,
+      "schemas_l2_valid": true,
+      "schemas_l3_valid": true,
+      "schemas_l4_valid": true,
+      "schemas_l5_valid": true
+    },
+    "observability": {
+      "observability_root_exists": true,
+      "observability_trace_folder_exists": true,
+      "observability_metrics_folder_exists": true,
+      "observability_logs_folder_exists": true,
+      "observability_cost_folder_exists": true,
+      "no_pii_in_logs": true,
+      "otel_trace_compliant": true,
+      "event_model_fields_complete": true
+    },
+    "import_and_lint": {
+      "no_import_errors": true,
+      "ruff_zero_errors": false,
+      "mypy_zero_blockers": false,
+      "no_circular_imports": true,
+      "import_dag_respected": true
+    },
+    "pytest": {
+      "pytest_zero_failures": false
+    },
+    "zero_loss": {
+      "zero_loss_dag_execution_completes": true,
+      "dags_valid_and_acyclic": true,
+      "no_behavior_loss_detected": true,
+      "no_capability_loss_detected": true,
+      "conflict_merges_preserved_behavior": true
+    },
+    "mcp": {
+      "mcp_tools_schema_defined": true,
+      "mcp_access_respects_acls": true,
+      "mcp_interactions_observable": true
+    },
+    "rag_kg_temporal": {
+      "rag_pipeline_defined": true,
+      "kg_pipeline_defined": true,
+      "temporal_kg_valid": true,
+      "rag_calls_are_deterministic": true,
+      "kg_lookups_are_deterministic": true,
+      "temporal_validity_rules_defined": true
+    },
+    "safety": {
+      "safety_filters_active": true,
+      "pii_filter_active": true,
+      "inj_shield_active": true,
+      "hallucination_detector_active": true,
+      "safety_runs_on_all_outbound_content": true,
+      "safety_runs_on_all_mutating_actions": true
+    },
+    "agent_ops": {
+      "cost_tracking_defined": true,
+      "latency_tracking_defined": true,
+      "tool_reliability_metrics_defined": true,
+      "model_reliability_metrics_defined": true,
+      "error_taxonomy_defined": true,
+      "canary_scenarios_exist": true
+    },
+    "evaluation": {
+      "golden_datasets_present": true,
+      "llm_as_judge_defined": true,
+      "regression_suite_defined": true,
+      "toolpath_evaluation_defined": true
+    },
+    "deployment": {
+      "rest_endpoints_secure": true,
+      "authn_authz_enforced": true,
+      "environment_separation_valid": true,
+      "model_versions_pinned": true
+    }
+  }
+}
