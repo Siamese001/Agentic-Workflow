@@ -92,6 +92,8 @@ Depth policy:
 * Level-1, Level-2, Level-3 = folders
 * Level-4 = files allowed under Level-3 folders
 * NO folder may exist deeper than Level-3 (no Level-4 folders; only Level-4 files)
+* No folder or subfolder at Levels 0–3 may be empty.
+* Every directory in the canonical tree must contain at least one valid file defined for its level.
 
 Windsurf MUST:
 
