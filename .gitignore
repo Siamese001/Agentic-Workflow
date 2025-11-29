@@ -1,9 +1,16 @@
 # archives / snapshots
 *.zip
 
-# python noise
+# python noise - ALL Python artifacts must be in runtime/cache/ per Section 1.1
 __pycache__/
 *.pyc
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+
+# Section 3 compliance: Prevent root-level cache directories
+# All Python caches centralized to runtime/cache/
+__pycache__/
 .mypy_cache/
 .pytest_cache/
 .ruff_cache/
