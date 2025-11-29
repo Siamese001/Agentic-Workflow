@@ -10,9 +10,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
-from agentic_core.l1_planning.cms.compiler import compile_prompt
-from agentic_core.l1_planning.cms.store import get_prompt_version
-from agentic_core.l1_planning.cms.schemas import validate_prompt
+from agentic_core.l1_planning.schemas.compiler import compile_prompt
+from agentic_core.l1_planning.schemas.store import get_prompt_version
+from agentic_core.l1_planning.schemas.schemas import validate_prompt
 from core.models.models import (
     ContextBudget,
     DraftingPlan,
@@ -32,7 +32,7 @@ from core.models.models import (
     PromptMeta,
     PromptVersion,
 )
-from agentic_core.l1_planning.draft_planning.lic_prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
+from agentic_core.l1_planning.planners.lic_prompt_system_v10_10 import PROMPT_ACLS, PROMPT_REGISTRY, PromptACL, get_prompt
 from runtime.infra.context_engine.assembly import assemble_context
 from runtime.infra.context_engine.pinned import PinnedItem
 from runtime.infra.context_engine.relevance import ContextItem

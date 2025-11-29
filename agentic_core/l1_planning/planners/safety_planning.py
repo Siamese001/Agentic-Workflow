@@ -16,7 +16,7 @@ from core.models.models import (
     RAGResult,
     QAResult,
 )
-from ..builders.prompt_builder import PromptInstance, build_safety_prompt
+from ..utils.prompt_builder import PromptInstance, build_safety_prompt
 
 
 @dataclass(frozen=True)

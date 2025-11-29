@@ -5,21 +5,21 @@ Coordinates all atomic layers for resume processing workflows.
 """
 
 from typing import Any, Dict, Protocol, Optional
-from agentic_core.l1_planning.draft_planning.lic_strategy_planning import plan_strategy
-from agentic_core.l1_planning.draft_planning.lic_draft_planning import plan_drafting
-from agentic_core.l1_planning.draft_planning.lic_qa_planning import plan_qa
-from agentic_core.l1_planning.draft_planning.lic_safety_planning import plan_safety
-from agentic_core.l1_planning.draft_planning.lic_result_parser import ResultParser
+from agentic_core.l1_planning.planners.lic_strategy_planning import plan_strategy
+from agentic_core.l1_planning.planners.lic_draft_planning import plan_drafting
+from agentic_core.l1_planning.planners.lic_qa_planning import plan_qa
+from agentic_core.l1_planning.planners.lic_safety_planning import plan_safety
+from agentic_core.l1_planning.planners.lic_result_parser import ResultParser
 from agentic_core.l2_execution.engines.outreach.lic_llm_caller import LLMCaller
 from agentic_core.l2_execution.engines.outreach.lic_strategy_executor import StrategyExecutor
 from agentic_core.l2_execution.engines.outreach.lic_draft_executor import DraftExecutor
 from agentic_core.l2_execution.engines.outreach.lic_qa_executor import QAExecutor
 from agentic_core.l2_execution.engines.outreach.lic_safety_executor import SafetyExecutor
-from agentic_core.l3_orchestration.agent_orchestration.lic_strategy_orchestrator import StrategyOrchestrator
-from agentic_core.l3_orchestration.agent_orchestration.lic_draft_orchestrator import DraftOrchestrator
-from agentic_core.l3_orchestration.agent_orchestration.lic_qa_orchestrator import QAOrchestrator
-from agentic_core.l3_orchestration.agent_orchestration.lic_safety_orchestrator import SafetyOrchestrator
-from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
+from agentic_core.l3_orchestration.framework.lic_strategy_orchestrator import StrategyOrchestrator
+from agentic_core.l3_orchestration.framework.lic_draft_orchestrator import DraftOrchestrator
+from agentic_core.l3_orchestration.framework.lic_qa_orchestrator import QAOrchestrator
+from agentic_core.l3_orchestration.framework.lic_safety_orchestrator import SafetyOrchestrator
+from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator, OutreachPipelineResult
 from runtime.observability import record_event
 
 # Protocol interfaces for L4/L5 dependency injection

@@ -1,6 +1,6 @@
 from typing import Dict, Any, List
 from dataclasses import dataclass, asdict
-from agentic_core.l1_planning.draft_planning.lic_lic_planner import LICPlanner
+from agentic_core.l1_planning.planners.lic_lic_planner import LICPlanner
 from agentic_core.l2_execution.engines.outreach.lic_k1_research import LIC_K1_Research
 from agentic_core.l2_execution.engines.outreach.lic_k2_insights import LIC_K2_Insights
 from agentic_core.l2_execution.engines.outreach.lic_k3_draft import LIC_K3_Draft

@@ -22,11 +22,11 @@ from runtime.infra.reasoning.cot import expand_chain_of_thought
 from runtime.infra.reasoning.react import run_react_loop
 from runtime.infra.reasoning.reflexion import apply_reflexion
 from runtime.infra.reasoning.tot import tree_search
-from agentic_core.l1_planning.builders.prompt_builder import (
+from agentic_core.l1_planning.utils.prompt_builder import (
     PromptInstance,
     build_drafting_prompt,
 )
-from agentic_core.l1_planning.draft_planning.lic_v6_prompt_adapter import build_v6_strategy_prompt, V6PromptConfig
+from agentic_core.l1_planning.planners.lic_v6_prompt_adapter import build_v6_strategy_prompt, V6PromptConfig
 from agentic_core.l5_safety.safety_policy.injection_detection import InjectionDetector, SafetyContext
 from runtime.infra.di_container import get_service
 from agentic_core.l5_safety.safety_policy.policy import SafetyEngine
