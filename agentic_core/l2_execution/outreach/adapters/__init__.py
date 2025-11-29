@@ -6,10 +6,10 @@ Adapter implementations for different outreach platforms and formats.
 
 class OutreachAdapter:
     """Base class for outreach adapters."""
-    
+
     def __init__(self):
         self.initialized = True
-    
+
     def adapt(self, outreach_data: dict) -> dict:
         """Adapt outreach data to platform-specific format."""
         return {
@@ -21,11 +21,11 @@ class OutreachAdapter:
 
 class EmailOutreachAdapter(OutreachAdapter):
     """Adapter for email outreach."""
-    
+
     def __init__(self):
         super().__init__()
         self.platform = "email"
-    
+
     def adapt(self, outreach_data: dict) -> dict:
         """Adapt outreach data for email format."""
         result = super().adapt(outreach_data)
@@ -36,11 +36,11 @@ class EmailOutreachAdapter(OutreachAdapter):
 
 class LinkedInOutreachAdapter(OutreachAdapter):
     """Adapter for LinkedIn outreach."""
-    
+
     def __init__(self):
         super().__init__()
         self.platform = "linkedin"
-    
+
     def adapt(self, outreach_data: dict) -> dict:
         """Adapt outreach data for LinkedIn format."""
         result = super().adapt(outreach_data)

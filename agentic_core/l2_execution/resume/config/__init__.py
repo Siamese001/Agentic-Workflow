@@ -6,7 +6,7 @@ Configuration settings and parameters for resume processing.
 
 class ResumeConfig:
     """Configuration for resume processing engine."""
-    
+
     def __init__(self):
         self.max_file_size = 10 * 1024 * 1024  # 10MB
         self.supported_formats = [".pdf", ".docx", ".txt", ".json"]
@@ -14,7 +14,7 @@ class ResumeConfig:
         self.enable_skill_extraction = True
         self.enable_experience_parsing = True
         self.enable_contact_extraction = True
-    
+
     def get_config(self) -> dict:
         """Get configuration as dictionary."""
         return {

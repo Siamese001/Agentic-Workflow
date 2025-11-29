@@ -5,7 +5,7 @@ Defines failure mode handling for L2 execution tools.
 """
 
 from enum import Enum
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 class FailureMode(Enum):
     """Failure mode types for L2 tools."""
@@ -19,7 +19,7 @@ class FailureMode(Enum):
 
 class ToolFailureHandler:
     """Handles failure modes for L2 tools."""
-    
+
     def __init__(self):
         self.failure_modes = list(FailureMode)
         self.failure_handlers = {
@@ -31,12 +31,12 @@ class ToolFailureHandler:
             FailureMode.RATE_LIMITED: self._handle_rate_limited,
             FailureMode.UNKNOWN_ERROR: self._handle_unknown_error
         }
-    
+
     def handle_failure(self, failure_mode: FailureMode, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle a specific failure mode."""
         handler = self.failure_handlers.get(failure_mode, self._handle_unknown_error)
         return handler(context)
-    
+
     def _handle_timeout(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle timeout failures."""
         return {
@@ -45,7 +45,7 @@ class ToolFailureHandler:
             "message": "Operation timed out",
             "context": context
         }
-    
+
     def _handle_network_error(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle network error failures."""
         return {
@@ -54,7 +54,7 @@ class ToolFailureHandler:
             "message": "Network connectivity issue",
             "context": context
         }
-    
+
     def _handle_validation_error(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle validation error failures."""
         return {
@@ -63,7 +63,7 @@ class ToolFailureHandler:
             "message": "Input validation failed",
             "context": context
         }
-    
+
     def _handle_resource_exhausted(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle resource exhaustion failures."""
         return {
@@ -72,7 +72,7 @@ class ToolFailureHandler:
             "message": "System resources exhausted",
             "context": context
         }
-    
+
     def _handle_permission_denied(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle permission denied failures."""
         return {
@@ -81,7 +81,7 @@ class ToolFailureHandler:
             "message": "Permission denied",
             "context": context
         }
-    
+
     def _handle_rate_limited(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle rate limiting failures."""
         return {
@@ -90,7 +90,7 @@ class ToolFailureHandler:
             "message": "Rate limit exceeded",
             "context": context
         }
-    
+
     def _handle_unknown_error(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """Handle unknown error failures."""
         return {
