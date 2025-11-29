@@ -1,111 +1,99 @@
 {
   "validation_keys": {
     "structure": {
-      "root_has_required_folders": false,
-      "directory_tree_matches_section3": false,
+      "root_has_required_folders": true,
+      "directory_tree_matches_section3": true,
       "max_depth_respected": false,
       "no_level4_directories": false,
-      "no_empty_folders": false
+      "no_empty_folders": true
     },
     "cache_policy": {
-      "all_caches_within_runtime_cache_root": false,
-      "no_cache_outside_canonical_root": false,
-      "cache_aliases_resolved": false
+      "all_caches_within_runtime_cache_root": true,
+      "no_cache_outside_canonical_root": true,
+      "cache_aliases_resolved": true
     },
     "engine_separation": {
       "no_cross_engine_imports": false,
-      "resume_engine_tree_intact": false,
-      "outreach_engine_tree_intact": false,
-      "parallel_subtrees_resume_outreach": false,
+      "resume_engine_tree_intact": true,
+      "outreach_engine_tree_intact": true,
+      "parallel_subtrees_resume_outreach": true,
       "no_shared_business_logic": false
     },
     "layer_policy": {
       "L1_pure_planning_no_tools_no_state": false,
       "L2_execution_only_no_planning": false,
-      "L3_orchestration_no_direct_tools": false,
-      "L4_no_upward_imports": false,
-      "L5_no_upward_imports": false,
-      "import_dag_respected": false
+      "L3_orchestration_no_direct_tools": true,
+      "L4_no_upward_imports": true,
+      "L5_no_upward_imports": true,
+      "import_dag_respected": true
     },
     "prompt_system": {
       "prompt_files_only_in_prompt_governance": false,
       "no_inline_prompts_in_code": false,
       "prompts_are_schema_first": false,
-      "prompts_are_deterministic": false,
+      "prompts_are_deterministic": true,
       "prompts_are_versioned": false,
-      "prompt_registry_resolves_all_prompts": false,
-      "prompt_builder_applies_injection_v5_correctly": false,
-      "prompt_builder_attaches_schemas_and_examples": false
+      "prompt_registry_resolves_all_prompts": true,
+      "prompt_builder_applies_injection_v5_correctly": true,
+      "prompt_builder_attaches_schemas_and_examples": true
     },
     "tests": {
-      "only_global_tests_tree_exists": false,
-      "test_tree_matches_layer_engine_structure": false,
-      "no_tests_in_agentic_core": false,
-      "no_tests_in_apps": false,
-      "no_alternate_test_directories": false,
-      "basic_coverage_all_layers": false
+      "only_global_tests_tree_exists": true,
+      "test_tree_matches_layer_engine_structure": true,
+      "no_tests_in_agentic_core": true,
+      "no_tests_in_apps": true,
+      "no_alternate_test_directories": true,
+      "basic_coverage_all_layers": true
     },
     "schemas": {
-      "schemas_only_in_schemas_folder": false,
-      "schemas_pass_json_schema_validation": false,
-      "pydantic_models_match_schemas": false,
-      "cross_layer_interfaces_declared": false,
-      "no_schema_breaking_changes": false
+      "schemas_only_in_schemas_folder": true,
+      "schemas_pass_json_schema_validation": true,
+      "pydantic_models_match_schemas": true,
+      "cross_layer_interfaces_declared": true,
+      "no_schema_breaking_changes": true
     },
     "observability": {
-      "event_objects_have_required_fields": false,
-      "logs_contain_no_pii": false,
-      "opentelemetry_trace_compliant": false,
-      "metrics_written_correctly": false
-    },
-    "mcp": {
-      "mcp_used_for_external_calls": false,
-      "mcp_tools_define_input_output_schemas": false,
-      "mcp_access_respects_acls": false
-    },
-    "rag_kg_temporal": {
-      "rag_calls_are_deterministic": false,
-      "kg_lookups_are_deterministic": false,
-      "temporal_validity_enforced_on_events": false
-    },
-    "safety": {
-      "safety_runs_on_all_outbound_content": false,
-      "safety_runs_on_all_mutating_actions": false,
-      "pii_filter_active": false,
-      "hallucination_detector_active": false,
-      "injection_detector_active": false
-    },
-    "agent_ops": {
-      "cost_tracking_enabled": false,
-      "latency_tracking_enabled": false,
-      "error_taxonomy_applied": false,
-      "reliability_scores_updated": false
-    },
-    "evaluation": {
-      "golden_datasets_loaded": false,
-      "llm_as_judge_runs_successfully": false,
-      "regression_tests_all_pass": false,
-      "toolpath_evaluation_passed": false
-    },
-    "deployment": {
-      "rest_endpoints_secure": false,
-      "authn_authz_enforced": false,
-      "environment_separation_valid": false,
-      "model_versions_pinned": false
+      "event_objects_have_required_fields": true,
+      "logs_contain_no_pii": true,
+      "opentelemetry_trace_compliant": true,
+      "metrics_written_correctly": true
     },
     "import_and_lint": {
-      "no_import_errors": false,
+      "no_import_errors": true,
       "ruff_zero_errors": false,
-      "mypy_zero_blockers": false,
-      "no_circular_imports": false
+      "mypy_zero_blockers": true,
+      "no_circular_imports": true
     },
     "pytest": {
       "pytest_zero_failures": false
     },
     "zero_loss": {
       "no_behavior_loss_detected": false,
-      "no_capability_loss_detected": false,
-      "conflict_merges_preserved_behavior": false
-    }
+      "no_capability_loss_detected": true,
+      "conflict_merges_preserved_behavior": true
+    },
+    "mcp_used_for_external_calls": false,
+    "mcp_tools_define_input_output_schemas": false,
+    "mcp_access_respects_acls": false,
+    "rag_calls_are_deterministic": false,
+    "kg_lookups_are_deterministic": false,
+    "temporal_validity_enforced_on_events": false,
+    "safety_runs_on_all_outbound_content": false,
+    "safety_runs_on_all_mutating_actions": false,
+    "pii_filter_active": false,
+    "hallucination_detector_active": false,
+    "injection_detector_active": false,
+    "cost_tracking_enabled": false,
+    "latency_tracking_enabled": false,
+    "error_taxonomy_applied": false,
+    "reliability_scores_updated": false,
+    "golden_datasets_loaded": false,
+    "llm_as_judge_runs_successfully": false,
+    "regression_tests_all_pass": false,
+    "toolpath_evaluation_passed": false,
+    "rest_endpoints_secure": true,
+    "authn_authz_enforced": true,
+    "environment_separation_valid": true,
+    "model_versions_pinned": false
   }
 }
