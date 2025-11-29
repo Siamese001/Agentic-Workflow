@@ -4,8 +4,8 @@
   "description": "Deep atomic L5 validation keys with strict folder deduplication and explicit allowed subfolder lists. This JSON fully replaces previous validation_keys definitions and is intended as the canonical Agentic-L5 structural and behavioral contract for Windsurf Mode-B.",
   "validation_keys": {
     "structure": {
-      "root_has_required_folders": false,
-      "directory_tree_matches_section3": false,
+      "root_has_required_folders": true,
+      "directory_tree_matches_section3": true,
       "max_depth_respected": true,
       "no_level4_directories": true,
       "no_empty_folders": true,
@@ -40,9 +40,9 @@
       "agentic_core_l2_execution_engines_outreach_valid": true,
       "agentic_core_l3_orchestration_engines_resume_valid": true,
       "agentic_core_l3_orchestration_engines_outreach_valid": true,
-      "agentic_core_l4_memory_providers_valid": true,
-      "agentic_core_l4_temporal_valid": true,
-      "agentic_core_l4_mappings_valid": true,
+      "agentic_core_l4_memory_providers_valid": false,
+      "agentic_core_l4_temporal_valid": false,
+      "agentic_core_l4_mappings_valid": false,
       "agentic_core_l5_safety_filters_valid": true,
       "agentic_core_l5_safety_policies_valid": true,
       "agentic_core_l5_safety_validators_valid": true,
