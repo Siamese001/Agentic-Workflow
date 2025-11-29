@@ -1,11 +1,11 @@
 {
-  "title": "WINDSURF GLOBAL RULES — MODE-B VERSION (JSON, ZERO-LOSS MERGE)",
-  "version": "final",
-  "description": "This JSON document encodes the complete Windsurf Global Rules (Sections 0–20) in a single machine-readable object, including a fully corrected, zero-ambiguity Section 3. It is intended to replace the prose version for automated enforcement.",
+  "title": "WINDSURF GLOBAL RULES — MODE-B VERSION (JSON, FULLY CONSOLIDATED, ZERO-LOSS)",
+  "version": "consolidated-final",
+  "description": "This JSON encodes the complete Windsurf Global Rules (Sections 0–20) in a single consolidated, non-duplicative, machine-readable document. All structural rules are centralized in Section 3; prompt governance and prompt builder are bundled into Section 6; all other sections reference these canonical definitions to avoid duplication while preserving every behavioral constraint.",
   "sections": {
     "0": {
       "title": "0 — EXECUTION MODEL",
-      "purpose": "Define how Windsurf must execute in Mode-B across PATCH and VALIDATION phases.",
+      "purpose": "Define how Windsurf operates in Mode-B across PATCH and VALIDATION phases.",
       "requirements": [
         "Windsurf MUST modify ANY file as needed to achieve compliance with all rules.",
         "Windsurf MUST ALWAYS self-correct violations of these rules.",
@@ -15,29 +15,26 @@
       ],
       "modes": {
         "PATCH_LOOP": {
-          "description": "Code modification phase.",
-          "allowed_outputs": [
-            "apply_patch blocks",
-            "write_to_file blocks"
-          ],
+          "description": "Phase where Windsurf emits code/file changes.",
+          "allowed_outputs": ["apply_patch blocks", "write_to_file blocks"],
           "forbidden_outputs": [
             "shell commands",
             "narrative explanations",
             "reasoning text",
-            "any output other than apply_patch/write_to_file"
+            "anything other than apply_patch/write_to_file"
           ]
         },
         "VALIDATION_LOOP": {
-          "description": "Validation-only phase.",
+          "description": "Phase where Windsurf validates but does not patch.",
           "allowed_outputs": [
             "TRUE/FALSE matrix for each validation key",
-            "final completion line: 'PHASE <N> VALIDATION COMPLETE — ALL KEYS TRUE.'"
+            "exact final line: 'PHASE <N> VALIDATION COMPLETE — ALL KEYS TRUE.'"
           ],
           "forbidden_outputs": [
-            "patches",
-            "apply_patch blocks",
-            "write_to_file blocks",
-            "explanations"
+            "apply_patch",
+            "write_to_file",
+            "explanations",
+            "commands"
           ]
         }
       }
@@ -47,30 +44,13 @@
       "rules": [
         "Existing files MUST be modified only via apply_patch.",
         "New files MUST be created only via write_to_file.",
-        "Directories MUST be created implicitly by writing files into them.",
+        "Directories MUST be created implicitly via writing files inside them.",
         "No placeholders or partial diffs are allowed.",
-        "All ambiguity MUST be resolved towards rule compliance and zero-loss continuity."
+        "Ambiguity MUST be resolved toward rule compliance and zero-loss continuity."
       ],
       "cache_handling": {
-        "section": "1.1 — CACHE HANDLING RULES",
-        "canonical_cache_root": "/agentic_workflow_10_11/runtime/cache/",
-        "mappings": {
-          "__pycache__": "/agentic_workflow_10_11/runtime/cache/__pycache__/",
-          ".venv": "/agentic_workflow_10_11/runtime/cache/venv/",
-          ".mypy_cache": "/agentic_workflow_10_11/runtime/cache/mypy/",
-          ".pytest_cache": "/agentic_workflow_10_11/runtime/cache/pytest/",
-          ".ruff_cache": "/agentic_workflow_10_11/runtime/cache/ruff/",
-          ".cache": "/agentic_workflow_10_11/runtime/cache/tmp/",
-          "cache": "/agentic_workflow_10_11/runtime/cache/tmp/",
-          "tmp": "/agentic_workflow_10_11/runtime/cache/tmp/",
-          "temp": "/agentic_workflow_10_11/runtime/cache/tmp/",
-          "scratch": "/agentic_workflow_10_11/runtime/cache/tmp/"
-        },
-        "constraints": [
-          "Cache-like folders MUST NOT appear anywhere else in the repo.",
-          "Windsurf MUST ensure `/agentic_workflow_10_11/runtime/cache/` is `.gitignore`-protected.",
-          "Any newly discovered cache-like folders MUST be migrated into the canonical cache tree."
-        ]
+        "ref": "sections.3.cache_policy",
+        "note": "All low-level cache-folder mapping is defined centrally in Section 3.cache_policy."
       }
     },
     "2": {
@@ -78,14 +58,14 @@
       "rules": [
         "Windsurf MUST preserve ALL existing capabilities.",
         "No regressions are allowed in functionality, tests, or behavior.",
-        "No deletions of behavior are allowed; refactors must be behavior-preserving.",
+        "No deletions of behavior are allowed; refactors must remain behavior-preserving.",
         "Duplicate or conflicting logic MUST be merged into a single correct version.",
         "When in doubt, Windsurf MUST preserve BOTH behaviors and add tests to disambiguate."
       ]
     },
     "3": {
-      "title": "3 — CANONICAL REPOSITORY TREE (ZERO-LOSS MERGE, FULLY CORRECTED)",
-      "description": "This section defines the single authoritative, unambiguous, fully corrected repository structure and rules for agentic_workflow_10_11. It replaces all prior Section 3 content.",
+      "title": "3 — CANONICAL REPOSITORY TREE (ZERO-LOSS MERGE, FULLY CONSOLIDATED)",
+      "description": "Defines the single authoritative repository layout and structural invariants for agentic_workflow_10_11. All directory, cache, test, prompt-governance, and engine-separation rules are centralized here.",
       "depth_rules": {
         "level_0": "Repository root",
         "level_1": "Top-level folders",
@@ -108,7 +88,7 @@
         }
       },
       "agentic_core": {
-        "description": "ALL L1–L5 logic MUST live exclusively inside agentic_core. Engines are implemented within L2 and L3 subtrees.",
+        "description": "All core agentic logic (L1–L5) resides here. Engines are implemented inside L2 and L3 subtrees.",
         "structure": {
           "l1_planning": {
             "planners": {},
@@ -144,11 +124,10 @@
           }
         }
       },
-      "engine_separation_rules": {
+      "engine_rules": {
+        "description": "Defines how resume and outreach engines must be separated and structured.",
         "engines_are_independent": true,
         "no_cross_engine_imports": true,
-        "resume_may_not_import_outreach": true,
-        "outreach_may_not_import_resume": true,
         "allowed_shared_sources": [
           "prompt_governance/*",
           "schemas/shared/*",
@@ -158,29 +137,33 @@
           "observability/*"
         ],
         "engine_specific_logic_locations": [
-          "agentic_core/l2_execution/engines/{resume|outreach}",
-          "agentic_core/l3_orchestration/engines/{resume|outreach}"
-        ]
+          "agentic_core/l2_execution/engines/resume",
+          "agentic_core/l2_execution/engines/outreach",
+          "agentic_core/l3_orchestration/engines/resume",
+          "agentic_core/l3_orchestration/engines/outreach"
+        ],
+        "no_shared_business_logic": true,
+        "parallel_subtrees_required": true
       },
-      "shared_logic_rules": {
-        "only_allowed_shared_locations": {
-          "prompt_governance": {},
-          "schemas/shared": {},
-          "agentic_core/l2_execution/tools": {},
-          "agentic_core/l4_memory_state/providers": {},
-          "agentic_core/l4_memory_state/temporal": {},
-          "observability": {}
+      "layer_policy": {
+        "description": "Centralized definition of L1–L5 semantics.",
+        "layers": {
+          "L1": "Planning only. Pure cognition; no tools, no state writes, no orchestration.",
+          "L2": "Execution only. Tools, RAG calls, side effects; no planning.",
+          "L3": "Orchestration only. DAG execution, reason/act/observe; no direct tool calls.",
+          "L4": "Memory/state. DB, vector stores, temporal/KG; no upward imports.",
+          "L5": "Safety. Filters, validators, policies; no upward imports."
         },
-        "forbidden_shared_items": [
-          "engine-specific planners",
-          "engine-specific executors",
-          "engine-specific orchestrators",
-          "engine-specific safety policies",
-          "engine-specific business-domain logic"
-        ]
+        "import_dag": {
+          "L1": { "imports_from": [] },
+          "L2": { "imports_from": ["L1"] },
+          "L3": { "imports_from": ["L1", "L2"] },
+          "L4": { "imports_from": [] },
+          "L5": { "imports_from": [] }
+        }
       },
       "apps_layer": {
-        "description": "MUST remain thin. NO L1–L5 logic allowed here.",
+        "description": "Thin entrypoints; must not contain agentic logic.",
         "structure": {
           "apps": {
             "resume_engine": {
@@ -192,10 +175,14 @@
               "pipelines": {}
             }
           }
+        },
+        "constraints": {
+          "no_L1_L5_logic_in_apps": true
         }
       },
-      "prompt_governance": {
-        "description": "All prompts MUST live outside code. No inline prompts allowed.",
+      "prompt_governance_structure": {
+        "description": "Filesystem locations for prompt governance and bundles.",
+        "path": "prompt_governance/",
         "structure": {
           "manifests": {},
           "PromptACLs": {},
@@ -207,19 +194,19 @@
           "InjectionPolicies": {}
         }
       },
-      "observability": {
+      "observability_structure": {
+        "description": "Filesystem layout for observability artifacts.",
+        "path": "observability/",
         "structure": {
           "trace": {},
           "metrics": {},
           "logs": {},
           "cost": {}
-        },
-        "rules": {
-          "no_business_logic": true,
-          "only_telemetry_allowed": true
         }
       },
-      "schemas": {
+      "schemas_structure": {
+        "description": "Centralized data contracts.",
+        "path": "schemas/",
         "structure": {
           "shared": {},
           "l1_planning": {},
@@ -227,78 +214,97 @@
           "l3_orchestration": {},
           "l4_memory": {},
           "l5_safety": {}
-        },
-        "rules": {
-          "no_schemas_outside_this_folder": true,
-          "schemas_required_for_cross_layer_interfaces": true
         }
       },
-      "tests": {
-        "description": "SINGLE global test tree. MUST follow layer-first → engine grouping exactly.",
+      "tests_structure": {
+        "description": "SINGLE global test tree; layer-first, then engine.",
+        "path": "tests/",
         "structure": {
-          "tests": {
-            "L1_planning": {
-              "resume": {},
-              "outreach": {},
-              "shared": {}
-            },
-            "L2_execution": {
-              "resume": {},
-              "outreach": {},
-              "tools": {}
-            },
-            "L3_orchestration": {
-              "resume": {},
-              "outreach": {},
-              "framework": {}
-            },
-            "L4_memory_state": {
-              "temporal": {},
-              "providers": {},
-              "mappings": {}
-            },
-            "L5_safety": {
-              "filters": {},
-              "policies": {},
-              "validators": {}
-            },
-            "integration": {
-              "resume": {},
-              "outreach": {}
-            },
-            "e2e": {
-              "resume": {},
-              "outreach": {}
-            },
-            "regression": {
-              "resume": {},
-              "outreach": {}
-            },
-            "fixtures": {
-              "resume": {},
-              "outreach": {},
-              "common": {}
-            },
-            "data": {
-              "sample_resumes": {},
-              "sample_outreach": {},
-              "kg_samples": {}
-            },
-            "helpers.py": "file"
-          }
+          "L1_planning": {
+            "resume": {},
+            "outreach": {},
+            "shared": {}
+          },
+          "L2_execution": {
+            "resume": {},
+            "outreach": {},
+            "tools": {}
+          },
+          "L3_orchestration": {
+            "resume": {},
+            "outreach": {},
+            "framework": {}
+          },
+          "L4_memory_state": {
+            "temporal": {},
+            "providers": {},
+            "mappings": {}
+          },
+          "L5_safety": {
+            "filters": {},
+            "policies": {},
+            "validators": {}
+          },
+          "integration": {
+            "resume": {},
+            "outreach": {}
+          },
+          "e2e": {
+            "resume": {},
+            "outreach": {}
+          },
+          "regression": {
+            "resume": {},
+            "outreach": {}
+          },
+          "fixtures": {
+            "resume": {},
+            "outreach": {},
+            "common": {}
+          },
+          "data": {
+            "sample_resumes": {},
+            "sample_outreach": {},
+            "kg_samples": {}
+          },
+          "helpers.py": "file"
         },
-        "rules": {
+        "constraints": {
           "no_tests_in_agentic_core": true,
           "no_tests_in_apps": true,
-          "no_root_tests": true,
-          "no_other_test_folders": true,
-          "engine_tests_must_be_separated": true
+          "no_tests_at_root": true,
+          "no_alternate_test_trees": true
         }
       },
-      "runtime_cache_rules": {
-        "all_caches_must_live_under": "runtime/cache/",
+      "cache_policy": {
+        "description": "Centralized cache handling; all other sections reference this.",
+        "canonical_root": "/agentic_workflow_10_11/runtime/cache/",
+        "allowed_subdirs": [
+          "__pycache__",
+          "venv",
+          "mypy",
+          "pytest",
+          "ruff",
+          "tmp"
+        ],
+        "mapping_aliases": {
+          "__pycache__": "runtime/cache/__pycache__/",
+          ".venv": "runtime/cache/venv/",
+          ".mypy_cache": "runtime/cache/mypy/",
+          ".pytest_cache": "runtime/cache/pytest/",
+          ".ruff_cache": "runtime/cache/ruff/",
+          ".cache": "runtime/cache/tmp/",
+          "cache": "runtime/cache/tmp/",
+          "tmp": "runtime/cache/tmp/",
+          "temp": "runtime/cache/tmp/",
+          "scratch": "runtime/cache/tmp/"
+        },
+        "no_cache_outside_canonical_root": true
+      },
+      "runtime_structure": {
+        "path": "runtime/",
         "structure": {
-          "runtime/cache": {
+          "cache": {
             "__pycache__": {},
             "venv": {},
             "mypy": {},
@@ -306,14 +312,14 @@
             "ruff": {},
             "tmp": {}
           }
-        },
-        "no_cache_folders_elsewhere": true
+        }
       },
       "empty_folder_policy": {
+        "description": "No directories at Levels 0–3 may be empty.",
         "no_empty_directories": true,
-        "allowed_placeholder": "README.md (only if absolutely necessary for non-code folders)"
+        "allowed_placeholder_file": "README.md"
       },
-      "prohibited_locations": {
+      "prohibited_paths": {
         "forbidden_directories": [
           "tests_unit/",
           "unit_tests/",
@@ -321,10 +327,10 @@
           "any tests under agentic_core/",
           "any tests under apps/"
         ],
-        "forbidden_content": [
-          "prompts inside code",
+        "forbidden_content_locations": [
+          "prompts inside L1–L5 code files",
           "schemas outside /schemas",
-          "caches outside /runtime/cache",
+          "cache directories outside /runtime/cache",
           "directories deeper than Level-3"
         ]
       },
@@ -332,7 +338,8 @@
     },
     "4": {
       "title": "4 — AGENTIC WORKFLOW (DAG + TOOLING + ROUTING + SAFETY + OBSERVABILITY)",
-      "description": "Defines how L1–L5 cooperate at runtime via DAG orchestration, tools, routing, observability, and safety.",
+      "description": "Defines how L1–L5 collaborate at runtime using DAG orchestration, tools, routing, observability, and safety.",
+      "ref_layer_policy": "sections.3.layer_policy",
       "subsections": {
         "4.1": {
           "title": "4.1 — DAG ORCHESTRATION (L3)",
@@ -341,47 +348,41 @@
             "Each DAG node MUST define InputSchema (typed).",
             "Each DAG node MUST define OutputSchema (typed).",
             "Each DAG node MUST define FailureModes (enumerated).",
-            "Each DAG node MUST define Invariants (entry/exit conditions).",
-            "Transitions MUST be typed and acyclic (no cycles)."
+            "Each DAG node MUST define explicit invariants on entry and exit.",
+            "Transitions MUST be typed, explicit, and acyclic."
           ],
           "constraints": [
             "Recursion controllers MUST live in agentic_core/l3_orchestration/framework/.",
-            "Planning recursion belongs in L1 (pure cognitive recursion).",
-            "L3 MUST NOT call tools directly; it must call L2 executors.",
-            "L3 MUST NOT embed business logic in prompts; it must delegate to L1 and L2."
+            "Planning recursion belongs exclusively in L1.",
+            "L3 MUST NOT call tools directly; it MUST delegate to L2.",
+            "L3 MUST NOT embed business logic in prompts; it MUST delegate to L1 and L2."
           ]
         },
         "4.2": {
           "title": "4.2 — TOOL CONTRACT (L2)",
           "requirements": [
-            "Each tool in agentic_core/l2_execution/tools MUST declare InputSchema.",
-            "Each tool MUST declare OutputSchema.",
-            "Each tool MUST declare FailureModes.",
-            "Each tool MUST declare Timeout.",
-            "Each tool MUST declare Retry policy.",
-            "Each tool MUST declare CircuitBreaker behavior.",
-            "Each tool MUST declare CostLimit and cost annotations.",
-            "Each tool MUST declare SafetyChecks (pre & post)."
+            "Each tool in agentic_core/l2_execution/tools MUST declare InputSchema and OutputSchema.",
+            "Each tool MUST declare FailureModes, Timeout, Retry, CircuitBreaker, CostLimit, and SafetyChecks (pre and post)."
           ],
           "constraints": [
             "Tools MUST NOT orchestrate or plan.",
-            "Tools MUST NOT perform multi-step reasoning; they execute a single bounded action.",
-            "Tools MUST be idempotent where possible, or clearly mark side effects."
+            "Tools MUST NOT perform multi-step reasoning; they perform a single bounded action.",
+            "Tools MUST be idempotent where possible or clearly indicate side effects."
           ]
         },
         "4.3": {
           "title": "4.3 — MODEL ROUTING",
           "rules": [
-            "L1 + L3 MUST use frontier reasoning models for planning and DAG control.",
+            "L1 and L3 MUST use frontier reasoning models.",
             "L2 MUST use efficient models optimized for execution.",
-            "L4 MAY use frontier or efficient models depending on cost/latency.",
-            "L5 MUST use safe, robust models for safety judgments."
+            "L4 MAY use frontier or efficient models as appropriate.",
+            "L5 MUST use robust models suitable for safety judgments."
           ],
           "budgets": [
-            "Routing MUST enforce token budgets (max tokens per call, per mission).",
-            "Routing MUST enforce latency budgets (per step and per mission).",
-            "Cost decorators MUST attach cost estimates to each call and aggregate across mission.",
-            "Routing policy MUST be configurable per environment (dev, stage, prod)."
+            "Token budgets MUST be enforced per call and per mission.",
+            "Latency budgets MUST be enforced per step and per mission.",
+            "Cost decorators MUST be attached to each call and aggregated per mission.",
+            "Routing policy MUST be environment-configurable (dev/stage/prod)."
           ]
         },
         "4.4": {
@@ -412,7 +413,7 @@
           ],
           "constraints": [
             "Events MUST be exportable to observability/trace, observability/metrics, and observability/logs.",
-            "Logs MUST NOT contain PII; hashing/redaction MUST be used.",
+            "No PII may appear in logs; hashing/redaction MUST be applied.",
             "Traces MUST be OpenTelemetry-compatible."
           ]
         },
@@ -420,27 +421,28 @@
           "title": "4.5 — SAFETY (L5)",
           "capabilities": [
             "PII detection and redaction.",
-            "Hallucination checks (answers must be grounded in retrieved or known data).",
-            "Injection shielding (defense against prompt injection).",
-            "Constitutional guardrails (domain-specific constraints).",
-            "Data vs. instruction isolation (user data is NEVER treated as system instructions).",
-            "Engine-specific overrides under l5_safety/policies/<engine>/."
+            "Hallucination checks with grounding.",
+            "Prompt injection shielding.",
+            "Constitutional guardrails for domains.",
+            "Data vs instruction isolation.",
+            "Engine-specific safety policies under l5_safety/policies/<engine>/."
           ],
           "enforcement": [
-            "Safety policies MUST be enforced for all outbound user-facing content.",
-            "Safety policies MUST be enforced for all tool invocations that can change external state (emails, DB writes, APIs)."
+            "Safety MUST run on all outbound user-facing content.",
+            "Safety MUST gate all L2 actions that mutate external state (emails, DB writes, APIs)."
           ]
         }
       }
     },
     "5": {
       "title": "5 — MEMORY, TEMPORAL AGENT, RAG, & KG (L4)",
+      "ref_structure": "sections.3.agentic_core.structure.l4_memory_state",
       "rules": [
         "All Temporal Agent, RAG, and KG logic MUST live under agentic_core/l4_memory_state/."
       ],
       "submodules": {
         "providers": "DB, vector store, KG backends",
-        "temporal": "temporal chunking, statement extraction, temporal ranges, triplets, events, invalidation, entity resolution",
+        "temporal": "temporal chunking, statement extraction, temporal range extraction, triplet extraction, event generation, entity resolution, invalidation",
         "mappings": "per-engine mapping (resume/outreach)"
       },
       "memory_types": [
@@ -452,24 +454,38 @@
       ],
       "constraints": [
         "L1, L2, L3, L5 MUST NOT mutate storage directly; they MUST call into L4 APIs.",
-        "L4 MUST define clear retention & eviction policies.",
-        "Temporal validity MUST be encoded in schemas using fields like valid_at, invalid_at."
+        "L4 MUST define explicit retention and eviction policies.",
+        "Temporal validity MUST be encoded in schemas via fields like valid_at and invalid_at."
       ]
     },
     "6": {
-      "title": "6 — PROMPT GOVERNANCE (INSTRUCTIONAL INJECTION v5)",
-      "rules": [
-        "Prompt governance MUST live under prompt_governance/.",
-        "NO prompt text may be embedded in code.",
-        "ALL prompts MUST be loaded from external files (.txt, .md, .json, .yaml, etc.).",
-        "ALL prompts MUST be referenced via a central Prompt_Registry.",
-        "Prompts MUST implement the Instructional Injection v5 layering: Framing → Context → Reasoning → Tooling → Safety → Output.",
-        "Each prompt bundle MUST be schema-first, deterministic, versioned, and never deleted (old versions remain for rollback).",
-        "User content is always data only; system/developer/governance prompts are instructions only."
+      "title": "6 — PROMPT SYSTEM (GOVERNANCE + BUILDER)",
+      "description": "Consolidated prompt governance (former Section 6) and prompt builder (former Section 11). All filesystem aspects live in Section 3; this section defines behavior and composition.",
+      "ref_structure": "sections.3.prompt_governance_structure",
+      "governance_rules": [
+        "All prompts MUST live under prompt_governance/ per Section 3.",
+        "NO prompt text may be inlined in L1–L5 code.",
+        "Prompts MUST be loaded exclusively from external files (.txt, .md, .json, .yaml, etc.).",
+        "All prompts MUST be referenced via a central Prompt_Registry data structure.",
+        "Prompts MUST be schema-first (expected output defined).",
+        "Prompts MUST be deterministic (stable fields and ordering).",
+        "Prompts MUST be versioned (semantic versioning: v1.0.0, v1.1.0, etc.).",
+        "Old prompt versions MUST NOT be deleted; they remain available for rollback.",
+        "User content MUST be treated as data-only; system/developer/governance prompts as instructions-only; they MUST NOT be mixed."
+      ],
+      "builder_rules": [
+        "The central Prompt Builder MUST compose system, developer, and user instructions using Injection v5 layering.",
+        "The layers MUST be applied in this order: Framing → Context → Reasoning → Tooling → Safety → Output.",
+        "The Prompt Builder MUST attach schemas and examples to each prompt call.",
+        "The Prompt Builder MUST support prompt diffing and regression evaluation.",
+        "Code MUST NOT inline large prompt strings; it MUST use templates in prompt_governance/.",
+        "Variables (goal, constraints, schemas, examples, etc.) MUST be filled in programmatically.",
+        "All calls from L1–L5 to models MUST go through the Prompt Builder."
       ]
     },
     "7": {
       "title": "7 — IMPORT HYGIENE (L1–L5 DEPENDENCY DAG)",
+      "ref_layer_policy": "sections.3.layer_policy",
       "dependency_dag": [
         "L1 (planning) = PURE (no imports from L2–L5).",
         "L2 (execution) may import from L1.",
@@ -479,91 +495,87 @@
       ],
       "forbidden": [
         "Any circular imports.",
-        "L4 importing L3, L2, or L1.",
-        "L5 importing L3, L2, or L1.",
-        "Cross-engine imports (resume importing outreach or vice versa).",
-        "Duplication of shared directories."
+        "L4 importing from L1, L2, or L3.",
+        "L5 importing from L1, L2, or L3.",
+        "Cross-engine imports (resume ↔ outreach).",
+        "Duplicate shared directories or split responsibilities."
       ],
       "windsurf_actions": [
-        "Fix imports to obey the DAG.",
-        "Add tests if needed to prevent regressions."
+        "Normalize imports to obey the DAG defined in Section 3.layer_policy.",
+        "Introduce or update tests to guard against future import violations."
       ]
     },
     "8": {
       "title": "8 — TEST STRUCTURE INVARIANT (GLOBAL TEST TREE)",
+      "ref_tests_structure": "sections.3.tests_structure",
       "rules": [
-        "There MUST be a single global tests/ tree exactly as defined in Section 3.",
+        "There MUST be exactly one global tests/ tree as defined in Section 3.",
         "No tests are allowed under apps/.",
-        "No tests are allowed inside engine folders under agentic_core/.",
+        "No tests are allowed inside agentic_core/.",
         "No alternate test trees (tests_unit/, unit_tests/, etc.) are allowed.",
-        "Engine-specific tests MUST be separated at file level by engine and layer."
+        "Engine-specific tests MUST be separated by engine AND layer."
       ],
       "windsurf_actions": [
-        "Relocate misplaced tests.",
-        "Correct imports and fixtures.",
-        "Ensure every L1–L5 module has at least basic coverage."
+        "Relocate all misplaced tests to the Section 3.tests_structure locations.",
+        "Fix imports and fixtures as needed.",
+        "Ensure at least basic coverage for every L1–L5 module."
       ]
     },
     "9": {
       "title": "9 — MODEL CONTEXT PROTOCOL (MCP) INTEGRATION",
       "rules": [
-        "MCP MUST be the standard for external tools/data sources.",
+        "MCP MUST be the standard mechanism for external tools and data sources.",
         "Only MCP-registered tools may be exposed to the agent runtime.",
         "MCP tools MUST declare input and output schemas.",
         "MCP servers MUST be discoverable and configurable per environment.",
-        "MCP interactions MUST be logged and observable."
+        "All MCP interactions MUST be logged and observable."
       ],
       "security": [
-        "MCP tool access MUST honor agent-specific ACLs.",
-        "No direct network calls from L1/L2; they MUST go through MCP or sanctioned adapters."
+        "MCP tool access MUST comply with agent-specific ACLs from prompt_governance/PromptACLs.",
+        "No direct network calls from L1/L2; external calls MUST go through MCP or sanctioned adapters."
       ]
     },
     "10": {
       "title": "10 — GLOBAL SCHEMA LAYER (DATA CONTRACTS)",
+      "ref_schemas_structure": "sections.3.schemas_structure",
       "rules": [
         "Schemas MUST live under /agentic_workflow_10_11/schemas/.",
-        "All domain data MUST use JSON Schema (2020-12) or equivalent.",
-        "Pydantic or equivalent type models MUST be auto-generated from schemas.",
-        "Backward-compatibility policy MUST prevent breaking changes without a version bump.",
-        "No loose dicts may cross layer boundaries; typed objects MUST be used.",
-        "Any cross-layer interface MUST be defined in schemas/.",
-        "Schema regression tests MUST exist to prevent breaking changes."
+        "All domain data MUST be modeled via JSON Schema (2020-12) or equivalent.",
+        "Pydantic or equivalent typed models MUST be generated from these schemas.",
+        "Backward-compatibility MUST be maintained; no breaking changes without a schema version bump.",
+        "No loose dictionaries may cross layer boundaries; typed objects MUST be used.",
+        "Any cross-layer interface MUST be declared in schemas/.",
+        "Schema regression tests MUST exist to catch breaking changes."
       ]
     },
     "11": {
-      "title": "11 — PROMPT BUILDER (CANONICAL PATTERN)",
-      "rules": [
-        "A central Prompt Builder MUST compose system, developer, and user instructions using Injection v5.",
-        "The Prompt Builder MUST enforce the layering: Framing/Context/Reasoning/Tooling/Safety/Output.",
-        "The Prompt Builder MUST attach schemas and examples to each prompt call.",
-        "Prompt Builder MUST support prompt diffing and regression evaluation.",
-        "Code MUST load templates from prompt_governance/ only.",
-        "Code MUST only fill in variable slots programmatically.",
-        "No large prompt strings may be inlined in L1–L5 code."
-      ]
+      "title": "11 — (MERGED INTO 6 — PROMPT SYSTEM)",
+      "note": "All prompt builder behavior has been consolidated into Section 6. This section remains as a pointer only.",
+      "ref": "sections.6"
     },
     "12": {
       "title": "12 — SELF-CORRECTION & ARBITRATION LAYER",
       "rules": [
-        "A self-correction layer MUST exist (typically L3).",
+        "A self-correction layer MUST exist, typically in L3.",
         "There MUST be a Critic model to evaluate candidate outputs or plans.",
         "There MUST be a Verifier model to check constraints, facts, and safety.",
-        "There MUST be an Arbiter to choose between candidates or to trigger re-plan/re-execute.",
-        "This layer MUST be deterministic (same input → same arbitration result).",
-        "This layer MUST log reasoning and arbitration decisions as non-sensitive summaries.",
-        "This layer MUST be testable with golden evaluation cases."
+        "There MUST be an Arbiter to choose between candidate outputs or to trigger re-plan/re-execution.",
+        "Self-correction MUST be deterministic (same input → same arbitration result).",
+        "Self-correction MUST log reasoning and arbitration decisions as non-sensitive summaries.",
+        "Self-correction MUST be testable using golden evaluation cases."
       ]
     },
     "13": {
       "title": "13 — AGENT OPS (OBSERVABILITY + RELIABILITY)",
+      "ref_observability_structure": "sections.3.observability_structure",
       "rules": [
         "Agent Ops MUST track token-level cost per mission and per step.",
-        "Latency distributions (p50/p90/p99) MUST be recorded per tool, model, and DAG node.",
-        "An error taxonomy MUST be defined (tool_error, model_error, safety_block, etc.).",
-        "Tool reliability scoring MUST be implemented (success/failure rates).",
-        "Model reliability scoring MUST be implemented per use-case.",
-        "Canary scenarios MUST be defined for critical flows.",
-        "All Agent Ops signals MUST be reflected in observability/metrics and observability/logs."
+        "Latency distributions (p50, p90, p99) MUST be recorded for each tool, model, and DAG node.",
+        "An error taxonomy MUST classify errors (tool_error, model_error, safety_block, etc.).",
+        "Tool reliability scoring MUST be maintained (success/failure rates).",
+        "Model reliability scoring MUST be maintained by use-case.",
+        "Canary scenarios MUST exist for critical flows.",
+        "All Agent Ops data MUST feed into observability/metrics and observability/logs."
       ]
     },
     "14": {
@@ -571,10 +583,10 @@
       "rules": [
         "Users, agents, and services MUST be treated as distinct principals.",
         "Agent identities MUST be distinct from user identities.",
-        "Least privilege MUST be applied: each agent gets only the tools/data it needs.",
+        "Least privilege MUST be enforced so each agent has only required tools/data.",
         "A Policy Decision Engine (PDE) MUST gate all high-risk actions.",
-        "Execution environments for code tools MUST be sandboxed.",
-        "Secrets MUST NOT be hard-coded; they MUST be supplied from secure config.",
+        "Execution environments for code tools MUST be sandboxed and isolated.",
+        "Secrets MUST NOT be hard-coded; they MUST come from secure configuration.",
         "Logs MUST NOT contain secrets or raw tokens."
       ]
     },
@@ -583,81 +595,83 @@
       "rules": [
         "The system MUST support explicit HITL checkpoints in DAGs (L3).",
         "The system MUST support human approval/rejection flows for consequential actions.",
-        "Human-provided corrections MUST feed into evaluation sets.",
+        "Human feedback MUST be captured and fed into evaluation datasets.",
         "HITL interactions MUST be logged as structured events.",
-        "HITL events MUST be used to create new golden examples."
+        "HITL events MUST be used to create new golden examples to prevent regressions."
       ]
     },
     "16": {
       "title": "16 — RAG & KNOWLEDGE OPTIMIZATION",
       "rules": [
         "Retrieval MUST support hybrid retrieval (dense + sparse + RRF or equivalent).",
-        "Retrieval MUST support query rewriting (HYDE or similar) where appropriate.",
-        "Retrieval MUST avoid duplicative context (deduping/clustering).",
-        "Retrieval MUST respect freshness and temporal validity when using temporal KGs."
+        "Retrieval MUST support query rewriting (e.g., HYDE-style) as appropriate.",
+        "Retrieved context MUST be deduplicated or clustered to avoid redundancy.",
+        "Temporal validity and freshness MUST be enforced when using temporal KGs."
       ],
       "constraints": [
-        "RAG MUST be deterministic given the same corpus and query.",
-        "RAG components MUST be testable with golden queries."
+        "RAG MUST be deterministic for a fixed corpus and query.",
+        "RAG components MUST be testable via golden queries."
       ]
     },
     "17": {
       "title": "17 — EVALUATION FRAMEWORK",
       "rules": [
-        "Evaluation MUST include golden datasets for core flows.",
-        "LLM-as-Judge style semantic evaluation SHOULD be used where human review is infeasible.",
-        "Regression evaluation MUST be run for each model/prompt version change.",
-        "Toolpath evaluation MUST check correct tools and arguments were used.",
-        "CI/CD MUST run the evaluation suite for any changes to L1–L5, schemas, prompts, or tools.",
+        "Evaluation MUST include human-annotated golden datasets for core flows.",
+        "LLM-as-Judge style semantic evaluation SHOULD be used where human review is infeasible at scale.",
+        "Regression evaluation MUST run on every model or prompt version change.",
+        "Toolpath evaluation MUST verify correct tools and arguments were used.",
+        "CI/CD MUST run evaluation for changes to L1–L5, schemas, prompts, or tools.",
         "Regressions MUST block merges unless explicitly overridden with justification."
       ]
     },
     "18": {
       "title": "18 — DEPLOYMENT LAYER (L6 APPLICATION)",
       "rules": [
-        "A REST or equivalent interface MUST be defined for main agent flows.",
-        "Sessions MUST be managed cleanly (session IDs, expirations).",
-        "AuthN/AuthZ MUST protect all endpoints.",
-        "Dev, staging, and prod environments MUST be separated.",
+        "A REST or equivalent interface MUST be provided for main agent flows.",
+        "Session management MUST include IDs and expiration policies.",
+        "AuthN/AuthZ MUST protect all external endpoints.",
+        "dev, staging, and prod environments MUST be separated.",
         "Model versions MUST be pinned per environment.",
-        "Rollbacks MUST be possible if quality degrades."
+        "Rollbacks MUST be feasible if quality or reliability degrades."
       ]
     },
     "19": {
       "title": "19 — VALIDATION GATE",
       "rules": [
-        "Before any Phase is complete, there MUST be 0 import errors.",
-        "There MUST be 0 pytest failures.",
-        "There MUST be 0 lint (Ruff) errors.",
-        "There MUST be 0 mypy blockers (if mypy is used).",
+        "Imports MUST be error-free (0 import errors).",
+        "All pytest suites MUST pass (0 test failures).",
+        "Ruff linting MUST pass with 0 errors.",
+        "If mypy is used, there MUST be 0 blocking type errors.",
         "No circular imports are allowed.",
-        "L1–L5 boundaries MUST remain intact per Section 7.",
+        "L1–L5 boundaries MUST be intact per Section 3.layer_policy and Section 7.",
         "DAGs MUST be valid (no cycles, correct schemas).",
         "Retrieval MUST be deterministic and correct.",
-        "Temporal agent MUST function consistently.",
-        "Safety MUST be enforced and effective.",
-        "Zero-loss continuity MUST be preserved (no behavior loss)."
+        "Temporal agent behavior MUST be consistent.",
+        "Safety MUST be correctly enforced and effective.",
+        "Zero-loss continuity MUST be preserved (no loss of behavior).",
+        "Filesystem MUST conform to Section 3 (all depths, caches, tests, prompt folders)."
       ],
-      "failure_action": "ANY failure MUST trigger the PATCH_LOOP again."
+      "failure_action": "ANY failure MUST trigger a return to the PATCH_LOOP until all keys become TRUE."
     },
     "20": {
       "title": "20 — MODE-B PATCH LOOP",
       "rules": [
-        "PATCH_LOOP MUST repeatedly emit patches (apply_patch + write_to_file ONLY).",
-        "After each patch batch, Windsurf MUST run validations (imports, tests, lint, type checks, structure).",
-        "If ANY requirement fails, Windsurf MUST continue patching.",
-        "EXIT is allowed ONLY when ALL required keys are TRUE."
+        "PATCH_LOOP MUST repeatedly emit apply_patch and/or write_to_file blocks only.",
+        "After each patch batch, Windsurf MUST rerun imports, tests, lint, type checks, and structural validation.",
+        "If ANY validation key fails, Windsurf MUST continue patching.",
+        "EXIT is allowed ONLY when ALL validation keys from Section 19 are TRUE."
       ],
       "validation_loop": {
         "output_requirements": [
           "A TRUE/FALSE matrix for each key in Section 19.",
-          "The final line MUST be: 'PHASE <N> VALIDATION COMPLETE — ALL KEYS TRUE.'"
+          "The final line MUST be exactly: 'PHASE <N> VALIDATION COMPLETE — ALL KEYS TRUE.'"
         ],
         "forbidden_outputs": [
           "explanations",
           "commands",
-          "patches",
-          "narrative text"
+          "apply_patch",
+          "write_to_file",
+          "any narrative text"
         ]
       }
     }
