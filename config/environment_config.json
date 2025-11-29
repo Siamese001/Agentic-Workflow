@@ -1,0 +1,48 @@
+{
+  "environments": {
+    "development": {
+      "name": "development",
+      "database_url": "sqlite:///dev.db",
+      "debug_mode": true,
+      "log_level": "DEBUG",
+      "api_keys": {
+        "openai": "dev-key-placeholder",
+        "anthropic": "dev-key-placeholder"
+      }
+    },
+    "staging": {
+      "name": "staging", 
+      "database_url": "postgresql://staging-db:5432/agentic_staging",
+      "debug_mode": false,
+      "log_level": "INFO",
+      "api_keys": {
+        "openai": "staging-key-placeholder",
+        "anthropic": "staging-key-placeholder"
+      }
+    },
+    "production": {
+      "name": "production",
+      "database_url": "postgresql://prod-db:5432/agentic_prod",
+      "debug_mode": false,
+      "log_level": "WARNING",
+      "api_keys": {
+        "openai": "prod-key-placeholder",
+        "anthropic": "prod-key-placeholder"
+      }
+    }
+  },
+  "environment_variables": {
+    "ENVIRONMENT": "development",
+    "CONFIG_PATH": "config/",
+    "LOGS_PATH": "logs/",
+    "CACHE_PATH": "runtime/cache/"
+  },
+  "separation_rules": {
+    "database_isolation": true,
+    "api_key_separation": true,
+    "log_separation": true,
+    "cache_isolation": true
+  },
+  "version": "1.0.0",
+  "last_updated": "2025-11-29T13:30:00Z"
+}
