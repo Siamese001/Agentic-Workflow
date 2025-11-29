@@ -1,0 +1,2 @@
+# This file ensures the tests/golden/scoring_suites directory is tracked by git
+# The directory contains scoring test suites for evaluation workflows
