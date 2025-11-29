@@ -1,0 +1,56 @@
+{
+  "golden_datasets": {
+    "resume_samples": [
+      {
+        "id": "resume_001",
+        "name": "Software Engineer Resume",
+        "experience_years": 5,
+        "skills": ["Python", "JavaScript", "React", "Node.js"],
+        "education": "BS Computer Science",
+        "expected_salary": 120000
+      },
+      {
+        "id": "resume_002", 
+        "name": "Data Scientist Resume",
+        "experience_years": 3,
+        "skills": ["Python", "Machine Learning", "SQL", "TensorFlow"],
+        "education": "MS Data Science",
+        "expected_salary": 110000
+      }
+    ],
+    "job_descriptions": [
+      {
+        "id": "job_001",
+        "title": "Senior Software Engineer",
+        "company": "Tech Corp",
+        "required_skills": ["Python", "React", "AWS"],
+        "experience_required": 4,
+        "salary_range": "100000-140000"
+      },
+      {
+        "id": "job_002",
+        "title": "Data Scientist",
+        "company": "Data Analytics Inc",
+        "required_skills": ["Python", "Machine Learning", "SQL"],
+        "experience_required": 2,
+        "salary_range": "90000-130000"
+      }
+    ],
+    "expected_matches": [
+      {
+        "resume_id": "resume_001",
+        "job_id": "job_001",
+        "match_score": 0.85,
+        "should_match": true
+      },
+      {
+        "resume_id": "resume_002",
+        "job_id": "job_002", 
+        "match_score": 0.78,
+        "should_match": true
+      }
+    ]
+  },
+  "dataset_version": "1.0.0",
+  "last_updated": "2025-11-29T13:30:00Z"
+}

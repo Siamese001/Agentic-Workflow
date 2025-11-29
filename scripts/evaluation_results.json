@@ -1,13 +1,13 @@
 {
-  "timestamp": "2025-11-29T12:36:42.585677",
+  "timestamp": "2025-11-29T13:59:30.658278",
   "summary": {
     "total_evaluations": 3,
     "passed_evaluations": 3,
     "failed_evaluations": 0,
     "warning_evaluations": 0,
     "pass_rate": 1.0,
-    "average_score": 0.9590656336805555,
-    "average_execution_time_ms": 401.3333333333333,
+    "average_score": 0.9590767447916667,
+    "average_execution_time_ms": 401.0,
     "status": "GOOD"
   },
   "detailed_results": [
@@ -51,7 +51,7 @@
       "recommendations": [
         "Reduce memory usage for 1 tools: model_call"
       ],
-      "timestamp": "2025-11-29T12:36:41.731658"
+      "timestamp": "2025-11-29T13:59:29.805307"
     },
     {
       "toolpath_id": "d0fca877aab2",
@@ -72,7 +72,7 @@
         },
         {
           "tool_name": "model_call",
-          "execution_time_ms": 201,
+          "execution_time_ms": 200,
           "success": true,
           "error_message": null,
           "input_size": 29,
@@ -80,11 +80,11 @@
           "memory_usage_mb": 128.5
         }
       ],
-      "score": 0.9456828125,
+      "score": 0.9457128124999999,
       "recommendations": [
         "Reduce memory usage for 1 tools: model_call"
       ],
-      "timestamp": "2025-11-29T12:36:42.083445"
+      "timestamp": "2025-11-29T13:59:30.156448"
     },
     {
       "toolpath_id": "c573e5dcc29e",
@@ -92,7 +92,7 @@
       "total_tools": 4,
       "successful_tools": 4,
       "failed_tools": 0,
-      "total_execution_time_ms": 502,
+      "total_execution_time_ms": 501,
       "tool_metrics": [
         {
           "tool_name": "draft_executor",
@@ -131,11 +131,11 @@
           "memory_usage_mb": 12.3
         }
       ],
-      "score": 0.9639028385416667,
+      "score": 0.963906171875,
       "recommendations": [
         "Reduce memory usage for 1 tools: model_call"
       ],
-      "timestamp": "2025-11-29T12:36:42.585624"
+      "timestamp": "2025-11-29T13:59:30.658195"
     }
   ]
 }
