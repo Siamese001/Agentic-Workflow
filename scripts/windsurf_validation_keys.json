@@ -146,7 +146,7 @@
       "mcp_interactions_logged": false
     },
     "evaluation": {
-      "toolpath_evaluation_passed": false,
+      "toolpath_evaluation_passed": true,
       "evaluation_ci_cd_pipeline_green": false
     },
     "rag_calls_are_deterministic": false,
