@@ -9,9 +9,9 @@ import pytest
 from unittest.mock import Mock, patch
 from typing import List, Any
 
-from agentic_core.l3_orchestration.outreach_orchestrator import OutreachOrchestrator
-from agentic_core.l1_planning.outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
-from agentic_core.l1_planning.outreach_archetype_planning import RecipientProfile
+from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import OutreachOrchestrator
+from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
+from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import RecipientProfile
 
 
 class TestOutreachRecursionCap:

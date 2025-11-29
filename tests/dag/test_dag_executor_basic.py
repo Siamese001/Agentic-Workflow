@@ -5,7 +5,7 @@ from typing import Any, Dict
 
 import pytest
 
-from orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
+from agentic_core.l3_orchestration.dag_engine import Graph, Node, Edge, DAGExecutor
 
 
 async def _id_node(ctx: Dict[str, Any]) -> Dict[str, Any]:

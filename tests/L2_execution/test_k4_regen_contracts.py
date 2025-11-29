@@ -1,4 +1,4 @@
-from agentic_core.l2_execution.lic_k4_regen import LIC_K4_Regen
+from agentic_core.l2_execution.engines.outreach.lic_k4_regen import LIC_K4_Regen
 
 def test_constructor():
     k4 = LIC_K4_Regen({}, {})

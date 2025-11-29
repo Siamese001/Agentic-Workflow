@@ -5,8 +5,8 @@ Coordinates safety planning and execution for resume enhancement.
 """
 
 from typing import Any
-from agentic_core.l1_planning.safety_planning import plan_safety
-from agentic_core.l2_execution.safety_executor import SafetyExecutor
+from agentic_core.l1_planning.draft_planning.lic_safety_planning import plan_safety
+from agentic_core.l2_execution.engines.outreach.lic_safety_executor import SafetyExecutor
 from runtime.observability import record_event
 
 class SafetyOrchestrator:

@@ -7,13 +7,13 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Set
 
 from l4 import PineconeAdapter, TripletStore, TripletQuery, Triplet
-from agentic_core.l4_memory.hybrid_search import HybridSearchExecutor, HybridSearchConfig, SearchResult
-from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
-from runtime.telemetry_bus import get_telemetry_bus
+from agentic_core.l4_memory_state.temporal.hybrid_search import HybridSearchExecutor, HybridSearchConfig, SearchResult
+from agentic_core.l4_memory_state.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
+from runtime.telemetry import get_telemetry_bus
 
 
 # Archetypes that benefit from KG fallback
-from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
 
 KG_FALLBACK_ARCHETYPES: Set[ArchetypeType] = {
     ArchetypeType.C_LEVEL,

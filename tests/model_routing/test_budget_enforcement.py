@@ -1,5 +1,5 @@
 from core.models.models import ExecutionProfile, RetrievalConfig
-from orchestration.model_routing import ModelChoice, enforce_budget
+from agentic_core.l3_orchestration.model_routing import ModelChoice, enforce_budget
 
 
 def test_budget_enforcement_downgrades_cost_tier():

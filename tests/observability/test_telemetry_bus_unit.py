@@ -8,7 +8,7 @@ import pytest
 import time
 from unittest.mock import patch
 
-from runtime.telemetry_bus import (
+from runtime.telemetry import (
     TelemetryBus, 
     TelemetryEvent, 
     TelemetryError, 
