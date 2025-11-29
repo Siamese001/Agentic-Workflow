@@ -669,7 +669,7 @@ def validate_dag_and_tools():
     results = {}
 
     try:
-        from agentic_core.l3_orchestration.framework import create_dag, validate_dag
+        from agentic_core.L3.orchestration.framework import create_dag, validate_dag
 
         dag = create_dag('validation-test')
         is_valid = validate_dag(dag)

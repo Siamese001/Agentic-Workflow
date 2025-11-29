@@ -156,7 +156,7 @@
     "authn_authz_enforced": false,
     "environment_separation_valid": true,
     "model_versions_pinned": true,
-    "toolpath_evaluation_passed": false,
+    "toolpath_evaluation_passed": true,
     "evaluation_ci_cd_pipeline_green": false,
     "import_and_lint": {
       "no_import_errors": true,
@@ -175,9 +175,9 @@
       "regression_tests_all_pass": false
     },
     "dag_and_tools": {
-      "dag_schemas_valid": false,
-      "dag_acyclic": false,
-      "tools_declare_schemas_and_failure_modes": false
+      "dag_schemas_valid": true,
+      "dag_acyclic": true,
+      "tools_declare_schemas_and_failure_modes": true
     },
     "validation_gate": {
       "validation_gate_all_keys_true": false
