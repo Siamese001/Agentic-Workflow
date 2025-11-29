@@ -121,7 +121,7 @@ class ToolpathEvaluator:
 
         success_check = latest_result.get('success_rate', 0) >= self.success_criteria['tool_execution_success']
         completeness_check = latest_result.get('average_completeness', 0) >= self.success_criteria['path_completeness']
-        
+
         report = f"""
 TOOLPATH EVALUATION REPORT
 ==========================
