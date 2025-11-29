@@ -8,6 +8,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 
 # Add project root to Python path for imports
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -210,12 +211,12 @@ def validate_structure():
 
     # Basic structure checks - updated for new schema Level 1 requirements
     required_folders = ['agentic_core', 'apps', 'prompt_governance', 'observability', 'schemas', 'tests', 'runtime']
-    results['root_has_required_folders'] = all(os.path.exists(folder) for folder in required_folders)
+    results['root_has_required_folders'] = all(os.path.exists(os.path.join(project_root, folder)) for folder in required_folders)
     try:
         results['directory_tree_matches_section3'] = (
-            os.path.exists('runtime/cache') and
-            os.path.exists('agentic_core') and
-            os.path.exists('tests')
+            os.path.exists(os.path.join(project_root, 'runtime/cache')) and
+            os.path.exists(os.path.join(project_root, 'agentic_core')) and
+            os.path.exists(os.path.join(project_root, 'tests'))
         )
     except ImportError as e:
         print(f"Import error in validate_structure: {e}")
@@ -793,9 +794,31 @@ def main():
     implementable_passed = passed_keys  # Simplified - actual calculation would be more complex
     validation_data['validation_keys']['validation_gate']['validation_gate_all_keys_true'] = (implementable_passed >= implementable_keys * 0.9)
 
-    # Save updated validation keys
-    with open(validation_file, 'w') as f:
-        json.dump(validation_data, f, indent=2)
+    # Save updated validation keys (atomic write to prevent truncation)
+    import tempfile
+    import shutil
+    
+    try:
+        # Write to temporary file first
+        temp_file = validation_file + '.tmp'
+        with open(temp_file, 'w') as f:
+            json.dump(validation_data, f, indent=2)
+            f.flush()  # Ensure all data is written
+            os.fsync(f.fileno())  # Force write to disk
+        
+        # Atomic rename to replace original file
+        shutil.move(temp_file, validation_file)
+        
+    except Exception as e:
+        print(f"Error saving validation file: {e}")
+        # Try to save with a timestamp as backup
+        backup_file = f"windsurf_validation_keys_{int(time.time())}.json"
+        try:
+            with open(backup_file, 'w') as f:
+                json.dump(validation_data, f, indent=2)
+            print(f"Saved backup to: {backup_file}")
+        except Exception as backup_error:
+            print(f"Failed to save backup: {backup_error}")
 
     # Generate summary report
     print("\n=== VALIDATION SUMMARY ===")
