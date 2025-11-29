@@ -1,16 +1,16 @@
 # Comprehensive Windsurf Validation Report
 
 **Total Keys**: 145
-**Passed**: 80
-**Failed**: 65
+**Passed**: 92
+**Failed**: 53
 **Infrastructure Keys**: 19
 **Implementable Keys**: 126
-**Overall Pass Rate**: 55.2%
+**Overall Pass Rate**: 63.4%
 
 ## Category Results
 
 - **structure**: PARTIAL (5/8)
-- **tree_levels**: PARTIAL (30/56)
+- **tree_levels**: PARTIAL (42/56)
 - **cache_policy**: PARTIAL (2/3)
 - **engine_separation**: PARTIAL (4/6)
 - **layer_policy**: PASS (7/7)

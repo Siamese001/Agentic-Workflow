@@ -143,18 +143,18 @@ def validate_level3_structure():
     results = {}
 
     # agentic_core L1-L5 subtrees
-    results['agentic_core_l1_planning_subtree_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l1_planning'))
-    results['agentic_core_l2_execution_tools_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l2_execution/tools'))
-    results['agentic_core_l2_execution_engines_resume_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l2_execution/engines/resume'))
-    results['agentic_core_l2_execution_engines_outreach_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l2_execution/engines/outreach'))
-    results['agentic_core_l3_orchestration_engines_resume_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l3_orchestration/engines/resume'))
-    results['agentic_core_l3_orchestration_engines_outreach_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l3_orchestration/engines/outreach'))
-    results['agentic_core_l4_memory_providers_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l4_memory_state/providers'))
-    results['agentic_core_l4_temporal_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l4_memory_state/temporal'))
-    results['agentic_core_l4_mappings_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l4_memory_state/mappings'))
-    results['agentic_core_l5_safety_filters_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l5_safety/filters'))
-    results['agentic_core_l5_safety_policies_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l5_safety/policies'))
-    results['agentic_core_l5_safety_validators_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/l5_safety/validators'))
+    results['agentic_core_l1_planning_subtree_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L1/planners'))
+    results['agentic_core_l2_execution_tools_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L2/tools'))
+    results['agentic_core_l2_execution_engines_resume_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L2/engines/resume'))
+    results['agentic_core_l2_execution_engines_outreach_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L2/engines/outreach'))
+    results['agentic_core_l3_orchestration_engines_resume_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L3/engines/resume'))
+    results['agentic_core_l3_orchestration_engines_outreach_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L3/engines/outreach'))
+    results['agentic_core_l4_memory_providers_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L4_memory_state/providers'))
+    results['agentic_core_l4_temporal_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L4_memory_state/temporal'))
+    results['agentic_core_l4_mappings_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L4_memory_state/mappings'))
+    results['agentic_core_l5_safety_filters_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L5_safety/filters'))
+    results['agentic_core_l5_safety_policies_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L5_safety/policies'))
+    results['agentic_core_l5_safety_validators_valid'] = os.path.exists(os.path.join(project_root, 'agentic_core/L5_safety/validators'))
 
     # apps engine structure
     results['apps_resume_engine_adapters_valid'] = os.path.exists(os.path.join(project_root, 'apps/resume/adapters')) if os.path.exists(os.path.join(project_root, 'apps/resume')) else True
@@ -292,8 +292,8 @@ def validate_engine_separation():
                     pass
 
     results['no_cross_engine_imports'] = cross_engine_business_logic == 0
-    results['resume_engine_tree_intact'] = os.path.exists('agentic_core/l2_execution/engines/resume')
-    results['outreach_engine_tree_intact'] = os.path.exists('agentic_core/l2_execution/engines/outreach')
+    results['resume_engine_tree_intact'] = os.path.exists('agentic_core/L2/engines/resume')
+    results['outreach_engine_tree_intact'] = os.path.exists('agentic_core/L2/engines/outreach')
     results['parallel_subtrees_resume_outreach'] = True
     results['no_shared_business_logic'] = cross_engine_business_logic == 0
     results['engines_use_only_allowed_shared_sources'] = True  # Assume compliant
@@ -306,7 +306,7 @@ def validate_layer_policy():
 
     # L1 pure planning (lenient check)
     l1_has_direct_tools = False
-    for root, dirs, files in os.walk('agentic_core/l1_planning'):
+    for root, dirs, files in os.walk('agentic_core/L1'):
         for file in files:
             if file.endswith('.py') and file != '__init__.py':
                 filepath = os.path.join(root, file)
@@ -322,7 +322,7 @@ def validate_layer_policy():
 
     # L2 execution only (lenient check)
     l2_has_direct_planning = False
-    for root, dirs, files in os.walk('agentic_core/l2_execution'):
+    for root, dirs, files in os.walk('agentic_core/L2'):
         for file in files:
             if file.endswith('.py') and file != '__init__.py':
                 filepath = os.path.join(root, file)
@@ -425,9 +425,9 @@ def validate_safety():
     results = {}
 
     # Check if safety layer exists and is functional
-    if os.path.exists(os.path.join(project_root, 'agentic_core/l5_safety/safety/safety_layer.py')):
+    if os.path.exists(os.path.join(project_root, 'AGENTIC_CORE/L5_SAFETY/SAFETY/SAFETY_LAYER.PY')):
         try:
-            from agentic_core.l5_safety.safety.safety_layer import check_outbound_content_safety, check_mutating_action_safety
+            from AGENTIC_CORE.L5_SAFETY.SAFETY.SAFETY_LAYER import check_outbound_content_safety, check_mutating_action_safety
 
             # Test outbound content safety
             safe_content = "This is a safe message"
@@ -473,11 +473,11 @@ def validate_mcp():
     results = {}
 
     # Check if MCP client exists and is functional
-    if os.path.exists('../agentic_core/l2_execution/tools/mcp/mcp_client.py'):
+    if os.path.exists('../AGENTIC_CORE/L2/TOOLS/MCP/MCP_CLIENT.PY'):
         try:
             # Add mcp directory to path for imports
-            sys.path.insert(0, '../agentic_core/l2_execution/tools/mcp')
-            from agentic_core.l2_execution.tools.mcp.mcp_client import call_external_service, get_tool_schemas, check_mcp_access
+            sys.path.insert(0, '../AGENTIC_CORE/L2/TOOLS/MCP')
+            from AGENTIC_CORE.L2.TOOLS.MCP.MCP_CLIENT import call_external_service, get_tool_schemas, check_mcp_access
 
             # Test external service calls
             test_result = call_external_service("basic_user", "weather_api", {"city": "Test City"})
@@ -509,8 +509,8 @@ def validate_mcp():
             results['mcp_interactions_logged'] = False
         finally:
             # Clean up path
-            if '../agentic_core/l2_execution/tools/mcp' in sys.path:
-                sys.path.remove('../agentic_core/l2_execution/tools/mcp')
+            if '../agentic_core/L2/tools/mcp' in sys.path:
+                sys.path.remove('../agentic_core/L2/tools/mcp')
     else:
         # MCP doesn't exist
         results['mcp_used_for_external_calls'] = False
@@ -644,7 +644,7 @@ def validate_zero_loss():
     results = {}
 
     try:
-        from agentic_core.l3_orchestration.framework import create_dag, validate_dag, execute_dag
+        from agentic_core.L3.orchestration.framework import create_dag, validate_dag, execute_dag
 
         dag = create_dag('zero-loss-test')
         is_valid = validate_dag(dag)
