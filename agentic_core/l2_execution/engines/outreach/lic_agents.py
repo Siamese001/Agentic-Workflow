@@ -127,7 +127,7 @@ class HYDEQueryAgent:
         job_title = getattr(job, "title", "") if job else ""
         
         # Use L1 prompt builder for pure planning
-        from agentic_core.l1_planning.draft_planning.lic_prompt_builder import PromptBuilder
+        from agentic_core.l1_planning.planners.lic_prompt_builder import PromptBuilder
         prompt = PromptBuilder.build_strategy_prompt(
             {"target_role": job_title, "reasoning": "HYDE query generation"},
             job,

@@ -13,7 +13,7 @@ from runtime.telemetry import get_telemetry_bus
 
 
 # Archetypes that benefit from KG fallback
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 
 KG_FALLBACK_ARCHETYPES: Set[ArchetypeType] = {
     ArchetypeType.C_LEVEL,

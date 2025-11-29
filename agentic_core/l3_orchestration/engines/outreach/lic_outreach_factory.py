@@ -6,10 +6,10 @@ based on configuration settings.
 """
 
 from typing import Optional, Any
-from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import OutreachArchetypePlanner
-from agentic_core.l1_planning.draft_planning.lic_research_planning import ResearchRefinementPlanner
-from agentic_core.l1_planning.draft_planning.lic_message_planning import MessagePlanner
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import OutreachArchetypePlanner
+from agentic_core.l1_planning.planners.lic_research_planning import ResearchRefinementPlanner
+from agentic_core.l1_planning.planners.lic_message_planning import MessagePlanner
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 from agentic_core.l2_execution.engines.outreach.lic_company_research_executor import CompanyResearchExecutor
 from agentic_core.l2_execution.engines.outreach.lic_contact_research_executor import ContactResearchExecutor
 from agentic_core.l2_execution.engines.outreach.lic_message_generation_executor import MessageGenerationExecutor
@@ -107,7 +107,7 @@ def create_outreach_orchestrator_with_routing(
     Returns:
         OutreachOrchestrator with message executor configured based on routing flag
     """
-    from agentic_core.l3_orchestration.agent_orchestration.lic_outreach_orchestrator import OutreachOrchestrator
+    from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
     
     # Create message executor with conditional routing
     message_executor = create_message_executor_with_routing(

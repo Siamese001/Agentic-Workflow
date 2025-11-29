@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from typing import Any, Sequence
 
 from core.models.models import ExecutionContext, Evidence
-from agentic_core.l1_planning.builders.prompt_builder import PromptInstance, build_rag_prompt, build_hyde_prompt
+from agentic_core.l1_planning.utils.prompt_builder import PromptInstance, build_rag_prompt, build_hyde_prompt
 
 
 @dataclass(frozen=True)

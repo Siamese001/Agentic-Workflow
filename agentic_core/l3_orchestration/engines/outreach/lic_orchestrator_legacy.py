@@ -13,7 +13,7 @@ from agentic_core.l2_execution.engines.outreach.lic_k7_assembly import LIC_K7_As
 
 from agentic_core.l5_safety.safety_validator.safety_validator.safety_validator.lic_safety_validator import LICSafetyValidator
 from agentic_core.l4_memory_state.temporal.lic_state import LICState
-from agentic_core.l1_planning.draft_planning.lic_lic_plan_schema import LICPlan
+from agentic_core.l1_planning.planners.lic_lic_plan_schema import LICPlan
 
 """
 LICOrchestrator (L3 Execution Controller)

@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional
 from l4 import PineconeAdapter
 from agentic_core.l4_memory_state.temporal.hybrid_search import HybridSearchExecutor, HybridSearchConfig, SearchResult
 from agentic_core.l4_memory_state.schema.outreach_schema import OutreachRAGResult, format_as_outreach_result
-from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 from runtime.telemetry import get_telemetry_bus
 
 
