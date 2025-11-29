@@ -213,7 +213,7 @@
   "tests_L5_policy_edge_cases_present": "",
   "tests_L5_snapshot_tests_present": "",
   "tests_L5_naming_conventions_valid": "",
-  "tests_L5_no_unexpected_subfolders": ""
+  "tests_L5_no_unexpected_subfolders": "",
   "tests_integration_resume_pipeline_test_present": "",
   "tests_integration_outreach_pipeline_test_present": "",
   "tests_integration_end_to_end_resume_flow_valid": "",
