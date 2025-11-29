@@ -1,4 +1,4 @@
-from eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts
+from runtime.eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts
 
 
 def test_load_golden_inputs_minimum_cases():

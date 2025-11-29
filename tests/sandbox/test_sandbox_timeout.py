@@ -1,8 +1,8 @@
 import pytest
 
-from infra.sandbox.models import ToolCallRequest
-from infra.sandbox.vm_manager import run_in_ephemeral_vm
-from infra.sandbox.sandbox_errors import SandboxTimeoutError
+from runtime.infra.sandbox.models import ToolCallRequest
+from runtime.infra.sandbox.vm_manager import run_in_ephemeral_vm
+from runtime.infra.sandbox.sandbox_errors import SandboxTimeoutError
 
 
 def test_timeout_error_when_timeout_non_positive():

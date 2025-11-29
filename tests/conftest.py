@@ -575,7 +575,7 @@ def pytest_collection_modifyitems(config, items):
             item.add_marker(pytest.mark.l2)
         elif "L3_orchestration" in file_path:
             item.add_marker(pytest.mark.l3)
-        elif "L4_memory_state" in file_path:
+        elif "l4_state_state" in file_path:
             item.add_marker(pytest.mark.l4)
         elif "L5_safety_policy" in file_path:
             item.add_marker(pytest.mark.l5)

@@ -2,7 +2,7 @@
 
 from core.models.models import ExecutionProfile, RetrievalConfig
 
-from eval.golden_state.runner import run_all_golden_tests
+from runtime.eval.golden_state.runner import run_all_golden_tests
 
 
 def test_run_all_golden_tests_returns_results():

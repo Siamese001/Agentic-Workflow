@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel
 
-from meta.schema_validation import validate_schema_version
+from runtime.meta.schema_validation import validate_schema_version
 from core.models.models import (
     StrategyPlan,
     StrategyResult,

@@ -16,7 +16,7 @@ import time
 from unittest.mock import patch, Mock
 from typing import Dict, Any
 
-from runtime.telemetry_bus import TelemetryBus, get_telemetry_bus
+from runtime.telemetry import TelemetryBus, get_telemetry_bus
 
 
 class TestTelemetryBoundaryPurity:

@@ -16,7 +16,7 @@ import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, Any
 
-from runtime.telemetry_bus import (
+from runtime.telemetry import (
     TelemetryBus,
     get_telemetry_bus
 )

@@ -1,7 +1,7 @@
 from agentic_core.l2_execution.tools.simulation import Engine
 
-from eval.simulation.models import SimScenario
-from eval.simulation.simulator import run_scenario
+from runtime.eval.simulation.models import SimScenario
+from runtime.eval.simulation.simulator import run_scenario
 
 
 def test_run_scenario_uses_existing_engine():

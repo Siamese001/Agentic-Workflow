@@ -1,5 +1,5 @@
-from meta.metacognition.evaluator import evaluate_hypotheses
-from meta.metacognition.models import Hypothesis
+from runtime.meta.metacognition.evaluator import runtime.evaluate_hypotheses
+from runtime.meta.metacognition.models import Hypothesis
 
 
 def test_evaluate_penalizes_no_evidence():

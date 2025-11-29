@@ -21,7 +21,7 @@ def test_lic_workflow_entry_imports():
 def test_lic_orchestrator_imports():
     """Test that the LIC orchestrator imports successfully."""
     try:
-        from agentic_core.l3_orchestration.lic_orchestrator import LICOrchestrator, RecipientProfile, LICPipelineResult
+        from agentic_core.l3_orchestration.draft_orchestration.lic_orchestrator import LICOrchestrator, RecipientProfile, LICPipelineResult
         assert LICOrchestrator is not None
         assert RecipientProfile is not None
         assert LICPipelineResult is not None
@@ -32,8 +32,8 @@ def test_lic_orchestrator_imports():
 def test_lic_rag_engine_imports():
     """Test that the LIC RAG engine imports successfully."""
     try:
-        from agentic_core.l4_memory.rag.rag_engine import RAGEngine
-        from agentic_core.l4_memory.rag.lic_rag_policies import get_rag_policy
+        from agentic_core.l4_memory_state.rag.rag_engine import RAGEngine
+        from agentic_core.l4_memory_state.rag.lic_rag_policies import get_rag_policy
         assert RAGEngine is not None
         assert callable(get_rag_policy)
     except ImportError as e:
@@ -85,8 +85,8 @@ def test_lic_end_to_end_import_chain():
         assert callable(run_batch_high_volume)
         
         # Verify we can create basic objects
-        from agentic_core.l1_planning.outreach_archetype_planning import RecipientProfile
-        from agentic_core.l1_planning.outreach_dataclasses import OutreachMission
+        from agentic_core.l1_planning.draft_planning.lic_outreach_archetype_planning import RecipientProfile
+        from agentic_core.l1_planning.draft_planning.lic_outreach_dataclasses import OutreachMission
         
         recipient = RecipientProfile(
             name="Test",
