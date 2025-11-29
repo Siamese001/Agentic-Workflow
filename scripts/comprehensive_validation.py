@@ -689,7 +689,7 @@ def main():
     print("=== COMPREHENSIVE WINDSURF VALIDATION (87 KEYS) ===\n")
 
     # Load existing validation keys
-    validation_file = '../config/windsurf_rules/windsurf_validation_keys.json'
+    validation_file = os.path.join(os.path.dirname(__file__), 'windsurf_validation_keys.json')
     with open(validation_file, 'r') as f:
         validation_data = json.load(f)
 
