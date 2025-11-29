@@ -1,18 +1,18 @@
 {
   "summary": {
     "total_keys": 5000,
-    "passed": 4946,
-    "failed": 54,
-    "pass_rate": 0.9892,
-    "execution_time": 3.0182044506073,
-    "timestamp": "2025-11-29 18:08:50"
+    "passed": 4971,
+    "failed": 29,
+    "pass_rate": 0.9942,
+    "execution_time": 2.3346877098083496,
+    "timestamp": "2025-11-29 18:09:22"
   },
   "category_breakdown": {
     "fs.structure": {
-      "passed": 159,
-      "failed": 34,
+      "passed": 179,
+      "failed": 14,
       "total": 193,
-      "pass_rate": 0.8238341968911918
+      "pass_rate": 0.927461139896373
     },
     "fs.depth": {
       "passed": 1,
@@ -105,10 +105,10 @@
       "pass_rate": 1.0
     },
     "tests.mapping": {
-      "passed": 0,
-      "failed": 10,
+      "passed": 5,
+      "failed": 5,
       "total": 10,
-      "pass_rate": 0.0
+      "pass_rate": 0.5
     },
     "l1.planning": {
       "passed": 8,
@@ -250,173 +250,93 @@
     }
   },
   "failed_keys": {
-    "fs.structure.exact_children::agentic_core::[l1_planning,l2_execution,l3_orchestration,l4_memory,l5_safety]": {
-      "reason": "Children match: ['__pycache__', 'l1_planning', 'l2_execution', 'l3_orchestration', 'l4_memory', 'l4_memory_state', 'l5_safety'] (expected ['l1_planning', 'l2_execution', 'l3_orchestration', 'l4_memory', 'l5_safety'])",
-      "time": 0.0004374980926513672
-    },
-    "fs.structure.exact_children::agentic_core/l1_planning::[planners,schemas,utils]": {
-      "reason": "Children match: ['__pycache__', 'planners', 'schemas', 'utils'] (expected ['planners', 'schemas', 'utils'])",
-      "time": 0.0002257823944091797
-    },
-    "fs.structure.exact_children::agentic_core/l1_planning/planners::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.0002665519714355469
-    },
-    "fs.structure.exact_children::agentic_core/l1_planning/schemas::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.0001461505889892578
-    },
-    "fs.structure.exact_children::agentic_core/l1_planning/utils::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00013899803161621094
-    },
-    "fs.structure.exact_children::agentic_core/l2_execution::[executors,schemas,utils]": {
-      "reason": "Children match: ['__pycache__', 'engines', 'executors', 'outreach', 'resume', 'schemas', 'tools', 'utils', 'wrappers'] (expected ['executors', 'schemas', 'utils'])",
-      "time": 0.0003082752227783203
-    },
-    "fs.structure.exact_children::agentic_core/l2_execution/utils::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00017762184143066406
-    },
-    "fs.structure.exact_children::agentic_core/l3_orchestration::[engines,framework,utils]": {
-      "reason": "Children match: ['__pycache__', 'engines', 'framework', 'orchestration', 'outreach', 'resume', 'utils'] (expected ['engines', 'framework', 'utils'])",
-      "time": 0.0003986358642578125
-    },
     "fs.structure.exact_children::agentic_core/l3_orchestration/engines::[]": {
-      "reason": "Children match: ['__pycache__', 'outreach', 'resume'] (expected [])",
-      "time": 0.00032806396484375
-    },
-    "fs.structure.exact_children::agentic_core/l3_orchestration/framework::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.0002033710479736328
-    },
-    "fs.structure.exact_children::agentic_core/l3_orchestration/utils::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00018310546875
+      "reason": "Children match: ['outreach', 'resume'] (expected [])",
+      "time": 0.00016927719116210938
     },
     "fs.structure.exact_children::agentic_core/l5_safety::[filters,policies,validators]": {
-      "reason": "Children match: ['L5', '__pycache__', 'filters', 'policies', 'safety', 'validators'] (expected ['filters', 'policies', 'validators'])",
-      "time": 0.00025272369384765625
-    },
-    "fs.structure.exact_children::agentic_core/l5_safety/filters::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00016808509826660156
-    },
-    "fs.structure.exact_children::agentic_core/l5_safety/policies::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.000164031982421875
-    },
-    "fs.structure.exact_children::agentic_core/l5_safety/validators::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00021147727966308594
+      "reason": "Children match: ['filters', 'policies', 'safety', 'validators'] (expected ['filters', 'policies', 'validators'])",
+      "time": 0.00020265579223632812
     },
     "fs.structure.exact_children::apps::[outreach_engine,resume_engine]": {
       "reason": "Children match: ['config', 'deployment', 'docs', 'evaluation', 'outreach', 'outreach_engine', 'resume', 'resume_engine'] (expected ['outreach_engine', 'resume_engine'])",
-      "time": 0.00030517578125
+      "time": 0.00022029876708984375
     },
     "fs.structure.exact_children::apps/resume_engine::[l1,l2,l3,l4,l5]": {
-      "reason": "Children match: ['__pycache__', 'adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines', 'production_inputs'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
-      "time": 0.0004184246063232422
+      "reason": "Children match: ['adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines', 'production_inputs'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
+      "time": 0.00024199485778808594
     },
     "fs.structure.exact_children::apps/outreach_engine::[l1,l2,l3,l4,l5]": {
-      "reason": "Children match: ['__pycache__', 'adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
-      "time": 0.00038123130798339844
+      "reason": "Children match: ['adapters', 'l1', 'l2', 'l3', 'l4', 'l5', 'pipelines'] (expected ['l1', 'l2', 'l3', 'l4', 'l5'])",
+      "time": 0.00022983551025390625
     },
     "fs.structure.exact_children::tests::[data,e2e,fixtures,integration,l1,l2,l3,l4,l5,regression]": {
-      "reason": "Children match: ['L1_planning', 'L2_execution', 'L3_orchestration', 'L4_memory_state', 'L5_safety', '__pycache__', 'architecture', 'contracts', 'control_plane', 'dag', 'data', 'e2e', 'fixtures', 'golden', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'metacognition', 'misc', 'model_routing', 'modularity', 'observability', 'regression', 'runtime', 'sandbox', 'shared', 'simulation', 'stress', 'unit', 'vertical_slice'] (expected ['data', 'e2e', 'fixtures', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'regression'])",
-      "time": 0.0016722679138183594
-    },
-    "fs.structure.exact_children::tests/l1/unit::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.0002772808074951172
-    },
-    "fs.structure.exact_children::tests/l1/integration::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.0001919269561767578
-    },
-    "fs.structure.exact_children::tests/l2/unit::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.0002231597900390625
-    },
-    "fs.structure.exact_children::tests/l2/integration::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00019216537475585938
-    },
-    "fs.structure.exact_children::tests/l3/orchestration::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.0002586841583251953
-    },
-    "fs.structure.exact_children::tests/l4/memory::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00022673606872558594
-    },
-    "fs.structure.exact_children::tests/l5/safety::[]": {
-      "reason": "Children match: ['__pycache__'] (expected [])",
-      "time": 0.00028586387634277344
+      "reason": "Children match: ['L1_planning', 'L2_execution', 'L3_orchestration', 'L4_memory_state', 'L5_safety', 'architecture', 'contracts', 'control_plane', 'dag', 'data', 'e2e', 'fixtures', 'golden', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'metacognition', 'misc', 'model_routing', 'modularity', 'observability', 'regression', 'runtime', 'sandbox', 'shared', 'simulation', 'stress', 'unit', 'vertical_slice'] (expected ['data', 'e2e', 'fixtures', 'integration', 'l1', 'l2', 'l3', 'l4', 'l5', 'regression'])",
+      "time": 0.0011081695556640625
     },
     "fs.structure.exact_children::tests/e2e::[]": {
-      "reason": "Children match: ['__pycache__', 'full_agent_workflows', 'multi-agent_scenarios', 'multi_agent_scenarios', 'outreach', 'resume', 'safety_enforced_paths'] (expected [])",
-      "time": 0.0003783702850341797
+      "reason": "Children match: ['full_agent_workflows', 'multi-agent_scenarios', 'multi_agent_scenarios', 'outreach', 'resume', 'safety_enforced_paths'] (expected [])",
+      "time": 0.000274658203125
     },
     "fs.structure.exact_children::tests/integration::[]": {
-      "reason": "Children match: ['__pycache__', 'outreach', 'resume'] (expected [])",
-      "time": 0.0003254413604736328
+      "reason": "Children match: ['outreach', 'resume'] (expected [])",
+      "time": 0.000213623046875
     },
     "fs.structure.exact_children::tests/regression::[]": {
-      "reason": "Children match: ['__pycache__', 'outreach', 'resume'] (expected [])",
-      "time": 0.00035953521728515625
+      "reason": "Children match: ['outreach', 'resume'] (expected [])",
+      "time": 0.0002536773681640625
     },
     "fs.structure.exact_children::tests/fixtures::[]": {
       "reason": "Children match: ['lic_golden'] (expected [])",
-      "time": 0.00018286705017089844
+      "time": 0.00010895729064941406
     },
     "fs.structure.exact_children::schemas::[]": {
       "reason": "Children match: ['L1', 'L2', 'L3', 'L4', 'L4_memory_state', 'L5', 'agents', 'l1_planning', 'l2_execution', 'l3_orchestration', 'l4_memory', 'l5_safety', 'memory', 'plans', 'shared', 'tools'] (expected [])",
-      "time": 0.00064849853515625
+      "time": 0.0004172325134277344
     },
     "fs.structure.exact_children::runtime::[]": {
-      "reason": "Children match: ['__pycache__', 'cache', 'config', 'core', 'data', 'environment', 'eval', 'infra', 'logs', 'meta', 'ops', 'router', 'telemetry'] (expected [])",
-      "time": 0.0008387565612792969
+      "reason": "Children match: ['cache', 'config', 'core', 'data', 'environment', 'eval', 'infra', 'logs', 'meta', 'ops', 'router', 'telemetry'] (expected [])",
+      "time": 0.0004150867462158203
     },
     "fs.structure.exact_children::observability::[]": {
       "reason": "Children match: ['cost', 'logs', 'metrics', 'trace', 'traces'] (expected [])",
-      "time": 0.0003058910369873047
+      "time": 0.0001838207244873047
     },
     "fs.structure.exact_children::prompt_governance::[]": {
       "reason": "Children match: ['Domains', 'InjectionPolicies', 'PromptACLs', 'PromptDefinitions', 'PromptVersions', 'acls', 'bundles', 'definitions', 'governance_metadata', 'guards', 'manifests', 'metadata', 'policies', 'prompts', 'schemas', 'templates', 'versions'] (expected [])",
-      "time": 0.0007112026214599609
+      "time": 0.00043654441833496094
     },
     "fs.depth.max_depth::8": {
       "reason": "Max depth: 9 (allowed 8)",
-      "time": 0.39339637756347656
+      "time": 0.27864813804626465
     },
     "fs.filename.forbidden_substring::old": {
       "reason": "Forbidden substring 'old' found in 35 files",
-      "time": 0.2695460319519043
+      "time": 0.2105870246887207
     },
     "fs.filename.forbidden_substring::backup": {
       "reason": "Forbidden substring 'backup' found in 2 files",
-      "time": 0.26836419105529785
+      "time": 0.200730562210083
     },
     "fs.filename.forbidden_substring::copy": {
       "reason": "Forbidden substring 'copy' found in 2 files",
-      "time": 0.30631184577941895
+      "time": 0.19746971130371094
     },
     "fs.filename.forbidden_substring::draft": {
       "reason": "Forbidden substring 'draft' found in 12 files",
-      "time": 0.2234487533569336
+      "time": 0.19183993339538574
     },
     "fs.tests.forbidden_extension::.md": {
       "reason": "Forbidden extension '.md' found in 17 files",
-      "time": 0.12526607513427734
+      "time": 0.10149192810058594
     },
     "fs.tests.forbidden_extension::.json": {
-      "reason": "Forbidden extension '.json' found in 445 files",
-      "time": 0.14168047904968262
+      "reason": "Forbidden extension '.json' found in 448 files",
+      "time": 0.12145590782165527
     },
     "fs.tests.forbidden_extension::.log": {
       "reason": "Forbidden extension '.log' found in 7 files",
-      "time": 0.11715149879455566
+      "time": 0.09875988960266113
     },
     "fs.zero_tolerance.empty_directories::true": {
       "reason": "Unknown filesystem rule",
@@ -424,47 +344,27 @@
     },
     "fs.zero_tolerance.case_collisions::true": {
       "reason": "Unknown filesystem rule",
-      "time": 9.5367431640625e-07
-    },
-    "tests.mapping.module_has_test_mapping::strategy_planner": {
-      "reason": "Unknown tests category: mapping",
-      "time": 4.76837158203125e-07
-    },
-    "tests.mapping.module_has_test_mapping::message_planner": {
-      "reason": "Unknown tests category: mapping",
-      "time": 4.76837158203125e-07
-    },
-    "tests.mapping.module_has_test_mapping::research_planner": {
-      "reason": "Unknown tests category: mapping",
-      "time": 2.384185791015625e-07
-    },
-    "tests.mapping.module_has_test_mapping::refinement_planner": {
-      "reason": "Unknown tests category: mapping",
-      "time": 2.384185791015625e-07
-    },
-    "tests.mapping.module_has_test_mapping::safety_planner": {
-      "reason": "Unknown tests category: mapping",
-      "time": 4.76837158203125e-07
+      "time": 1.1920928955078125e-06
     },
     "tests.mapping.module_has_test_mapping::company_research_executor": {
-      "reason": "Unknown tests category: mapping",
-      "time": 2.384185791015625e-07
+      "reason": "Module company_research_executor: exists=False, test_exists=False",
+      "time": 4.744529724121094e-05
     },
     "tests.mapping.module_has_test_mapping::contact_research_executor": {
-      "reason": "Unknown tests category: mapping",
-      "time": 2.384185791015625e-07
+      "reason": "Module contact_research_executor: exists=False, test_exists=False",
+      "time": 6.198883056640625e-05
     },
     "tests.mapping.module_has_test_mapping::message_generation_executor": {
-      "reason": "Unknown tests category: mapping",
-      "time": 2.384185791015625e-07
+      "reason": "Module message_generation_executor: exists=False, test_exists=False",
+      "time": 4.673004150390625e-05
     },
     "tests.mapping.module_has_test_mapping::resume_engine_dag": {
-      "reason": "Unknown tests category: mapping",
-      "time": 2.384185791015625e-07
+      "reason": "Module resume_engine_dag: exists=False, test_exists=False",
+      "time": 7.677078247070312e-05
     },
     "tests.mapping.module_has_test_mapping::outreach_engine_dag": {
-      "reason": "Unknown tests category: mapping",
-      "time": 2.384185791015625e-07
+      "reason": "Module outreach_engine_dag: exists=False, test_exists=False",
+      "time": 6.031990051269531e-05
     }
   }
 }
