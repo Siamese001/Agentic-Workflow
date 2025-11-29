@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Any
 import re
 from datetime import datetime, timedelta
 
-from .models import (
+from ..models import (
     Route, Archetype, CTATemplate, GreetingTemplate, 
     SignatureTemplate, ValidationResult, ValidationSeverity
 )

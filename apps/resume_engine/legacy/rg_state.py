@@ -11,7 +11,7 @@ import re
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
-from .rg_models import ValidationResult, ValidationSeverity
+from ..utils.rg_models import ValidationResult, ValidationSeverity
 
 
 # Exception classes

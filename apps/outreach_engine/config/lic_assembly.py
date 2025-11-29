@@ -7,7 +7,7 @@ Message assembly engine for K1-K5 components
 from typing import Dict, List, Optional, Any, Tuple
 from datetime import datetime
 
-from .models import (
+from ..models import (
     Route, Archetype, MessageAssembly, ValidationResult, ValidationSeverity
 )
 
