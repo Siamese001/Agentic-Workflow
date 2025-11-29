@@ -45,15 +45,14 @@ from .profile_planner import (
 from .research_planner import (
     ResearchPlanner,
     ResearchPlan,
-    QueryPlan,
-    VectorParams
+    VectorQueryParams
 )
 
 from .message_planner import (
     MessagePlanner,
     MessagePlan,
     MessageContent,
-    SectionTemplate
+    MessageSection
 )
 
 # K Executors - Hop-based Execution Layer
