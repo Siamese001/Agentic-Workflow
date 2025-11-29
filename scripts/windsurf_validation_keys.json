@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "run_id": "b4067536",
-    "timestamp": "2025-11-29T19:22:20Z"
+    "run_id": "d5907c95",
+    "timestamp": "2025-11-29T19:24:50Z"
   },
   "validation_keys": {
     "circular_imports": {
@@ -23,7 +23,7 @@
     },
     "structure": {
       "max_depth_respected": true,
-      "no_empty_directories": false
+      "no_empty_directories": true
     },
     "tooling": {
       "mypy_zero_errors": false,
