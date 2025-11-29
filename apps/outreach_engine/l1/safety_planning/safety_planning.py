@@ -16,7 +16,7 @@ from core.models.models import (
     RAGResult,
     QAResult,
 )
-from l1.builders.prompt_builder import PromptInstance, build_safety_prompt
+from ..builders.prompt_builder import PromptInstance, build_safety_prompt
 
 
 @dataclass(frozen=True)
@@ -88,6 +88,3 @@ def plan_safety(
         drafting=None,
         qa=None,
     )
-
-
-
