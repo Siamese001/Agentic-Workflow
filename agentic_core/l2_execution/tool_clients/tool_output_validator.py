@@ -11,7 +11,7 @@ import re
 import json
 from typing import Any, List, Optional
 
-from l2.interfaces import L2ToolOutputValidatorInterface, ToolOutputValidationResult
+from agentic_core.l2_execution.interfaces import L2ToolOutputValidatorInterface, ToolOutputValidationResult
 
 
 class L2ToolOutputValidator(L2ToolOutputValidatorInterface):

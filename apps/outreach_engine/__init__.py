@@ -19,36 +19,36 @@ from .models import (
 )
 
 # L1 Planners - Hop-based Planning Layer
-from .legacy.lic_fusion_planner import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_fusion_planner import (
     FusionPlanner,
     ValueProposition,
     MessageSectionPlan,
     FusionPlan
 )
 
-from .legacy.lic_grounding_planner import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_grounding_planner import (
     GroundingPlanner,
     GroundingPlan
 )
 
-from .legacy.lic_persona_planner import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_persona_planner import (
     PersonaPlanner,
     PersonaPlan
 )
 
-from .legacy.lic_profile_planner import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_profile_planner import (
     ProfilePlanner,
     ProfilePlan,
     ProfileSignal
 )
 
-from .legacy.lic_research_planner import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_research_planner import (
     ResearchPlanner,
     ResearchPlan,
     VectorQueryParams
 )
 
-from .legacy.lic_message_planner import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_message_planner import (
     MessagePlanner,
     MessagePlan,
     MessageContent,
@@ -98,13 +98,13 @@ from agentic_core.l2_execution.draft_execution.lic_k7_assembly import (
 )
 
 # L3 Orchestrator - Hop-based Coordination Layer
-from .legacy.lic_orchestrator import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_orchestrator import (
     OutreachOrchestrator,
     OrchestratorOutput
 )
 
 # Enhanced Orchestrator - Priority 1 & 2 Features
-from .legacy.lic_enhanced_orchestrator import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_enhanced_orchestrator import (
     EnhancedOutreachOrchestrator,
     EnhancedOrchestratorConfig
 )
@@ -123,7 +123,7 @@ from .config import (
 )
 
 # RAG pipeline v75
-from .legacy.lic_rag import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_rag import (
     RAGPipelineV75,
     HyDEProcessor,
     HybridRecall,
@@ -135,7 +135,7 @@ from .legacy.lic_rag import (
 )
 
 # Insight models
-from .legacy.lic_insights import (
+# REMOVED: Legacy import during Phase 1 consolidationlic_insights import (
     SignalQualityScorer,
     ClaimConfidenceScorer,
     InsightsEngine

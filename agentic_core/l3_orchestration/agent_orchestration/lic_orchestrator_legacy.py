@@ -3,17 +3,17 @@ This file is preserved only for archival/reference.
 All runtime LIC behavior now uses the atomic engine under l1/l2/l3/l4/l5.
 Do NOT import from this module in new code."""
 
-from l2.lic_k1_research import LIC_K1_Research
-from l2.lic_k2_insights import LIC_K2_Insights
-from l2.lic_k3_draft import LIC_K3_Draft
-from l2.lic_k4_regen import LIC_K4_Regen
-from l2.lic_k5_validation import LIC_K5_Validation
-from l2.lic_k6_cta import LIC_K6_CTA
-from l2.lic_k7_assembly import LIC_K7_Assembly
+from agentic_core.l2_execution.lic_k1_research import LIC_K1_Research
+from agentic_core.l2_execution.lic_k2_insights import LIC_K2_Insights
+from agentic_core.l2_execution.lic_k3_draft import LIC_K3_Draft
+from agentic_core.l2_execution.lic_k4_regen import LIC_K4_Regen
+from agentic_core.l2_execution.lic_k5_validation import LIC_K5_Validation
+from agentic_core.l2_execution.lic_k6_cta import LIC_K6_CTA
+from agentic_core.l2_execution.lic_k7_assembly import LIC_K7_Assembly
 
-from l5.lic_safety_validator import LICSafetyValidator
-from l4.lic_state import LICState
-from l1.lic_plan_schema import LICPlan
+from agentic_core.l5_safety.lic_safety_validator import LICSafetyValidator
+from agentic_core.l4_memory.lic_state import LICState
+from agentic_core.l1_planning.lic_plan_schema import LICPlan
 
 """
 LICOrchestrator (L3 Execution Controller)

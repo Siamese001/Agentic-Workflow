@@ -32,12 +32,12 @@ from dataclasses import dataclass
 from itertools import product
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple
 
-from tools.main_v10_10 import (
+from agentic_core.l2_execution.tools.main_v10_10 import (
     run_workflow,
     RRFStrategy,
     TelemetryRoutingMode,
 )
-from tools.golden_eval import (
+from agentic_core.l2_execution.tools.golden_eval import (
     GOLDEN_SCENARIOS,
     GoldenScenario,
     ScenarioKnobs,
@@ -50,7 +50,7 @@ from observability import (
     emit_scenario_simulation_event,
 )
 
-from tools.run_batch_v10_10 import (
+from agentic_core.l2_execution.tools.run_batch_v10_10 import (
     run_batch,
     BatchJobResult,
     BatchTelemetrySummary,

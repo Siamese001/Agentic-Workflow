@@ -6,18 +6,18 @@ based on configuration settings.
 """
 
 from typing import Optional, Any
-from l1.outreach_archetype_planning import OutreachArchetypePlanner
-from l1.research_planning import ResearchRefinementPlanner
-from l1.message_planning import MessagePlanner
-from l1.outreach_dataclasses import ArchetypeType
-from l2.company_research_executor import CompanyResearchExecutor
-from l2.contact_research_executor import ContactResearchExecutor
-from l2.message_generation_executor import MessageGenerationExecutor
-from l2.outreach_llm_caller import OutreachLLMCaller
+from agentic_core.l1_planning.outreach_archetype_planning import OutreachArchetypePlanner
+from agentic_core.l1_planning.research_planning import ResearchRefinementPlanner
+from agentic_core.l1_planning.message_planning import MessagePlanner
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
+from agentic_core.l2_execution.company_research_executor import CompanyResearchExecutor
+from agentic_core.l2_execution.contact_research_executor import ContactResearchExecutor
+from agentic_core.l2_execution.message_generation_executor import MessageGenerationExecutor
+from agentic_core.l2_execution.outreach_llm_caller import OutreachLLMCaller
 from infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import get_budget_manager
 from runtime.runtime_utils import SandboxConfig
-from l5.safety_validator import SafetyValidator
+from agentic_core.l5_safety.safety_validator import SafetyValidator
 from config.LIC.lic_profile import get_lic_profile
 
 
@@ -107,7 +107,7 @@ def create_outreach_orchestrator_with_routing(
     Returns:
         OutreachOrchestrator with message executor configured based on routing flag
     """
-    from l3.outreach_orchestrator import OutreachOrchestrator
+    from agentic_core.l3_orchestration.outreach_orchestrator import OutreachOrchestrator
     
     # Create message executor with conditional routing
     message_executor = create_message_executor_with_routing(

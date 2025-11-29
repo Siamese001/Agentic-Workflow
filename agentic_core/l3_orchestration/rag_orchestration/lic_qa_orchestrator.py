@@ -5,8 +5,8 @@ Coordinates QA planning and execution for resume enhancement.
 """
 
 from typing import Any
-from l1.qa_planning import plan_qa
-from l2.qa_executor import QAExecutor
+from agentic_core.l1_planning.qa_planning import plan_qa
+from agentic_core.l2_execution.qa_executor import QAExecutor
 from runtime.observability import record_event
 
 class QAOrchestrator:

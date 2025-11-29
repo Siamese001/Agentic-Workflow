@@ -6,7 +6,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Dict, List
 
-from l4.schema.outreach_schema import OutreachRAGResult
+from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult
 from runtime.telemetry_bus import get_telemetry_bus
 from runtime.execution_budget_manager import get_budget_manager
 
@@ -267,7 +267,7 @@ class MessageGenerationExecutor:
         if self.routing_policy:
             try:
                 # Extract context for routing
-                from l1.outreach_dataclasses import ArchetypeType
+                from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
                 archetype = getattr(ctx, 'archetype', 'EXECUTIVE')
                 if isinstance(archetype, str):
                     # Convert string to ArchetypeType enum

@@ -13,7 +13,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any, Dict, Optional
 
-from l5.safety_validator import SafetyResult, SafetyViolation
+from agentic_core.l5_safety.safety_validator import SafetyResult, SafetyViolation
 
 logger = logging.getLogger(__name__)
 

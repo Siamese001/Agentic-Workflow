@@ -10,7 +10,7 @@ import pytest
 from unittest.mock import Mock, patch
 
 from agentic_core.l2_execution.outreach_llm_caller import OutreachLLMCaller
-from agentic_core.l2_execution.message_generation_executor import MessageGenerationExecutor, GenerationContext
+from agentic_core.l2_execution.rag_execution.message_generation_executor import MessageGenerationExecutor, GenerationContext
 from infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
 from runtime.runtime_utils import SandboxConfig

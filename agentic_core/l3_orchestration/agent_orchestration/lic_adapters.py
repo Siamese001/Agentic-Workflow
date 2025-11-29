@@ -9,14 +9,14 @@ from __future__ import annotations
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 
-from l3.interfaces import (
+from agentic_core.l3_orchestration.interfaces import (
     L3OrchestratorInterface,
     L3DAGExecutorInterface,
     L3OrchestrationRequest,
     L3OrchestrationResult,
     ExecutionMode,
 )
-from l3.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator
+from agentic_core.l3_orchestration.unified_workflow_orchestrator import UnifiedWorkflowOrchestrator
 from core.models.models import (
     WorkflowPlanBundle,
     ExecutionContext,
