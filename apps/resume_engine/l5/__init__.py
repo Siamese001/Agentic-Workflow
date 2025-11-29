@@ -39,13 +39,11 @@ from .rg_validation_toolkit import (
     get_validation_summary
 )
 
-# Safety validation - temporarily excluded due to missing RG_capabilities dependency
-# from .rg_safety_validator import (
-#     SafetyViolation,
-#     SafetyReport,
-#     ContentSafetyValidator
-# )
-# NOTE: rg_safety_validator requires RG_capabilities module - pre-existing technical debt
+from .rg_safety_validator import (
+    SafetyViolation,
+    SafetyReport,
+    ContentSafetyValidator
+)
 
 __all__ = [
     # Original validation engine
@@ -79,8 +77,8 @@ __all__ = [
     'validate_resume_content',
     'get_validation_summary',
     
-    # Safety validation - temporarily excluded due to missing RG_capabilities dependency
-    # 'SafetyViolation',
-    # 'SafetyReport', 
-    # 'ContentSafetyValidator'
+    # Safety validation
+    'SafetyViolation',
+    'SafetyReport',
+    'ContentSafetyValidator'
 ]
