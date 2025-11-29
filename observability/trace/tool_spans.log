@@ -1,0 +1,9 @@
+# Tool Spans Log - OpenTelemetry Compatible
+# Format: timestamp|trace_id|span_id|tool_name|duration_ms|status|tokens_used|cost
+
+2025-11-29T08:34:00.200Z|trace_001|tool_001|rag_retrieval|800|OK|150|0.0025
+2025-11-29T08:34:01.000Z|trace_001|tool_002|search_tool|300|OK|50|0.0008
+2025-11-29T08:34:01.300Z|trace_001|tool_003|http_tool|500|OK|75|0.0012
+2025-11-29T08:34:02.000Z|trace_001|tool_004|embedding_tool|400|OK|200|0.0035
+2025-11-29T08:34:02.400Z|trace_001|tool_005|sql_tool|600|OK|100|0.0018
+2025-11-29T08:34:03.000Z|trace_001|tool_006|file_tool|200|OK|25|0.0004

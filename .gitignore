@@ -24,6 +24,8 @@ Thumbs.db
 
 # logs and outputs
 *.log
+!observability/**/*.log
 outputs/
 logs/
+!observability/logs/
 
