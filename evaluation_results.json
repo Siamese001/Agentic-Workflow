@@ -1,13 +1,13 @@
 {
-  "timestamp": "2025-11-29T12:13:29.023988",
+  "timestamp": "2025-11-29T12:16:26.272874",
   "summary": {
     "total_evaluations": 3,
     "passed_evaluations": 3,
     "failed_evaluations": 0,
     "warning_evaluations": 0,
     "pass_rate": 1.0,
-    "average_score": 0.9590767447916667,
-    "average_execution_time_ms": 401.0,
+    "average_score": 0.9590778559027777,
+    "average_execution_time_ms": 400.6666666666667,
     "status": "GOOD"
   },
   "detailed_results": [
@@ -51,7 +51,7 @@
       "recommendations": [
         "Reduce memory usage for 1 tools: model_call"
       ],
-      "timestamp": "2025-11-29T12:13:28.171138"
+      "timestamp": "2025-11-29T12:16:25.420349"
     },
     {
       "toolpath_id": "d0fca877aab2",
@@ -59,7 +59,7 @@
       "total_tools": 2,
       "successful_tools": 2,
       "failed_tools": 0,
-      "total_execution_time_ms": 351,
+      "total_execution_time_ms": 350,
       "tool_metrics": [
         {
           "tool_name": "data_processing",
@@ -80,11 +80,11 @@
           "memory_usage_mb": 128.5
         }
       ],
-      "score": 0.9457128124999999,
+      "score": 0.9457161458333333,
       "recommendations": [
         "Reduce memory usage for 1 tools: model_call"
       ],
-      "timestamp": "2025-11-29T12:13:28.522329"
+      "timestamp": "2025-11-29T12:16:25.771348"
     },
     {
       "toolpath_id": "c573e5dcc29e",
@@ -135,7 +135,7 @@
       "recommendations": [
         "Reduce memory usage for 1 tools: model_call"
       ],
-      "timestamp": "2025-11-29T12:13:29.023959"
+      "timestamp": "2025-11-29T12:16:26.272844"
     }
   ]
 }
