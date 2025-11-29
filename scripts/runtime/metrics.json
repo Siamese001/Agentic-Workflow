@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-29T16:56:41.360047",
+  "timestamp": "2025-11-29T17:00:40.654555",
   "total_metrics": 3,
   "metrics": {
     "system_uptime": [
@@ -7,7 +7,7 @@
         "name": "system_uptime",
         "value": 0.0,
         "metric_type": "gauge",
-        "timestamp": "2025-11-29T16:56:41.359689",
+        "timestamp": "2025-11-29T17:00:40.654204",
         "labels": {},
         "unit": ""
       }
@@ -17,7 +17,7 @@
         "name": "system_startups",
         "value": 1.0,
         "metric_type": "counter",
-        "timestamp": "2025-11-29T16:56:41.359724",
+        "timestamp": "2025-11-29T17:00:40.654240",
         "labels": {},
         "unit": ""
       }
@@ -27,7 +27,7 @@
         "name": "active_connections",
         "value": 0,
         "metric_type": "gauge",
-        "timestamp": "2025-11-29T16:56:41.359734",
+        "timestamp": "2025-11-29T17:00:40.654250",
         "labels": {},
         "unit": ""
       }
