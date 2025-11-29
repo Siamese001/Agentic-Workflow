@@ -28,23 +28,18 @@ from .fusion_planner import (
 
 from .grounding_planner import (
     GroundingPlanner,
-    GroundingPlan,
-    Claim,
-    Entity
+    GroundingPlan
 )
 
 from .persona_planner import (
     PersonaPlanner,
-    PersonaPlan,
-    ToneParameters,
-    StyleGuidelines
+    PersonaPlan
 )
 
 from .profile_planner import (
     ProfilePlanner,
     ProfilePlan,
-    ProfileSignals,
-    ArchetypeInference
+    ProfileSignal
 )
 
 from .research_planner import (
@@ -62,42 +57,42 @@ from .message_planner import (
 )
 
 # K Executors - Hop-based Execution Layer
-from .k1_research import (
+from .l2.lic_k1_research import (
     K1ResearchExecutor,
     ResearchOutput
 )
 
-from .k2_insights import (
+from .l2.lic_k2_insights import (
     K2InsightsExecutor,
     InsightOutput,
     ClaimScore
 )
 
-from .k3_draft import (
+from .l2.lic_k3_draft import (
     K3DraftExecutor,
     DraftOutput,
     DraftSection
 )
 
-from .k4_regen import (
+from .l2.lic_k4_regen import (
     K4RegenExecutor,
     RegenOutput,
     RegenViolation
 )
 
-from .k5_validation import (
+from .l2.lic_k5_validation import (
     K5ValidationExecutor,
     ValidationOutput,
     ValidationViolation
 )
 
-from .k6_cta import (
+from .l2.lic_k6_cta import (
     K6CTAExecutor,
     CTAOutput,
     CTAOption
 )
 
-from .k7_assembly import (
+from .l2.lic_k7_assembly import (
     K7AssemblyExecutor,
     AssemblyOutput,
     MessageComponent
