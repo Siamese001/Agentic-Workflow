@@ -1,99 +1,218 @@
 {
   "validation_keys": {
     "structure": {
-      "root_has_required_folders": true,
-      "directory_tree_matches_section3": true,
+      "root_has_required_folders": false,
+      "directory_tree_matches_section3": false,
       "max_depth_respected": false,
       "no_level4_directories": false,
-      "no_empty_folders": true
+      "no_empty_folders": false,
+      "all_required_readmes_present": false,
+      "no_orphan_files": false,
+      "apps_layer_is_thin": false,
+      "prompt_governance_structure_intact": false,
+      "observability_structure_intact": false,
+      "schemas_structure_intact": false,
+      "tests_structure_intact": false
     },
     "cache_policy": {
-      "all_caches_within_runtime_cache_root": true,
-      "no_cache_outside_canonical_root": true,
-      "cache_aliases_resolved": true
+      "all_caches_within_runtime_cache_root": false,
+      "no_cache_outside_canonical_root": false,
+      "cache_aliases_resolved": false,
+      "cache_dirs_clean_on_validation": false
     },
     "engine_separation": {
       "no_cross_engine_imports": false,
-      "resume_engine_tree_intact": true,
-      "outreach_engine_tree_intact": true,
-      "parallel_subtrees_resume_outreach": true,
-      "no_shared_business_logic": false
+      "resume_engine_tree_intact": false,
+      "outreach_engine_tree_intact": false,
+      "parallel_subtrees_resume_outreach": false,
+      "no_shared_business_logic": false,
+      "engines_use_only_allowed_shared_dependencies": false,
+      "engine_configs_are_engine_local": false
     },
     "layer_policy": {
       "L1_pure_planning_no_tools_no_state": false,
       "L2_execution_only_no_planning": false,
-      "L3_orchestration_no_direct_tools": true,
-      "L4_no_upward_imports": true,
-      "L5_no_upward_imports": true,
-      "import_dag_respected": true
+      "L3_orchestration_no_direct_tools": false,
+      "L3_orchestration_uses_L1_L2_only": false,
+      "L4_no_upward_imports": false,
+      "L5_no_upward_imports": false,
+      "import_dag_respected": false,
+      "no_layer_leakage": false
     },
     "prompt_system": {
       "prompt_files_only_in_prompt_governance": false,
       "no_inline_prompts_in_code": false,
       "prompts_are_schema_first": false,
-      "prompts_are_deterministic": true,
+      "prompts_are_deterministic": false,
       "prompts_are_versioned": false,
-      "prompt_registry_resolves_all_prompts": true,
-      "prompt_builder_applies_injection_v5_correctly": true,
-      "prompt_builder_attaches_schemas_and_examples": true
+      "prompt_registry_resolves_all_prompts": false,
+      "prompt_documents_pass_lint": false,
+      "prompt_builder_applies_injection_v5_correctly": false,
+      "prompt_builder_attaches_schemas_and_examples": false,
+      "prompt_collisions_do_not_exist": false,
+      "prompt_acl_enforced": false,
+      "prompt_diff_regression_passed": false
     },
     "tests": {
-      "only_global_tests_tree_exists": true,
-      "test_tree_matches_layer_engine_structure": true,
-      "no_tests_in_agentic_core": true,
-      "no_tests_in_apps": true,
-      "no_alternate_test_directories": true,
-      "basic_coverage_all_layers": true
+      "only_global_tests_tree_exists": false,
+      "test_tree_matches_layer_engine_structure": false,
+      "no_tests_in_agentic_core": false,
+      "no_tests_in_apps": false,
+      "no_alternate_test_directories": false,
+      "basic_coverage_all_layers": false,
+      "fixtures_resolve_cleanly": false,
+      "mocks_not_used_outside_unit_tests": false,
+      "test_imports_clean": false
+    },
+    "test_categories": {
+      "unit_tests_all_pass": false,
+      "integration_tests_all_pass": false,
+      "e2e_tests_all_pass": false,
+      "regression_tests_all_pass": false,
+      "stress_tests_all_pass": false,
+      "load_tests_all_pass": false,
+      "chaos_tests_all_pass": false,
+      "temporal_agent_tests_all_pass": false,
+      "kg_graph_tests_all_pass": false,
+      "rag_retrieval_tests_all_pass": false,
+      "safety_tests_all_pass": false,
+      "prompt_system_tests_all_pass": false,
+      "prompt_diff_regressions_all_pass": false,
+      "toolpath_tests_all_pass": false
     },
     "schemas": {
-      "schemas_only_in_schemas_folder": true,
-      "schemas_pass_json_schema_validation": true,
-      "pydantic_models_match_schemas": true,
-      "cross_layer_interfaces_declared": true,
-      "no_schema_breaking_changes": true
+      "schemas_only_in_schemas_folder": false,
+      "schemas_pass_json_schema_validation": false,
+      "pydantic_models_match_schemas": false,
+      "cross_layer_interfaces_declared": false,
+      "no_schema_breaking_changes": false,
+      "schema_migrations_exist_for_new_fields": false
     },
     "observability": {
-      "event_objects_have_required_fields": true,
-      "logs_contain_no_pii": true,
-      "opentelemetry_trace_compliant": true,
-      "metrics_written_correctly": true
+      "event_objects_have_required_fields": false,
+      "logs_contain_no_pii": false,
+      "opentelemetry_traces_valid": false,
+      "metrics_written_correctly": false,
+      "token_usage_logged": false,
+      "costs_logged_per_step": false,
+      "tool_spans_correctly_attached": false,
+      "dag_spans_correctly_linked": false,
+      "missing_observability_signals_detected": false,
+      "latency_statistics_available": false,
+      "error_taxonomy_applied": false
+    },
+    "mcp": {
+      "mcp_used_for_external_calls": false,
+      "mcp_tools_define_input_output_schemas": false,
+      "mcp_services_available": false,
+      "mcp_access_respects_acls": false,
+      "mcp_latency_within_bounds": false,
+      "mcp_failures_retry_according_to_policy": false
+    },
+    "rag_kg_temporal": {
+      "rag_calls_are_deterministic": false,
+      "rag_filtering_correct": false,
+      "rag_rrf_scoring_correct": false,
+      "hyde_query_generation_valid": false,
+      "kg_lookups_are_deterministic": false,
+      "kg_edges_and_nodes_schema_valid": false,
+      "temporal_validity_enforced_on_events": false,
+      "temporal_invalidation_rules_applied": false,
+      "temporal_clustering_correct": false,
+      "chunking_pipeline_valid": false,
+      "statement_extraction_valid": false,
+      "temporal_range_extraction_valid": false,
+      "triplet_extraction_valid": false,
+      "event_generation_valid": false,
+      "entity_resolution_valid": false
+    },
+    "safety": {
+      "safety_runs_on_all_outbound_content": false,
+      "safety_runs_on_all_mutating_actions": false,
+      "pii_filter_active": false,
+      "hallucination_detector_active": false,
+      "injection_detector_active": false,
+      "toxicity_detector_active": false,
+      "content_validator_active": false,
+      "safety_policy_yaml_valid": false,
+      "policy_decision_engine_runs": false,
+      "safety_blocking_correctly_applied": false
+    },
+    "dag": {
+      "all_nodes_schema_valid": false,
+      "dag_is_acyclic": false,
+      "dag_edges_match_node_definitions": false,
+      "recursion_controllers_valid": false,
+      "orchestrator_uses_canonical_loop": false,
+      "timeouts_and_retries_defined_for_each_node": false,
+      "dag_version_controlled": false
+    },
+    "tools": {
+      "each_tool_defines_schema": false,
+      "each_tool_declares_failure_modes": false,
+      "idempotency_marked_correctly": false,
+      "side_effects_marked_correctly": false,
+      "tools_log_telemetry": false,
+      "tool_timeout_enforced": false,
+      "tool_retry_policy_enforced": false,
+      "tool_costs_computed_correctly": false,
+      "tool_safety_checks_active": false,
+      "tool_return_values_schema_valid": false
+    },
+    "agent_ops": {
+      "cost_tracking_enabled": false,
+      "latency_tracking_enabled": false,
+      "error_taxonomy_applied": false,
+      "reliability_scores_updated": false,
+      "canary_scenarios_run": false,
+      "tool_health_monitoring_active": false,
+      "runtime_faults_detected_and_logged": false
+    },
+    "evaluation": {
+      "golden_datasets_loaded": false,
+      "llm_as_judge_runs_successfully": false,
+      "regression_tests_all_pass": false,
+      "toolpath_evaluation_passed": false,
+      "prompt_diff_evaluation_passed": false,
+      "behavioral_regression_prevented": false,
+      "evaluation_suite_deterministic": false
+    },
+    "deployment": {
+      "rest_endpoints_secure": false,
+      "authn_authz_enforced": false,
+      "environment_separation_valid": false,
+      "model_versions_pinned": false,
+      "secrets_not_in_repo": false,
+      "deployment_bluegreen_or_canary_ready": false
     },
     "import_and_lint": {
-      "no_import_errors": true,
+      "no_import_errors": false,
       "ruff_zero_errors": false,
-      "mypy_zero_blockers": true,
-      "no_circular_imports": true
+      "mypy_zero_blockers": false,
+      "no_circular_imports": false,
+      "no_namespace_collisions": false,
+      "imports_match_layer_policy": false
+    },
+    "determinism": {
+      "model_calls_are_deterministic_when_required": false,
+      "rag_pipeline_deterministic": false,
+      "kg_pipeline_deterministic": false,
+      "temporal_agents_deterministic": false,
+      "orchestrator_not_non_deterministic": false,
+      "tool_invocations_deterministic": false
     },
     "pytest": {
-      "pytest_zero_failures": false
+      "pytest_zero_failures": false,
+      "pytest_collects_all_tests": false,
+      "pytest_fixture_resolution_clean": false,
+      "pytest_parallel_safe": false
     },
     "zero_loss": {
       "no_behavior_loss_detected": false,
-      "no_capability_loss_detected": true,
-      "conflict_merges_preserved_behavior": true
-    },
-    "mcp_used_for_external_calls": false,
-    "mcp_tools_define_input_output_schemas": false,
-    "mcp_access_respects_acls": false,
-    "rag_calls_are_deterministic": false,
-    "kg_lookups_are_deterministic": false,
-    "temporal_validity_enforced_on_events": false,
-    "safety_runs_on_all_outbound_content": false,
-    "safety_runs_on_all_mutating_actions": false,
-    "pii_filter_active": false,
-    "hallucination_detector_active": false,
-    "injection_detector_active": false,
-    "cost_tracking_enabled": false,
-    "latency_tracking_enabled": false,
-    "error_taxonomy_applied": false,
-    "reliability_scores_updated": false,
-    "golden_datasets_loaded": false,
-    "llm_as_judge_runs_successfully": false,
-    "regression_tests_all_pass": false,
-    "toolpath_evaluation_passed": false,
-    "rest_endpoints_secure": true,
-    "authn_authz_enforced": true,
-    "environment_separation_valid": true,
-    "model_versions_pinned": false
+      "no_capability_loss_detected": false,
+      "conflict_merges_preserved_behavior": false,
+      "deleted_logic_must_be_reinstated_or_test_approved": false,
+      "all_regressions_blocked_automatically": false
+    }
   }
 }
