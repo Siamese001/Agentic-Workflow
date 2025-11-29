@@ -5,7 +5,7 @@ Provides intelligent model selection for outreach workflows based on stage,
 archetype, and budget constraints using the ModelRoutingPolicy.
 """
 
-from l1.outreach_dataclasses import ArchetypeType
+from agentic_core.l1_planning.outreach_dataclasses import ArchetypeType
 from runtime.runtime_utils import invoke_model, SandboxConfig
 from infra.model_routing.policies import ModelRoutingPolicy
 from runtime.execution_budget_manager import ExecutionBudgetManager

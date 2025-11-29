@@ -11,8 +11,8 @@ from agentic_core.l4_memory.temporal_kg import TemporalKG, TemporalNodeMetadata
 from agentic_core.l4_memory.high_signal import HighSignalScore
 from agentic_core.l4_memory.temporal_fusion import TemporalRankFusion
 from agentic_core.l4_memory.rag.rag_engine import RAGEngine, OutreachRAGResult
-from agentic_core.l2_execution.company_research_executor import CompanyResearchExecutor
-from agentic_core.l2_execution.contact_research_executor import ContactResearchExecutor
+from agentic_core.l2_execution.draft_execution.outreach.company_research_executor import CompanyResearchExecutor
+from agentic_core.l2_execution.draft_execution.outreach.contact_research_executor import ContactResearchExecutor
 
 
 class TestTemporalResearchPathways:

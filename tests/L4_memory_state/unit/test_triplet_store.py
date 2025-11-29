@@ -44,7 +44,7 @@ from agentic_core.l2_execution.kg_retrieval_executor import (
     KGRetrievalResult,
     execute_entity_query,
 )
-from agentic_core.l2_execution.triplet_extraction_executor import (
+from agentic_core.l2_execution.rag_execution.triplet_extraction_executor import (
     TripletExtractionExecutor,
     ExtractionPlan,
     create_extraction_plan,

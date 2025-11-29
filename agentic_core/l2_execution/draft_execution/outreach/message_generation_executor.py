@@ -6,7 +6,7 @@ This allows Phase 5 refinement without touching core L2.
 """
 
 # Re-export the original executor exactly as-is
-from l2.message_generation_executor import (
+from agentic_core.l2_execution.message_generation_executor import (
     MessageGenerationExecutor,
     MessageSection,
     MessageResult,

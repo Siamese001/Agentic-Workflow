@@ -118,7 +118,7 @@ class HYDEQueryAgent:
         query generation and job alignment.
         """
         # Delegate to L2 LLM caller for pure execution
-        from l2.llm_caller import LLMCaller
+        from agentic_core.l2_execution.llm_caller import LLMCaller
         llm_caller = LLMCaller(self.routing_policy, self.sandbox)
         
         job = getattr(ctx, "job", None)
@@ -127,7 +127,7 @@ class HYDEQueryAgent:
         job_title = getattr(job, "title", "") if job else ""
         
         # Use L1 prompt builder for pure planning
-        from l1.prompt_builder import PromptBuilder
+        from agentic_core.l1_planning.prompt_builder import PromptBuilder
         prompt = PromptBuilder.build_strategy_prompt(
             {"target_role": job_title, "reasoning": "HYDE query generation"},
             job,
@@ -179,7 +179,7 @@ class LLMBaseAgent:
     
     def _call_llm(self, prompt: Any) -> str:
         """Legacy LLM call for resume processing - delegates to atomic L2."""
-        from l2.llm_caller import LLMCaller
+        from agentic_core.l2_execution.llm_caller import LLMCaller
         llm_caller = LLMCaller(self.routing_policy, self.sandbox)
         return llm_caller.call_llm(prompt, self.agent_card.role.value)
 

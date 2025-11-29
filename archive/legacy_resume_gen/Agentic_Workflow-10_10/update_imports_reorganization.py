@@ -99,14 +99,14 @@ IMPORT_MAPPINGS = {
     "import retrieval": "import infra.storage.retrieval",
     
     # Tools -> tools/
-    "from runtime_utils import": "from tools.runtime_utils import",
-    "import runtime_utils": "import tools.runtime_utils",
-    "from golden_eval import": "from tools.golden_eval import",
-    "import golden_eval": "import tools.golden_eval",
-    "from simulation import": "from tools.simulation import",
-    "import simulation": "import tools.simulation",
-    "from registry import": "from tools.registry import",
-    "import registry": "import tools.registry",
+    "from runtime_utils import": "from agentic_core.l2_execution.tools.runtime_utils import",
+    "import runtime_utils": "import agentic_core.l2_execution.tools.runtime_utils",
+    "from golden_eval import": "from agentic_core.l2_execution.tools.golden_eval import",
+    "import golden_eval": "import agentic_core.l2_execution.tools.golden_eval",
+    "from simulation import": "from agentic_core.l2_execution.tools.simulation import",
+    "import simulation": "import agentic_core.l2_execution.tools.simulation",
+    "from registry import": "from agentic_core.l2_execution.tools.registry import",
+    "import registry": "import agentic_core.l2_execution.tools.registry",
     
     # Core models (keep in core for now)
     "from core.models.": "from core.models.",

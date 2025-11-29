@@ -7,7 +7,7 @@ fallback conditions, and output mapping to OutreachRAGResult list.
 
 from unittest.mock import Mock
 
-from agentic_core.l2_execution.company_research_executor import CompanyResearchExecutor, CompanySearchConfig, CompanyResearchResult, KG_FALLBACK_ARCHETYPES
+from agentic_core.l2_execution.draft_execution.outreach.company_research_executor import CompanyResearchExecutor, CompanySearchConfig, CompanyResearchResult, KG_FALLBACK_ARCHETYPES
 from agentic_core.l4_memory.hybrid_search import HybridSearchExecutor, SearchResult
 from agentic_core.l4_memory.schema.outreach_schema import OutreachRAGResult
 from l4 import PineconeAdapter, TripletStore, Triplet

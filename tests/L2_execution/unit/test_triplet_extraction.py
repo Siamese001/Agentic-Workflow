@@ -7,7 +7,7 @@ Tests triplet extraction functionality extracted from working legacy tests.
 import pytest
 
 # L2 Components
-from agentic_core.l2_execution.triplet_extraction_executor import (
+from agentic_core.l2_execution.rag_execution.triplet_extraction_executor import (
     TripletExtractionExecutor,
     create_extraction_plan,
 )

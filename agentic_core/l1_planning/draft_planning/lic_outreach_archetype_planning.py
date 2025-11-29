@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, List
 
-from l1.outreach_dataclasses import (
+from agentic_core.l1_planning.outreach_dataclasses import (
     OutreachMission,
     ArchetypeType,
     ArchetypeContext,

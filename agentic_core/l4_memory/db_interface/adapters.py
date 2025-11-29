@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
-from l4.interfaces import (
+from agentic_core.l4_memory.interfaces import (
     L4StateManagerInterface,
     L4MemoryManagerInterface,
     L4VectorStoreInterface,
@@ -22,7 +22,7 @@ from l4.interfaces import (
     L4StorageResult,
     StorageType,
 )
-from l4.state_manager import StateManager, WorkflowState
+from agentic_core.l4_memory.state_manager import StateManager, WorkflowState
 from core.models.models import (
     ExecutionContext,
     Entity,
