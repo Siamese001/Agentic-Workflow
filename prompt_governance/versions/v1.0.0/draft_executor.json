@@ -1,0 +1,35 @@
+{
+  "name": "draft_executor",
+  "description": "Prompt for content drafting and generation",
+  "version": "1.0.0",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "content_type": {
+        "type": "string",
+        "enum": ["email", "report", "article", "summary"]
+      },
+      "topic": {
+        "type": "string"
+      },
+      "tone": {
+        "type": "string",
+        "enum": ["formal", "casual", "professional", "friendly"],
+        "default": "professional"
+      }
+    },
+    "required": ["content_type", "topic"]
+  },
+  "template": "You are a professional content writer. Create a {{tone}} {{content_type}} about {{topic}}.",
+  "created_at": "2024-01-01T00:00:00Z",
+  "examples": [
+    {
+      "input": {
+        "content_type": "email",
+        "topic": "project update",
+        "tone": "professional"
+      },
+      "output": "Subject: Project Update\n\nDear Team,\n\nI wanted to provide a brief update on our current project progress.\n\nBest regards"
+    }
+  ]
+}
