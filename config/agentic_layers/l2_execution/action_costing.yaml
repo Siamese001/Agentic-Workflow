@@ -1,1 +1,89 @@
-# Placeholder configuration file
+# L2 Action Costing Configuration
+# Cost tracking and budget management for execution actions
+
+# Cost Tracking Parameters
+costing:
+  enable_cost_tracking: true
+  cost_currency: USD
+  cost_precision: 4
+  default_cost_model: token_based
+
+# Model-Specific Costing (per 1K tokens)
+model_costs:
+  openai:
+    gpt-4:
+      input: 0.03
+      output: 0.06
+    gpt-4-turbo:
+      input: 0.01
+      output: 0.03
+    gpt-3.5-turbo:
+      input: 0.0015
+      output: 0.002
+    gpt-5-nano:
+      input: 0.0005
+      output: 0.001
+  
+  anthropic:
+    claude-3-opus:
+      input: 0.015
+      output: 0.075
+    claude-3-sonnet:
+      input: 0.003
+      output: 0.015
+    claude-3-haiku:
+      input: 0.00025
+      output: 0.00125
+    claude-haiku-4-5-20251001:
+      input: 0.0002
+      output: 0.001
+
+# Tool-Specific Costing
+tool_costs:
+  web_search:
+    per_query: 0.005
+    per_result: 0.0001
+  
+  document_processing:
+    per_page: 0.001
+    per_mb: 0.01
+  
+  content_generation:
+    base_cost: 0.01
+    per_token: 0.00001
+  
+  analysis_tools:
+    per_analysis: 0.005
+    per_kb_input: 0.001
+
+# Cost Budgets
+budgets:
+  per_session:
+    default: 1.00
+    maximum: 10.00
+  
+  per_operation:
+    research: 0.10
+    generation: 0.05
+    analysis: 0.03
+    validation: 0.01
+  
+  per_user:
+    daily: 5.00
+    weekly: 25.00
+    monthly: 100.00
+
+# Cost Optimization
+optimization:
+  enable_smart_routing: true
+  prefer_cheaper_models: true
+  cache_expensive_results: true
+  batch_similar_requests: true
+
+# Cost Alerts
+alerts:
+  warning_threshold: 0.8  # 80% of budget
+  critical_threshold: 0.95  # 95% of budget
+  alert_cooldown: 300  # seconds
+  enable_email_alerts: false
+  enable_system_alerts: true

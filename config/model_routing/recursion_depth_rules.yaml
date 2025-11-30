@@ -1,1 +1,91 @@
-# Placeholder configuration file
+# Model Routing Recursion Depth Rules Configuration
+# Recursion and iteration limits for model routing decisions
+
+# Recursion Depth Framework
+recursion_depth:
+  enabled: true
+  max_total_depth: 5
+  max_routing_iterations: 10
+  timeout_protection: true
+
+# Depth Limits by Context
+context_depth_limits:
+  simple_tasks:
+    max_depth: 2
+    max_iterations: 3
+    timeout: 30  # seconds
+  
+  standard_tasks:
+    max_depth: 3
+    max_iterations: 5
+    timeout: 60  # seconds
+  
+  complex_tasks:
+    max_depth: 4
+    max_iterations: 8
+    timeout: 120  # seconds
+  
+  critical_tasks:
+    max_depth: 5
+    max_iterations: 10
+    timeout: 300  # seconds
+
+# Routing Decision Recursion
+routing_recursion:
+  model_selection:
+    max_attempts: 3
+    fallback_chain_depth: 4
+    quality_threshold_minimum: 0.6
+  
+  cost_optimization:
+    max_cost_checks: 5
+    budget_retry_attempts: 2
+    cost_increase_tolerance: 0.2
+  
+  availability_checks:
+    max_provider_attempts: 3
+    health_check_timeout: 5  # seconds
+  failover_timeout: 30  # seconds
+
+# Safety Recursion Limits
+safety_recursion:
+  content_validation:
+    max_validation_attempts: 3
+    safety_check_depth: 2
+    escalation_threshold: 0.8
+  
+  pii_detection:
+    max_scan_attempts: 2
+    recursive_scan_enabled: true
+    max_scan_depth: 3
+
+# Performance Recursion Controls
+performance_recursion:
+  load_balancing:
+    max_rebalance_attempts: 5
+    provider_switch_timeout: 10  # seconds
+    circuit_breaker_reset_time: 60  # seconds
+  
+  caching:
+    max_cache_lookup_depth: 3
+    cache_miss_fallback_attempts: 2
+    cache_refresh_recursion: false
+
+# Error Handling Recursion
+error_recursion:
+  retry_policies:
+    max_retry_depth: 3
+    exponential_backoff_enabled: true
+    max_backoff_multiplier: 8
+  
+  error_classification:
+    max_classification_attempts: 2
+    error_type_hierarchy_depth: 4
+  fallback_escalation_depth: 3
+
+# Monitoring and Debugging
+monitoring:
+  track_recursion_depth: true
+  alert_on_depth_exceeded: true
+  log_recursion_paths: true
+  performance_impact_threshold: 0.1

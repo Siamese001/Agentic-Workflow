@@ -1,1 +1,141 @@
-# Placeholder configuration file
+# Resume Engine Scoring Weights Configuration
+# Scoring algorithm weights and evaluation criteria
+
+# Scoring Framework
+scoring_framework:
+  enabled: true
+  composite_scoring: true
+  normalization: true
+  weighting_strategy: dynamic
+
+# Primary Scoring Categories
+primary_weights:
+  content_quality:
+    weight: 0.35
+    min_threshold: 0.7
+    importance: high
+  
+  ats_compatibility:
+    weight: 0.30
+    min_threshold: 0.8
+    importance: high
+  
+  relevance_score:
+    weight: 0.20
+    min_threshold: 0.6
+    importance: medium
+  
+  presentation_quality:
+    weight: 0.15
+    min_threshold: 0.7
+    importance: medium
+
+# Content Quality Sub-Weights
+content_quality_weights:
+  action_verbs:
+    weight: 0.3
+    target_count: 15
+    diversity_bonus: 0.1
+  
+  quantification:
+    weight: 0.25
+    target_ratio: 0.6
+    impact_weighting: 0.2
+  
+  clarity_readability:
+    weight: 0.2
+    target_score: 8.0
+    sentence_length_penalty: 0.1
+  
+  completeness:
+    weight: 0.15
+    required_sections_weight: 0.8
+    optional_sections_bonus: 0.05
+  
+  grammar_spelling:
+    weight: 0.1
+    min_score: 0.9
+    auto_correction_bonus: 0.05
+
+# ATS Compatibility Sub-Weights
+ats_compatibility_weights:
+  keyword_optimization:
+    weight: 0.4
+    density_target: 0.02
+    relevance_weight: 0.3
+  
+  parsing_score:
+    weight: 0.3
+    min_score: 0.9
+    critical_block_weight: 0.5
+  
+  format_compliance:
+    weight: 0.2
+    strict_mode_penalty: 0.1
+    standardization_bonus: 0.05
+  
+  structure_optimization:
+    weight: 0.1
+    section_order_weight: 0.3
+    layout_consistency: 0.2
+
+# Relevance Score Sub-Weights
+relevance_weights:
+  job_description_match:
+    weight: 0.5
+    skill_match_threshold: 0.7
+    experience_match_weight: 0.3
+  
+  industry_alignment:
+    weight: 0.3
+    terminology_match: 0.6
+    trend_alignment: 0.2
+  
+  seniority_level:
+    weight: 0.2
+    experience_level_match: 0.7
+    responsibility_alignment: 0.3
+
+# Presentation Quality Sub-Weights
+presentation_weights:
+  visual_appeal:
+    weight: 0.4
+    layout_score: 0.7
+    typography_score: 0.3
+  
+  length_optimization:
+    weight: 0.3
+    target_pages: 2
+    content_density: 0.6
+  
+  consistency:
+    weight: 0.2
+    formatting_consistency: 0.8
+    style_consistency: 0.2
+  
+  professionalism:
+    weight: 0.1
+    tone_appropriateness: 0.7
+    industry_standards: 0.3
+
+# Dynamic Weight Adjustment Rules
+dynamic_adjustments:
+  industry_specific:
+    technology: {content_quality: 0.4, ats_compatibility: 0.25}
+    finance: {ats_compatibility: 0.35, presentation_quality: 0.2}
+    healthcare: {content_quality: 0.3, relevance_score: 0.25}
+    creative: {presentation_quality: 0.25, content_quality: 0.3}
+  
+  experience_level:
+    entry_level: {relevance_score: 0.25, content_quality: 0.3}
+    mid_level: {content_quality: 0.35, ats_compatibility: 0.3}
+    senior_level: {content_quality: 0.4, relevance_score: 0.15}
+    executive: {presentation_quality: 0.2, content_quality: 0.35}
+
+# Scoring Thresholds
+thresholds:
+  excellent_score: 0.9
+  good_score: 0.8
+  acceptable_score: 0.7
+  needs_improvement: 0.6
+  poor_score: 0.5

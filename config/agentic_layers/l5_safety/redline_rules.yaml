@@ -1,1 +1,134 @@
-# Placeholder configuration file
+# L5 Redline Rules Configuration
+# Critical safety rules that cannot be bypassed or overridden
+
+# Redline Rules Framework
+redline_rules:
+  enabled: true
+  enforcement_mode: absolute
+  violation_action: immediate_stop
+  escalation_required: true
+  no_override_allowed: true
+
+# Critical Content Redlines
+content_redlines:
+  illegal_content:
+    - illegal_activities
+    - terrorist_content
+    - child_exploitation
+    - drug_manufacturing
+    action: immediate_block_and_report
+  
+  severe_harm:
+    - self_harm_instructions
+    - violence_incitement
+    - hate_crime_promotion
+    - harassment_campaigns
+    action: immediate_block_and_escalate
+  
+  security_threats:
+    - malware_instructions
+    - phishing_templates
+    - social_engineering
+    - system_exploitation
+    action: immediate_block_and_alert
+
+# Privacy Redlines
+privacy_redlines:
+  sensitive_pii:
+    - social_security_numbers
+    - credit_card_numbers
+    - medical_records
+    - legal_documents
+    action: immediate_redaction_and_audit
+  
+  protected_class_data:
+    - medical_conditions
+    - genetic_information
+    - biometric_data
+    - religious_affiliation
+    action: immediate_redaction_and_compliance_review
+  
+  financial_redlines:
+    - bank_account_numbers
+    - investment_portfolios
+    - tax_returns
+    - payroll_data
+    action: immediate_redaction_and_financial_alert
+
+# Operational Redlines
+operational_redlines:
+  system_integrity:
+    - unauthorized_admin_access
+    - system_configuration_changes
+    - security_policy_modification
+    - credential_exposure
+    action: immediate_stop_and_security_alert
+  
+  resource_abuse:
+    - resource_exhaustion_attacks
+    - denial_of_service_patterns
+    - crypto_mining_operations
+    - data_exfiltration_attempts
+    action: immediate_block_and_monitor
+  
+  compliance_violations:
+    - gdpr_data_processing_without_consent
+    - ccpa_data_sales
+    - hipaa_privacy_breaches
+    - sox_financial_data_tampering
+    action: immediate_stop_and_legal_alert
+
+# Business Redlines
+business_redlines:
+  employment_discrimination:
+    - discriminatory_hiring_criteria
+    - biased_screening_questions
+    - unequal_opportunity_policies
+    - protected_class_targeting
+    action: immediate_block_and_hr_review
+  
+  fraudulent_activities:
+    - fake_resume_generation
+    - false credential_creation
+    - misrepresentation_templates
+    - identity_fraud_assistance
+    action: immediate_block_and_legal_escalation
+  
+  unethical_practices:
+    - spam_campaign_generation
+    - deceptive_marketing_content
+    - manipulative_persuasion_techniques
+    - harassment_campaign_planning
+    action: immediate_block_and_ethics_review
+
+# Legal and Regulatory Redlines
+legal_redlines:
+  intellectual_property:
+    - copyright_infringement
+    - patent_violation_content
+    - trademark_misuse
+    - trade_secret_exposure
+    action: immediate_block_and_legal_alert
+  
+  regulatory_compliance:
+    - securities_fraud_content
+    - medical_claims_without_certification
+    - legal_advice_without_license
+    - financial_advice_violations
+    action: immediate_block_and_compliance_escalation
+
+# Enforcement and Monitoring
+enforcement:
+  real_time_monitoring: true
+  automatic_blocking: true
+  incident_logging: true
+  legal_notification: true
+  audit_trail_preservation: true
+
+# Escalation Protocols
+escalation:
+  security_team: immediate
+  legal_team: within_1_hour
+  compliance_team: within_2_hours
+  executive_notification: critical_violations_only
+  law_enforcement: illegal_content_only
