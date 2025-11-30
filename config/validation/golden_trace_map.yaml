@@ -1,1 +1,118 @@
-# Placeholder configuration file
+# Golden Trace Map Configuration
+# Reference traces for validation and testing
+
+# Golden Trace Framework
+golden_trace_map:
+  enabled: true
+  version: "1.0.0"
+  trace_validation: true
+  regression_detection: true
+
+# Core Workflow Traces
+core_traces:
+  resume_processing_workflow:
+    trace_id: "resume_processing_golden_001"
+    expected_duration: 180  # seconds
+    expected_cost: 0.50  # USD
+    key_steps:
+      - step_name: "resume_upload"
+        expected_duration: 5
+        expected_tokens: 100
+      - step_name: "ats_analysis"
+        expected_duration: 30
+        expected_tokens: 500
+      - step_name: "skill_extraction"
+        expected_duration: 45
+        expected_tokens: 800
+      - step_name: "content_optimization"
+        expected_duration: 60
+        expected_tokens: 1200
+      - step_name: "final_validation"
+        expected_duration: 15
+        expected_tokens: 200
+  
+  outreach_campaign_workflow:
+    trace_id: "outreach_campaign_golden_001"
+    expected_duration: 300  # seconds
+    expected_cost: 0.75  # USD
+    key_steps:
+      - step_name: "target_research"
+        expected_duration: 60
+        expected_tokens: 600
+      - step_name: "contact_identification"
+        expected_duration: 45
+        expected_tokens: 400
+      - step_name: "message_personalization"
+        expected_duration: 90
+        expected_tokens: 1500
+      - step_name: "campaign_execution"
+        expected_duration: 105
+        expected_tokens: 1000
+
+# Layer-Specific Traces
+layer_traces:
+  l1_planning_traces:
+    strategy_planning_golden:
+      trace_id: "l1_strategy_golden_001"
+      expected_duration: 45
+      expected_quality_score: 0.85
+    
+    research_planning_golden:
+      trace_id: "l1_research_golden_001"
+      expected_duration: 90
+      expected_quality_score: 0.8
+    
+    message_planning_golden:
+      trace_id: "l1_message_golden_001"
+      expected_duration: 30
+      expected_quality_score: 0.75
+  
+  l2_execution_traces:
+    tool_execution_golden:
+      trace_id: "l2_tools_golden_001"
+      expected_duration: 120
+      success_rate: 0.95
+    
+    action_costing_golden:
+      trace_id: "l2_costing_golden_001"
+      expected_duration: 30
+      accuracy_threshold: 0.9
+  
+  l3_orchestration_traces:
+    workflow_orchestration_golden:
+      trace_id: "l3_orchestration_golden_001"
+      expected_duration: 300
+      completion_rate: 0.9
+  
+  l4_state_traces:
+    memory_operations_golden:
+      trace_id: "l4_memory_golden_001"
+      expected_duration: 30
+      cache_hit_rate: 0.8
+  
+  l5_safety_traces:
+    safety_validation_golden:
+      trace_id: "l5_safety_golden_001"
+      expected_duration: 45
+      violation_rate: 0.01
+
+# Validation Rules
+validation_rules:
+  duration_tolerance: 0.2  # 20%
+  cost_tolerance: 0.15  # 15%
+  quality_threshold: 0.7
+  performance_regression_threshold: 0.1
+
+# Trace Storage
+storage:
+  backend: file_system
+  base_path: "golden_traces/"
+  compression: true
+  retention_period: 90  # days
+
+# Comparison Metrics
+comparison_metrics:
+  duration_comparison: absolute_and_percentage
+  cost_comparison: absolute_and_percentage
+  quality_comparison: relative_score
+  performance_comparison: benchmark_based

@@ -1,1 +1,98 @@
-# Placeholder configuration file
+# Runtime Tracing Configuration
+# Distributed tracing and observability settings
+
+# Tracing Framework
+tracing_framework:
+  enabled: true
+  service_name: agentic-workflow
+  sampling_rate: 0.1
+  trace_exporter: jaeger
+
+# Trace Configuration
+trace_config:
+  batch_export:
+    max_batch_size: 512
+    max_export_batch_size: 512
+    max_export_timeout: 30  # seconds
+    export_timeout: 30  # seconds
+  
+  sampling:
+    default_sampler: traceidratio
+    traceidratio_sampler: 0.1
+    parentbased_sampler: true
+
+# Layer-Specific Tracing
+layer_tracing:
+  l1_planning:
+    trace_strategy_planning: true
+    trace_research_planning: true
+    trace_message_planning: true
+    trace_safety_planning: true
+  
+  l2_execution:
+    trace_tool_execution: true
+    trace_action_costing: true
+    trace_retry_logic: true
+    trace_execution_limits: true
+  
+  l3_orchestration:
+    trace_workflow_execution: true
+    trace_orchestration_decisions: true
+    trace_cost_budget_enforcement: true
+    trace_fallback_policies: true
+  
+  l4_state:
+    trace_memory_operations: true
+    trace_vector_cache_operations: true
+    trace_persistence_operations: true
+    trace_recency_policies: true
+  
+  l5_safety:
+    trace_safety_validation: true
+    trace_pii_detection: true
+    trace_content_filtering: true
+    trace_guardrails: true
+
+# Engine-Specific Tracing
+engine_tracing:
+  resume_engine:
+    trace_resume_processing: true
+    trace_ats_optimization: true
+    trace_skill_extraction: true
+    trace_scoring: true
+  
+  outreach_engine:
+    trace_campaign_setup: true
+    trace_message_generation: true
+    trace_contact_research: true
+    trace_personalization: true
+
+# Performance Tracing
+performance_tracing:
+  trace_latency: true
+  trace_memory_usage: true
+  trace_cpu_usage: true
+  trace_network_calls: true
+  
+  thresholds:
+    latency_warning: 1000  # milliseconds
+    latency_critical: 5000  # milliseconds
+    memory_warning: 1024  # MB
+    memory_critical: 2048  # MB
+
+# Error Tracing
+error_tracing:
+  trace_exceptions: true
+  trace_timeouts: true
+  trace_retries: true
+  trace_circuit_breaker: true
+
+# Export Configuration
+export_config:
+  jaeger:
+    endpoint: http://localhost:14268/api/traces
+    timeout: 10  # seconds
+  
+  zipkin:
+    endpoint: http://localhost:9411/api/v2/spans
+    timeout: 10  # seconds

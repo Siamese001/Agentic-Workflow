@@ -1,1 +1,96 @@
-# Placeholder configuration file
+# Test Matrix Configuration
+# Comprehensive testing framework for agentic workflow validation
+
+# Test Matrix Framework
+test_matrix:
+  enabled: true
+  test_coverage_target: 0.85
+  automated_execution: true
+  parallel_testing: true
+
+# Test Categories
+test_categories:
+  unit_tests:
+    enabled: true
+    coverage_threshold: 0.8
+    timeout: 30  # seconds
+    max_concurrent: 10
+  
+  integration_tests:
+    enabled: true
+    coverage_threshold: 0.75
+    timeout: 120  # seconds
+    max_concurrent: 5
+  
+  end_to_end_tests:
+    enabled: true
+    coverage_threshold: 0.7
+    timeout: 300  # seconds
+    max_concurrent: 2
+  
+  performance_tests:
+    enabled: true
+    coverage_threshold: 0.6
+    timeout: 600  # seconds
+    max_concurrent: 3
+
+# Layer-Specific Testing
+layer_testing:
+  l1_planning:
+    strategy_planning_tests: 15
+    research_planning_tests: 20
+    message_planning_tests: 12
+    safety_planning_tests: 18
+  
+  l2_execution:
+    tool_execution_tests: 25
+    action_costing_tests: 10
+    retry_logic_tests: 15
+    execution_limits_tests: 8
+  
+  l3_orchestration:
+    workflow_tests: 20
+    orchestration_tests: 12
+    cost_budget_tests: 10
+    fallback_tests: 8
+  
+  l4_state:
+    memory_tests: 15
+    cache_tests: 12
+    persistence_tests: 10
+    recency_tests: 8
+  
+  l5_safety:
+    safety_policy_tests: 20
+    pii_detection_tests: 15
+    guardrail_tests: 12
+    redline_tests: 10
+
+# Engine Testing
+engine_testing:
+  resume_engine:
+    processing_tests: 25
+    ats_optimization_tests: 15
+    scoring_tests: 12
+    skill_extraction_tests: 10
+  
+  outreach_engine:
+    campaign_tests: 20
+    message_generation_tests: 15
+    personalization_tests: 12
+    contact_research_tests: 10
+
+# Test Execution Parameters
+execution:
+  test_environment: staging
+  data_cleanup: true
+  isolation_level: test
+  retry_failed_tests: true
+  max_test_retries: 2
+
+# Quality Gates
+quality_gates:
+  min_pass_rate: 0.8
+  critical_test_failure_threshold: 0
+  performance_regression_threshold: 0.1
+  security_test_required: true
