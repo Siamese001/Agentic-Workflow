@@ -9,7 +9,7 @@ Tests that ensure telemetry payloads follow the correct schema:
 """
 
 
-from runtime.telemetry import (
+from runtime.telemetry.telemetry import (
     TelemetryBus
 )
 

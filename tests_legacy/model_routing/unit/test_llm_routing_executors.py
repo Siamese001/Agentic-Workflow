@@ -11,8 +11,8 @@ from unittest.mock import Mock, patch
 from agentic_core.l2_execution.engines.outreach.lic_outreach_llm_caller import OutreachLLMCaller
 from agentic_core.l2_execution.engines.outreach.message_generation_executor import MessageGenerationExecutor
 from runtime.infra.model_routing.policies import ModelRoutingPolicy
-from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
-from runtime.runtime_utils import SandboxConfig
+from runtime.inference.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
+from runtime.inference.runtime_utils import SandboxConfig
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 from config.LIC.lic_profile import create_custom_profile
 
