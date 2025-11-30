@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Resume Generation Request",
+  "description": "Schema for resume generation requests",
+  "type": "object",
+  "required": ["user_profile", "job_description"],
+  "properties": {
+    "user_profile": {
+      "type": "object",
+      "description": "User's professional profile and experience",
+      "required": ["name", "email", "experience"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the user"
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "Contact email address"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Phone number"
+        },
+        "experience": {
+          "type": "array",
+          "description": "Work experience entries",
+          "items": {
+            "type": "object",
+            "properties": {
+              "company": {"type": "string"},
+              "position": {"type": "string"},
+              "start_date": {"type": "string"},
+              "end_date": {"type": "string"},
+              "description": {"type": "string"}
+            }
+          }
+        },
+        "education": {
+          "type": "array",
+          "description": "Educational background",
+          "items": {
+            "type": "object",
+            "properties": {
+              "institution": {"type": "string"},
+              "degree": {"type": "string"},
+              "graduation_year": {"type": "integer"}
+            }
+          }
+        },
+        "skills": {
+          "type": "array",
+          "description": "Technical and soft skills",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "job_description": {
+      "type": "object",
+      "description": "Target job description and requirements",
+      "required": ["title", "company"],
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Job title"
+        },
+        "company": {
+          "type": "string",
+          "description": "Company name"
+        },
+        "requirements": {
+          "type": "array",
+          "description": "Job requirements",
+          "items": {"type": "string"}
+        },
+        "responsibilities": {
+          "type": "array",
+          "description": "Job responsibilities",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "description": "Resume generation preferences",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": ["chronological", "functional", "hybrid"],
+          "default": "chronological"
+        },
+        "tone": {
+          "type": "string",
+          "enum": ["professional", "casual", "creative"],
+          "default": "professional"
+        },
+        "length": {
+          "type": "string",
+          "enum": ["one_page", "two_pages"],
+          "default": "one_page"
+        }
+      }
+    }
+  }
+}
