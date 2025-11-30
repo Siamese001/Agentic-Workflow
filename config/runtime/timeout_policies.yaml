@@ -1,1 +1,85 @@
-# Placeholder configuration file
+# Runtime Timeout Policies Configuration
+# System-wide timeout settings and policies
+
+# Timeout Framework
+timeout_framework:
+  enabled: true
+  default_timeout: 60  # seconds
+  timeout_handling: graceful_shutdown
+  timeout_recovery: true
+
+# Operation-Specific Timeouts
+operation_timeouts:
+  model_inference:
+    fast_models: 30  # seconds
+    standard_models: 60  # seconds
+    slow_models: 120  # seconds
+    batch_operations: 300  # seconds
+  
+  data_processing:
+    resume_analysis: 120  # seconds
+    message_generation: 60  # seconds
+    content_validation: 30  # seconds
+    batch_processing: 600  # seconds
+  
+  external_apis:
+    database_operations: 10  # seconds
+    cache_operations: 5  # seconds
+    web_service_calls: 30  # seconds
+    file_operations: 60  # seconds
+
+# Layer-Specific Timeouts
+layer_timeouts:
+  l1_planning:
+    strategy_planning: 45  # seconds
+    research_planning: 90  # seconds
+    message_planning: 30  # seconds
+    safety_planning: 60  # seconds
+  
+  l2_execution:
+    tool_execution: 120  # seconds
+    action_costing: 30  # seconds
+    retry_logic: 180  # seconds
+  
+  l3_orchestration:
+    workflow_execution: 300  # seconds
+    orchestration_decisions: 60  # seconds
+    cost_budget_enforcement: 45  # seconds
+  
+  l4_state:
+    memory_operations: 30  # seconds
+    vector_cache_operations: 45  # seconds
+    persistence_operations: 120  # seconds
+  
+  l5_safety:
+    safety_validation: 30  # seconds
+    pii_detection: 45  # seconds
+  content_filtering: 15  # seconds
+
+# Engine-Specific Timeouts
+engine_timeouts:
+  resume_engine:
+    resume_processing: 180  # seconds
+    ats_optimization: 120  # seconds
+    skill_extraction: 90  # seconds
+  
+  outreach_engine:
+    campaign_setup: 300  # seconds
+    message_generation: 60  # seconds
+    contact_research: 120  # seconds
+
+# Timeout Handling Policies
+handling_policies:
+  warning_threshold: 0.8  # 80% of timeout
+  escalation_threshold: 0.9  # 90% of timeout
+  auto_extension_enabled: false
+  max_extensions: 1
+  extension_duration: 30  # seconds
+
+# Timeout Recovery
+recovery:
+  retry_on_timeout: true
+  max_timeout_retries: 2
+  fallback_on_timeout: true
+  partial_result_handling: true
+  timeout_logging: true
