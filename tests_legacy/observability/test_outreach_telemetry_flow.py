@@ -9,7 +9,7 @@ import time
 import asyncio
 from unittest.mock import Mock
 
-from runtime.telemetry import get_telemetry_bus
+from runtime.telemetry.telemetry import get_telemetry_bus
 from agentic_core.l3_orchestration.framework.lic_outreach_orchestrator import OutreachOrchestrator
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import OutreachMission, ArchetypeContext, ArchetypeType
 from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import RecipientProfile

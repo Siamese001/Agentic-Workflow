@@ -15,7 +15,7 @@ import time
 import random
 from concurrent.futures import ThreadPoolExecutor
 
-from runtime.telemetry import TelemetryBus, get_telemetry_bus
+from runtime.telemetry.telemetry import TelemetryBus, get_telemetry_bus
 
 
 class TestTelemetryAsyncSafety:

@@ -9,7 +9,7 @@ Tests for routing behavior under concurrent execution:
 from unittest.mock import Mock
 
 from runtime.infra.model_routing.policies import ModelRoutingPolicy
-from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
+from runtime.inference.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
 
 
 class TestRoutingConcurrencyBudgetInteraction:
