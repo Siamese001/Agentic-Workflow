@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 
-from ..core.base_schemas import BaseRequest, BaseResponse, ProcessingStatus
+from .base_schemas import BaseRequest, BaseResponse, ProcessingStatus
 
 class ExecutionType(str, Enum):
     """Execution type enumeration"""

@@ -8,7 +8,7 @@ from typing import Dict, Any, Optional, List
 from pydantic import BaseModel, Field
 from enum import Enum
 
-from ..core.base_schemas import BaseRequest, BaseResponse
+from .base_schemas import BaseRequest, BaseResponse
 
 class OrchestrationType(str, Enum):
     """Orchestration type enumeration"""
