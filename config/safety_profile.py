@@ -29,11 +29,11 @@ class SafetyProfile:
     require_human_approval: bool = False
     audit_logging: bool = True
     metadata: Optional[Dict[str, Any]] = None
-    
+
     def __post_init__(self):
         if self.metadata is None:
             self.metadata = {}
-        
+
         # Set default content filters based on safety level
         if not self.content_filters:
             if self.safety_level == SafetyLevel.MINIMAL:

@@ -18,13 +18,10 @@ from datetime import datetime
 from agentic_core.api import (
     BaseRequest,
     create_success_response,
-    create_error_response,
-    create_validation_response,
     handle_errors,
     log_api_calls,
     rate_limit,
     validate_request,
-    APIException,
     ValidationAPIException,
     ServiceUnavailableAPIException
 )
@@ -60,12 +57,12 @@ class PreviewResponse(BaseRequest):
 
 class PreviewEndpoint:
     """Handles message preview operations"""
-    
+
     def __init__(self):
         self.message_planner = message_planner
         self.outreach_generator = outreach_generator
         self.personalization_engine = personalization_engine
-    
+
     async def generate_preview(self, request: PreviewRequest) -> Dict[str, Any]:
         """Generate a preview of the outreach message"""
         try:
@@ -76,27 +73,27 @@ class PreviewEndpoint:
                 template_id=request.template_id,
                 personalization_data=request.personalization_data
             )
-            
+
             # Generate the message content
             message_content = await self.outreach_generator.generate_message(
                 plan=message_plan,
                 personalization_data=request.personalization_data
             )
-            
+
             # Apply personalization and get notes
             personalization_result = await self.personalization_engine.personalize_with_notes(
                 content=message_content,
                 recipient_data=request.personalization_data,
                 include_notes=request.include_personalization_notes
             )
-            
+
             personalized_content = personalization_result["content"]
             personalization_notes = personalization_result.get("notes", [])
             personalization_score = personalization_result.get("score", 0.8)
-            
+
             # Create preview record
             preview_id = f"preview_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
-            
+
             return {
                 "preview_id": preview_id,
                 "message_content": personalized_content,
@@ -107,7 +104,7 @@ class PreviewEndpoint:
                 "message_type": request.message_type,
                 "recipient_type": request.recipient_type
             }
-            
+
         except Exception as e:
             raise ServiceUnavailableAPIException(
                 message=f"Failed to generate message preview: {str(e)}",
@@ -120,22 +117,22 @@ preview_endpoint = PreviewEndpoint()
 def validate_preview_request(request: PreviewRequest) -> None:
     """Validate preview request"""
     errors = []
-    
+
     if not request.recipient_id or len(request.recipient_id.strip()) < 3:
         errors.append({"field": "recipient_id", "message": "Valid recipient ID is required"})
-    
+
     if request.recipient_type not in ["linkedin", "email"]:
         errors.append({"field": "recipient_type", "message": "Must be 'linkedin' or 'email'"})
-    
+
     if not request.message_type:
         errors.append({"field": "message_type", "message": "Message type is required"})
-    
+
     if not request.template_id:
         errors.append({"field": "template_id", "message": "Template ID is required"})
-    
+
     if not request.personalization_data:
         errors.append({"field": "personalization_data", "message": "Personalization data is required"})
-    
+
     if errors:
         raise ValidationAPIException(
             message="Preview request validation failed",
@@ -151,17 +148,17 @@ async def generate_preview(request: PreviewRequest):
     """Generate a preview of an outreach message"""
     try:
         result = await preview_endpoint.generate_preview(request)
-        
+
         return create_success_response(
             data=result,
             message="Message preview generated successfully"
         )
-        
+
     except ValidationAPIException as e:
         raise e
     except ServiceUnavailableAPIException as e:
         raise e
-    except Exception as e:
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Preview service temporarily unavailable",
             error_code="PREVIEW_SERVICE_ERROR"
@@ -176,17 +173,17 @@ async def compare_templates(request: PreviewRequest):
     try:
         # Get available templates for the message type
         available_templates = await message_planner.get_templates_for_type(request.message_type)
-        
+
         comparisons = []
-        
+
         for template_id in available_templates[:3]:  # Limit to 3 templates for comparison
             comparison_request = PreviewRequest(
                 **request.dict(),
                 template_id=template_id
             )
-            
+
             preview_result = await preview_endpoint.generate_preview(comparison_request)
-            
+
             comparisons.append({
                 "template_id": template_id,
                 "preview_id": preview_result["preview_id"],
@@ -194,10 +191,10 @@ async def compare_templates(request: PreviewRequest):
                 "personalization_score": preview_result["personalization_score"],
                 "personalization_notes": preview_result["personalization_notes"]
             })
-        
+
         # Sort by personalization score
         comparisons.sort(key=lambda x: x["personalization_score"], reverse=True)
-        
+
         return create_success_response(
             data={
                 "comparisons": comparisons,
@@ -213,8 +210,8 @@ async def compare_templates(request: PreviewRequest):
             },
             message="Template comparison completed successfully"
         )
-        
-    except Exception as e:
+
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Template comparison failed",
             error_code="COMPARISON_ERROR"
@@ -234,15 +231,15 @@ async def get_templates_for_type(message_type: str):
                     "message": "Message type cannot be empty"
                 }]
             )
-        
+
         templates = await message_planner.get_templates_for_type(message_type)
-        
+
         if not templates:
             return create_success_response(
                 data=[],
                 message=f"No templates found for message type: {message_type}"
             )
-        
+
         # Get template details
         template_details = []
         for template_id in templates:
@@ -255,15 +252,15 @@ async def get_templates_for_type(message_type: str):
                 "personalization_fields": template_info.get("personalization_fields", []),
                 "usage_count": template_info.get("usage_count", 0)
             })
-        
+
         return create_success_response(
             data=template_details,
             message=f"Retrieved {len(template_details)} templates for {message_type}"
         )
-        
+
     except ValidationAPIException as e:
         raise e
-    except Exception as e:
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Failed to retrieve templates",
             error_code="TEMPLATE_RETRIEVAL_ERROR"
@@ -284,7 +281,7 @@ async def get_preview_history(recipient_id: str):
                     "message": "Recipient ID must be at least 3 characters"
                 }]
             )
-        
+
         # Mock history data - in real implementation would query database
         preview_history = [
             {
@@ -304,15 +301,15 @@ async def get_preview_history(recipient_id: str):
                 "status": "previewed"
             }
         ]
-        
+
         return create_success_response(
             data=preview_history,
             message=f"Retrieved {len(preview_history)} preview records"
         )
-        
+
     except ValidationAPIException as e:
         raise e
-    except Exception as e:
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Failed to retrieve preview history",
             error_code="HISTORY_RETRIEVAL_ERROR"

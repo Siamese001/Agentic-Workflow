@@ -4,7 +4,7 @@ LEVEL 5 - Common request/response models for API layer
 """
 
 from pydantic import BaseModel, Field, validator
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List
 from datetime import datetime
 from uuid import UUID, uuid4
 from enum import Enum
@@ -33,7 +33,7 @@ class SortOrder(str, Enum):
 
 class BaseRequest(BaseModel):
     """Base request model with common fields"""
-    
+
     request_id: Optional[UUID] = Field(
         default_factory=uuid4,
         description="Unique identifier for this request"
@@ -62,7 +62,7 @@ class BaseRequest(BaseModel):
         default_factory=dict,
         description="Additional request metadata"
     )
-    
+
     class Config:
         use_enum_values = True
         json_encoders = {
@@ -72,7 +72,7 @@ class BaseRequest(BaseModel):
 
 class PaginatedRequest(BaseRequest):
     """Base request with pagination support"""
-    
+
     page: int = Field(
         1,
         ge=1,
@@ -92,7 +92,7 @@ class PaginatedRequest(BaseRequest):
         SortOrder.ASC,
         description="Sort direction"
     )
-    
+
     @validator("page_size")
     def validate_page_size(cls, v):
         """Validate page size limits"""
@@ -101,18 +101,18 @@ class PaginatedRequest(BaseRequest):
         if v < 1:
             raise ValueError("Page size must be at least 1")
         return v
-    
+
     def get_offset(self) -> int:
         """Calculate offset for database queries"""
         return (self.page - 1) * self.page_size
-    
+
     def get_limit(self) -> int:
         """Get limit for database queries"""
         return self.page_size
 
 class SearchRequest(PaginatedRequest):
     """Base request with search capabilities"""
-    
+
     query: Optional[str] = Field(
         None,
         description="Search query string"
@@ -129,7 +129,7 @@ class SearchRequest(PaginatedRequest):
         False,
         description="Enable fuzzy search"
     )
-    
+
     @validator("query")
     def validate_query(cls, v):
         """Validate search query"""
@@ -141,7 +141,7 @@ class SearchRequest(PaginatedRequest):
 
 class FilterRequest(PaginatedRequest):
     """Base request with advanced filtering"""
-    
+
     filters: Optional[Dict[str, Any]] = Field(
         default_factory=dict,
         description="Filter criteria"
@@ -150,7 +150,7 @@ class FilterRequest(PaginatedRequest):
         "AND",
         description="Logic for combining filters (AND/OR)"
     )
-    
+
     @validator("filter_logic")
     def validate_filter_logic(cls, v):
         """Validate filter logic"""
@@ -160,7 +160,7 @@ class FilterRequest(PaginatedRequest):
 
 class BaseResponse(BaseModel):
     """Base response model with common fields"""
-    
+
     success: bool = Field(..., description="Whether the request was successful")
     request_id: Optional[UUID] = Field(
         None,
@@ -182,7 +182,7 @@ class BaseResponse(BaseModel):
         default_factory=dict,
         description="Additional response metadata"
     )
-    
+
     class Config:
         use_enum_values = True
         json_encoders = {
@@ -192,14 +192,14 @@ class BaseResponse(BaseModel):
 
 class PaginatedResponse(BaseResponse):
     """Base response with pagination information"""
-    
+
     page: int = Field(..., description="Current page number")
     page_size: int = Field(..., description="Items per page")
     total_items: int = Field(..., ge=0, description="Total number of items")
     total_pages: int = Field(..., ge=0, description="Total number of pages")
     has_next: bool = Field(..., description="Whether there is a next page")
     has_previous: bool = Field(..., description="Whether there is a previous page")
-    
+
     @validator("total_pages")
     def calculate_total_pages(cls, v, values):
         """Calculate total pages from total items and page size"""
@@ -212,11 +212,11 @@ class PaginatedResponse(BaseResponse):
 
 class SearchResponse(PaginatedResponse):
     """Base response with search results"""
-    
+
     query: Optional[str] = Field(None, description="Search query that was executed")
     search_time_ms: Optional[float] = Field(None, description="Time taken for search in milliseconds")
     result_count: int = Field(..., description="Number of results returned")
-    
+
     @validator("result_count")
     def validate_result_count(cls, v, values):
         """Ensure result count doesn't exceed page size"""
@@ -226,7 +226,7 @@ class SearchResponse(PaginatedResponse):
 
 class ErrorResponse(BaseResponse):
     """Error response model"""
-    
+
     success: bool = Field(False, description="Always false for error responses")
     error_code: str = Field(..., description="Machine-readable error code")
     error_type: str = Field(..., description="Error type/category")
@@ -242,18 +242,18 @@ class ErrorResponse(BaseResponse):
         None,
         description="Seconds to wait before retrying"
     )
-    
+
     class Config:
         use_enum_values = True
 
 class ValidationErrorResponse(ErrorResponse):
     """Validation error response with field-specific errors"""
-    
+
     validation_errors: List[Dict[str, Any]] = Field(
         ...,
         description="List of validation errors"
     )
-    
+
     @validator("validation_errors")
     def validate_validation_errors(cls, v):
         """Ensure validation errors have required structure"""
@@ -264,14 +264,14 @@ class ValidationErrorResponse(ErrorResponse):
 
 class RateLimitResponse(ErrorResponse):
     """Rate limit exceeded response"""
-    
+
     error_code: str = Field("RATE_LIMIT_EXCEEDED", description="Rate limit error code")
     error_type: str = Field("rate_limit", description="Rate limit error type")
     limit: int = Field(..., description="Request limit")
     remaining: int = Field(0, description="Remaining requests")
     reset_time: datetime = Field(..., description="When limit resets")
     retry_after: int = Field(..., description="Seconds to wait before retry")
-    
+
     class Config:
         json_encoders = {
             datetime: lambda v: v.isoformat()
@@ -279,7 +279,7 @@ class RateLimitResponse(ErrorResponse):
 
 class AuthenticationResponse(ErrorResponse):
     """Authentication error response"""
-    
+
     error_code: str = Field("AUTHENTICATION_FAILED", description="Auth error code")
     error_type: str = Field("authentication", description="Auth error type")
     auth_method: Optional[str] = Field(None, description="Authentication method used")
@@ -287,7 +287,7 @@ class AuthenticationResponse(ErrorResponse):
 
 class HealthCheckResponse(BaseResponse):
     """Health check response"""
-    
+
     status: str = Field(..., description="Service status")
     version: str = Field(..., description="Service version")
     uptime_seconds: float = Field(..., description="Service uptime in seconds")
@@ -302,7 +302,7 @@ class HealthCheckResponse(BaseResponse):
 
 class BatchRequest(BaseRequest):
     """Batch request for multiple operations"""
-    
+
     operations: List[Dict[str, Any]] = Field(
         ...,
         description="List of operations to perform"
@@ -315,7 +315,7 @@ class BatchRequest(BaseRequest):
         True,
         description="Return results for each operation"
     )
-    
+
     @validator("operations")
     def validate_operations(cls, v):
         """Validate operations list"""
@@ -327,7 +327,7 @@ class BatchRequest(BaseRequest):
 
 class BatchResponse(BaseResponse):
     """Batch response for multiple operations"""
-    
+
     total_operations: int = Field(..., description="Total operations processed")
     successful_operations: int = Field(..., description="Number of successful operations")
     failed_operations: int = Field(..., description="Number of failed operations")
@@ -335,7 +335,7 @@ class BatchResponse(BaseResponse):
         None,
         description="Results for individual operations"
     )
-    
+
     @validator("successful_operations", "failed_operations")
     def validate_operation_counts(cls, v, values):
         """Ensure operation counts are consistent"""

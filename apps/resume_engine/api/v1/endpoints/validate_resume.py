@@ -3,8 +3,7 @@ Resume Validation Endpoint
 LEVEL 5 - Resume validation and scoring API endpoint
 """
 
-from fastapi import APIRouter, Depends, HTTPException
-from typing import Dict, Any, List
+from fastapi import APIRouter, HTTPException
 from ...schemas.resume_request import ResumeRequest
 from ...schemas.resume_response import ResumeResponse
 from ...services.utils.scoring import ResumeScorer
@@ -14,13 +13,13 @@ router = APIRouter()
 
 class ResumeValidationEndpoint:
     """Handles resume validation with ATS optimization checks"""
-    
+
     def __init__(self):
         self.resume_scorer = ResumeScorer()
         self.validation_pipeline = ValidationPipeline()
-    
+
     async def validate_resume(
-        self, 
+        self,
         request: ResumeRequest
     ) -> ResumeResponse:
         """
@@ -35,10 +34,10 @@ class ResumeValidationEndpoint:
         try:
             # Perform ATS validation
             ats_score = await self.resume_scorer.calculate_ats_score(request.resume_content)
-            
+
             # Run validation pipeline
             validation_results = await self.validation_pipeline.validate(request)
-            
+
             return ResumeResponse(
                 success=True,
                 resume_content=request.resume_content,
@@ -49,7 +48,7 @@ class ResumeValidationEndpoint:
                 },
                 processing_time=validation_results.get("processing_time", 0)
             )
-            
+
         except Exception as e:
             raise HTTPException(
                 status_code=500,

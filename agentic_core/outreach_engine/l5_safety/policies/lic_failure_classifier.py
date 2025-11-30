@@ -34,14 +34,14 @@ class FailureClassification:
 
 class FailureClassifier:
     """Failure classifier for outreach operations."""
-    
+
     def __init__(self, config: Optional[LICFailureClassifierConfig] = None):
         self.config = config or LICFailureClassifierConfig()
-    
+
     def classify_failure(self, error: Any, context: Optional[Dict[str, Any]] = None) -> FailureClassification:
         """Classify a failure based on error and context."""
         error_str = str(error).lower()
-        
+
         if "timeout" in error_str:
             return FailureClassification(
                 failure_type=FailureType.TIMEOUT,

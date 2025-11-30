@@ -75,14 +75,14 @@ class ResumeStateManager:
         self.state_history: List[Dict[str, Any]] = []
         self.event_handlers: Dict[str, List[Callable]] = {}
 
-    async def store_memory(self, memory_id: str, content: Dict[str, Any], 
-                          episode_type: str = "generic", 
+    async def store_memory(self, memory_id: str, content: Dict[str, Any],
+                          episode_type: str = "generic",
                           tags: List[str] = None,
                           confidence: float = 1.0) -> Dict[str, Any]:
         """Store episodic memory with validation."""
         if tags is None:
             tags = []
-        
+
         memory = EpisodicMemory(
             memory_id=memory_id,
             content=content,
@@ -91,15 +91,15 @@ class ResumeStateManager:
             tags=tags,
             confidence=confidence
         )
-        
+
         self.memories[memory_id] = memory
-        
+
         # Record state change
         self._record_state_change("memory_stored", {"memory_id": memory_id})
-        
+
         # Trigger event handlers
         await self._trigger_event("memory_stored", memory)
-        
+
         self.logger.info(f"Stored episodic memory: {memory_id}")
         return {"id": memory_id, "status": "stored"}
 
@@ -108,31 +108,31 @@ class ResumeStateManager:
         """Retrieve memories with filtering."""
         if tags is None:
             tags = []
-        
+
         results = []
         for memory in self.memories.values():
             # Filter by tags
             if tags and not all(memory.matches_tag(tag) for tag in tags):
                 continue
-            
+
             # Filter by episode type
             if episode_type and memory.episode_type != episode_type:
                 continue
-            
+
             # Filter by content query (simple text search)
             if query:
                 content_text = str(memory.content).lower()
                 if query.lower() not in content_text:
                     continue
-            
+
             results.append(memory.process())
-            
+
             if len(results) >= limit:
                 break
-        
+
         return results
 
-    async def create_context(self, context_id: str, name: str, 
+    async def create_context(self, context_id: str, name: str,
                            context_type: str = "generic",
                            parent_context: str = None,
                            initial_data: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -143,15 +143,15 @@ class ResumeStateManager:
             context_type=context_type,
             parent_context=parent_context
         )
-        
+
         self.contexts[context_id] = context
-        
+
         # Update parent context if provided
         if parent_context and parent_context in self.contexts:
             self.contexts[parent_context].children_contexts.append(context_id)
-        
+
         self._record_state_change("context_created", {"context_id": context_id})
-        
+
         self.logger.info(f"Created temporal context: {context_id}")
         return {"id": context_id, "status": "created"}
 
@@ -159,13 +159,13 @@ class ResumeStateManager:
         """Update an existing temporal context."""
         if context_id not in self.contexts:
             raise ValueError(f"Context {context_id} not found")
-        
+
         context = self.contexts[context_id]
         for key, value in updates.items():
             context.update_data(key, value)
-        
+
         self._record_state_change("context_updated", {"context_id": context_id})
-        
+
         return {"id": context_id, "status": "updated", "updated_keys": list(updates.keys())}
 
     def get_context(self, context_id: str) -> Optional[Dict[str, Any]]:
@@ -194,23 +194,23 @@ class ResumeStateManager:
             "memory_ids": [],
             "context_ids": []
         }
-        
+
         self.active_sessions[session_id] = session_data
         self._record_state_change("session_created", {"session_id": session_id})
-        
+
         return {"session_id": session_id, "status": "created"}
 
     async def update_session(self, session_id: str, state_updates: Dict[str, Any]) -> Dict[str, Any]:
         """Update session state."""
         if session_id not in self.active_sessions:
             raise ValueError(f"Session {session_id} not found")
-        
+
         session = self.active_sessions[session_id]
         session["state"].update(state_updates)
         session["updated_at"] = datetime.now().isoformat()
-        
+
         self._record_state_change("session_updated", {"session_id": session_id})
-        
+
         return {"session_id": session_id, "status": "updated"}
 
     def add_event_handler(self, event_type: str, handler: Callable) -> None:
@@ -239,7 +239,7 @@ class ResumeStateManager:
             "details": details
         }
         self.state_history.append(record)
-        
+
         # Keep history size manageable
         if len(self.state_history) > 1000:
             self.state_history = self.state_history[-500:]

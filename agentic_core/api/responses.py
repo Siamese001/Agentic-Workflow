@@ -3,24 +3,15 @@ Shared API Response Utilities
 LEVEL 5 - Common response creation and formatting utilities
 """
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 from datetime import datetime
 from uuid import UUID
 import json
 
-from .models import (
-    BaseResponse, 
-    ErrorResponse, 
-    ValidationErrorResponse,
-    PaginatedResponse,
-    SearchResponse,
-    HealthCheckResponse,
-    BatchResponse
-)
 
 class APIResponse:
     """Utility class for creating consistent API responses"""
-    
+
     @staticmethod
     def success(
         data: Any = None,
@@ -36,16 +27,16 @@ class APIResponse:
             "timestamp": datetime.utcnow().isoformat(),
             "data": data
         }
-        
+
         if request_id:
             response["request_id"] = str(request_id)
         if processing_time_ms is not None:
             response["processing_time_ms"] = processing_time_ms
         if metadata:
             response["metadata"] = metadata
-            
+
         return response
-    
+
     @staticmethod
     def error(
         error_code: str,
@@ -65,7 +56,7 @@ class APIResponse:
             "message": message,
             "timestamp": datetime.utcnow().isoformat()
         }
-        
+
         if request_id:
             response["request_id"] = str(request_id)
         if error_details:
@@ -76,9 +67,9 @@ class APIResponse:
             response["retry_after"] = retry_after
         if metadata:
             response["metadata"] = metadata
-            
+
         return response
-    
+
     @staticmethod
     def validation_error(
         validation_errors: List[Dict[str, Any]],
@@ -95,7 +86,7 @@ class APIResponse:
             request_id=request_id,
             metadata=metadata
         )
-    
+
     @staticmethod
     def not_found(
         resource: str = "Resource",
@@ -106,14 +97,14 @@ class APIResponse:
         message = f"{resource} not found"
         if resource_id:
             message += f" with ID: {resource_id}"
-            
+
         return APIResponse.error(
             error_code="NOT_FOUND",
             message=message,
             error_type="not_found",
             request_id=request_id
         )
-    
+
     @staticmethod
     def unauthorized(
         message: str = "Authentication required",
@@ -127,7 +118,7 @@ class APIResponse:
             error_details["auth_method"] = auth_method
         if required_scopes:
             error_details["required_scopes"] = required_scopes
-            
+
         return APIResponse.error(
             error_code="UNAUTHORIZED",
             message=message,
@@ -135,7 +126,7 @@ class APIResponse:
             error_details=error_details if error_details else None,
             request_id=request_id
         )
-    
+
     @staticmethod
     def forbidden(
         message: str = "Access denied",
@@ -146,7 +137,7 @@ class APIResponse:
         error_details = {}
         if required_permissions:
             error_details["required_permissions"] = required_permissions
-            
+
         return APIResponse.error(
             error_code="FORBIDDEN",
             message=message,
@@ -154,7 +145,7 @@ class APIResponse:
             error_details=error_details if error_details else None,
             request_id=request_id
         )
-    
+
     @staticmethod
     def rate_limit(
         limit: int,
@@ -175,7 +166,7 @@ class APIResponse:
             retry_after=retry_after,
             request_id=request_id
         )
-    
+
     @staticmethod
     def paginated(
         data: List[Any],
@@ -191,7 +182,7 @@ class APIResponse:
         total_pages = (total_items + page_size - 1) // page_size
         has_next = page < total_pages
         has_previous = page > 1
-        
+
         response = APIResponse.success(
             data=data,
             message=message,
@@ -199,7 +190,7 @@ class APIResponse:
             processing_time_ms=processing_time_ms,
             metadata=metadata
         )
-        
+
         # Add pagination info
         response.update({
             "pagination": {
@@ -211,9 +202,9 @@ class APIResponse:
                 "has_previous": has_previous
             }
         })
-        
+
         return response
-    
+
     @staticmethod
     def search(
         data: List[Any],
@@ -238,7 +229,7 @@ class APIResponse:
             processing_time_ms=processing_time_ms,
             metadata=metadata
         )
-        
+
         # Add search info
         search_info = {
             "query": query,
@@ -246,11 +237,11 @@ class APIResponse:
         }
         if search_time_ms is not None:
             search_info["search_time_ms"] = search_time_ms
-            
+
         response["search"] = search_info
-        
+
         return response
-    
+
     @staticmethod
     def health_check(
         status: str,
@@ -269,14 +260,14 @@ class APIResponse:
             "timestamp": datetime.utcnow().isoformat(),
             "message": message
         }
-        
+
         if dependencies:
             response["dependencies"] = dependencies
         if metrics:
             response["metrics"] = metrics
-            
+
         return response
-    
+
     @staticmethod
     def batch(
         operation_results: List[Dict[str, Any]],
@@ -289,7 +280,7 @@ class APIResponse:
     ) -> Dict[str, Any]:
         """Create a batch operation response"""
         total_operations = successful_operations + failed_operations
-        
+
         response = APIResponse.success(
             data=operation_results,
             message=message,
@@ -297,7 +288,7 @@ class APIResponse:
             processing_time_ms=processing_time_ms,
             metadata=metadata
         )
-        
+
         # Add batch info
         response.update({
             "batch": {
@@ -306,7 +297,7 @@ class APIResponse:
                 "failed_operations": failed_operations
             }
         })
-        
+
         return response
 
 # Convenience functions for common response types
@@ -357,39 +348,39 @@ def create_batch_response(**kwargs) -> Dict[str, Any]:
 # Response formatting utilities
 class ResponseFormatter:
     """Utility class for formatting response data"""
-    
+
     @staticmethod
     def format_timestamp(dt: datetime) -> str:
         """Format datetime for API responses"""
         return dt.isoformat()
-    
+
     @staticmethod
     def format_uuid(uuid_obj: UUID) -> str:
         """Format UUID for API responses"""
         return str(uuid_obj)
-    
+
     @staticmethod
     def sanitize_metadata(metadata: Dict[str, Any]) -> Dict[str, Any]:
         """Sanitize metadata for API responses"""
         if not metadata:
             return {}
-        
+
         # Remove sensitive keys
         sensitive_keys = ["password", "token", "secret", "key", "auth"]
         sanitized = {}
-        
+
         for key, value in metadata.items():
             if not any(sensitive in key.lower() for sensitive in sensitive_keys):
                 sanitized[key] = value
-        
+
         return sanitized
-    
+
     @staticmethod
     def format_error_details(error_details: Dict[str, Any]) -> Dict[str, Any]:
         """Format error details for API responses"""
         if not error_details:
             return {}
-        
+
         # Ensure error details are JSON serializable
         try:
             json.dumps(error_details)
@@ -404,17 +395,17 @@ class ResponseFormatter:
                 except (TypeError, ValueError):
                     formatted[key] = str(value)
             return formatted
-    
+
     @staticmethod
     def truncate_string(value: str, max_length: int = 1000) -> str:
         """Truncate string for API responses"""
         if not value or len(value) <= max_length:
             return value
         return value[:max_length] + "... (truncated)"
-    
+
     @staticmethod
     def format_list_response(
-        items: List[Any], 
+        items: List[Any],
         max_items: int = 1000,
         truncate_strings: bool = True,
         max_string_length: int = 500
@@ -422,10 +413,10 @@ class ResponseFormatter:
         """Format list for API responses"""
         if not items:
             return []
-        
+
         # Limit number of items
         formatted_items = items[:max_items]
-        
+
         if truncate_strings:
             # Truncate string values in items
             result = []
@@ -443,5 +434,5 @@ class ResponseFormatter:
                 else:
                     result.append(item)
             return result
-        
+
         return formatted_items

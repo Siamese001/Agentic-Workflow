@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 from dataclasses import dataclass
 from datetime import datetime
 import math
@@ -26,7 +26,7 @@ class TemporalRankFusion:
         result_lists = kwargs.get("result_lists", [])
         if not result_lists:
             return {"fused_results": [], "processed": True}
-        
+
         fused_results = self.fuse_rankings(result_lists)
         return {
             "fused_results": [
@@ -44,24 +44,24 @@ class TemporalRankFusion:
         """Fuse multiple ranked result lists using temporal decay."""
         if not result_lists:
             return []
-        
+
         # Collect all unique items
         item_scores = {}
         item_metadata = {}
-        
+
         for results in result_lists:
             for i, result in enumerate(results):
                 if result.item_id not in item_scores:
                     item_scores[result.item_id] = 0.0
                     item_metadata[result.item_id] = result.metadata
-                
+
                 # Apply rank-based scoring with temporal decay
                 rank_score = 1.0 / (i + 1)  # Reciprocal rank
                 time_factor = self._calculate_time_factor(result.timestamp)
                 combined_score = rank_score * time_factor
-                
+
                 item_scores[result.item_id] += combined_score
-        
+
         # Sort by fused score
         fused_results = []
         for item_id, score in item_scores.items():
@@ -71,30 +71,30 @@ class TemporalRankFusion:
                 timestamp=datetime.now(),
                 metadata=item_metadata[item_id]
             ))
-        
+
         return sorted(fused_results, key=lambda x: x.score, reverse=True)
 
     def _calculate_time_factor(self, timestamp: datetime) -> float:
         """Calculate temporal decay factor."""
         now = datetime.now()
         time_diff = (now - timestamp).total_seconds()
-        
+
         # Apply exponential decay based on time difference
         if time_diff < 0:
             return 1.0  # Future timestamps get full weight
-        
+
         # Decay over days (86400 seconds per day)
         days_passed = time_diff / 86400
         return math.pow(self.decay_factor, days_passed)
 
-    def add_temporal_boost(self, results: List[RankedResult], 
+    def add_temporal_boost(self, results: List[RankedResult],
                           boost_factor: float = 1.2) -> List[RankedResult]:
         """Apply temporal boost to recent results."""
         now = datetime.now()
-        
+
         for result in results:
             time_diff = (now - result.timestamp).total_seconds()
             if time_diff < 86400:  # Less than 1 day old
                 result.score *= boost_factor
-        
+
         return results

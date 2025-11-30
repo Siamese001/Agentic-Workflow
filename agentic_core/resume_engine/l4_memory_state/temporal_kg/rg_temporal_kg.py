@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
-import json
 
 @dataclass
 class TemporalNodeMetadata:
@@ -72,7 +71,7 @@ class TemporalKG:
         self.facts.append(fact)
         return fact.fact_id
 
-    def query_facts(self, subject: Optional[str] = None, 
+    def query_facts(self, subject: Optional[str] = None,
                    predicate: Optional[str] = None,
                    object: Optional[str] = None,
                    time_range: Optional[tuple] = None) -> List[TemporalFact]:

@@ -10,7 +10,7 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union, Callable
+from typing import Any, Dict, List, Optional, Callable
 from enum import Enum
 import uuid
 
@@ -41,7 +41,7 @@ class Task:
     completed_at: Optional[float] = None
     result: Optional[Any] = None
     error: Optional[str] = None
-    
+
     def __post_init__(self):
         if not self.id:
             self.id = str(uuid.uuid4())
@@ -65,7 +65,7 @@ class ExecutionPlan:
     priority: int = 0
     dependencies: Dict[str, List[str]] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self):
         if not self.plan_id:
             self.plan_id = str(uuid.uuid4())
@@ -80,7 +80,7 @@ class ExecutionResult:
     errors: List[str] = field(default_factory=list)
     execution_time_ms: float = 0.0
     metadata: Dict[str, Any] = field(default_factory=dict)
-    
+
     def __post_init__(self):
         if not self.execution_id:
             self.execution_id = str(uuid.uuid4())
@@ -88,27 +88,27 @@ class ExecutionResult:
 
 class ExecutionEngine:
     """Engine for executing tasks with dependency management."""
-    
+
     def __init__(self):
         self.tasks: Dict[str, Task] = {}
         self.execution_queue: List[Task] = []
         self.running_tasks: Dict[str, asyncio.Task] = {}
         self.completed_tasks: Dict[str, Any] = {}
-        
+
     def add_task(self, task: Task) -> str:
         """Add a task to the execution queue."""
         self.tasks[task.id] = task
         return task.id
-    
+
     def execute_task(self, task_id: str, context: ExecutionContext) -> Any:
         """Execute a single task."""
         task = self.tasks.get(task_id)
         if not task:
             raise ValueError(f"Task {task_id} not found")
-        
+
         task.status = ExecutionStatus.RUNNING
         task.started_at = time.time()
-        
+
         try:
             result = task.function(*task.args, **task.kwargs)
             task.result = result
@@ -120,7 +120,7 @@ class ExecutionEngine:
             task.status = ExecutionStatus.FAILED
             task.completed_at = time.time()
             raise
-    
+
     async def execute_async(self, task_id: str, context: ExecutionContext) -> Any:
         """Execute a task asynchronously."""
         return await asyncio.get_event_loop().run_in_executor(
@@ -142,7 +142,7 @@ def get_execution_engine() -> ExecutionEngine:
 
 __all__ = [
     "ExecutionEngine",
-    "Task", 
+    "Task",
     "ExecutionContext",
     "ExecutionStatus",
     "get_execution_engine",

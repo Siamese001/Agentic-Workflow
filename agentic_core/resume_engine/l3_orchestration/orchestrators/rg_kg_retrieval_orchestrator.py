@@ -14,11 +14,11 @@ class KGOrchestrationConfig:
 
 class ResumeKGOrchestrator:
     """Orchestrates knowledge graph retrieval for resume processing."""
-    
+
     def __init__(self, config: Optional[KGOrchestrationConfig] = None):
         self.config = config or KGOrchestrationConfig()
         self._cache = {}
-    
+
     def orchestrate_retrieval(self, query: str, context: Dict[str, Any]) -> List[Dict[str, Any]]:
         """Orchestrate KG retrieval based on query and context."""
         # Mock implementation
@@ -31,7 +31,7 @@ class ResumeKGOrchestrator:
             }
             for i in range(3)
         ]
-    
+
     def get_config(self) -> KGOrchestrationConfig:
         """Get current orchestration config."""
         return self.config

@@ -5,7 +5,7 @@ Minimal types module for safety policy compatibility.
 
 from __future__ import annotations
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 from dataclasses import dataclass
 from enum import Enum
 
@@ -67,7 +67,7 @@ class Verdict(str, Enum):
 __all__ = [
     "SafetyPolicyType",
     "SafetyPolicy",
-    "ContentFilterPolicy", 
+    "ContentFilterPolicy",
     "RateLimitPolicy",
     "SafetyContext",
     "Verdict",
