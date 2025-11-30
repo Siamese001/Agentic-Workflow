@@ -13,6 +13,143 @@ from dataclasses import dataclass, field
 from datetime import datetime, UTC
 import uuid
 
+@dataclass
+class ExecutionProfile:
+    """Profile for execution configuration"""
+    name: str
+    description: str = ""
+    model: str = "default"
+    max_tokens: int = 1000
+    temperature: float = 0.7
+    timeout: int = 30
+    retrieval: Optional[Any] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class RetrievalConfig:
+    """Configuration for retrieval operations"""
+    top_k: int = 10
+    similarity_threshold: float = 0.5
+    include_metadata: bool = True
+    filters: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class StrategyPlan:
+    """Strategy execution plan"""
+    name: str = ""
+    description: str = ""
+    steps: List[str] = field(default_factory=list)
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class StrategyResult:
+    """Result from strategy execution"""
+    plan_name: str = ""
+    success: bool = True
+    branches: List[Any] = field(default_factory=list)
+    schema_version: str = "v1"
+    output: Dict[str, Any] = field(default_factory=dict)
+    error: Optional[str] = None
+    execution_time: float = 0.0
+
+@dataclass
+class DraftingPlan:
+    """Drafting execution plan"""
+    name: str = ""
+    content: str = ""
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class DraftingResult:
+    """Result from drafting execution"""
+    plan_name: str = ""
+    success: bool = True
+    sections: List[Any] = field(default_factory=list)
+    schema_version: str = "v1"
+    content: str = ""
+    error: Optional[str] = None
+
+@dataclass
+class QAPlan:
+    """QA execution plan"""
+    name: str = ""
+    checks: List[str] = field(default_factory=list)
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class QAResult:
+    """Result from QA execution"""
+    plan_name: str = ""
+    success: bool = True
+    findings: List[Any] = field(default_factory=list)
+    schema_version: str = "v1"
+    issues: List[str] = field(default_factory=list)
+    error: Optional[str] = None
+
+@dataclass
+class SafetyPlan:
+    """Safety execution plan"""
+    name: str = ""
+    checks: List[str] = field(default_factory=list)
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class SafetyResult:
+    """Result from safety execution"""
+    plan_name: str = ""
+    success: bool = True
+    findings: List[Any] = field(default_factory=list)
+    schema_version: str = "v1"
+    violations: List[str] = field(default_factory=list)
+    error: Optional[str] = None
+
+@dataclass
+class WorkflowPlanBundle:
+    """Bundle of workflow plans"""
+    strategy: StrategyPlan = field(default_factory=StrategyPlan)
+    rag: RAGPlan = field(default_factory=RAGPlan)
+    drafting: DraftingPlan = field(default_factory=DraftingPlan)
+    qa: QAPlan = field(default_factory=QAPlan)
+    safety: SafetyPlan = field(default_factory=SafetyPlan)
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class RAGPlan:
+    """RAG execution plan"""
+    name: str = ""
+    query: str = ""
+    retriever_config: RetrievalConfig = field(default_factory=RetrievalConfig)
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class RAGResult:
+    """Result from RAG execution"""
+    plan_name: str = ""
+    success: bool = True
+    evidence: List[Any] = field(default_factory=list)
+    used_hyde: bool = False
+    schema_version: str = "v1"
+    documents: List[Dict[str, Any]] = field(default_factory=list)
+    answer: str = ""
+    error: Optional[str] = None
+
+@dataclass
+class L2ResultBundle:
+    """Bundle of L2 execution results"""
+    strategy: StrategyResult = field(default_factory=lambda: StrategyResult(branches=[]))
+    rag: RAGResult = field(default_factory=lambda: RAGResult(evidence=[], used_hyde=False))
+    drafting: DraftingResult = field(default_factory=lambda: DraftingResult(sections=[]))
+    qa: QAResult = field(default_factory=lambda: QAResult(findings=[]))
+    safety: SafetyResult = field(default_factory=lambda: SafetyResult(findings=[]))
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
 
 class ComplexityLevel(str, Enum):
     """Complexity levels for tasks and operations."""
