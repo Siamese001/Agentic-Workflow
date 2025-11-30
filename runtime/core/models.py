@@ -32,6 +32,24 @@ class RetrievalConfig:
     similarity_threshold: float = 0.5
     include_metadata: bool = True
     filters: Dict[str, Any] = field(default_factory=dict)
+    max_hits: int = 10
+
+@dataclass
+class Evidence:
+    """Evidence item for retrieval and reasoning"""
+    text: str
+    score: float
+    source: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class CouncilVote:
+    """Vote from council member"""
+    voter_id: str
+    vote: str
+    confidence: float
+    reasoning: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass
 class StrategyPlan:
