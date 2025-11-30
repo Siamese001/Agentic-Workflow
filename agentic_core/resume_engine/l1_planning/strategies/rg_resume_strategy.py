@@ -1,16 +1,77 @@
 # RG Resume Strategy for L1 planning
 from typing import Dict, Any, Optional, List
-from dataclasses import dataclass
+from dataclasses import dataclass, field, asdict
+from datetime import datetime
+from enum import Enum
+
+@dataclass
+class SchemaVersion:
+    """Schema version information for compatibility"""
+    version: str
+    compatible: bool = True
+    errors: List[str] = field(default_factory=list)
+
+def validate_schema_version(schema: Dict[str, Any], expected_version: str = "v1", model_type: Any = None) -> SchemaVersion:
+    """Validate schema version compatibility"""
+    # Handle different object types
+    if hasattr(schema, 'model_dump'):
+        schema_dict = schema.model_dump()
+    elif hasattr(schema, 'dict'):
+        schema_dict = schema.dict()
+    elif hasattr(schema, '__dataclass_fields__'):
+        schema_dict = asdict(schema)
+    else:
+        schema_dict = schema
+
+    schema_version = schema_dict.get("schema_version", "v1")
+
+    # Check for version mismatch
+    if schema_version != expected_version:
+        return SchemaVersion(
+            version=schema_version,
+            compatible=False,
+            errors=[f"Expected schema_version {expected_version}, got {schema_version}"]
+        )
+
+    return SchemaVersion(version=schema_version, compatible=True)
+
+class ResumeSection(Enum):
+    """Resume section identifiers"""
+    K0_CONTACT = "K0_CONTACT"
+    K1_HEADLINE = "K1_HEADLINE"
+    K2_SUMMARY = "K2_SUMMARY"
+    K3_EXPERIENCE = "K3_EXPERIENCE"
+    K4_EDUCATION = "K4_EDUCATION"
+    K5_SKILLS = "K5_SKILLS"
+    K6_PROJECTS = "K6_PROJECTS"
+    K7_CERTIFICATIONS = "K7_CERTIFICATIONS"
+    K8_ADDITIONAL = "K8_ADDITIONAL"
+
+@dataclass
+class ThematicAnalysis:
+    """Job description thematic analysis results"""
+    themes: List[str] = field(default_factory=list)
+    keywords: List[str] = field(default_factory=list)
+    skills_required: List[str] = field(default_factory=list)
+    experience_level: str = "mid"
+    industry: Optional[str] = None
+    company_intelligence: Dict = field(default_factory=dict)
+    competitive_positioning: Dict = field(default_factory=dict)
+    narrative_mining: Dict = field(default_factory=dict)
+    signal_score: float = 0.0
+    analysis_timestamp: str = field(default_factory=lambda: datetime.now().isoformat())
+    schema_version: str = "v1"
 
 @dataclass
 class ResumeStrategy:
-    """Resume strategy definition"""
+    """Resume strategy definition with enhanced analysis"""
     strategy_id: str = ""
     target_role: str = ""
     optimization_focus: List[str] = None
     formatting_style: str = ""
     content_priorities: List[str] = None
     bullet_selection_strategy: str = ""
+    thematic_analysis: Optional[ThematicAnalysis] = None
     metadata: Dict[str, Any] = None
 
     def __post_init__(self):
@@ -61,25 +122,87 @@ class RGResumeStrategy:
             }
         }
 
-    def create_strategy(self, target_role: str, experience_level: str) -> ResumeStrategy:
-        """Create resume strategy based on target role with real business logic"""
-        role_config = self.role_strategies.get(target_role.lower(), self.role_strategies["technical_lead"])
+    def create_strategy(self, target_role: str, experience_level: str,
+                        job_description: Optional[str] = None) -> ResumeStrategy:
+        """Create enhanced resume strategy with thematic analysis and validation"""
 
+        # Get base strategy
+        base_strategy = self.role_strategies.get(target_role.lower(),
+            self.role_strategies["ai_engineer"])
+
+        # Create thematic analysis if job description provided
+        thematic = None
+        if job_description:
+            thematic = self._analyze_job_themes(job_description, target_role)
+            # Validate schema version
+            version_check = validate_schema_version(thematic, expected_version="v1")
+            if not version_check.compatible:
+                # Log version mismatch but continue with default analysis
+                print(f"Warning: ThematicAnalysis schema version mismatch: {version_check.errors}")
+
+        # Enhanced strategy with thematic insights
         strategy = ResumeStrategy(
             strategy_id=f"strategy_{target_role}_{experience_level}",
             target_role=target_role,
-            optimization_focus=role_config["optimization_focus"],
-            formatting_style=role_config["formatting_style"],
-            content_priorities=role_config["content_priorities"],
-            bullet_selection_strategy=role_config["bullet_selection_strategy"],
+            optimization_focus=base_strategy["optimization_focus"],
+            formatting_style=base_strategy["formatting_style"],
+            content_priorities=base_strategy["content_priorities"],
+            bullet_selection_strategy=base_strategy["bullet_selection_strategy"],
+            thematic_analysis=thematic,
             metadata={
                 "experience_level": experience_level,
-                "keywords": role_config["keywords"],
-                "created_with_real_logic": True
+                "has_thematic_analysis": thematic is not None,
+                "created_at": datetime.now().isoformat(),
+                "schema_version": "v1"
             }
         )
 
         return strategy
+
+    def _analyze_job_themes(self, job_description: str, target_role: str) -> ThematicAnalysis:
+        """Analyze job description for themes and competitive intelligence"""
+
+        # Extract keywords from job description
+        jd_keywords = self._extract_keywords(job_description)
+
+        # Role-specific theme analysis
+        role_themes = {
+            "ai_engineer": ["machine learning", "deep learning", "production systems", "model deployment"],
+            "technical_lead": ["architecture", "scalability", "team leadership", "technical strategy"],
+            "executive": ["business strategy", "leadership", "revenue growth", "digital transformation"],
+            "data_scientist": ["analytics", "data modeling", "insights", "statistical analysis"]
+        }
+
+        # Calculate signal score based on keyword overlap
+        themes = role_themes.get(target_role.lower(), [])
+        matched_themes = [theme for theme in themes if theme.lower() in job_description.lower()]
+        signal_score = len(matched_themes) / len(themes) if themes else 0.0
+
+        # Industry detection
+        industry_indicators = {
+            "financial_services": ["banking", "finance", "trading", "risk", "compliance"],
+            "healthcare": ["medical", "health", "clinical", "pharmaceutical", "healthcare"],
+            "technology": ["software", "technology", "saas", "platform", "digital"],
+            "retail": ["retail", "ecommerce", "consumer", "merchandise", "sales"]
+        }
+
+        detected_industry = None
+        for industry, indicators in industry_indicators.items():
+            if any(indicator in job_description.lower() for indicator in indicators):
+                detected_industry = industry
+                break
+
+        return ThematicAnalysis(
+            themes=matched_themes,
+            keywords=jd_keywords,
+            skills_required=self._extract_skills(job_description),
+            experience_level=self._infer_experience_level(job_description),
+            industry=detected_industry,
+            company_intelligence={"size": "unknown", "type": "unknown"},
+            competitive_positioning={"differentiation_opportunities": matched_themes},
+            narrative_mining={"key_phrases": jd_keywords[:5]},
+            signal_score=signal_score
+        )
 
     def optimize_strategy(self, strategy: ResumeStrategy, feedback_data: Dict[str, Any]) -> ResumeStrategy:
         """Optimize strategy based on feedback with real business logic"""
@@ -187,3 +310,53 @@ class RGResumeStrategy:
             recommendations.append("Align skills more closely with target role keywords")
 
         return recommendations
+
+    def _extract_keywords(self, text: str) -> List[str]:
+        """Extract keywords from text"""
+        # Simple keyword extraction based on common resume terms
+        keyword_patterns = [
+            "python", "java", "javascript", "aws", "azure", "docker", "kubernetes",
+            "machine learning", "ai", "deep learning", "data science", "analytics",
+            "leadership", "management", "strategy", "architecture", "development",
+            "engineering", "software", "technology", "cloud", "devops", "agile"
+        ]
+
+        found_keywords = []
+        text_lower = text.lower()
+        for pattern in keyword_patterns:
+            if pattern in text_lower:
+                found_keywords.append(pattern)
+
+        return found_keywords
+
+    def _extract_skills(self, text: str) -> List[str]:
+        """Extract skills from job description"""
+        skills = []
+
+        # Technical skills indicators
+        tech_indicators = ["experience with", "proficient in", "skilled in", "knowledge of"]
+
+        for indicator in tech_indicators:
+            if indicator in text.lower():
+                # Simple extraction - in real implementation would use NLP
+                words = text.lower().split(indicator)
+                if len(words) > 1:
+                    potential_skills = words[1].split()[:3]  # Take next 3 words
+                    skills.extend([skill.strip().strip(',') for skill in potential_skills if len(skill) > 2])
+
+        return list(set(skills))  # Remove duplicates
+
+    def _infer_experience_level(self, text: str) -> str:
+        """Infer experience level from job description"""
+        text_lower = text.lower()
+
+        if any(term in text_lower for term in ["entry level", "junior", "0-2 years", "recent graduate"]):
+            return "entry"
+        elif any(term in text_lower for term in ["mid level", "3-5 years", "intermediate"]):
+            return "mid"
+        elif any(term in text_lower for term in ["senior", "5+ years", "lead", "principal"]):
+            return "senior"
+        elif any(term in text_lower for term in ["executive", "director", "vp", "c-level", "10+ years"]):
+            return "executive"
+
+        return "mid"  # Default
