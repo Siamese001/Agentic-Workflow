@@ -19,9 +19,6 @@ from apps.resume_app.adapters.app_resume_engine_adapter import (
 from apps.resume_app.adapters.app_resume_memory_adapter import (
     ResumeMemoryAdapter, MemoryQueryRequest
 )
-from apps.resume_app.validators.app_resume_input_validator import (
-    ResumeInputValidator, ValidationResult
-)
 
 
 @dataclass
@@ -66,7 +63,6 @@ class ResumeResearchWorkflow:
         self.config = config or {}
         self.engine_adapter = ResumeEngineAdapter(self.config)
         self.memory_adapter = ResumeMemoryAdapter(self.config)
-        self.input_validator = ResumeInputValidator(self.config)
         self.logger = logging.getLogger(__name__)
         
         # Research-specific configuration
