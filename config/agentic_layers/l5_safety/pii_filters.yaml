@@ -1,1 +1,118 @@
-# Placeholder configuration file
+# L5 PII Filters Configuration
+# Personally Identifiable Information detection and filtering policies
+
+# PII Detection Framework
+pii_detection:
+  enabled: true
+  scan_all_content: true
+  confidence_threshold: 0.8
+  false_positive_tolerance: 0.1
+
+# PII Categories and Patterns
+pii_categories:
+  personal_identifiers:
+    ssn:
+      pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+      confidence_required: 0.9
+      action: mask
+    passport:
+      pattern: "\\b[A-Z]{2}\\d{7}\\b"
+      confidence_required: 0.8
+      action: mask
+    driver_license:
+      pattern: "\\b[A-Z]{1}\\d{7}\\b"
+      confidence_required: 0.7
+      action: mask
+  
+  contact_information:
+    email:
+      pattern: "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+      confidence_required: 0.9
+      action: mask
+    phone:
+      pattern: "\\b\\d{3}-\\d{3}-\\d{4}\\b"
+      confidence_required: 0.8
+      action: mask
+    address:
+      pattern: "\\b\\d+\\s+[A-Za-z0-9\\s,]+\\b"
+      confidence_required: 0.6
+      action: mask
+  
+  financial_information:
+    credit_card:
+      pattern: "\\b\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}\\b"
+      confidence_required: 0.9
+      action: redact
+    bank_account:
+      pattern: "\\b\\d{10,12}\\b"
+      confidence_required: 0.7
+      action: redact
+    routing_number:
+      pattern: "\\b\\d{9}\\b"
+      confidence_required: 0.8
+      action: mask
+  
+  health_information:
+    medical_record:
+      pattern: "\\bMRN\\s*:?\\s*\\d+\\b"
+      confidence_required: 0.8
+      action: redact
+    insurance_id:
+      pattern: "\\b[\\w-]+\\d{8,}\\b"
+      confidence_required: 0.7
+      action: mask
+
+# Filtering Actions
+actions:
+  mask:
+    method: partial_mask
+    visible_chars: 4
+    mask_char: "*"
+  
+  redact:
+    method: complete_replacement
+    replacement_text: "[REDACTED]"
+  
+  flag:
+    method: add_warning
+    warning_text: "[PII DETECTED]"
+  
+  log:
+    method: audit_only
+    log_level: warning
+
+# Context-Aware Filtering
+context_aware:
+  resume_processing:
+    allow_name: true
+    allow_email: false
+    allow_phone: false
+    allow_address: false
+  
+  outreach_messages:
+    allow_recipient_name: true
+    allow_company_name: true
+    allow_personal_contact: false
+  
+  internal_processing:
+    scan_all: true
+    strict_mode: true
+
+# ML-Based Detection
+ml_detection:
+  enabled: true
+  model_threshold: 0.8
+  ensemble_models: true
+  human_review_threshold: 0.6
+
+# Compliance and Reporting
+compliance:
+  gdpr_right_to_be_forgotten: true
+  data_minimization: true
+  purpose_limitation: true
+  audit_trail: true
+  
+  reporting:
+    pii_detection_rate: true
+    false_positive_rate: true
+    processing_time_metrics: true

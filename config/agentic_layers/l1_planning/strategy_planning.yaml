@@ -1,1 +1,60 @@
-# Placeholder configuration file
+# L1 Strategy Planning Configuration
+# Strategy formulation and high-level planning parameters
+
+# Strategy Planning Parameters
+strategy:
+  max_planning_depth: 5
+  max_alternative_strategies: 3
+  strategy_timeout: 60  # seconds
+  confidence_threshold: 0.7
+  
+# Resume Strategy Planning
+resume_strategy:
+  optimization_goals:
+    - ats_compatibility
+    - keyword_density
+    - impact_quantification
+    - skill_alignment
+  
+  weighting:
+    ats_compatibility: 0.4
+    keyword_density: 0.3
+    impact_quantification: 0.2
+    skill_alignment: 0.1
+  
+  target_formats:
+    - modern
+    - classic
+    - technical
+    - executive
+  
+# Outreach Strategy Planning
+outreach_strategy:
+  engagement_models:
+    - direct_approach
+    - referral_based
+    - content_first
+    - warm_introduction
+  
+  personalization_levels:
+    - basic: 0.3
+    - intermediate: 0.6
+    - advanced: 0.9
+  
+  follow_up_cadence:
+    initial_delay: 1  # days
+    follow_up_interval: 3  # days
+    max_follow_ups: 3
+
+# Planning Constraints
+constraints:
+  max_planning_time: 120  # seconds
+  max_memory_usage: 512  # MB
+  max_api_calls_per_plan: 10
+  
+# Strategy Validation
+validation:
+  require_goal_clarity: true
+  require_feasibility_check: true
+  require_resource_estimation: true
+  min_success_probability: 0.6

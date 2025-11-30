@@ -1,1 +1,61 @@
-# Placeholder configuration file
+# Environment Configuration
+# Environment-specific settings and variables
+
+# Environment Detection
+environment:
+  name: development  # development, staging, production
+  debug: true
+  log_level: INFO
+  
+# Database Configuration
+database:
+  host: localhost
+  port: 5432
+  name: agentic_workflow
+  pool_size: 10
+  max_overflow: 20
+  
+# External Service Endpoints
+services:
+  openai:
+    base_url: https://api.openai.com/v1
+    timeout: 30
+  anthropic:
+    base_url: https://api.anthropic.com
+    timeout: 30
+  redis:
+    host: localhost
+    port: 6379
+    db: 0
+  chromadb:
+    host: localhost
+    port: 8000
+  pinecone:
+    environment: us-west1-gcp-free
+    
+# File Storage
+storage:
+  local_path: ./data
+  temp_path: ./temp
+  max_file_size: 10485760  # 10MB
+  
+# API Configuration
+api:
+  host: 0.0.0.0
+  port: 8000
+  workers: 4
+  cors_origins:
+    - http://localhost:3000
+    - http://localhost:8080
+    
+# Security
+security:
+  secret_key: ${SECRET_KEY}
+  algorithm: HS256
+  access_token_expire_minutes: 30
+  
+# Monitoring
+monitoring:
+  enabled: true
+  metrics_port: 9090
+  health_check_interval: 30
