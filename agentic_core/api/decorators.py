@@ -65,10 +65,10 @@ def rate_limit(
 ):
     """
     Rate limiting decorator for API endpoints
-    
+
     Args:
         requests_per_minute: Requests allowed per minute
-        requests_per_hour: Requests allowed per hour  
+        requests_per_hour: Requests allowed per hour
         requests_per_day: Requests allowed per day
         key_func: Function to extract rate limit key from request
     """
@@ -145,7 +145,7 @@ def rate_limit(
 def validate_request(validator_func: Callable):
     """
     Request validation decorator
-    
+
     Args:
         validator_func: Function that validates request and raises ValidationAPIException if invalid
     """
@@ -188,7 +188,7 @@ def handle_errors(
 ):
     """
     Error handling decorator for API endpoints
-    
+
     Args:
         default_error_message: Default error message for unhandled exceptions
         log_errors: Whether to log errors
@@ -334,7 +334,7 @@ def log_api_calls(
 ):
     """
     API call logging decorator
-    
+
     Args:
         log_level: Log level to use ('debug', 'info', 'warning', 'error')
         include_args: Whether to include function arguments in logs
@@ -475,7 +475,7 @@ def cache_response(
 ):
     """
     Response caching decorator for API endpoints
-    
+
     Args:
         ttl_seconds: Time to live for cached responses
         max_size: Maximum number of cached responses
@@ -534,7 +534,7 @@ def require_auth(
 ):
     """
     Authentication decorator for API endpoints
-    
+
     Args:
         auth_func: Function that performs authentication and returns user info
         required_scopes: List of required permission scopes

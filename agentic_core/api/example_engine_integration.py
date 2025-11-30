@@ -5,45 +5,35 @@ LEVEL 5 - Simple FastAPI app demonstrating shared API layer usage
 
 import sys
 from pathlib import Path
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import List, Dict, Any, Optional
 
 # Add the project root to Python path for imports
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from fastapi import FastAPI
-from pydantic import BaseModel
-from typing import List, Dict, Any, Optional
-
 # Import shared API components
 try:
     from agentic_core.api import (
-        BaseRequest,
-        BaseResponse,
         PaginatedRequest,
         SearchRequest,
         create_success_response,
         create_error_response,
         create_paginated_response,
         create_search_response,
-        create_not_found_response,
-        create_validation_response,
         rate_limit,
         validate_request,
         handle_errors,
         log_api_calls,
         APIException,
         ValidationAPIException,
-        AuthenticationAPIException,
-        RateLimitAPIException,
         NotFoundAPIException
     )
 
     # Try to import middleware if FastAPI is available
     try:
-        from agentic_core.api import (
-            add_shared_middleware,
-            DEFAULT_CORS_CONFIG
-        )
+        from agentic_core.api import add_shared_middleware
         MIDDLEWARE_AVAILABLE = True
     except ImportError:
         MIDDLEWARE_AVAILABLE = False
@@ -182,7 +172,7 @@ async def generate_resume(request: ResumeRequest):
         Experience: {request.experience_years} years
         Skills: {', '.join(request.skills)}
         Target Job: {request.target_job}
-        
+
         [Resume content would be generated here...]
         """
 
