@@ -1,5 +1,5 @@
 # Plan schema definitions
-from .base import BaseSchema
+from ..core.base import BaseSchema
 from typing import List, Optional
 
 class PlanSchema(BaseSchema):
