@@ -22,7 +22,7 @@ from agentic_core.models.models import (
     ComplexityLevel,
 )
 from config.llm_profile import LLMProfile
-from config.retrieval_profile import RetrievalProfile
+from agentic_core.models.models import RetrievalProfile
 from config.safety_profile import SafetyProfile
 from config.context_profile import ContextProfile
 from config.budget_profile import BudgetProfile
