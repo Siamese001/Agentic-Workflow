@@ -43,15 +43,30 @@ def choose_provider_and_model(ctx: RoutingContext, requested_model: Optional[str
 
 def enforce_budget(choice: ModelChoice, profile: Any) -> ModelChoice:
     """Enforce budget constraints on model choice"""
-    # Stub implementation - downgrade high cost models if needed
-    if choice.cost_tier == "high" and hasattr(profile, 'budget_limit'):
-        if profile.budget_limit < choice.estimated_cost:
-            # Downgrade to medium tier
+    # Check if profile has max_cost_tier constraint in metadata
+    max_cost_tier = None
+    if hasattr(profile, 'metadata') and profile.metadata:
+        max_cost_tier = profile.metadata.get("max_cost_tier")
+
+    # Downgrade high cost models if max_cost_tier is lower
+    if max_cost_tier and choice.cost_tier == "high":
+        if max_cost_tier == "medium":
             return ModelChoice(
                 provider=choice.provider,
-                model_name="claude-haiku-4-5-20251001",
+                model_name="gpt-4-turbo",
                 cost_tier="medium",
-                estimated_cost=0.001,
-                latency_ms=300
+                estimated_cost=0.002,
+                latency_ms=800,
+                metadata=choice.metadata.copy()
             )
+        elif max_cost_tier == "low":
+            return ModelChoice(
+                provider=choice.provider,
+                model_name="gpt-3.5-turbo",
+                cost_tier="low",
+                estimated_cost=0.0005,
+                latency_ms=400,
+                metadata=choice.metadata.copy()
+            )
+
     return choice

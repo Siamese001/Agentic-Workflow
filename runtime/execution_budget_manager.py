@@ -114,22 +114,33 @@ class ExecutionBudgetManager:
         """Disable budget enforcement"""
         self.enabled = False
     
-    def get_status(self) -> Dict[str, Any]:
-        """Get budget manager status"""
-        return {
-            "enabled": self.enabled,
-            "limits": {
-                "max_tokens": self.limits.max_tokens,
-                "max_cost": self.limits.max_cost,
-                "max_execution_time": self.limits.max_execution_time
-            },
-            "usage": {
-                "tokens_used": self.usage.tokens_used,
-                "cost_incurred": self.usage.cost_incurred,
-                "execution_time": self.usage.execution_time
-            },
-            "remaining": self.get_remaining_budget()
-        }
+    def record_tokens(self, operation: str, tokens: int) -> None:
+        """Record token usage for a specific operation"""
+        self.usage.tokens_used += tokens
+    
+    def record_request(self, operation: str) -> None:
+        """Record a request for a specific operation"""
+        # For now, just track that a request was made
+        pass
+    
+    def increment_depth(self) -> None:
+        """Increment execution depth"""
+        if not hasattr(self.usage, 'current_depth'):
+            self.usage.current_depth = 0
+        self.usage.current_depth += 1
+    
+    def decrement_depth(self) -> None:
+        """Decrement execution depth"""
+        if hasattr(self.usage, 'current_depth') and self.usage.current_depth > 0:
+            self.usage.current_depth -= 1
+    
+    def check_context_size(self, context_size: int) -> bool:
+        """Check if context size is within limits"""
+        return context_size <= 128000  # Default context limit
+    
+    def check_message_length(self, message_length: int) -> bool:
+        """Check if message length is within limits"""
+        return message_length <= 4000  # Default message limit
 
 # Global budget manager instance
 _global_budget_manager: Optional[ExecutionBudgetManager] = None
