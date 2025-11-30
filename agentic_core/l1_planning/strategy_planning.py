@@ -10,10 +10,6 @@ from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 from enum import Enum
 
-# Re-export robust implementations from outreach engine
-from agentic_core.outreach_engine.l1_planning.planners.lic_strategy_planning import *  # noqa: F401,F403
-from agentic_core.outreach_engine.l1_planning.planners.lic_workflow_planning import *  # noqa: F401,F403
-
 # Core strategy planning classes
 class StrategyType(str, Enum):
     """Strategy types for different workflow scenarios."""

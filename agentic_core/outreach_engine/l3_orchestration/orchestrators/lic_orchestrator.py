@@ -6,6 +6,30 @@ import asyncio
 import time
 
 @dataclass
+class RecipientProfile:
+    """Profile information for outreach recipients."""
+    name: str = ""
+    title: str = ""
+    company: str = ""
+    industry: str = ""
+    seniority: str = ""
+    department: str = ""
+    skills: List[str] = field(default_factory=list)
+    recent_activity: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class LICPipelineResult:
+    """Result from LIC pipeline execution."""
+    pipeline_id: str = ""
+    success: bool = True
+    result_data: Dict[str, Any] = field(default_factory=dict)
+    error_message: str = ""
+    execution_time: float = 0.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.now)
+
+@dataclass
 class RetryPolicy:
     """Configuration for retry policies."""
     max_attempts: int = 3
