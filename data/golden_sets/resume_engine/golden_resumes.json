@@ -1,3 +1,269 @@
 {
-  "placeholder": true
+  "golden_resumes": {
+    "version": "1.0",
+    "last_updated": "2024-01-01",
+    "validation_reference": true,
+    "examples": [
+      {
+        "id": "golden_resume_001",
+        "target_role": "Senior Software Engineer - Cloud Infrastructure",
+        "industry": "technology",
+        "experience_level": "senior",
+        "quality_score": 0.95,
+        "ats_compliance": 0.98,
+        "expected_outcomes": {
+          "keyword_match_score": 0.92,
+          "format_compliance": 0.95,
+          "readability_score": 8.8,
+          "achievement_clarity": 0.90,
+          "skill_alignment": 0.94
+        },
+        "content": {
+          "header": {
+            "name": "Jennifer Martinez",
+            "title": "Senior Software Engineer | Cloud Infrastructure | Kubernetes Expert",
+            "contact": {
+              "email": "jennifer.martinez.tech@email.com",
+              "phone": "(555) 987-6543",
+              "linkedin": "linkedin.com/in/jennifermartinez",
+              "github": "github.com/jennifermartinez",
+              "location": "Seattle, WA",
+              "portfolio": "jennifermartinez.dev"
+            }
+          },
+          "professional_summary": "Senior Software Engineer with 7+ years of specialized experience in cloud infrastructure, Kubernetes orchestration, and distributed systems. Proven track record of scaling applications from prototype to production, reducing infrastructure costs by 40% while improving reliability to 99.99%. Expert in Go, Python, AWS, and containerization technologies. Seeking to leverage deep cloud architecture expertise in a senior engineering role focused on building scalable, resilient systems.",
+          "core_competencies": {
+            "cloud_platforms": ["AWS (Expert)", "Google Cloud (Advanced)", "Azure (Intermediate)"],
+            "containerization": ["Kubernetes (Expert)", "Docker (Expert)", "Helm (Advanced)", "Istio (Intermediate)"],
+            "programming_languages": ["Go (Expert)", "Python (Advanced)", "TypeScript (Intermediate)", "Bash (Advanced)"],
+            "infrastructure_tools": ["Terraform (Expert)", "Ansible (Advanced)", "Jenkins (Advanced)", "GitLab CI (Expert)"],
+            "databases": ["PostgreSQL (Advanced)", "Redis (Advanced)", "MongoDB (Intermediate)", "DynamoDB (Intermediate)"],
+            "monitoring": ["Prometheus (Expert)", "Grafana (Advanced)", "ELK Stack (Intermediate)", "Jaeger (Intermediate)"]
+          },
+          "professional_experience": [
+            {
+              "title": "Senior Software Engineer - Cloud Infrastructure",
+              "company": "CloudScale Technologies",
+              "location": "Seattle, WA",
+              "duration": "2020 - Present",
+              "achievements": [
+                "Architected and led migration of monolithic application to microservices using Kubernetes, reducing deployment time by 75% and improving scalability to handle 10M+ daily requests",
+                "Designed and implemented GitOps pipeline using GitLab CI and ArgoCD, achieving 95% reduction in manual deployment errors and enabling daily releases",
+                "Built custom Kubernetes operators for automated resource management, saving $500K annually in infrastructure costs through intelligent scaling",
+                "Led disaster recovery initiative implementing multi-region Kubernetes clusters, achieving 99.99% uptime and RTO of 5 minutes",
+                "Mentored 4 junior engineers in cloud best practices and established internal cloud certification program, improving team cloud expertise by 60%"
+              ],
+              "technologies_used": ["Go", "Kubernetes", "AWS", "Terraform", "Prometheus", "Grafana", "GitLab CI", "ArgoCD"]
+            },
+            {
+              "title": "Software Engineer - Platform Engineering",
+              "company": "DataFlow Systems",
+              "location": "Portland, OR",
+              "duration": "2018 - 2020",
+              "achievements": [
+                "Developed container orchestration platform using Docker Swarm, improving resource utilization by 45% and reducing server costs by $200K annually",
+                "Implemented comprehensive monitoring stack with Prometheus and Grafana, providing real-time insights into 500+ microservices",
+                "Built automated testing framework for infrastructure as code, catching 90% of configuration issues before production deployment",
+                "Collaborated with security team to implement zero-trust networking, reducing security vulnerabilities by 80%"
+              ],
+              "technologies_used": ["Python", "Docker", "Docker Swarm", "Prometheus", "Grafana", "Ansible", "AWS", "PostgreSQL"]
+            },
+            {
+              "title": "DevOps Engineer",
+              "company": "StartupHub Inc.",
+              "location": "San Francisco, CA",
+              "duration": "2016 - 2018",
+              "achievements": [
+                "Established CI/CD pipeline using Jenkins and Docker, reducing deployment time from 2 hours to 15 minutes",
+                "Implemented infrastructure automation using Terraform, enabling consistent environments across development, staging, and production",
+                "Managed cloud infrastructure serving 100K+ users, maintaining 99.9% uptime while reducing costs by 30%",
+                "Developed monitoring and alerting system, reducing mean time to detection (MTTD) from hours to minutes"
+              ],
+              "technologies_used": ["Python", "Bash", "Jenkins", "Docker", "Terraform", "AWS", "MySQL", "Redis"]
+            }
+          ],
+          "education": [
+            {
+              "degree": "Bachelor of Science in Computer Science",
+              "university": "University of Washington",
+              "location": "Seattle, WA",
+              "graduation": "2016",
+              "gpa": "3.9/4.0",
+              "honors": ["Dean's List", "ACM Programming Competition Finalist"],
+              "relevant_coursework": ["Distributed Systems", "Cloud Computing", "Network Security", "Database Systems", "Software Engineering"]
+            }
+          ],
+          "certifications": [
+            "AWS Certified Solutions Architect - Professional (2023)",
+            "Certified Kubernetes Administrator (CKA) (2022)",
+            "Certified Kubernetes Security Specialist (CKS) (2023)",
+            "Terraform Associate Certified (2022)",
+            "Google Cloud Professional Developer (2021)"
+          ],
+          "technical_projects": [
+            {
+              "name": "Kubernetes Autoscaler",
+              "description": "Open-source custom Kubernetes autoscaler that uses machine learning to predict resource needs based on historical usage patterns",
+              "technologies": ["Go", "Kubernetes", "Machine Learning", "Prometheus", "Docker"],
+              "impact": "500+ GitHub stars, adopted by 3 companies, reduces infrastructure costs by 15-20%",
+              "url": "github.com/jennifermartinez/k8s-ml-autoscaler"
+            },
+            {
+              "name": "Cloud Cost Optimizer",
+              "description": "Multi-cloud cost optimization tool that analyzes usage patterns and recommends cost-saving measures across AWS, GCP, and Azure",
+              "technologies": ["Python", "AWS SDK", "Google Cloud API", "Azure SDK", "React"],
+              "impact": "Saved $1M+ in cloud costs across 5 enterprise deployments",
+              "url": "github.com/jennifermartinez/cloud-cost-optimizer"
+            }
+          ],
+          "open_source_contributions": [
+            "Kubernetes project - Contributed to core scheduler improvements",
+            "Terraform provider for monitoring services - Maintainer since 2021",
+            "Prometheus exporter for custom metrics - Active contributor"
+          ]
+        },
+        "validation_criteria": {
+          "keyword_density": {
+            "kubernetes": 6,
+            "cloud infrastructure": 5,
+            "aws": 4,
+            "docker": 4,
+            "devops": 3,
+            "microservices": 3,
+            "monitoring": 3,
+            "scalability": 2
+          },
+          "achievement_metrics": {
+            "quantified_results": 12,
+            "action_verbs": 15,
+            "impact_statements": 10,
+            "technical_depth": 0.92
+          },
+          "format_compliance": {
+            "section_order": true,
+            "consistent_formatting": true,
+            "readability_score": 8.8,
+            "length_optimal": true
+          }
+        },
+        "scoring_weights": {
+          "technical_relevance": 0.35,
+          "achievement_impact": 0.25,
+          "keyword_optimization": 0.20,
+          "format_quality": 0.15,
+          "industry_alignment": 0.05
+        }
+      },
+      {
+        "id": "golden_resume_002",
+        "target_role": "Data Scientist - Machine Learning",
+        "industry": "fintech",
+        "experience_level": "mid",
+        "quality_score": 0.92,
+        "ats_compliance": 0.95,
+        "expected_outcomes": {
+          "keyword_match_score": 0.89,
+          "format_compliance": 0.93,
+          "readability_score": 8.5,
+          "achievement_clarity": 0.88,
+          "skill_alignment": 0.91
+        },
+        "content": {
+          "header": {
+            "name": "David Kim",
+            "title": "Data Scientist | Machine Learning | FinTech Specialist",
+            "contact": {
+              "email": "david.kim.ml@email.com",
+              "phone": "(555) 456-7890",
+              "linkedin": "linkedin.com/in/davidkim",
+              "github": "github.com/davidkim",
+              "location": "New York, NY",
+              "kaggle": "kaggle.com/davidkim"
+            }
+          },
+          "professional_summary": "Data Scientist with 5 years of experience specializing in machine learning applications for financial services. Expert in building predictive models for fraud detection, risk assessment, and customer analytics. Proven ability to process and analyze large datasets using Apache Spark, with track record of delivering models that reduce financial losses by $3M+ annually. Strong foundation in statistics, deep learning, and MLOps best practices. Seeking to leverage ML expertise in a challenging fintech environment.",
+          "technical_skills": {
+            "programming_languages": ["Python (Expert)", "R (Advanced)", "SQL (Expert)", "Julia (Intermediate)"],
+            "machine_learning": ["TensorFlow (Advanced)", "PyTorch (Advanced)", "Scikit-learn (Expert)", "XGBoost (Expert)", "LightGBM (Advanced)"],
+            "deep_learning": ["CNN", "RNN", "LSTM", "Transformer Models", "GANs"],
+            "big_data": ["Apache Spark (Expert)", "Hadoop (Intermediate)", "Kafka (Advanced)", "Airflow (Advanced)"],
+            "databases": ["PostgreSQL (Advanced)", "MongoDB (Intermediate)", "Redis (Advanced)", "Snowflake (Advanced)"],
+            "visualization": ["Tableau (Advanced)", "Power BI (Intermediate)", "Plotly (Expert)", "Matplotlib (Expert)"]
+          },
+          "professional_experience": [
+            {
+              "title": "Data Scientist - Fraud Detection",
+              "company": "SecurePay Financial",
+              "location": "New York, NY",
+              "duration": "2021 - Present",
+              "achievements": [
+                "Developed real-time fraud detection system using deep learning, reducing false positives by 35% while maintaining 96% detection accuracy",
+                "Built feature engineering pipeline processing 50TB of transaction data daily using Apache Spark and Python",
+                "Implemented model monitoring and retraining pipeline using MLflow, improving model performance by 25% over 18 months",
+                "Led cross-functional team of 5 engineers to deploy ML models to production, serving 10M+ transactions daily",
+                "Created executive dashboards using Tableau, providing real-time fraud analytics and saving 100+ hours of manual reporting monthly"
+              ],
+              "technologies_used": ["Python", "TensorFlow", "Apache Spark", "SQL", "AWS", "Docker", "MLflow", "Tableau"]
+            },
+            {
+              "title": "Machine Learning Engineer",
+              "company": "FinTech Innovations",
+              "location": "Boston, MA",
+              "duration": "2019 - 2021",
+              "achievements": [
+                "Designed credit risk scoring model using ensemble methods, improving prediction accuracy by 20% and reducing default losses by $1.2M annually",
+                "Optimized model inference latency by 70% through model quantization and caching strategies",
+                "Developed automated A/B testing framework for model validation, improving experiment velocity by 3x",
+                "Built customer segmentation system using clustering algorithms, enabling targeted marketing campaigns with 40% higher conversion rates"
+              ],
+              "technologies_used": ["Python", "PyTorch", "XGBoost", "Apache Kafka", "PostgreSQL", "Kubernetes", "Redis"]
+            }
+          ],
+          "education": [
+            {
+              "degree": "Master of Science in Data Science",
+              "university": "Columbia University",
+              "location": "New York, NY",
+              "graduation": "2019",
+              "gpa": "3.9/4.0",
+              "thesis": "Deep Learning for Real-Time Financial Fraud Detection"
+            },
+            {
+              "degree": "Bachelor of Science in Statistics",
+              "university": "University of Michigan",
+              "location": "Ann Arbor, MI",
+              "graduation": "2017",
+              "gpa": "3.8/4.0"
+            }
+          ],
+          "projects": [
+            {
+              "name": "Cryptocurrency Price Prediction",
+              "description": "LSTM-based model for predicting cryptocurrency price movements using social media sentiment and technical indicators",
+              "technologies": ["Python", "PyTorch", "LSTM", "Twitter API", "Pandas"],
+              "accuracy": "72% prediction accuracy over 6-month period"
+            }
+          ]
+        }
+      }
+    ],
+    "quality_standards": {
+      "minimum_scores": {
+        "overall_quality": 0.85,
+        "ats_compliance": 0.90,
+        "keyword_match": 0.80,
+        "readability": 8.0,
+        "achievement_clarity": 0.80
+      },
+      "required_sections": ["header", "summary", "experience", "education", "skills"],
+      "achievement_format": "Action verb + specific task + quantifiable result + business impact",
+      "keyword_optimization": "Natural integration of role-specific keywords without stuffing"
+    },
+    "validation_rules": {
+      "format_consistency": "Standard section headings and consistent formatting throughout",
+      "content_quality": "Clear, concise language with 8th-grade reading level",
+      "technical_accuracy": "Technologies and skills accurately represented with appropriate proficiency levels",
+      "impact_quantification": "Achievements include specific metrics and business impact"
+    }
+  }
 }

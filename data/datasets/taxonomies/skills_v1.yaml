@@ -1,1 +1,167 @@
-# Placeholder configuration/data file
+# Skills Taxonomy v1.0
+# Comprehensive skill classification system for tech industry
+
+skills_taxonomy:
+  version: "1.0"
+  last_updated: "2024-01-01"
+  
+technical_skills:
+  programming_languages:
+    - name: "Python"
+      category: "backend"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Django", "Flask", "FastAPI", "NumPy", "Pandas"]
+    
+    - name: "JavaScript"
+      category: "frontend"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["React", "Vue.js", "Node.js", "TypeScript", "Angular"]
+    
+    - name: "Java"
+      category: "backend"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Spring Boot", "Maven", "Hibernate", "Jenkins", "AWS"]
+    
+    - name: "TypeScript"
+      category: "full_stack"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["JavaScript", "React", "Node.js", "Angular", "NestJS"]
+    
+    - name: "Go"
+      category: "backend"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Docker", "Kubernetes", "gRPC", "Microservices", "Cloud Native"]
+    
+    - name: "Rust"
+      category: "systems"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Systems Programming", "Memory Management", "WebAssembly", "Blockchain"]
+    
+    - name: "SQL"
+      category: "database"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["PostgreSQL", "MySQL", "Oracle", "Database Design", "Query Optimization"]
+    
+    - name: "C++"
+      category: "systems"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Embedded Systems", "Game Development", "High Performance Computing", "Qt"]
+
+  cloud_platforms:
+    - name: "AWS"
+      category: "cloud"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["EC2", "S3", "Lambda", "RDS", "CloudFormation", "Terraform"]
+    
+    - name: "Azure"
+      category: "cloud"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Azure Functions", "App Service", "Cosmos DB", "DevOps", "ARM Templates"]
+    
+    - name: "Google Cloud"
+      category: "cloud"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Compute Engine", "Cloud Functions", "BigQuery", "Kubernetes Engine"]
+    
+    - name: "Docker"
+      category: "devops"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Containerization", "Kubernetes", "CI/CD", "Microservices", "DevOps"]
+    
+    - name: "Kubernetes"
+      category: "devops"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Container Orchestration", "Docker", "Helm", "Service Mesh", "Cloud Native"]
+
+  data_science:
+    - name: "Machine Learning"
+      category: "ai_ml"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["TensorFlow", "PyTorch", "Scikit-learn", "Deep Learning", "MLOps"]
+    
+    - name: "Data Analysis"
+      category: "data"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["Pandas", "NumPy", "Data Visualization", "Statistics", "SQL"]
+    
+    - name: "Data Engineering"
+      category: "data"
+      proficiency_levels: ["beginner", "intermediate", "advanced", "expert"]
+      related_skills: ["ETL", "Data Pipelines", "Apache Spark", "Airflow", "Big Data"]
+
+soft_skills:
+  communication:
+    - name: "Technical Writing"
+      category: "communication"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.8
+    
+    - name: "Presentation Skills"
+      category: "communication"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.7
+    
+    - name: "Documentation"
+      category: "communication"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.6
+
+  leadership:
+    - name: "Team Leadership"
+      category: "leadership"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.9
+    
+    - name: "Project Management"
+      category: "leadership"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.8
+    
+    - name: "Mentoring"
+      category: "leadership"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.7
+
+  problem_solving:
+    - name: "Analytical Thinking"
+      category: "cognitive"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.9
+    
+    - name: "System Design"
+      category: "technical"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.8
+    
+    - name: "Troubleshooting"
+      category: "technical"
+      proficiency_levels: ["basic", "competent", "proficient", "expert"]
+      importance_weight: 0.7
+
+skill_relationships:
+  complementary_pairs:
+    - ["Python", "Data Science"]
+    - ["JavaScript", "React"]
+    - ["Java", "Spring Boot"]
+    - ["AWS", "DevOps"]
+    - ["Docker", "Kubernetes"]
+    - ["SQL", "Database Design"]
+  
+  career_progression:
+    junior_to_mid:
+      required_skills: ["Programming Fundamentals", "Version Control", "Basic Testing"]
+      preferred_skills: ["CI/CD", "Documentation", "Code Review"]
+    
+    mid_to_senior:
+      required_skills: ["System Design", "Mentoring", "Project Leadership"]
+      preferred_skills: ["Architecture", "Performance Optimization", "Security"]
+    
+    senior_to_lead:
+      required_skills: ["Team Leadership", "Strategic Planning", "Technical Vision"]
+      preferred_skills: ["Business Acumen", "Stakeholder Management", "Cross-functional Collaboration"]
+
+skill_demand_weights:
+  high_demand: 1.0
+  medium_demand: 0.7
+  low_demand: 0.4
+  emerging: 0.8
