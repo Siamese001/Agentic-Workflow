@@ -23,7 +23,12 @@ class OutreachLLMCaller:
             "usage": {"prompt_tokens": len(prompt.split()), "completion_tokens": 50},
             "model": self.model,
             "provider": self.provider
-    }
+        }
+
+    def generate(self, prompt: str, **kwargs) -> str:
+        """Generate text response - main interface for tests"""
+        response = self.call(prompt, **kwargs)
+        return response["text"]
 
     def set_model(self, provider: str, model: str) -> None:
         """Update the provider and model"""
