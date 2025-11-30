@@ -7,15 +7,12 @@ import asyncio
 import time
 import logging
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Union, Tuple
+from typing import Callable, Dict, List, Optional, Tuple
 from datetime import datetime, timedelta
-import hashlib
-import json
 
-from .responses import APIResponse
 from .exceptions import (
-    APIException, 
-    ValidationAPIException, 
+    APIException,
+    ValidationAPIException,
     RateLimitAPIException,
     AuthenticationAPIException
 )
@@ -24,20 +21,20 @@ logger = logging.getLogger(__name__)
 
 class RateLimiter:
     """Simple in-memory rate limiter for API endpoints"""
-    
+
     def __init__(self):
         self.requests: Dict[str, List[datetime]] = {}
-    
+
     def is_allowed(
-        self, 
-        key: str, 
-        limit: int, 
+        self,
+        key: str,
+        limit: int,
         window_seconds: int
     ) -> Tuple[bool, datetime]:
         """Check if request is allowed and return reset time"""
         now = datetime.utcnow()
         window_start = now - timedelta(seconds=window_seconds)
-        
+
         # Clean old requests
         if key in self.requests:
             self.requests[key] = [
@@ -46,12 +43,12 @@ class RateLimiter:
             ]
         else:
             self.requests[key] = []
-        
+
         # Check if under limit
         if len(self.requests[key]) < limit:
             self.requests[key].append(now)
             return True, now + timedelta(seconds=window_seconds)
-        
+
         # Rate limited - return reset time
         oldest_request = min(self.requests[key])
         reset_time = oldest_request + timedelta(seconds=window_seconds)
@@ -91,10 +88,10 @@ def rate_limit(
                     key = str(args[0].user_id)
                 elif 'user_id' in kwargs:
                     key = str(kwargs['user_id'])
-            
+
             # Check rate limits
             now = datetime.utcnow()
-            
+
             # Check minute limit
             allowed, reset_time = rate_limiter.is_allowed(
                 f"{key}:minute", requests_per_minute, 60
@@ -107,7 +104,7 @@ def rate_limit(
                     reset_time=reset_time,
                     retry_after=retry_after
                 )
-            
+
             # Check hour limit
             allowed, reset_time = rate_limiter.is_allowed(
                 f"{key}:hour", requests_per_hour, 3600
@@ -120,7 +117,7 @@ def rate_limit(
                     reset_time=reset_time,
                     retry_after=retry_after
                 )
-            
+
             # Check day limit
             allowed, reset_time = rate_limiter.is_allowed(
                 f"{key}:day", requests_per_day, 86400
@@ -133,15 +130,15 @@ def rate_limit(
                     reset_time=reset_time,
                     retry_after=retry_after
                 )
-            
+
             # Execute function
             return await func(*args, **kwargs)
-        
+
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             # For sync functions, just execute (rate limiting would need async context)
             return func(*args, **kwargs)
-        
+
         return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
     return decorator
 
@@ -166,7 +163,7 @@ def validate_request(validator_func: Callable):
                     message=f"Request validation failed: {str(e)}",
                     validation_errors=[{"field": "general", "message": str(e)}]
                 )
-        
+
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             try:
@@ -180,7 +177,7 @@ def validate_request(validator_func: Callable):
                     message=f"Request validation failed: {str(e)}",
                     validation_errors=[{"field": "general", "message": str(e)}]
                 )
-        
+
         return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
     return decorator
 
@@ -203,7 +200,7 @@ def handle_errors(
             start_time = time.time()
             try:
                 result = await func(*args, **kwargs)
-                
+
                 # Log successful execution
                 if log_errors:
                     execution_time = (time.time() - start_time) * 1000
@@ -216,9 +213,9 @@ def handle_errors(
                             "kwargs_count": len(kwargs)
                         }
                     )
-                
+
                 return result
-                
+
             except APIException:
                 # Re-raise API exceptions as-is
                 if log_errors:
@@ -232,11 +229,11 @@ def handle_errors(
                         }
                     )
                 raise
-                
+
             except Exception as e:
                 # Handle unexpected exceptions
                 execution_time = (time.time() - start_time) * 1000
-                
+
                 if log_errors:
                     logger.error(
                         f"API call {func.__name__} failed with unexpected error: {str(e)}",
@@ -248,26 +245,26 @@ def handle_errors(
                         },
                         exc_info=True
                     )
-                
+
                 # Create API exception
                 api_exception = APIException(
                     message=default_error_message,
                     error_code="INTERNAL_SERVER_ERROR",
                     error_type="internal"
                 )
-                
+
                 if include_stack_trace:
                     import traceback
                     api_exception.stack_trace = traceback.format_exc()
-                
+
                 raise api_exception
-        
+
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             start_time = time.time()
             try:
                 result = func(*args, **kwargs)
-                
+
                 # Log successful execution
                 if log_errors:
                     execution_time = (time.time() - start_time) * 1000
@@ -280,9 +277,9 @@ def handle_errors(
                             "kwargs_count": len(kwargs)
                         }
                     )
-                
+
                 return result
-                
+
             except APIException:
                 # Re-raise API exceptions as-is
                 if log_errors:
@@ -296,11 +293,11 @@ def handle_errors(
                         }
                     )
                 raise
-                
+
             except Exception as e:
                 # Handle unexpected exceptions
                 execution_time = (time.time() - start_time) * 1000
-                
+
                 if log_errors:
                     logger.error(
                         f"API call {func.__name__} failed with unexpected error: {str(e)}",
@@ -312,20 +309,20 @@ def handle_errors(
                         },
                         exc_info=True
                     )
-                
+
                 # Create API exception
                 api_exception = APIException(
                     message=default_error_message,
                     error_code="INTERNAL_SERVER_ERROR",
                     error_type="internal"
                 )
-                
+
                 if include_stack_trace:
                     import traceback
                     api_exception.stack_trace = traceback.format_exc()
-                
+
                 raise api_exception
-        
+
         return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
     return decorator
 
@@ -346,25 +343,25 @@ def log_api_calls(
     """
     if sensitive_params is None:
         sensitive_params = ["password", "token", "secret", "key", "auth"]
-    
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
             start_time = time.time()
-            
+
             # Prepare log data
             log_data = {
                 "function": func.__name__,
                 "module": func.__module__,
                 "start_time": datetime.utcnow().isoformat()
             }
-            
+
             # Add arguments if requested
             if include_args and args:
                 log_data["args_count"] = len(args)
                 if len(args) <= 3:  # Only log if few args
                     log_data["args"] = [str(arg) for arg in args]
-            
+
             if include_kwargs and kwargs:
                 # Sanitize sensitive parameters
                 sanitized_kwargs = {}
@@ -374,28 +371,28 @@ def log_api_calls(
                     else:
                         sanitized_kwargs[key] = str(value)
                 log_data["kwargs"] = sanitized_kwargs
-            
+
             # Log function call
             log_func = getattr(logger, log_level.lower(), logger.info)
             log_func(f"API call started: {func.__name__}", extra=log_data)
-            
+
             try:
                 result = await func(*args, **kwargs)
                 execution_time = (time.time() - start_time) * 1000
-                
+
                 # Log successful completion
                 log_data.update({
                     "success": True,
                     "execution_time_ms": execution_time,
                     "end_time": datetime.utcnow().isoformat()
                 })
-                
+
                 log_func(f"API call completed: {func.__name__}", extra=log_data)
                 return result
-                
+
             except Exception as e:
                 execution_time = (time.time() - start_time) * 1000
-                
+
                 # Log error
                 log_data.update({
                     "success": False,
@@ -404,27 +401,27 @@ def log_api_calls(
                     "error_message": str(e),
                     "end_time": datetime.utcnow().isoformat()
                 })
-                
+
                 logger.error(f"API call failed: {func.__name__}", extra=log_data)
                 raise
-        
+
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             start_time = time.time()
-            
+
             # Prepare log data
             log_data = {
                 "function": func.__name__,
                 "module": func.__module__,
                 "start_time": datetime.utcnow().isoformat()
             }
-            
+
             # Add arguments if requested
             if include_args and args:
                 log_data["args_count"] = len(args)
                 if len(args) <= 3:  # Only log if few args
                     log_data["args"] = [str(arg) for arg in args]
-            
+
             if include_kwargs and kwargs:
                 # Sanitize sensitive parameters
                 sanitized_kwargs = {}
@@ -434,28 +431,28 @@ def log_api_calls(
                     else:
                         sanitized_kwargs[key] = str(value)
                 log_data["kwargs"] = sanitized_kwargs
-            
+
             # Log function call
             log_func = getattr(logger, log_level.lower(), logger.info)
             log_func(f"API call started: {func.__name__}", extra=log_data)
-            
+
             try:
                 result = func(*args, **kwargs)
                 execution_time = (time.time() - start_time) * 1000
-                
+
                 # Log successful completion
                 log_data.update({
                     "success": True,
                     "execution_time_ms": execution_time,
                     "end_time": datetime.utcnow().isoformat()
                 })
-                
+
                 log_func(f"API call completed: {func.__name__}", extra=log_data)
                 return result
-                
+
             except Exception as e:
                 execution_time = (time.time() - start_time) * 1000
-                
+
                 # Log error
                 log_data.update({
                     "success": False,
@@ -464,10 +461,10 @@ def log_api_calls(
                     "error_message": str(e),
                     "end_time": datetime.utcnow().isoformat()
                 })
-                
+
                 logger.error(f"API call failed: {func.__name__}", extra=log_data)
                 raise
-        
+
         return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
     return decorator
 
@@ -485,7 +482,7 @@ def cache_response(
         key_func: Function to generate cache key from request
     """
     cache = {}
-    
+
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def async_wrapper(*args, **kwargs):
@@ -497,7 +494,7 @@ def cache_response(
                     cache_key = str(hash(str(args) + str(sorted(kwargs.items()))))
             else:
                 cache_key = str(hash(str(args) + str(sorted(kwargs.items()))))
-            
+
             # Check cache
             now = datetime.utcnow()
             if cache_key in cache:
@@ -508,26 +505,26 @@ def cache_response(
                 else:
                     # Cache expired
                     del cache[cache_key]
-            
+
             # Execute function
             result = await func(*args, **kwargs)
-            
+
             # Cache result
             if len(cache) >= max_size:
                 # Remove oldest entry (simple LRU)
                 oldest_key = min(cache.keys(), key=lambda k: cache[k][1])
                 del cache[oldest_key]
-            
+
             cache[cache_key] = (result, now)
             logger.debug(f"Cached response for {func.__name__}")
-            
+
             return result
-        
+
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             # For sync functions, just execute (caching would need async context)
             return func(*args, **kwargs)
-        
+
         return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
     return decorator
 
@@ -548,13 +545,13 @@ def require_auth(
             try:
                 # Perform authentication
                 user_info = auth_func(*args, **kwargs)
-                
+
                 if not user_info:
                     raise AuthenticationAPIException(
                         message="Authentication failed",
                         auth_method="decorator"
                     )
-                
+
                 # Check scopes if required
                 if required_scopes:
                     user_scopes = user_info.get("scopes", [])
@@ -565,12 +562,12 @@ def require_auth(
                             auth_method="decorator",
                             required_scopes=required_scopes
                         )
-                
+
                 # Add user info to kwargs
                 kwargs["current_user"] = user_info
-                
+
                 return await func(*args, **kwargs)
-                
+
             except AuthenticationAPIException:
                 raise
             except Exception as e:
@@ -578,19 +575,19 @@ def require_auth(
                     message=f"Authentication error: {str(e)}",
                     auth_method="decorator"
                 )
-        
+
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             try:
                 # Perform authentication
                 user_info = auth_func(*args, **kwargs)
-                
+
                 if not user_info:
                     raise AuthenticationAPIException(
                         message="Authentication failed",
                         auth_method="decorator"
                     )
-                
+
                 # Check scopes if required
                 if required_scopes:
                     user_scopes = user_info.get("scopes", [])
@@ -601,12 +598,12 @@ def require_auth(
                             auth_method="decorator",
                             required_scopes=required_scopes
                         )
-                
+
                 # Add user info to kwargs
                 kwargs["current_user"] = user_info
-                
+
                 return func(*args, **kwargs)
-                
+
             except AuthenticationAPIException:
                 raise
             except Exception as e:
@@ -614,6 +611,6 @@ def require_auth(
                     message=f"Authentication error: {str(e)}",
                     auth_method="decorator"
                 )
-        
+
         return async_wrapper if asyncio.iscoroutinefunction(func) else sync_wrapper
     return decorator

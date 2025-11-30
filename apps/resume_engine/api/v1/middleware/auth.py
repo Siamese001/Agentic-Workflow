@@ -5,21 +5,20 @@ LEVEL 5 - JWT-based authentication and authorization
 
 from fastapi import HTTPException, status, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from typing import Optional, Dict, Any
+from typing import Dict, Any
 import jwt
-import time
 from datetime import datetime, timedelta
 
 security = HTTPBearer()
 
 class AuthMiddleware:
     """Handles JWT authentication for resume engine endpoints"""
-    
+
     def __init__(self, secret_key: str = "resume_engine_secret_key"):
         self.secret_key = secret_key
         self.algorithm = "HS256"
         self.token_expiry = timedelta(hours=24)
-    
+
     def create_access_token(self, user_data: Dict[str, Any]) -> str:
         """Create JWT access token for authenticated user"""
         payload = {
@@ -29,9 +28,9 @@ class AuthMiddleware:
             "iat": datetime.utcnow(),
             "exp": datetime.utcnow() + self.token_expiry
         }
-        
+
         return jwt.encode(payload, self.secret_key, algorithm=self.algorithm)
-    
+
     def verify_token(self, token: str) -> Dict[str, Any]:
         """Verify and decode JWT token"""
         try:
@@ -49,7 +48,7 @@ class AuthMiddleware:
                 detail="Invalid token",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-    
+
     def check_permission(self, payload: Dict[str, Any], required_permission: str) -> bool:
         """Check if user has required permission"""
         permissions = payload.get("permissions", [])
@@ -73,8 +72,8 @@ async def require_resume_write_permission(current_user: Dict[str, Any] = Depends
     return current_user
 
 __all__ = [
-    "AuthMiddleware", 
-    "get_current_user", 
+    "AuthMiddleware",
+    "get_current_user",
     "require_resume_write_permission",
     "security"
 ]

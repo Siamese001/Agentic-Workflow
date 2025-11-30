@@ -34,16 +34,16 @@ class LICSafetyValidator:
                 confidence=1.0,
                 metadata={"validator": "LICSafetyValidator", "disabled": False}
             )
-        
+
         # Mock validation logic
         violations = []
         confidence = 0.9
-        
+
         if isinstance(input_data, str):
             if len(input_data) > 10000:
                 violations.append("Content too long")
                 confidence -= 0.2
-        
+
         return SafetyResult(
             is_safe=len(violations) == 0,
             safety_level=SafetyLevel.STANDARD if violations else SafetyLevel.RELAXED,

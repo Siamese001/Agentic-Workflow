@@ -10,7 +10,7 @@ from __future__ import annotations
 from agentic_core.resume_engine.l4_memory_state.memory import *  # noqa: F401,F403
 from agentic_core.resume_engine.l4_memory_state.rag import *  # noqa: F401,F403
 
-# Outreach Memory/State imports  
+# Outreach Memory/State imports
 from agentic_core.outreach_engine.l4_memory_state.memory import *  # noqa: F401,F403
 from agentic_core.outreach_engine.l4_memory_state.rag import *  # noqa: F401,F403
 
@@ -36,6 +36,6 @@ __all__ = [
     "ResumeStateManager",
     "ResumeRAGEngine",
     # Outreach memory classes
-    "OutreachMemoryManager", 
+    "OutreachMemoryManager",
     "get_rag_policy",
 ]

@@ -6,7 +6,7 @@ Minimal LLM profile configuration for compatibility.
 
 from __future__ import annotations
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from dataclasses import dataclass
 from enum import Enum
 

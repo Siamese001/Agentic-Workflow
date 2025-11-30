@@ -9,7 +9,7 @@ from uuid import UUID
 
 class APIException(Exception):
     """Base exception for API errors"""
-    
+
     def __init__(
         self,
         message: str,
@@ -31,7 +31,7 @@ class APIException(Exception):
         self.retry_after = retry_after
         self.metadata = metadata
         self.timestamp = datetime.utcnow()
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert exception to dictionary for API responses"""
         result = {
@@ -41,7 +41,7 @@ class APIException(Exception):
             "message": self.message,
             "timestamp": self.timestamp.isoformat()
         }
-        
+
         if self.request_id:
             result["request_id"] = str(self.request_id)
         if self.error_details:
@@ -52,12 +52,12 @@ class APIException(Exception):
             result["retry_after"] = self.retry_after
         if self.metadata:
             result["metadata"] = self.metadata
-            
+
         return result
 
 class ValidationAPIException(APIException):
     """Exception for validation errors"""
-    
+
     def __init__(
         self,
         message: str = "Validation failed",
@@ -71,25 +71,25 @@ class ValidationAPIException(APIException):
             **kwargs
         )
         self.validation_errors = validation_errors or []
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert validation exception to dictionary"""
         result = super().to_dict()
         result["validation_errors"] = self.validation_errors
         return result
-    
+
     @classmethod
     def from_field_error(cls, field: str, message: str, value: Any = None):
         """Create validation exception from field error"""
         error = {"field": field, "message": message}
         if value is not None:
             error["value"] = value
-        
+
         return cls(
             message=f"Validation failed for field: {field}",
             validation_errors=[error]
         )
-    
+
     @classmethod
     def from_multiple_errors(cls, errors: List[Dict[str, Any]]):
         """Create validation exception from multiple field errors"""
@@ -100,7 +100,7 @@ class ValidationAPIException(APIException):
 
 class AuthenticationAPIException(APIException):
     """Exception for authentication errors"""
-    
+
     def __init__(
         self,
         message: str = "Authentication failed",
@@ -116,25 +116,25 @@ class AuthenticationAPIException(APIException):
         )
         self.auth_method = auth_method
         self.required_scopes = required_scopes
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert authentication exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {}
         if self.auth_method:
             error_details["auth_method"] = self.auth_method
         if self.required_scopes:
             error_details["required_scopes"] = self.required_scopes
-        
+
         if error_details:
             result["error_details"] = error_details
-            
+
         return result
 
 class AuthorizationAPIException(APIException):
     """Exception for authorization errors"""
-    
+
     def __init__(
         self,
         message: str = "Access denied",
@@ -150,25 +150,25 @@ class AuthorizationAPIException(APIException):
         )
         self.required_permissions = required_permissions
         self.current_permissions = current_permissions
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert authorization exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {}
         if self.required_permissions:
             error_details["required_permissions"] = self.required_permissions
         if self.current_permissions:
             error_details["current_permissions"] = self.current_permissions
-        
+
         if error_details:
             result["error_details"] = error_details
-            
+
         return result
 
 class RateLimitAPIException(APIException):
     """Exception for rate limiting errors"""
-    
+
     def __init__(
         self,
         message: str = "Rate limit exceeded",
@@ -186,23 +186,23 @@ class RateLimitAPIException(APIException):
         )
         self.limit = limit
         self.reset_time = reset_time or (datetime.utcnow().timestamp() + retry_after)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert rate limit exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {
             "limit": self.limit,
             "reset_time": datetime.fromtimestamp(self.reset_time).isoformat(),
             "remaining": 0
         }
-        
+
         result["error_details"] = error_details
         return result
 
 class NotFoundAPIException(APIException):
     """Exception for resource not found errors"""
-    
+
     def __init__(
         self,
         message: str = "Resource not found",
@@ -214,7 +214,7 @@ class NotFoundAPIException(APIException):
             full_message = f"{resource_type.title()} not found: {resource_id}"
         else:
             full_message = f"{resource_type.title()} not found"
-        
+
         super().__init__(
             message=full_message,
             error_code="NOT_FOUND",
@@ -223,23 +223,23 @@ class NotFoundAPIException(APIException):
         )
         self.resource_type = resource_type
         self.resource_id = resource_id
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert not found exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {
             "resource_type": self.resource_type
         }
         if self.resource_id:
             error_details["resource_id"] = self.resource_id
-        
+
         result["error_details"] = error_details
         return result
 
 class ConflictAPIException(APIException):
     """Exception for conflict errors"""
-    
+
     def __init__(
         self,
         message: str = "Resource conflict",
@@ -255,23 +255,23 @@ class ConflictAPIException(APIException):
         )
         self.conflict_type = conflict_type
         self.conflicting_resource = conflicting_resource
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert conflict exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {
             "conflict_type": self.conflict_type
         }
         if self.conflicting_resource:
             error_details["conflicting_resource"] = self.conflicting_resource
-        
+
         result["error_details"] = error_details
         return result
 
 class BadRequestAPIException(APIException):
     """Exception for bad request errors"""
-    
+
     def __init__(
         self,
         message: str = "Bad request",
@@ -285,19 +285,19 @@ class BadRequestAPIException(APIException):
             **kwargs
         )
         self.request_details = request_details or {}
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert bad request exception to dictionary"""
         result = super().to_dict()
-        
+
         if self.request_details:
             result["error_details"] = self.request_details
-            
+
         return result
 
 class ServiceUnavailableAPIException(APIException):
     """Exception for service unavailable errors"""
-    
+
     def __init__(
         self,
         message: str = "Service temporarily unavailable",
@@ -313,23 +313,23 @@ class ServiceUnavailableAPIException(APIException):
             **kwargs
         )
         self.service_name = service_name
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert service unavailable exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {}
         if self.service_name:
             error_details["service_name"] = self.service_name
-        
+
         if error_details:
             result["error_details"] = error_details
-            
+
         return result
 
 class TimeoutAPIException(APIException):
     """Exception for timeout errors"""
-    
+
     def __init__(
         self,
         message: str = "Request timeout",
@@ -345,25 +345,25 @@ class TimeoutAPIException(APIException):
         )
         self.timeout_seconds = timeout_seconds
         self.operation = operation
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert timeout exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {}
         if self.timeout_seconds:
             error_details["timeout_seconds"] = self.timeout_seconds
         if self.operation:
             error_details["operation"] = self.operation
-        
+
         if error_details:
             result["error_details"] = error_details
-            
+
         return result
 
 class QuotaExceededAPIException(APIException):
     """Exception for quota exceeded errors"""
-    
+
     def __init__(
         self,
         message: str = "Quota exceeded",
@@ -383,11 +383,11 @@ class QuotaExceededAPIException(APIException):
         self.current_usage = current_usage
         self.quota_limit = quota_limit
         self.reset_time = reset_time
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert quota exceeded exception to dictionary"""
         result = super().to_dict()
-        
+
         error_details = {
             "quota_type": self.quota_type,
             "current_usage": self.current_usage,
@@ -395,7 +395,7 @@ class QuotaExceededAPIException(APIException):
         }
         if self.reset_time:
             error_details["reset_time"] = self.reset_time.isoformat()
-        
+
         result["error_details"] = error_details
         return result
 

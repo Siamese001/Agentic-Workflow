@@ -9,7 +9,7 @@ from __future__ import annotations
 # Resume Safety imports
 from agentic_core.resume_engine.l5_safety.policies import *  # noqa: F401,F403
 
-# Outreach Safety imports  
+# Outreach Safety imports
 from agentic_core.outreach_engine.l5_safety.policies import *  # noqa: F401,F403
 
 # Core safety interfaces

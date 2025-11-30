@@ -18,13 +18,10 @@ from datetime import datetime
 from agentic_core.api import (
     BaseRequest,
     create_success_response,
-    create_error_response,
-    create_validation_response,
     handle_errors,
     log_api_calls,
     rate_limit,
     validate_request,
-    APIException,
     ValidationAPIException,
     ServiceUnavailableAPIException
 )
@@ -41,7 +38,7 @@ except ImportError as e:
     class ResumeRequest(BaseRequest):
         user_profile: Dict[str, Any]
         job_description: str
-    
+
     class ResumeResponse(BaseRequest):
         success: bool
         resume_content: Dict[str, Any]
@@ -62,7 +59,7 @@ router = APIRouter()
 
 class ResumeGenerationEndpoint:
     """Handles resume generation requests with robust validation and processing"""
-    
+
     def __init__(self):
         if SERVICES_AVAILABLE:
             self.section_generator = SectionGenerator()
@@ -70,9 +67,9 @@ class ResumeGenerationEndpoint:
         else:
             self.section_generator = None
             self.resume_pipeline = None
-    
+
     async def generate_resume(
-        self, 
+        self,
         request: ResumeRequest
     ) -> Dict[str, Any]:
         """
@@ -90,7 +87,7 @@ class ResumeGenerationEndpoint:
                     message="Resume generation services not available",
                     error_code="SERVICES_UNAVAILABLE"
                 )
-            
+
             # Validate input data
             if not request.user_profile or not request.job_description:
                 raise ValidationAPIException(
@@ -100,10 +97,10 @@ class ResumeGenerationEndpoint:
                         {"field": "job_description", "message": "Job description is required"}
                     ]
                 )
-            
+
             # Generate resume through pipeline
             result = await self.resume_pipeline.execute(request)
-            
+
             return {
                 "success": True,
                 "resume_content": result["resume_content"],
@@ -111,7 +108,7 @@ class ResumeGenerationEndpoint:
                 "processing_time": result["processing_time"],
                 "resume_id": f"resume_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
             }
-            
+
         except ValidationAPIException as e:
             raise e
         except Exception as e:
@@ -126,17 +123,17 @@ resume_endpoint = ResumeGenerationEndpoint()
 def validate_resume_request(request: ResumeRequest) -> None:
     """Validate resume generation request"""
     errors = []
-    
+
     if not request.user_profile:
         errors.append({"field": "user_profile", "message": "User profile is required"})
     elif not isinstance(request.user_profile, dict):
         errors.append({"field": "user_profile", "message": "User profile must be a dictionary"})
-    
+
     if not request.job_description:
         errors.append({"field": "job_description", "message": "Job description is required"})
     elif not isinstance(request.job_description, str):
         errors.append({"field": "job_description", "message": "Job description must be a string"})
-    
+
     if errors:
         raise ValidationAPIException(
             message="Resume generation request validation failed",
@@ -152,17 +149,17 @@ async def generate_resume_endpoint(request: ResumeRequest):
     """Generate resume endpoint"""
     try:
         result = await resume_endpoint.generate_resume(request)
-        
+
         return create_success_response(
             data=result,
             message="Resume generated successfully"
         )
-        
+
     except ValidationAPIException as e:
         raise e
     except ServiceUnavailableAPIException as e:
         raise e
-    except Exception as e:
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Resume generation service temporarily unavailable",
             error_code="GENERATION_SERVICE_ERROR"
