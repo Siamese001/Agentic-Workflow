@@ -335,7 +335,7 @@ class RGResumeOrchestrator:
 
         # Update average execution time
         total_time = (
-            self.performance_metrics["average_execution_time_ms"] * 
+            self.performance_metrics["average_execution_time_ms"] *
             (self.performance_metrics["total_orchestrations"] - 1)
         )
         self.performance_metrics["average_execution_time_ms"] = (
