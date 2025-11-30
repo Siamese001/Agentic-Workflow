@@ -2,6 +2,9 @@
 from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 
+# Import BulletProvenance from L4 memory layer for provenance tracking
+from ..l4_memory_state.memory.rg_memory import BulletProvenance
+
 @dataclass
 class LLMRequest:
     """LLM request structure"""
@@ -114,8 +117,21 @@ Certifications: {certifications}
     def _enhance_bullet(self, request: LLMRequest) -> LLMResponse:
         """Enhance resume bullet with real business logic"""
         context = request.context or {}
-        original_bullet = context.get("original_bullet", "")
+        # Get bullet from prompt field (where ResumeEngineAdapter passes it)
+        original_bullet = request.prompt or ""
         target_role = context.get("target_role", "professional")
+
+        # Guard against empty bullets
+        if not original_bullet or not original_bullet.strip():
+            return LLMResponse(
+                content=original_bullet,
+                token_usage=0,
+                metadata={
+                    "model": self.model_name,
+                    "task_type": "bullet_enhancement",
+                    "error": "Empty bullet provided"
+                }
+            )
 
         # Real bullet enhancement logic
         enhanced = self._apply_bullet_enhancement_rules(original_bullet, target_role)
@@ -128,26 +144,35 @@ Certifications: {certifications}
                 "task_type": "bullet_enhancement",
                 "original_length": len(original_bullet),
                 "enhanced_length": len(enhanced)
-            }
+            },
+            enhancements_applied=["action_verb", "quantification", "role_keywords"],
+            overall_confidence=0.85,  # Fixed confidence for template-based enhancement
+            provenance=BulletProvenance.ENRICHED
         )
 
     def _apply_bullet_enhancement_rules(self, bullet: str, target_role: str) -> str:
         """Apply real bullet enhancement rules"""
         enhanced = bullet
 
-        # Add action verb if missing
-        action_verbs = ["led", "developed", "implemented", "architected", "managed", "optimized"]
-        if not any(enhanced.lower().startswith(verb.lower()) for verb in action_verbs):
+        # Add action verb if missing (don't double-add)
+        action_verbs = ["led", "developed", "implemented", "architected", "managed", "optimized", "built", "created", "improved", "reduced", "increased"]
+        first_word = enhanced.lower().split()[0] if enhanced.split() else ""
+        if not any(first_word.startswith(verb.lower()) for verb in action_verbs):
             enhanced = "Developed " + enhanced[0].lower() + enhanced[1:]
 
-        # Add quantification if missing
-        if not any(char in enhanced for char in ['$', '%', 'number']):
+        # Add quantification if missing (avoid double quantification)
+        has_metrics = any(char in enhanced for char in ['$', '%']) or any(
+            word in enhanced.lower() for word in ['by 40%', 'by 30%', 'by 25%', 'improvement', 'growth', 'costs']
+        )
+        if not has_metrics:
             if "improved" in enhanced.lower():
                 enhanced += ", resulting in 25% improvement in efficiency"
             elif "reduced" in enhanced.lower():
                 enhanced += ", cutting costs by 30%"
             elif "increased" in enhanced.lower():
                 enhanced += ", driving 40% growth in key metrics"
+            elif "developed" in enhanced.lower() or "built" in enhanced.lower():
+                enhanced += ", serving 10,000+ users"
 
         # Add role-specific keywords
         role_keywords = {
