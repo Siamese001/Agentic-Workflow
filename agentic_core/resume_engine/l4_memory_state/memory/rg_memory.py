@@ -1,15 +1,38 @@
 # RG Memory for L4 memory state
 from typing import Dict, Any, Optional, List
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
+from datetime import datetime
+from enum import Enum
 import json
+
+class BulletProvenance(Enum):
+    """Bullet point origin tracking"""
+    VERBATIM = "verbatim"
+    MASTER_RESUME = "master_resume"
+    GENERATED = "generated"
+    ENRICHED = "enriched"
+    HYBRID = "hybrid"
+
+@dataclass
+class BulletIndex:
+    """Enhanced bullet index with provenance tracking"""
+    bullet_id: str
+    company: str
+    role: str
+    bullet_text: str
+    keywords: List[str] = field(default_factory=list)
+    provenance: BulletProvenance = BulletProvenance.MASTER_RESUME
+    relevance_score: float = 0.0
+    indexed_at: str = field(default_factory=lambda: datetime.now().isoformat())
 
 @dataclass
 class MemoryResult:
-    """Memory operation result"""
+    """Memory operation result with enhanced metadata"""
     success: bool = True
     data: Dict[str, Any] = None
     metadata: Dict[str, Any] = None
+    provenance_tracking: Dict[str, BulletProvenance] = field(default_factory=dict)
 
     def __post_init__(self):
         if self.data is None:
