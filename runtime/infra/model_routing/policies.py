@@ -17,10 +17,10 @@ class ModelRoutingConfig:
     """Configuration for model routing."""
     strategy: RoutingStrategy = RoutingStrategy.BALANCED
     priority_weights: Dict[str, float] = field(default_factory=lambda: {
-        "C_LEVEL": 2.0,
-        "EXECUTIVE": 1.5,
-        "SENIOR_TA": 1.2,
-        "RECRUITER": 1.0
+        "c_level": 2.0,
+        "executive": 1.5,
+        "senior_ta": 1.2,
+        "recruiter": 1.0
     })
     cost_thresholds: Dict[str, float] = field(default_factory=lambda: {
         "max_cost_per_request": 0.01,
@@ -53,10 +53,15 @@ class ModelRoutingPolicy:
         self.config = config or ModelRoutingConfig()
         self.routing_history = []
         self.model_registry = {
-            "gpt-4": {"cost": 0.03, "performance": {"latency": 2000, "accuracy": 0.95}},
-            "gpt-3.5-turbo": {"cost": 0.002, "performance": {"latency": 1000, "accuracy": 0.85}},
-            "claude-3": {"cost": 0.015, "performance": {"latency": 1500, "accuracy": 0.92}},
-            "llama-2": {"cost": 0.001, "performance": {"latency": 800, "accuracy": 0.80}}
+            "gpt-5.1": {"cost": 0.03, "performance": {"latency": 2000, "accuracy": 0.95}, "tier": "heavy"},
+            "gpt-5-mini": {"cost": 0.015, "performance": {"latency": 1500, "accuracy": 0.90}, "tier": "medium"},
+            "gpt-5-nano": {"cost": 0.002, "performance": {"latency": 800, "accuracy": 0.80}, "tier": "light"},
+            "claude-opus-4-1-20250805": {"cost": 0.025, "performance": {"latency": 1800, "accuracy": 0.93}, "tier": "heavy"},
+            "claude-sonnet-4-5-20250929": {"cost": 0.012, "performance": {"latency": 1200, "accuracy": 0.88}, "tier": "medium"},
+            "claude-haiku-4-5-20251001": {"cost": 0.001, "performance": {"latency": 600, "accuracy": 0.75}, "tier": "light"},
+            "gemini-3-pro-preview": {"cost": 0.02, "performance": {"latency": 1600, "accuracy": 0.91}, "tier": "heavy"},
+            "gemini-2.5-flash": {"cost": 0.01, "performance": {"latency": 1000, "accuracy": 0.85}, "tier": "medium"},
+            "gemini-2.5-flash-lite": {"cost": 0.0005, "performance": {"latency": 500, "accuracy": 0.70}, "tier": "light"}
         }
     
     def route_request(self, 
@@ -82,6 +87,67 @@ class ModelRoutingPolicy:
         self.routing_history.append(decision)
         
         return decision
+    
+    def select_model(self, archetype: str, budget_manager: Any = None, stage: str = None, context: Dict[str, Any] = None) -> str:
+        """Select model based on archetype and budget constraints"""
+        context = context or {}
+        
+        # Get priority for archetype (handle both string and enum)
+        if hasattr(archetype, 'value'):
+            archetype_str = archetype.value
+        else:
+            archetype_str = str(archetype)
+        
+        priority = self.config.priority_weights.get(archetype_str, 1.0)
+        
+        # Safety always gets heavy models regardless of budget
+        if stage == 'safety':
+            heavy_models = [name for name, info in self.model_registry.items() if info['tier'] == 'heavy']
+            return heavy_models[0] if heavy_models else "gpt-5.1"
+        
+        # Unknown stage defaults to medium models
+        if stage is None or stage == 'unknown' or 'unknown' in str(stage).lower():
+            medium_models = [name for name, info in self.model_registry.items() if info['tier'] == 'medium']
+            return medium_models[0] if medium_models else "gpt-5-mini"
+        
+        # Check budget constraints only if budget_manager exists and has constraints
+        if budget_manager and hasattr(budget_manager, 'current_usage'):
+            try:
+                usage = budget_manager.current_usage()
+                budget_exceeded = usage.get('budget_exceeded', {})
+                
+                # Check if budget is exceeded for tokens - use light models
+                if budget_exceeded.get('tokens', False):
+                    light_models = [name for name, info in self.model_registry.items() if info['tier'] == 'light']
+                    return light_models[0] if light_models else "gpt-5-nano"
+                
+                # Check if low budget (less than 30% tokens remaining)
+                if usage.get('tokens_remaining', 1000) < 300:
+                    light_models = [name for name, info in self.model_registry.items() if info['tier'] == 'light']
+                    return light_models[0] if light_models else "gpt-5-nano"
+                
+                # Check if medium budget (less than 70% tokens remaining)
+                if usage.get('tokens_remaining', 1000) < 700:
+                    medium_models = [name for name, info in self.model_registry.items() if info['tier'] == 'medium']
+                    return medium_models[0] if medium_models else "gpt-5-mini"
+                
+            except (AttributeError, Exception):
+                # If budget checks fail, continue with archetype-based selection
+                pass
+        
+        # Default archetype-based selection when no budget constraints
+        if priority >= 2.0:  # C_LEVEL
+            heavy_models = [name for name, info in self.model_registry.items() if info['tier'] == 'heavy']
+            return heavy_models[0] if heavy_models else "gpt-5.1"
+        elif priority >= 1.5:  # EXECUTIVE
+            medium_models = [name for name, info in self.model_registry.items() if info['tier'] == 'medium']
+            return medium_models[0] if medium_models else "gpt-5-mini"
+        elif priority >= 1.2:  # SENIOR_TA
+            light_models = [name for name, info in self.model_registry.items() if info['tier'] == 'light']
+            return light_models[0] if light_models else "gpt-5-nano"
+        else:  # RECRUITER or others
+            light_models = [name for name, info in self.model_registry.items() if info['tier'] == 'light']
+            return light_models[0] if light_models else "gpt-5-nano"
     
     def _route_by_archetype(self, request_type: str, archetype: str, context: Dict[str, Any]) -> RoutingDecision:
         """Route based on archetype-specific requirements."""
