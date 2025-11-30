@@ -5,7 +5,7 @@ Tests for individual safety components
 
 import pytest
 from agentic_core.l5_safety import (
-    ContentFilter, Guardrail, Auditor
+    ContentFilter, SafetyValidator, SafetyMonitor
 )
 
 
@@ -17,12 +17,12 @@ class TestSafetyComponents:
         filter = ContentFilter()
         assert filter is not None
     
-    def test_guardrail_init(self):
-        """Test Guardrail initialization"""
-        guardrail = Guardrail()
-        assert guardrail is not None
+    def test_safety_validator_init(self):
+        """Test SafetyValidator initialization"""
+        validator = SafetyValidator()
+        assert validator is not None
     
-    def test_auditor_init(self):
-        """Test Auditor initialization"""
-        auditor = Auditor()
-        assert auditor is not None
+    def test_safety_monitor_init(self):
+        """Test SafetyMonitor initialization"""
+        monitor = SafetyMonitor()
+        assert monitor is not None
