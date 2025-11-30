@@ -3,7 +3,7 @@ from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 
 # Import BulletProvenance from L4 memory layer for provenance tracking
-from ..l4_memory_state.memory.rg_memory import BulletProvenance
+from agentic_core.resume_engine.l4_memory_state.memory.rg_memory import BulletProvenance
 
 @dataclass
 class LLMRequest:

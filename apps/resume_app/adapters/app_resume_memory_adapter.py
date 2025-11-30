@@ -297,9 +297,35 @@ class ResumeMemoryAdapter:
 
         return MemoryResult(
             success=True,
-            data={"stored_experience": experience_data.get("company", "")},
+            data={"stored_experience": experience_data},
             provenance_tracking={"experience": request.provenance}
         )
+
+    def store_research_data(self, memory_request: MemoryQueryRequest) -> MemoryResult:
+        """Store research data to memory"""
+        try:
+            # Store research data in a separate section
+            if "research_data" not in self.core_memory.memory:
+                self.core_memory.memory["research_data"] = {}
+            
+            research_data = memory_request.filters.get("research_data", {})
+            target_role = memory_request.target_role or "unknown"
+            
+            # Store research data with timestamp
+            research_key = f"{target_role}_{datetime.now().timestamp()}"
+            self.core_memory.memory["research_data"][research_key] = research_data
+            
+            return MemoryResult(
+                success=True,
+                data={"research_key": research_key, "stored_data": research_data},
+                metadata={"target_role": target_role, "stored_at": datetime.now().isoformat()}
+            )
+        except Exception as e:
+            return MemoryResult(
+                success=False,
+                data={},
+                metadata={"error": str(e)}
+            )
 
     def _build_provenance_summary(self, results: List[Dict[str, Any]]) -> Dict[str, int]:
         """Build summary of provenance types in results"""
