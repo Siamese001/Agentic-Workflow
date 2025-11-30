@@ -1,1 +1,70 @@
-# Placeholder configuration file
+# L1 Research Planning Configuration
+# Research methodology and information gathering parameters
+
+# Research Planning Parameters
+research:
+  max_sources_per_query: 5
+  research_depth: 3
+  confidence_threshold: 0.8
+  research_timeout: 90  # seconds
+  
+# Company Research Planning
+company_research:
+  focus_areas:
+    - company_mission
+    - recent_funding
+    - key_executives
+    - tech_stack
+    - company_culture
+    - recent_news
+  
+  data_sources:
+    - company_website
+    - linkedin
+    - crunchbase
+    - tech_crunch
+    - glassdoor
+  
+  weighting:
+    company_website: 0.3
+    linkedin: 0.25
+    crunchbase: 0.2
+    tech_crunch: 0.15
+    glassdoor: 0.1
+
+# Contact Research Planning
+contact_research:
+  profile_elements:
+    - professional_background
+    - recent_activity
+    - mutual_connections
+    - interests
+    - communication_style
+  
+  search_strategies:
+    - title_based: 0.4
+    - skill_based: 0.3
+    - company_based: 0.2
+    - network_based: 0.1
+
+# Job Description Research
+jd_research:
+  extraction_targets:
+    - required_skills
+    - preferred_skills
+    - experience_level
+    - responsibilities
+    - company_values
+    - compensation_range
+  
+  analysis_depth:
+    skill_extraction: deep
+    experience_matching: medium
+    culture_fit: light
+
+# Research Quality Control
+quality_control:
+  source_reliability_threshold: 0.7
+  data_freshness_days: 30
+  cross_reference_required: true
+  min_confidence_score: 0.6

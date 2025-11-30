@@ -1,1 +1,97 @@
-# Placeholder configuration file
+# L4 Memory Store Configuration
+# Memory management and storage parameters
+
+# Memory Store Settings
+memory_store:
+  enabled: true
+  max_memory_size: 1024  # MB
+  retention_period: 86400  # seconds (24 hours)
+  compression_enabled: true
+
+# Memory Types
+memory_types:
+  working_memory:
+    size_limit: 256  # MB
+    ttl: 3600  # seconds (1 hour)
+    priority: high
+    persistence: false
+  
+  short_term_memory:
+    size_limit: 512  # MB
+    ttl: 86400  # seconds (24 hours)
+    priority: medium
+    persistence: true
+  
+  long_term_memory:
+    size_limit: 2048  # MB
+    ttl: 604800  # seconds (7 days)
+    priority: low
+    persistence: true
+
+# Storage Backends
+backends:
+  primary:
+    type: redis
+    host: localhost
+    port: 6379
+    db: 0
+    connection_pool_size: 10
+  
+  secondary:
+    type: file
+    path: ./data/memory
+    format: json
+    compression: gzip
+  
+  tertiary:
+    type: database
+    connection_string: ${DATABASE_URL}
+    table: memory_store
+
+# Memory Categories
+categories:
+  user_context:
+    ttl: 3600
+    priority: high
+    max_entries: 100
+  
+  session_data:
+    ttl: 7200
+    priority: high
+    max_entries: 50
+  
+  workflow_state:
+    ttl: 1800
+    priority: medium
+    max_entries: 200
+  
+  cache_data:
+    ttl: 300
+    priority: low
+    max_entries: 1000
+
+# Memory Operations
+operations:
+  get:
+    timeout: 100  # milliseconds
+    retry_attempts: 2
+  
+  set:
+    timeout: 200  # milliseconds
+    retry_attempts: 3
+  
+  delete:
+    timeout: 50  # milliseconds
+    retry_attempts: 1
+  
+  cleanup:
+    interval: 300  # seconds
+    batch_size: 100
+
+# Memory Optimization
+optimization:
+  enable_compression: true
+  compression_threshold: 1024  # bytes
+  enable_deduplication: true
+  enable_lazy_loading: true
+  gc_frequency: 3600  # seconds

@@ -1,1 +1,117 @@
-# Placeholder configuration file
+# Model Routing Budget Bands Configuration
+# Budget-based model selection and cost management
+
+# Budget Band Framework
+budget_bands:
+  enabled: true
+  default_band: standard
+  auto_upgrade: false
+  downgrade_on_overage: true
+
+# Budget Band Definitions
+bands:
+  economy:
+    daily_limit: 1.00
+    per_request_limit: 0.01
+    models:
+      - gpt-3.5-turbo
+      - claude-3-haiku
+      - gpt-5-nano
+      - claude-haiku-4-5-20251001
+    quality_threshold: 0.6
+    use_cases:
+      - basic_validation
+      - simple_classification
+      - quick_generation
+  
+  standard:
+    daily_limit: 5.00
+    per_request_limit: 0.05
+    models:
+      - gpt-4-turbo
+      - claude-3-sonnet
+      - gpt-3.5-turbo
+      - claude-3-haiku
+    quality_threshold: 0.7
+    use_cases:
+      - message_generation
+      - data_analysis
+      - content_optimization
+  
+  premium:
+    daily_limit: 25.00
+    per_request_limit: 0.10
+    models:
+      - gpt-4
+      - claude-3-opus
+      - gpt-4-turbo
+      - claude-3-sonnet
+    quality_threshold: 0.8
+    use_cases:
+      - resume_generation
+      - complex_analysis
+      - strategic_planning
+  
+  enterprise:
+    daily_limit: 100.00
+    per_request_limit: 0.50
+    models:
+      - gpt-4
+      - claude-3-opus
+      - all_available_models
+    quality_threshold: 0.9
+    use_cases:
+      - high_stakes_tasks
+      - batch_processing
+      - premium_features
+
+# Band Assignment Rules
+assignment_rules:
+  user_tier_based:
+    free_users: economy
+    basic_users: standard
+    pro_users: premium
+    enterprise_users: enterprise
+  
+  task_complexity_based:
+    simple_tasks: economy
+    standard_tasks: standard
+    complex_tasks: premium
+    critical_tasks: enterprise
+  
+  context_based:
+    internal_tools: economy
+    customer_facing: standard
+    revenue_generating: premium
+    mission_critical: enterprise
+
+# Cost Management Policies
+cost_management:
+  real_time_tracking: true
+  budget_alerts: true
+  oversampling_protection: true
+  cost_optimization: true
+  
+  alert_thresholds:
+    warning: 0.8  # 80% of budget
+    critical: 0.95  # 95% of budget
+    exhausted: 1.0  # 100% of budget
+
+# Band Transition Rules
+transitions:
+  upgrade:
+    auto_upgrade_enabled: false
+    manual_approval_required: true
+    upgrade_cooldown: 3600  # seconds
+  
+  downgrade:
+    auto_downgrade_enabled: true
+    downgrade_threshold: 1.2  # 120% of budget
+    grace_period: 1800  # seconds
+
+# Usage Monitoring
+monitoring:
+  track_per_user: true
+  track_per_task: true
+  track_per_model: true
+  reporting_frequency: 3600  # seconds

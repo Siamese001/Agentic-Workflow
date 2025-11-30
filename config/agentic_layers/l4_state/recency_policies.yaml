@@ -1,1 +1,89 @@
-# Placeholder configuration file
+# L4 Recency Policies Configuration
+# Data freshness and temporal relevance policies
+
+# Recency Policy Framework
+recency_policy:
+  enabled: true
+  default_freshness_threshold: 86400  # seconds (24 hours)
+  max_age_limit: 604800  # seconds (7 days)
+  freshness_check_interval: 300  # seconds
+
+# Data Category Freshness Rules
+freshness_rules:
+  user_data:
+    profile_info: 604800  # 7 days
+    preferences: 86400  # 1 day
+    activity_history: 3600  # 1 hour
+    session_data: 1800  # 30 minutes
+  
+  market_data:
+    job_postings: 172800  # 2 days
+    company_info: 604800  # 7 days
+    salary_data: 2592000  # 30 days
+    industry_trends: 1209600  # 14 days
+  
+  content_data:
+    generated_resumes: 86400  # 1 day
+    message_templates: 604800  # 7 days
+    research_results: 43200  # 12 hours
+    analysis_results: 21600  # 6 hours
+  
+  cache_data:
+    api_responses: 300  # 5 minutes
+    computed_results: 1800  # 30 minutes
+    lookup_data: 3600  # 1 hour
+
+# Recency Scoring
+scoring:
+  time_decay_factor: 0.1
+  access_frequency_weight: 0.3
+  importance_weight: 0.4
+  freshness_weight: 0.3
+  
+  score_thresholds:
+    very_fresh: 0.8
+    fresh: 0.6
+    stale: 0.4
+    very_stale: 0.2
+
+# Data Refresh Policies
+refresh_policies:
+  automatic_refresh:
+    enabled: true
+    refresh_interval: 3600  # seconds
+    priority_threshold: 0.7
+  
+  manual_refresh:
+    user_initiated: true
+    admin_override: true
+    force_refresh_available: true
+  
+  conditional_refresh:
+    on_access: true
+    on_usage_pattern: true
+    on_quality_degradation: true
+
+# Cache Invalidation Rules
+invalidation:
+  ttl_based:
+    enabled: true
+    default_ttl: 3600  # seconds
+    extended_ttl: 86400  # seconds
+  
+  event_based:
+    user_update: true
+    system_config_change: true
+    data_source_update: true
+    security_policy_change: true
+  
+  size_based:
+    max_cache_size: 512  # MB
+    eviction_policy: lru
+    cleanup_threshold: 0.8
+
+# Recency Monitoring
+monitoring:
+  track_data_age: true
+  freshness_alerts: true
+  staleness_detection: true
+  refresh_performance_metrics: true

@@ -1,1 +1,67 @@
-# Placeholder configuration file
+# L2 Execution Limits Configuration
+# Resource constraints and execution boundaries
+
+# Execution Resource Limits
+resources:
+  max_memory_per_execution: 512  # MB
+  max_cpu_time_per_execution: 300  # seconds
+  max_api_calls_per_execution: 20
+  max_file_size_processed: 10485760  # 10MB
+
+# Concurrency Limits
+concurrency:
+  max_concurrent_executions: 5
+  max_concurrent_api_calls: 10
+  max_concurrent_file_operations: 3
+  queue_size_limit: 100
+
+# Rate Limiting
+rate_limits:
+  api_calls_per_minute: 60
+  file_operations_per_minute: 30
+  memory_operations_per_second: 1000
+  network_requests_per_minute: 45
+
+# Tool-Specific Limits
+tool_limits:
+  web_search:
+    max_results_per_query: 10
+    max_query_length: 500
+    timeout: 30
+  
+  document_processing:
+    max_pages: 50
+    max_file_size: 5242880  # 5MB
+    timeout: 60
+  
+  content_generation:
+    max_tokens: 2000
+    max_output_length: 5000
+    timeout: 45
+  
+  analysis_tools:
+    max_input_size: 100000  # characters
+    max_processing_time: 90
+    timeout: 30
+
+# Memory Management
+memory:
+  working_set_limit: 256  # MB
+  cache_size_limit: 128  # MB
+  garbage_collection_interval: 300  # seconds
+  memory_pressure_threshold: 0.8
+
+# Error Handling Limits
+error_handling:
+  max_retries_per_operation: 3
+  retry_backoff_base: 1.0  # seconds
+  max_retry_delay: 30  # seconds
+  error_accumulation_limit: 10
+
+# Execution Timeouts
+timeouts:
+  default_operation: 60  # seconds
+  complex_operation: 180  # seconds
+  api_call: 30  # seconds
+  file_operation: 45  # seconds
+  memory_operation: 10  # seconds

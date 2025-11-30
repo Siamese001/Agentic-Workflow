@@ -1,1 +1,204 @@
-# Placeholder configuration file
+# Logging Configuration
+# Comprehensive logging setup for all system components
+
+# Root Logger Configuration
+root:
+  level: INFO
+  handlers:
+    - console
+    - file
+    - structured
+
+# Console Handler
+console:
+  class: logging.StreamHandler
+  level: INFO
+  formatter: standard
+  stream: ext://sys.stdout
+
+# File Handler
+file:
+  class: logging.handlers.RotatingFileHandler
+  level: DEBUG
+  formatter: detailed
+  filename: logs/agentic_workflow.log
+  maxBytes: 10485760  # 10MB
+  backupCount: 5
+
+# Structured JSON Handler
+structured:
+  class: logging.handlers.RotatingFileHandler
+  level: INFO
+  formatter: json
+  filename: logs/agentic_workflow_structured.log
+  maxBytes: 10485760  # 10MB
+  backupCount: 5
+
+# Formatters
+formatters:
+  standard:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  detailed:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(module)s:%(lineno)d - %(funcName)s - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+  
+  json:
+    format: '{"timestamp": "%(asctime)s", "level": "%(levelname)s", "logger": "%(name)s", "module": "%(module)s", "line": %(lineno)d, "function": "%(funcName)s", "message": "%(message)s"}'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+
+# Layer-Specific Loggers
+loggers:
+  # L1 Planning Layer
+  l1_planning:
+    level: DEBUG
+    propagate: false
+    handlers:
+      - console
+      - file
+      - structured
+  
+  l1_strategy:
+    level: DEBUG
+    propagate: true
+    parent: l1_planning
+  
+  l1_research:
+    level: DEBUG
+    propagate: true
+    parent: l1_planning
+  
+  l1_message:
+    level: DEBUG
+    propagate: true
+    parent: l1_planning
+  
+  l1_safety:
+    level: INFO
+    propagate: true
+    parent: l1_planning
+
+  # L2 Execution Layer
+  l2_execution:
+    level: INFO
+    propagate: false
+    handlers:
+      - console
+      - file
+      - structured
+  
+  l2_tools:
+    level: DEBUG
+    propagate: true
+    parent: l2_execution
+  
+  l2_retry:
+    level: INFO
+    propagate: true
+    parent: l2_execution
+
+  # L3 Orchestration Layer
+  l3_orchestration:
+    level: INFO
+    propagate: false
+    handlers:
+      - console
+      - file
+      - structured
+  
+  l3_workflow:
+    level: INFO
+    propagate: true
+    parent: l3_orchestration
+  
+  l3_budget:
+    level: WARNING
+    propagate: true
+    parent: l3_orchestration
+
+  # L4 Memory & State Layer
+  l4_state:
+    level: INFO
+    propagate: false
+    handlers:
+      - console
+      - file
+      - structured
+  
+  l4_memory:
+    level: DEBUG
+    propagate: true
+    parent: l4_state
+  
+  l4_cache:
+    level: DEBUG
+    propagate: true
+    parent: l4_state
+
+  # L5 Safety Layer
+  l5_safety:
+    level: WARNING
+    propagate: false
+    handlers:
+      - console
+      - file
+      - structured
+  
+  l5_guardrails:
+    level: WARNING
+    propagate: true
+    parent: l5_safety
+  
+  l5_pii:
+    level: ERROR
+    propagate: true
+    parent: l5_safety
+
+  # Engine Loggers
+  resume_engine:
+    level: INFO
+    propagate: false
+    handlers:
+      - console
+      - file
+      - structured
+  
+  outreach_engine:
+    level: INFO
+    propagate: false
+    handlers:
+      - console
+      - file
+      - structured
+
+  # External Service Loggers
+  openai:
+    level: WARNING
+    propagate: false
+    handlers:
+      - file
+      - structured
+  
+  anthropic:
+    level: WARNING
+    propagate: false
+    handlers:
+      - file
+      - structured
+
+# Performance and Audit Logging
+performance:
+  enabled: true
+  log_slow_queries: true
+  slow_query_threshold: 1.0  # seconds
+  log_api_calls: true
+  log_model_calls: true
+
+# Security Logging
+security:
+  enabled: true
+  log_auth_events: true
+  log_permission_denied: true
+  log_data_access: true
+  log_pii_violations: true

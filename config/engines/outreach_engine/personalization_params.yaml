@@ -1,1 +1,111 @@
-# Placeholder configuration file
+# Outreach Engine Personalization Parameters Configuration
+# Message personalization algorithms and customization settings
+
+# Personalization Framework
+personalization_framework:
+  enabled: true
+  personalization_level: high
+  dynamic_adaptation: true
+  learning_enabled: false
+
+# Research-Based Personalization
+research_personalization:
+  company_research:
+    recent_news: true
+    company_values: true
+    recent_projects: true
+    industry_position: true
+    funding_events: true
+    leadership_changes: true
+  
+  contact_research:
+    professional_background: true
+    recent_activity: true
+    published_content: true
+    speaking_events: true
+    career_progression: true
+    mutual_connections: true
+
+# Content Personalization Parameters
+content_personalization:
+  relevance_scoring:
+    skill_match_weight: 0.4
+    experience_alignment_weight: 0.3
+    industry_relevance_weight: 0.2
+    timing_relevance_weight: 0.1
+  
+  personalization_depth:
+    surface_level: {research_points: 1-2, integration_score: 0.3}
+    moderate_level: {research_points: 3-4, integration_score: 0.6}
+    deep_level: {research_points: 5+, integration_score: 0.8}
+
+# Message Customization Rules
+customization_rules:
+  opening_personalization:
+    name_usage: first_name
+    title_reference: preferred
+    company_reference: required
+    context_reference: preferred
+  
+  body_personalization:
+    company_specific_insights: required
+    role_alignment: required
+    skill_highlighting: required
+    value_proposition: required
+  
+  closing_personalization:
+    specific_call_to_action: preferred
+    follow_up_reference: optional
+  personal_signature: required
+
+# Personalization Quality Metrics
+quality_metrics:
+  personalization_score:
+    min_threshold: 0.7
+    target_score: 0.8
+    excellent_score: 0.9
+  
+  relevance_score:
+    min_threshold: 0.6
+    target_score: 0.75
+    excellent_score: 0.85
+  
+  authenticity_score:
+    min_threshold: 0.5
+    target_score: 0.7
+    excellent_score: 0.8
+
+# Dynamic Personalization Rules
+dynamic_rules:
+  industry_adaptation:
+    technology: {technical_depth: medium, innovation_focus: high}
+    finance: {technical_depth: high, compliance_focus: high}
+    healthcare: {technical_depth: medium, empathy_focus: high}
+    creative: {technical_depth: low, portfolio_focus: high}
+  
+  seniority_adaptation:
+    entry_level: {guidance_tone: mentorship, opportunity_focus: growth}
+    mid_level: {guidance_tone: collaborative, opportunity_focus: advancement}
+    senior_level: {guidance_tone: peer, opportunity_focus: leadership}
+    executive: {guidance_tone: strategic, opportunity_focus: partnership}
+
+# Personalization Sources
+data_sources:
+  primary_sources:
+    - linkedin_profile
+    - company_website
+    - recent_publications
+    - industry_reports
+  
+  secondary_sources:
+    - news_articles
+    - conference_speaking
+    - social_media_activity
+    - professional_networks
+
+# Personalization Limits
+constraints:
+  max_research_time: 300  # seconds
+  max_personalization_points: 8
+  min_authenticity_threshold: 0.5
+  max_processing_time: 120  # seconds
