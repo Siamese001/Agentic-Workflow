@@ -1,1 +1,360 @@
-# Placeholder configuration/data file
+# Job Title Normalization v1.0
+# Standard mapping of job titles to normalized categories for role analysis and matching
+
+title_normalization:
+  version: "1.0"
+  last_updated: "2024-01-01"
+  
+software_engineering:
+  senior_software_engineer:
+    normalized: "Senior Software Engineer"
+    category: "software_engineering"
+    seniority: "senior"
+    level: "L4"
+    variations:
+      - "Sr Software Engineer"
+      - "Senior Software Developer"
+      - "Senior SDE"
+      - "Senior Software Engineer II"
+      - "Staff Software Engineer"
+      - "Lead Software Engineer"
+  
+  software_engineer:
+    normalized: "Software Engineer"
+    category: "software_engineering"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Software Developer"
+      - "SDE"
+      - "Software Engineer II"
+      - "Application Developer"
+      - "Full Stack Developer"
+  
+  junior_software_engineer:
+    normalized: "Junior Software Engineer"
+    category: "software_engineering"
+    seniority: "junior"
+    level: "L2"
+    variations:
+      - "Associate Software Engineer"
+      - "Software Engineer I"
+      - "Junior Developer"
+      - "Entry Level Software Engineer"
+      - "Graduate Software Engineer"
+  
+  principal_engineer:
+    normalized: "Principal Engineer"
+    category: "software_engineering"
+    seniority: "principal"
+    level: "L5"
+    variations:
+      - "Distinguished Engineer"
+      - "Senior Principal Engineer"
+      - "Principal Software Engineer"
+      - "Chief Engineer"
+      - "Staff Principal Engineer"
+
+data_science:
+  senior_data_scientist:
+    normalized: "Senior Data Scientist"
+    category: "data_science"
+    seniority: "senior"
+    level: "L4"
+    variations:
+      - "Sr Data Scientist"
+      - "Lead Data Scientist"
+      - "Principal Data Scientist"
+      - "Senior Data Analyst"
+  
+  data_scientist:
+    normalized: "Data Scientist"
+    category: "data_science"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Data Analyst"
+      - "ML Engineer"
+      - "Machine Learning Engineer"
+      - "Data Science Engineer"
+  
+  junior_data_scientist:
+    normalized: "Junior Data Scientist"
+    category: "data_science"
+    seniority: "junior"
+    level: "L2"
+    variations:
+      - "Associate Data Scientist"
+      - "Data Analyst I"
+      - "Junior Data Analyst"
+      - "Entry Level Data Scientist"
+
+infrastructure_devops:
+  senior_devops_engineer:
+    normalized: "Senior DevOps Engineer"
+    category: "infrastructure"
+    seniority: "senior"
+    level: "L4"
+    variations:
+      - "Sr DevOps Engineer"
+      - "Senior Site Reliability Engineer"
+      - "Senior Infrastructure Engineer"
+      - "Lead DevOps Engineer"
+  
+  devops_engineer:
+    normalized: "DevOps Engineer"
+    category: "infrastructure"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Site Reliability Engineer"
+      - "Infrastructure Engineer"
+      - "Cloud Engineer"
+      - "Platform Engineer"
+  
+  cloud_engineer:
+    normalized: "Cloud Engineer"
+    category: "infrastructure"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Cloud Infrastructure Engineer"
+      - "AWS Engineer"
+      - "Azure Engineer"
+      - "GCP Engineer"
+
+management_leadership:
+  engineering_manager:
+    normalized: "Engineering Manager"
+    category: "management"
+    seniority: "manager"
+    level: "L4"
+    variations:
+      - "Software Engineering Manager"
+      - "Technical Manager"
+      - "Team Lead Manager"
+      - "Development Manager"
+  
+  director_engineering:
+    normalized: "Director of Engineering"
+    category: "management"
+    seniority: "director"
+    level: "L5"
+    variations:
+      - "Engineering Director"
+      - "Director of Software Engineering"
+      - "Director of Technology"
+      - "VP of Engineering"
+  
+  tech_lead:
+    normalized: "Technical Lead"
+    category: "technical_leadership"
+    seniority: "lead"
+    level: "L4"
+    variations:
+      - "Tech Lead"
+      - "Technical Team Lead"
+      - "Lead Developer"
+      - "Principal Developer"
+
+specialized_roles:
+  full_stack_developer:
+    normalized: "Full Stack Developer"
+    category: "software_engineering"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Full Stack Engineer"
+      - "Full Stack Software Engineer"
+      - "Web Developer"
+      - "Frontend and Backend Developer"
+  
+  frontend_developer:
+    normalized: "Frontend Developer"
+    category: "software_engineering"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Frontend Engineer"
+      - "UI Developer"
+      - "Front End Developer"
+      - "React Developer"
+      - "Angular Developer"
+  
+  backend_developer:
+    normalized: "Backend Developer"
+    category: "software_engineering"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Backend Engineer"
+      - "API Developer"
+      - "Server Side Developer"
+      - "Java Developer"
+      - "Python Developer"
+
+mobile_development:
+  senior_mobile_developer:
+    normalized: "Senior Mobile Developer"
+    category: "mobile_development"
+    seniority: "senior"
+    level: "L4"
+    variations:
+      - "Senior iOS Developer"
+      - "Senior Android Developer"
+      - "Lead Mobile Developer"
+  
+  mobile_developer:
+    normalized: "Mobile Developer"
+    category: "mobile_development"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "iOS Developer"
+      - "Android Developer"
+      - "React Native Developer"
+      - "Flutter Developer"
+
+quality_assurance:
+  senior_qa_engineer:
+    normalized: "Senior QA Engineer"
+    category: "quality_assurance"
+    seniority: "senior"
+    level: "L4"
+    variations:
+      - "Senior Quality Assurance Engineer"
+      - "Senior Test Engineer"
+      - "Lead QA Engineer"
+  
+  qa_engineer:
+    normalized: "QA Engineer"
+    category: "quality_assurance"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "Quality Assurance Engineer"
+      - "Test Engineer"
+      - "Automation Engineer"
+      - "Software Tester"
+
+product_management:
+  senior_product_manager:
+    normalized: "Senior Product Manager"
+    category: "product_management"
+    seniority: "senior"
+    level: "L4"
+    variations:
+      - "Sr Product Manager"
+      - "Lead Product Manager"
+      - "Principal Product Manager"
+  
+  product_manager:
+    normalized: "Product Manager"
+    category: "product_management"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "PM"
+      - "Technical Product Manager"
+      - "Product Owner"
+      - "Associate Product Manager"
+
+design_ux:
+  senior_ux_designer:
+    normalized: "Senior UX Designer"
+    category: "design"
+    seniority: "senior"
+    level: "L4"
+    variations:
+      - "Senior User Experience Designer"
+      - "Lead UX Designer"
+      - "Principal UX Designer"
+  
+  ux_designer:
+    normalized: "UX Designer"
+    category: "design"
+    seniority: "mid"
+    level: "L3"
+    variations:
+      - "User Experience Designer"
+      - "UI/UX Designer"
+      - "Product Designer"
+      - "Interaction Designer"
+
+normalization_rules:
+  case_handling: "title_case"
+  abbreviation_expansion: true
+  seniority_detection: true
+  category_classification: true
+  
+seniority_keywords:
+  junior: ["junior", "associate", "entry level", "graduate", "i", "1"]
+  mid: ["engineer", "developer", "analyst", "specialist", "ii", "2", "3"]
+  senior: ["senior", "sr", "lead", "principal", "iii", "3", "4"]
+  principal: ["principal", "distinguished", "chief", "fellow", "5"]
+  manager: ["manager", "head", "lead manager"]
+  director: ["director", "vp", "vice president"]
+
+category_keywords:
+  software_engineering: ["software", "developer", "engineer", "sde", "programming", "coding"]
+  data_science: ["data", "science", "analytics", "machine learning", "ml", "ai"]
+  infrastructure: ["devops", "infrastructure", "cloud", "sre", "platform", "ops"]
+  management: ["manager", "director", "vp", "head", "leadership"]
+  mobile: ["mobile", "ios", "android", "react native", "flutter"]
+  quality_assurance: ["qa", "quality", "test", "testing", "automation"]
+  product: ["product", "pm", "owner", "strategy"]
+  design: ["design", "ux", "ui", "user experience", "interface"]
+
+technology_specific:
+  languages:
+    python: ["Python Developer", "Python Engineer", "Django Developer"]
+    java: ["Java Developer", "Java Engineer", "Spring Developer"]
+    javascript: ["JavaScript Developer", "Node.js Developer", "React Developer"]
+    go: ["Go Developer", "Golang Engineer", "Go Engineer"]
+    ruby: ["Ruby Developer", "Rails Developer", "Ruby on Rails"]
+  
+  platforms:
+    aws: ["AWS Engineer", "Cloud Engineer", "DevOps Engineer"]
+    azure: ["Azure Engineer", "Microsoft Cloud Engineer"]
+    gcp: ["GCP Engineer", "Google Cloud Engineer"]
+    kubernetes: ["Kubernetes Engineer", "K8s Engineer", "Container Engineer"]
+
+industry_specific:
+  fintech:
+    - "FinTech Software Engineer"
+    - "Financial Services Developer"
+    - "Banking Technology Engineer"
+  
+  healthcare:
+    - "Healthcare IT Engineer"
+    - "Medical Software Developer"
+    - "Health Technology Engineer"
+  
+  ecommerce:
+    - "E-commerce Developer"
+    - "Retail Software Engineer"
+    - "Platform Engineer"
+
+validation_patterns:
+  title_patterns:
+    - "(Senior|Lead|Principal|Staff) (Software|Data|DevOps) Engineer"
+    - "(Junior|Associate|Entry Level) (Developer|Engineer|Analyst)"
+    - "(Director|VP|Head) of (Engineering|Technology)"
+    - "(Technical|Team) Lead"
+    - "(Frontend|Backend|Full Stack) (Developer|Engineer)"
+
+normalization_algorithm:
+  steps:
+    1: "Standardize case and remove special characters"
+    2: "Expand common abbreviations"
+    3: "Detect seniority level"
+    4: "Classify functional category"
+    5: "Map to normalized title"
+    6: "Assign seniority level"
+
+usage_guidelines:
+  - "Use normalized titles for consistent job matching and analysis"
+  - "Maintain original titles for display and search purposes"
+  - "Consider company-specific title conventions"
+  - "Handle international title variations appropriately"
+  - "Update mappings regularly as new roles emerge"

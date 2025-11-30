@@ -1,1 +1,58 @@
-# Placeholder text file
+Senior Software Engineer - Cloud Infrastructure
+Company: TechCorp Solutions
+Location: San Francisco, CA / Remote
+Salary: $140,000 - $180,000 + Equity + Benefits
+
+About TechCorp:
+TechCorp Solutions is a leading cloud infrastructure company helping enterprises scale their applications with cutting-edge Kubernetes and microservices solutions. We're building the next generation of cloud-native platforms that power millions of users worldwide.
+
+Position Overview:
+We're seeking a Senior Software Engineer to join our Cloud Infrastructure team. You'll be responsible for designing, building, and maintaining scalable cloud infrastructure that supports our rapidly growing customer base. This role offers significant technical challenges and the opportunity to work with modern cloud technologies.
+
+Key Responsibilities:
+• Design and implement cloud-native infrastructure using Kubernetes, Docker, and AWS/GCP
+• Develop and maintain CI/CD pipelines for automated deployment and testing
+• Build monitoring and observability solutions using Prometheus, Grafana, and ELK stack
+• Collaborate with product teams to ensure infrastructure meets scalability and reliability requirements
+• Participate in architectural decisions and contribute to technical strategy
+• Mentor junior engineers and promote best practices in cloud engineering
+• Troubleshoot complex infrastructure issues and provide 24/7 on-call support (rotational)
+
+Required Qualifications:
+• 5+ years of experience in software engineering with focus on cloud infrastructure
+• Strong proficiency in Go, Python, or Java for backend development
+• Deep experience with containerization technologies (Docker, Kubernetes)
+• Hands-on experience with cloud platforms (AWS preferred, GCP/Azure acceptable)
+• Expertise in Infrastructure as Code tools (Terraform, CloudFormation, Ansible)
+• Solid understanding of microservices architecture and distributed systems
+• Experience with monitoring and logging solutions (Prometheus, Grafana, ELK)
+• Strong knowledge of networking, security, and system performance optimization
+
+Preferred Qualifications:
+• Experience with service mesh technologies (Istio, Linkerd)
+• Knowledge of serverless computing and event-driven architectures
+• Background in DevOps practices and site reliability engineering
+• Experience with large-scale distributed systems
+• Contributions to open-source projects
+• BS/MS in Computer Science or related field
+
+Technical Stack:
+• Languages: Go, Python, TypeScript
+• Platforms: Kubernetes, Docker, AWS (EKS, EC2, S3, Lambda)
+• Tools: Terraform, Helm, Prometheus, Grafana, Jenkins, GitLab CI
+• Databases: PostgreSQL, Redis, DynamoDB
+• Protocols: gRPC, REST, WebSocket
+
+What We Offer:
+• Competitive salary and equity package
+• Comprehensive health, dental, and vision insurance
+• 401(k) with company matching
+• Unlimited PTO and flexible work arrangements
+• Professional development budget and conference attendance
+• Modern office space or fully remote setup
+• Collaborative engineering culture with regular tech talks and hackathons
+
+How to Apply:
+Please submit your resume along with a cover letter highlighting your experience with cloud infrastructure and any relevant projects or contributions to open source.
+
+TechCorp Solutions is an equal opportunity employer. We celebrate diversity and are committed to creating an inclusive environment for all employees.

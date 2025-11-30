@@ -1,3 +1,325 @@
 {
-  "placeholder": true
+  "contact_archetypes": {
+    "version": "1.0",
+    "last_updated": "2024-01-01",
+    "archetypes": [
+      {
+        "id": "hiring_manager",
+        "name": "Hiring Manager",
+        "description": "Direct hiring authority responsible for team building and recruitment decisions",
+        "characteristics": {
+          "decision_making": "high",
+          "technical_depth": "medium",
+          "business_focus": "high",
+          "response_time": "moderate",
+          "preferred_contact": "email",
+          "best_timing": "Tuesday-Thursday, 9-11 AM"
+        },
+        "pain_points": [
+          "Finding qualified candidates quickly",
+          "Reducing time-to-hire",
+          "Ensuring cultural fit",
+          "Managing recruitment budget",
+          "Competing for top talent"
+        ],
+        "motivations": [
+          "Building high-performing teams",
+          "Meeting departmental goals",
+          "Reducing turnover",
+          "Improving team diversity",
+          "Delivering business results"
+        ],
+        "communication_style": "direct_business_focused",
+        "engagement_strategy": {
+          "approach": "value_proposition_first",
+          "personalization_level": "high",
+          "follow_up_frequency": "weekly",
+          "message_length": "medium",
+          "tone": "professional_but_approachable"
+        },
+        "key_indicators": {
+          "titles": ["Engineering Manager", "Hiring Manager", "Team Lead", "Director of Engineering"],
+          "company_size": "50-1000 employees",
+          "industries": ["technology", "finance", "healthcare"],
+          "response_rate": 0.12,
+          "conversion_rate": 0.08
+        },
+        "messaging_framework": {
+          "subject_pattern": "[Role] opportunity at [Company]",
+          "opening": "Acknowledge their role and company context",
+          "value_prop": "Focus on time-saving and quality candidates",
+          "call_to_action": "Specific time-bound request for brief discussion",
+          "closing": "Professional signature with relevant credentials"
+        },
+        "weight_factors": {
+          "technical_match": 0.4,
+          "cultural_fit": 0.3,
+          "availability": 0.2,
+          "compensation_alignment": 0.1
+        }
+      },
+      {
+        "id": "tech_lead",
+        "name": "Technical Lead",
+        "description": "Senior technical contributor with influence on hiring and technical decisions",
+        "characteristics": {
+          "decision_making": "medium",
+          "technical_depth": "high",
+          "business_focus": "medium",
+          "response_time": "slow",
+          "preferred_contact": "linkedin_email",
+          "best_timing": "Monday-Wednesday, 10 AM-12 PM"
+        },
+        "pain_points": [
+          "Finding technically strong candidates",
+          "Assessing practical skills vs. theoretical knowledge",
+          "Onboarding new team members effectively",
+          "Maintaining technical standards",
+          "Balancing coding and leadership responsibilities"
+        ],
+        "motivations": [
+          "Building technically excellent teams",
+          "Solving complex technical challenges",
+          "Mentoring junior engineers",
+          "Influencing technical direction",
+          "Maintaining high code quality"
+        ],
+        "communication_style": "technically_detailed",
+        "engagement_strategy": {
+          "approach": "technical_credibility_first",
+          "personalization_level": "very_high",
+          "follow_up_frequency": "bi_weekly",
+          "message_length": "short",
+          "tone": "peer_to_peer_technical"
+        },
+        "key_indicators": {
+          "titles": ["Tech Lead", "Staff Engineer", "Principal Engineer", "Senior Software Engineer"],
+          "company_size": "20-500 employees",
+          "industries": ["technology", "fintech", "e-commerce"],
+          "response_rate": 0.08,
+          "conversion_rate": 0.05
+        },
+        "messaging_framework": {
+          "subject_pattern": "Technical question about [specific_technology]",
+          "opening": "Reference their technical work or contributions",
+          "value_prop": "Focus on technical challenges and learning opportunities",
+          "call_to_action": "Technical discussion or knowledge sharing",
+          "closing": "Peer-level technical signature"
+        },
+        "weight_factors": {
+          "technical_match": 0.5,
+          "growth_opportunity": 0.3,
+          "team_culture": 0.15,
+          "compensation": 0.05
+        }
+      },
+      {
+        "id": "senior_engineer",
+        "name": "Senior Engineer",
+        "description": "Experienced individual contributor potentially open to new opportunities",
+        "characteristics": {
+          "decision_making": "low",
+          "technical_depth": "high",
+          "business_focus": "low",
+          "response_time": "variable",
+          "preferred_contact": "linkedin",
+          "best_timing": "Tuesday-Thursday, 12-2 PM"
+        },
+        "pain_points": [
+          "Career growth and advancement",
+          "Work-life balance",
+          "Interesting technical challenges",
+          "Compensation and benefits",
+          "Company culture and values"
+        ],
+        "motivations": [
+          "Technical growth and learning",
+          "Better compensation",
+          "Improved work-life balance",
+          "More impactful work",
+          "Career advancement opportunities"
+        ],
+        "communication_style": "casual_technical",
+        "engagement_strategy": {
+          "approach": "opportunity_focused",
+          "personalization_level": "medium",
+          "follow_up_frequency": "monthly",
+          "message_length": "short",
+          "tone": "friendly_professional"
+        },
+        "key_indicators": {
+          "titles": ["Senior Software Engineer", "Senior Data Scientist", "Senior Backend Engineer"],
+          "company_size": "10-1000 employees",
+          "industries": ["technology", "finance", "healthcare", "retail"],
+          "response_rate": 0.15,
+          "conversion_rate": 0.10
+        },
+        "messaging_framework": {
+          "subject_pattern": "Interesting opportunity in [technology_stack]",
+          "opening": "Acknowledge their technical background",
+          "value_prop": "Focus on growth, impact, and technical challenges",
+          "call_to_action": "Casual invitation to learn more",
+          "closing": "Friendly professional signature"
+        },
+        "weight_factors": {
+          "technical_growth": 0.35,
+          "compensation": 0.25,
+          "work_life_balance": 0.20,
+          "company_culture": 0.20
+        }
+      },
+      {
+        "id": "principal_engineer",
+        "name": "Principal Engineer",
+        "description": "Senior technical leader with strategic influence and high standards",
+        "characteristics": {
+          "decision_making": "high",
+          "technical_depth": "very_high",
+          "business_focus": "high",
+          "response_time": "very_slow",
+          "preferred_contact": "warm_introduction",
+          "best_timing": "Wednesday-Friday, 2-4 PM"
+        },
+        "pain_points": [
+          "Strategic technical challenges",
+          "Scaling systems and teams",
+          "Technical mentorship and knowledge transfer",
+          "Long-term architectural decisions",
+          "Industry recognition and influence"
+        ],
+        "motivations": [
+          "Solving mission-critical technical problems",
+          "Building lasting technical legacy",
+          "Mentoring next generation of engineers",
+          "Industry thought leadership",
+          "High-impact, high-autonomy roles"
+        ],
+        "communication_style": "strategic_technical",
+        "engagement_strategy": {
+          "approach": "strategic_challenge_first",
+          "personalization_level": "very_high",
+          "follow_up_frequency": "monthly",
+          "message_length": "medium",
+          "tone": "peer_strategic"
+        },
+        "key_indicators": {
+          "titles": ["Principal Engineer", "Distinguished Engineer", "Chief Architect", "VP of Engineering"],
+          "company_size": "100-10000 employees",
+          "industries": ["technology", "fintech", "enterprise_software"],
+          "response_rate": 0.05,
+          "conversion_rate": 0.03
+        },
+        "messaging_framework": {
+          "subject_pattern": "Strategic technical challenge at [Company]",
+          "opening": "Reference their strategic technical work",
+          "value_prop": "Focus on impact, autonomy, and technical legacy",
+          "call_to_action": "Executive-level technical discussion",
+          "closing": "Peer executive signature"
+        },
+        "weight_factors": {
+          "strategic_impact": 0.4,
+          "technical_autonomy": 0.3,
+          "industry_influence": 0.2,
+          "compensation": 0.1
+        }
+      },
+      {
+        "id": "engineering_manager",
+        "name": "Engineering Manager",
+        "description": "People-focused technical leader responsible for team performance and delivery",
+        "characteristics": {
+          "decision_making": "high",
+          "technical_depth": "medium",
+          "business_focus": "high",
+          "response_time": "moderate",
+          "preferred_contact": "email",
+          "best_timing": "Monday-Wednesday, 9-11 AM"
+        },
+        "pain_points": [
+          "Team performance and productivity",
+          "Retaining top talent",
+          "Meeting delivery deadlines",
+          "Balancing technical and people management",
+          "Scaling teams effectively"
+        ],
+        "motivations": [
+          "Building successful teams",
+          "Career advancement to leadership roles",
+          "Improving processes and efficiency",
+          "Delivering business value through teams",
+          "Developing engineering culture"
+        ],
+        "communication_style": "leadership_focused",
+        "engagement_strategy": {
+          "approach": "team_and_business_impact",
+          "personalization_level": "high",
+          "follow_up_frequency": "bi_weekly",
+          "message_length": "medium",
+          "tone": "professional_leadership"
+        },
+        "key_indicators": {
+          "titles": ["Engineering Manager", "Director of Engineering", "VP of Engineering"],
+          "company_size": "50-5000 employees",
+          "industries": ["technology", "finance", "healthcare", "consulting"],
+          "response_rate": 0.10,
+          "conversion_rate": 0.07
+        },
+        "messaging_framework": {
+          "subject_pattern": "Leadership opportunity at [Company]",
+          "opening": "Acknowledge their leadership experience",
+          "value_prop": "Focus on team building, culture, and business impact",
+          "call_to_action": "Leadership discussion about team and strategy",
+          "closing": "Professional leadership signature"
+        },
+        "weight_factors": {
+          "leadership_opportunity": 0.4,
+          "team_impact": 0.3,
+          "business_growth": 0.2,
+          "compensation": 0.1
+        }
+      }
+    ],
+    "archetype_classification": {
+      "decision_makers": ["hiring_manager", "principal_engineer", "engineering_manager"],
+      "technical_influencers": ["tech_lead", "principal_engineer"],
+      "individual_contributors": ["senior_engineer"],
+      "leadership_roles": ["principal_engineer", "engineering_manager", "hiring_manager"]
+    },
+    "engagement_metrics": {
+      "overall_benchmarks": {
+        "average_response_rate": 0.10,
+        "average_conversion_rate": 0.06,
+        "optimal_message_length": "150-250 words",
+        "best_follow_up_timing": "3-5 days"
+      },
+      "channel_effectiveness": {
+        "email": {"response_rate": 0.12, "conversion_rate": 0.08},
+        "linkedin": {"response_rate": 0.08, "conversion_rate": 0.05},
+        "warm_introduction": {"response_rate": 0.35, "conversion_rate": 0.20},
+        "referral": {"response_rate": 0.25, "conversion_rate": 0.15}
+      },
+      "timing_optimization": {
+        "morning": {"response_rate": 0.11, "conversion_rate": 0.07},
+        "afternoon": {"response_rate": 0.09, "conversion_rate": 0.06},
+        "evening": {"response_rate": 0.06, "conversion_rate": 0.04}
+      }
+    },
+    "personalization_strategies": {
+      "high_personalization": {
+        "research_time": "15-30 minutes",
+        "elements": ["company research", "recent work", "shared connections", "technical interests"],
+        "effectiveness_boost": 0.4
+      },
+      "medium_personalization": {
+        "research_time": "5-15 minutes",
+        "elements": ["role context", "company information", "basic technical alignment"],
+        "effectiveness_boost": 0.2
+      },
+      "low_personalization": {
+        "research_time": "1-5 minutes",
+        "elements": ["basic role information", "general industry context"],
+        "effectiveness_boost": 0.1
+      }
+    }
+  }
 }

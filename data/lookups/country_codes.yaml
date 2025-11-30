@@ -1,1 +1,388 @@
-# Placeholder configuration/data file
+# Country Codes Reference v1.0
+# ISO country codes and regional classifications for location normalization
+
+country_codes:
+  version: "1.0"
+  last_updated: "2024-01-01"
+  
+north_america:
+  US:
+    name: "United States"
+    iso2: "US"
+    iso3: "USA"
+    numeric: "840"
+    region: "North America"
+    subregion: "Northern America"
+    capital: "Washington D.C."
+    currency: "USD"
+    languages: ["English"]
+    timezones: ["UTC-12:00 to UTC-04:00"]
+    states: 50
+  
+  CA:
+    name: "Canada"
+    iso2: "CA"
+    iso3: "CAN"
+    numeric: "124"
+    region: "North America"
+    subregion: "Northern America"
+    capital: "Ottawa"
+    currency: "CAD"
+    languages: ["English", "French"]
+    timezones: ["UTC-08:00 to UTC-03:30"]
+    provinces: 13
+  
+  MX:
+    name: "Mexico"
+    iso2: "MX"
+    iso3: "MEX"
+    numeric: "484"
+    region: "North America"
+    subregion: "Central America"
+    capital: "Mexico City"
+    currency: "MXN"
+    languages: ["Spanish"]
+    timezones: ["UTC-08:00 to UTC-05:00"]
+
+europe:
+  GB:
+    name: "United Kingdom"
+    iso2: "GB"
+    iso3: "GBR"
+    numeric: "826"
+    region: "Europe"
+    subregion: "Northern Europe"
+    capital: "London"
+    currency: "GBP"
+    languages: ["English"]
+    timezones: ["UTC"]
+  
+  DE:
+    name: "Germany"
+    iso2: "DE"
+    iso3: "DEU"
+    numeric: "276"
+    region: "Europe"
+    subregion: "Western Europe"
+    capital: "Berlin"
+    currency: "EUR"
+    languages: ["German"]
+    timezones: ["UTC+01:00"]
+  
+  FR:
+    name: "France"
+    iso2: "FR"
+    iso3: "FRA"
+    numeric: "250"
+    region: "Europe"
+    subregion: "Western Europe"
+    capital: "Paris"
+    currency: "EUR"
+    languages: ["French"]
+    timezones: ["UTC+01:00 to UTC+12:00"]
+  
+  NL:
+    name: "Netherlands"
+    iso2: "NL"
+    iso3: "NLD"
+    numeric: "528"
+    region: "Europe"
+    subregion: "Western Europe"
+    capital: "Amsterdam"
+    currency: "EUR"
+    languages: ["Dutch"]
+    timezones: ["UTC+01:00"]
+  
+  SE:
+    name: "Sweden"
+    iso2: "SE"
+    iso3: "SWE"
+    numeric: "752"
+    region: "Europe"
+    subregion: "Northern Europe"
+    capital: "Stockholm"
+    currency: "SEK"
+    languages: ["Swedish"]
+    timezones: ["UTC+01:00"]
+  
+  NO:
+    name: "Norway"
+    iso2: "NO"
+    iso3: "NOR"
+    numeric: "578"
+    region: "Europe"
+    subregion: "Northern Europe"
+    capital: "Oslo"
+    currency: "NOK"
+    languages: ["Norwegian"]
+    timezones: ["UTC+01:00"]
+  
+  DK:
+    name: "Denmark"
+    iso2: "DK"
+    iso3: "DNK"
+    numeric: "208"
+    region: "Europe"
+    subregion: "Northern Europe"
+    capital: "Copenhagen"
+    currency: "DKK"
+    languages: ["Danish"]
+    timezones: ["UTC+01:00"]
+  
+  FI:
+    name: "Finland"
+    iso2: "FI"
+    iso3: "FIN"
+    numeric: "246"
+    region: "Europe"
+    subregion: "Northern Europe"
+    capital: "Helsinki"
+    currency: "EUR"
+    languages: ["Finnish", "Swedish"]
+    timezones: ["UTC+02:00"]
+  
+  CH:
+    name: "Switzerland"
+    iso2: "CH"
+    iso3: "CHE"
+    numeric: "756"
+    region: "Europe"
+    subregion: "Western Europe"
+    capital: "Bern"
+    currency: "CHF"
+    languages: ["German", "French", "Italian", "Romansh"]
+    timezones: ["UTC+01:00"]
+  
+  AT:
+    name: "Austria"
+    iso2: "AT"
+    iso3: "AUT"
+    numeric: "040"
+    region: "Europe"
+    subregion: "Western Europe"
+    capital: "Vienna"
+    currency: "EUR"
+    languages: ["German"]
+    timezones: ["UTC+01:00"]
+  
+  ES:
+    name: "Spain"
+    iso2: "ES"
+    iso3: "ESP"
+    numeric: "724"
+    region: "Europe"
+    subregion: "Southern Europe"
+    capital: "Madrid"
+    currency: "EUR"
+    languages: ["Spanish"]
+    timezones: ["UTC+00:00 to UTC+01:00"]
+  
+  IT:
+    name: "Italy"
+    iso2: "IT"
+    iso3: "ITA"
+    numeric: "380"
+    region: "Europe"
+    subregion: "Southern Europe"
+    capital: "Rome"
+    currency: "EUR"
+    languages: ["Italian"]
+    timezones: ["UTC+01:00"]
+  
+  IE:
+    name: "Ireland"
+    iso2: "IE"
+    iso3: "IRL"
+    numeric: "372"
+    region: "Europe"
+    subregion: "Northern Europe"
+    capital: "Dublin"
+    currency: "EUR"
+    languages: ["English", "Irish"]
+    timezones: ["UTC+00:00"]
+  
+  PT:
+    name: "Portugal"
+    iso2: "PT"
+    iso3: "PRT"
+    numeric: "620"
+    region: "Europe"
+    subregion: "Southern Europe"
+    capital: "Lisbon"
+    currency: "EUR"
+    languages: ["Portuguese"]
+    timezones: ["UTC+00:00 to UTC+01:00"]
+  
+  BE:
+    name: "Belgium"
+    iso2: "BE"
+    iso3: "BEL"
+    numeric: "056"
+    region: "Europe"
+    subregion: "Western Europe"
+    capital: "Brussels"
+    currency: "EUR"
+    languages: ["Dutch", "French", "German"]
+    timezones: ["UTC+01:00"]
+
+asia_pacific:
+  AU:
+    name: "Australia"
+    iso2: "AU"
+    iso3: "AUS"
+    numeric: "036"
+    region: "Oceania"
+    subregion: "Australia and New Zealand"
+    capital: "Canberra"
+    currency: "AUD"
+    languages: ["English"]
+    timezones: ["UTC+05:00 to UTC+11:30"]
+  
+  NZ:
+    name: "New Zealand"
+    iso2: "NZ"
+    iso3: "NZL"
+    numeric: "554"
+    region: "Oceania"
+    subregion: "Australia and New Zealand"
+    capital: "Wellington"
+    currency: "NZD"
+    languages: ["English", "Māori"]
+    timezones: ["UTC+11:00 to UTC+12:45"]
+  
+  SG:
+    name: "Singapore"
+    iso2: "SG"
+    iso3: "SGP"
+    numeric: "702"
+    region: "Asia"
+    subregion: "South-Eastern Asia"
+    capital: "Singapore"
+    currency: "SGD"
+    languages: ["English", "Chinese", "Malay", "Tamil"]
+    timezones: ["UTC+08:00"]
+  
+  JP:
+    name: "Japan"
+    iso2: "JP"
+    iso3: "JPN"
+    numeric: "392"
+    region: "Asia"
+    subregion: "Eastern Asia"
+    capital: "Tokyo"
+    currency: "JPY"
+    languages: ["Japanese"]
+    timezones: ["UTC+09:00"]
+  
+  KR:
+    name: "South Korea"
+    iso2: "KR"
+    iso3: "KOR"
+    numeric: "410"
+    region: "Asia"
+    subregion: "Eastern Asia"
+    capital: "Seoul"
+    currency: "KRW"
+    languages: ["Korean"]
+    timezones: ["UTC+09:00"]
+  
+  CN:
+    name: "China"
+    iso2: "CN"
+    iso3: "CHN"
+    numeric: "156"
+    region: "Asia"
+    subregion: "Eastern Asia"
+    capital: "Beijing"
+    currency: "CNY"
+    languages: ["Chinese (Mandarin)"]
+    timezones: ["UTC+08:00"]
+  
+  IN:
+    name: "India"
+    iso2: "IN"
+    iso3: "IND"
+    numeric: "356"
+    region: "Asia"
+    subregion: "Southern Asia"
+    capital: "New Delhi"
+    currency: "INR"
+    languages: ["Hindi", "English"]
+    timezones: ["UTC+05:30"]
+
+other_regions:
+  IL:
+    name: "Israel"
+    iso2: "IL"
+    iso3: "ISR"
+    numeric: "376"
+    region: "Asia"
+    subregion: "Western Asia"
+    capital: "Jerusalem"
+    currency: "ILS"
+    languages: ["Hebrew", "Arabic"]
+    timezones: ["UTC+02:00"]
+  
+  AE:
+    name: "United Arab Emirates"
+    iso2: "AE"
+    iso3: "ARE"
+    numeric: "784"
+    region: "Asia"
+    subregion: "Western Asia"
+    capital: "Abu Dhabi"
+    currency: "AED"
+    languages: ["Arabic"]
+    timezones: ["UTC+04:00"]
+  
+  BR:
+    name: "Brazil"
+    iso2: "BR"
+    iso3: "BRA"
+    numeric: "076"
+    region: "Americas"
+    subregion: "South America"
+    capital: "Brasília"
+    currency: "BRL"
+    languages: ["Portuguese"]
+    timezones: ["UTC-05:00 to UTC-02:00"]
+  
+  AR:
+    name: "Argentina"
+    iso2: "AR"
+    iso3: "ARG"
+    numeric: "032"
+    region: "Americas"
+    subregion: "South America"
+    capital: "Buenos Aires"
+    currency: "ARS"
+    languages: ["Spanish"]
+    timezones: ["UTC-03:00"]
+
+regional_groupings:
+  tech_hubs:
+    north_america: ["US", "CA"]
+    europe: ["GB", "DE", "FR", "NL", "IE", "SE", "NO", "DK", "FI", "CH"]
+    asia_pacific: ["AU", "NZ", "SG", "JP", "KR"]
+  
+  emerging_markets:
+    asia: ["CN", "IN"]
+    latin_america: ["BR", "AR"]
+    middle_east: ["IL", "AE"]
+
+remote_work_friendly:
+  high: ["US", "CA", "GB", "DE", "NL", "AU", "NZ", "SG"]
+  medium: ["FR", "SE", "NO", "DK", "FI", "IE", "CH", "JP", "KR"]
+  developing: ["IN", "BR", "AR", "MX", "IL", "AE"]
+
+validation_rules:
+  required_fields: ["iso2", "iso3", "name"]
+  iso2_format: "2 uppercase letters"
+  iso3_format: "3 uppercase letters"
+  numeric_format: "3 digits"
+
+usage_notes:
+  - "Use ISO2 codes for database storage and API responses"
+  - "Use ISO3 codes for reporting and display purposes"
+  - "Regional groupings help with location-based targeting"
+  - "Remote work friendliness affects outreach strategy"
