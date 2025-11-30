@@ -1,1 +1,239 @@
-# Placeholder YAML configuration file
+# Data Ingestion Pipeline Configuration v1.0
+# Real-time data collection and processing for observability
+
+ingestion_pipeline:
+  version: "1.0"
+  enabled: true
+  
+  # Pipeline stages
+  stages:
+    # Data collection stage
+    collection:
+      enabled: true
+      sources:
+        metrics:
+          type: "prometheus"
+          config:
+            scrape_interval: "15s"
+            scrape_timeout: "10s"
+            static_configs:
+              - targets: ["localhost:9090"]
+                labels:
+                  environment: "${ENVIRONMENT:development}"
+                  
+        traces:
+          type: "otlp"
+          config:
+            endpoint: "0.0.0.0:4317"
+            protocols:
+              - "grpc"
+              - "http"
+              
+        logs:
+          type: "loki"
+          config:
+            positions:
+              filename: "/tmp/positions.yaml"
+            clients:
+              - url: "http://localhost:3100/loki/api/v1/push"
+                
+    # Processing stage
+    processing:
+      enabled: true
+      processors:
+        # Metrics processing
+        metrics_processor:
+          enabled: true
+          operations:
+            - type: "aggregation"
+              config:
+                window: "1m"
+                functions: ["sum", "avg", "max", "min"]
+                
+            - type: "filtering"
+              config:
+                exclude_labels: ["job", "instance"]
+                
+            - type: "enrichment"
+              config:
+                add_labels:
+                  service: "agentic-workflow"
+                  version: "1.0.0"
+                  
+        # Traces processing
+        traces_processor:
+          enabled: true
+          operations:
+            - type: "sampling"
+              config:
+                sample_rate: 1.0
+                
+            - type: "attribute_filtering"
+              config:
+                allowed_attributes:
+                  - "layer"
+                  - "agent_id"
+                  - "operation"
+                  
+            - type: "span_enrichment"
+              config:
+                add_attributes:
+                  service_name: "agentic-workflow"
+                  
+        # Logs processing
+        logs_processor:
+          enabled: true
+          operations:
+            - type: "parsing"
+              config:
+                formats:
+                  - "json"
+                  - "logfmt"
+                  
+            - type: "field_extraction"
+              config:
+                fields:
+                  - "trace_id"
+                  - "span_id"
+                  - "level"
+                  
+            - type: "label_enrichment"
+              config:
+                from_fields:
+                  level: "log_level"
+
+    # Validation stage
+    validation:
+      enabled: true
+      rules:
+        metrics:
+          - name: "metric_name_validation"
+            pattern: "^[a-zA-Z_][a-zA-Z0-9_]*$"
+            action: "reject"
+            
+          - name: "metric_value_validation"
+            type: "numeric_check"
+            action: "transform"
+            
+        traces:
+          - name: "trace_id_validation"
+            pattern: "^[a-f0-9]{32}$"
+            action: "reject"
+            
+          - name: "span_duration_validation"
+            max_duration: "1h"
+            action: "cap"
+            
+        logs:
+          - name: "log_level_validation"
+            allowed_levels: ["debug", "info", "warn", "error", "fatal"]
+            action: "normalize"
+
+    # Enrichment stage
+    enrichment:
+      enabled: true
+      enrichers:
+        geo_ip:
+          enabled: false
+          provider: "maxmind"
+          database_path: "/etc/geoip/GeoLite2-City.mmdb"
+          
+        user_agent:
+          enabled: true
+          parse_user_agents: true
+          
+        kubernetes:
+          enabled: true
+          extract_pod_info: true
+          extract_service_info: true
+
+  # Buffer configuration
+  buffer:
+    type: "memory"
+    max_events: 10000
+    max_bytes: "100MB"
+    flush_interval: "5s"
+    flush_timeout: "30s"
+
+  # Error handling
+  error_handling:
+    retry_policy:
+      max_retries: 3
+      backoff: "exponential"
+      initial_interval: "1s"
+      max_interval: "30s"
+      
+    dead_letter_queue:
+      enabled: true
+      max_size: "1GB"
+      ttl: "7d"
+
+  # Performance settings
+  performance:
+    # Worker configuration
+    workers:
+      count: 4
+      max_memory_per_worker: "256MB"
+      
+    # Batch processing
+    batch:
+      enabled: true
+      max_events: 1000
+      timeout: "5s"
+      
+    # Connection pooling
+    connection_pool:
+      max_connections: 100
+      connection_timeout: "10s"
+      idle_timeout: "60s"
+
+  # Health monitoring
+  health:
+    enabled: true
+    endpoints:
+      - "/health"
+      - "/ready"
+      - "/live"
+      
+    metrics:
+      enabled: true
+      endpoint: "/metrics"
+
+  # Security
+  security:
+    tls:
+      enabled: false
+      cert_file: "/etc/ssl/certs/server.crt"
+      key_file: "/etc/ssl/private/server.key"
+      
+    authentication:
+      enabled: false
+      type: "basic"
+      users_file: "/etc/observability/users.htpasswd"
+
+  # Resource limits
+  limits:
+    cpu:
+      max: "2"
+      request: "500m"
+      
+    memory:
+      max: "2Gi"
+      request: "512Mi"
+
+  # Observability for the pipeline itself
+  self_monitoring:
+    enabled: true
+    metrics:
+      - "pipeline_events_total"
+      - "pipeline_processing_duration"
+      - "pipeline_errors_total"
+      - "pipeline_buffer_usage"
+      
+    traces:
+      enabled: true
+      sample_rate: 0.1
+      
+    logs:
+      level: "info"
+      format: "json"
