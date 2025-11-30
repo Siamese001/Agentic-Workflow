@@ -2,8 +2,10 @@
 from typing import Dict, Any, Optional, List
 from dataclasses import dataclass
 
-# Import BulletProvenance from L4 memory layer for provenance tracking
-from agentic_core.resume_engine.l4_memory_state.memory.rg_memory import BulletProvenance
+# Import comprehensive message generation executor as implementation engine
+from ..executors.rg_message_generation_executor import (
+    MessageGenerationExecutor, GenerationContext
+)
 
 @dataclass
 class LLMRequest:
@@ -30,244 +32,222 @@ class LLMResponse:
             self.metadata = {}
 
 class RGLLMAdapter:
-    """LLM adapter for resume execution with real business logic"""
+    """LLM adapter for resume execution - thin interface layer using comprehensive executor"""
 
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
         self.model_name = self.config.get("model", "resume-optimization-v1")
-        self.resume_templates = self._initialize_templates()
+        # Use comprehensive message generation executor as implementation engine
+        self.executor = MessageGenerationExecutor(config)
 
-    def _initialize_templates(self) -> Dict[str, str]:
-        """Initialize resume generation templates"""
-        return {
-            "professional_summary": """
-Dynamic and results-driven {target_role} with {years} years of experience in {key_areas}.
-Proven track record of {key_achievements}. Seeking to leverage expertise in {specialties}
-to drive {impact_type} at {company_type}.
-            """.strip(),
+    def generate_professional_summary(self, target_role: str, experience_level: str,
+                                    years_experience: str, key_areas: List[str],
+                                    key_achievements: List[str], specialties: List[str],
+                                    impact_type: str = "business impact",
+                                    company_type: str = "innovative organizations") -> LLMResponse:
+        """Generate professional summary using comprehensive executor"""
 
-            "bullet_enhancement": """
-Transform this achievement: "{original_bullet}"
-Into a compelling resume bullet that:
-1. Starts with a strong action verb
-2. Includes quantifiable metrics
-3. Highlights business impact
-4. Incorporates relevant keywords for {target_role}
-            """.strip(),
-
-            "skills_section": """
-Technical Skills: {technical_skills}
-Soft Skills: {soft_skills}
-Tools & Technologies: {tools}
-Certifications: {certifications}
-            """.strip()
-        }
-
-    def generate_response(self, request: LLMRequest) -> LLMResponse:
-        """Generate response from LLM with real resume logic"""
-        if request.task_type == "professional_summary":
-            return self._generate_professional_summary(request)
-        elif request.task_type == "bullet_enhancement":
-            return self._enhance_bullet(request)
-        elif request.task_type == "skills_optimization":
-            return self._optimize_skills(request)
-        else:
-            return self._generate_generic_response(request)
-
-    def _generate_professional_summary(self, request: LLMRequest) -> LLMResponse:
-        """Generate professional summary with real business logic"""
-        context = request.context or {}
-        target_role = context.get("target_role", "professional")
-        years = context.get("years_experience", 5)
-        key_areas = context.get("key_areas", "technology and business")
-        key_achievements = context.get("key_achievements", "delivering measurable business results")
-        specialties = context.get("specialties", "strategic planning and execution")
-        impact_type = context.get("impact_type", "organizational growth")
-        company_type = context.get("company_type", "innovative organizations")
-
-        template = self.resume_templates["professional_summary"]
-        summary = template.format(
-            target_role=target_role,
-            years=years,
-            key_areas=key_areas,
-            key_achievements=key_achievements,
-            specialties=specialties,
-            impact_type=impact_type,
-            company_type=company_type
+        # Create prompt from parameters
+        prompt = (
+            f"Generate professional summary for {target_role} with {years_experience} years "
+            f"experience in {', '.join(key_areas)}. Key achievements: {', '.join(key_achievements)}. "
+            f"Specialties: {', '.join(specialties)}."
         )
 
-        # Add role-specific enhancements
-        if target_role.lower() == "ai_engineer":
-            summary += " Expert in machine learning, deep learning, and production AI systems."
-        elif target_role.lower() == "technical_lead":
-            summary += " Experienced in leading cross-functional teams and architecting scalable solutions."
-        elif target_role.lower() == "executive":
-            summary += " Strategic leader with proven success in driving digital transformation and revenue growth."
-
-        return LLMResponse(
-            content=summary,
-            token_usage=len(summary.split()),
-            metadata={
-                "model": self.model_name,
-                "task_type": "professional_summary",
-                "target_role": target_role
+        # Create enhanced context
+        context = GenerationContext(
+            prompt=prompt,
+            task_type="professional_summary",
+            target_role=target_role,
+            experience_level=experience_level,
+            optimization_focus=["impact", "keywords", "readability"],
+            parameters={
+                "key_areas": key_areas,
+                "key_achievements": key_achievements,
+                "specialties": specialties,
+                "impact_type": impact_type,
+                "company_type": company_type
             }
         )
 
-    def _enhance_bullet(self, request: LLMRequest) -> LLMResponse:
-        """Enhance resume bullet with real business logic"""
-        context = request.context or {}
-        # Get bullet from prompt field (where ResumeEngineAdapter passes it)
-        original_bullet = request.prompt or ""
-        target_role = context.get("target_role", "professional")
+        # Execute using comprehensive executor
+        result = self.executor.execute(context)
 
-        # Guard against empty bullets
-        if not original_bullet or not original_bullet.strip():
-            return LLMResponse(
-                content=original_bullet,
-                token_usage=0,
-                metadata={
-                    "model": self.model_name,
-                    "task_type": "bullet_enhancement",
-                    "error": "Empty bullet provided"
-                }
+        return LLMResponse(
+            content=result.content,
+            token_usage=result.token_usage,
+            metadata={
+                "confidence_score": result.confidence_score,
+                "quality_metrics": result.quality_metrics,
+                "compliance_check": result.compliance_check,
+                "enhancements_applied": result.enhancement_applied,
+                "model_name": self.model_name
+            }
+        )
+
+    def enhance_bullets(self, bullets: List[str], target_role: str,
+                       optimization_focus: List[str] = None) -> List[LLMResponse]:
+        """Enhance bullets using comprehensive executor"""
+        if optimization_focus is None:
+            optimization_focus = ["impact", "keywords"]
+
+        enhanced_responses = []
+
+        for bullet in bullets:
+            context = GenerationContext(
+                prompt=bullet,
+                task_type="bullet_enhancement",
+                target_role=target_role,
+                optimization_focus=optimization_focus,
+                compliance_rules={"linkedin": True, "ats_friendly": True}
             )
 
-        # Real bullet enhancement logic
-        enhanced = self._apply_bullet_enhancement_rules(original_bullet, target_role)
+            result = self.executor.execute(context)
+
+            enhanced_responses.append(LLMResponse(
+                content=result.content,
+                token_usage=result.token_usage,
+                metadata={
+                    "confidence_score": result.confidence_score,
+                    "quality_metrics": result.quality_metrics,
+                    "compliance_check": result.compliance_check,
+                    "enhancements_applied": result.enhancement_applied,
+                    "original_bullet": bullet,
+                    "model_name": self.model_name
+                }
+            ))
+
+        return enhanced_responses
+
+    def optimize_skills_section(self, technical_skills: List[str],
+                              soft_skills: List[str], tools: List[str],
+                              target_role: str, experience_level: str = "mid") -> LLMResponse:
+        """Optimize skills section using comprehensive executor"""
+
+        context = GenerationContext(
+            prompt="Optimize skills section",
+            task_type="skills_optimization",
+            target_role=target_role,
+            experience_level=experience_level,
+            optimization_focus=["keywords", "readability"],
+            parameters={
+                "technical_skills": technical_skills,
+                "leadership_skills": soft_skills,
+                "tools": tools
+            }
+        )
+
+        result = self.executor.execute(context)
 
         return LLMResponse(
-            content=enhanced,
-            token_usage=len(enhanced.split()),
+            content=result.content,
+            token_usage=result.token_usage,
             metadata={
-                "model": self.model_name,
-                "task_type": "bullet_enhancement",
-                "original_length": len(original_bullet),
-                "enhanced_length": len(enhanced)
-            },
-            enhancements_applied=["action_verb", "quantification", "role_keywords"],
-            overall_confidence=0.85,  # Fixed confidence for template-based enhancement
-            provenance=BulletProvenance.ENRICHED
+                "confidence_score": result.confidence_score,
+                "quality_metrics": result.quality_metrics,
+                "compliance_check": result.compliance_check,
+                "enhancements_applied": result.enhancement_applied,
+                "skills_processed": {
+                    "technical_count": len(technical_skills),
+                    "soft_count": len(soft_skills),
+                    "tools_count": len(tools)
+                },
+                "model_name": self.model_name
+            }
         )
 
-    def _apply_bullet_enhancement_rules(self, bullet: str, target_role: str) -> str:
-        """Apply real bullet enhancement rules"""
-        enhanced = bullet
+    def process(self, request: LLMRequest) -> LLMResponse:
+        """Process LLM request using comprehensive executor"""
 
-        # Add action verb if missing (don't double-add)
-        action_verbs = ["led", "developed", "implemented", "architected", "managed", "optimized", "built", "created", "improved", "reduced", "increased"]
-        first_word = enhanced.lower().split()[0] if enhanced.split() else ""
-        if not any(first_word.startswith(verb.lower()) for verb in action_verbs):
-            enhanced = "Developed " + enhanced[0].lower() + enhanced[1:]
-
-        # Add quantification if missing (avoid double quantification)
-        has_metrics = any(char in enhanced for char in ['$', '%']) or any(
-            word in enhanced.lower() for word in ['by 40%', 'by 30%', 'by 25%', 'improvement', 'growth', 'costs']
-        )
-        if not has_metrics:
-            if "improved" in enhanced.lower():
-                enhanced += ", resulting in 25% improvement in efficiency"
-            elif "reduced" in enhanced.lower():
-                enhanced += ", cutting costs by 30%"
-            elif "increased" in enhanced.lower():
-                enhanced += ", driving 40% growth in key metrics"
-            elif "developed" in enhanced.lower() or "built" in enhanced.lower():
-                enhanced += ", serving 10,000+ users"
-
-        # Add role-specific keywords
-        role_keywords = {
-            "ai_engineer": ["machine learning", "AI", "algorithms", "models"],
-            "technical_lead": ["architecture", "scalability", "leadership", "team"],
-            "executive": ["strategic", "business", "revenue", "transformation"],
-            "data_scientist": ["analytics", "insights", "data", "statistical"]
+        # Map task types to executor task types
+        task_mapping = {
+            "generation": "general",
+            "summary": "professional_summary",
+            "bullet_enhancement": "bullet_enhancement",
+            "skills_optimization": "skills_optimization"
         }
 
-        keywords = role_keywords.get(target_role.lower(), [])
-        for keyword in keywords:
-            if keyword.lower() not in enhanced.lower():
-                enhanced += f" using advanced {keyword}"
-                break
+        executor_task_type = task_mapping.get(request.task_type, "general")
 
-        return enhanced
+        context = GenerationContext(
+            prompt=request.prompt,
+            task_type=executor_task_type,
+            parameters=request.context,
+            compliance_rules={"linkedin": True, "ats_friendly": True}
+        )
+
+        result = self.executor.execute(context)
+
+        return LLMResponse(
+            content=result.content,
+            token_usage=result.token_usage,
+            metadata={
+                "confidence_score": result.confidence_score,
+                "quality_metrics": result.quality_metrics,
+                "compliance_check": result.compliance_check,
+                "enhancements_applied": result.enhancement_applied,
+                "model_name": self.model_name,
+                "original_task_type": request.task_type
+            }
+        )
+
+    def get_model_info(self) -> Dict[str, Any]:
+        """Get model information"""
+        return {
+            "model_name": self.model_name,
+            "executor_version": "comprehensive_v2",
+            "capabilities": [
+                "professional_summary_generation",
+                "bullet_enhancement",
+                "skills_optimization",
+                "compliance_checking",
+                "quality_metrics"
+            ],
+            "supported_task_types": [
+                "generation", "summary", "bullet_enhancement", "skills_optimization"
+            ]
+        }
+
+    def get_generation_history(self, limit: int = 10) -> List[Dict[str, Any]]:
+        """Get generation history from executor"""
+        return self.executor.get_generation_history(limit)
+
+    def analyze_performance(self) -> Dict[str, Any]:
+        """Analyze performance using executor analytics"""
+        return self.executor.analyze_generation_patterns()
+
+    # Private methods for backward compatibility with resume_app
+    def _enhance_bullet(self, request: LLMRequest) -> LLMResponse:
+        """Enhance bullet - private method for resume_app compatibility"""
+        bullets = [request.prompt]
+        enhanced_responses = self.enhance_bullets(
+            bullets,
+            request.context.get("target_role", "Professional"),
+            request.context.get("optimization_focus", ["impact", "keywords"])
+        )
+        return enhanced_responses[0] if enhanced_responses else LLMResponse()
+
+    def _generate_professional_summary(self, request: LLMRequest) -> LLMResponse:
+        """Generate professional summary - private method for resume_app compatibility"""
+        context = request.context or {}
+        return self.generate_professional_summary(
+            target_role=context.get("target_role", "Professional"),
+            experience_level=context.get("experience_level", "mid"),
+            years_experience=context.get("years_experience", "5"),
+            key_areas=context.get("key_areas", []),
+            key_achievements=context.get("key_achievements", []),
+            specialties=context.get("specialties", []),
+            impact_type=context.get("impact_type", "business impact"),
+            company_type=context.get("company_type", "innovative organizations")
+        )
 
     def _optimize_skills(self, request: LLMRequest) -> LLMResponse:
-        """Optimize skills section with real business logic"""
+        """Optimize skills - private method for resume_app compatibility"""
         context = request.context or {}
-        technical_skills = context.get("technical_skills", [])
-        soft_skills = context.get("soft_skills", [])
-        tools = context.get("tools", [])
-        certifications = context.get("certifications", [])
-
-        # Prioritize skills based on target role
-        target_role = context.get("target_role", "professional")
-        prioritized_skills = self._prioritize_skills_for_role(
-            technical_skills, soft_skills, tools, certifications, target_role
+        return self.optimize_skills_section(
+            technical_skills=context.get("technical_skills", []),
+            soft_skills=context.get("soft_skills", []),
+            tools=context.get("tools", []),
+            target_role=context.get("target_role", "Professional"),
+            experience_level=context.get("experience_level", "mid")
         )
-
-        template = self.resume_templates["skills_section"]
-        skills_content = template.format(**prioritized_skills)
-
-        return LLMResponse(
-            content=skills_content,
-            token_usage=len(skills_content.split()),
-            metadata={
-                "model": self.model_name,
-                "task_type": "skills_optimization",
-                "target_role": target_role,
-                "total_skills": len(technical_skills) + len(soft_skills)
-            }
-        )
-
-    def _prioritize_skills_for_role(self, tech_skills: List[str], soft_skills: List[str],
-                                   tools: List[str], certs: List[str], target_role: str) -> Dict[str, str]:
-        """Prioritize skills based on target role"""
-        role_priority_map = {
-            "ai_engineer": {
-                "tech_priority": ["Python", "Machine Learning", "Deep Learning", "TensorFlow", "PyTorch"],
-                "soft_priority": ["Problem Solving", "Analytical Thinking", "Innovation"],
-                "tools_priority": ["Jupyter", "Docker", "Kubernetes", "AWS"],
-                "certs_priority": ["AWS ML", "Google ML", "Microsoft Azure"]
-            },
-            "technical_lead": {
-                "tech_priority": ["System Design", "Architecture", "Cloud Computing", "DevOps"],
-                "soft_priority": ["Leadership", "Communication", "Project Management"],
-                "tools_priority": ["AWS", "Azure", "Jenkins", "Git"],
-                "certs_priority": ["AWS Solutions Architect", "PMP", "Scrum Master"]
-            },
-            "executive": {
-                "tech_priority": ["Strategic Planning", "Business Analysis", "Digital Transformation"],
-                "soft_priority": ["Executive Leadership", "Strategic Thinking", "Stakeholder Management"],
-                "tools_priority": ["Salesforce", "Tableau", "Power BI", "ERP Systems"],
-                "certs_priority": ["MBA", "Executive Leadership", "Digital Strategy"]
-            }
-        }
-
-        priorities = role_priority_map.get(target_role.lower(), role_priority_map["technical_lead"])
-
-        # Sort skills by priority
-        def prioritize_list(items: List[str], priority_list: List[str]) -> List[str]:
-            priority_dict = {skill.lower(): idx for idx, skill in enumerate(priority_list)}
-            return sorted(items, key=lambda x: priority_dict.get(x.lower(), 999))
-
-        return {
-            "technical_skills": ", ".join(prioritize_list(tech_skills, priorities["tech_priority"])),
-            "soft_skills": ", ".join(prioritize_list(soft_skills, priorities["soft_priority"])),
-            "tools": ", ".join(prioritize_list(tools, priorities["tools_priority"])),
-            "certifications": ", ".join(prioritize_list(certs, priorities["certs_priority"]))
-        }
-
-    def _generate_generic_response(self, request: LLMRequest) -> LLMResponse:
-        """Generate generic response for other task types"""
-        return LLMResponse(
-            content=f"Generated response for: {request.prompt[:50]}...",
-            token_usage=len(request.prompt.split()),
-            metadata={"model": self.model_name, "task_type": request.task_type}
-        )
-
-    def batch_generate(self, requests: List[LLMRequest]) -> List[LLMResponse]:
-        """Generate responses for multiple requests"""
-        return [self.generate_response(request) for request in requests]
-
-    def estimate_tokens(self, text: str) -> int:
-        """Estimate token count for text"""
-        return len(text.split()) * 4  # Rough estimation
