@@ -28,13 +28,52 @@ class ReasoningMode(Enum):
     TOT = "tot"  # Tree of Thoughts
     REACT = "react"  # ReAct (Reasoning + Acting)
 
+# Constants for temperature and reasoning profiles
+SECTION_TEMPERATURE_SCHEDULE = {
+    "intro": 0.7,
+    "body": 0.8,
+    "conclusion": 0.6
+}
 
+EXECUTIVE_REASONING_PROFILES = {
+    "c_level": {"depth": "deep", "style": "analytical"},
+    "vp_level": {"depth": "medium", "style": "strategic"},
+    "director_level": {"depth": "light", "style": "tactical"}
+}
+
+@dataclass
 class AgentType(Enum):
-    """Agent types for outreach execution."""
+    """Agent types for planning delegation."""
     RESEARCHER = "researcher"
-    PLANNER = "planner"
-    EXECUTOR = "executor"
-    VALIDATOR = "validator"
+    WRITER = "writer"
+    ANALYZER = "analyzer"
+
+@dataclass
+class ArchetypeContext:
+    """Context for archetype-based planning."""
+    archetype: ArchetypeType
+    stage: str
+    constraints: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
+class RefinementPlan:
+    """Plan for refining research or content."""
+    needs_refinement: bool
+    suggested_actions: List[str]
+    target_quality: float = 0.8
+
+
+# Functions for temperature and content adjustment
+def adjust_temperature_by_intensity(base_temp: float, intensity: str) -> float:
+    """Adjust temperature based on reasoning intensity."""
+    adjustments = {"low": -0.1, "medium": 0.0, "high": 0.2}
+    return base_temp + adjustments.get(intensity, 0.0)
+
+def expand_section_by_intensity(base_content: str, intensity: str) -> str:
+    """Expand content based on reasoning intensity."""
+    multipliers = {"low": 1.0, "medium": 1.2, "high": 1.5}
+    multiplier = multipliers.get(intensity, 1.0)
+    return base_content * int(multiplier) if multiplier > 1 else base_content
 
 
 @dataclass
@@ -125,7 +164,7 @@ class MessagePlan:
 
 
 @dataclass
-class ArchetypeContext:
+class ArchetypeContextFlat:
     """Context for archetype-based planning and execution - flattened interface."""
     archetype: str  # String value, not ArchetypeType enum
     reasoning_mode: str = "balanced"
