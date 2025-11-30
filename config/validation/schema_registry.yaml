@@ -1,1 +1,142 @@
-# Placeholder configuration file
+# Schema Registry Configuration
+# Schema management and validation framework
+
+# Schema Registry Framework
+schema_registry:
+  enabled: true
+  version_control: true
+  validation_strict_mode: true
+  auto_schema_discovery: false
+
+# Core Schemas
+core_schemas:
+  system_defaults:
+    version: "1.0.0"
+    schema_path: "schemas/core/system_defaults.json"
+    validation_required: true
+    backward_compatibility: true
+  
+  environment:
+    version: "1.0.0"
+    schema_path: "schemas/core/environment.json"
+    validation_required: true
+    backward_compatibility: true
+  
+  secrets:
+    version: "1.0.0"
+    schema_path: "schemas/core/secrets.json"
+    validation_required: true
+    backward_compatibility: false
+
+# Layer Schemas
+layer_schemas:
+  l1_planning:
+    strategy_planning:
+      version: "1.0.0"
+      schema_path: "schemas/l1/strategy_planning.json"
+      validation_required: true
+    
+    research_planning:
+      version: "1.0.0"
+      schema_path: "schemas/l1/research_planning.json"
+      validation_required: true
+    
+    message_planning:
+      version: "1.0.0"
+      schema_path: "schemas/l1/message_planning.json"
+      validation_required: true
+    
+    safety_planning:
+      version: "1.0.0"
+      schema_path: "schemas/l1/safety_planning.json"
+      validation_required: true
+  
+  l2_execution:
+    tool_registry:
+      version: "1.0.0"
+      schema_path: "schemas/l2/tool_registry.json"
+      validation_required: true
+    
+    execution_limits:
+      version: "1.0.0"
+      schema_path: "schemas/l2/execution_limits.json"
+      validation_required: true
+    
+    action_costing:
+      version: "1.0.0"
+      schema_path: "schemas/l2/action_costing.json"
+      validation_required: true
+    
+    retry_policies:
+      version: "1.0.0"
+      schema_path: "schemas/l2/retry_policies.json"
+      validation_required: true
+
+# Engine Schemas
+engine_schemas:
+  resume_engine:
+    ats_rules:
+      version: "1.0.0"
+      schema_path: "schemas/engines/resume/ats_rules.json"
+      validation_required: true
+    
+    optimizer_params:
+      version: "1.0.0"
+      schema_path: "schemas/engines/resume/optimizer_params.json"
+      validation_required: true
+    
+    resume_style:
+      version: "1.0.0"
+      schema_path: "schemas/engines/resume/resume_style.json"
+      validation_required: true
+    
+    scoring_weights:
+      version: "1.0.0"
+      schema_path: "schemas/engines/resume/scoring_weights.json"
+      validation_required: true
+    
+    skill_taxonomy:
+      version: "1.0.0"
+      schema_path: "schemas/engines/resume/skill_taxonomy.json"
+      validation_required: true
+  
+  outreach_engine:
+    pipeline:
+      version: "1.0.0"
+      schema_path: "schemas/engines/outreach/pipeline.json"
+      validation_required: true
+    
+    message_style:
+      version: "1.0.0"
+      schema_path: "schemas/engines/outreach/message_style.json"
+      validation_required: true
+    
+    personalization:
+      version: "1.0.0"
+      schema_path: "schemas/engines/outreach/personalization.json"
+      validation_required: true
+    
+    cadence:
+      version: "1.0.0"
+      schema_path: "schemas/engines/outreach/cadence.json"
+      validation_required: true
+    
+    archetype_weights:
+      version: "1.0.0"
+      schema_path: "schemas/engines/outreach/archetype_weights.json"
+      validation_required: true
+
+# Validation Rules
+validation_rules:
+  strict_validation: true
+  allow_unknown_fields: false
+  require_all_fields: false
+  type_validation: strict
+  format_validation: true
+
+# Schema Storage
+storage:
+  backend: file_system
+  base_path: "schemas/"
+  backup_enabled: true
+  compression: false
