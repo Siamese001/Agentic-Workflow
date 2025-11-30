@@ -111,9 +111,16 @@ class MessageGenerationExecutor:
                 ]
             },
             "skills_optimization": {
-                "technical_priority": ["Python", "Machine Learning", "Cloud Computing", "DevOps", "Data Engineering"],
-                "leadership_priority": ["Team Leadership", "Project Management", "Strategic Planning", "Stakeholder Management"],
-                "tools_priority": ["AWS", "Azure", "Docker", "Kubernetes", "Git", "Jenkins"]
+                "technical_priority": [
+                    "Python", "Machine Learning", "Cloud Computing", "DevOps", "Data Engineering"
+                ],
+                "leadership_priority": [
+                    "Team Leadership", "Project Management", "Strategic Planning", 
+                    "Stakeholder Management"
+                ],
+                "tools_priority": [
+                    "AWS", "Azure", "Docker", "Kubernetes", "Git", "Jenkins"
+                ]
             }
         }
 
@@ -647,7 +654,10 @@ class MessageGenerationExecutor:
 
     def _has_special_characters(self, content: str) -> bool:
         """Check for ATS-unfriendly special characters"""
-        special_chars = ["@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "=", "{", "}", "[", "]", "|", "\\", ":", ";", '"', "'", "<", ">", ",", ".", "?", "/"]
+        special_chars = [
+            "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "=", "{", "}", 
+            "[", "]", "|", "\\", ":", ";", '"', "'", "<", ">", ",", ".", "?", "/"
+        ]
         return any(char in content for char in special_chars if not content.strip().endswith(char))
 
     def _calculate_readability(self, content: str) -> float:

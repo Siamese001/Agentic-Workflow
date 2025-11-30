@@ -334,8 +334,13 @@ class RGResumeOrchestrator:
             self.performance_metrics["successful_orchestrations"] += 1
 
         # Update average execution time
-        total_time = self.performance_metrics["average_execution_time_ms"] * (self.performance_metrics["total_orchestrations"] - 1)
-        self.performance_metrics["average_execution_time_ms"] = (total_time + result.execution_time_ms) / self.performance_metrics["total_orchestrations"]
+        total_time = (
+            self.performance_metrics["average_execution_time_ms"] * 
+            (self.performance_metrics["total_orchestrations"] - 1)
+        )
+        self.performance_metrics["average_execution_time_ms"] = (
+            total_time + result.execution_time_ms
+        ) / self.performance_metrics["total_orchestrations"]
 
         # Update compliance rate
         if result.compliance_results:
