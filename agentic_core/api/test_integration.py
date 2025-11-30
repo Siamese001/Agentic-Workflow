@@ -19,7 +19,7 @@ def test_imports() -> Dict[str, Any]:
     
     # Test imports from main __init__.py
     try:
-        from apps.shared.api import (
+        from agentic_core.api import (
             BaseRequest,
             BaseResponse,
             PaginatedRequest,
@@ -46,116 +46,63 @@ def test_imports() -> Dict[str, Any]:
             "handle_errors", "log_api_calls", "APIException", "ValidationAPIException",
             "AuthenticationAPIException", "RateLimitAPIException"
         ])
-        
-    except ImportError as e:
+    except Exception as e:
+        results["import_errors"].append(f"Models import failed: {e}")
         results["success"] = False
-        results["import_errors"].append(f"Main import error: {str(e)}")
-        return results
     
-    # Test direct imports from models
+    # Test response utilities
     try:
-        from apps.shared.api.models import (
-            BaseRequest as BaseModelRequest,
-            BaseResponse as BaseModelResponse,
-            PaginatedRequest as PaginatedModelRequest,
-            PaginatedResponse as PaginatedModelResponse,
-            SearchRequest as SearchModelRequest,
-            ErrorResponse,
-            ValidationErrorResponse,
-            RateLimitResponse,
-            AuthenticationResponse,
-            HealthCheckResponse,
-            BatchRequest,
-            BatchResponse
+        from agentic_core.api.responses import (
+            APIResponse, create_success_response, create_error_response,
+            create_validation_response, create_not_found_response,
+            create_unauthorized_response, create_forbidden_response,
+            create_rate_limit_response, create_paginated_response,
+            create_search_response, create_health_check_response,
+            create_batch_response, ResponseFormatter
         )
-        
         results["imported_components"].extend([
-            "BaseModelRequest", "BaseModelResponse", "PaginatedModelRequest",
-            "PaginatedModelResponse", "SearchModelRequest", "ErrorResponse",
-            "ValidationErrorResponse", "RateLimitResponse", "AuthenticationResponse",
-            "HealthCheckResponse", "BatchRequest", "BatchResponse"
-        ])
-        
-    except ImportError as e:
-        results["success"] = False
-        results["import_errors"].append(f"Models import error: {str(e)}")
-    
-    # Test direct imports from responses
-    try:
-        from apps.shared.api.responses import (
-            APIResponse as ResponseAPIResponse,
-            create_success_response as create_success,
-            create_error_response as create_error,
-            create_validation_response,
-            create_not_found_response,
-            create_unauthorized_response,
-            create_forbidden_response,
-            create_rate_limit_response,
-            create_paginated_response as create_paginated,
-            create_search_response,
-            create_health_check_response,
-            create_batch_response,
-            ResponseFormatter
-        )
-        
-        results["imported_components"].extend([
-            "ResponseAPIResponse", "create_success", "create_error",
+            "APIResponse", "create_success_response", "create_error_response",
             "create_validation_response", "create_not_found_response",
             "create_unauthorized_response", "create_forbidden_response",
-            "create_rate_limit_response", "create_paginated", "create_search_response",
-            "create_health_check_response", "create_batch_response", "ResponseFormatter"
+            "create_rate_limit_response", "create_paginated_response",
+            "create_search_response", "create_health_check_response",
+            "create_batch_response", "ResponseFormatter"
         ])
-        
-    except ImportError as e:
+    except Exception as e:
+        results["import_errors"].append(f"Responses import failed: {e}")
         results["success"] = False
-        results["import_errors"].append(f"Responses import error: {str(e)}")
     
-    # Test direct imports from decorators
+    # Test decorators
     try:
-        from apps.shared.api.decorators import (
-            rate_limit as rate_limit_decorator,
-            validate_request as validate_decorator,
-            handle_errors as handle_errors_decorator,
-            log_api_calls as log_decorator,
-            cache_response as cache_decorator,
-            require_auth as auth_decorator,
-            RateLimiter
+        from agentic_core.api.decorators import (
+            rate_limit, validate_request, handle_errors, log_api_calls,
+            cache_response, require_auth, RateLimiter
         )
-        
         results["imported_components"].extend([
-            "rate_limit_decorator", "validate_decorator", "handle_errors_decorator",
-            "log_decorator", "cache_decorator", "auth_decorator", "RateLimiter"
+            "rate_limit", "validate_request", "handle_errors", "log_api_calls",
+            "cache_response", "require_auth", "RateLimiter"
         ])
-        
-    except ImportError as e:
+    except Exception as e:
+        results["import_errors"].append(f"Decorators import failed: {e}")
         results["success"] = False
-        results["import_errors"].append(f"Decorators import error: {str(e)}")
     
-    # Test direct imports from exceptions
+    # Test exceptions
     try:
-        from apps.shared.api.exceptions import (
-            APIException as ExceptionAPIException,
-            ValidationAPIException as ExceptionValidationAPIException,
-            AuthenticationAPIException as ExceptionAuthAPIException,
-            AuthorizationAPIException,
-            RateLimitAPIException as ExceptionRateLimitAPIException,
-            NotFoundAPIException,
-            ConflictAPIException,
-            BadRequestAPIException,
-            ServiceUnavailableAPIException,
-            TimeoutAPIException,
-            QuotaExceededAPIException,
-            create_validation_error as create_validation_exc,
-            create_not_found_error as create_not_found_exc,
-            create_auth_error as create_auth_exc,
-            create_rate_limit_error as create_rate_limit_exc,
-            create_permission_error as create_permission_exc,
-            create_service_unavailable_error as create_service_unavailable_exc
+        from agentic_core.api.exceptions import (
+            APIException, ValidationAPIException, AuthenticationAPIException,
+            AuthorizationAPIException, RateLimitAPIException, NotFoundAPIException,
+            ConflictAPIException, BadRequestAPIException, ServiceUnavailableAPIException,
+            TimeoutAPIException, QuotaExceededAPIException, create_validation_error,
+            create_not_found_error, create_auth_error, create_rate_limit_error,
+            create_permission_error, create_service_unavailable_error
         )
-        
         results["imported_components"].extend([
-            "ExceptionAPIException", "ExceptionValidationAPIException",
-            "ExceptionAuthAPIException", "AuthorizationAPIException",
+            "APIException", "ValidationAPIException", "AuthenticationAPIException",
+            "AuthorizationAPIException", "RateLimitAPIException", "NotFoundAPIException",
+            "ConflictAPIException", "BadRequestAPIException", "ServiceUnavailableAPIException",
+            "TimeoutAPIException", "QuotaExceededAPIException", "create_validation_error",
+            "create_not_found_error", "create_auth_error", "create_rate_limit_error",
+            "create_permission_error", "create_service_unavailable_error"
             "ExceptionRateLimitAPIException", "NotFoundAPIException",
             "ConflictAPIException", "BadRequestAPIException",
             "ServiceUnavailableAPIException", "TimeoutAPIException",
@@ -181,9 +128,9 @@ def test_basic_functionality() -> Dict[str, Any]:
     
     try:
         # Test basic request/response creation
-        from apps.shared.api.models import BaseRequest, BaseResponse
-        from apps.shared.api.responses import create_success_response, create_error_response
-        from apps.shared.api.exceptions import APIException, ValidationAPIException
+        from agentic_core.api.models import BaseRequest, BaseResponse
+        from agentic_core.api.responses import create_success_response, create_error_response
+        from agentic_core.api.exceptions import APIException, ValidationAPIException
         
         # Test BaseRequest
         request = BaseRequest()
@@ -240,7 +187,7 @@ def test_rate_limiter() -> Dict[str, Any]:
     }
     
     try:
-        from apps.shared.api.decorators import RateLimiter
+        from agentic_core.api.decorators import RateLimiter
         from datetime import datetime, timedelta
         
         limiter = RateLimiter()
