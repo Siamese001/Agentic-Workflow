@@ -4,8 +4,47 @@
 prompt_index:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
-  total_prompts: 0
+  total_prompts: 30
   
+  # V5 Instructional Injection Framework
+  v5_injection_framework:
+    enabled: true
+    description: "Comprehensive 6-layer instructional injection framework for AI prompt governance"
+    total_injections: 30
+    total_layers: 6
+    index_file: "injections/injections_index.yaml"
+    
+    layer_structure:
+      framing_layer:
+        file: "injections/framing.yaml"
+        injection_count: 5
+        section: "v5_framing_injections"
+        
+      context_layer:
+        file: "injections/context_engineering.yaml"
+        injection_count: 5
+        section: "v5_context_injections"
+        
+      reasoning_layer:
+        file: "injections/reasoning.yaml"
+        injection_count: 5
+        section: "v5_reasoning_injections"
+        
+      tooling_layer:
+        file: "injections/tool_use.yaml"
+        injection_count: 5
+        section: "v5_tooling_injections"
+        
+      safety_layer:
+        file: "injections/safety.yaml"
+        injection_count: 5
+        section: "v5_safety_injections"
+        
+      output_layer:
+        file: "injections/output_governance.yaml"
+        injection_count: 5
+        section: "v5_output_injections"
+        
   # Prompt categories
   categories:
     system:
@@ -25,7 +64,14 @@ prompt_index:
       
     safety:
       description: "Safety and governance prompts"
-      count: 0
+      count: 25  # V5 safety layer injections
+      prompts: []
+      
+    injections:
+      description: "V5 Instructional Injection Framework prompts"
+      count: 30
+      type: "governance_framework"
+      framework_version: "v5"
       prompts: []
       
     evaluation:
