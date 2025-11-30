@@ -152,11 +152,12 @@ class TripletExtractionExecutor:
         
         return mock_triplets
 
-def create_extraction_plan(config: Optional[ExtractionConfig] = None) -> Dict[str, Any]:
+def create_extraction_plan(source_text: str = "", config: Optional[ExtractionConfig] = None) -> Dict[str, Any]:
     """Create an extraction plan with configuration and strategy."""
     config = config or ExtractionConfig()
     
     return {
+        "source_text": source_text,
         "model_name": config.model_name,
         "confidence_threshold": config.confidence_threshold,
         "max_triplets": config.max_triplets,
