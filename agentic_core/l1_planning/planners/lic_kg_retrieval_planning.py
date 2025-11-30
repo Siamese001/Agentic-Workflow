@@ -83,6 +83,18 @@ class KGRetrievalPlanner:
         )
         return refined
 
+def plan_entity_retrieval(entity_name: str, entity_type: Optional[EntityType] = None,
+                         constraints: Dict[str, Any] = None) -> KGQueryPlan:
+    """Plan entity retrieval from knowledge graph."""
+    return KGQueryPlan(
+        primary_entity=entity_name,
+        target_entity="",
+        relationship_types=["related_to", "part_of", "works_for"],
+        constraints=constraints or {},
+        reasoning_enabled=True,
+        metadata={"entity_type": entity_type.value if entity_type else "unknown"}
+    )
+
 @dataclass
 class KGQueryPlan:
     """Knowledge graph query plan structure."""
