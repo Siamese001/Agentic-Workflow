@@ -131,7 +131,11 @@ EXECUTIVE_REASONING_PROFILES = {
         reflexion_passes=3,
         sc_k=10,
         require_deep_research=True,
-        cognitive_axes=["analysis", "synthesis", "evaluation", "creativity", "critical_thinking", "strategic_planning", "decision_making", "problem_solving"]
+        cognitive_axes=[
+            "analysis", "synthesis", "evaluation", "creativity",
+            "critical_thinking", "strategic_planning",
+            "decision_making", "problem_solving"
+        ]
     ),
     ArchetypeType.EXECUTIVE: ExecutiveReasoningProfile(
         reasoning_intensity="high",
@@ -140,7 +144,11 @@ EXECUTIVE_REASONING_PROFILES = {
         reflexion_passes=2,
         sc_k=6,
         require_deep_research=True,
-        cognitive_axes=["analysis", "synthesis", "evaluation", "creativity", "critical_thinking", "strategic_planning", "decision_making", "problem_solving"]
+        cognitive_axes=[
+            "analysis", "synthesis", "evaluation", "creativity",
+            "critical_thinking", "strategic_planning",
+            "decision_making", "problem_solving"
+        ]
     ),
     ArchetypeType.SENIOR_TA: ExecutiveReasoningProfile(
         reasoning_intensity="medium",
@@ -361,26 +369,6 @@ RECRUITER_REASONING_PROFILES = {
         "tone": "friendly"
     }
 }
-
-def compute_reasoning_multiplier(profile_name: str, archetype: ArchetypeType) -> float:
-    """Compute reasoning multiplier based on profile and archetype."""
-    base_multipliers = {
-        ArchetypeType.RECRUITER: 1.0,
-        ArchetypeType.SENIOR_TA: 1.2,
-        ArchetypeType.EXECUTIVE: 1.5,
-        ArchetypeType.C_LEVEL: 2.0
-    }
-
-    profile_adjustments = {
-        "strategic": 1.2,
-        "operational": 1.0,
-        "technical": 1.1,
-        "general": 0.9
-    }
-
-    base = base_multipliers.get(archetype, 1.0)
-    adjustment = profile_adjustments.get(profile_name, 1.0)
-    return base * adjustment
 
 def reasoning_intensity_metadata(reasoning_mode: str, archetype: ArchetypeType) -> Dict[str, Any]:
     """Generate reasoning intensity metadata for given mode and archetype."""

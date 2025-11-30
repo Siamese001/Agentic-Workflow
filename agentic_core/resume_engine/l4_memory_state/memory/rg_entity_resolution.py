@@ -216,13 +216,6 @@ def create_mention(entity_id: str = "", text: str = "", entity_type: EntityType 
         confidence=confidence
     )
 
-# Remove the duplicate create_mention class that was at the end
-class create_mention:
-    """create_mention implementation"""
-
-    def __init__(self):
-        pass
-
     def process(self, *args, **kwargs) -> Any:
         """Process method"""
         return {"processed": True}
