@@ -1,6 +1,7 @@
 # Retrieval module for hybrid ranking and orchestration
 from .orchestrate import orchestrate_retrieval
 from .hybrid_ranker import fuse_and_rank
+import types
 
 def _run_bm25(query: str, config: dict) -> list:
     """Internal BM25 retrieval function for testing"""
@@ -48,3 +49,7 @@ def emit_retrieval_failure(*args, **kwargs) -> None:
 def emit_retrieval_complete(*args, **kwargs) -> None:
     """Emit retrieval complete event for observability"""
     pass
+
+def start_span(*args, **kwargs) -> types.SimpleNamespace:
+    """Start tracing span for observability"""
+    return types.SimpleNamespace()

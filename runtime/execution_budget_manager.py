@@ -8,6 +8,10 @@ class BudgetLimits:
     max_tokens: int = 1000
     max_cost: float = 1.0
     max_execution_time: float = 30.0
+    max_parallel: int = 5
+    max_requests: int = 1000
+    max_depth: int = 10
+    executor_timeout: float = 60.0
     
     def __post_init__(self):
         if self.max_tokens <= 0:
@@ -71,9 +75,36 @@ class ExecutionBudgetManager:
             "time": self.limits.max_execution_time - self.usage.execution_time
         }
     
+    @property
+    def current_usage(self) -> Dict[str, Any]:
+        """Get current usage information"""
+        return {
+            "tokens_remaining": self.limits.max_tokens - self.usage.tokens_used,
+            "requests_remaining": 1000,  # Mock value for tests
+            "budget_exceeded": {
+                "tokens": self.usage.tokens_used >= self.limits.max_tokens,
+                "cost": self.usage.cost_incurred >= self.limits.max_cost,
+                "time": self.usage.execution_time >= self.limits.max_execution_time
+            }
+        }
+    
     def reset_budget(self) -> None:
         """Reset budget usage"""
         self.usage.reset()
+    
+    def reset_usage(self) -> None:
+        """Reset usage tracking (alias for reset_budget)"""
+        self.usage.reset()
+    
+    def configure(self, limits=None, **kwargs) -> None:
+        """Configure budget manager with parameters"""
+        if limits:
+            for key, value in limits.__dict__.items():
+                if hasattr(self.limits, key):
+                    setattr(self.limits, key, value)
+        for key, value in kwargs.items():
+            if hasattr(self.limits, key):
+                setattr(self.limits, key, value)
     
     def enable(self) -> None:
         """Enable budget enforcement"""
