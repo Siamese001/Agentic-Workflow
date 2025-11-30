@@ -3,6 +3,9 @@ from typing import Dict, Any, Optional, List
 from dataclasses import dataclass, field
 from datetime import datetime
 
+# Import KGQueryPlan from L1 module
+from agentic_core.l1_planning.planners.lic_kg_retrieval_planning import KGQueryPlan
+
 @dataclass
 class KGRetrievalConfig:
     """Configuration for KG retrieval operations."""
@@ -82,6 +85,13 @@ class KGRetrievalExecutor:
             
             self.execution_history.append(error_result)
             return error_result
+    
+    def execute(self, plan: KGQueryPlan) -> KGRetrievalResult:
+        """Execute a KG query plan."""
+        return self.execute_retrieval(
+            query=plan.primary_entity,
+            context=plan.constraints
+        )
     
     def _retrieve_entities(self, query: str, context: Dict[str, Any] = None) -> List[Dict[str, Any]]:
         """Mock entity retrieval from KG."""
