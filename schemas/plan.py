@@ -1,6 +1,5 @@
 # Plan schema definitions
 from .base import BaseSchema
-from pydantic import BaseModel
 from typing import List, Optional
 
 class PlanSchema(BaseSchema):

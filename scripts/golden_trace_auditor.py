@@ -4,8 +4,8 @@ golden_trace_auditor.py
 Executes golden flows and compares trace hash with golden_traces.json.
 
 Covers:
-- Golden trace schema presence
-- Behavioral drift detection via hash mismatch
+- Golden trace presence
+- Behavioral drift via hash mismatch
 """
 
 import os
@@ -14,12 +14,15 @@ import json
 import hashlib
 import subprocess
 
-REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
+REPO_ROOT = (
+    r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines"
+    r"\Resume Gen\Git\Agentic_Workflow-10_11"
+)
 GOLDEN_PATH = os.path.join(REPO_ROOT, "golden_traces.json")
 
 
 def run_flow():
-    """Run the golden flow via main.py --golden-flow and return parsed JSON trace."""
+    """Run main.py --golden-flow and parse stdout as JSON trace."""
     proc = subprocess.run(
         [sys.executable, "main.py", "--golden-flow"],
         cwd=REPO_ROOT,

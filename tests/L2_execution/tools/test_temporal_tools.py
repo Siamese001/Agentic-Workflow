@@ -62,7 +62,8 @@ class TestTemporalTools:
         ]
         
         assert len(valid_records) == 2  # Should exclude expired record
-        assert record["id"] != "record_3" for record in valid_records
+        for record in valid_records:
+            assert record["id"] != "record_3"
     
     def test_temporal_invalidation_tool_conflict_resolution(self):
         """Test temporal invalidation tool for conflict resolution"""
