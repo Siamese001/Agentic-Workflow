@@ -10,6 +10,7 @@ class OutreachLLMCaller:
     api_key: Optional[str] = None
     temperature: float = 0.7
     max_tokens: int = 1000
+    routing_policy: Optional[Any] = None
 
     def call(self, prompt: str, **kwargs) -> Dict[str, Any]:
         """Make an LLM call with the given prompt"""
