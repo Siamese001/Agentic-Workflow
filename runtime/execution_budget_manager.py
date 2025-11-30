@@ -134,12 +134,21 @@ class ExecutionBudgetManager:
 # Global budget manager instance
 _global_budget_manager: Optional[ExecutionBudgetManager] = None
 
-def get_budget_manager() -> ExecutionBudgetManager:
-    """Get the global budget manager instance"""
-    global _global_budget_manager
-    if _global_budget_manager is None:
-        _global_budget_manager = ExecutionBudgetManager()
-    return _global_budget_manager
+def get_budget_manager(limits: Optional[BudgetLimits] = None) -> ExecutionBudgetManager:
+    """Create a new budget manager with optional limits"""
+    return ExecutionBudgetManager(limits or BudgetLimits())
+
+def create_budget_limits_from_config(config: Dict[str, Any]) -> BudgetLimits:
+    """Create budget limits from configuration dictionary"""
+    return BudgetLimits(
+        max_tokens=config.get('max_tokens', 1000000),
+        max_cost=config.get('max_cost', 1.0),
+        max_execution_time=config.get('max_execution_time', 30.0),
+        max_parallel=config.get('max_parallel', 5),
+        max_requests=config.get('max_requests', 1000),
+        max_depth=config.get('max_depth', 10),
+        executor_timeout=config.get('executor_timeout', 60.0)
+    )
 
 def reset_budget_manager() -> None:
     """Reset the global budget manager (for testing)"""
