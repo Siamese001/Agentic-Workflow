@@ -1,1 +1,325 @@
-# Placeholder YAML configuration file
+# Retention Policies Configuration v1.0
+# Data retention policies for observability data
+
+retention_policies:
+  version: "1.0"
+  enabled: true
+  
+  # Global retention settings
+  global_settings:
+    default_retention: "30d"
+    max_retention: "2y"
+    min_retention: "7d"
+    
+  # Metrics retention policies
+  metrics:
+    high_frequency_metrics:
+      # System metrics (CPU, memory, etc.)
+      system_metrics:
+        retention: "7d"
+        resolution: "1m"
+        aggregation: "avg"
+        
+      # Application performance metrics
+      performance_metrics:
+        retention: "30d"
+        resolution: "5m"
+        aggregation: ["avg", "max", "p95"]
+        
+    business_metrics:
+      # Business KPIs
+      business_kpis:
+        retention: "90d"
+        resolution: "1h"
+        aggregation: ["sum", "avg"]
+        
+      # Cost metrics
+      cost_metrics:
+        retention: "1y"
+        resolution: "1d"
+        aggregation: ["sum", "avg"]
+        
+    # Low-frequency metrics
+    low_frequency_metrics:
+      agent_metrics:
+        retention: "30d"
+        resolution: "15m"
+        aggregation: "avg"
+
+  # Traces retention policies
+  traces:
+    # High-value traces
+    high_value_traces:
+      conditions:
+        - "layer = 'L5' AND safety.result = 'blocked'"
+        - "operation.type = 'resume_processing' AND resume.quality_score < 0.5"
+        - "operation.type = 'outreach_generation' AND outreach.personalization_score > 0.9"
+      retention: "90d"
+      
+    # Standard traces
+    standard_traces:
+      conditions:
+        - "operation.type IN ['resume_processing', 'outreach_generation', 'job_analysis']"
+      retention: "30d"
+      
+    # Debug traces
+    debug_traces:
+      conditions:
+        - "debug.mode = true"
+        - "environment = 'development'"
+      retention: "7d"
+      
+    # Error traces
+    error_traces:
+      conditions:
+        - "span.status = 'ERROR'"
+        - "exception.type IS NOT NULL"
+      retention: "90d"
+
+  # Events retention policies
+  events:
+    # Business events
+    business_events:
+      resume_events:
+        retention: "90d"
+        archive: true
+        
+      outreach_events:
+        retention: "60d"
+        archive: true
+        
+      job_events:
+        retention: "90d"
+        archive: true
+        
+    # Security events
+    security_events:
+      authentication_events:
+        retention: "1y"
+        archive: true
+        
+      authorization_events:
+        retention: "180d"
+        archive: true
+        
+      data_access_events:
+        retention: "2y"
+        archive: true
+        
+    # System events
+    system_events:
+      agent_events:
+        retention: "30d"
+        archive: false
+        
+      resource_events:
+        retention: "60d"
+        archive: false
+
+  # Logs retention policies
+  logs:
+    # Application logs
+    application_logs:
+      info_logs:
+        retention: "30d"
+        archive: false
+        
+      warn_logs:
+        retention: "60d"
+        archive: true
+        
+      error_logs:
+        retention: "90d"
+        archive: true
+        
+      debug_logs:
+        retention: "7d"
+        archive: false
+        
+    # Access logs
+    access_logs:
+      retention: "90d"
+      archive: true
+      
+    # Audit logs
+    audit_logs:
+      retention: "2y"
+      archive: true
+
+  # Environment-specific retention
+  environments:
+    development:
+      metrics_retention: "7d"
+      traces_retention: "7d"
+      events_retention: "7d"
+      logs_retention: "7d"
+      
+    staging:
+      metrics_retention: "30d"
+      traces_retention: "30d"
+      events_retention: "60d"
+      logs_retention: "30d"
+      
+    production:
+      metrics_retention: "90d"
+      traces_retention: "30d"
+      events_retention: "90d"
+      logs_retention: "90d"
+
+  # Data tiering policies
+  tiering:
+    hot_tier:
+      description: "Frequently accessed data"
+      retention: "7d"
+      storage: "ssd"
+      access_pattern: "read_write"
+      
+    warm_tier:
+      description: "Occasionally accessed data"
+      retention: "30d"
+      storage: "hdd"
+      access_pattern: "read_mostly"
+      
+    cold_tier:
+      description: "Rarely accessed data"
+      retention: "1y"
+      storage: "object_storage"
+      access_pattern: "read_only"
+      
+    archive_tier:
+      description: "Compliance archive"
+      retention: "7y"
+      storage: "glacier"
+      access_pattern: "read_only_with_delay"
+
+  # Compliance retention policies
+  compliance:
+    gdpr:
+      personal_data:
+        retention: "until_consent_withdrawn"
+        anonymization_after: "365d"
+        
+    sox:
+      financial_data:
+        retention: "7y"
+        immutable: true
+        
+    hipaa:
+      phi_data:
+        retention: "6y"
+        encrypted: true
+        
+    ccpa:
+      consumer_data:
+        retention: "until_deletion_request"
+        anonymization_after: "365d"
+
+  # Automated cleanup policies
+  cleanup:
+    # Cleanup schedules
+    schedules:
+      daily_cleanup:
+        time: "02:00 UTC"
+        types: ["debug_logs", "temp_data"]
+        
+      weekly_cleanup:
+        day: "sunday"
+        time: "03:00 UTC"
+        types: ["old_traces", "archived_metrics"]
+        
+      monthly_cleanup:
+        day: 1
+        time: "04:00 UTC"
+        types: ["cold_tier_promotion"]
+        
+    # Cleanup rules
+    rules:
+      - name: "remove_expired_data"
+        condition: "retention_period_expired"
+        action: "delete"
+        
+      - name: "archive_old_data"
+        condition: "data_age > archive_threshold"
+        action: "move_to_archive"
+        
+      - name: "aggregate_old_metrics"
+        condition: "metrics_age > aggregation_threshold"
+        action: "aggregate_and_downsample"
+
+  # Storage optimization
+  optimization:
+    # Compression policies
+    compression:
+      enabled: true
+      algorithms:
+        - type: "gzip"
+          for_data: ["logs", "events"]
+          compression_ratio: 0.7
+          
+        - type: "snappy"
+          for_data: ["metrics", "traces"]
+          compression_ratio: 0.5
+          
+    # Data deduplication
+    deduplication:
+      enabled: true
+      window: "1h"
+      algorithms: ["exact_match", "fuzzy_match"]
+
+  # Monitoring and alerting
+  monitoring:
+    # Storage usage alerts
+    storage_alerts:
+      - name: "storage_usage_warning"
+        threshold: 80
+        unit: "percent"
+        
+      - name: "storage_usage_critical"
+        threshold: 95
+        unit: "percent"
+        
+    # Retention policy alerts
+    retention_alerts:
+      - name: "retention_policy_violation"
+        description: "Data kept longer than policy allows"
+        
+      - name: "premature_deletion"
+        description: "Data deleted before retention period"
+
+  # Data export policies
+  export:
+    # Export formats
+    formats:
+      - name: "csv"
+        for_data: ["metrics", "events"]
+        
+      - name: "json"
+        for_data: ["traces", "logs"]
+        
+      - name: "parquet"
+        for_data: ["archived_data"]
+        
+    # Export destinations
+    destinations:
+      - name: "s3_archive"
+        type: "s3"
+        bucket: "observability-archive"
+        
+      - name: "data_lake"
+        type: "azure_blob"
+        container: "observability-lake"
+
+  # Audit trail
+  audit:
+    # Track retention actions
+    track_actions:
+      - "data_deletion"
+      - "data_archival"
+      - "policy_change"
+      - "access_request"
+      
+    # Audit log retention
+    audit_retention: "7y"
+    
+    # Immutable audit
+    immutable_audit: true

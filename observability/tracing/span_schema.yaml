@@ -1,1 +1,325 @@
-# Placeholder YAML configuration file
+# Span Schema Configuration v1.0
+# OpenTelemetry span schema definition for Agentic Workflow System
+
+span_schema:
+  version: "1.0"
+  specification: "opentelemetry-1.0"
+  
+  # Standard span attributes
+  standard_attributes:
+    # Service attributes
+    service:
+      - name: "service.name"
+        type: "string"
+        required: true
+        description: "Logical name of the service"
+        
+      - name: "service.version"
+        type: "string"
+        required: false
+        description: "Version string of the service"
+        
+      - name: "service.instance.id"
+        type: "string"
+        required: false
+        description: "Unique identifier of the service instance"
+        
+    # Operation attributes
+    operation:
+      - name: "operation.name"
+        type: "string"
+        required: true
+        description: "Name of the operation being performed"
+        
+      - name: "operation.type"
+        type: "string"
+        required: false
+        enum: ["resume_processing", "outreach_generation", "job_analysis", "agent_execution"]
+        description: "Type of operation"
+        
+    # Layer attributes
+    layer:
+      - name: "layer"
+        type: "string"
+        required: true
+        enum: ["L1", "L2", "L3", "L4", "L5"]
+        description: "Agentic workflow layer"
+        
+      - name: "layer.component"
+        type: "string"
+        required: false
+        description: "Component within the layer"
+
+  # Custom span attributes for agentic workflow
+  custom_attributes:
+    # Agent attributes
+    agent:
+      - name: "agent.id"
+        type: "string"
+        required: false
+        description: "Unique identifier of the agent"
+        
+      - name: "agent.type"
+        type: "string"
+        required: false
+        enum: ["planning", "execution", "orchestration", "memory", "safety"]
+        description: "Type of agent"
+        
+      - name: "agent.state"
+        type: "string"
+        required: false
+        enum: ["starting", "running", "completed", "failed", "stopped"]
+        description: "Current state of the agent"
+        
+    # Resume processing attributes
+    resume:
+      - name: "resume.id"
+        type: "string"
+        required: false
+        description: "Resume identifier"
+        
+      - name: "resume.quality_score"
+        type: "double"
+        required: false
+        range: [0.0, 1.0]
+        description: "Quality score of processed resume"
+        
+      - name: "resume.ats_compliance"
+        type: "double"
+        required: false
+        range: [0.0, 1.0]
+        description: "ATS compliance score"
+        
+      - name: "resume.extraction_confidence"
+        type: "double"
+        required: false
+        range: [0.0, 1.0]
+        description: "Confidence in data extraction"
+        
+    # Outreach attributes
+    outreach:
+      - name: "outreach.campaign_id"
+        type: "string"
+        required: false
+        description: "Campaign identifier"
+        
+      - name: "outreach.message_id"
+        type: "string"
+        required: false
+        description: "Message identifier"
+        
+      - name: "outreach.channel"
+        type: "string"
+        required: false
+        enum: ["email", "linkedin", "sms", "phone"]
+        description: "Communication channel"
+        
+      - name: "outreach.personalization_score"
+        type: "double"
+        required: false
+        range: [0.0, 1.0]
+        description: "Personalization quality score"
+        
+    # Job analysis attributes
+    job:
+      - name: "job.id"
+        type: "string"
+        required: false
+        description: "Job description identifier"
+        
+      - name: "job.industry"
+        type: "string"
+        required: false
+        description: "Industry classification"
+        
+      - name: "job.seniority_level"
+        type: "string"
+        required: false
+        enum: ["entry", "mid", "senior", "executive"]
+        description: "Seniority level"
+        
+      - name: "job.skill_count"
+        type: "int"
+        required: false
+        description: "Number of skills extracted"
+        
+    # Performance attributes
+    performance:
+      - name: "performance.cpu_usage"
+        type: "double"
+        required: false
+        unit: "percent"
+        range: [0.0, 100.0]
+        description: "CPU usage during operation"
+        
+      - name: "performance.memory_usage"
+        type: "int"
+        required: false
+        unit: "bytes"
+        description: "Memory usage during operation"
+        
+      - name: "performance.token_count"
+        type: "int"
+        required: false
+        description: "Number of tokens processed"
+        
+      - name: "performance.cost_usd"
+        type: "double"
+        required: false
+        unit: "usd"
+        description: "Cost of operation in USD"
+
+  # Span naming conventions
+  naming_conventions:
+    # Format: layer.component.operation
+    format: "{layer}.{component}.{operation}"
+    
+    examples:
+      - "L2.execution.resume_processing"
+      - "L3.orchestration.outreach_generation"
+      - "L1.planning.job_analysis"
+      - "L5.safety.content_validation"
+
+  # Span status mapping
+  status_mapping:
+    success:
+      code: "OK"
+      description: "Operation completed successfully"
+      
+    error:
+      code: "ERROR"
+      description: "Operation failed with error"
+      
+    timeout:
+      code: "ERROR"
+      description: "Operation timed out"
+      
+    cancelled:
+      code: "ERROR"
+      description: "Operation was cancelled"
+
+  # Span event schema
+  events:
+    # Standard events
+    standard:
+      - name: "exception"
+        attributes:
+          - name: "exception.type"
+            type: "string"
+            required: true
+            
+          - name: "exception.message"
+            type: "string"
+            required: true
+            
+          - name: "exception.stacktrace"
+            type: "string"
+            required: false
+            
+    # Custom events
+    custom:
+      - name: "agent_state_change"
+        attributes:
+          - name: "old_state"
+            type: "string"
+            required: true
+            
+          - name: "new_state"
+            type: "string"
+            required: true
+            
+      - name: "processing_stage"
+        attributes:
+          - name: "stage"
+            type: "string"
+            required: true
+            
+          - name: "progress"
+            type: "double"
+            range: [0.0, 1.0]
+            required: true
+
+  # Span link schema
+  links:
+    attributes:
+      - name: "link.type"
+        type: "string"
+        enum: ["parent", "child", "related", "causal"]
+        required: true
+        
+      - name: "link.description"
+        type: "string"
+        required: false
+
+  # Validation rules
+  validation:
+    # Required attributes by operation type
+    required_by_operation:
+      resume_processing:
+        - "service.name"
+        - "operation.name"
+        - "layer"
+        - "resume.id"
+        
+      outreach_generation:
+        - "service.name"
+        - "operation.name"
+        - "layer"
+        - "outreach.campaign_id"
+        
+      job_analysis:
+        - "service.name"
+        - "operation.name"
+        - "layer"
+        - "job.id"
+        
+    # Attribute format validation
+    format_validation:
+      ids:
+        pattern: "^[a-zA-Z0-9_-]+$"
+        max_length: 64
+        
+      names:
+        pattern: "^[a-zA-Z0-9_.-]+$"
+        max_length: 128
+        
+    # Numeric validation
+    numeric_validation:
+      scores:
+        min: 0.0
+        max: 1.0
+        
+      percentages:
+        min: 0.0
+        max: 100.0
+
+  # Sampling rules integration
+  sampling_integration:
+    # High-value spans (always sample)
+    always_sample:
+      - "operation.type = 'resume_processing' AND resume.quality_score < 0.5"
+      - "operation.type = 'outreach_generation' AND outreach.personalization_score > 0.8"
+      - "layer = 'L5'"  # Safety layer
+      
+    # Low-value spans (reduced sampling)
+    reduced_sampling:
+      - "operation.type = 'agent_execution' AND layer = 'L1'"
+      - "performance.cpu_usage < 10.0"
+
+  # Span storage configuration
+  storage:
+    # Index attributes for efficient querying
+    indexed_attributes:
+      - "service.name"
+      - "operation.name"
+      - "layer"
+      - "agent.id"
+      - "resume.id"
+      - "outreach.campaign_id"
+      - "job.id"
+      
+    # TTL configuration
+    ttl:
+      default: "30d"
+      high_value: "90d"
+      debug: "7d"
