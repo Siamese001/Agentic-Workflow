@@ -386,7 +386,7 @@ def add_shared_middleware(
 ):
     """
     Add all shared middleware to a FastAPI application
-    
+
     Args:
         app: FastAPI application instance
         enable_request_id: Enable request ID middleware

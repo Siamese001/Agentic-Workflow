@@ -80,7 +80,7 @@ class OrchestrationResult:
 class OrchestrationEngine:
     """
     Core L3 orchestration coordinator with robust implementations.
-    
+
     Manages workflow execution, step dependencies, and state coordination
     between L1 planning and L2 execution layers.
     """
@@ -112,11 +112,11 @@ class OrchestrationEngine:
     ) -> OrchestrationResult:
         """
         Execute a complete workflow with step dependency management.
-        
+
         Args:
             workflow: Workflow definition with steps
             context: Execution context
-            
+
         Returns:
             Orchestration result with step outcomes
         """

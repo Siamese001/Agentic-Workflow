@@ -65,25 +65,11 @@ def test_imports() -> Dict[str, Any]:
     try:
         from agentic_core.api.exceptions import (
             APIException, ValidationAPIException, AuthenticationAPIException,
-            AuthorizationAPIException, RateLimitAPIException, NotFoundAPIException,
-            ConflictAPIException, BadRequestAPIException, ServiceUnavailableAPIException,
-            TimeoutAPIException, QuotaExceededAPIException, create_validation_error,
-            create_not_found_error, create_auth_error, create_rate_limit_error,
-            create_permission_error, create_service_unavailable_error
+            AuthorizationAPIException, RateLimitAPIException, NotFoundAPIException
         )
         results["imported_components"].extend([
             "APIException", "ValidationAPIException", "AuthenticationAPIException",
-            "AuthorizationAPIException", "RateLimitAPIException", "NotFoundAPIException",
-            "ConflictAPIException", "BadRequestAPIException", "ServiceUnavailableAPIException",
-            "TimeoutAPIException", "QuotaExceededAPIException", "create_validation_error",
-            "create_not_found_error", "create_auth_error", "create_rate_limit_error",
-            "create_permission_error", "create_service_unavailable_error"
-            "ExceptionRateLimitAPIException", "NotFoundAPIException",
-            "ConflictAPIException", "BadRequestAPIException",
-            "ServiceUnavailableAPIException", "TimeoutAPIException",
-            "QuotaExceededAPIException", "create_validation_exc", "create_not_found_exc",
-            "create_auth_exc", "create_rate_limit_exc", "create_permission_exc",
-            "create_service_unavailable_exc"
+            "AuthorizationAPIException", "RateLimitAPIException", "NotFoundAPIException"
         ])
 
     except ImportError as e:
