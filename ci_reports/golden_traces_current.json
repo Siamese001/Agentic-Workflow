@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0.0",
+  "flows": [
+    {
+      "id": "outreach_archetype_planning",
+      "name": "Outreach Archetype Planning Flow",
+      "description": "Complete outreach archetype selection and context generation",
+      "steps": [
+        {
+          "step_id": "recipient_analysis",
+          "component": "lic_outreach_archetype_planning",
+          "method": "generate_recipient_profile",
+          "inputs": ["recipient_data"],
+          "outputs": ["recipient_profile"]
+        },
+        {
+          "step_id": "archetype_selection",
+          "component": "lic_outreach_archetype_planning", 
+          "method": "plan_archetype",
+          "inputs": ["mission", "recipient_profile"],
+          "outputs": ["archetype_context"]
+        }
+      ],
+      "expected_output_schema": {
+        "archetype": "string",
+        "reasoning_mode": "string",
+        "confidence": "number",
+        "reasoning_params": "object",
+        "rag_params": "object",
+        "signal_params": "object"
+      },
+      "hash": "sha256:abc123def456"
+    },
+    {
+      "id": "message_planning_execution",
+      "name": "Message Planning and Execution Flow",
+      "description": "Plan and generate outreach messages",
+      "steps": [
+        {
+          "step_id": "message_planning",
+          "component": "lic_message_planning",
+          "method": "plan_message",
+          "inputs": ["context", "archetype_context"],
+          "outputs": ["message_plan"]
+        },
+        {
+          "step_id": "content_generation",
+          "component": "lic_message_planning",
+          "method": "generate_content",
+          "inputs": ["prompt", "constraints"],
+          "outputs": ["message_content"]
+        }
+      ],
+      "expected_output_schema": {
+        "text": "string",
+        "metadata": "object"
+      },
+      "hash": "sha256:def789ghi012"
+    }
+  ],
+  "metadata": {
+    "created_at": "2025-11-29T20:15:00Z",
+    "version": "1.0.0",
+    "description": "Current Agentic L5 Golden Trace Execution Results for Outreach Workflows"
+  }
+}

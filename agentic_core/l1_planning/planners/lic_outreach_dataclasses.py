@@ -7,7 +7,8 @@ recipient profiles used across the L1-L5 layers.
 
 from enum import Enum
 from dataclasses import dataclass, field
-from typing import Dict, List, Any
+from typing import Dict, Any, List
+from datetime import datetime
 
 
 class ArchetypeType(Enum):
@@ -16,6 +17,24 @@ class ArchetypeType(Enum):
     SENIOR_TA = "senior_ta"
     EXECUTIVE = "executive"
     C_LEVEL = "c_level"
+
+
+class ReasoningMode(Enum):
+    """Reasoning modes for outreach planning."""
+    CONSERVATIVE = "conservative"
+    BALANCED = "balanced"
+    AGGRESSIVE = "aggressive"
+    COT = "cot"  # Chain of Thought
+    TOT = "tot"  # Tree of Thoughts
+    REACT = "react"  # ReAct (Reasoning + Acting)
+
+
+class AgentType(Enum):
+    """Agent types for outreach execution."""
+    RESEARCHER = "researcher"
+    PLANNER = "planner"
+    EXECUTOR = "executor"
+    VALIDATOR = "validator"
 
 
 @dataclass
@@ -29,6 +48,101 @@ class ArchetypeDefinition:
     constraint_params: Dict[str, Any] = field(default_factory=dict)
     temperature_schedule: Dict[str, float] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
+    message_style: str = "professional"
+    focus_areas: List[str] = field(default_factory=list)
+    tone: str = "balanced"
+    priority_weight: float = 1.0
+
+
+@dataclass
+class OutreachMission:
+    """Core mission configuration for outreach campaigns."""
+    mission_id: str = ""
+    target_company: str = ""
+    target_role: str = ""
+    archetype: ArchetypeType = ArchetypeType.RECRUITER
+    objective: str = ""
+    value_proposition: str = ""
+    constraints: Dict[str, Any] = field(default_factory=dict)
+    personalization_points: List[str] = field(default_factory=list)
+    urgency: str = "medium"
+    priority: str = "medium"
+    created_at: datetime = field(default_factory=datetime.now)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class RecipientProfile:
+    """Profile information for outreach recipients."""
+    name: str = ""
+    title: str = ""
+    company: str = ""
+    industry: str = ""
+    department: str = ""
+    seniority: str = ""
+    skills: List[str] = field(default_factory=list)
+    recent_activity: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    contact_info: Dict[str, str] = field(default_factory=dict)
+    research_data: Dict[str, Any] = field(default_factory=dict)
+    last_updated: datetime = field(default_factory=datetime.now)
+
+
+@dataclass
+class ReasoningParams:
+    """Reasoning parameters with required attributes."""
+    max_reasoning_depth: int = 5
+    enable_chain_of_thought: bool = True
+    depth: str = "medium"
+    creativity: str = "medium"
+
+
+@dataclass
+class RagParams:
+    """RAG parameters with required attributes."""
+    source_weights: Dict[str, float] = field(default_factory=lambda: {"company": 0.7, "individual": 0.3})
+    company_research: str = "technical"
+    role_analysis: str = "strategic"
+
+
+@dataclass
+class SignalParams:
+    """Signal parameters with required attributes."""
+    signal_types: List[str] = field(default_factory=lambda: ["technical", "strategic"])
+    expertise: str = "deep_technical"
+    value_prop: str = "innovation"
+
+
+@dataclass
+class MessagePlan:
+    """Message planning configuration."""
+    content: str = ""
+    tone: str = "professional"
+    length: str = "medium"
+    personalization_level: str = "medium"
+    constraints: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class ArchetypeContext:
+    """Context for archetype-based planning and execution - flattened interface."""
+    archetype: str  # String value, not ArchetypeType enum
+    reasoning_mode: str = "balanced"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    confidence: float = 0.8
+    created_at: datetime = field(default_factory=datetime.now)
+
+    # Parameter objects for direct attribute access
+    reasoning_params: ReasoningParams = field(default_factory=ReasoningParams)
+    rag_params: RagParams = field(default_factory=RagParams)
+    signal_params: SignalParams = field(default_factory=SignalParams)
+
+    # Keep other parameters as dicts for now
+    tone_params: Dict[str, Any] = field(default_factory=dict)
+    cta_params: Dict[str, Any] = field(default_factory=dict)
+    constraint_params: Dict[str, Any] = field(default_factory=dict)
+    temperature_schedule: Dict[str, float] = field(default_factory=dict)
     message_style: str = "professional"
     focus_areas: List[str] = field(default_factory=list)
     tone: str = "balanced"
@@ -94,3 +208,90 @@ ARCHETYPE_REGISTRY = {
         priority_weight=0.7
     )
 }
+
+# Reasoning profiles for different archetypes
+EXECUTIVE_REASONING_PROFILES = {
+    "strategic": {
+        "depth": "high",
+        "creativity": "low",
+        "focus": ["business_impact", "roi", "market_position"],
+        "tone": "formal"
+    },
+    "operational": {
+        "depth": "medium",
+        "creativity": "medium",
+        "focus": ["execution", "metrics", "efficiency"],
+        "tone": "professional"
+    }
+}
+
+RECRUITER_REASONING_PROFILES = {
+    "technical": {
+        "depth": "medium",
+        "creativity": "medium",
+        "focus": ["skills", "growth", "team_fit"],
+        "tone": "approachable"
+    },
+    "general": {
+        "depth": "low",
+        "creativity": "high",
+        "focus": ["culture", "opportunity", "benefits"],
+        "tone": "friendly"
+    }
+}
+
+def compute_reasoning_multiplier(profile_name: str, archetype: ArchetypeType) -> float:
+    """Compute reasoning multiplier based on profile and archetype."""
+    base_multipliers = {
+        ArchetypeType.RECRUITER: 1.0,
+        ArchetypeType.SENIOR_TA: 1.2,
+        ArchetypeType.EXECUTIVE: 1.5,
+        ArchetypeType.C_LEVEL: 2.0
+    }
+    
+    profile_adjustments = {
+        "strategic": 1.2,
+        "operational": 1.0,
+        "technical": 1.1,
+        "general": 0.9
+    }
+    
+    base = base_multipliers.get(archetype, 1.0)
+    adjustment = profile_adjustments.get(profile_name, 1.0)
+    return base * adjustment
+
+def reasoning_intensity_metadata(reasoning_mode: str, archetype: ArchetypeType) -> Dict[str, Any]:
+    """Generate reasoning intensity metadata for given mode and archetype."""
+    intensity_levels = {
+        "conservative": {"depth": 3, "creativity": 0.2, "iterations": 1},
+        "balanced": {"depth": 5, "creativity": 0.5, "iterations": 2},
+        "aggressive": {"depth": 8, "creativity": 0.8, "iterations": 3},
+        "cot": {"depth": 6, "creativity": 0.6, "iterations": 2},
+        "tot": {"depth": 7, "creativity": 0.7, "iterations": 3},
+        "react": {"depth": 4, "creativity": 0.4, "iterations": 2}
+    }
+    
+    base_intensity = intensity_levels.get(reasoning_mode, intensity_levels["balanced"])
+    
+    # Adjust based on archetype
+    archetype_multipliers = {
+        ArchetypeType.RECRUITER: 1.0,
+        ArchetypeType.SENIOR_TA: 1.3,
+        ArchetypeType.EXECUTIVE: 1.5,
+        ArchetypeType.C_LEVEL: 2.0
+    }
+    
+    multiplier = archetype_multipliers.get(archetype, 1.0)
+    
+    return {
+        "reasoning_mode": reasoning_mode,
+        "archetype": archetype.value,
+        "depth": int(base_intensity["depth"] * multiplier),
+        "creativity": min(1.0, base_intensity["creativity"] * multiplier),
+        "iterations": int(base_intensity["iterations"] * multiplier),
+        "multiplier": multiplier,
+        "metadata": {
+            "base_intensity": base_intensity,
+            "computed_at": datetime.now().isoformat()
+        }
+    }

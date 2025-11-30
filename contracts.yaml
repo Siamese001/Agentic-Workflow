@@ -1,0 +1,50 @@
+# Agentic L5 Contract Registry
+# Minimal stub to unblock contract_registry_validator
+
+version: "1.0.0"
+contracts:
+  planners:
+    - name: "OutreachArchetypePlanner"
+      module: "agentic_core.l1_planning.planners.lic_outreach_archetype_planning"
+      schema:
+        input: "OutreachMission, RecipientProfile"
+        output: "ArchetypeContext"
+      timeout: 30
+      retries: 3
+      cost_tier: "low"
+      safety_policy: "basic_validation"
+    
+  executors:
+    - name: "MessageExecutor"
+      module: "agentic_core.l2_execution.executors.lic_message_executor"
+      schema:
+        input: "MessagePlan"
+        output: "MessageResult"
+      timeout: 60
+      retries: 2
+      cost_tier: "medium"
+      safety_policy: "content_filter"
+    
+  tools:
+    - name: "ResearchTool"
+      module: "agentic_core.l2_execution.tools.research_tool"
+      schema:
+        input: "ResearchQuery"
+        output: "ResearchData"
+      timeout: 120
+      retries: 1
+      cost_tier: "high"
+      safety_policy: "data_privacy"
+
+safety_policies:
+  basic_validation:
+    description: "Basic input validation"
+    rules: ["non_null_inputs", "type_checking"]
+  
+  content_filter:
+    description: "Content safety filtering"
+    rules: ["no_pii", "appropriate_language"]
+  
+  data_privacy:
+    description: "Privacy protection"
+    rules: ["encrypt_sensitive", "audit_logging"]

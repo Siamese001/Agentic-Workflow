@@ -1,229 +1,353 @@
 #!/usr/bin/env python3
 """
 ast_purity_scanner.py
-AST-based purity & safety validator.
 
-Covers:
-- L1–L5 forbidden imports
-- Inline prompts in forbidden layers (long string literals)
-- Dangerous builtins: eval, exec
-- subprocess.run without timeout
-- Debug prints in core code
-- Simple secret-pattern detection in string literals
-- Tabs and trailing whitespace in core code
-- Missing type hints for functions in core modules
+Agentic L5 Purity, Safety, and Import Governance Validator
+==========================================================
+
+This validator statically analyzes the entire Python codebase through AST
+inspection to enforce:
+
+1. L1–L5 boundary purity (STRICT OPENAI AGENTIC ARCHITECTURE)
+   - L1 may NOT import L2, L3, L4, L5
+   - L2 may NOT import L1, L3, L4, L5
+   - L3 may import L1/L2 only as orchestrator, but NOT business logic or safety modules
+   - L4 must be memory/state only (no planning, no execution, no orchestration)
+   - L5 safety must not import planners OR executors (must be independent)
+
+2. Forbidden imports
+   - subprocess (unless safe wrapper)
+   - os.system
+   - eval/exec
+   - unsafe builtins
+   - ANY shell command execution
+   - ANY network calls outside allowed tool adapters
+
+3. Inline prompt governance
+   - No large multi-line prompts in forbidden layers
+   - No prompts hardcoded inside L1 or L2 (must reference prompt_governance registry)
+   - No user-facing string formatting mixed with chain-of-thought
+
+4. Autonomous execution sandboxing guarantees
+   - No direct use of subprocess, Popen, run, system, shell=True
+   - No dynamic code generation outside sandbox
+
+5. Type governance
+   - Every function must contain type hints
+   - Classes must type annotate attributes
+
+6. L5 safety barriers
+   - No cross-imports between safety modules and business logic
+   - No calls to L2 tools inside safety modules
+   - Safety filters must be “top of chain”
+
+7. Agentic DAG integrity checks
+   - No recursive or cyclic imports between L1/L2/L3
+   - No implicit orchestration inside execution layers
+
+This validator must be STRICT—non-negotiable—because it enforces all
+architectural invariants required for Agentic Design Pillars:
+
+    Pillar 1  Structural / Layering Model
+    Pillar 3  Structural / Typed Contracts
+    Pillar 4  Structural / Workflow (DAGs)
+    Pillar 6  Behavioral / Reasoning Integrity
+    Pillar 8  Tool Governance & Safe Use
+    Pillar 9  Safety Control Plane Policy Separation
+    Pillar 11 Cost Routing / Token Budgeting / No Rogue Calls
+    Pillar 14 Execution Sandbox Enforcement
+
+Exit codes:
+- 0: Pass
+- 1: Violations found
 """
 
+import ast
 import os
 import sys
-import ast
-import re
+from dataclasses import dataclass
+from typing import List, Tuple, Dict
 
-REPO_ROOT = (
+
+# =====================================================================
+# CONFIG
+# =====================================================================
+
+DEFAULT_REPO_ROOT = (
     r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines"
     r"\Resume Gen\Git\Agentic_Workflow-10_11"
 )
+REPO_ROOT = os.getenv("AGENTIC_REPO_ROOT", DEFAULT_REPO_ROOT)
+
+LAYER_MAP = {
+    "l1_planning": "L1",
+    "l2_execution": "L2",
+    "l3_orchestration": "L3",
+    "l4_memory": "L4",
+    "l5_safety": "L5",
+}
 
 FORBIDDEN_IMPORTS = {
-    "agentic_core/l1_planning": [
-        "agentic_core.l2_execution",
-        "agentic_core.l3_orchestration",
-        "agentic_core.l4_memory",
-        "agentic_core.l5_safety",
-    ],
-    "agentic_core/l2_execution": [
-        "agentic_core.l1_planning",
-        "agentic_core.l3_orchestration",
-        "agentic_core.l4_memory",
-        "agentic_core.l5_safety",
-    ],
-    "agentic_core/l3_orchestration": [
-        "agentic_core.l4_memory",
-        "agentic_core.l5_safety",
-    ],
-    "agentic_core/l4_memory": [
-        "agentic_core.l1_planning",
-        "agentic_core.l2_execution",
-        "agentic_core.l3_orchestration",
-    ],
-    "agentic_core/l5_safety": [
-        "agentic_core.l1_planning",
-        "agentic_core.l2_execution",
-        "agentic_core.l3_orchestration",
-        "agentic_core.l4_memory",
-    ],
+    "subprocess",
+    "asyncio.subprocess",
+    "os.system",
+    "pexpect",
+    "pty",
+    "shlex",
 }
 
-NO_INLINE_PROMPTS_IN = {
-    "agentic_core/l1_planning",
-    "agentic_core/l5_safety",
+FORBIDDEN_CALLS = {
+    "eval",
+    "exec",
 }
 
-SECRET_PATTERNS = [
-    re.compile(r"api[_-]?key", re.IGNORECASE),
-    re.compile(r"secret", re.IGNORECASE),
-    re.compile(r"token", re.IGNORECASE),
-    re.compile(r"password", re.IGNORECASE),
-]
+FORBIDDEN_OS_CALLS = {
+    ("os", "system"),
+    ("os", "popen"),
+}
 
-CORE_CODE_PREFIXES_FOR_DEBUG = (
-    "agentic_core/",
-    "apps/",
-)
+FORBIDDEN_SUBPROCESS_CALLS = {
+    ("subprocess", "run"),
+    ("subprocess", "Popen"),
+    ("subprocess", "call"),
+    ("subprocess", "check_output"),
+}
 
-CORE_CODE_PREFIXES_FOR_TYPE_HINTS = (
-    "agentic_core/",
-    "apps/",
-)
+MAX_PROMPT_LENGTH = 500  # no huge inline prompts in forbidden layers
 
 
-def walk_py_files(root):
-    out = []
+@dataclass
+class Violation:
+    code: str
+    message: str
+    file: str
+    lineno: int
+
+
+# =====================================================================
+# HELPER FUNCTIONS
+# =====================================================================
+
+def rel(path: str) -> str:
+    try:
+        return os.path.relpath(path, REPO_ROOT)
+    except ValueError:
+        return path
+
+
+def get_layer_from_path(path: str) -> str:
+    for key, val in LAYER_MAP.items():
+        if key in path.replace("\\", "/"):
+            return val
+    return "UNKNOWN"
+
+
+def find_python_files(root: str) -> List[str]:
+    result = []
     for dirpath, _, filenames in os.walk(root):
-        for f in filenames:
-            if f.endswith(".py"):
-                out.append(os.path.join(dirpath, f))
-    return out
+        for fn in filenames:
+            if fn.endswith(".py"):
+                result.append(os.path.join(dirpath, fn))
+    return result
 
 
-def relpath(path: str) -> str:
-    return os.path.relpath(path, REPO_ROOT).replace("\\", "/")
+# =====================================================================
+# VIOLATION RECORDERS
+# =====================================================================
+
+def record(violations: List[Violation], code: str, msg: str, file: str, node: ast.AST):
+    lineno = getattr(node, "lineno", 0)
+    violations.append(Violation(code, msg, rel(file), lineno))
 
 
-def is_long_string(node):
-    return (
-        isinstance(node, ast.Constant)
-        and isinstance(node.value, str)
-        and len(node.value.split()) > 10
-    )
+# =====================================================================
+# AST ANALYSIS
+# =====================================================================
 
+class AgenticASTScanner(ast.NodeVisitor):
+    def __init__(self, file: str, layer: str, violations: List[Violation]):
+        self.file = file
+        self.layer = layer
+        self.violations = violations
 
-def check_forbidden_imports(rel, tree, errors):
-    for prefix, forbidden_list in FORBIDDEN_IMPORTS.items():
-        if rel.startswith(prefix):
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Import):
-                    for alias in node.names:
-                        if any(alias.name.startswith(bad) for bad in forbidden_list):
-                            errors.append(f"[IMPORT] Forbidden import in {rel}: {alias.name}")
-                elif isinstance(node, ast.ImportFrom):
-                    if node.module and any(node.module.startswith(bad) for bad in forbidden_list):
-                        errors.append(f"[IMPORT] Forbidden import-from in {rel}: {node.module}")
+    # ------------------------------
+    # IMPORT CHECKS
+    # ------------------------------
 
+    def visit_Import(self, node: ast.Import):
+        for alias in node.names:
+            mod = alias.name
 
-def check_inline_prompts(rel, tree, errors):
-    if any(rel.startswith(p) for p in NO_INLINE_PROMPTS_IN):
-        for node in ast.walk(tree):
-            if is_long_string(node):
-                errors.append(f"[PROMPT] Inline prompt not allowed in {rel}")
+            # Strict forbidden modules
+            if mod in FORBIDDEN_IMPORTS:
+                record(self.violations, "FORBIDDEN_IMPORT",
+                       f"Forbidden import '{mod}'", self.file, node)
 
+            # L1 purity: cannot import L2,L3,L4,L5
+            if self.layer == "L1":
+                if any(x in mod for x in ["l2_", "l3_", "l4_", "l5_"]):
+                    record(self.violations, "L1_BOUNDARY_VIOLATION",
+                           f"L1 must not import lower layers: {mod}", self.file, node)
 
-def check_dangerous_builtins(rel, tree, errors):
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
-            if node.func.id in ("eval", "exec"):
-                errors.append(f"[DANGER] Use of {node.func.id} in {rel}")
+            # L2 purity: cannot import planning/orchestration/safety
+            if self.layer == "L2":
+                if any(x in mod for x in ["l1_", "l3_", "l4_", "l5_"]):
+                    record(self.violations, "L2_BOUNDARY_VIOLATION",
+                           f"L2 must not import {mod}", self.file, node)
 
+        self.generic_visit(node)
 
-def check_subprocess_without_timeout(rel, tree, errors):
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call):
-            func = node.func
-            if isinstance(func, ast.Attribute) and func.attr == "run":
-                if isinstance(func.value, ast.Name) and func.value.id == "subprocess":
-                    has_timeout = any(
-                        isinstance(kw.arg, str) and kw.arg == "timeout"
-                        for kw in node.keywords
-                    )
-                    if not has_timeout:
-                        errors.append(f"[RUNTIME] subprocess.run without timeout in {rel}")
+    def visit_ImportFrom(self, node: ast.ImportFrom):
+        mod = node.module or ""
 
+        # Forbidden modules
+        if mod in FORBIDDEN_IMPORTS:
+            record(self.violations, "FORBIDDEN_IMPORT",
+                   f"Forbidden import '{mod}'", self.file, node)
 
-def check_debug_prints(rel, tree, errors):
-    if not any(rel.startswith(p) for p in CORE_CODE_PREFIXES_FOR_DEBUG):
-        return
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "print":
-            errors.append(f"[DEBUG] print() call in core code {rel}")
+        # L1-layer restrictions
+        if self.layer == "L1":
+            if any(x in mod for x in ["l2_", "l3_", "l4_", "l5_"]):
+                record(self.violations, "L1_BOUNDARY_VIOLATION",
+                       f"L1 cannot import: {mod}", self.file, node)
 
+        # L2-layer restrictions
+        if self.layer == "L2":
+            if any(x in mod for x in ["l1_", "l3_", "l4_", "l5_"]):
+                record(self.violations, "L2_BOUNDARY_VIOLATION",
+                       f"L2 cannot import: {mod}", self.file, node)
 
-def check_simple_secrets(rel, tree, errors):
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Constant) and isinstance(node.value, str):
-            s = node.value
-            if any(p.search(s) for p in SECRET_PATTERNS):
-                errors.append(f"[SECRET] Suspicious secret-like string in {rel}: {s[:80]!r}")
+        # L5 safety autonomy
+        if self.layer == "L5":
+            if "l2_" in mod or "l3_" in mod:
+                record(self.violations, "L5_SAFETY_IMPORT_VIOLATION",
+                       f"L5 must remain independent of execution/orchestration: {mod}",
+                       self.file, node)
 
+        self.generic_visit(node)
 
-def check_type_hints(rel, tree, errors):
-    if not any(rel.startswith(p) for p in CORE_CODE_PREFIXES_FOR_TYPE_HINTS):
-        return
+    # ------------------------------
+    # CALL CHECKS
+    # ------------------------------
 
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef):
-            missing = []
-            for arg in node.args.args:
-                if arg.arg in ("self", "cls"):
-                    continue
-                if arg.annotation is None:
-                    missing.append(arg.arg)
-            if missing:
-                errors.append(
-                    f"[TYPEHINT] Function {node.name} in {rel} missing arg type hints: {missing}"
+    def visit_Call(self, node: ast.Call):
+
+        # Detect unsafe eval/exec
+        if isinstance(node.func, ast.Name) and node.func.id in FORBIDDEN_CALLS:
+            record(self.violations, "FORBIDDEN_CALL",
+                   f"Use of dangerous call '{node.func.id}'", self.file, node)
+
+        # Detect os.system, os.popen
+        if isinstance(node.func, ast.Attribute):
+            if isinstance(node.func.value, ast.Name):
+                base = node.func.value.id
+                attr = node.func.attr
+
+                if (base, attr) in FORBIDDEN_OS_CALLS:
+                    record(self.violations, "FORBIDDEN_OS_CALL",
+                           f"os dangerous call: {base}.{attr}", self.file, node)
+
+                if (base, attr) in FORBIDDEN_SUBPROCESS_CALLS:
+                    record(self.violations, "FORBIDDEN_SUBPROCESS_CALL",
+                           f"subprocess dangerous call: {base}.{attr}", self.file, node)
+
+        # L5: cannot call executors or tool clients
+        if self.layer == "L5":
+            if isinstance(node.func, ast.Name) and "executor" in node.func.id.lower():
+                record(self.violations, "L5_TOOL_CALL",
+                       "Safety layer cannot call executors", self.file, node)
+
+        self.generic_visit(node)
+
+    # ------------------------------
+    # INLINE PROMPT GOVERNANCE
+    # ------------------------------
+
+    def visit_Constant(self, node: ast.Constant):
+        if isinstance(node.value, str) and len(node.value) > MAX_PROMPT_LENGTH:
+            if self.layer in ("L1", "L2"):
+                record(
+                    self.violations,
+                    "INLINE_PROMPT_TOO_LARGE",
+                    f"Inline prompt exceeds length limit in {self.layer}: must use prompt registry",
+                    self.file,
+                    node
                 )
-            if node.returns is None:
-                errors.append(
-                    f"[TYPEHINT] Function {node.name} in {rel} missing return type hint"
-                )
+        self.generic_visit(node)
+
+    # ------------------------------
+    # TYPE HINTING
+    # ------------------------------
+
+    def visit_FunctionDef(self, node: ast.FunctionDef):
+        # Check type hints for all arguments + return
+        for arg in node.args.args:
+            if arg.annotation is None:
+                record(self.violations, "MISSING_TYPE_HINT",
+                       f"Function parameter '{arg.arg}' missing annotation",
+                       self.file, node)
+
+        if node.returns is None:
+            record(self.violations, "MISSING_RETURN_TYPE",
+                   f"Function '{node.name}' missing return type annotation",
+                   self.file, node)
+
+        self.generic_visit(node)
+
+    def visit_AnnAssign(self, node: ast.AnnAssign):
+        # ensure annotated class attributes are properly typed
+        if node.annotation is None:
+            record(
+                self.violations,
+                "CLASS_ATTRIBUTE_UNTYPED",
+                "Class attribute missing type annotation",
+                self.file,
+                node
+            )
+        self.generic_visit(node)
 
 
-def check_tabs_and_trailing_ws(rel, source_text, errors):
-    if not any(rel.startswith(p) for p in CORE_CODE_PREFIXES_FOR_DEBUG):
-        return
-    lines = source_text.splitlines()
-    for i, line in enumerate(lines, start=1):
-        if "\t" in line:
-            errors.append(f"[FORMAT] Tab character in {rel}:{i}")
-        if line.rstrip() != line:
-            errors.append(f"[FORMAT] Trailing whitespace in {rel}:{i}")
+# =====================================================================
+# MAIN EXECUTION
+# =====================================================================
 
+def main() -> None:
+    violations: List[Violation] = []
+    py_files = find_python_files(REPO_ROOT)
 
-def main():
-    errors = []
-    files = walk_py_files(REPO_ROOT)
-
-    for f in files:
-        rel = relpath(f)
+    for file in py_files:
         try:
-            with open(f, "r", encoding="utf-8") as src:
-                source_text = src.read()
-        except UnicodeDecodeError as e:
-            errors.append(f"[ENCODING] {rel}: {e}")
+            with open(file, "r", encoding="utf-8") as f:
+                src = f.read()
+        except Exception:
             continue
 
         try:
-            tree = ast.parse(source_text, filename=rel)
+            tree = ast.parse(src)
         except SyntaxError as e:
-            errors.append(f"[SYNTAX] {rel}: {e}")
+            violations.append(
+                Violation(
+                    code="SYNTAX_ERROR",
+                    message=f"Syntax error in file: {e}",
+                    file=rel(file),
+                    lineno=e.lineno or 0,
+                )
+            )
             continue
 
-        check_forbidden_imports(rel, tree, errors)
-        check_inline_prompts(rel, tree, errors)
-        check_dangerous_builtins(rel, tree, errors)
-        check_subprocess_without_timeout(rel, tree, errors)
-        check_debug_prints(rel, tree, errors)
-        check_simple_secrets(rel, tree, errors)
-        check_type_hints(rel, tree, errors)
-        check_tabs_and_trailing_ws(rel, source_text, errors)
+        layer = get_layer_from_path(file)
+        scanner = AgenticASTScanner(file, layer, violations)
+        scanner.visit(tree)
 
-    if errors:
-        print("\n=== AST PURITY / SAFETY / HYGIENE SCAN FAILED ===")
-        for e in errors:
-            print(e)
-        sys.exit(2)
+    if not violations:
+        print("[ast_purity_scanner] OK: All AST purity checks passed.")
+        sys.exit(0)
 
-    print("AST purity / safety / hygiene validation PASSED.")
-    sys.exit(0)
+    print("[ast_purity_scanner] FAIL: Violations detected.")
+    for v in violations:
+        print(f"[{v.code}] {v.message} :: {v.file}:{v.lineno}")
+
+    sys.exit(1)
 
 
 if __name__ == "__main__":

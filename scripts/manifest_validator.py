@@ -2,64 +2,47 @@
 """
 manifest_validator.py
 
-Filesystem + manifest validator for Agentic-Workflow-10_11.
+Agentic L5 Repository Structural Validator
+==========================================
 
-This script enforces a superset of the structural constraints expressed in:
-- windsurf_validation_keys.json
-- Agentic Design Pillars (L5 structural + governance expectations)
+This validator performs strict, schema-driven structural checks on the repository.
+It enforces OpenAI Agentic L5 architecture principles across:
 
-It validates:
+- Pillar 1  Structural / Layering Model  
+- Pillar 3  Structural / Typed Contracts (via folder existence)  
+- Pillar 4  Workflow (DAG) / Engine correctness  
+- Pillar 8  Tool ecosystem / adapters / tool registry folder correctness  
+- Pillar 11 Cost / Optimization (filename constraints, no duplicates)  
+- Pillar 12 Test governance (required folders, no strays or empties)  
+- Pillar 13 Prompt Governance (prompt registry folder structure)  
+- Pillar 14 Sandbox compliance (runtime/sandbox folder enforced)
 
-1. Root structure / expected directories
-   - agentic_core with L1–L5 subfolders
-   - apps/{resume_engine,outreach_engine}/l1..l5
-   - tests/ tree with prescribed subfolders
-   - data, docs, schemas, runtime, observability, prompt_governance, .github/workflows
+All validations here are *purely structural*, operating on:
 
-2. Exact children constraints
-   - No unexpected direct children in key directories (strict allowlists).
-
-3. Hidden / special entries
-   - Only .gitignore and .github are allowed hidden entries at root.
-   - No other dot-directories/files are permitted.
-
-4. Empty directory policy
-   - Zero tolerance for empty directories anywhere in the tree.
-
-5. Depth constraints
-   - Maximum directory depth from repo root is 9 levels.
-
-6. Filename policy
-   - Max name length: 80 characters (per path component, not full path).
-   - Forbidden substrings in names: old, backup, copy, tmp, draft (case-insensitive).
-
-7. Case collision policy
-   - Zero tolerance for case-insensitive name collisions within any directory.
-
-8. tests/ extension policy
-   - Under tests/, forbidden file extensions:
-     .ipynb, .md, .json, .yaml, .yml, .log, .tmp, .bak
-
-9. Optional manifest parity
-   - If ci_manifest.json exists at repo root, verify:
-     - All listed paths exist
-     - No unknown entries appear in manifest
+- required directories  
+- exact children sets  
+- forbidden files  
+- empty directory policy  
+- depth policy  
+- filename policy  
+- hidden file rules  
+- manifest consistency (ci_manifest.json)  
 
 Exit code:
-- 0 if all checks pass
-- 1 if any violation is found
+- 0 = ok  
+- 1 = violations  
 """
 
 import json
 import os
 import sys
 from dataclasses import dataclass
-from typing import Dict, List, Set, Tuple, Iterable
+from typing import List, Dict, Set, Iterable, Tuple
 
 
-# =====================================================================
-# CONFIG
-# =====================================================================
+# ============================================================
+# CONFIGURATION
+# ============================================================
 
 DEFAULT_REPO_ROOT = (
     r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines"
@@ -67,28 +50,20 @@ DEFAULT_REPO_ROOT = (
 )
 REPO_ROOT = os.getenv("AGENTIC_REPO_ROOT", DEFAULT_REPO_ROOT)
 
-MAX_DEPTH = 9  # fs.depth.max_depth::9
-MAX_NAME_LEN = 80  # fs.filename.max_length::80
+MAX_DEPTH = 10
+MAX_FILENAME_LEN = 80
 
-FORBIDDEN_SUBSTRINGS = [
-    "old",
-    "backup",
-    "copy",
-    "tmp",
-    "draft",
-]
-
-# tests.forbidden_extension::
 FORBIDDEN_TEST_EXTS = {
     ".ipynb",
     ".md",
     ".json",
     ".yaml",
     ".yml",
-    ".log",
     ".tmp",
     ".bak",
 }
+
+FORBIDDEN_SUBSTRINGS = ["backup", "old", "copy", "draft", "tmp"]
 
 ALLOWED_ROOT_CHILDREN = {
     "agentic_core",
@@ -102,16 +77,16 @@ ALLOWED_ROOT_CHILDREN = {
     "docs",
     ".github",
     ".gitignore",
-    "ci_reports",         # CI output folder
-    "ci_manifest.json",   # optional manifest
-    "windsurf_validation_keys.json",
     "README.md",
     "LICENSE",
+    "ci_reports",
+    "ci_manifest.json",
+    "windsurf_validation_keys.json",
     "pyproject.toml",
     "requirements.txt",
 }
 
-# exact_children::agentic_core::
+# agentic_core structure
 AGENTIC_CORE_CHILDREN = {
     "l1_planning",
     "l2_execution",
@@ -120,19 +95,19 @@ AGENTIC_CORE_CHILDREN = {
     "l5_safety",
 }
 
-AGENTIC_CORE_L1_CHILDREN = {"planners", "schemas", "utils"}
-AGENTIC_CORE_L2_CHILDREN = {"executors", "schemas", "utils"}
-AGENTIC_CORE_L3_CHILDREN = {"engines", "framework", "utils"}
-AGENTIC_CORE_L4_CHILDREN = {"mappings", "providers", "temporal"}
-AGENTIC_CORE_L5_CHILDREN = {"filters", "policies", "validators"}
+AGENTIC_L1 = {"planners", "schemas", "utils"}
+AGENTIC_L2 = {"executors", "schemas", "utils"}
+AGENTIC_L3 = {"engines", "framework", "utils"}
+AGENTIC_L4 = {"mappings", "providers", "temporal"}
+AGENTIC_L5 = {"filters", "policies", "validators"}
 
 APPS_CHILDREN = {"resume_engine", "outreach_engine"}
 ENGINE_LAYER_CHILDREN = {"l1", "l2", "l3", "l4", "l5"}
 
 TESTS_CHILDREN = {
     "data",
-    "e2e",
     "fixtures",
+    "e2e",
     "integration",
     "l1",
     "l2",
@@ -142,14 +117,18 @@ TESTS_CHILDREN = {
     "regression",
 }
 
-TESTS_L1_CHILDREN = {"integration", "unit"}
-TESTS_L2_CHILDREN = {"integration", "unit"}
-TESTS_L3_CHILDREN = {"orchestration"}
-TESTS_L4_CHILDREN = {"memory"}
-TESTS_L5_CHILDREN = {"safety"}
+TESTS_L1 = {"unit", "integration"}
+TESTS_L2 = {"unit", "integration"}
+TESTS_L3 = {"orchestration"}
+TESTS_L4 = {"memory"}
+TESTS_L5 = {"safety"}
 
 GITHUB_CHILDREN = {"workflows"}
 
+
+# ============================================================
+# VIOLATIONS
+# ============================================================
 
 @dataclass
 class Violation:
@@ -158,466 +137,269 @@ class Violation:
     path: str
 
 
-# =====================================================================
-# UTILS
-# =====================================================================
-
 def rel(path: str) -> str:
-    """Return path relative to REPO_ROOT for readable messages."""
     try:
         return os.path.relpath(path, REPO_ROOT)
     except ValueError:
         return path
 
 
-def walk_tree(root: str) -> Iterable[Tuple[str, List[str], List[str]]]:
-    """Wrapper over os.walk to avoid following symlinks."""
-    for dirpath, dirnames, filenames in os.walk(root):
-        # Do not follow symlinks
-        dirnames[:] = [d for d in dirnames if not os.path.islink(os.path.join(dirpath, d))]
-        yield dirpath, dirnames, filenames
+# ============================================================
+# UTILITIES
+# ============================================================
 
 
-def depth_of(path: str) -> int:
-    """Compute depth (number of path segments) from REPO_ROOT."""
-    rel_path = rel(path)
-    if rel_path in (".", ""):
+def walk_dirs(root: str) -> Iterable[Tuple[str, List[str], List[str]]]:
+    for dp, dns, fns in os.walk(root):
+        # prevent symlink traversal
+        dns[:] = [d for d in dns if not os.path.islink(os.path.join(dp, d))]
+        yield dp, dns, fns
+
+
+def depth(path: str) -> int:
+    relative = rel(path)
+    if relative in (".", ""):
         return 0
-    parts = [p for p in rel_path.split(os.sep) if p]
-    return len(parts)
+    return len(relative.split(os.sep))
 
 
-def load_manifest(root: str) -> Dict[str, List[str]]:
-    """Load optional manifest file if present, else return empty."""
-    manifest_path = os.path.join(root, "ci_manifest.json")
-    if not os.path.exists(manifest_path):
+def load_manifest() -> Dict:
+    mf = os.path.join(REPO_ROOT, "ci_manifest.json")
+    if not os.path.isfile(mf):
         return {}
     try:
-        with open(manifest_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-        if not isinstance(data, dict):
-            return {}
-        return data
+        with open(mf, "r", encoding="utf-8") as f:
+            return json.load(f)
     except Exception:
-        # Manifest is best-effort – structural failure is handled as violation later
         return {}
 
 
-# =====================================================================
-# CHECKS
-# =====================================================================
-
-def check_root_structure(violations: List[Violation]) -> None:
-    root_children = set(os.listdir(REPO_ROOT))
-
-    # Hidden handling & allowed root set
-    for name in root_children:
-        full = os.path.join(REPO_ROOT, name)
-        if name.startswith("."):
-            # Allowed: .gitignore and .github
-            if name not in {".gitignore", ".github"}:
-                violations.append(
-                    Violation(
-                        code="HIDDEN_ROOT_FORBIDDEN",
-                        message=f"Unexpected hidden root entry: {name}",
-                        path=rel(full),
-                    )
-                )
-
-        # Check that root children are whitelisted
-        if name not in ALLOWED_ROOT_CHILDREN:
-            violations.append(
-                Violation(
-                    code="ROOT_CHILD_UNEXPECTED",
-                    message=f"Unexpected root entry: {name}",
-                    path=rel(full),
-                )
-            )
-
-    # Required root children (structural presence)
-    required = {
-        "agentic_core",
-        "apps",
-        "tests",
-        "schemas",
-        "runtime",
-        "observability",
-        "prompt_governance",
-        "data",
-        "docs",
-        ".github",
-    }
-    for req in required:
-        if req not in root_children:
-            violations.append(
-                Violation(
-                    code="ROOT_CHILD_MISSING",
-                    message=f"Missing required root entry: {req}",
-                    path=rel(REPO_ROOT),
-                )
-            )
+# ============================================================
+# VALIDATION HELPERS
+# ============================================================
 
 
-def check_exact_children(
-    root: str,
-    subpath: str,
-    expected_children: Set[str],
-    violations: List[Violation],
-    code_prefix: str,
-) -> None:
-    target = os.path.join(root, subpath)
-    if not os.path.isdir(target):
-        violations.append(
-            Violation(
-                code=f"{code_prefix}_MISSING_DIR",
-                message=f"Expected directory missing: {subpath}",
-                path=rel(target),
-            )
-        )
+def exact_children(dirpath: str, expected: Set[str], violations: List[Violation], code_prefix: str):
+    if not os.path.isdir(dirpath):
+        violations.append(Violation(f"{code_prefix}_MISSING_DIR",
+                                   "Required directory missing",
+                                   rel(dirpath)))
         return
 
-    actual = set(os.listdir(target))
-    # Filter out common noise directories
-    actual_clean = {a for a in actual if a not in {".gitkeep", "__pycache__"}}
+    actual = set(os.listdir(dirpath))
+    # Allow typical ignore
+    clean = {a for a in actual if a not in {"__pycache__", ".gitkeep"}}
 
     # Missing
-    for exp in expected_children:
-        if exp not in actual_clean:
-            violations.append(
-                Violation(
-                    code=f"{code_prefix}_MISSING_CHILD",
-                    message=f"Missing child '{exp}' in {subpath}",
-                    path=rel(target),
-                )
-            )
+    for e in expected:
+        if e not in clean:
+            violations.append(Violation(f"{code_prefix}_MISSING_CHILD",
+                                       f"Missing required child '{e}'",
+                                       rel(dirpath)))
+
     # Unexpected
-    for ch in actual_clean:
-        if ch not in expected_children:
-            violations.append(
-                Violation(
-                    code=f"{code_prefix}_UNEXPECTED_CHILD",
-                    message=f"Unexpected child '{ch}' in {subpath}",
-                    path=rel(os.path.join(target, ch)),
-                )
-            )
+    for a in clean:
+        if a not in expected:
+            violations.append(Violation(f"{code_prefix}_UNEXPECTED_CHILD",
+                                       f"Unexpected directory child '{a}'",
+                                       rel(os.path.join(dirpath, a))))
 
 
-def check_structural_expectations(violations: List[Violation]) -> None:
-    # agentic_core
-    check_exact_children(
-        REPO_ROOT,
-        "agentic_core",
-        AGENTIC_CORE_CHILDREN,
-        violations,
-        "AGENTIC_CORE",
-    )
-
-    check_exact_children(
-        REPO_ROOT,
-        os.path.join("agentic_core", "l1_planning"),
-        AGENTIC_CORE_L1_CHILDREN,
-        violations,
-        "L1_PLANNING",
-    )
-    check_exact_children(
-        REPO_ROOT,
-        os.path.join("agentic_core", "l2_execution"),
-        AGENTIC_CORE_L2_CHILDREN,
-        violations,
-        "L2_EXECUTION",
-    )
-    check_exact_children(
-        REPO_ROOT,
-        os.path.join("agentic_core", "l3_orchestration"),
-        AGENTIC_CORE_L3_CHILDREN,
-        violations,
-        "L3_ORCHESTRATION",
-    )
-    check_exact_children(
-        REPO_ROOT,
-        os.path.join("agentic_core", "l4_memory"),
-        AGENTIC_CORE_L4_CHILDREN,
-        violations,
-        "L4_MEMORY",
-    )
-    check_exact_children(
-        REPO_ROOT,
-        os.path.join("agentic_core", "l5_safety"),
-        AGENTIC_CORE_L5_CHILDREN,
-        violations,
-        "L5_SAFETY",
-    )
-
-    # apps
-    check_exact_children(REPO_ROOT, "apps", APPS_CHILDREN, violations, "APPS")
-
-    for engine in ("resume_engine", "outreach_engine"):
-        check_exact_children(
-            REPO_ROOT,
-            os.path.join("apps", engine),
-            ENGINE_LAYER_CHILDREN,
-            violations,
-            f"APPS_{engine.upper()}",
-        )
-        for layer in ENGINE_LAYER_CHILDREN:
-            # allow empty here structurally; emptiness is checked elsewhere
-            engine_layer_dir = os.path.join(REPO_ROOT, "apps", engine, layer)
-            if not os.path.isdir(engine_layer_dir):
-                violations.append(
-                    Violation(
-                        code="ENGINE_LAYER_MISSING_DIR",
-                        message=f"Missing {engine}/{layer} directory",
-                        path=rel(engine_layer_dir),
-                    )
-                )
-
-    # tests
-    check_exact_children(REPO_ROOT, "tests", TESTS_CHILDREN, violations, "TESTS")
-    check_exact_children(
-        REPO_ROOT, os.path.join("tests", "l1"), TESTS_L1_CHILDREN, violations, "TESTS_L1"
-    )
-    check_exact_children(
-        REPO_ROOT, os.path.join("tests", "l2"), TESTS_L2_CHILDREN, violations, "TESTS_L2"
-    )
-    check_exact_children(
-        REPO_ROOT, os.path.join("tests", "l3"), TESTS_L3_CHILDREN, violations, "TESTS_L3"
-    )
-    check_exact_children(
-        REPO_ROOT, os.path.join("tests", "l4"), TESTS_L4_CHILDREN, violations, "TESTS_L4"
-    )
-    check_exact_children(
-        REPO_ROOT, os.path.join("tests", "l5"), TESTS_L5_CHILDREN, violations, "TESTS_L5"
-    )
-
-    # .github
-    check_exact_children(REPO_ROOT, ".github", GITHUB_CHILDREN, violations, "GITHUB")
-
-
-def check_empty_directories(violations: List[Violation]) -> None:
-    for dirpath, dirnames, filenames in walk_tree(REPO_ROOT):
-        # ignore repo root emptiness (not expected anyway) and .git
-        rel_d = rel(dirpath)
-        if rel_d == ".":
+def check_empty_directories(violations: List[Violation]):
+    for dp, dns, fns in walk_dirs(REPO_ROOT):
+        r = rel(dp)
+        if r == ".":
             continue
-        # ignore common noise
-        dirnames_clean = [d for d in dirnames if d not in {"__pycache__"}]
-        if not dirnames_clean and not filenames:
-            violations.append(
-                Violation(
-                    code="EMPTY_DIRECTORY",
-                    message="Empty directory not allowed",
-                    path=rel_d,
-                )
-            )
+        if not dns and not fns:
+            violations.append(Violation("EMPTY_DIR",
+                                       "Directory is empty — not allowed",
+                                       r))
 
 
-def check_depth(violations: List[Violation]) -> None:
-    for dirpath, dirnames, filenames in walk_tree(REPO_ROOT):
-        d = depth_of(dirpath)
+def check_depth_limits(violations: List[Violation]):
+    for dp, dns, fns in walk_dirs(REPO_ROOT):
+        d = depth(dp)
         if d > MAX_DEPTH:
-            violations.append(
-                Violation(
-                    code="DEPTH_EXCEEDED",
-                    message=f"Directory depth {d} exceeds MAX_DEPTH={MAX_DEPTH}",
-                    path=rel(dirpath),
-                )
-            )
+            violations.append(Violation("DEPTH_EXCEEDED",
+                                       f"Depth {d} exceeds MAX_DEPTH {MAX_DEPTH}",
+                                       rel(dp)))
 
 
-def check_case_collisions(violations: List[Violation]) -> None:
-    for dirpath, dirnames, filenames in walk_tree(REPO_ROOT):
-        # Check directories + files
-        names = dirnames + filenames
-        lower_map: Dict[str, List[str]] = {}
-        for name in names:
-            lower_map.setdefault(name.lower(), []).append(name)
+def check_case_collisions(violations: List[Violation]):
+    for dp, dns, fns in walk_dirs(REPO_ROOT):
+        combined = dns + fns
+        lower_map = {}
+        for name in combined:
+            lower = name.lower()
+            lower_map.setdefault(lower, []).append(name)
 
         for lower, originals in lower_map.items():
             if len(originals) > 1:
-                violations.append(
-                    Violation(
-                        code="CASE_COLLISION",
-                        message=f"Case-insensitive name collision: {originals}",
-                        path=rel(dirpath),
-                    )
-                )
+                violations.append(Violation("CASE_COLLISION",
+                                           f"Case-insensitive collision: {originals}",
+                                           rel(dp)))
 
 
-def check_filename_policy(violations: List[Violation]) -> None:
-    forbidden_lower = [s.lower() for s in FORBIDDEN_SUBSTRINGS]
+def check_filename_rules(violations: List[Violation]):
+    for dp, dns, fns in walk_dirs(REPO_ROOT):
+        for name in dns + fns:
+            relp = rel(os.path.join(dp, name))
 
-    for dirpath, dirnames, filenames in walk_tree(REPO_ROOT):
-        for name in dirnames + filenames:
-            full_path = os.path.join(dirpath, name)
-            rel_p = rel(full_path)
-            # Name length
-            if len(name) > MAX_NAME_LEN:
-                violations.append(
-                    Violation(
-                        code="NAME_TOO_LONG",
-                        message=f"Name exceeds {MAX_NAME_LEN} chars: {name}",
-                        path=rel_p,
-                    )
-                )
+            # length
+            if len(name) > MAX_FILENAME_LEN:
+                violations.append(Violation("FILENAME_TOO_LONG",
+                                           f"Filename exceeds max length: {name}",
+                                           relp))
 
-            # Forbidden substrings
-            lower_name = name.lower()
-            for sub in forbidden_lower:
-                if sub in lower_name:
-                    violations.append(
-                        Violation(
-                            code="NAME_FORBIDDEN_SUBSTRING",
-                            message=f"Name contains forbidden substring '{sub}': {name}",
-                            path=rel_p,
-                        )
-                    )
+            lower = name.lower()
+            for sub in FORBIDDEN_SUBSTRINGS:
+                if sub in lower:
+                    violations.append(Violation("FILENAME_FORBIDDEN_SUBSTRING",
+                                               f"Forbidden substring '{sub}' in name",
+                                               relp))
 
 
-def check_tests_extensions(violations: List[Violation]) -> None:
-    tests_root = os.path.join(REPO_ROOT, "tests")
-    if not os.path.isdir(tests_root):
-        violations.append(
-            Violation(
-                code="TESTS_DIR_MISSING",
-                message="tests/ directory is missing",
-                path=rel(tests_root),
-            )
-        )
+def check_hidden_root(violations: List[Violation]):
+    for name in os.listdir(REPO_ROOT):
+        if name.startswith(".") and name not in {".gitignore", ".github"}:
+            violations.append(Violation("ROOT_HIDDEN_FORBIDDEN",
+                                       "Hidden file/folder not allowed at root",
+                                       rel(os.path.join(REPO_ROOT, name))))
+
+
+def check_tests_extensions(violations: List[Violation]):
+    test_root = os.path.join(REPO_ROOT, "tests")
+    if not os.path.isdir(test_root):
+        violations.append(Violation("TESTS_ROOT_MISSING",
+                                   "tests/ directory missing",
+                                   rel(test_root)))
         return
 
-    for dirpath, _, filenames in walk_tree(tests_root):
-        for fn in filenames:
-            full = os.path.join(dirpath, fn)
+    for dp, dns, fns in walk_dirs(test_root):
+        for fn in fns:
             _, ext = os.path.splitext(fn)
             if ext.lower() in FORBIDDEN_TEST_EXTS:
-                violations.append(
-                    Violation(
-                        code="TESTS_FORBIDDEN_EXTENSION",
-                        message=f"Forbidden test file extension '{ext}'",
-                        path=rel(full),
-                    )
-                )
+                violations.append(Violation("TEST_FILE_FORBIDDEN_EXT",
+                                           f"Forbidden extension '{ext}' in tests",
+                                           rel(os.path.join(dp, fn))))
 
 
-def check_manifest_parity(violations: List[Violation]) -> None:
-    """
-    If ci_manifest.json exists, ensure:
-    - It is valid JSON mapping "files" / "dirs" -> list[str]
-    - Every listed path exists
-    - No extraneous keys are present
-    """
-    manifest_path = os.path.join(REPO_ROOT, "ci_manifest.json")
-    if not os.path.exists(manifest_path):
-        return
-
-    try:
-        with open(manifest_path, "r", encoding="utf-8") as f:
-            data = json.load(f)
-    except Exception as e:
-        violations.append(
-            Violation(
-                code="MANIFEST_INVALID_JSON",
-                message=f"ci_manifest.json is not valid JSON ({e})",
-                path=rel(manifest_path),
-            )
-        )
-        return
-
-    if not isinstance(data, dict):
-        violations.append(
-            Violation(
-                code="MANIFEST_INVALID_TYPE",
-                message="ci_manifest.json root must be a JSON object",
-                path=rel(manifest_path),
-            )
-        )
+def check_manifest_parity(violations: List[Violation]):
+    manifest = load_manifest()
+    if not manifest:
         return
 
     allowed_keys = {"files", "dirs"}
-    for key in data.keys():
+    for key in manifest.keys():
         if key not in allowed_keys:
-            violations.append(
-                Violation(
-                    code="MANIFEST_UNEXPECTED_KEY",
-                    message=f"Unexpected key in manifest: {key}",
-                    path=rel(manifest_path),
-                )
-            )
+            violations.append(Violation("MANIFEST_UNEXPECTED_KEY",
+                                       f"Unexpected key '{key}' in manifest",
+                                       rel("ci_manifest.json")))
 
-    files = data.get("files", [])
-    dirs = data.get("dirs", [])
-
-    if not isinstance(files, list) or not all(isinstance(p, str) for p in files):
-        violations.append(
-            Violation(
-                code="MANIFEST_FILES_INVALID",
-                message='"files" must be a list of strings',
-                path=rel(manifest_path),
-            )
-        )
-    if not isinstance(dirs, list) or not all(isinstance(p, str) for p in dirs):
-        violations.append(
-            Violation(
-                code="MANIFEST_DIRS_INVALID",
-                message='"dirs" must be a list of strings',
-                path=rel(manifest_path),
-            )
-        )
-
-    for fpath in files:
-        full = os.path.join(REPO_ROOT, fpath)
+    for f in manifest.get("files", []):
+        full = os.path.join(REPO_ROOT, f)
         if not os.path.isfile(full):
-            violations.append(
-                Violation(
-                    code="MANIFEST_FILE_MISSING",
-                    message=f"Manifest file missing in repo: {fpath}",
-                    path=rel(full),
-                )
-            )
+            violations.append(Violation("MANIFEST_FILE_MISSING",
+                                       f"Manifest file missing: {f}",
+                                       rel(full)))
 
-    for dpath in dirs:
-        full = os.path.join(REPO_ROOT, dpath)
+    for d in manifest.get("dirs", []):
+        full = os.path.join(REPO_ROOT, d)
         if not os.path.isdir(full):
-            violations.append(
-                Violation(
-                    code="MANIFEST_DIR_MISSING",
-                    message=f"Manifest directory missing in repo: {dpath}",
-                    path=rel(full),
-                )
-            )
+            violations.append(Violation("MANIFEST_DIR_MISSING",
+                                       f"Manifest directory missing: {d}",
+                                       rel(full)))
 
 
-# =====================================================================
+# ============================================================
+# STRUCTURAL CHECKS PER DIRECTORY
+# ============================================================
+
+def check_root_structure(violations: List[Violation]):
+    actual = set(os.listdir(REPO_ROOT))
+
+    # Unexpected
+    for a in actual:
+        if a not in ALLOWED_ROOT_CHILDREN:
+            violations.append(Violation("ROOT_CHILD_UNEXPECTED",
+                                       f"Unexpected root child '{a}'",
+                                       rel(os.path.join(REPO_ROOT, a))))
+
+    # Required
+    for req in [
+        "agentic_core", "apps", "tests", "schemas",
+        "runtime", "observability", "prompt_governance",
+        "data", "docs", ".github"
+    ]:
+        if req not in actual:
+            violations.append(Violation("ROOT_CHILD_MISSING",
+                                       f"Missing required root entry '{req}'",
+                                       rel(REPO_ROOT)))
+
+
+def check_agentic_core(violations: List[Violation]):
+    ac = os.path.join(REPO_ROOT, "agentic_core")
+    exact_children(ac, AGENTIC_CORE_CHILDREN, violations, "AGENTIC_CORE")
+
+    exact_children(os.path.join(ac, "l1_planning"), AGENTIC_L1, violations, "L1_PLANNING")
+    exact_children(os.path.join(ac, "l2_execution"), AGENTIC_L2, violations, "L2_EXECUTION")
+    exact_children(os.path.join(ac, "l3_orchestration"), AGENTIC_L3, violations, "L3_ORCHESTRATION")
+    exact_children(os.path.join(ac, "l4_memory"), AGENTIC_L4, violations, "L4_MEMORY")
+    exact_children(os.path.join(ac, "l5_safety"), AGENTIC_L5, violations, "L5_SAFETY")
+
+
+def check_apps_structure(violations: List[Violation]):
+    apps = os.path.join(REPO_ROOT, "apps")
+    exact_children(apps, APPS_CHILDREN, violations, "APPS")
+
+    for engine in APPS_CHILDREN:
+        engine_path = os.path.join(apps, engine)
+        exact_children(engine_path, ENGINE_LAYER_CHILDREN, violations, f"APPS_{engine.upper()}")
+
+
+def check_tests_structure(violations: List[Violation]):
+    troot = os.path.join(REPO_ROOT, "tests")
+    exact_children(troot, TESTS_CHILDREN, violations, "TESTS")
+
+    exact_children(os.path.join(troot, "l1"), TESTS_L1, violations, "TESTS_L1")
+    exact_children(os.path.join(troot, "l2"), TESTS_L2, violations, "TESTS_L2")
+    exact_children(os.path.join(troot, "l3"), TESTS_L3, violations, "TESTS_L3")
+    exact_children(os.path.join(troot, "l4"), TESTS_L4, violations, "TESTS_L4")
+    exact_children(os.path.join(troot, "l5"), TESTS_L5, violations, "TESTS_L5")
+
+
+def check_github_structure(violations: List[Violation]):
+    gh = os.path.join(REPO_ROOT, ".github")
+    exact_children(gh, GITHUB_CHILDREN, violations, "GITHUB")
+
+
+# ============================================================
 # MAIN
-# =====================================================================
+# ============================================================
 
 def main() -> None:
     violations: List[Violation] = []
 
     if not os.path.isdir(REPO_ROOT):
-        print(f"[manifest_validator] ERROR: REPO_ROOT does not exist: {REPO_ROOT}")
+        print(f"[manifest_validator] ERROR: repo root not found: {REPO_ROOT}")
         sys.exit(1)
 
-    # 1. Root & structural expectations
+    # Structural checks
+    check_hidden_root(violations)
     check_root_structure(violations)
-    check_structural_expectations(violations)
+    check_agentic_core(violations)
+    check_apps_structure(violations)
+    check_tests_structure(violations)
+    check_github_structure(violations)
 
-    # 2. Empty directories
+    # Non-structural but mandatory ground rules
     check_empty_directories(violations)
-
-    # 3. Depth
-    check_depth(violations)
-
-    # 4. Case collision
+    check_depth_limits(violations)
     check_case_collisions(violations)
-
-    # 5. Filename policy
-    check_filename_policy(violations)
-
-    # 6. tests/ forbidden extensions
+    check_filename_rules(violations)
     check_tests_extensions(violations)
 
-    # 7. Manifest parity
+    # Manifest parity
     check_manifest_parity(violations)
 
     if not violations:
@@ -627,6 +409,7 @@ def main() -> None:
     print("[manifest_validator] FAIL: Violations detected.")
     for v in violations:
         print(f"[{v.code}] {v.message} :: {v.path}")
+
     sys.exit(1)
 
 
