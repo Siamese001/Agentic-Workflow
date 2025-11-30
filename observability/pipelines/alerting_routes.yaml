@@ -1,1 +1,361 @@
-# Placeholder YAML configuration file
+# Alerting Routes Configuration v1.0
+# Alert routing and notification configuration for observability system
+
+alerting_routes:
+  version: "1.0"
+  enabled: true
+  
+  # Global routing settings
+  global_settings:
+    default_receiver: "default"
+    group_by: ["alertname", "cluster", "service"]
+    group_wait: "30s"
+    group_interval: "5m"
+    repeat_interval: "12h"
+    
+  # Route tree
+  routes:
+    # Default route
+    - receiver: "default"
+      group_wait: "30s"
+      repeat_interval: "12h"
+      
+    # Critical alerts route
+    - match:
+        severity: "critical"
+      receiver: "critical_alerts"
+      group_wait: "10s"
+      repeat_interval: "5m"
+      
+    # System performance alerts
+    - match:
+        alert_type: "system_performance"
+      receiver: "ops_team"
+      group_by: ["instance", "alertname"]
+      group_wait: "1m"
+      repeat_interval: "15m"
+      
+      # Sub-routes for specific system metrics
+      routes:
+        - match:
+            metric: "cpu_usage"
+          receiver: "cpu_alerts"
+          
+        - match:
+            metric: "memory_usage"
+          receiver: "memory_alerts"
+          
+        - match:
+            metric: "disk_usage"
+          receiver: "storage_alerts"
+          
+    # Application performance alerts
+    - match:
+        alert_type: "application_performance"
+      receiver: "dev_team"
+      group_by: ["service", "alertname"]
+      group_wait: "2m"
+      repeat_interval: "30m"
+      
+      # Sub-routes for specific services
+      routes:
+        - match:
+            service: "resume_processing"
+          receiver: "resume_team"
+          
+        - match:
+            service: "outreach_generation"
+          receiver: "outreach_team"
+          
+        - match:
+            service: "job_analysis"
+          receiver: "job_team"
+          
+    # Business metrics alerts
+    - match:
+        alert_type: "business_metrics"
+      receiver: "business_team"
+      group_by: ["metric", "operation"]
+      group_wait: "5m"
+      repeat_interval: "1h"
+      
+      # Sub-routes for specific business metrics
+      routes:
+        - match:
+            metric: "processing_rate"
+          receiver: "product_team"
+          
+        - match:
+            metric: "quality_score"
+          receiver: "quality_team"
+          
+        - match:
+            metric: "cost_metrics"
+          receiver: "finance_team"
+          
+    # Cost alerts
+    - match:
+        alert_type: "cost"
+      receiver: "finance_team"
+      group_by: ["cost_type", "service"]
+      group_wait: "1m"
+      repeat_interval: "30m"
+      
+      # Sub-routes for cost severity
+      routes:
+        - match:
+            cost_severity: "high"
+          receiver: "exec_team"
+          group_wait: "10s"
+          repeat_interval: "5m"
+          
+        - match:
+            cost_severity: "medium"
+          receiver: "finance_team"
+          
+    # Safety and security alerts
+    - match:
+        alert_type: "safety"
+      receiver: "safety_team"
+      group_wait: "10s"
+      repeat_interval: "15m"
+      
+    - match:
+        alert_type: "security"
+      receiver: "security_team"
+      group_wait: "10s"
+      repeat_interval: "15m"
+      
+    # Data quality alerts
+    - match:
+        alert_type: "data_quality"
+      receiver: "data_team"
+      group_by: ["data_source", "quality_issue"]
+      group_wait: "5m"
+      repeat_interval: "2h"
+
+  # Receivers configuration
+  receivers:
+    # Default receiver
+    - name: "default"
+      email_configs:
+        - to: "alerts@company.com"
+          from: "observability@company.com"
+          smarthost: "smtp.company.com:587"
+          auth_username: "observability@company.com"
+          auth_password: "password"
+          
+    # Critical alerts receiver
+    - name: "critical_alerts"
+      email_configs:
+        - to: "oncall@company.com"
+          from: "critical@company.com"
+          subject: "CRITICAL: {{ .GroupLabels.alertname }}"
+          
+      slack_configs:
+        - api_url: "https://hooks.slack.com/services/..."
+          channel: "#critical-alerts"
+          title: "Critical Alert: {{ .GroupLabels.alertname }}"
+          color: "danger"
+          
+      pagerduty_configs:
+        - service_key: "critical_service_key"
+          severity: "critical"
+          
+    # Operations team receiver
+    - name: "ops_team"
+      email_configs:
+        - to: "ops@company.com"
+          from: "observability@company.com"
+          
+      slack_configs:
+        - api_url: "https://hooks.slack.com/services/..."
+          channel: "#ops-alerts"
+          title: "Ops Alert: {{ .GroupLabels.alertname }}"
+          color: "warning"
+          
+    # Development team receiver
+    - name: "dev_team"
+      email_configs:
+        - to: "dev@company.com"
+          from: "observability@company.com"
+          
+      slack_configs:
+        - api_url: "https://hooks.slack.com/services/..."
+          channel: "#dev-alerts"
+          title: "Dev Alert: {{ .GroupLabels.alertname }}"
+          color: "warning"
+          
+      # Service-specific receivers
+    - name: "resume_team"
+      email_configs:
+        - to: "resume-team@company.com"
+          from: "observability@company.com"
+          
+    - name: "outreach_team"
+      email_configs:
+        - to: "outreach-team@company.com"
+          from: "observability@company.com"
+          
+    - name: "job_team"
+      email_configs:
+        - to: "job-team@company.com"
+          from: "observability@company.com"
+          
+    # Business team receivers
+    - name: "business_team"
+      email_configs:
+        - to: "business@company.com"
+          from: "observability@company.com"
+          
+    - name: "product_team"
+      email_configs:
+        - to: "product@company.com"
+          from: "observability@company.com"
+          
+    - name: "quality_team"
+      email_configs:
+        - to: "quality@company.com"
+          from: "observability@company.com"
+          
+    # Finance team receiver
+    - name: "finance_team"
+      email_configs:
+        - to: "finance@company.com"
+          from: "observability@company.com"
+          
+    - name: "exec_team"
+      email_configs:
+        - to: "executives@company.com"
+          from: "observability@company.com"
+          
+      pagerduty_configs:
+        - service_key: "exec_service_key"
+          severity: "high"
+          
+    # Safety and security receivers
+    - name: "safety_team"
+      email_configs:
+        - to: "safety@company.com"
+          from: "observability@company.com"
+          
+      pagerduty_configs:
+        - service_key: "safety_service_key"
+          severity: "high"
+          
+    - name: "security_team"
+      email_configs:
+        - to: "security@company.com"
+          from: "observability@company.com"
+          
+      pagerduty_configs:
+        - service_key: "security_service_key"
+          severity: "critical"
+          
+    # Data team receiver
+    - name: "data_team"
+      email_configs:
+        - to: "data@company.com"
+          from: "observability@company.com"
+          
+    # System-specific receivers
+    - name: "cpu_alerts"
+      email_configs:
+        - to: "ops@company.com"
+          from: "observability@company.com"
+          subject: "CPU Alert: {{ .GroupLabels.instance }}"
+          
+    - name: "memory_alerts"
+      email_configs:
+        - to: "ops@company.com"
+          from: "observability@company.com"
+          subject: "Memory Alert: {{ .GroupLabels.instance }}"
+          
+    - name: "storage_alerts"
+      email_configs:
+        - to: "ops@company.com"
+          from: "observability@company.com"
+          subject: "Storage Alert: {{ .GroupLabels.instance }}"
+
+  # Inhibition rules
+  inhibit_rules:
+    # Inhibit lower severity alerts if critical alert is firing
+    - source_match:
+        severity: "critical"
+      target_match:
+        severity: "warning"
+      equal: ["alertname", "instance"]
+      
+    # Inhibit component alerts if service is down
+    - source_match:
+        alertname: "ServiceDown"
+      target_match:
+        service: "{{ .Labels.service }}"
+      equal: ["service"]
+      
+    # Inhibit metric alerts if system is down
+    - source_match:
+        alertname: "InstanceDown"
+      target_match_re:
+        alertname: ".*Metric.*"
+      equal: ["instance"]
+
+  # Time-based routing
+  time_based_routing:
+    # Business hours routing
+    business_hours:
+      start_time: "09:00"
+      end_time: "17:00"
+      timezone: "UTC"
+      days: ["monday", "tuesday", "wednesday", "thursday", "friday"]
+      
+      # During business hours, route to teams
+      routes:
+        - match:
+            alert_type: "business_metrics"
+          receiver: "business_team"
+          
+    # After hours routing
+    after_hours:
+      # Outside business hours, route to oncall
+      routes:
+        - match:
+            severity: "critical"
+          receiver: "critical_alerts"
+          
+        - match:
+            severity: "warning"
+          receiver: "ops_team"
+
+  # Environment-based routing
+  environment_routing:
+    development:
+      receiver: "dev_team"
+      group_wait: "5m"
+      repeat_interval: "1h"
+      
+    staging:
+      receiver: "ops_team"
+      group_wait: "2m"
+      repeat_interval: "30m"
+      
+    production:
+      receiver: "critical_alerts"
+      group_wait: "30s"
+      repeat_interval: "5m"
+
+  # Custom templates
+  templates:
+    - "/etc/alertmanager/templates/*.tmpl"
+    
+  # Silence rules
+  silence_rules:
+    # Maintenance window silences
+    maintenance_windows:
+      - name: "planned_maintenance"
+        matchers:
+          - match_type: "maintenance"
+        starts_at: "2024-01-01T00:00:00Z"
+        ends_at: "2024-01-01T06:00:00Z"
+        created_by: "ops@company.com"
+        comment: "Planned maintenance window"

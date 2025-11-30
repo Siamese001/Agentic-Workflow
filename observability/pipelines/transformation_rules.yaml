@@ -1,1 +1,283 @@
-# Placeholder YAML configuration file
+# Transformation Rules Configuration v1.0
+# Data transformation and enrichment rules for observability pipelines
+
+transformation_rules:
+  version: "1.0"
+  enabled: true
+  
+  # Global transformation settings
+  global_settings:
+    default_timezone: "UTC"
+    timestamp_format: "RFC3339"
+    enable_enrichment: true
+    enable_validation: true
+    
+  # Data source transformations
+  sources:
+    metrics:
+      # Metric name normalization
+      name_normalization:
+        enabled: true
+        rules:
+          - pattern: "agent_cpu_usage_percent"
+            replacement: "agent_cpu_usage"
+            unit: "percent"
+            
+          - pattern: "memory_usage_bytes"
+            replacement: "memory_usage"
+            unit: "bytes"
+            
+      # Label enrichment
+      label_enrichment:
+        enabled: true
+        rules:
+          - source_label: "environment"
+            target_label: "deployment_environment"
+            
+          - source_label: "service"
+            target_label: "service_name"
+            
+      # Metric aggregation
+      aggregation:
+        enabled: true
+        rules:
+          - metric_pattern: "request_duration_seconds"
+            aggregations: ["sum", "avg", "p95", "p99"]
+            window: "5m"
+            
+          - metric_pattern: "error_count_total"
+            aggregations: ["sum", "rate"]
+            window: "1m"
+            
+    traces:
+      # Span name normalization
+      span_normalization:
+        enabled: true
+        rules:
+          - pattern: "HTTP GET /api/*"
+            replacement: "HTTP_GET_API"
+            
+          - pattern: "process_resume_*"
+            replacement: "resume_processing"
+            
+      # Attribute enrichment
+      attribute_enrichment:
+        enabled: true
+        rules:
+          - source_attribute: "user.id"
+            target_attributes:
+              - "user_tier"
+              - "organization"
+              
+          - source_attribute: "operation.duration_ms"
+            target_attribute: "operation.duration_seconds"
+            transformation: "divide_by_1000"
+            
+      # Span correlation
+      correlation:
+        enabled: true
+        rules:
+          - parent_pattern: "resume_processing"
+            child_patterns: ["skill_extraction", "quality_scoring"]
+            
+          - parent_pattern: "outreach_generation"
+            child_patterns: ["profile_analysis", "message_generation"]
+            
+    events:
+      # Event type normalization
+      type_normalization:
+        enabled: true
+        rules:
+          - pattern: "user_action_*"
+            replacement: "user_interaction"
+            
+          - pattern: "system_*"
+            replacement: "system_event"
+            
+      # Event enrichment
+      enrichment:
+        enabled: true
+        rules:
+          - event_pattern: "resume_*"
+            enrich_fields:
+              - "processing_tier"
+              - "quality_threshold"
+              
+          - event_pattern: "outreach_*"
+            enrich_fields:
+              - "campaign_type"
+              - "personalization_level"
+
+  # Business logic transformations
+  business_logic:
+    # Resume processing transformations
+    resume_processing:
+      quality_score_calculation:
+        enabled: true
+        formula: "ats_compliance * 0.4 + skill_extraction_confidence * 0.3 + format_score * 0.3"
+        
+      processing_tier_assignment:
+        enabled: true
+        rules:
+          - condition: "quality_score >= 0.9"
+            tier: "premium"
+            
+          - condition: "quality_score >= 0.7"
+            tier: "standard"
+            
+          - condition: "quality_score < 0.7"
+            tier: "basic"
+            
+    # Outreach generation transformations
+    outreach_generation:
+      personalization_score_calculation:
+        enabled: true
+        formula: "profile_match * 0.5 + content_relevance * 0.3 + timing_optimization * 0.2"
+        
+      channel_optimization:
+        enabled: true
+        rules:
+          - condition: "personalization_score >= 0.8"
+            recommended_channels: ["email", "linkedin"]
+            
+          - condition: "personalization_score >= 0.6"
+            recommended_channels: ["email"]
+            
+    # Cost optimization transformations
+    cost_optimization:
+      cost_per_operation:
+        enabled: true
+        formula: "total_cost / operation_count"
+        
+      efficiency_score:
+        enabled: true
+        formula: "success_rate / cost_per_operation"
+
+  # Data quality transformations
+  data_quality:
+    # Validation rules
+    validation:
+      metrics:
+        - name: "value_range_check"
+          condition: "value >= 0"
+          action: "drop_invalid"
+          
+        - name: "label_presence_check"
+          required_labels: ["service", "environment"]
+          action: "add_default"
+          
+      traces:
+        - name: "duration_check"
+          condition: "duration_ms >= 0"
+          action: "set_to_zero"
+          
+        - name: "trace_id_check"
+          condition: "trace_id IS NOT NULL"
+          action: "generate_id"
+          
+      events:
+        - name: "timestamp_check"
+          condition: "timestamp IS NOT NULL"
+          action: "use_current_time"
+          
+    # Data cleaning
+    cleaning:
+      remove_duplicates:
+        enabled: true
+        window: "1m"
+        
+      outlier_removal:
+        enabled: true
+        method: "iqr"
+        threshold: 3.0
+        
+      missing_value_handling:
+        enabled: true
+        strategy: "default_value"
+
+  # Performance optimizations
+  performance:
+    # Batch processing
+    batch_processing:
+      enabled: true
+      batch_size: 1000
+      timeout: "5s"
+      
+    # Parallel processing
+    parallel_processing:
+      enabled: true
+      worker_count: 4
+      queue_size: 10000
+      
+    # Caching
+    caching:
+      enabled: true
+      cache_size: 10000
+      ttl: "1h"
+
+  # Error handling
+  error_handling:
+    # Retry policies
+    retry_policies:
+      - error_type: "transient"
+        max_retries: 3
+        backoff: "exponential"
+        
+      - error_type: "rate_limit"
+        max_retries: 5
+        backoff: "linear"
+        
+    # Dead letter queue
+    dead_letter_queue:
+      enabled: true
+      retention: "7d"
+      max_size: "1GB"
+
+  # Monitoring and alerting
+  monitoring:
+    # Transformation metrics
+    metrics:
+      - name: "transformations_processed_total"
+        type: "counter"
+        
+      - name: "transformation_errors_total"
+        type: "counter"
+        
+      - name: "transformation_duration_seconds"
+        type: "histogram"
+        
+    # Health checks
+    health_checks:
+      - name: "transformation_pipeline_health"
+        interval: "30s"
+        timeout: "10s"
+
+  # Environment-specific rules
+  environments:
+    development:
+      enable_debug: true
+      log_level: "debug"
+      
+    staging:
+      enable_debug: false
+      log_level: "info"
+      
+    production:
+      enable_debug: false
+      log_level: "warn"
+      
+  # Version control
+  version_control:
+    enabled: true
+    track_rule_changes: true
+    rollback_on_failure: true
+    
+  # Compliance
+  compliance:
+    gdpr:
+      anonymize_pii: true
+      retention_policy: "until_consent_withdrawn"
+      
+    sox:
+      audit_trail: true
+      immutable_logs: true

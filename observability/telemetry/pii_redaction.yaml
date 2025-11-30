@@ -1,1 +1,272 @@
-# Placeholder YAML configuration file
+# PII Redaction Configuration v1.0
+# Personally Identifiable Information protection for observability data
+
+pii_redaction:
+  version: "1.0"
+  enabled: true
+  
+  # PII detection patterns
+  detection_patterns:
+    # Email addresses
+    email:
+      enabled: true
+      pattern: "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b"
+      redaction_method: "hash"
+      hash_algorithm: "sha256"
+      
+    # Phone numbers (US format)
+    phone_us:
+      enabled: true
+      pattern: "\\b\\(?\\d{3}\\)?[-.]?\\d{3}[-.]?\\d{4}\\b"
+      redaction_method: "mask"
+      mask_format: "***-***-****"
+      
+    # Phone numbers (international format)
+    phone_international:
+      pattern: "\\+\\d{1,3}[-.]?\\(?\\d{3}\\)?[-.]?\\d{3}[-.]?\\d{4}"
+      redaction_method: "mask"
+      mask_format: "+*-***-***-****"
+      
+    # Social Security Numbers
+    ssn:
+      enabled: true
+      pattern: "\\b\\d{3}-\\d{2}-\\d{4}\\b"
+      redaction_method: "replace"
+      replacement: "[SSN_REDACTED]"
+      
+    # Credit card numbers
+    credit_card:
+      enabled: true
+      pattern: "\\b\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}[-\\s]?\\d{4}\\b"
+      redaction_method: "mask"
+      mask_format: "****-****-****-****"
+      
+    # IP addresses
+    ip_address:
+      enabled: true
+      pattern: "\\b(?:[0-9]{1,3}\\.){3}[0-9]{1,3}\\b"
+      redaction_method: "partial_mask"
+      mask_format: "*.***.*.*"
+      
+    # URLs with potential PII
+    url_with_params:
+      enabled: true
+      pattern: "\\bhttps?://[^\\s]*\\?(?:[^&]*&)*?[^&]*=[^&\\s]*"
+      redaction_method: "remove_query"
+      
+    # Names (simple pattern)
+    names:
+      enabled: true
+      pattern: "\\b[A-Z][a-z]+ [A-Z][a-z]+\\b"
+      redaction_method: "replace"
+      replacement: "[NAME_REDACTED]"
+      
+    # Addresses
+    address:
+      enabled: true
+      pattern: "\\b\\d+\\s+[A-Z][a-z]+\\s+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Place|Pl|Terrace|Ter)\\b"
+      redaction_method: "replace"
+      replacement: "[ADDRESS_REDACTED]"
+
+  # Redaction methods
+  redaction_methods:
+    hash:
+      algorithm: "sha256"
+      salt: "agentic-workflow-pii-salt"
+      include_length: false
+      
+    mask:
+      preserve_format: true
+      mask_char: "*"
+      
+    replace:
+      replacement_text: "[REDACTED]"
+      preserve_length: false
+      
+    partial_mask:
+      preserve_domain: true
+      mask_char: "*"
+
+  # Field-specific redaction rules
+  field_rules:
+    # Trace attributes
+    trace_attributes:
+      user_id:
+        enabled: true
+        method: "hash"
+        
+      email:
+        enabled: true
+        method: "hash"
+        
+      phone:
+        enabled: true
+        method: "mask"
+        
+      ip_address:
+        enabled: true
+        method: "partial_mask"
+        
+    # Log fields
+    log_fields:
+      message:
+        enabled: true
+        apply_patterns: ["email", "phone", "ssn", "credit_card"]
+        
+      user_agent:
+        enabled: false  # User agents rarely contain PII
+        
+      request_body:
+        enabled: true
+        apply_patterns: ["email", "phone", "ssn", "credit_card", "names"]
+        
+    # Metric labels
+    metric_labels:
+      user_id:
+        enabled: true
+        method: "hash"
+        
+      session_id:
+        enabled: true
+        method: "hash"
+        
+      tenant_id:
+        enabled: false  # Usually not PII
+
+  # Context-aware redaction
+  context_aware:
+    # Development environment - less strict
+    development:
+      strict_mode: false
+      allow_sample_data: true
+      
+    # Staging environment - moderate
+    staging:
+      strict_mode: true
+      allow_sample_data: false
+      
+    # Production environment - strict
+    production:
+      strict_mode: true
+      allow_sample_data: false
+      audit_mode: true
+
+  # Redaction performance
+  performance:
+    # Caching for regex patterns
+    pattern_cache:
+      enabled: true
+      max_size: 1000
+      ttl: "1h"
+      
+    # Batch processing
+    batch_processing:
+      enabled: true
+      batch_size: 100
+      timeout: "5s"
+      
+    # Async processing
+    async_processing:
+      enabled: true
+      worker_count: 4
+      queue_size: 10000
+
+  # Compliance requirements
+  compliance:
+    gdpr:
+      enabled: true
+      data_subject_rights: true
+      consent_tracking: true
+      
+    ccpa:
+      enabled: true
+      consumer_rights: true
+      opt_out_tracking: true
+      
+    hipaa:
+      enabled: false  # Not applicable unless handling health data
+      
+    sox:
+      enabled: true
+      audit_trail: true
+
+  # Redaction monitoring
+  monitoring:
+    # Track redaction statistics
+    statistics:
+      enabled: true
+      metrics:
+        - "pii_detections_total"
+        - "pii_redactions_total"
+        - "redaction_processing_duration"
+        
+    # Alert on unusual patterns
+    anomaly_detection:
+      enabled: true
+      high_redaction_rate_threshold: 0.1  # 10% of data contains PII
+      
+    # Audit logging
+    audit:
+      enabled: true
+      log_redactions: true
+      include_original_hash: false
+
+  # Redaction testing
+  testing:
+    # Test data sets
+    test_datasets:
+      - name: "sample_emails"
+        count: 100
+        expected_redactions: 100
+        
+      - name: "sample_phones"
+        count: 50
+        expected_redactions: 50
+        
+    # Validation rules
+    validation:
+      min_detection_rate: 0.95  # 95% of PII should be detected
+      max_false_positive_rate: 0.01  # < 1% false positives
+      
+    # Performance benchmarks
+    performance:
+      max_processing_time_ms: 100
+      max_memory_usage_mb: 256
+
+  # Redaction policies
+  policies:
+    # Default policy
+    default:
+      strict_mode: true
+      audit_required: false
+      
+    # High security policy
+    high_security:
+      strict_mode: true
+      audit_required: true
+      additional_patterns: ["names", "address"]
+      
+    # Development policy
+    development:
+      strict_mode: false
+      audit_required: false
+      exclude_patterns: ["names"]
+
+  # Integration points
+  integrations:
+    # Metrics backend
+    prometheus:
+      enabled: true
+      redact_before_export: true
+      
+    # Tracing backend
+    jaeger:
+      enabled: true
+      redact_spans: true
+      redact_tags: true
+      
+    # Logging backend
+    loki:
+      enabled: true
+      redact_logs: true
+      redact_labels: true
