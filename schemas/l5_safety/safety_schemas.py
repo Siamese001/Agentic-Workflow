@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from enum import Enum
 
-from ..core.base_schemas import BaseRequest, BaseResponse
+from .base_schemas import BaseRequest, BaseResponse
 
 class SafetyLevel(str, Enum):
     """Safety level enumeration"""
