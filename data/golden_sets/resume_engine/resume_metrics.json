@@ -1,0 +1,145 @@
+{
+  "resume_metrics": {
+    "version": "1.0",
+    "last_updated": "2024-01-01",
+    "benchmark_metrics": {
+      "length_metrics": {
+        "optimal_word_count": {
+          "entry_level": {"min": 300, "max": 500, "optimal": 400},
+          "mid_level": {"min": 400, "max": 700, "optimal": 550},
+          "senior_level": {"min": 500, "max": 900, "optimal": 700},
+          "executive_level": {"min": 700, "max": 1200, "optimal": 900}
+        },
+        "section_lengths": {
+          "summary": {"min": 50, "max": 150, "optimal": 100},
+          "experience_per_role": {"min": 50, "max": 200, "optimal": 120},
+          "skills_section": {"min": 10, "max": 50, "optimal": 30}
+        }
+      },
+      "readability_metrics": {
+        "flesch_kincaid_grade": {
+          "excellent": {"min": 8.0, "max": 10.0},
+          "good": {"min": 7.0, "max": 11.0},
+          "acceptable": {"min": 6.0, "max": 12.0}
+        },
+        "sentence_length": {
+          "optimal_average": 15.0,
+          "max_acceptable": 25.0
+        },
+        "paragraph_length": {
+          "optimal_lines": 3,
+          "max_lines": 6
+        }
+      },
+      "keyword_metrics": {
+        "density_targets": {
+          "primary_keywords": {"min": 0.04, "max": 0.10, "optimal": 0.07},
+          "secondary_keywords": {"min": 0.08, "max": 0.15, "optimal": 0.12},
+          "total_keyword_density": {"min": 0.12, "max": 0.25, "optimal": 0.19}
+        },
+        "keyword_distribution": {
+          "summary_section": 0.30,
+          "experience_section": 0.50,
+          "skills_section": 0.20
+        }
+      },
+      "achievement_metrics": {
+        "quantification_targets": {
+          "entry_level": {"min": 2, "optimal": 4},
+          "mid_level": {"min": 4, "optimal": 8},
+          "senior_level": {"min": 6, "optimal": 12},
+          "executive_level": {"min": 8, "optimal": 15}
+        },
+        "impact_types": {
+          "metrics_based": {"weight": 0.4, "examples": ["reduced costs by X%", "improved efficiency by Y%"]},
+          "business_outcomes": {"weight": 0.3, "examples": ["increased revenue", "launched product"]},
+          "team_leadership": {"weight": 0.2, "examples": ["led team of X", "mentored Y engineers"]},
+          "technical_innovation": {"weight": 0.1, "examples": ["developed new system", "patented technology"]}
+        }
+      },
+      "ats_compliance_metrics": {
+        "format_compatibility": {
+          "standard_sections": ["header", "summary", "experience", "education", "skills"],
+          "section_order_compliance": 1.0,
+          "format_consistency": 0.95
+        },
+        "parsing_success": {
+          "contact_info_extraction": 0.98,
+          "experience_timeline_parsing": 0.92,
+          "skills_extraction": 0.95,
+          "education_parsing": 0.90
+        }
+      }
+    },
+    "quality_thresholds": {
+      "excellent_resume": {
+        "overall_score": 0.90,
+        "keyword_optimization": 0.85,
+        "achievement_clarity": 0.80,
+        "readability_score": 8.5,
+        "ats_compliance": 0.90
+      },
+      "good_resume": {
+        "overall_score": 0.75,
+        "keyword_optimization": 0.70,
+        "achievement_clarity": 0.65,
+        "readability_score": 7.5,
+        "ats_compliance": 0.75
+      },
+      "satisfactory_resume": {
+        "overall_score": 0.60,
+        "keyword_optimization": 0.55,
+        "achievement_clarity": 0.50,
+        "readability_score": 6.5,
+        "ats_compliance": 0.60
+      }
+    },
+    "industry_specific_metrics": {
+      "technology": {
+        "technical_skill_weight": 0.40,
+        "project_portfolio_importance": 0.25,
+        "certification_value": 0.15,
+        "soft_skill_weight": 0.20
+      },
+      "finance": {
+        "technical_skill_weight": 0.30,
+        "business_acumen_weight": 0.35,
+        "certification_value": 0.20,
+        "soft_skill_weight": 0.15
+      },
+      "healthcare": {
+        "technical_skill_weight": 0.35,
+        "compliance_importance": 0.25,
+        "certification_value": 0.25,
+        "soft_skill_weight": 0.15
+      }
+    },
+    "scoring_weights": {
+      "technical_relevance": 0.35,
+      "achievement_impact": 0.25,
+      "keyword_optimization": 0.20,
+      "format_quality": 0.15,
+      "industry_alignment": 0.05
+    },
+    "validation_rules": {
+      "minimum_requirements": {
+        "contact_info": ["email", "phone"],
+        "experience_entries": 2,
+        "education_entries": 1,
+        "skills_list": 5
+      },
+      "automatic_penalties": {
+        "missing_contact_info": -0.10,
+        "poor_formatting": -0.08,
+        "keyword_stuffing": -0.12,
+        "vague_achievements": -0.06
+      },
+      "automatic_bonuses": {
+        "strong_portfolio": 0.05,
+        "relevant_certifications": 0.03,
+        "industry_experience": 0.04,
+        "leadership_roles": 0.03
+      }
+    }
+  }
+}

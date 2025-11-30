@@ -1,0 +1,37 @@
+# Job Description Cluster Centroids (Binary Placeholder)
+# This file contains synthetic cluster centroids for job description clustering
+# In production, this would be generated from actual ML clustering algorithms
+
+# Cluster 1: Backend/Cloud Infrastructure Engineering
+backend_cloud_centroid = [0.2345, -0.6789, 0.1234, 0.5678, -0.9012, 0.3456, 0.7890, -0.2345, 0.6789, -0.1234]
+
+# Cluster 2: Data Science/Machine Learning
+data_science_centroid = [-0.3456, 0.7890, -0.5678, 0.2345, 0.9012, -0.1234, 0.4567, 0.8901, -0.3456, 0.7890]
+
+# Cluster 3: Frontend/Full Stack Development
+frontend_centroid = [0.4567, -0.8901, 0.6789, -0.3456, 0.1234, 0.5678, -0.7890, 0.2345, 0.9012, -0.4567]
+
+# Cluster 4: DevOps/Platform Engineering
+devops_centroid = [-0.5678, 0.1234, 0.7890, 0.9012, -0.6789, 0.3456, -0.2345, 0.6789, 0.1234, -0.8901]
+
+# Cluster 5: Mobile Development
+mobile_centroid = [0.6789, -0.3456, 0.9012, -0.1234, 0.5678, -0.7890, 0.2345, 0.4567, -0.9012, 0.6789]
+
+# Cluster metadata
+cluster_info = {
+    "num_clusters": 5,
+    "embedding_dimension": 10,
+    "clustering_algorithm": "k-means",
+    "cluster_labels": [
+        "Backend/Cloud Infrastructure",
+        "Data Science/Machine Learning", 
+        "Frontend/Full Stack",
+        "DevOps/Platform Engineering",
+        "Mobile Development"
+    ],
+    "cluster_sizes": [250, 180, 200, 150, 120],
+    "silhouette_score": 0.65
+}
+
+# Usage: Load these centroids for job description classification and similarity matching
+# Replace with actual numpy array in production: np.load('jd_cluster_centroids.npy')
