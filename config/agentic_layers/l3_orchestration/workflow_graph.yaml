@@ -1,1 +1,110 @@
-# Placeholder configuration file
+# L3 Workflow Graph Configuration
+# Workflow definition and execution graph parameters
+
+# Workflow Graph Structure
+workflow:
+  max_workflow_depth: 10
+  max_parallel_branches: 5
+  default_timeout: 600  # seconds
+  enable_checkpointing: true
+
+# Node Types
+node_types:
+  planning:
+    color: "#4CAF50"
+    timeout: 120
+    retry_attempts: 2
+    required_inputs: ["request", "context"]
+  
+  execution:
+    color: "#2196F3"
+    timeout: 300
+    retry_attempts: 3
+    required_inputs: ["plan", "resources"]
+  
+  validation:
+    color: "#FF9800"
+    timeout: 60
+    retry_attempts: 1
+    required_inputs: ["result", "criteria"]
+  
+  orchestration:
+    color: "#9C27B0"
+    timeout: 180
+    retry_attempts: 2
+    required_inputs: ["state", "triggers"]
+
+# Edge Definitions
+edges:
+  success:
+    color: "#4CAF50"
+    weight: 1.0
+    condition: "status == 'success'"
+  
+  failure:
+    color: "#F44336"
+    weight: 0.5
+    condition: "status == 'failure'"
+  
+  retry:
+    color: "#FF9800"
+    weight: 0.7
+    condition: "status == 'retry'"
+  
+  fallback:
+    color: "#607D8B"
+    weight: 0.3
+    condition: "status == 'fallback'"
+
+# Workflow Templates
+templates:
+  resume_processing:
+    nodes:
+      - id: "plan_resume"
+        type: "planning"
+        timeout: 90
+      - id: "analyze_jd"
+        type: "execution"
+        timeout: 120
+      - id: "generate_resume"
+        type: "execution"
+        timeout: 180
+      - id: "validate_ats"
+        type: "validation"
+        timeout: 60
+      - id: "optimize_content"
+        type: "execution"
+        timeout: 150
+  
+  outreach_campaign:
+    nodes:
+      - id: "research_company"
+        type: "planning"
+        timeout: 90
+      - id: "identify_contacts"
+        type: "execution"
+        timeout: 120
+      - id: "craft_message"
+        type: "execution"
+        timeout: 100
+      - id: "personalize_content"
+        type: "execution"
+        timeout: 80
+      - id: "validate_safety"
+        type: "validation"
+        timeout: 30
+
+# Graph Execution Policies
+execution:
+  enable_parallel_execution: true
+  max_concurrent_nodes: 3
+  resource_sharing: true
+  deadlock_detection: true
+  deadlock_timeout: 300  # seconds
+
+# State Management
+state:
+  persistence_interval: 30  # seconds
+  checkpoint_on_failure: true
+  rollback_on_error: true
+  state_compression: true

@@ -1,1 +1,50 @@
-# Placeholder configuration file
+# System Defaults Configuration
+# Core system-wide settings and default values
+
+# System Performance Limits
+system:
+  max_connections: 100
+  max_overflow: 20
+  max_request_size: 10485760  # 10MB in bytes
+  rate_limit_requests: 100
+  rate_limit_window: 60  # seconds
+  
+# Processing Timeouts
+timeouts:
+  default: 30  # seconds
+  ci_cd_pipeline: 30  # seconds
+  deployment: 60  # seconds
+  
+# Session Management
+session:
+  timeout_minutes: 30
+  
+# Context and Message Limits
+context:
+  max_context_size: 100000  # 100KB
+  max_message_length: 100000  # 100KB
+  max_context_size_small: 50000  # 50KB for constrained operations
+  max_context_size_large: 200000  # 200KB for complex operations
+  
+# Retry Configuration
+retry:
+  max_attempts: 1
+  default_backoff: 1.0  # seconds
+  
+# Resume Processing Limits
+resume:
+  max_bullets_per_experience: 5
+  max_chars_per_bullet: 600
+  max_summary_chars: 2000
+  max_bullets_per_role: 5
+  max_skills_per_category: 10
+  relevant_coursework_limit: 5
+  
+# Keyword Extraction
+keywords:
+  max_keywords_extracted: 20
+  max_keywords: 30
+  
+# Processing Time
+processing:
+  max_processing_time: 300  # seconds

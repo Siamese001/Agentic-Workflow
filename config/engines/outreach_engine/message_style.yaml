@@ -1,1 +1,128 @@
-# Placeholder configuration file
+# Outreach Engine Message Style Configuration
+# Message formatting, tone, and communication style parameters
+
+# Message Style Framework
+message_style:
+  default_tone: professional
+  formality_level: formal
+  personalization_level: high
+  industry_adaptation: true
+
+# Tone Profiles
+tone_profiles:
+  professional:
+    formality: high
+    language: formal
+    greeting_style: formal
+    closing_style: professional
+    contractions: false
+    emojis: false
+  
+  casual:
+    formality: medium
+    language: conversational
+    greeting_style: friendly
+    closing_style: casual
+    contractions: limited
+    emojis: minimal
+  
+  enthusiastic:
+    formality: medium_low
+    language: energetic
+    greeting_style: warm
+    closing_style: enthusiastic
+    contractions: allowed
+    emojis: limited
+
+# Message Structure Templates
+structure_templates:
+  initial_contact:
+    opening: personal_greeting
+    body: introduction + value_proposition + call_to_action
+    closing: professional_signature
+    max_length: 300
+  
+  follow_up:
+    opening: context_reference
+    body: value_addition + gentle_reminder + call_to_action
+    closing: professional_signature
+    max_length: 250
+  
+  networking_request:
+    opening: mutual_connection_reference
+    body: introduction + request + value_offering
+    closing: gratitude_signature
+    max_length: 200
+
+# Content Style Guidelines
+content_guidelines:
+  opening_lines:
+    personalization_required: true
+    name_usage: first_name
+    context_reference: preferred
+    length: 1-2_sentences
+  
+  body_content:
+    value_proposition: required
+    company_research: required
+    skills_alignment: required
+    length: 3-5_sentences
+  
+  call_to_action:
+    clarity: high
+    urgency: low
+    specific_request: preferred
+    alternatives: provided
+
+# Industry-Specific Styles
+industry_styles:
+  technology:
+    tone: professional_casual
+    technical_depth: medium
+    innovation_focus: high
+    jargon_level: limited
+  
+  finance:
+    tone: formal
+    technical_depth: high
+    compliance_focus: high
+    jargon_level: professional
+  
+  healthcare:
+    tone: formal
+    technical_depth: medium
+    empathy_focus: high
+    jargon_level: minimal
+  
+  creative:
+    tone: casual_enthusiastic
+    technical_depth: low
+    portfolio_focus: high
+    jargon_level: industry_specific
+
+# Personalization Parameters
+personalization:
+  research_integration:
+    company_news: true
+    recent_projects: true
+    mutual_connections: true
+    industry_trends: true
+  
+  recipient_specific:
+    job_title_reference: true
+    company_role_context: true
+    career_progression: true
+    skill_alignment: true
+
+# Quality Standards
+quality_standards:
+  grammar_score: 0.9
+  readability_score: 8.0
+  personalization_score: 0.7
+  spam_score_threshold: 0.1
+  
+  content_validation:
+    duplicate_detection: true
+    template_overuse: false
+    relevance_check: true
+    compliance_check: true
