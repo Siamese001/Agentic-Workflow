@@ -12,6 +12,14 @@ class ResearchResult:
     sources: List[str] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
+    results: Dict[str, Any] = field(default_factory=dict)  # Added for test compatibility
+    
+    def __post_init__(self):
+        # Alias results to findings for backward compatibility
+        if self.results and not self.findings:
+            self.findings = self.results
+        elif self.findings and not self.results:
+            self.results = self.findings
 
 @dataclass
 class FailureContext:

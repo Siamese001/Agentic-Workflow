@@ -8,8 +8,13 @@ def create_custom_profile(name: str, **kwargs) -> Dict[str, Any]:
         "provider": kwargs.get("provider", "anthropic"),
         "model": kwargs.get("model", "claude-haiku-4-5-20251001"),
         "temperature": kwargs.get("temperature", 0.7),
-        "max_tokens": kwargs.get("max_tokens", 1000),
-        "cost_limit": kwargs.get("cost_limit", 0.01)
+        "max_tokens": kwargs.get("max_tokens", 4000),
+        "metadata": kwargs.get("metadata", {})
     }
-
     return profile
+
+def get_lic_profile(name: str = "default") -> Dict[str, Any]:
+    """Get a LIC profile by name"""
+    if name == "default":
+        return create_custom_profile("default")
+    return create_custom_profile(name)
