@@ -124,7 +124,8 @@ class ShortTermMemory:
     def cleanup_expired(self) -> int:
         """Remove expired items and return count of removed items"""
         expired_keys = []
-        datetime.now()
+        # Note: current_time would be used in a real implementation for TTL checks
+        # datetime.now()  # Placeholder for time-based expiration
 
         for key, item in self.memory.items():
             if item.is_expired():
