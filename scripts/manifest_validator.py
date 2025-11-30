@@ -7,9 +7,11 @@ Covers:
 - Root-level allowlist (no unexpected top-level dirs)
 - Forbidden dirs anywhere (cache, .cache, __pycache__, .venv, etc.)
 - Depth limits
-- Hidden dirs/files policy
-- Forbidden extensions (log, tmp, bak, zip, etc.)
+- Hidden directory/file policy
+- Forbidden extensions (log, tmp, bak, zip, exe, dll, etc.)
+- Unknown extensions outside a safe text allowlist
 - Empty directory detection
+- Case-insensitive filename collisions
 - Optional manifest.yaml exact match of dirs/files
 """
 
@@ -22,7 +24,10 @@ from collections import defaultdict
 # CONFIG
 # =============================================================================
 
-REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
+REPO_ROOT = (
+    r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines"
+    r"\Resume Gen\Git\Agentic_Workflow-10_11"
+)
 MANIFEST_PATH = os.path.join(REPO_ROOT, "manifest.yaml")
 
 # Allowed top-level directories (zero-tolerance: anything else is a violation)
@@ -55,7 +60,7 @@ FORBIDDEN_DIR_NAMES = {
     "node_modules",
 }
 
-# Forbidden file extensions (outside fixtures/data)
+# Forbidden file extensions (outside explicit allow zones)
 FORBIDDEN_EXTENSIONS = {
     ".log",
     ".tmp",
@@ -71,6 +76,21 @@ FORBIDDEN_EXTENSIONS = {
     ".dll",
     ".so",
     ".dylib",
+}
+
+# Extensions we treat as "text-like" and allowed by default
+ALLOWED_TEXT_EXTS = {
+    ".py",
+    ".txt",
+    ".md",
+    ".rst",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".toml",
+    ".ini",
+    ".cfg",
+    ".csv",
 }
 
 # Hidden dirs/files allowlist
@@ -182,14 +202,19 @@ def check_hidden_policy(all_dirs, all_files, errors):
             errors.append(f"[HIDDEN] Hidden file not allowed: {f}")
 
 
-def check_forbidden_extensions(all_files, errors):
+def check_forbidden_and_unknown_extensions(all_files, errors):
     for f in all_files:
         ext = os.path.splitext(f)[1].lower()
+        # In tests/fixtures or tests/data we may allow extra types
+        if f.startswith("tests/fixtures/") or f.startswith("tests/data/"):
+            if ext in FORBIDDEN_EXTENSIONS:
+                errors.append(f"[EXT] Forbidden extension in fixtures/data: {f}")
+            continue
+
         if ext in FORBIDDEN_EXTENSIONS:
-            # Allow some under tests/fixtures or tests/data if desired
-            if f.startswith("tests/fixtures/") or f.startswith("tests/data/"):
-                continue
             errors.append(f"[EXT] Forbidden file extension {ext}: {f}")
+        elif ext and ext not in ALLOWED_TEXT_EXTS:
+            errors.append(f"[EXT] Unknown/unsupported extension {ext}: {f}")
 
 
 def check_empty_directories(all_dirs, all_files, errors):
@@ -201,9 +226,11 @@ def check_empty_directories(all_dirs, all_files, errors):
     for d in all_dirs:
         if d == "":
             continue
-        # If directory has no files AND no subdirs, flag as empty
         if files_by_dir[d] == 0:
-            has_child_dir = any(child.startswith(d + "/") for child in all_dirs if child != d)
+            # treat directory as non-empty if it has any child dir
+            has_child_dir = any(
+                child.startswith(d + "/") and child != d for child in all_dirs
+            )
             if not has_child_dir:
                 errors.append(f"[EMPTY] Directory is empty: {d}")
 
@@ -222,7 +249,7 @@ def check_case_collisions(all_files, errors):
 def check_manifest_exact(all_dirs, all_files, errors):
     manifest = load_manifest(MANIFEST_PATH)
     if manifest is None:
-        # Optional: treat missing manifest as failure or warning.
+        # For strict mode, treat missing manifest as failure
         errors.append(f"[MANIFEST] manifest.yaml missing at {MANIFEST_PATH}")
         return
 
@@ -248,15 +275,14 @@ def check_manifest_exact(all_dirs, all_files, errors):
 # =============================================================================
 
 def main():
-    errors = []
-
     all_dirs, all_files = walk_repo(REPO_ROOT)
+    errors = []
 
     check_root_allowlist(all_dirs, errors)
     check_forbidden_dirs(all_dirs, errors)
     check_depth_limits(all_dirs, errors)
     check_hidden_policy(all_dirs, all_files, errors)
-    check_forbidden_extensions(all_files, errors)
+    check_forbidden_and_unknown_extensions(all_files, errors)
     check_empty_directories(all_dirs, all_files, errors)
     check_case_collisions(all_files, errors)
     check_manifest_exact(all_dirs, all_files, errors)
@@ -273,3 +299,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
