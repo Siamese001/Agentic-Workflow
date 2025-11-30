@@ -1,0 +1,86 @@
+{
+  "migration_timestamp": "2025-11-30T08:48:52.449485",
+  "total_files_moved": 16,
+  "moves": [
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\agent.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\core\\agent.py",
+      "new_folder": "core"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\base.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\core\\base.py",
+      "new_folder": "core"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\plan.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\planning\\plan.py",
+      "new_folder": "planning"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\agents\\__init__.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\core\\__init__.py",
+      "new_folder": "core"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\L1\\.gitkeep",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\planning\\.gitkeep",
+      "new_folder": "planning"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\L2\\.gitkeep",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\execution\\.gitkeep",
+      "new_folder": "execution"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\L3\\.gitkeep",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\orchestration\\.gitkeep",
+      "new_folder": "orchestration"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\L4\\.gitkeep",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\memory_state\\.gitkeep",
+      "new_folder": "memory_state"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\l4_memory\\memory_schemas.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\memory_state\\memory_schemas.py",
+      "new_folder": "memory_state"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\l4_memory\\memory_types.json",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\memory_state\\memory_types.json",
+      "new_folder": "memory_state"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\L5\\.gitkeep",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\safety\\.gitkeep",
+      "new_folder": "safety"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\memory\\__init__.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\memory_state\\__init__.py",
+      "new_folder": "memory_state"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\plans\\__init__.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\planning\\__init__.py",
+      "new_folder": "planning"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\shared\\base_schemas.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\core\\base_schemas.py",
+      "new_folder": "core"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\shared\\shared_types.json",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\core\\shared_types.json",
+      "new_folder": "core"
+    },
+    {
+      "source": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\tools\\__init__.py",
+      "destination": "C:\\Users\\amita\\Documents\\Work\\AI Job Search\\AI\\ML\\DL\\GenAI\\LLM 101\\LLM Pipelines\\Resume Gen\\Git\\Agentic_Workflow-10_11\\schemas\\execution\\__init__.py",
+      "new_folder": "execution"
+    }
+  ]
+}
