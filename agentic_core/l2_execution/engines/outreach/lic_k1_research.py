@@ -1,5 +1,5 @@
 # lic_k1_research - K1 research execution engine
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
 @dataclass
@@ -8,7 +8,7 @@ class K1ResearchResult:
     research_data: Dict[str, Any] = None
     confidence_score: float = 0.0
     metadata: Dict[str, Any] = None
-    
+
     def __post_init__(self):
         if self.research_data is None:
             self.research_data = {}
@@ -17,15 +17,15 @@ class K1ResearchResult:
 
 class LIC_K1_Research:
     """K1 research execution engine"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-    
+
     def execute_research(self, query: str, context: Dict[str, Any] = None) -> K1ResearchResult:
         """Execute K1 research query"""
         if context is None:
             context = {}
-        
+
         # Mock research execution
         return K1ResearchResult(
             research_data={
@@ -36,7 +36,7 @@ class LIC_K1_Research:
             confidence_score=0.85,
             metadata={"execution_time": 0.5, "model": "mock_k1"}
         )
-    
+
     def run(self, input_data: Dict[str, Any]) -> K1ResearchResult:
         """Run K1 research (alias for execute_research)"""
         query = input_data.get("query", "")

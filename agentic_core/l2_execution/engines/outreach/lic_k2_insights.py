@@ -8,7 +8,7 @@ class K2Insights:
     insights: List[str] = None
     confidence: float = 0.0
     metadata: Dict[str, Any] = None
-    
+
     def __post_init__(self):
         if self.insights is None:
             self.insights = []
@@ -17,10 +17,10 @@ class K2Insights:
 
 class LIC_K2_Insights:
     """K2 insights generation engine"""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-    
+
     def generate_insights(self, research_data: Dict[str, Any]) -> K2Insights:
         """Generate insights from research data"""
         return K2Insights(
@@ -28,7 +28,7 @@ class LIC_K2_Insights:
             confidence=0.8,
             metadata={"source": research_data}
         )
-    
+
     def run(self, input_data: Dict[str, Any]) -> K2Insights:
         """Run insights generation"""
         return self.generate_insights(input_data)
