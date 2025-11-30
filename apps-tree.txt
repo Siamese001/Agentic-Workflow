@@ -1,0 +1,258 @@
+﻿=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\config ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\CONFIG
+|   environment_config.json
+|   evaluation_results.json
+|   mcp_interactions.log
+|   meta_profile.py
+|   model_versions.json
+|   mypy.ini
+|   pyproject.toml
+|   pytest.ini
+|   __init__.py
+|   
++---.vscode
+|       launch.json
+|       settings.json
+|       tasks.json
+|       
++---pipeline_artifacts
+|       pipeline_pipeline_1764436382_results.json
+|       
++---pipeline_logs
+|       lint_check_1764436382.log
+|       
+\---windsurf_rules
+        windsurf_validation_keys.json
+        
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\deployment ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\DEPLOYMENT
+    api.py
+    auth.py
+    config.py
+    __init__.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\docs ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\DOCS
+    Agentic Design Pillars.md
+    COMPREHENSIVE_VALIDATION_REPORT.md
+    CRITICAL_VIOLATIONS_PROGRESS.md
+    FINAL_COMPREHENSIVE_REPORT.md
+    FINAL_VALIDATION_REPORT.md
+    fix_validation_plan.md
+    INFRASTRUCTURE_ACHIEVEMENTS_REPORT.md
+    PHASE1_STRUCTURAL_GAP_ANALYSIS.md
+    README.md
+    SECTION_3_ALIGNMENT_SUMMARY.md
+    TECHNICAL_DEBT.md
+    VALIDATION_KEYS_SUMMARY.md
+    VALIDATION_SCHEMA_GAP_REPORT.md
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\evaluation ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\EVALUATION
+    ci_cd_pipeline.py
+    toolpath_evaluator.py
+    __init__.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH
+    .gitkeep
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE
+|   __init__.py
+|   
++---adapters
+|       outreach_adapter.py
+|       
++---l1
++---l2
++---l3
++---l4
++---l5
+\---pipelines
+        outreach_pipeline.py
+        
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME
+    .gitkeep
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE
+|   __init__.py
+|   
++---adapters
+|       resume_adapter.py
+|       
++---l1
++---l2
++---l3
++---l4
++---l5
++---pipelines
+|       resume_pipeline.py
+|       
+\---production_inputs
+        job_input.json
+        master_resume.json
+        
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\config\.vscode ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\CONFIG\.VSCODE
+    launch.json
+    settings.json
+    tasks.json
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\config\pipeline_artifacts ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\CONFIG\PIPELINE_ARTIFACTS
+    pipeline_pipeline_1764436382_results.json
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\config\pipeline_logs ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\CONFIG\PIPELINE_LOGS
+    lint_check_1764436382.log
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\config\windsurf_rules ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\CONFIG\WINDSURF_RULES
+    windsurf_validation_keys.json
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\adapters ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\ADAPTERS
+    outreach_adapter.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\l1 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\L1
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\l2 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\L2
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\l3 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\L3
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\l4 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\L4
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\l5 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\L5
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\outreach_engine\pipelines ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\OUTREACH_ENGINE\PIPELINES
+    outreach_pipeline.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\adapters ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\ADAPTERS
+    resume_adapter.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\l1 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\L1
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\l2 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\L2
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\l3 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\L3
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\l4 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\L4
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\l5 ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\L5
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\pipelines ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\PIPELINES
+    resume_pipeline.py
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\apps\resume_engine\production_inputs ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\APPS\RESUME_ENGINE\PRODUCTION_INPUTS
+    job_input.json
+    master_resume.json
+    
+No subfolders exist 
+
