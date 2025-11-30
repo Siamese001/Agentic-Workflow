@@ -1,14 +1,13 @@
 # State management - Functional implementation
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from datetime import datetime
-import json
 
 # Import the robust state manager we already created
 from .rg_state_manager import ResumeStateManager
 
 class StateManager:
     """Functional state manager that delegates to ResumeStateManager."""
-    
+
     def __init__(self):
         self._delegate = ResumeStateManager()
         self._local_cache: Dict[str, Any] = {}
@@ -18,16 +17,16 @@ class StateManager:
         # Check local cache first
         if key in self._local_cache:
             return self._local_cache[key]
-        
+
         # Create a simple memory-based state for backward compatibility
         state_key = f"state_{key}"
         memories = self._delegate.memories
-        
+
         if state_key in memories:
             value = memories[state_key].content.get("value", default)
             self._local_cache[key] = value
             return value
-        
+
         return default
 
     def set_state(self, key: str, value: Any) -> bool:
@@ -35,11 +34,11 @@ class StateManager:
         try:
             # Update local cache
             self._local_cache[key] = value
-            
+
             # Store in episodic memory for persistence
             state_key = f"state_{key}"
             import asyncio
-            
+
             # Create memory content
             memory_content = {
                 "key": key,
@@ -47,7 +46,7 @@ class StateManager:
                 "timestamp": datetime.now().isoformat(),
                 "type": "state"
             }
-            
+
             # Store asynchronously if possible, otherwise synchronously
             try:
                 loop = asyncio.get_event_loop()
@@ -80,9 +79,9 @@ class StateManager:
                     'episode_type': 'state',
                     'tags': ['state', key]
                 })()
-            
+
             return True
-            
+
         except Exception:
             # Fallback to local-only storage
             self._local_cache[key] = value
@@ -93,25 +92,25 @@ class StateManager:
         # Remove from local cache
         if key in self._local_cache:
             del self._local_cache[key]
-        
+
         # Remove from persistent storage
         state_key = f"state_{key}"
         if state_key in self._delegate.memories:
             del self._delegate.memories[state_key]
             return True
-        
+
         return False
 
     def list_keys(self) -> list:
         """List all state keys."""
         keys = set(self._local_cache.keys())
-        
+
         # Add keys from persistent storage
         for memory_id in self._delegate.memories:
             if memory_id.startswith("state_"):
                 key = memory_id[6:]  # Remove "state_" prefix
                 keys.add(key)
-        
+
         return list(keys)
 
     def clear_cache(self) -> None:

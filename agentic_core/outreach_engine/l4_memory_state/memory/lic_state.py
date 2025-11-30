@@ -1,7 +1,6 @@
 from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
 from datetime import datetime
-import json
 
 @dataclass
 class OutreachState:
@@ -28,7 +27,7 @@ class LICState:
     def process(self, *args, **kwargs) -> Any:
         """Process LIC state operations."""
         operation = kwargs.get("operation", "status")
-        
+
         if operation == "create":
             return self.create_state(**kwargs)
         elif operation == "update":
@@ -57,18 +56,18 @@ class LICState:
             timestamp=datetime.now(),
             status=status
         )
-        
+
         self.states[state_id] = state
-        
+
         # Update indexes
         if workflow_id not in self.workflow_index:
             self.workflow_index[workflow_id] = []
         self.workflow_index[workflow_id].append(state_id)
-        
+
         if current_stage not in self.stage_index:
             self.stage_index[current_stage] = []
         self.stage_index[current_stage].append(state_id)
-        
+
         return {
             "status": "created",
             "state_id": state_id,
@@ -79,9 +78,9 @@ class LICState:
         """Update an existing state."""
         if state_id not in self.states:
             return {"status": "not_found", "processed": True}
-        
+
         state = self.states[state_id]
-        
+
         # Update indexes if stage changed
         if "current_stage" in updates and updates["current_stage"] != state.current_stage:
             # Remove from old stage index
@@ -89,24 +88,24 @@ class LICState:
                 self.stage_index[state.current_stage].remove(state_id)
                 if not self.stage_index[state.current_stage]:
                     del self.stage_index[state.current_stage]
-            
+
             # Add to new stage index
             new_stage = updates["current_stage"]
             if new_stage not in self.stage_index:
                 self.stage_index[new_stage] = []
             self.stage_index[new_stage].append(state_id)
-            
+
             state.current_stage = new_stage
-        
+
         # Update other fields
         if "data" in updates:
             state.data.update(updates["data"])
-        
+
         if "status" in updates:
             state.status = updates["status"]
-        
+
         state.timestamp = datetime.now()
-        
+
         return {
             "status": "updated",
             "state_id": state_id,
@@ -133,32 +132,32 @@ class LICState:
                 }
             else:
                 return {"status": "not_found", "processed": True}
-        
+
         # Filter states
         candidate_ids = None
-        
+
         if workflow_id and workflow_id in self.workflow_index:
             candidate_ids = set(self.workflow_index[workflow_id])
-        
+
         if current_stage and current_stage in self.stage_index:
             stage_ids = set(self.stage_index[current_stage])
             if candidate_ids is not None:
                 candidate_ids &= stage_ids
             else:
                 candidate_ids = stage_ids
-        
+
         if candidate_ids is None:
             candidate_ids = set(self.states.keys())
-        
+
         # Apply status filter
         results = []
         for state_id in candidate_ids:
             if state_id in self.states:
                 state = self.states[state_id]
-                
+
                 if status and state.status != status:
                     continue
-                
+
                 results.append({
                     "state_id": state.state_id,
                     "workflow_id": state.workflow_id,
@@ -167,7 +166,7 @@ class LICState:
                     "timestamp": state.timestamp.isoformat(),
                     "status": state.status
                 })
-        
+
         return {
             "status": "retrieved",
             "states": results,
@@ -179,24 +178,24 @@ class LICState:
         """Delete a specific state."""
         if state_id not in self.states:
             return {"status": "not_found", "processed": True}
-        
+
         state = self.states[state_id]
-        
+
         # Remove from workflow index
         if state.workflow_id in self.workflow_index:
             self.workflow_index[state.workflow_id].remove(state_id)
             if not self.workflow_index[state.workflow_id]:
                 del self.workflow_index[state.workflow_id]
-        
+
         # Remove from stage index
         if state.current_stage in self.stage_index:
             self.stage_index[state.current_stage].remove(state_id)
             if not self.stage_index[state.current_stage]:
                 del self.stage_index[state.current_stage]
-        
+
         # Remove from main storage
         del self.states[state_id]
-        
+
         return {
             "status": "deleted",
             "state_id": state_id,
@@ -207,11 +206,11 @@ class LICState:
         """Get state statistics."""
         status_counts = {}
         stage_counts = {}
-        
+
         for state in self.states.values():
             status_counts[state.status] = status_counts.get(state.status, 0) + 1
             stage_counts[state.current_stage] = stage_counts.get(state.current_stage, 0) + 1
-        
+
         return {
             "total_states": len(self.states),
             "active_workflows": len(self.workflow_index),

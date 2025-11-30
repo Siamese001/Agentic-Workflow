@@ -18,7 +18,6 @@ from agentic_core.api import (
     create_error_response,
     handle_errors,
     log_api_calls,
-    APIException,
     ServiceUnavailableAPIException
 )
 
@@ -57,7 +56,7 @@ async def root():
                 message="Some endpoint routers are not available",
                 error_type="configuration_error"
             )
-        
+
         available_endpoints = []
         if healthcheck:
             available_endpoints.extend(["/health/ - Health check endpoints"])
@@ -65,7 +64,7 @@ async def root():
             available_endpoints.extend(["/outreach/send - Send outreach message"])
         if preview_message:
             available_endpoints.extend(["/outreach/preview - Message preview"])
-        
+
         return create_success_response(
             data={
                 "engine": "outreach_engine",
@@ -76,8 +75,8 @@ async def root():
             },
             message="Outreach engine API is running"
         )
-        
-    except Exception as e:
+
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Root endpoint unavailable",
             error_code="ROOT_ENDPOINT_ERROR"

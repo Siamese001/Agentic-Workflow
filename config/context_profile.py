@@ -29,11 +29,11 @@ class ContextProfile:
     semantic_chunking: bool = True
     priority_sections: List[str] = field(default_factory=list)
     metadata: Optional[Dict[str, Any]] = None
-    
+
     def __post_init__(self):
         if self.metadata is None:
             self.metadata = {}
-        
+
         # Set default priority sections based on context type
         if not self.priority_sections:
             if self.context_type == ContextType.CONVERSATION:

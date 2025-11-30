@@ -3,7 +3,6 @@ Outreach Engine Setup CLI
 LEVEL 5 - Setup and configuration utility for the Outreach Engine
 """
 
-import asyncio
 import argparse
 import json
 import logging
@@ -18,59 +17,59 @@ sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 
 class OutreachEngineSetup:
     """Setup utility for the Outreach Engine"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self.project_root = Path(__file__).parent.parent.parent.parent
         self.outreach_engine_root = self.project_root / "apps" / "outreach_engine"
-        
+
         # Setup logging
         self._setup_logging()
-    
+
     def _setup_logging(self):
         """Setup logging configuration"""
         logging.basicConfig(
             level=logging.INFO,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
-    
+
     def setup_environment(self, config_file: Optional[str] = None):
         """Setup the outreach engine environment"""
         try:
             self.logger.info("Setting up Outreach Engine environment")
-            
+
             # Load configuration
             config = self._load_config(config_file) if config_file else self._get_default_config()
-            
+
             # Create necessary directories
             self._create_directories(config)
-            
+
             # Create configuration files
             self._create_config_files(config)
-            
+
             # Setup database connections
             self._setup_database(config)
-            
+
             # Initialize logging
             self._setup_logging_config(config)
-            
+
             # Create startup scripts
             self._create_startup_scripts(config)
-            
+
             print("✅ Outreach Engine environment setup completed!")
             print(f"📁 Installation directory: {self.outreach_engine_root}")
             print(f"⚙️  Configuration loaded from: {config_file or 'default'}")
-            
+
         except Exception as e:
             self.logger.error(f"Environment setup failed: {e}")
             print(f"❌ Error: {e}")
             sys.exit(1)
-    
+
     def validate_setup(self):
         """Validate the outreach engine setup"""
         try:
             self.logger.info("Validating Outreach Engine setup")
-            
+
             validation_results = {
                 "directories": self._validate_directories(),
                 "config_files": self._validate_config_files(),
@@ -78,73 +77,73 @@ class OutreachEngineSetup:
                 "database": self._validate_database(),
                 "permissions": self._validate_permissions()
             }
-            
+
             # Calculate overall status
             all_valid = all(result["valid"] for result in validation_results.values())
-            
+
             # Display results
-            print(f"\n🔍 Outreach Engine Setup Validation")
+            print("\n🔍 Outreach Engine Setup Validation")
             print(f"{'='*50}")
-            
+
             for component, result in validation_results.items():
                 status = "✅" if result["valid"] else "❌"
                 print(f"{status} {component.replace('_', ' ').title()}: {result['message']}")
-                
+
                 if not result["valid"] and result.get("details"):
                     for detail in result["details"]:
                         print(f"    • {detail}")
-            
+
             overall_status = "✅ VALID" if all_valid else "❌ INVALID"
             print(f"\n📊 Overall Status: {overall_status}")
-            
+
             if not all_valid:
                 print("\n💡 Please fix the issues above before using the Outreach Engine")
                 sys.exit(1)
             else:
                 print("\n🎉 Setup validation passed! Outreach Engine is ready to use.")
-            
+
         except Exception as e:
             self.logger.error(f"Setup validation failed: {e}")
             print(f"❌ Error: {e}")
             sys.exit(1)
-    
+
     def create_config_template(self, output_file: str):
         """Create a configuration template file"""
         try:
             template = self._get_config_template()
-            
+
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(template, f, indent=2, ensure_ascii=False)
-            
+
             print(f"✅ Configuration template created: {output_file}")
             print("📝 Edit this file and use it with 'setup --config <file>'")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to create config template: {e}")
             print(f"❌ Error: {e}")
             sys.exit(1)
-    
+
     def install_dependencies(self):
         """Install required dependencies"""
         try:
             self.logger.info("Installing Outreach Engine dependencies")
-            
+
             # Create requirements file
             requirements_content = self._get_requirements_content()
             requirements_file = self.outreach_engine_root / "requirements.txt"
-            
+
             with open(requirements_file, 'w', encoding='utf-8') as f:
                 f.write(requirements_content)
-            
+
             print(f"📦 Requirements file created: {requirements_file}")
             print("💡 Install dependencies with: pip install -r requirements.txt")
             print("🔧 Or use: pip install -e . (for development mode)")
-            
+
         except Exception as e:
             self.logger.error(f"Failed to install dependencies: {e}")
             print(f"❌ Error: {e}")
             sys.exit(1)
-    
+
     def _load_config(self, config_file: str) -> Dict[str, Any]:
         """Load configuration from file"""
         try:
@@ -154,7 +153,7 @@ class OutreachEngineSetup:
             raise FileNotFoundError(f"Configuration file not found: {config_file}")
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON in configuration file: {e}")
-    
+
     def _get_default_config(self) -> Dict[str, Any]:
         """Get default configuration"""
         return {
@@ -199,7 +198,7 @@ class OutreachEngineSetup:
                 "session_timeout": 3600
             }
         }
-    
+
     def _create_directories(self, config: Dict[str, Any]):
         """Create necessary directories"""
         directories = [
@@ -210,52 +209,52 @@ class OutreachEngineSetup:
             self.outreach_engine_root / "backups",
             self.outreach_engine_root / "config"
         ]
-        
+
         for directory in directories:
             directory.mkdir(parents=True, exist_ok=True)
             self.logger.info(f"Created directory: {directory}")
-    
+
     def _create_config_files(self, config: Dict[str, Any]):
         """Create configuration files"""
         # Save main configuration
         config_file = self.outreach_engine_root / "config" / "outreach_engine.json"
         with open(config_file, 'w', encoding='utf-8') as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
-        
+
         # Create environment file
         env_file = self.outreach_engine_root / ".env"
         env_content = self._get_env_content(config)
         with open(env_file, 'w', encoding='utf-8') as f:
             f.write(env_content)
-        
+
         self.logger.info("Configuration files created")
-    
+
     def _setup_database(self, config: Dict[str, Any]):
         """Setup database connections"""
         db_config = config.get("database", {})
         db_type = db_config.get("type", "sqlite")
-        
+
         if db_type == "sqlite":
             db_path = self.outreach_engine_root / "data" / db_config.get("path", "outreach_engine.db")
             # Create database file (empty)
             db_path.touch()
             self.logger.info(f"SQLite database created: {db_path}")
-        
+
         # Create database schema placeholder
         schema_file = self.outreach_engine_root / "config" / "schema.sql"
         schema_content = self._get_database_schema(db_type)
         with open(schema_file, 'w', encoding='utf-8') as f:
             f.write(schema_content)
-    
+
     def _setup_logging_config(self, config: Dict[str, Any]):
         """Setup logging configuration"""
         log_config = config.get("logging", {})
         log_file = self.outreach_engine_root / "logs" / log_config.get("file", "outreach_engine.log")
-        
+
         # Create log file
         log_file.touch()
         self.logger.info(f"Logging setup completed: {log_file}")
-    
+
     def _create_startup_scripts(self, config: Dict[str, Any]):
         """Create startup scripts"""
         # Create startup shell script
@@ -263,18 +262,18 @@ class OutreachEngineSetup:
         startup_content = self._get_startup_script_content(config)
         with open(startup_script, 'w', encoding='utf-8') as f:
             f.write(startup_content)
-        
+
         # Make script executable
         os.chmod(startup_script, 0o755)
-        
+
         # Create Windows batch file
         batch_script = self.outreach_engine_root / "start_outreach_engine.bat"
         batch_content = self._get_batch_script_content(config)
         with open(batch_script, 'w', encoding='utf-8') as f:
             f.write(batch_content)
-        
+
         self.logger.info("Startup scripts created")
-    
+
     def _validate_directories(self) -> Dict[str, Any]:
         """Validate required directories"""
         required_dirs = [
@@ -290,38 +289,38 @@ class OutreachEngineSetup:
             "cli",
             "tests"
         ]
-        
+
         missing_dirs = []
         for dir_path in required_dirs:
             full_path = self.outreach_engine_root / dir_path
             if not full_path.exists():
                 missing_dirs.append(dir_path)
-        
+
         return {
             "valid": len(missing_dirs) == 0,
             "message": f"Found {len(required_dirs) - len(missing_dirs)}/{len(required_dirs)} directories",
             "details": missing_dirs if missing_dirs else None
         }
-    
+
     def _validate_config_files(self) -> Dict[str, Any]:
         """Validate configuration files"""
         config_files = [
             "config/outreach_engine.json",
             ".env"
         ]
-        
+
         missing_files = []
         for file_path in config_files:
             full_path = self.outreach_engine_root / file_path
             if not full_path.exists():
                 missing_files.append(file_path)
-        
+
         return {
             "valid": len(missing_files) == 0,
             "message": f"Found {len(config_files) - len(missing_files)}/{len(config_files)} config files",
             "details": missing_files if missing_files else None
         }
-    
+
     def _validate_dependencies(self) -> Dict[str, Any]:
         """Validate Python dependencies"""
         required_packages = [
@@ -333,41 +332,41 @@ class OutreachEngineSetup:
             "aiofiles",
             "python-multipart"
         ]
-        
+
         missing_packages = []
         for package in required_packages:
             try:
                 __import__(package.replace("-", "_"))
             except ImportError:
                 missing_packages.append(package)
-        
+
         return {
             "valid": len(missing_packages) == 0,
             "message": f"Found {len(required_packages) - len(missing_packages)}/{len(required_packages)} packages",
             "details": missing_packages if missing_packages else None
         }
-    
+
     def _validate_database(self) -> Dict[str, Any]:
         """Validate database setup"""
         db_path = self.outreach_engine_root / "data" / "outreach_engine.db"
-        
+
         if not db_path.exists():
             return {
                 "valid": False,
                 "message": "Database file not found",
                 "details": ["Create database file using setup command"]
             }
-        
+
         return {
             "valid": True,
             "message": "Database file exists",
             "details": None
         }
-    
+
     def _validate_permissions(self) -> Dict[str, Any]:
         """Validate file permissions"""
         issues = []
-        
+
         # Check write permissions in key directories
         test_dirs = ["logs", "data", "temp"]
         for dir_name in test_dirs:
@@ -379,13 +378,13 @@ class OutreachEngineSetup:
                     test_file.unlink()
                 except PermissionError:
                     issues.append(f"No write permission in {dir_name}")
-        
+
         return {
             "valid": len(issues) == 0,
             "message": "Permissions OK" if len(issues) == 0 else f"Permission issues found: {len(issues)}",
             "details": issues if issues else None
         }
-    
+
     def _get_config_template(self) -> Dict[str, Any]:
         """Get configuration template"""
         return {
@@ -437,7 +436,7 @@ class OutreachEngineSetup:
                 "_comment": "Security configuration - change secret key in production"
             }
         }
-    
+
     def _get_env_content(self, config: Dict[str, Any]) -> str:
         """Get environment file content"""
         return f"""# Outreach Engine Environment Configuration
@@ -465,7 +464,7 @@ OUTREACH_WORKER_ENABLED={config.get('workers', {}).get('outreach_worker', {}).ge
 ENRICHMENT_WORKER_ENABLED={config.get('workers', {}).get('enrichment_worker', {}).get('enabled', True)}
 DELIVERY_WORKER_ENABLED={config.get('workers', {}).get('delivery_worker', {}).get('enabled', True)}
 """
-    
+
     def _get_database_schema(self, db_type: str) -> str:
         """Get database schema"""
         return f"""-- Outreach Engine Database Schema
@@ -518,7 +517,7 @@ CREATE TABLE IF NOT EXISTS performance_metrics (
     recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 """
-    
+
     def _get_startup_script_content(self, config: Dict[str, Any]) -> str:
         """Get startup script content"""
         return f"""#!/bin/bash
@@ -537,7 +536,7 @@ python -m uvicorn api.main:app --host {config.get('api', {}).get('host', 'localh
 
 echo "✅ Outreach Engine started successfully!"
 """
-    
+
     def _get_batch_script_content(self, config: Dict[str, Any]) -> str:
         """Get Windows batch script content"""
         return f"""@echo off
@@ -557,7 +556,7 @@ python -m uvicorn api.main:app --host {config.get('api', {}).get('host', 'localh
 echo ✅ Outreach Engine started successfully!
 pause
 """
-    
+
     def _get_requirements_content(self) -> str:
         """Get requirements.txt content"""
         return """# Outreach Engine Dependencies
@@ -616,33 +615,33 @@ def main():
     parser = argparse.ArgumentParser(
         description="Outreach Engine Setup Utility"
     )
-    
+
     subparsers = parser.add_subparsers(dest='command', help='Available commands')
-    
+
     # Setup command
     setup_parser = subparsers.add_parser('setup', help='Setup Outreach Engine environment')
     setup_parser.add_argument('--config', help='Configuration file path')
-    
+
     # Validate command
     validate_parser = subparsers.add_parser('validate', help='Validate Outreach Engine setup')
-    
+
     # Config template command
     config_parser = subparsers.add_parser('config-template', help='Create configuration template')
     config_parser.add_argument('--output', required=True, help='Output file path')
-    
+
     # Dependencies command
     deps_parser = subparsers.add_parser('install-deps', help='Install dependencies')
-    
+
     # Parse arguments
     args = parser.parse_args()
-    
+
     if not args.command:
         parser.print_help()
         sys.exit(1)
-    
+
     # Create setup instance
     setup = OutreachEngineSetup()
-    
+
     # Execute command
     if args.command == 'setup':
         setup.setup_environment(args.config)

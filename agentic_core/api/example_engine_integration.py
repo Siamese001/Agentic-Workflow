@@ -4,14 +4,13 @@ LEVEL 5 - Simple FastAPI app demonstrating shared API layer usage
 """
 
 import sys
-import os
 from pathlib import Path
 
 # Add the project root to Python path for imports
 project_root = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
@@ -38,7 +37,7 @@ try:
         RateLimitAPIException,
         NotFoundAPIException
     )
-    
+
     # Try to import middleware if FastAPI is available
     try:
         from agentic_core.api import (
@@ -48,9 +47,9 @@ try:
         MIDDLEWARE_AVAILABLE = True
     except ImportError:
         MIDDLEWARE_AVAILABLE = False
-    
+
     SHARED_API_AVAILABLE = True
-    
+
 except ImportError as e:
     print(f"Shared API not available: {e}")
     SHARED_API_AVAILABLE = False
@@ -128,19 +127,19 @@ MOCK_CONTACTS = [
 def validate_resume_request(request: ResumeRequest) -> None:
     """Validate resume generation request"""
     errors = []
-    
+
     if not request.name or len(request.name.strip()) < 2:
         errors.append({"field": "name", "message": "Name must be at least 2 characters"})
-    
+
     if not request.email or "@" not in request.email:
         errors.append({"field": "email", "message": "Valid email is required"})
-    
+
     if request.experience_years < 0:
         errors.append({"field": "experience_years", "message": "Experience years cannot be negative"})
-    
+
     if not request.skills or len(request.skills) < 3:
         errors.append({"field": "skills", "message": "At least 3 skills are required"})
-    
+
     if errors:
         raise ValidationAPIException(
             message="Resume request validation failed",
@@ -174,7 +173,7 @@ async def generate_resume(request: ResumeRequest):
     try:
         # Validate request using shared validation
         validate_resume_request(request)
-        
+
         # Mock resume generation
         resume_id = f"resume_{len(MOCK_RESUMES) + 1}"
         resume_content = f"""
@@ -186,18 +185,18 @@ async def generate_resume(request: ResumeRequest):
         
         [Resume content would be generated here...]
         """
-        
+
         result = ResumeResponse(
             resume_id=resume_id,
             content=resume_content.strip(),
             generated_at="2025-11-30T12:00:00Z"
         )
-        
+
         return create_success_response(
             data=result.dict(),
             message="Resume generated successfully"
         )
-        
+
     except ValidationAPIException as e:
         # Validation errors are automatically handled by middleware
         raise e
@@ -217,9 +216,9 @@ async def list_resumes(request: PaginatedRequest):
         # Mock pagination
         start_idx = request.get_offset()
         end_idx = start_idx + request.get_limit()
-        
+
         paginated_resumes = MOCK_RESUMES[start_idx:end_idx]
-        
+
         return create_paginated_response(
             data=paginated_resumes,
             page=request.page,
@@ -227,7 +226,7 @@ async def list_resumes(request: PaginatedRequest):
             total_items=len(MOCK_RESUMES),
             message="Resumes retrieved successfully"
         )
-        
+
     except Exception as e:
         return create_error_response(
             error_code="RESUME_LIST_FAILED",
@@ -243,32 +242,32 @@ async def search_contacts(request: SearchRequest):
     try:
         # Mock search logic
         filtered_contacts = MOCK_CONTACTS.copy()
-        
+
         # Apply filters
         if request.filters:
             if "company" in request.filters:
                 company = request.filters["company"]
                 filtered_contacts = [c for c in filtered_contacts if company.lower() in c["company"].lower()]
-            
+
             if "location" in request.filters:
                 location = request.filters["location"]
                 filtered_contacts = [c for c in filtered_contacts if location.lower() in c["location"].lower()]
-        
+
         # Apply text search
         if request.query:
             query = request.query.lower()
             filtered_contacts = [
-                c for c in filtered_contacts 
-                if query in c["name"].lower() or 
-                   query in c["company"].lower() or 
+                c for c in filtered_contacts
+                if query in c["name"].lower() or
+                   query in c["company"].lower() or
                    query in c["location"].lower()
             ]
-        
+
         # Mock pagination
         start_idx = request.get_offset()
         end_idx = start_idx + request.get_limit()
         paginated_results = filtered_contacts[start_idx:end_idx]
-        
+
         return create_search_response(
             data=paginated_results,
             query=request.query or "",
@@ -278,7 +277,7 @@ async def search_contacts(request: SearchRequest):
             search_time_ms=25.5,
             message="Contacts found successfully"
         )
-        
+
     except Exception as e:
         return create_error_response(
             error_code="CONTACT_SEARCH_FAILED",
@@ -292,18 +291,18 @@ async def get_contact(contact_id: str):
     try:
         # Find contact
         contact = next((c for c in MOCK_CONTACTS if c["id"] == contact_id), None)
-        
+
         if not contact:
             raise NotFoundAPIException(
                 resource_type="contact",
                 resource_id=contact_id
             )
-        
+
         return create_success_response(
             data=contact,
             message="Contact retrieved successfully"
         )
-        
+
     except NotFoundAPIException as e:
         raise e
     except Exception as e:
@@ -322,13 +321,13 @@ async def batch_process(request: Dict[str, Any]):
         results = []
         success_count = 0
         error_count = 0
-        
+
         for i, op in enumerate(operations):
             try:
                 # Mock processing
                 operation_type = op.get("type")
                 operation_id = f"op_{i+1}"
-                
+
                 if operation_type == "generate_resume":
                     results.append({
                         "operation_id": operation_id,
@@ -350,7 +349,7 @@ async def batch_process(request: Dict[str, Any]):
                         "error": f"Unknown operation type: {operation_type}"
                     })
                     error_count += 1
-                    
+
             except Exception as e:
                 results.append({
                     "operation_id": f"op_{i+1}",
@@ -358,12 +357,12 @@ async def batch_process(request: Dict[str, Any]):
                     "error": str(e)
                 })
                 error_count += 1
-        
+
         return create_success_response(
             data=results,
             message=f"Batch processing completed: {success_count} successful, {error_count} failed"
         )
-        
+
     except Exception as e:
         return create_error_response(
             error_code="BATCH_PROCESS_FAILED",
@@ -387,7 +386,7 @@ async def health_check():
             "validated_endpoints": 1
         }
     }
-    
+
     return create_success_response(
         data=health_data,
         message="Service is healthy"
@@ -413,7 +412,7 @@ async def test_validation():
 
 if __name__ == "__main__":
     import uvicorn
-    
+
     print("🚀 Starting Example Engine API with Shared Components")
     print(f"✅ Shared API Available: {SHARED_API_AVAILABLE}")
     print(f"✅ Middleware Available: {MIDDLEWARE_AVAILABLE}")
@@ -429,5 +428,5 @@ if __name__ == "__main__":
     print("   GET  /test/validation     - Test validation errors")
     print("\n🌐 Server will be available at: http://localhost:8000")
     print("📖 API docs at: http://localhost:8000/docs")
-    
+
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)

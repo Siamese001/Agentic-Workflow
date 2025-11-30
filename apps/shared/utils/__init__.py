@@ -7,7 +7,7 @@ from .formatting import Formatter, FormattingOptions, FormattingResult, TextCase
 __all__ = [
     "TextProcessor",
     "TextProcessingResult",
-    "ValidationUtils", 
+    "ValidationUtils",
     "ValidationResult",
     "ValidationReport",
     "ValidationLevel",

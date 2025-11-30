@@ -32,7 +32,7 @@ def create_backup():
     """Create a complete backup of the schemas directory"""
     if os.path.exists(BACKUP_ROOT):
         shutil.rmtree(BACKUP_ROOT)
-    
+
     print(f"Creating backup at: {BACKUP_ROOT}")
     shutil.copytree(ROOT, BACKUP_ROOT)
     print("✅ Backup created successfully")
@@ -86,12 +86,12 @@ MOVE_MAP = {
 def collect_moves():
     """Collect all file moves to execute later"""
     moves = []
-    
+
     # Walk the directory tree to find all files
     for root, dirs, files in os.walk(ROOT):
         # Skip new folders and backup folder
-        if (any(root.endswith(nf) for nf in NEW_LAYOUT.keys()) or 
-            "backup" in root.lower() or 
+        if (any(root.endswith(nf) for nf in NEW_LAYOUT.keys()) or
+            "backup" in root.lower() or
             root == BACKUP_ROOT):
             continue
 
@@ -117,7 +117,7 @@ def collect_moves():
             dst_folder = os.path.join(ROOT, new_folder)
             dst = os.path.join(dst_folder, file)
             moves.append((src, dst, new_folder))
-    
+
     return moves
 
 # ---------------------------------------------------------------------
@@ -126,26 +126,26 @@ def collect_moves():
 def execute_moves(moves):
     """Execute all file moves"""
     print(f"\nExecuting {len(moves)} file moves...")
-    
+
     for src, dst, new_folder in moves:
         try:
             # Ensure destination folder exists
             dst_folder = os.path.dirname(dst)
             os.makedirs(dst_folder, exist_ok=True)
-            
+
             # Skip if source doesn't exist (might have been moved already)
             if not os.path.exists(src):
                 print(f"SKIP MISSING: {src}")
                 continue
-                
+
             # Skip if destination already exists
             if os.path.exists(dst):
                 print(f"SKIP EXISTS: {dst}")
                 continue
-            
+
             print(f"MOVE: {src} → {dst}")
             shutil.move(src, dst)
-            
+
         except Exception as e:
             print(f"ERROR moving {src}: {e}")
 
@@ -154,20 +154,20 @@ def execute_moves(moves):
 # ---------------------------------------------------------------------
 def delete_empty():
     print("\nCleaning up empty folders...")
-    
+
     # Get all directories to check (excluding new layout folders)
     all_dirs = []
     for root, dirs, files in os.walk(ROOT):
-        if (any(root.endswith(nf) for nf in NEW_LAYOUT.keys()) or 
+        if (any(root.endswith(nf) for nf in NEW_LAYOUT.keys()) or
             "backup" in root.lower()):
             continue
         all_dirs.append(root)
-    
+
     # Process in reverse order (leaf nodes first)
     for root in sorted(all_dirs, reverse=True):
         if root == ROOT:
             continue
-            
+
         try:
             if not os.listdir(root):  # Directory is empty
                 print(f"DELETE EMPTY: {root}")
@@ -192,11 +192,11 @@ def generate_report(moves):
             for src, dst, new_folder in moves
         ]
     }
-    
+
     report_file = os.path.join(ROOT, "migration_report.json")
     with open(report_file, 'w') as f:
         json.dump(report, f, indent=2)
-    
+
     print(f"\n📊 Migration report saved to: {report_file}")
     return report
 
@@ -206,7 +206,7 @@ def generate_report(moves):
 def verify_migration():
     """Verify that the migration completed successfully"""
     print("\n🔍 Verifying migration...")
-    
+
     # Check new folders exist and have content
     for folder in NEW_LAYOUT.keys():
         folder_path = os.path.join(ROOT, folder)
@@ -217,7 +217,7 @@ def verify_migration():
             print(f"  ✅ {folder}: {len(files)} files")
         else:
             print(f"  ❌ {folder}: Missing")
-    
+
     print("\n✅ Migration verification complete")
 
 # ---------------------------------------------------------------------
@@ -225,34 +225,34 @@ def verify_migration():
 # ---------------------------------------------------------------------
 if __name__ == "__main__":
     print("🚀 Starting safe schema migration...")
-    
+
     try:
         # Step 1: Create backup
         create_backup()
-        
+
         # Step 2: Create new folder structure
         ensure_folders()
-        
+
         # Step 3: Collect all moves
         moves = collect_moves()
         print(f"\n📋 Collected {len(moves)} files to move")
-        
+
         # Step 4: Execute moves
         execute_moves(moves)
-        
+
         # Step 5: Clean up empty folders
         delete_empty()
-        
+
         # Step 6: Generate report
         report = generate_report(moves)
-        
+
         # Step 7: Verify migration
         verify_migration()
-        
+
         print("\n🎉 SCHEMA MIGRATION COMPLETE")
         print(f"📁 Backup available at: {BACKUP_ROOT}")
         print(f"📊 Migration report: {len(moves)} files moved")
-        
+
     except Exception as e:
         print(f"\n❌ Migration failed: {e}")
         print("🔄 Backup is available at:", BACKUP_ROOT)

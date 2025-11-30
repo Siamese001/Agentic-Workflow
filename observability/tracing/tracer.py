@@ -44,7 +44,7 @@ class SpanContext:
     parent_span_id: Optional[str] = None
     baggage: Dict[str, str] = field(default_factory=dict)
     flags: int = 0
-    
+
     def to_headers(self) -> Dict[str, str]:
         """Convert to HTTP headers for propagation."""
         return {
@@ -53,7 +53,7 @@ class SpanContext:
             "x-parent-span-id": self.parent_span_id or "",
             "x-trace-flags": str(self.flags),
         }
-    
+
     @classmethod
     def from_headers(cls, headers: Dict[str, str]) -> SpanContext:
         """Create from HTTP headers."""
@@ -78,11 +78,11 @@ class Span:
     kind: SpanKind = SpanKind.INTERNAL
     attributes: Dict[str, Any] = field(default_factory=dict)
     events: List[Dict[str, Any]] = field(default_factory=list)
-    
+
     def set_attribute(self, key: str, value: Any) -> None:
         """Set an attribute on the span."""
         self.attributes[key] = value
-    
+
     def add_event(self, name: str, attributes: Optional[Dict[str, Any]] = None) -> None:
         """Add an event to the span."""
         event = {
@@ -91,13 +91,13 @@ class Span:
             "attributes": attributes or {},
         }
         self.events.append(event)
-    
+
     def set_error(self, error: Exception) -> None:
         """Mark span as errored."""
         self.status = "error"
         self.set_attribute("error.message", str(error))
         self.set_attribute("error.type", type(error).__name__)
-    
+
     def finish(self) -> None:
         """Finish the span."""
         self.end_time = time.time()
@@ -107,39 +107,39 @@ class Span:
 
 class Tracer:
     """Distributed tracer for agentic workflow monitoring."""
-    
+
     def __init__(self, service_name: str = "agentic-workflow", jaeger_endpoint: Optional[str] = None):
         self.service_name = service_name
         self.spans: Dict[str, Span] = {}
         self.active_spans: List[str] = []
-        
+
         # Initialize OpenTelemetry if Jaeger endpoint provided
         if jaeger_endpoint:
             self._init_opentelemetry(jaeger_endpoint)
         else:
             self._tracer = None
-    
+
     def _init_opentelemetry(self, jaeger_endpoint: str) -> None:
         """Initialize OpenTelemetry with Jaeger exporter."""
         resource = Resource.create({"service.name": self.service_name})
-        
+
         trace.set_tracer_provider(TracerProvider(resource=resource))
         tracer_provider = trace.get_tracer_provider()
-        
+
         jaeger_exporter = JaegerExporter(
             endpoint=jaeger_endpoint,
             collector_endpoint=jaeger_endpoint,
         )
-        
+
         span_processor = BatchSpanProcessor(jaeger_exporter)
         tracer_provider.add_span_processor(span_processor)
-        
+
         self._tracer = trace.get_tracer(__name__)
-    
+
     def start_span(self, name: str, parent: Optional[Span] = None, kind: SpanKind = SpanKind.INTERNAL) -> Span:
         """Start a new span."""
         span_id = str(uuid.uuid4())
-        
+
         # Get trace ID from parent or create new
         if parent:
             trace_id = parent.trace_id
@@ -147,7 +147,7 @@ class Tracer:
         else:
             trace_id = str(uuid.uuid4())
             parent_span_id = None
-        
+
         span = Span(
             name=name,
             trace_id=trace_id,
@@ -155,40 +155,40 @@ class Tracer:
             parent_span_id=parent_span_id,
             kind=kind,
         )
-        
+
         self.spans[span_id] = span
         self.active_spans.append(span_id)
-        
+
         # Set current span context
         current_span.set(span)
-        
+
         # Also create OpenTelemetry span if available
         if self._tracer:
             ot_span = self._tracer.start_span(name)
             span.set_attribute("otel_span_id", ot_span.get_span_context().span_id)
-        
+
         return span
-    
+
     def finish_span(self, span: Span) -> None:
         """Finish a span."""
         span.finish()
         if span.span_id in self.active_spans:
             self.active_spans.remove(span.span_id)
-    
+
     def get_current_span(self) -> Optional[Span]:
         """Get the currently active span."""
         return current_span.get()
-    
+
     def get_trace(self, trace_id: str) -> List[Span]:
         """Get all spans for a trace."""
         return [span for span in self.spans.values() if span.trace_id == trace_id]
-    
+
     @asynccontextmanager
     async def trace(self, operation_name: str, kind: SpanKind = SpanKind.INTERNAL) -> AsyncGenerator[Span, None]:
         """Context manager for automatic span lifecycle management."""
         parent = self.get_current_span()
         span = self.start_span(operation_name, parent=parent, kind=kind)
-        
+
         try:
             yield span
         except Exception as e:
@@ -196,7 +196,7 @@ class Tracer:
             raise
         finally:
             self.finish_span(span)
-    
+
     def trace_function(self, operation_name: str, kind: SpanKind = SpanKind.INTERNAL):
         """Decorator for automatic function tracing."""
         def decorator(func):
@@ -213,14 +213,14 @@ class Tracer:
                         return runner.run(self._trace_sync(func, operation_name, kind, *args, **kwargs))
                 return sync_wrapper
         return decorator
-    
+
     async def _trace_sync(self, func, operation_name: str, kind: SpanKind, *args, **kwargs):
         """Helper for tracing synchronous functions."""
         async with self.trace(f"{operation_name}:{func.__name__}", kind) as span:
             span.set_attribute("function.name", func.__name__)
             span.set_attribute("function.args_count", len(args))
             return func(*args, **kwargs)
-    
+
     def inject_headers(self, headers: Dict[str, str]) -> Dict[str, str]:
         """Inject trace context into HTTP headers."""
         span = self.get_current_span()
@@ -232,14 +232,14 @@ class Tracer:
             )
             headers.update(context.to_headers())
         return headers
-    
+
     def extract_context(self, headers: Dict[str, str]) -> Optional[SpanContext]:
         """Extract trace context from HTTP headers."""
         try:
             return SpanContext.from_headers(headers)
         except (KeyError, ValueError):
             return None
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get tracer metrics."""
         return {
@@ -284,7 +284,7 @@ def trace_function(operation_name: str, kind: SpanKind = SpanKind.INTERNAL):
 __all__ = [
     "Tracer",
     "Span",
-    "SpanContext", 
+    "SpanContext",
     "SpanKind",
     "get_tracer",
     "init_tracer",

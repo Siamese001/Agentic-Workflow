@@ -10,22 +10,18 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent.parent.parent
 sys.path.insert(0, str(project_root))
 
-from fastapi import APIRouter, Depends
-from typing import Dict, Any, List
+from fastapi import APIRouter
+from typing import Dict, Any
 from datetime import datetime
 
 # Import shared API components from framework layer
 from agentic_core.api import (
     BaseRequest,
     create_success_response,
-    create_error_response,
-    create_not_found_response,
-    create_validation_response,
     handle_errors,
     log_api_calls,
     rate_limit,
     validate_request,
-    APIException,
     ValidationAPIException,
     NotFoundAPIException,
     ServiceUnavailableAPIException
@@ -66,14 +62,14 @@ class OutreachResponse(BaseRequest):
 
 class OutreachEndpoint:
     """Handles outreach message sending operations"""
-    
+
     def __init__(self):
         self.message_planner = message_planner
         self.outreach_generator = outreach_generator
         self.personalization_engine = personalization_engine
         self.linkedin_worker = linkedin_worker
         self.email_worker = email_worker
-    
+
     async def send_outreach_message(self, request: OutreachRequest) -> Dict[str, Any]:
         """Send an outreach message"""
         try:
@@ -84,19 +80,19 @@ class OutreachEndpoint:
                 template_id=request.template_id,
                 personalization_data=request.personalization_data
             )
-            
+
             # Generate the message content
             message_content = await self.outreach_generator.generate_message(
                 plan=message_plan,
                 personalization_data=request.personalization_data
             )
-            
+
             # Apply personalization
             personalized_content = await self.personalization_engine.personalize(
                 content=message_content,
                 recipient_data=request.personalization_data
             )
-            
+
             # Send the message
             if request.recipient_type == "linkedin":
                 delivery_result = await self.linkedin_worker.send_message(
@@ -116,10 +112,10 @@ class OutreachEndpoint:
                         "message": "Must be 'linkedin' or 'email'"
                     }]
                 )
-            
+
             # Create outreach record
             outreach_id = f"outreach_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
-            
+
             return {
                 "outreach_id": outreach_id,
                 "status": "sent" if delivery_result["success"] else "failed",
@@ -128,7 +124,7 @@ class OutreachEndpoint:
                 "sent_at": datetime.utcnow().isoformat(),
                 "delivery_details": delivery_result
             }
-            
+
         except Exception as e:
             raise ServiceUnavailableAPIException(
                 message=f"Failed to send outreach message: {str(e)}",
@@ -141,22 +137,22 @@ outreach_endpoint = OutreachEndpoint()
 def validate_outreach_request(request: OutreachRequest) -> None:
     """Validate outreach request"""
     errors = []
-    
+
     if not request.recipient_id or len(request.recipient_id.strip()) < 3:
         errors.append({"field": "recipient_id", "message": "Valid recipient ID is required"})
-    
+
     if request.recipient_type not in ["linkedin", "email"]:
         errors.append({"field": "recipient_type", "message": "Must be 'linkedin' or 'email'"})
-    
+
     if not request.message_type:
         errors.append({"field": "message_type", "message": "Message type is required"})
-    
+
     if not request.template_id:
         errors.append({"field": "template_id", "message": "Template ID is required"})
-    
+
     if not request.personalization_data:
         errors.append({"field": "personalization_data", "message": "Personalization data is required"})
-    
+
     if errors:
         raise ValidationAPIException(
             message="Outreach request validation failed",
@@ -172,17 +168,17 @@ async def send_outreach(request: OutreachRequest):
     """Send an outreach message"""
     try:
         result = await outreach_endpoint.send_outreach_message(request)
-        
+
         return create_success_response(
             data=result,
             message="Outreach message sent successfully"
         )
-        
+
     except ValidationAPIException as e:
         raise e
     except ServiceUnavailableAPIException as e:
         raise e
-    except Exception as e:
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Outreach service temporarily unavailable",
             error_code="OUTREACH_SERVICE_ERROR"
@@ -200,7 +196,7 @@ async def get_outreach_status(outreach_id: str):
                 message="Outreach message not found",
                 error_code="OUTREACH_NOT_FOUND"
             )
-        
+
         # Mock status data
         status_data = {
             "outreach_id": outreach_id,
@@ -210,15 +206,15 @@ async def get_outreach_status(outreach_id: str):
             "delivered_at": "2025-11-30T12:01:00Z",
             "recipient_engagement": "opened"
         }
-        
+
         return create_success_response(
             data=status_data,
             message="Outreach status retrieved successfully"
         )
-        
+
     except NotFoundAPIException as e:
         raise e
-    except Exception as e:
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Status check failed",
             error_code="STATUS_CHECK_ERROR"
@@ -249,13 +245,13 @@ async def list_outreach():
                 "sent_at": "2025-11-30T11:50:00Z"
             }
         ]
-        
+
         return create_success_response(
             data=outreach_list,
             message="Outreach list retrieved successfully"
         )
-        
-    except Exception as e:
+
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Failed to retrieve outreach list",
             error_code="OUTREACH_LIST_ERROR"
