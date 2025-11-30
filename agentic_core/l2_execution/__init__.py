@@ -1,27 +1,11 @@
-"""L2 Execution Layer - Task Execution and Coordination
+"""L2 Execution Layer - Tool Execution and Operations"""
 
-This layer provides execution capabilities for both resume and outreach workflows.
-Re-exports robust implementations from the engine modules to maintain architectural compliance.
-"""
-
-from __future__ import annotations
-
-from .l2_execution import (
-    ExecutionEngine,
-    Task,
-    ExecutionContext,
-    ExecutionStatus,
-    ExecutionPlan,
-    ExecutionResult,
-    get_execution_engine,
-)
+from .tools.browser import BrowserTool
+from .tools.file_ops import FileOpsTool  
+from .tools.api import APITool
+from .execution_engines import ToolInvocation, Validation, ErrorHandling
 
 __all__ = [
-    "ExecutionEngine",
-    "Task",
-    "ExecutionContext",
-    "ExecutionStatus",
-    "ExecutionPlan",
-    "ExecutionResult",
-    "get_execution_engine",
+    "BrowserTool", "FileOpsTool", "APITool",
+    "ToolInvocation", "Validation", "ErrorHandling"
 ]
