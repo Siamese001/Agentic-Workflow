@@ -1,10 +1,133 @@
 # Tool Use Injection v1.0
 # Tool selection and usage guidance prompts for optimal tool integration
+# Integrated with v5 Instructional Injection Framework
 
 tool_use_injection:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
   
+  # V5 Instructional Injection Framework - Tooling Layer
+  v5_tooling_injections:
+    enabled: true
+    injection_count: 5
+    
+    # 16. Tool-Feedback Loop Injection
+    tool_feedback_loop:
+      description: "Incorporate structured tool outputs into subsequent reasoning steps"
+      prompt_template: |
+        Tool-Feedback Loop Protocol:
+        1. Tool Input: {tool_input}
+        2. Tool Output: {tool_output}
+        3. Output Analysis: {output_analysis}
+        4. Integration Steps: {integration_steps}
+        5. Next Action: {next_action}
+        
+        Use tool output to inform and improve subsequent reasoning and actions.
+        Maintain feedback loop throughout the entire process.
+      usage_context:
+        - "Multi-tool workflows"
+        - "Iterative analysis"
+        - "Tool coordination"
+      success_criteria:
+        - "Tool outputs effectively integrated"
+        - "Feedback loop maintained"
+        - "Process optimization achieved"
+        
+    # 17. Evidence Binding / Citation Anchors
+    evidence_binding:
+      description: "Ground claims to explicit retrieved strings or verified evidence"
+      prompt_template: |
+        Evidence Binding Requirements:
+        - Claim: {claim_statement}
+        - Evidence Source: {evidence_source}
+        - Citation Anchor: {citation_anchor}
+        - Verification Status: {verification_status}
+        
+        All claims must be grounded in explicit evidence with proper citations.
+        Use citation anchors to reference specific evidence locations.
+      usage_context:
+        - "Fact verification"
+        - "Evidence-based analysis"
+        - "Citation management"
+      success_criteria:
+        - "Claims properly evidenced"
+        - "Citations accurately anchored"
+        - "Evidence verification complete"
+        
+    # 18. Cross-Tool Reconciliation
+    cross_tool_reconciliation:
+      description: "Resolve conflicting outputs across RAG, QA, and drafting tools"
+      prompt_template: |
+        Cross-Tool Reconciliation Process:
+        Tool A Output: {tool_a_output}
+        Tool B Output: {tool_b_output}
+        Tool C Output: {tool_c_output}
+        
+        Conflict Analysis: {conflict_analysis}
+        Resolution Strategy: {resolution_strategy}
+        Reconciled Output: {reconciled_output}
+        
+        Identify and resolve conflicts between tool outputs for consistent results.
+      usage_context:
+        - "Multi-tool analysis"
+        - "Conflict resolution"
+        - "Output harmonization"
+      success_criteria:
+        - "Conflicts identified and resolved"
+        - "Consistent output achieved"
+        - "Tool integration optimized"
+        
+    # 19. Shadow Validation
+    shadow_validation:
+      description: "Run rapid internal sanity check before returning final output"
+      prompt_template: |
+        Shadow Validation Protocol:
+        1. Primary Output: {primary_output}
+        2. Validation Criteria: {validation_criteria}
+        3. Sanity Check: {sanity_check}
+        4. Error Detection: {error_detection}
+        5. Final Validation: {final_validation}
+        
+        Perform internal validation before output finalization.
+        Correct any issues before returning results.
+      usage_context:
+        - "Quality assurance"
+        - "Error prevention"
+        - "Output validation"
+      success_criteria:
+        - "Internal validation completed"
+        - "Errors detected and corrected"
+        - "Quality standards met"
+        
+    # 20. Model-Switch Aware Instructions
+    model_switch_aware:
+      description: "Adapt instructions based on fast versus high-accuracy model usage"
+      prompt_template: |
+        Model-Switch Adaptation:
+        Current Model: {current_model_type}
+        Model Characteristics: {model_characteristics}
+        Adaptation Strategy: {adaptation_strategy}
+        
+        Fast Model Mode:
+        - Processing Style: {fast_processing_style}
+        - Output Format: {fast_output_format}
+        - Quality Threshold: {fast_quality_threshold}
+        
+        High-Accuracy Model Mode:
+        - Processing Style: {accurate_processing_style}
+        - Output Format: {accurate_output_format}
+        - Quality Threshold: {accurate_quality_threshold}
+        
+        Adapt approach based on current model capabilities and constraints.
+      usage_context:
+        - "Multi-model environments"
+        - "Resource optimization"
+        - "Model-specific adaptation"
+      success_criteria:
+        - "Instructions adapted to model"
+        - "Optimal performance achieved"
+        - "Resource constraints respected"
+        
   # Global tool use principles
   global_principles:
     enabled: true
