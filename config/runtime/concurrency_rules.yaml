@@ -1,1 +1,76 @@
-# Placeholder configuration file
+# Runtime Concurrency Rules Configuration
+# Concurrent execution limits and resource management
+
+# Concurrency Framework
+concurrency_framework:
+  enabled: true
+  max_concurrent_requests: 10
+  queue_enabled: true
+  load_balancing: true
+
+# Global Concurrency Limits
+global_limits:
+  max_concurrent_users: 100
+  max_concurrent_sessions: 50
+  max_concurrent_workflows: 25
+  max_concurrent_api_calls: 20
+
+# Layer-Specific Concurrency
+layer_concurrency:
+  l1_planning:
+    max_concurrent_plans: 5
+    max_concurrent_research: 3
+    max_concurrent_strategies: 4
+  
+  l2_execution:
+    max_concurrent_tools: 8
+    max_concurrent_actions: 10
+    max_concurrent_retries: 5
+  
+  l3_orchestration:
+    max_concurrent_workflows: 6
+    max_concurrent_orchestrations: 4
+    max_concurrent_decisions: 8
+  
+  l4_state:
+    max_concurrent_memory_ops: 15
+    max_concurrent_cache_ops: 20
+    max_concurrent_persistence_ops: 5
+  
+  l5_safety:
+    max_concurrent_validations: 12
+    max_concurrent_safety_checks: 10
+    max_concurrent_pii_scans: 8
+
+# Engine-Specific Concurrency
+engine_concurrency:
+  resume_engine:
+    max_concurrent_resumes: 5
+    max_concurrent_analyses: 8
+    max_concurrent_optimizations: 3
+  
+  outreach_engine:
+    max_concurrent_campaigns: 4
+    max_concurrent_messages: 15
+    max_concurrent_research: 6
+
+# Resource-Based Concurrency
+resource_limits:
+  cpu_concurrent_limit: 8  # cores
+  memory_concurrent_limit: 4096  # MB
+  network_concurrent_limit: 50  # connections
+  database_concurrent_limit: 20  # connections
+
+# Queue Management
+queue_management:
+  max_queue_size: 1000
+  queue_timeout: 300  # seconds
+  priority_queue_enabled: true
+  fair_scheduling: true
+
+# Concurrency Control
+control_policies:
+  rate_limiting: true
+  backpressure_enabled: true
+  circuit_breaker_enabled: true
+  graceful_degradation: true

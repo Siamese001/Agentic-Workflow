@@ -1,1 +1,90 @@
-# Placeholder configuration file
+# Runtime Batch Limits Configuration
+# Batch processing size limits and throttling parameters
+
+# Batch Processing Framework
+batch_framework:
+  enabled: true
+  default_batch_size: 10
+  max_batch_size: 100
+  adaptive_batching: true
+
+# Operation-Specific Batch Limits
+operation_batches:
+  model_inference:
+    max_batch_size: 20
+    min_batch_size: 1
+    optimal_batch_size: 5
+    batch_timeout: 60  # seconds
+  
+  data_processing:
+    resume_batch: 10
+    message_batch: 25
+    validation_batch: 50
+    analysis_batch: 15
+  
+  external_apis:
+    database_batch: 100
+    cache_batch: 200
+    web_service_batch: 20
+    file_operation_batch: 50
+
+# Layer-Specific Batch Limits
+layer_batches:
+  l1_planning:
+    strategy_batch: 5
+    research_batch: 8
+    message_batch: 10
+    safety_batch: 3
+  
+  l2_execution:
+    tool_execution_batch: 15
+    action_costing_batch: 20
+    retry_batch: 10
+  
+  l3_orchestration:
+    workflow_batch: 5
+    orchestration_batch: 8
+    decision_batch: 12
+  
+  l4_state:
+    memory_ops_batch: 50
+    cache_ops_batch: 100
+    persistence_batch: 25
+  
+  l5_safety:
+    validation_batch: 30
+    safety_check_batch: 25
+    pii_scan_batch: 40
+
+# Engine-Specific Batch Limits
+engine_batches:
+  resume_engine:
+    resume_processing_batch: 5
+    ats_optimization_batch: 8
+    skill_extraction_batch: 10
+  
+  outreach_engine:
+    campaign_setup_batch: 3
+    message_generation_batch: 20
+    contact_research_batch: 15
+
+# Resource-Based Batch Limits
+resource_batches:
+  memory_limit_per_batch: 1024  # MB
+  cpu_limit_per_batch: 4  # cores
+  network_limit_per_batch: 100  # connections
+  timeout_per_batch: 300  # seconds
+
+# Batch Throttling
+throttling:
+  rate_limit_per_second: 10
+  burst_limit: 50
+  backoff_on_error: true
+  adaptive_throttling: true
+
+# Batch Quality Control
+quality_control:
+  batch_success_threshold: 0.9
+  partial_batch_handling: true
+  batch_retry_enabled: true
+  max_batch_retries: 3
