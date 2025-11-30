@@ -100,7 +100,7 @@ class TaskExecutor:
             budget_limits = BudgetLimits(
                 max_tokens=task.get("max_tokens", 1000),
                 max_cost=task.get("max_cost", 0.10),
-                timeout_seconds=execution_context.timeout_seconds
+                max_execution_time=execution_context.timeout_seconds
             )
 
             if not self.budget_manager.check_budget(execution_context.task_id, budget_limits):
