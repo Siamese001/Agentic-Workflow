@@ -1,1 +1,277 @@
-# Placeholder configuration/data file
+# Seniority Level Mapping v1.0
+# Career level classification and progression framework
+
+seniority_taxonomy:
+  version: "1.0"
+  last_updated: "2024-01-01"
+
+career_levels:
+  entry_level:
+    name: "Entry Level"
+    code: "L1"
+    experience_range: [0, 2]
+    typical_titles:
+      - "Junior Software Engineer"
+      - "Associate Developer"
+      - "Software Engineer I"
+      - "Graduate Developer"
+      - "Junior Analyst"
+      - "Associate Consultant"
+    
+    responsibilities:
+      - "Learning and development"
+      - "Basic task execution"
+      - "Code implementation"
+      - "Testing and debugging"
+      - "Documentation"
+    
+    expected_skills:
+      - "Programming fundamentals"
+      - "Basic problem solving"
+      - "Version control"
+      - "Communication basics"
+    
+    salary_multiplier: 1.0
+    autonomy_level: "low"
+    decision_making: "supervised"
+
+  junior_level:
+    name: "Junior Level"
+    code: "L2"
+    experience_range: [2, 4]
+    typical_titles:
+      - "Software Engineer"
+      - "Developer"
+      - "Data Analyst"
+      - "Business Analyst"
+      - "Junior Product Manager"
+      - "Associate Engineer"
+    
+    responsibilities:
+      - "Independent task completion"
+      - "Feature development"
+      - "Code reviews"
+      - "Unit testing"
+      - "Collaboration with team"
+    
+    expected_skills:
+      - "Proficient programming"
+      - "System design basics"
+      - "Testing frameworks"
+      - "Team collaboration"
+    
+    salary_multiplier: 1.3
+    autonomy_level: "moderate"
+    decision_making: "guided"
+
+  mid_level:
+    name: "Mid Level"
+    code: "L3"
+    experience_range: [4, 7]
+    typical_titles:
+      - "Senior Software Engineer"
+      - "Software Engineer II"
+      - "Lead Developer"
+      - "Senior Analyst"
+      - "Product Manager"
+      - "Technical Lead"
+    
+    responsibilities:
+      - "Feature ownership"
+      - "Mentoring juniors"
+      - "Technical design"
+      - "Process improvement"
+      - "Cross-functional collaboration"
+    
+    expected_skills:
+      - "Advanced programming"
+      - "System architecture"
+      - "Performance optimization"
+      - "Mentoring skills"
+    
+    salary_multiplier: 1.7
+    autonomy_level: "high"
+    decision_making: "independent"
+
+  senior_level:
+    name: "Senior Level"
+    code: "L4"
+    experience_range: [7, 12]
+    typical_titles:
+      - "Staff Software Engineer"
+      - "Principal Engineer"
+      - "Senior Product Manager"
+      - "Engineering Manager"
+      - "Senior Architect"
+      - "Team Lead"
+    
+    responsibilities:
+      - "Technical leadership"
+      - "Strategic planning"
+      - "Architecture decisions"
+      - "Team management"
+      - "Stakeholder communication"
+    
+    expected_skills:
+      - "System architecture"
+      - "Technical leadership"
+      - "Project management"
+      - "Business acumen"
+    
+    salary_multiplier: 2.2
+    autonomy_level: "very_high"
+    decision_making: "strategic"
+
+  principal_level:
+    name: "Principal Level"
+    code: "L5"
+    experience_range: [12, 20]
+    typical_titles:
+      - "Principal Engineer"
+      - "Distinguished Engineer"
+      - "Director of Engineering"
+      - "VP of Engineering"
+      - "Chief Architect"
+      - "Senior Director"
+    
+    responsibilities:
+      - "Technical vision"
+      - "Organizational strategy"
+      - "Industry influence"
+      - "Executive communication"
+      - "Innovation leadership"
+    
+    expected_skills:
+      - "Technical vision"
+      - "Organizational leadership"
+      - "Industry expertise"
+      - "Executive presence"
+    
+    salary_multiplier: 3.0
+    autonomy_level: "executive"
+    decision_making: "executive"
+
+  executive_level:
+    name: "Executive Level"
+    code: "L6"
+    experience_range: [20, 999]
+    typical_titles:
+      - "CTO"
+      - "VP of Technology"
+      - "Chief Architect"
+      - "Engineering Fellow"
+      - "SVP Engineering"
+      - "Head of Technology"
+    
+    responsibilities:
+      - "Company strategy"
+      - "Industry leadership"
+      - "Executive decision making"
+      - "Board communication"
+      - "Innovation direction"
+    
+    expected_skills:
+      - "Executive leadership"
+      - "Business strategy"
+      - "Industry influence"
+      - "Public speaking"
+    
+    salary_multiplier: 4.0
+    autonomy_level: "complete"
+    decision_making: "board_level"
+
+level_progression:
+  typical_timeline:
+    L1_to_L2: "1-2 years"
+    L2_to_L3: "2-3 years"
+    L3_to_L4: "3-5 years"
+    L4_to_L5: "5-8 years"
+    L5_to_L6: "8+ years"
+  
+  promotion_criteria:
+    technical_excellence:
+      weight: 0.4
+      indicators: ["Code quality", "System design", "Problem solving", "Innovation"]
+    
+    leadership_impact:
+      weight: 0.3
+      indicators: ["Mentoring", "Team influence", "Process improvement", "Knowledge sharing"]
+    
+    business_value:
+      weight: 0.2
+      indicators: ["Project delivery", "Cost optimization", "Revenue impact", "Customer satisfaction"]
+    
+    collaboration:
+      weight: 0.1
+      indicators: ["Cross-team work", "Communication", "Stakeholder management", "Conflict resolution"]
+
+industry_variations:
+  startups:
+    accelerated_timeline: true
+    title_inflation: true
+    responsibilities_shift: "earlier"
+    
+  enterprise:
+    structured_progression: true
+    formal_reviews: true
+    specialization_focus: true
+    
+  consulting:
+    client_facing_skills: true
+    rapid_advancement: true
+    business_acumen_required: true
+    
+  government:
+    slower_progression: true
+    formal_requirements: true
+    security_clearance_impact: true
+
+regional_variations:
+  north_america:
+    title_standardization: "high"
+    salary_transparency: "medium"
+    promotion_frequency: "annual"
+  
+  europe:
+    title_standardization: "medium"
+    salary_transparency: "low"
+    promotion_frequency: "biennial"
+  
+  asia_pacific:
+    title_standardization: "low"
+    salary_transparency: "low"
+    promotion_frequency: "merit_based"
+
+skill_requirements_by_level:
+  technical_skills:
+    L1: ["Basic programming", "Debugging", "Documentation"]
+    L2: ["Framework proficiency", "Testing", "Version control"]
+    L3: ["System design", "Performance", "Security basics"]
+    L4: ["Architecture", "Scalability", "DevOps"]
+    L5: ["Technical vision", "Innovation", "Research"]
+    L6: ["Industry leadership", "Technology strategy", "Innovation management"]
+  
+  soft_skills:
+    L1: ["Communication", "Teamwork", "Learning attitude"]
+    L2: ["Time management", "Problem solving", "Accountability"]
+    L3: ["Mentoring", "Project management", "Client communication"]
+    L4: ["Leadership", "Strategic thinking", "Negotiation"]
+    L5: ["Executive presence", "Influence", "Change management"]
+    L6: ["Board communication", "Industry networking", "Public speaking"]
+
+compensation_benchmarks:
+  base_salary:
+    L1: [60000, 90000]
+    L2: [80000, 120000]
+    L3: [100000, 160000]
+    L4: [140000, 220000]
+    L5: [200000, 350000]
+    L6: [300000, 600000]
+  
+  total_compensation:
+    L1: [65000, 100000]
+    L2: [90000, 140000]
+    L3: [120000, 200000]
+    L4: [180000, 300000]
+    L5: [280000, 500000]
+    L6: [400000, 1000000]

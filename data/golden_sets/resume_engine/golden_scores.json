@@ -1,3 +1,199 @@
 {
-  "placeholder": true
+  "golden_scores": {
+    "version": "1.0",
+    "last_updated": "2024-01-01",
+    "validation_reference": true,
+    "scoring_examples": [
+      {
+        "resume_id": "golden_resume_001",
+        "target_role": "Senior Software Engineer - Cloud Infrastructure",
+        "overall_score": 0.92,
+        "quality_tier": "excellent",
+        "category_scores": {
+          "technical_relevance": 0.94,
+          "achievement_clarity": 0.90,
+          "keyword_optimization": 0.92,
+          "format_quality": 0.88,
+          "industry_alignment": 0.85
+        },
+        "detailed_metrics": {
+          "keyword_analysis": {
+            "primary_keyword_density": 0.08,
+            "secondary_keyword_density": 0.12,
+            "industry_term_usage": 0.06,
+            "keyword_relevance_score": 0.91
+          },
+          "achievement_analysis": {
+            "quantified_achievements": 12,
+            "action_verb_usage": 0.85,
+            "business_impact_statements": 10,
+            "technical_depth_score": 0.88
+          },
+          "format_analysis": {
+            "readability_score": 8.8,
+            "section_completeness": 0.95,
+            "structure_compliance": 0.90,
+            "length_optimization": 0.85
+          },
+          "ats_compliance": {
+            "ats_friendliness": 0.95,
+            "format_compatibility": 0.92,
+            "keyword_optimization": 0.90,
+            "parsing_success_rate": 0.98
+          }
+        },
+        "strengths": [
+          "Strong keyword optimization for cloud infrastructure roles",
+          "Excellent quantification of technical achievements",
+          "Professional formatting with clear structure",
+          "Comprehensive technical skills section",
+          "Relevant certifications and project portfolio"
+        ],
+        "improvement_areas": [
+          "Could add more business impact metrics",
+          "Consider adding team leadership examples",
+          "Include more industry-specific terminology"
+        ],
+        "scoring_breakdown": {
+          "base_score": 0.85,
+          "bonuses": {
+            "exceptional_technical_relevance": 0.03,
+            "strong_portfolio": 0.02,
+            "certification_relevance": 0.02
+          },
+          "penalties": {
+            "minor_formatting_issues": -0.00
+          },
+          "final_adjustments": 0.00
+        }
+      },
+      {
+        "resume_id": "golden_resume_002",
+        "target_role": "Data Scientist - Machine Learning",
+        "overall_score": 0.88,
+        "quality_tier": "good",
+        "category_scores": {
+          "technical_relevance": 0.90,
+          "achievement_clarity": 0.85,
+          "keyword_optimization": 0.88,
+          "format_quality": 0.85,
+          "industry_alignment": 0.82
+        },
+        "detailed_metrics": {
+          "keyword_analysis": {
+            "primary_keyword_density": 0.07,
+            "secondary_keyword_density": 0.11,
+            "industry_term_usage": 0.05,
+            "keyword_relevance_score": 0.87
+          },
+          "achievement_analysis": {
+            "quantified_achievements": 8,
+            "action_verb_usage": 0.80,
+            "business_impact_statements": 7,
+            "technical_depth_score": 0.92
+          },
+          "format_analysis": {
+            "readability_score": 8.5,
+            "section_completeness": 0.90,
+            "structure_compliance": 0.85,
+            "length_optimization": 0.80
+          },
+          "ats_compliance": {
+            "ats_friendliness": 0.90,
+            "format_compatibility": 0.88,
+            "keyword_optimization": 0.85,
+            "parsing_success_rate": 0.95
+          }
+        },
+        "strengths": [
+          "Strong technical depth in machine learning",
+          "Good quantification of data science achievements",
+          "Relevant educational background",
+          "Solid project examples with impact metrics"
+        ],
+        "improvement_areas": [
+          "Could improve keyword density for ATS optimization",
+          "Add more business-focused achievements",
+          "Enhance formatting consistency",
+          "Include more industry-specific fintech terminology"
+        ],
+        "scoring_breakdown": {
+          "base_score": 0.80,
+          "bonuses": {
+            "strong_technical_depth": 0.04,
+            "relevant_education": 0.02,
+            "project_impact": 0.02
+          },
+          "penalties": {
+            "moderate_keyword_issues": -0.00,
+            "minor_formatting_issues": -0.00
+          },
+          "final_adjustments": 0.00
+        }
+      }
+    ],
+    "scoring_benchmarks": {
+      "excellent_threshold": 0.90,
+      "good_threshold": 0.75,
+      "satisfactory_threshold": 0.60,
+      "needs_improvement_threshold": 0.40,
+      
+      "category_benchmarks": {
+        "technical_relevance": {
+          "excellent": 0.90,
+          "good": 0.75,
+          "satisfactory": 0.60
+        },
+        "achievement_clarity": {
+          "excellent": 0.85,
+          "good": 0.70,
+          "satisfactory": 0.55
+        },
+        "keyword_optimization": {
+          "excellent": 0.90,
+          "good": 0.75,
+          "satisfactory": 0.60
+        },
+        "format_quality": {
+          "excellent": 0.85,
+          "good": 0.70,
+          "satisfactory": 0.55
+        },
+        "industry_alignment": {
+          "excellent": 0.80,
+          "good": 0.65,
+          "satisfactory": 0.50
+        }
+      }
+    },
+    "validation_rules": {
+      "score_range": "0.0 to 1.0",
+      "precision": "3 decimal places",
+      "category_sum": "Must equal overall score when weighted",
+      "consistency": "Same resume should score within 0.05 across evaluations"
+    },
+    "quality_indicators": {
+      "excellent_indicators": [
+        "Primary keyword density between 0.06-0.10",
+        "8+ quantified achievements",
+        "Readability score 8.5+",
+        "ATS compliance 0.90+",
+        "Strong technical relevance (0.85+)"
+      ],
+      "good_indicators": [
+        "Primary keyword density between 0.04-0.08",
+        "5-8 quantified achievements",
+        "Readability score 7.5-8.5",
+        "ATS compliance 0.75-0.90",
+        "Good technical relevance (0.70-0.85)"
+      ],
+      "improvement_indicators": [
+        "Primary keyword density below 0.04",
+        "Fewer than 5 quantified achievements",
+        "Readability score below 7.5",
+        "ATS compliance below 0.75",
+        "Technical relevance below 0.70"
+      ]
+    }
+  }
 }
