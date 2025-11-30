@@ -1,1 +1,318 @@
-# Placeholder YAML configuration file
+# Workflow Trace Rules Configuration v1.0
+# Distributed tracing rules for Agentic Workflow System
+
+workflow_trace_rules:
+  version: "1.0"
+  enabled: true
+  
+  # Workflow definitions
+  workflows:
+    resume_processing_workflow:
+      name: "Resume Processing Workflow"
+      description: "End-to-end resume processing and analysis"
+      layers: ["L1", "L2", "L3", "L4", "L5"]
+      expected_spans:
+        - "L1.planning.resume_analysis_planning"
+        - "L2.execution.resume_parsing"
+        - "L2.execution.skill_extraction"
+        - "L3.orchestration.quality_scoring"
+        - "L4.memory.resume_storage"
+        - "L5.safety.content_validation"
+        
+      trace_rules:
+        - name: "resume_processing_completeness"
+          description: "Ensure all required spans are present"
+          condition: "all_spans_present"
+          required_spans: ["L2.execution.resume_parsing", "L3.orchestration.quality_scoring"]
+          
+        - name: "resume_processing_order"
+          description: "Validate span execution order"
+          condition: "span_order_validation"
+          order_rules:
+            - "L1.planning.resume_analysis_planning BEFORE L2.execution.resume_parsing"
+            - "L2.execution.resume_parsing BEFORE L2.execution.skill_extraction"
+            - "L3.orchestration.quality_scoring AFTER L2.execution.skill_extraction"
+
+    outreach_generation_workflow:
+      name: "Outreach Generation Workflow"
+      description: "Personalized outreach message generation"
+      layers: ["L1", "L2", "L3", "L4", "L5"]
+      expected_spans:
+        - "L1.planning.outreach_strategy_planning"
+        - "L2.execution.profile_analysis"
+        - "L2.execution.message_generation"
+        - "L3.orchestration.personalization"
+        - "L4.memory.outreach_storage"
+        - "L5.safety.content_validation"
+        
+      trace_rules:
+        - name: "outreach_generation_completeness"
+          description: "Ensure all required spans are present"
+          condition: "all_spans_present"
+          required_spans: ["L2.execution.profile_analysis", "L2.execution.message_generation"]
+          
+        - name: "outreach_quality_validation"
+          description: "Validate outreach quality metrics"
+          condition: "attribute_validation"
+          validation_rules:
+            - "outreach.personalization_score >= 0.7"
+            - "performance.cost_usd <= 0.25"
+
+    job_analysis_workflow:
+      name: "Job Analysis Workflow"
+      description: "Job description parsing and analysis"
+      layers: ["L1", "L2", "L3", "L4", "L5"]
+      expected_spans:
+        - "L1.planning.job_analysis_planning"
+        - "L2.execution.job_parsing"
+        - "L2.execution.skill_extraction"
+        - "L3.orchestration.requirement_analysis"
+        - "L4.memory.job_storage"
+        - "L5.safety.content_validation"
+
+  # Trace correlation rules
+  correlation_rules:
+    # Cross-workflow correlation
+    resume_to_outreach:
+      description: "Correlate resume processing with subsequent outreach"
+      condition: "attribute_match"
+      attributes:
+        - "resume.id"
+        - "user.id"
+      time_window: "24h"
+      
+    job_to_candidate:
+      description: "Correlate job analysis with candidate matching"
+      condition: "attribute_match"
+      attributes:
+        - "job.id"
+        - "skill_set"
+      time_window: "1h"
+
+  # Performance trace rules
+  performance_rules:
+    # Duration thresholds
+    duration_thresholds:
+      resume_processing:
+        warning: "30s"
+        critical: "60s"
+        
+      outreach_generation:
+        warning: "15s"
+        critical: "30s"
+        
+      job_analysis:
+        warning: "20s"
+        critical: "45s"
+        
+    # Resource usage rules
+    resource_rules:
+      memory_threshold:
+        warning: "512MB"
+        critical: "1GB"
+        
+      cpu_threshold:
+        warning: "80%"
+        critical: "95%"
+        
+      cost_threshold:
+        warning: "0.50 USD"
+        critical: "1.00 USD"
+
+  # Error handling trace rules
+  error_rules:
+    # Error classification
+    error_classification:
+      timeout_errors:
+        pattern: "timeout"
+        severity: "warning"
+        
+      validation_errors:
+        pattern: "validation_failed"
+        severity: "error"
+        
+      resource_errors:
+        pattern: "resource_exhausted"
+        severity: "critical"
+        
+    # Error propagation rules
+    propagation_rules:
+      - name: "critical_error_propagation"
+        description: "Critical errors should propagate to parent spans"
+        condition: "error_status_propagation"
+        severity_filter: "critical"
+        
+      - name: "timeout_cascade_prevention"
+        description: "Prevent timeout cascades in workflows"
+        condition: "timeout_isolation"
+        max_timeout_cascade_depth: 2
+
+  # Layer-specific trace rules
+  layer_rules:
+    L1_planning:
+      description: "Planning layer trace rules"
+      rules:
+        - name: "planning_completeness"
+          condition: "required_attributes_present"
+          attributes: ["plan.id", "strategy.type"]
+          
+        - name: "planning_duration"
+          condition: "duration_threshold"
+          max_duration: "10s"
+          
+    L2_execution:
+      description: "Execution layer trace rules"
+      rules:
+        - name: "execution_resource_tracking"
+          condition: "required_attributes_present"
+          attributes: ["performance.cpu_usage", "performance.memory_usage"]
+          
+        - name: "execution_quality_metrics"
+          condition: "attribute_validation"
+          validation_rules:
+            - "performance.cost_usd > 0"
+            - "performance.token_count > 0"
+            
+    L3_orchestration:
+      description: "Orchestration layer trace rules"
+      rules:
+        - name: "orchestration_coordination"
+          condition: "span_link_validation"
+          required_link_types: ["parent", "child"]
+          
+        - name: "orchestration_decision_logging"
+          condition: "event_presence"
+          required_events: ["decision_point", "coordination_event"]
+          
+    L4_memory:
+      description: "Memory layer trace rules"
+      rules:
+        - name: "memory_operation_tracking"
+          condition: "required_attributes_present"
+          attributes: ["operation.type", "data.size"]
+          
+        - name: "memory_persistence_validation"
+          condition: "attribute_validation"
+          validation_rules:
+            - "operation.result = 'success' OR operation.result = 'failure'"
+            
+    L5_safety:
+      description: "Safety layer trace rules"
+      rules:
+        - name: "safety_validation_completeness"
+          condition: "required_attributes_present"
+          attributes: ["safety.check_type", "safety.result"]
+          
+        - name: "safety_blocking_rules"
+          condition: "safety_blocking_validation"
+          rule: "IF safety.result = 'blocked' THEN safety.reason MUST be present"
+
+  # Trace sampling rules
+  sampling_rules:
+    # High-value traces
+    high_value_traces:
+      - condition: "operation.type = 'resume_processing' AND resume.quality_score < 0.5"
+        sample_rate: 1.0
+        
+      - condition: "operation.type = 'outreach_generation' AND outreach.personalization_score > 0.9"
+        sample_rate: 1.0
+        
+      - condition: "layer = 'L5' AND safety.result = 'blocked'"
+        sample_rate: 1.0
+        
+    # Standard traces
+    standard_traces:
+      - condition: "operation.type IN ['resume_processing', 'outreach_generation', 'job_analysis']"
+        sample_rate: 0.1
+        
+    # Low-value traces
+    low_value_traces:
+      - condition: "layer = 'L1' AND operation.duration < 1s"
+        sample_rate: 0.01
+
+  # Trace retention rules
+  retention_rules:
+    # High-value traces
+    high_value:
+      conditions:
+        - "operation.type = 'resume_processing' AND resume.quality_score < 0.5"
+        - "layer = 'L5' AND safety.result = 'blocked'"
+      retention: "90d"
+      
+    # Standard traces
+    standard:
+      conditions:
+        - "operation.type IN ['resume_processing', 'outreach_generation', 'job_analysis']"
+      retention: "30d"
+      
+    # Debug traces
+    debug:
+      conditions:
+        - "debug.mode = true"
+      retention: "7d"
+
+  # Trace enrichment rules
+  enrichment_rules:
+    # Automatic enrichment
+    automatic:
+      - name: "environment_enrichment"
+        description: "Add environment information to all traces"
+        attributes: ["environment", "deployment.version"]
+        
+      - name: "business_context_enrichment"
+        description: "Add business context to operation traces"
+        conditions: ["operation.type IN ['resume_processing', 'outreach_generation']"]
+        attributes: ["business.user_id", "business.tenant_id"]
+        
+    # Conditional enrichment
+    conditional:
+      - name: "cost_enrichment"
+        condition: "performance.cost_usd > 0"
+        attributes: ["cost.model_name", "cost.provider"]
+        
+      - name: "performance_enrichment"
+        condition: "operation.duration > 5s"
+        attributes: ["performance.bottleneck", "performance.optimization_suggestion"]
+
+  # Trace validation rules
+  validation_rules:
+    # Schema validation
+    schema_validation:
+      enabled: true
+      strict_mode: false  # Warn on violations, don't reject
+      
+    # Business logic validation
+    business_validation:
+      - name: "resume_quality_validation"
+        condition: "operation.type = 'resume_processing'"
+        rules:
+          - "resume.quality_score BETWEEN 0 AND 1"
+          - "resume.ats_compliance BETWEEN 0 AND 1"
+          
+      - name: "outreach_cost_validation"
+        condition: "operation.type = 'outreach_generation'"
+        rules:
+          - "performance.cost_usd > 0"
+          - "outreach.personalization_score BETWEEN 0 AND 1"
+
+  # Alert rules for traces
+  alert_rules:
+    # Performance alerts
+    performance_alerts:
+      - name: "slow_resume_processing"
+        condition: "operation.type = 'resume_processing' AND operation.duration > 60s"
+        severity: "warning"
+        
+      - name: "expensive_outreach_generation"
+        condition: "operation.type = 'outreach_generation' AND performance.cost_usd > 0.50"
+        severity: "critical"
+        
+    # Error alerts
+    error_alerts:
+      - name: "high_failure_rate"
+        condition: "error_rate > 0.1 AND operation_count > 10"
+        severity: "critical"
+        
+      - name: "safety_blocking_spikes"
+        condition: "layer = 'L5' AND safety.result = 'blocked' AND count > 5"
+        severity: "warning"
