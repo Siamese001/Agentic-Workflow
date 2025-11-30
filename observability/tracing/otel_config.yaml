@@ -1,1 +1,182 @@
-# Placeholder YAML configuration file
+# OpenTelemetry Configuration v1.0
+# Distributed tracing setup for Agentic Workflow System
+
+otel_config:
+  version: "1.0"
+  enabled: true
+  
+  # Service configuration
+  service:
+    name: "agentic-workflow"
+    version: "1.0.0"
+    environment: "${ENVIRONMENT:development}"
+    
+  # Exporter configuration
+  exporters:
+    # Jaeger exporter
+    jaeger:
+      enabled: true
+      endpoint: "${JAEGER_ENDPOINT:http://localhost:14268/api/traces}"
+      
+    # OTLP exporter ( multiple backends)
+    otlp:
+      enabled: false
+      endpoint: "${OTLP_ENDPOINT:http://localhost:4317}"
+      headers:
+        "api-key": "${OTLP_API_KEY}"
+        
+    # Console exporter for development
+    console:
+      enabled: true
+      pretty_print: true
+
+  # Sampler configuration
+  sampler:
+    type: "traceidratio"  # Options: always_on, always_off, traceidratio, parentbased_traceidratio
+    argument: 1.0  # Sample 100% of traces in development
+    
+    # Environment-specific sampling
+    environments:
+      development:
+        type: "always_on"
+        
+      staging:
+        type: "traceidratio"
+        argument: 0.1  # 10% sampling
+        
+      production:
+        type: "traceidratio"
+        argument: 0.01  # 1% sampling
+
+  # Resource attributes
+  resource:
+    attributes:
+      service.name: "agentic-workflow"
+      service.version: "1.0.0"
+      deployment.environment: "${ENVIRONMENT:development}"
+      host.name: "${HOSTNAME:localhost}"
+      
+  # Span processors
+  span_processors:
+    batch:
+      enabled: true
+      max_queue_size: 2048
+      scheduled_delay_millis: 5000
+      max_export_batch_size: 512
+      max_export_timeout_millis: 30000
+      
+    simple:
+      enabled: false
+
+  # Instrumentation libraries
+  instrumentation:
+    # HTTP instrumentation
+    http:
+      enabled: true
+      capture_request_headers: ["x-request-id", "x-user-id"]
+      capture_response_headers: ["x-response-time"]
+      
+    # Database instrumentation
+    database:
+      enabled: true
+      capture_connection_string: false
+      capture_sql_parameters: false
+      
+    # Redis instrumentation
+    redis:
+      enabled: true
+      
+    # Custom agent instrumentation
+    agents:
+      enabled: true
+      capture_layer_context: true
+      capture_agent_metrics: true
+
+  # Propagation
+  propagation:
+    formats:
+      - "tracecontext"
+      - "baggage"
+      - "jaeger"
+      - "b3"
+
+  # Context management
+  context:
+    # Automatic context extraction from headers
+    auto_extract: true
+    
+    # Context timeout in seconds
+    timeout: 30
+    
+    # Maximum context depth
+    max_depth: 100
+
+  # Performance settings
+  performance:
+    # Maximum spans per trace
+    max_spans_per_trace: 1000
+    
+    # Maximum span attributes
+    max_attributes_per_span: 128
+    
+    # Maximum attribute length
+    max_attribute_length: 1024
+    
+    # Maximum events per span
+    max_events_per_span: 128
+
+  # Security settings
+  security:
+    # Redact sensitive data
+    redact_sensitive_data: true
+    
+    # Sensitive attribute patterns
+    sensitive_patterns:
+      - ".*password.*"
+      - ".*token.*"
+      - ".*secret.*"
+      - ".*key.*"
+      - ".*auth.*"
+
+  # Batch processing
+  batch:
+    # Export batch size
+    export_batch_size: 512
+    
+    # Export timeout in milliseconds
+    export_timeout_millis: 30000
+    
+    # Max export batch size
+    max_export_batch_size: 512
+    
+    # Scheduled delay in milliseconds
+    scheduled_delay_millis: 5000
+    
+    # Max queue size
+    max_queue_size: 2048
+
+  # Metrics integration
+  metrics:
+    # Enable trace metrics
+    enabled: true
+    
+    # Metrics to collect
+    trace_metrics:
+      - "spans.started.total"
+      - "spans.ended.total"
+      - "span.duration"
+      - "trace.duration"
+
+  # Logging integration
+  logging:
+    # Enable trace context in logs
+    enabled: true
+    
+    # Log level for trace information
+    level: "info"
+    
+    # Include trace ID in logs
+    include_trace_id: true
+    
+    # Include span ID in logs
+    include_span_id: true
