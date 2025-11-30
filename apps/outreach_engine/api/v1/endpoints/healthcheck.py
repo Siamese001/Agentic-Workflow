@@ -3,10 +3,27 @@ Outreach Engine Health Check Endpoint
 LEVEL 5 - API endpoint for monitoring outreach engine health and status
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import Dict, Any, Optional
+import sys
+from pathlib import Path
+
+# Add project root to Python path for shared API imports
+project_root = Path(__file__).parent.parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from fastapi import APIRouter
+from typing import Dict, Any
 from datetime import datetime, timedelta
-import asyncio
+
+# Import shared API components from framework layer
+from agentic_core.api import (
+    create_health_check_response,
+    create_success_response,
+    create_error_response,
+    handle_errors,
+    log_api_calls,
+    APIException,
+    ServiceUnavailableAPIException
+)
 
 from ...services.pipelines.outreach_pipeline import OutreachPipeline
 from ...workers.outreach_generate_worker import OutreachGenerateWorker
@@ -216,66 +233,152 @@ class HealthCheckEndpoint:
 health_endpoint = HealthCheckEndpoint()
 
 @router.get("/")
+@handle_errors()
+@log_api_calls(log_level="info")
 async def health_check():
     """Get comprehensive health status"""
-    return await health_endpoint.get_system_status()
+    try:
+        system_status = await health_endpoint.get_system_status()
+        
+        if system_status.get("status") == "error":
+            return create_error_response(
+                error_code="HEALTH_CHECK_ERROR",
+                message=f"Health check failed: {system_status.get('error', 'Unknown error')}",
+                error_type="service_error"
+            )
+        
+        return create_health_check_response(
+            status=system_status["status"],
+            health_score=system_status["health_score"],
+            uptime_seconds=system_status["uptime_seconds"],
+            components=system_status["components"],
+            workers=system_status["workers"],
+            resources=system_status["resources"],
+            version=system_status["version"],
+            issues=system_status["issues"],
+            message=f"Outreach engine is {system_status['status']}"
+        )
+        
+    except Exception as e:
+        raise ServiceUnavailableAPIException(
+            message="Health check service unavailable",
+            error_code="HEALTH_SERVICE_UNAVAILABLE"
+        )
 
 @router.get("/ping")
+@handle_errors()
+@log_api_calls(log_level="debug")
 async def ping():
     """Simple ping endpoint for basic connectivity check"""
-    return {
-        "status": "ok",
-        "message": "Outreach engine is running",
-        "timestamp": datetime.utcnow().isoformat(),
-        "uptime_seconds": (datetime.utcnow() - health_endpoint.start_time).total_seconds()
-    }
+    uptime_seconds = (datetime.utcnow() - health_endpoint.start_time).total_seconds()
+    
+    return create_success_response(
+        data={
+            "status": "ok",
+            "uptime_seconds": uptime_seconds
+        },
+        message="Outreach engine is running"
+    )
 
 @router.get("/components")
+@handle_errors()
+@log_api_calls(log_level="info")
 async def check_components():
     """Check health of individual components"""
-    return await health_endpoint._check_components()
+    try:
+        components = await health_endpoint._check_components()
+        
+        return create_success_response(
+            data=components,
+            message="Component health check completed"
+        )
+    except Exception as e:
+        raise ServiceUnavailableAPIException(
+            message="Component health check failed",
+            error_code="COMPONENT_HEALTH_ERROR"
+        )
 
 @router.get("/workers")
+@handle_errors()
+@log_api_calls(log_level="info")
 async def check_workers():
     """Check health of worker systems"""
-    return await health_endpoint._check_workers()
+    try:
+        workers = await health_endpoint._check_workers()
+        
+        return create_success_response(
+            data=workers,
+            message="Worker health check completed"
+        )
+    except Exception as e:
+        raise ServiceUnavailableAPIException(
+            message="Worker health check failed",
+            error_code="WORKER_HEALTH_ERROR"
+        )
 
 @router.get("/resources")
+@handle_errors()
+@log_api_calls(log_level="info")
 async def check_resources():
     """Check system resource usage"""
-    return await health_endpoint._check_resources()
+    try:
+        resources = await health_endpoint._check_resources()
+        
+        return create_success_response(
+            data=resources,
+            message="Resource health check completed"
+        )
+    except Exception as e:
+        raise ServiceUnavailableAPIException(
+            message="Resource health check failed",
+            error_code="RESOURCE_HEALTH_ERROR"
+        )
 
 @router.get("/metrics")
+@handle_errors()
+@log_api_calls(log_level="info")
 async def get_health_metrics():
     """Get detailed health metrics"""
-    system_status = await health_endpoint.get_system_status()
-    
-    return {
-        "health_metrics": {
-            "component_health_score": sum(system_status["components"].values()) / len(system_status["components"]),
-            "worker_health_score": sum(
-                1 for worker in system_status["workers"].values() 
-                if worker.get("healthy", False)
-            ) / len(system_status["workers"]),
-            "resource_health_score": 1.0 if system_status["resources"]["queue_health"] == "healthy" else 0.5,
-            "overall_health_score": system_status["health_score"]
-        },
-        "performance_metrics": {
-            "total_queue_size": system_status["resources"]["total_queue_size"],
-            "active_workers": sum(
-                1 for worker in system_status["workers"].values() 
-                if worker.get("active", False)
-            ),
-            "processing_tasks": sum(
-                worker.get("processing_tasks", 0) 
-                for worker in system_status["workers"].values()
-            )
-        },
-        "system_info": {
-            "version": system_status["version"],
-            "uptime_seconds": system_status["uptime_seconds"],
-            "start_time": (datetime.utcnow() - timedelta(seconds=system_status["uptime_seconds"])).isoformat()
+    try:
+        system_status = await health_endpoint.get_system_status()
+        
+        metrics_data = {
+            "health_metrics": {
+                "component_health_score": sum(system_status["components"].values()) / len(system_status["components"]),
+                "worker_health_score": sum(
+                    1 for worker in system_status["workers"].values() 
+                    if worker.get("healthy", False)
+                ) / len(system_status["workers"]),
+                "resource_health_score": 1.0 if system_status["resources"]["queue_health"] == "healthy" else 0.5,
+                "overall_health_score": system_status["health_score"]
+            },
+            "performance_metrics": {
+                "total_queue_size": system_status["resources"]["total_queue_size"],
+                "active_workers": sum(
+                    1 for worker in system_status["workers"].values() 
+                    if worker.get("active", False)
+                ),
+                "processing_tasks": sum(
+                    worker.get("processing_tasks", 0) 
+                    for worker in system_status["workers"].values()
+                )
+            },
+            "system_info": {
+                "version": system_status["version"],
+                "uptime_seconds": system_status["uptime_seconds"],
+                "start_time": (datetime.utcnow() - timedelta(seconds=system_status["uptime_seconds"])).isoformat()
+            }
         }
-    }
+        
+        return create_success_response(
+            data=metrics_data,
+            message="Health metrics retrieved successfully"
+        )
+        
+    except Exception as e:
+        raise ServiceUnavailableAPIException(
+            message="Health metrics retrieval failed",
+            error_code="METRICS_ERROR"
+        )
 
 __all__ = ["router", "HealthCheckEndpoint"]

@@ -3,10 +3,29 @@ Resume Engine Health Check Endpoint
 LEVEL 5 - System health monitoring and status reporting
 """
 
-from fastapi import APIRouter, HTTPException
+import sys
+from pathlib import Path
+
+# Add project root to Python path for shared API imports
+project_root = Path(__file__).parent.parent.parent.parent.parent
+sys.path.insert(0, str(project_root))
+
+from fastapi import APIRouter
 from typing import Dict, Any
 import asyncio
 import time
+from datetime import datetime
+
+# Import shared API components from framework layer
+from agentic_core.api import (
+    create_health_check_response,
+    create_success_response,
+    create_error_response,
+    handle_errors,
+    log_api_calls,
+    APIException,
+    ServiceUnavailableAPIException
+)
 
 router = APIRouter()
 
@@ -48,24 +67,73 @@ class HealthCheckEndpoint:
             "timestamp": current_time
         }
 
-@router.get("/health")
+@router.get("/")
+@handle_errors()
+@log_api_calls(log_level="info")
 async def health_check():
-    """Health check endpoint"""
-    health_checker = HealthCheckEndpoint()
-    status = await health_checker.get_system_status()
-    
-    if status["status"] == "degraded":
-        raise HTTPException(
-            status_code=503,
-            detail="System degraded",
-            headers={"X-Health-Status": "degraded"}
+    """Get comprehensive health status"""
+    try:
+        health_checker = HealthCheckEndpoint()
+        system_status = await health_checker.get_system_status()
+        
+        # Convert to match shared API response format
+        health_score = 1.0 if system_status["status"] == "healthy" else 0.7
+        issues = [] if system_status["status"] == "healthy" else ["Some components degraded"]
+        
+        return create_health_check_response(
+            status=system_status["status"],
+            health_score=health_score,
+            uptime_seconds=system_status["uptime_seconds"],
+            components=system_status["components"],
+            workers={},  # No workers in current implementation
+            resources={},  # No resource monitoring in current implementation
+            version=system_status["version"],
+            issues=issues,
+            message=f"Resume engine is {system_status['status']}"
         )
-    
-    return status
+        
+    except Exception as e:
+        raise ServiceUnavailableAPIException(
+            message="Health check service unavailable",
+            error_code="HEALTH_SERVICE_UNAVAILABLE"
+        )
 
-@router.get("/health/ping")
+@router.get("/ping")
+@handle_errors()
+@log_api_calls(log_level="debug")
 async def ping():
     """Simple ping endpoint for basic connectivity check"""
-    return {"status": "ok", "message": "Resume engine is running"}
+    health_checker = HealthCheckEndpoint()
+    uptime_seconds = time.time() - health_checker.start_time
+    
+    return create_success_response(
+        data={
+            "status": "ok",
+            "uptime_seconds": uptime_seconds
+        },
+        message="Resume engine is running"
+    )
+
+@router.get("/components")
+@handle_errors()
+@log_api_calls(log_level="info")
+async def check_components():
+    """Check health of individual components"""
+    try:
+        health_checker = HealthCheckEndpoint()
+        components = {}
+        
+        for component in health_checker.component_status:
+            components[component] = await health_checker.check_component_health(component)
+        
+        return create_success_response(
+            data=components,
+            message="Component health check completed"
+        )
+    except Exception as e:
+        raise ServiceUnavailableAPIException(
+            message="Component health check failed",
+            error_code="COMPONENT_HEALTH_ERROR"
+        )
 
 __all__ = ["router", "HealthCheckEndpoint"]
