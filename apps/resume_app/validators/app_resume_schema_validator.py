@@ -224,6 +224,10 @@ class ResumeSchemaValidator:
                 continue
 
             field_value = data[field_name]
+            
+            # Skip validation for None values in optional fields
+            if not field_def.required and field_value is None:
+                continue
 
             # Validate field type
             if not self._validate_field_type(field_value, field_def.field_type):

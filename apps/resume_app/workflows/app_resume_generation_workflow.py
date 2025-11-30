@@ -114,8 +114,11 @@ class ResumeGenerationWorkflow:
 
         except Exception as e:
             self.logger.error(f"Workflow failed with error: {str(e)}")
+            import traceback
+            traceback.print_exc()  # Print full stack trace for debugging
             result.success = False
             result.metadata["workflow_error"] = str(e)
+            result.metadata["full_traceback"] = traceback.format_exc()
 
         finally:
             # Calculate total execution time
@@ -261,25 +264,32 @@ class ResumeGenerationWorkflow:
         try:
             self.logger.info("Generating enhanced resume")
 
-            # Build generation request
+            # Build generation request - use request_data as master_resume_data if not provided
+            master_resume_data = request_data.get("master_resume_data", request_data)
+            
             generation_request = ResumeGenerationRequest(
                 target_role=request_data.get("target_role", ""),
                 experience_level=request_data.get("experience_level", ""),
                 job_description=request_data.get("job_description"),
-                master_resume_data=request_data.get("master_resume_data"),
+                master_resume_data=master_resume_data,
                 target_company=request_data.get("target_company"),
                 optimization_focus=request_data.get("optimization_focus", ["impact", "keywords"]),
                 linkedin_format=request_data.get("linkedin_format", True)
             )
+
+            self.logger.info(f"Generation request created for role: {generation_request.target_role}")
 
             # Execute generation with retry logic
             resume_response = None
 
             for attempt in range(self.max_retry_attempts + 1):
                 try:
+                    self.logger.info(f"Generation attempt {attempt + 1}")
                     resume_response = self.engine_adapter.generate_enhanced_resume(generation_request)
+                    self.logger.info("Generation completed successfully")
                     break
                 except Exception as e:
+                    self.logger.error(f"Generation attempt {attempt + 1} failed: {str(e)}")
                     if attempt < self.max_retry_attempts:
                         self.logger.warning(f"Generation attempt {attempt + 1} failed, retrying...")
                         continue
