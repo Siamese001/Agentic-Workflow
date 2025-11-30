@@ -5,7 +5,7 @@ Tests event capture, error recording, and configuration management.
 """
 
 
-from runtime.telemetry import (
+from runtime.telemetry.telemetry import (
     TelemetryBus, 
     get_telemetry_bus
 )

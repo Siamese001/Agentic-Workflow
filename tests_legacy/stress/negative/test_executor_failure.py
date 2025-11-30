@@ -9,7 +9,7 @@ import asyncio
 import threading
 import time
 
-from runtime.execution_budget_manager import (
+from runtime.inference.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetLimits,
     get_budget_manager
