@@ -4,7 +4,7 @@ Schema definitions for the Agentic L5 architecture.
 Canonical schema structure with clear layer separation:
 - core: Base schemas and shared types
 - planning: L1 planning schemas and types
-- execution: L2 execution schemas and types  
+- execution: L2 execution schemas and types
 - orchestration: L3 orchestration schemas and types
 - memory_state: L4 memory and state schemas
 - safety: L5 safety and security schemas
