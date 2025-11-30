@@ -2,6 +2,23 @@
 from typing import Dict, Any, Optional, List
 from dataclasses import dataclass, field
 from datetime import datetime
+from enum import Enum
+
+class QueryType(Enum):
+    """Knowledge graph query type enumeration."""
+    ENTITY_LOOKUP = "entity_lookup"
+    RELATIONSHIP_SEARCH = "relationship_search"
+    PATH_FINDING = "path_finding"
+    NEIGHBORHOOD_SEARCH = "neighborhood_search"
+    REASONING_QUERY = "reasoning_query"
+
+class HopDirection(Enum):
+    """Knowledge graph hop direction enumeration."""
+    FORWARD = "forward"
+    BACKWARD = "backward"
+    BIDIRECTIONAL = "bidirectional"
+    OUTGOING = "outgoing"
+    INCOMING = "incoming"
 
 @dataclass
 class KGQuery:
@@ -65,3 +82,21 @@ class KGRetrievalPlanner:
             metadata={**initial_query.metadata, "refined": True}
         )
         return refined
+
+@dataclass
+class KGQueryPlan:
+    """Knowledge graph query plan structure."""
+    query_id: str = ""
+    primary_entity: str = ""
+    target_entity: str = ""
+    relationship_types: List[str] = field(default_factory=list)
+    traversal_depth: int = 3
+    constraints: Dict[str, Any] = field(default_factory=dict)
+    reasoning_enabled: bool = True
+    priority: float = 1.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.now)
+    
+    def __post_init__(self):
+        if not self.query_id:
+            self.query_id = f"kg_query_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
