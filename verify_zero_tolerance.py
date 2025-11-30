@@ -53,9 +53,6 @@ class ZeroToleranceValidator:
             (r'# Placeholder', 'Placeholder comment'),
         ]
         
-        # Exclude valid exception handler pass statements
-        exception_handler_pattern = r'except.*:.*pass'
-        
         target_dirs = ['agentic_core', 'apps', 'config']
         
         for target_dir in target_dirs:
@@ -71,6 +68,13 @@ class ZeroToleranceValidator:
                     
                     for pattern, description in stub_patterns:
                         for i, line in enumerate(lines, 1):
+                            # Skip pass statements in exception handlers
+                            if 'pass' in line and description == 'pass statement':
+                                # Check if this pass is in an exception handler
+                                prev_line = lines[i-2] if i > 1 else ""
+                                if re.search(r'except\s+', prev_line.strip()):
+                                    continue  # Skip legitimate exception handler
+                            
                             if re.search(pattern, line.strip()):
                                 self.issues.append({
                                     'type': 'stub_pattern',
