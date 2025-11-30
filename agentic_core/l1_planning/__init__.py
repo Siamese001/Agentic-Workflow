@@ -14,7 +14,7 @@ from .safety_planning.policies.safety_planner import SafetyPlanner
 
 __all__ = [
     "StrategyPlanner",
-    "MessagePlanner", 
+    "MessagePlanner",
     "ResearchPlanner",
     "RefinementPlanner",
     "SafetyPlanner",

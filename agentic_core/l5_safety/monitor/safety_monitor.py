@@ -2,9 +2,9 @@
 Safety Monitor Implementation for Safety Layer
 """
 
-from typing import Dict, Any, List, Optional, Callable
+from typing import Dict, Any, List, Callable
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from ..filters.content_filter import ContentFilter, FilterResult
 from ..validators.safety_validator import SafetyValidator, ValidationResult
@@ -29,7 +29,7 @@ class SafetyAlert:
     context: Dict[str, Any]
     timestamp: datetime
     resolved: bool = False
-    
+
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.now()
@@ -45,7 +45,7 @@ class SafetyMetrics:
     true_positives: int
     average_response_time: float
     timestamp: datetime
-    
+
     def __post_init__(self):
         if self.timestamp is None:
             self.timestamp = datetime.now()
@@ -53,7 +53,7 @@ class SafetyMetrics:
 
 class SafetyMonitor:
     """Central safety monitoring system"""
-    
+
     def __init__(self, content_filter: ContentFilter = None, safety_validator: SafetyValidator = None):
         self.content_filter = content_filter or ContentFilter()
         self.safety_validator = safety_validator or SafetyValidator()
@@ -72,46 +72,46 @@ class SafetyMonitor:
         self.created_at = datetime.now()
         self.last_check = datetime.now()
         self.monitoring_enabled = True
-    
+
     def add_alert_handler(self, alert_type: str, handler: Callable):
         """Add a handler for specific alert types"""
         self.alert_handlers[alert_type] = handler
-    
+
     def add_monitoring_rule(self, rule_name: str, rule_config: Dict[str, Any]):
         """Add a monitoring rule"""
         self.monitoring_rules[rule_name] = rule_config
-    
+
     def check_content_safety(self, content: str, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Check content safety using both filter and validator"""
         if not self.monitoring_enabled:
             return {"monitored": False, "reason": "Monitoring disabled"}
-        
+
         start_time = datetime.now()
         results = {}
-        
+
         try:
             # Filter content
             filter_result = self.content_filter.filter_content(content, context)
             results["filter"] = filter_result
-            
+
             # Validate content
             validation_result = self.safety_validator.validate_content(content, context)
             results["validation"] = validation_result
-            
+
             # Generate alerts if needed
             alerts = self._generate_alerts(filter_result, validation_result, "content_check", context)
             results["alerts"] = alerts
-            
+
             # Update metrics
             response_time = (datetime.now() - start_time).total_seconds()
             self._update_metrics(filter_result, validation_result, response_time)
-            
+
             results["monitored"] = True
             results["response_time"] = response_time
             self.last_check = datetime.now()
-            
+
             return results
-            
+
         except Exception as e:
             # Generate error alert
             error_alert = SafetyAlert(
@@ -123,34 +123,34 @@ class SafetyMonitor:
                 timestamp=datetime.now()
             )
             self.alerts.append(error_alert)
-            
+
             return {
                 "monitored": False,
                 "error": str(e),
                 "alert": error_alert
             }
-    
+
     def check_operation_safety(self, operation: str, parameters: Dict[str, Any], context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Check operation safety"""
         if not self.monitoring_enabled:
             return {"monitored": False, "reason": "Monitoring disabled"}
-        
+
         start_time = datetime.now()
-        
+
         try:
             # Validate operation
             validation_result = self.safety_validator.validate_operation(operation, parameters, context)
-            
+
             # Apply monitoring rules
             rule_violations = self._apply_monitoring_rules(operation, parameters, context)
-            
+
             # Generate alerts
             alerts = self._generate_operation_alerts(validation_result, rule_violations, operation, context)
-            
+
             # Update metrics
             response_time = (datetime.now() - start_time).total_seconds()
             self._update_operation_metrics(validation_result, response_time)
-            
+
             results = {
                 "monitored": True,
                 "validation": validation_result,
@@ -158,10 +158,10 @@ class SafetyMonitor:
                 "alerts": alerts,
                 "response_time": response_time
             }
-            
+
             self.last_check = datetime.now()
             return results
-            
+
         except Exception as e:
             error_alert = SafetyAlert(
                 alert_id=f"error_{datetime.now().timestamp()}",
@@ -172,17 +172,17 @@ class SafetyMonitor:
                 timestamp=datetime.now()
             )
             self.alerts.append(error_alert)
-            
+
             return {
                 "monitored": False,
                 "error": str(e),
                 "alert": error_alert
             }
-    
+
     def _generate_alerts(self, filter_result: FilterResult, validation_result: ValidationResult, source: str, context: Dict[str, Any]) -> List[SafetyAlert]:
         """Generate alerts based on filter and validation results"""
         alerts = []
-        
+
         # Filter-based alerts
         if filter_result.action.value in ["block", "modify"]:
             level = AlertLevel.HIGH if filter_result.action.value == "block" else AlertLevel.MEDIUM
@@ -195,19 +195,19 @@ class SafetyMonitor:
                 timestamp=datetime.now()
             )
             alerts.append(alert)
-        
+
         # Validation-based alerts
         if not validation_result.is_valid:
             critical_issues = [i for i in validation_result.issues if i.level.value == "critical"]
             error_issues = [i for i in validation_result.issues if i.level.value == "error"]
-            
+
             if critical_issues:
                 level = AlertLevel.CRITICAL
             elif error_issues:
                 level = AlertLevel.HIGH
             else:
                 level = AlertLevel.MEDIUM
-            
+
             alert = SafetyAlert(
                 alert_id=f"validation_{datetime.now().timestamp()}",
                 level=level,
@@ -217,23 +217,23 @@ class SafetyMonitor:
                 timestamp=datetime.now()
             )
             alerts.append(alert)
-        
+
         # Add alerts to the list
         self.alerts.extend(alerts)
-        
+
         # Trigger alert handlers
         for alert in alerts:
             self._trigger_alert_handlers(alert)
-        
+
         return alerts
-    
+
     def _generate_operation_alerts(self, validation_result: ValidationResult, rule_violations: List[str], operation: str, context: Dict[str, Any]) -> List[SafetyAlert]:
         """Generate alerts for operation safety checks"""
         alerts = []
-        
+
         if not validation_result.is_valid or rule_violations:
             level = AlertLevel.HIGH if not validation_result.is_valid else AlertLevel.MEDIUM
-            
+
             alert = SafetyAlert(
                 alert_id=f"operation_{datetime.now().timestamp()}",
                 level=level,
@@ -243,94 +243,95 @@ class SafetyMonitor:
                 timestamp=datetime.now()
             )
             alerts.append(alert)
-        
+
         self.alerts.extend(alerts)
-        
+
         for alert in alerts:
             self._trigger_alert_handlers(alert)
-        
+
         return alerts
-    
+
     def _apply_monitoring_rules(self, operation: str, parameters: Dict[str, Any], context: Dict[str, Any]) -> List[str]:
         """Apply monitoring rules to an operation"""
         violations = []
-        
+
         for rule_name, rule_config in self.monitoring_rules.items():
             if self._check_rule(operation, parameters, rule_config):
                 violations.append(f"Rule violation: {rule_name}")
-        
+
         return violations
-    
+
     def _check_rule(self, operation: str, parameters: Dict[str, Any], rule_config: Dict[str, Any]) -> bool:
         """Check if a monitoring rule is violated"""
         rule_type = rule_config.get("type", "")
-        
+
         if rule_type == "operation_blacklist":
             blacklisted_ops = rule_config.get("operations", [])
             return operation in blacklisted_ops
-        
+
         elif rule_type == "parameter_check":
             required_params = rule_config.get("required_parameters", [])
             return not all(param in parameters for param in required_params)
-        
+
         elif rule_type == "rate_limit":
             # Simple rate limiting check (would need more sophisticated implementation)
-            max_calls = rule_config.get("max_calls", 100)
-            time_window = rule_config.get("time_window", 3600)  # seconds
-            
+            # Note: max_calls and time_window would be used in a real implementation
+            rule_config.get("max_calls", 100)
+            rule_config.get("time_window", 3600)  # seconds
+
             # This is a mock implementation
             return False
-        
+
         return False
-    
+
     def _trigger_alert_handlers(self, alert: SafetyAlert):
         """Trigger appropriate alert handlers"""
         alert_type = f"{alert.level.value}_{alert.source}"
-        
+
         if alert_type in self.alert_handlers:
             try:
                 self.alert_handlers[alert_type](alert)
             except Exception:
                 pass  # Handler failed, but we don't want to crash the monitor
-    
+
     def _update_metrics(self, filter_result: FilterResult, validation_result: ValidationResult, response_time: float):
         """Update safety metrics"""
         self.metrics.total_checks += 1
-        
+
         if filter_result.violations or not validation_result.is_valid:
             self.metrics.violations_found += 1
-        
+
         # Update average response time
         total_time = self.metrics.average_response_time * (self.metrics.total_checks - 1) + response_time
         self.metrics.average_response_time = total_time / self.metrics.total_checks
-        
+
         self.metrics.timestamp = datetime.now()
-    
+
     def _update_operation_metrics(self, validation_result: ValidationResult, response_time: float):
         """Update metrics for operation checks"""
         self.metrics.total_checks += 1
-        
+
         if not validation_result.is_valid:
             self.metrics.violations_found += 1
-        
+
         # Update average response time
         total_time = self.metrics.average_response_time * (self.metrics.total_checks - 1) + response_time
         self.metrics.average_response_time = total_time / self.metrics.total_checks
-        
+
         self.metrics.timestamp = datetime.now()
-    
+
     def get_alerts(self, level: AlertLevel = None, resolved: bool = None, limit: int = 100) -> List[SafetyAlert]:
         """Get alerts with optional filtering"""
         filtered_alerts = self.alerts
-        
+
         if level:
             filtered_alerts = [a for a in filtered_alerts if a.level == level]
-        
+
         if resolved is not None:
             filtered_alerts = [a for a in filtered_alerts if a.resolved == resolved]
-        
+
         return filtered_alerts[-limit:]
-    
+
     def resolve_alert(self, alert_id: str) -> bool:
         """Mark an alert as resolved"""
         for alert in self.alerts:
@@ -338,7 +339,7 @@ class SafetyMonitor:
                 alert.resolved = True
                 return True
         return False
-    
+
     def get_metrics(self) -> Dict[str, Any]:
         """Get current safety metrics"""
         return {
@@ -350,19 +351,19 @@ class SafetyMonitor:
             "created_at": self.created_at.isoformat(),
             "last_check": self.last_check.isoformat()
         }
-    
+
     def enable_monitoring(self):
         """Enable safety monitoring"""
         self.monitoring_enabled = True
-    
+
     def disable_monitoring(self):
         """Disable safety monitoring"""
         self.monitoring_enabled = False
-    
+
     def clear_alerts(self):
         """Clear all alerts"""
         self.alerts.clear()
-    
+
     def reset_metrics(self):
         """Reset metrics"""
         self.metrics = SafetyMetrics(
@@ -374,12 +375,12 @@ class SafetyMonitor:
             average_response_time=0.0,
             timestamp=datetime.now()
         )
-    
+
     def get_status(self) -> Dict[str, Any]:
         """Get overall safety monitor status"""
         unresolved_alerts = [a for a in self.alerts if not a.resolved]
         critical_alerts = [a for a in unresolved_alerts if a.level == AlertLevel.CRITICAL]
-        
+
         return {
             "monitoring_enabled": self.monitoring_enabled,
             "total_alerts": len(self.alerts),
@@ -389,9 +390,9 @@ class SafetyMonitor:
             "created_at": self.created_at.isoformat(),
             "last_check": self.last_check.isoformat()
         }
-    
+
     def __str__(self):
         return f"SafetyMonitor(alerts={len(self.alerts)}, checks={self.metrics.total_checks})"
-    
+
     def __repr__(self):
         return self.__str__()
