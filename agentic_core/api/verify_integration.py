@@ -3,6 +3,13 @@ Shared API Layer Verification Script
 LEVEL 5 - Simple verification that core components work correctly
 """
 
+import sys
+from pathlib import Path
+
+# Add the project root to Python path for imports
+project_root = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(project_root))
+
 from datetime import datetime
 
 def verify_core_components():
@@ -15,9 +22,20 @@ def verify_core_components():
     # Test 1: Import core models
     total_tests += 1
     try:
-        from apps.shared.api import (
-            BaseRequest, BaseResponse, PaginatedRequest, 
-            PaginatedResponse, SearchRequest, ErrorResponse
+        from agentic_core.api import (
+            BaseRequest, BaseResponse, PaginatedRequest, PaginatedResponse, SearchRequest, ErrorResponse
+        )
+        
+        from agentic_core.api import (
+            create_success_response, create_error_response, create_paginated_response, APIResponse, ResponseFormatter
+        )
+        
+        from agentic_core.api import (
+            rate_limit, validate_request, handle_errors, log_api_calls, RateLimiter
+        )
+        
+        from agentic_core.api import (
+            APIException, ValidationAPIException, AuthenticationAPIException, RateLimitAPIException
         )
         
         # Test basic functionality
@@ -35,7 +53,7 @@ def verify_core_components():
     # Test 2: Import response utilities
     total_tests += 1
     try:
-        from apps.shared.api import (
+        from agentic_core.api import (
             create_success_response, create_error_response, 
             create_paginated_response, APIResponse, ResponseFormatter
         )
@@ -56,7 +74,7 @@ def verify_core_components():
     # Test 3: Import decorators
     total_tests += 1
     try:
-        from apps.shared.api import (
+        from agentic_core.api import (
             rate_limit, validate_request, handle_errors, 
             log_api_calls, RateLimiter
         )
@@ -75,7 +93,7 @@ def verify_core_components():
     # Test 4: Import exceptions
     total_tests += 1
     try:
-        from apps.shared.api import (
+        from agentic_core.api import (
             APIException, ValidationAPIException, 
             AuthenticationAPIException, RateLimitAPIException
         )
@@ -96,7 +114,7 @@ def verify_core_components():
     # Test 5: Test pagination functionality
     total_tests += 1
     try:
-        from apps.shared.api import PaginatedRequest, create_paginated_response
+        from agentic_core.api import PaginatedRequest, create_paginated_response
         
         request = PaginatedRequest(page=1, page_size=20)
         response = create_paginated_response(
@@ -119,7 +137,7 @@ def verify_core_components():
     # Test 6: Test validation exceptions
     total_tests += 1
     try:
-        from apps.shared.api import ValidationAPIException
+        from agentic_core.api import ValidationAPIException
         
         validation_exc = ValidationAPIException.from_field_error("email", "Invalid email")
         assert len(validation_exc.validation_errors) == 1
@@ -134,7 +152,7 @@ def verify_core_components():
     # Test 7: Test response formatting
     total_tests += 1
     try:
-        from apps.shared.api import ResponseFormatter
+        from agentic_core.api import ResponseFormatter
         
         # Test sanitization
         metadata = {"name": "John", "password": "secret", "api_key": "abc123"}
@@ -153,7 +171,7 @@ def verify_core_components():
     # Test 8: Check middleware availability (optional)
     total_tests += 1
     try:
-        from apps.shared.api import _MIDDLEWARE_AVAILABLE
+        from agentic_core.api import _MIDDLEWARE_AVAILABLE
         
         if _MIDDLEWARE_AVAILABLE:
             print("✅ FastAPI middleware is available")

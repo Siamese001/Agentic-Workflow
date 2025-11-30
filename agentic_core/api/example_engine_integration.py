@@ -17,7 +17,7 @@ from typing import List, Dict, Any, Optional
 
 # Import shared API components
 try:
-    from apps.shared.api import (
+    from agentic_core.api import (
         BaseRequest,
         BaseResponse,
         PaginatedRequest,
@@ -29,18 +29,19 @@ try:
         create_not_found_response,
         create_validation_response,
         rate_limit,
-        handle_errors,
         validate_request,
+        handle_errors,
         log_api_calls,
         APIException,
         ValidationAPIException,
-        NotFoundAPIException,
-        RateLimiter
+        AuthenticationAPIException,
+        RateLimitAPIException,
+        NotFoundAPIException
     )
     
     # Try to import middleware if FastAPI is available
     try:
-        from apps.shared.api import (
+        from agentic_core.api import (
             add_shared_middleware,
             DEFAULT_CORS_CONFIG
         )
