@@ -1,0 +1,619 @@
+# V5 Instructional Injection Index v1.0
+# Comprehensive mapping of all 30 instructional injection prompts across 6 layers
+
+injections_index:
+  version: "1.0"
+  last_updated: "2024-01-01T00:00:00Z"
+  framework_name: "V5 Instructional Injection Framework"
+  total_injections: 30
+  total_layers: 6
+  
+  # Framework overview
+  framework_overview:
+    description: "Comprehensive instructional injection framework for AI prompt governance"
+    architecture: "6-layer hierarchical injection system"
+    purpose: "Ensure consistent, safe, and optimized AI interactions"
+    
+    layer_summary:
+      framing_layer:
+        injection_count: 5
+        purpose: "Establish clear objectives, constraints, and operational parameters"
+        file: "framing.yaml"
+        
+      context_layer:
+        injection_count: 5
+        purpose: "Optimize input processing and context management"
+        file: "context_engineering.yaml"
+        
+      reasoning_layer:
+        injection_count: 5
+        purpose: "Enhance logical reasoning and decision-making processes"
+        file: "reasoning.yaml"
+        
+      tooling_layer:
+        injection_count: 5
+        purpose: "Coordinate tool usage and integration workflows"
+        file: "tool_use.yaml"
+        
+      safety_layer:
+        injection_count: 5
+        purpose: "Enforce security, ethical, and compliance safeguards"
+        file: "safety.yaml"
+        
+      output_layer:
+        injection_count: 5
+        purpose: "Standardize output format and quality controls"
+        file: "output_governance.yaml"
+        
+  # Detailed injection mappings
+  injection_mappings:
+    # Framing Layer (1-5)
+    framing_injections:
+      - id: 1
+        name: "global_goal_state"
+        category: "framing"
+        description: "Anchor all model reasoning to one clear overarching objective"
+        file: "framing.yaml"
+        section: "v5_framing_injections.global_goal_state"
+        usage_contexts:
+          - "Resume optimization"
+          - "Outreach strategy development"
+          - "Quality assessment"
+        success_criteria:
+          - "Clear goal articulation"
+          - "Consistent alignment throughout"
+          - "Objective-driven decision making"
+        dependencies: []
+        priority: "high"
+        
+      - id: 2
+        name: "success_criteria"
+        category: "framing"
+        description: "Define explicit quality thresholds and outcome requirements upfront"
+        file: "framing.yaml"
+        section: "v5_framing_injections.success_criteria"
+        usage_contexts:
+          - "Resume scoring"
+          - "Message effectiveness"
+          - "Content quality assessment"
+        success_criteria:
+          - "Measurable quality standards"
+          - "Clear outcome definitions"
+          - "Specific evaluation metrics"
+        dependencies: []
+        priority: "high"
+        
+      - id: 3
+        name: "task_mode_declaration"
+        category: "framing"
+        description: "Specify cognitive mode: analytical, synthesis, adversarial, meta, security"
+        file: "framing.yaml"
+        section: "v5_framing_injections.task_mode_declaration"
+        usage_contexts:
+          - "Complex analysis tasks"
+          - "Multi-perspective evaluation"
+          - "Security-sensitive operations"
+        success_criteria:
+          - "Consistent mode application"
+          - "Appropriate cognitive approach"
+          - "Mode-specific output characteristics"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 4
+        name: "scope_boundaries"
+        category: "framing"
+        description: "State exact constraints and forbidden behaviors for the task"
+        file: "framing.yaml"
+        section: "v5_framing_injections.scope_boundaries"
+        usage_contexts:
+          - "Data privacy compliance"
+          - "Content filtering"
+          - "Operational constraints"
+        success_criteria:
+          - "Strict boundary adherence"
+          - "No scope violations"
+          - "Appropriate constraint application"
+        dependencies: []
+        priority: "high"
+        
+      - id: 5
+        name: "cost_latency_targets"
+        category: "framing"
+        description: "Guide model toward concise, efficient reasoning under resource limits"
+        file: "framing.yaml"
+        section: "v5_framing_injections.cost_latency_targets"
+        usage_contexts:
+          - "Real-time processing"
+          - "High-volume operations"
+          - "Cost-sensitive applications"
+        success_criteria:
+          - "Response within time limits"
+          - "Efficient token usage"
+          - "Cost-effective processing"
+        dependencies: []
+        priority: "medium"
+        
+    # Context Layer (6-10)
+    context_injections:
+      - id: 6
+        name: "untrusted_block_wrapping"
+        category: "context"
+        description: "Encapsulate user-provided text as neutral data-only segments"
+        file: "context_engineering.yaml"
+        section: "v5_context_injections.untrusted_block_wrapping"
+        usage_contexts:
+          - "User resume content"
+          - "Job description text"
+          - "External message content"
+        success_criteria:
+          - "Data treated as read-only"
+          - "No command execution"
+          - "Neutral processing maintained"
+        dependencies: []
+        priority: "high"
+        
+      - id: 7
+        name: "canonicalization"
+        category: "context"
+        description: "Normalize formatting, casing, spacing, and command-like sequences"
+        file: "context_engineering.yaml"
+        section: "v5_context_injections.canonicalization"
+        usage_contexts:
+          - "Resume text processing"
+          - "Job description parsing"
+          - "Message content analysis"
+        success_criteria:
+          - "Consistent formatting"
+          - "Standardized text structure"
+          - "Safe command handling"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 8
+        name: "context_pruning"
+        category: "context"
+        description: "Filter irrelevant material to respect token and relevance budgets"
+        file: "context_engineering.yaml"
+        section: "v5_context_injections.context_pruning"
+        usage_contexts:
+          - "Large document processing"
+          - "Multi-source analysis"
+          - "Token-constrained operations"
+        success_criteria:
+          - "Essential information retained"
+          - "Token limits respected"
+          - "Context coherence maintained"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 9
+        name: "cross_field_consistency"
+        category: "context"
+        description: "Verify JD, resume, strategy, and bullets align without contradictions"
+        file: "context_engineering.yaml"
+        section: "v5_context_injections.cross_field_consistency"
+        usage_contexts:
+          - "Resume-JD matching"
+          - "Strategy validation"
+          - "Content coherence checking"
+        success_criteria:
+          - "No contradictions detected"
+          - "Consistent messaging"
+          - "Aligned content elements"
+        dependencies: []
+        priority: "high"
+        
+      - id: 10
+        name: "structured_context_ordering"
+        category: "context"
+        description: "Present inputs in deterministic, stable, predictable sequence"
+        file: "context_engineering.yaml"
+        section: "v5_context_injections.structured_context_ordering"
+        usage_contexts:
+          - "Multi-input processing"
+          - "Consistent analysis workflows"
+          - "Deterministic output generation"
+        success_criteria:
+          - "Consistent ordering applied"
+          - "Predictable processing"
+          - "Stable output generation"
+        dependencies: []
+        priority: "medium"
+        
+    # Reasoning Layer (11-15)
+    reasoning_injections:
+      - id: 11
+        name: "failure_anticipation"
+        category: "reasoning"
+        description: "Predict likely mistakes before reasoning and mitigate proactively"
+        file: "reasoning.yaml"
+        section: "v5_reasoning_injections.failure_anticipation"
+        usage_contexts:
+          - "Complex problem solving"
+          - "Risk assessment"
+          - "Quality assurance"
+        success_criteria:
+          - "Failure modes identified"
+          - "Preventive measures applied"
+          - "Error rates reduced"
+        dependencies: []
+        priority: "high"
+        
+      - id: 12
+        name: "multi_branch_thinking"
+        category: "reasoning"
+        description: "Generate multiple branches and vote for strongest reasoning path"
+        file: "reasoning.yaml"
+        section: "v5_reasoning_injections.multi_branch_thinking"
+        usage_contexts:
+          - "Complex decision making"
+          - "Strategy development"
+          - "Problem solving"
+        success_criteria:
+          - "Multiple perspectives considered"
+          - "Systematic evaluation applied"
+          - "Optimal path selected"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 13
+        name: "confidence_uncertainty"
+        category: "reasoning"
+        description: "Provide numeric confidence with clear justification for uncertainty"
+        file: "reasoning.yaml"
+        section: "v5_reasoning_injections.confidence_uncertainty"
+        usage_contexts:
+          - "Risk assessment"
+          - "Decision making"
+          - "Quality evaluation"
+        success_criteria:
+          - "Confidence quantified"
+          - "Uncertainty acknowledged"
+          - "Justification provided"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 14
+        name: "reason_then_answer"
+        category: "reasoning"
+        description: "Think privately first, then output final structured result"
+        file: "reasoning.yaml"
+        section: "v5_reasoning_injections.reason_then_answer"
+        usage_contexts:
+          - "Complex analysis tasks"
+          - "Sensitive evaluations"
+          - "Structured reporting"
+        success_criteria:
+          - "Complete reasoning performed"
+          - "Private process maintained"
+          - "Structured output delivered"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 15
+        name: "error_simulation"
+        category: "reasoning"
+        description: "Simulate potential failures and correct output before finalizing"
+        file: "reasoning.yaml"
+        section: "v5_reasoning_injections.error_simulation"
+        usage_contexts:
+          - "Critical decision making"
+          - "Quality assurance"
+          - "Risk mitigation"
+        success_criteria:
+          - "Error scenarios simulated"
+          - "Corrections applied"
+          - "Output validated"
+        dependencies: []
+        priority: "high"
+        
+    # Tooling Layer (16-20)
+    tooling_injections:
+      - id: 16
+        name: "tool_feedback_loop"
+        category: "tooling"
+        description: "Incorporate structured tool outputs into subsequent reasoning steps"
+        file: "tool_use.yaml"
+        section: "v5_tooling_injections.tool_feedback_loop"
+        usage_contexts:
+          - "Multi-tool workflows"
+          - "Iterative analysis"
+          - "Tool coordination"
+        success_criteria:
+          - "Tool outputs effectively integrated"
+          - "Feedback loop maintained"
+          - "Process optimization achieved"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 17
+        name: "evidence_binding"
+        category: "tooling"
+        description: "Ground claims to explicit retrieved strings or verified evidence"
+        file: "tool_use.yaml"
+        section: "v5_tooling_injections.evidence_binding"
+        usage_contexts:
+          - "Fact verification"
+          - "Evidence-based analysis"
+          - "Citation management"
+        success_criteria:
+          - "Claims properly evidenced"
+          - "Citations accurately anchored"
+          - "Evidence verification complete"
+        dependencies: []
+        priority: "high"
+        
+      - id: 18
+        name: "cross_tool_reconciliation"
+        category: "tooling"
+        description: "Resolve conflicting outputs across RAG, QA, and drafting tools"
+        file: "tool_use.yaml"
+        section: "v5_tooling_injections.cross_tool_reconciliation"
+        usage_contexts:
+          - "Multi-tool analysis"
+          - "Conflict resolution"
+          - "Output harmonization"
+        success_criteria:
+          - "Conflicts identified and resolved"
+          - "Consistent output achieved"
+          - "Tool integration optimized"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 19
+        name: "shadow_validation"
+        category: "tooling"
+        description: "Run rapid internal sanity check before returning final output"
+        file: "tool_use.yaml"
+        section: "v5_tooling_injections.shadow_validation"
+        usage_contexts:
+          - "Quality assurance"
+          - "Error prevention"
+          - "Output validation"
+        success_criteria:
+          - "Internal validation completed"
+          - "Errors detected and corrected"
+          - "Quality standards met"
+        dependencies: []
+        priority: "high"
+        
+      - id: 20
+        name: "model_switch_aware"
+        category: "tooling"
+        description: "Adapt instructions based on fast versus high-accuracy model usage"
+        file: "tool_use.yaml"
+        section: "v5_tooling_injections.model_switch_aware"
+        usage_contexts:
+          - "Multi-model environments"
+          - "Resource optimization"
+          - "Model-specific adaptation"
+        success_criteria:
+          - "Instructions adapted to model"
+          - "Optimal performance achieved"
+          - "Resource constraints respected"
+        dependencies: []
+        priority: "medium"
+        
+    # Safety Layer (21-25)
+    safety_injections:
+      - id: 21
+        name: "prompt_injection_shielding"
+        category: "safety"
+        description: "Add robust anti-jailbreak safeguards protecting system instructions"
+        file: "safety.yaml"
+        section: "v5_safety_injections.prompt_injection_shielding"
+        usage_contexts:
+          - "All user interactions"
+          - "System instruction protection"
+          - "Jailbreak prevention"
+        success_criteria:
+          - "System instructions protected"
+          - "Injection attempts blocked"
+          - "Original objectives maintained"
+        dependencies: []
+        priority: "critical"
+        
+      - id: 22
+        name: "data_instruction_separation"
+        category: "safety"
+        description: "Clearly distinguish raw data content from actionable directives"
+        file: "safety.yaml"
+        section: "v5_safety_injections.data_instruction_separation"
+        usage_contexts:
+          - "Mixed content processing"
+          - "Command safety"
+          - "Data protection"
+        success_criteria:
+          - "Data and instructions properly separated"
+          - "Unauthorized commands ignored"
+          - "Authorized instructions processed"
+        dependencies: []
+        priority: "high"
+        
+      - id: 23
+        name: "constitutional_guardrails"
+        category: "safety"
+        description: "Enforce ethics, safety, neutrality, and style principles consistently"
+        file: "safety.yaml"
+        section: "v5_safety_injections.constitutional_guardrails"
+        usage_contexts:
+          - "Content generation"
+          - "User interactions"
+          - "Quality assurance"
+        success_criteria:
+          - "Constitutional principles enforced"
+          - "Violations prevented"
+          - "Compliance maintained"
+        dependencies: []
+        priority: "critical"
+        
+      - id: 24
+        name: "delegation_guardrails"
+        category: "safety"
+        description: "Prevent downstream agents from overriding upstream decisions"
+        file: "safety.yaml"
+        section: "v5_safety_injections.delegation_guardrails"
+        usage_contexts:
+          - "Multi-agent systems"
+          - "Decision hierarchy"
+          - "Authority management"
+        success_criteria:
+          - "Upstream decisions protected"
+          - "Unauthorized overrides prevented"
+          - "Authority hierarchy maintained"
+        dependencies: []
+        priority: "high"
+        
+      - id: 25
+        name: "expanded_adversarial_mode"
+        category: "safety"
+        description: "Strengthen detection of manipulative or anomalous patterns"
+        file: "safety.yaml"
+        section: "v5_safety_injections.expanded_adversarial_mode"
+        usage_contexts:
+          - "Security-sensitive operations"
+          - "High-risk interactions"
+          - "Threat detection"
+        success_criteria:
+          - "Adversarial patterns detected"
+          - "Malicious inputs blocked"
+          - "Security incidents logged"
+        dependencies: []
+        priority: "critical"
+        
+    # Output Layer (26-30)
+    output_injections:
+      - id: 26
+        name: "strict_json_output"
+        category: "output"
+        description: "Require deterministic, schema-compliant JSON without extra text"
+        file: "output_governance.yaml"
+        section: "v5_output_injections.strict_json_output"
+        usage_contexts:
+          - "API responses"
+          - "Data exchange"
+          - "Structured output generation"
+        success_criteria:
+          - "Valid JSON format"
+          - "Schema compliance"
+          - "No extra text content"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 27
+        name: "schema_enforcement"
+        category: "output"
+        description: "Supply minimal schema and one valid illustrative example"
+        file: "output_governance.yaml"
+        section: "v5_output_injections.schema_enforcement"
+        usage_contexts:
+          - "Complex data structures"
+          - "Format standardization"
+          - "Data validation"
+        success_criteria:
+          - "Schema structure followed"
+          - "Field types correct"
+          - "Example format referenced"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 28
+        name: "stability_contracts"
+        category: "output"
+        description: "Preserve field order and naming across repeated outputs"
+        file: "output_governance.yaml"
+        section: "v5_output_injections.stability_contracts"
+        usage_contexts:
+          - "Repeated operations"
+          - "API consistency"
+          - "Data pipeline stability"
+        success_criteria:
+          - "Field order maintained"
+          - "Naming consistent"
+          - "Structure stable"
+        dependencies: []
+        priority: "medium"
+        
+      - id: 29
+        name: "error_envelope"
+        category: "output"
+        description: "Standardize failures into simple, structured error objects"
+        file: "output_governance.yaml"
+        section: "v5_output_injections.error_envelope"
+        usage_contexts:
+          - "Error handling"
+          - "API responses"
+          - "Failure reporting"
+        success_criteria:
+          - "Standardized error format"
+          - "Clear error codes"
+          - "Comprehensive error details"
+        dependencies: []
+        priority: "high"
+        
+      - id: 30
+        name: "minimality_constraints"
+        category: "output"
+        description: "Limit output size to enforce clarity and conciseness"
+        file: "output_governance.yaml"
+        section: "v5_output_injections.minimality_constraints"
+        usage_contexts:
+          - "Token optimization"
+          - "Performance requirements"
+          - "Clarity optimization"
+        success_criteria:
+          - "Size constraints respected"
+          - "Essential information retained"
+          - "Output is concise"
+        dependencies: []
+        priority: "medium"
+        
+  # Usage patterns and combinations
+  usage_patterns:
+    common_combinations:
+      resume_optimization:
+        description: "Standard resume optimization workflow"
+        injections: [1, 2, 4, 6, 7, 9, 11, 13, 14, 17, 19, 21, 23, 26, 27]
+        priority_injections: [1, 2, 21, 23]
+        
+      outreach_strategy:
+        description: "Outreach message development workflow"
+        injections: [1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 18, 21, 23, 26, 28]
+        priority_injections: [1, 2, 21, 23]
+        
+      quality_assurance:
+        description: "Quality assessment and validation workflow"
+        injections: [2, 11, 13, 14, 15, 19, 21, 23, 25, 26, 27, 29]
+        priority_injections: [2, 19, 21, 23]
+        
+      security_sensitive:
+        description: "High-security operations workflow"
+        injections: [3, 4, 5, 6, 21, 22, 23, 24, 25, 26, 29]
+        priority_injections: [21, 22, 23, 25]
+        
+    layer_dependencies:
+      description: "Recommended layer activation order"
+      order: ["framing", "context", "reasoning", "tooling", "safety", "output"]
+      notes: "Safety layer should always be active, framing layer sets foundation"
+      
+  # Governance and compliance
+  governance:
+    compliance_requirements:
+      mandatory_injections: [21, 22, 23, 24, 25]  # All safety layer injections
+      recommended_injections: [1, 2, 4, 11, 13, 17, 19, 26, 27, 29]
+      optional_injections: [3, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16, 18, 20, 28, 30]
+      
+    quality_standards:
+      documentation_required: true
+      testing_required: true
+      monitoring_required: true
+      audit_trail_required: true
+      
+    maintenance:
+      review_frequency: "quarterly"
+      update_triggers:
+        - "security_incident"
+        - "compliance_change"
+        - "performance_degradation"
+        - "user_feedback"
