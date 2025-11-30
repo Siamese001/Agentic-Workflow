@@ -133,12 +133,12 @@ class SafetyEngine:
     ) -> ValidationResult:
         """
         Validate content against safety policies.
-        
+
         Args:
             content: Content to validate
             content_type: Type of content (text, json, etc.)
             context: Additional context for validation
-            
+
         Returns:
             Validation result with threat detection
         """

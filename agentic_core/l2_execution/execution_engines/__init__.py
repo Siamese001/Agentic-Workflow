@@ -9,6 +9,6 @@ from .error_handling import ErrorHandling, ErrorInfo
 
 __all__ = [
     "ToolInvocation", "ToolResult",
-    "Validation", "ValidationResult", 
+    "Validation", "ValidationResult",
     "ErrorHandling", "ErrorInfo"
 ]

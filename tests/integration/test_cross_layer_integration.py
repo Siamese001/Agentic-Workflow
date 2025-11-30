@@ -26,7 +26,7 @@ class TestLayerIntegration:
     def test_execution_to_orchestration_flow(self):
         """Test flow from execution to orchestration"""
         executor = ToolInvocation()
-        orchestrator = DAGBuilder()
+        orchestrator = DAGBuilder(name="test_dag", description="Test DAG for integration")
         
         # Test basic integration
         assert executor is not None

@@ -107,11 +107,11 @@ class MemoryManager:
     ) -> str:
         """
         Store a memory entry with appropriate backend.
-        
+
         Args:
             entry: Memory entry to store
             workflow_type: Optional workflow type for specialized handling
-            
+
         Returns:
             Entry ID of stored memory
         """
@@ -147,11 +147,11 @@ class MemoryManager:
     ) -> RetrievalResult:
         """
         Retrieve memory entries based on query.
-        
+
         Args:
             query: Retrieval query parameters
             workflow_type: Optional workflow type for specialized handling
-            
+
         Returns:
             Retrieval results with matching entries
         """
