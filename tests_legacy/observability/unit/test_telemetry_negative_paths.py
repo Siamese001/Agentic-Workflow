@@ -15,7 +15,7 @@ import threading
 import time
 from unittest.mock import patch
 
-from runtime.telemetry import (
+from runtime.telemetry.telemetry import (
     TelemetryBus
 )
 

@@ -7,7 +7,7 @@ resource management across all ExecutionBudgetManager functionality.
 
 import threading
 
-from runtime.execution_budget_manager import (
+from runtime.inference.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetUsage,
     BudgetLimits,

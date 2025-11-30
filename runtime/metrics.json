@@ -1,13 +1,13 @@
 {
-  "timestamp": "2025-11-29T12:14:13.204706",
-  "total_metrics": 6,
+  "timestamp": "2025-11-30T08:41:59.301776",
+  "total_metrics": 3,
   "metrics": {
     "system_uptime": [
       {
         "name": "system_uptime",
         "value": 0.0,
         "metric_type": "gauge",
-        "timestamp": "2025-11-29T12:14:13.203207",
+        "timestamp": "2025-11-30T08:41:59.301398",
         "labels": {},
         "unit": ""
       }
@@ -17,7 +17,7 @@
         "name": "system_startups",
         "value": 1.0,
         "metric_type": "counter",
-        "timestamp": "2025-11-29T12:14:13.203249",
+        "timestamp": "2025-11-30T08:41:59.301434",
         "labels": {},
         "unit": ""
       }
@@ -27,45 +27,9 @@
         "name": "active_connections",
         "value": 0,
         "metric_type": "gauge",
-        "timestamp": "2025-11-29T12:14:13.203260",
+        "timestamp": "2025-11-30T08:41:59.301443",
         "labels": {},
         "unit": ""
-      }
-    ],
-    "model_call_latency": [
-      {
-        "name": "model_call_latency",
-        "value": 150.0,
-        "metric_type": "timer",
-        "timestamp": "2025-11-29T12:14:13.204417",
-        "labels": {
-          "model": "gpt-3.5-turbo"
-        },
-        "unit": "ms"
-      }
-    ],
-    "dag_execution_latency": [
-      {
-        "name": "dag_execution_latency",
-        "value": 75.0,
-        "metric_type": "timer",
-        "timestamp": "2025-11-29T12:14:13.204432",
-        "labels": {
-          "dag_type": "simple"
-        },
-        "unit": "ms"
-      }
-    ],
-    "tool_execution_latency": [
-      {
-        "name": "tool_execution_latency",
-        "value": 25.0,
-        "metric_type": "timer",
-        "timestamp": "2025-11-29T12:14:13.204440",
-        "labels": {
-          "tool": "draft_executor"
-        },
-        "unit": "ms"
       }
     ]
   }

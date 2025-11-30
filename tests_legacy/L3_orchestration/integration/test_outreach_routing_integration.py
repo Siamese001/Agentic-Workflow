@@ -10,7 +10,7 @@ from unittest.mock import Mock, patch
 
 from agentic_core.l3_orchestration.framework.lic_outreach_factory import create_message_executor_with_routing, create_outreach_orchestrator_with_routing
 from runtime.infra.model_routing.policies import ModelRoutingPolicy
-from runtime.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
+from runtime.inference.execution_budget_manager import ExecutionBudgetManager, BudgetLimits, get_budget_manager
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 from config.LIC.lic_profile import get_lic_profile, create_custom_profile
 

@@ -7,7 +7,7 @@ across all orchestration paths and high token usage scenarios.
 
 import pytest
 
-from runtime.execution_budget_manager import (
+from runtime.inference.execution_budget_manager import (
     ExecutionBudgetManager,
     BudgetLimits,
     get_budget_manager

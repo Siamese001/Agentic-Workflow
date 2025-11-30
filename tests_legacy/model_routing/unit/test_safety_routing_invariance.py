@@ -9,7 +9,7 @@ Tests for safety routing behavior:
 from unittest.mock import Mock
 
 from runtime.infra.model_routing.policies import ModelRoutingPolicy
-from runtime.execution_budget_manager import ExecutionBudgetManager, get_budget_manager
+from runtime.inference.execution_budget_manager import ExecutionBudgetManager, get_budget_manager
 
 
 class TestSafetyRoutingInvariance:

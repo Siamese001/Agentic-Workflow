@@ -9,7 +9,7 @@ from unittest.mock import Mock
 
 from runtime.infra.model_routing.policies import ModelRoutingPolicy
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
-from runtime.execution_budget_manager import ExecutionBudgetManager
+from runtime.inference.execution_budget_manager import ExecutionBudgetManager
 
 
 class TestRoutingPolicyBasic:
