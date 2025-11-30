@@ -4,6 +4,9 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 
+# Import EntityType from L4 module as expected by tests
+from agentic_core.l4_memory_state.temporal.entity_resolution import EntityType
+
 class QueryType(Enum):
     """Knowledge graph query type enumeration."""
     ENTITY_LOOKUP = "entity_lookup"
