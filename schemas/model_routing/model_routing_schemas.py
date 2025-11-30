@@ -48,7 +48,7 @@ class ModelChoice(BaseModel):
     estimated_cost: float = Field(0.001, description="Estimated cost per request")
     latency_ms: int = Field(500, description="Expected latency in milliseconds")
     max_tokens: Optional[int] = Field(None, description="Maximum tokens supported")
-    temperature_range: tuple[float, float] = Field((0.0, 1.0), description="Temperature range")
+    temperature_range: Tuple[float, float] = Field((0.0, 1.0), description="Temperature range")
     capabilities: List[str] = Field(default_factory=list, description="Model capabilities")
     metadata: Dict[str, Any] = Field(default_factory=dict, description="Additional metadata")
 
