@@ -266,7 +266,7 @@ class ResumeGenerationWorkflow:
 
             # Build generation request - use request_data as master_resume_data if not provided
             master_resume_data = request_data.get("master_resume_data", request_data)
-            
+
             generation_request = ResumeGenerationRequest(
                 target_role=request_data.get("target_role", ""),
                 experience_level=request_data.get("experience_level", ""),

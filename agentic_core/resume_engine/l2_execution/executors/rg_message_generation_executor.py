@@ -98,15 +98,15 @@ class MessageGenerationExecutor:
             },
             "bullet_enhancement": {
                 "action_verbs": [
-                    "developed", "implemented", "architected", "led", "optimized", 
+                    "developed", "implemented", "architected", "led", "optimized",
                     "transformed", "launched", "scaled"
                 ],
                 "impact_patterns": [
-                    "resulting in {metric} improvement", "driving {metric} growth", 
+                    "resulting in {metric} improvement", "driving {metric} growth",
                     "achieving {metric} efficiency", "delivering {metric} value"
                 ],
                 "technical_keywords": [
-                    "machine learning", "cloud architecture", "data analytics", 
+                    "machine learning", "cloud architecture", "data analytics",
                     "microservices", "devops", "automation"
                 ]
             },
@@ -115,7 +115,7 @@ class MessageGenerationExecutor:
                     "Python", "Machine Learning", "Cloud Computing", "DevOps", "Data Engineering"
                 ],
                 "leadership_priority": [
-                    "Team Leadership", "Project Management", "Strategic Planning", 
+                    "Team Leadership", "Project Management", "Strategic Planning",
                     "Stakeholder Management"
                 ],
                 "tools_priority": [
@@ -203,7 +203,7 @@ class MessageGenerationExecutor:
     def _generate_professional_summary(self, context: GenerationContext) -> MessageResult:
         """Generate professional summary with role-specific logic"""
         templates = self.generation_templates["professional_summary"]
-        template = templates.get(context.experience_level, templates["mid"])
+        template = templates.get(context.experience_level, templates["mid_level"])
 
         # Extract key information
         key_areas = self._extract_key_areas(context.prompt, context.target_role)
@@ -655,7 +655,7 @@ class MessageGenerationExecutor:
     def _has_special_characters(self, content: str) -> bool:
         """Check for ATS-unfriendly special characters"""
         special_chars = [
-            "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "=", "{", "}", 
+            "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "+", "=", "{", "}",
             "[", "]", "|", "\\", ":", ";", '"', "'", "<", ">", ",", ".", "?", "/"
         ]
         return any(char in content for char in special_chars if not content.strip().endswith(char))
