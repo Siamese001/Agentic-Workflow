@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 from dataclasses import dataclass
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 
 class TemporalRelation(str, Enum):
@@ -32,7 +32,7 @@ class TemporalEntity:
         duration = None
         if self.end_time:
             duration = (self.end_time - self.start_time).total_seconds()
-        
+
         return {
             "entity_id": self.entity_id,
             "entity_type": self.entity_type,
@@ -149,7 +149,7 @@ class TemporalTriplet:
             TemporalRelation.STARTS: TemporalRelation.ENDS,
             TemporalRelation.ENDS: TemporalRelation.STARTS,
         }
-        
+
         return TemporalTriplet(
             subject_id=self.object_id,
             relation=inverse_relations.get(self.relation, self.relation),

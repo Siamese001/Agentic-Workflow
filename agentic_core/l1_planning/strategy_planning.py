@@ -35,10 +35,10 @@ class StrategyConfig:
 
 class StrategyPlanner:
     """Robust strategy planning implementation."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        
+
     def plan_strategy(self, mission_type: str, context: Dict[str, Any]) -> StrategyConfig:
         """Plan strategy based on mission type and context."""
         if mission_type == "resume_generation":
@@ -69,7 +69,7 @@ class StrategyPlanner:
                 reasoning_depth=5,
                 enable_rag=True
             )
-    
+
     def validate_strategy(self, strategy: StrategyConfig) -> List[str]:
         """Validate strategy configuration."""
         issues = []
@@ -98,7 +98,7 @@ def reset_strategy_planner() -> None:
 
 __all__ = [
     "StrategyType",
-    "StrategyConfig", 
+    "StrategyConfig",
     "StrategyPlanner",
     "get_strategy_planner",
     "reset_strategy_planner",

@@ -14,7 +14,7 @@ __all__ = [
     "BaseModel",
     "TimestampedModel",
     "IdentifiableModel",
-    
+
     # Profile models
     "UserProfile",
     "ContactInfo",
@@ -22,7 +22,7 @@ __all__ = [
     "EducationEntry",
     "SkillEntry",
     "SkillsByCategory",
-    
+
     # Validation models (re-exported from utils)
     "ValidationError",
     "ValidationResult",

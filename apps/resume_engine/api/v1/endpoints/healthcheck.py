@@ -14,16 +14,13 @@ from fastapi import APIRouter
 from typing import Dict, Any
 import asyncio
 import time
-from datetime import datetime
 
 # Import shared API components from framework layer
 from agentic_core.api import (
     create_health_check_response,
     create_success_response,
-    create_error_response,
     handle_errors,
     log_api_calls,
-    APIException,
     ServiceUnavailableAPIException
 )
 
@@ -31,7 +28,7 @@ router = APIRouter()
 
 class HealthCheckEndpoint:
     """Monitors resume engine system health and component status"""
-    
+
     def __init__(self):
         self.start_time = time.time()
         self.component_status = {
@@ -40,25 +37,25 @@ class HealthCheckEndpoint:
             "ats_optimizer": True,
             "skill_expander": True
         }
-    
+
     async def check_component_health(self, component_name: str) -> bool:
         """Check health of specific component"""
         # Simulate component health check
         await asyncio.sleep(0.01)  # Simulate async operation
         return self.component_status.get(component_name, False)
-    
+
     async def get_system_status(self) -> Dict[str, Any]:
         """Get comprehensive system health status"""
         current_time = time.time()
         uptime = current_time - self.start_time
-        
+
         # Check all components
         component_health = {}
         for component in self.component_status:
             component_health[component] = await self.check_component_health(component)
-        
+
         overall_health = all(component_health.values())
-        
+
         return {
             "status": "healthy" if overall_health else "degraded",
             "uptime_seconds": uptime,
@@ -75,11 +72,11 @@ async def health_check():
     try:
         health_checker = HealthCheckEndpoint()
         system_status = await health_checker.get_system_status()
-        
+
         # Convert to match shared API response format
         health_score = 1.0 if system_status["status"] == "healthy" else 0.7
         issues = [] if system_status["status"] == "healthy" else ["Some components degraded"]
-        
+
         return create_health_check_response(
             status=system_status["status"],
             health_score=health_score,
@@ -91,8 +88,8 @@ async def health_check():
             issues=issues,
             message=f"Resume engine is {system_status['status']}"
         )
-        
-    except Exception as e:
+
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Health check service unavailable",
             error_code="HEALTH_SERVICE_UNAVAILABLE"
@@ -105,7 +102,7 @@ async def ping():
     """Simple ping endpoint for basic connectivity check"""
     health_checker = HealthCheckEndpoint()
     uptime_seconds = time.time() - health_checker.start_time
-    
+
     return create_success_response(
         data={
             "status": "ok",
@@ -122,15 +119,15 @@ async def check_components():
     try:
         health_checker = HealthCheckEndpoint()
         components = {}
-        
+
         for component in health_checker.component_status:
             components[component] = await health_checker.check_component_health(component)
-        
+
         return create_success_response(
             data=components,
             message="Component health check completed"
         )
-    except Exception as e:
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Component health check failed",
             error_code="COMPONENT_HEALTH_ERROR"

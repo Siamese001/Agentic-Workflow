@@ -18,12 +18,12 @@ class RAGEngine:
 
 class ResumeRAGEngine(RAGEngine):
     """Resume-specific RAG engine implementation."""
-    
+
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         super().__init__(config)
         self.resume_index = {}
-    
-    def query(self, query_text: str, policy: Optional[Dict[str, Any]] = None, 
+
+    def query(self, query_text: str, policy: Optional[Dict[str, Any]] = None,
               limit: int = 10) -> List[Dict[str, Any]]:
         """Query resume documents."""
         # Mock implementation

@@ -1,6 +1,5 @@
 from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
-import asyncio
 
 @dataclass
 class PineconeConfig:
@@ -26,7 +25,7 @@ class PineconeAdapter:
     def process(self, *args, **kwargs) -> Any:
         """Process Pinecone operations."""
         operation = kwargs.get("operation", "status")
-        
+
         if operation == "connect":
             return self.connect()
         elif operation == "upsert":
@@ -76,7 +75,7 @@ class PineconeAdapter:
         """Upsert vectors to Pinecone (mock implementation)."""
         if not self._connected:
             return {"status": "not_connected", "processed": True}
-        
+
         upserted_count = 0
         for vector in vectors:
             vector_id = vector.get("id")
@@ -84,7 +83,7 @@ class PineconeAdapter:
             if vector_id and vector_data:
                 self._vectors[vector_id] = vector_data
                 upserted_count += 1
-        
+
         return {
             "status": "upserted",
             "count": upserted_count,
@@ -96,10 +95,10 @@ class PineconeAdapter:
         """Query vectors from Pinecone (mock implementation)."""
         if not self._connected:
             return {"status": "not_connected", "processed": True}
-        
+
         if not query_vector:
             return {"status": "no_query_vector", "processed": True}
-        
+
         # Mock similarity search (simple dot product)
         results = []
         for vector_id, vector_data in self._vectors.items():
@@ -111,10 +110,10 @@ class PineconeAdapter:
                     "score": similarity,
                     "values": vector_data
                 })
-        
+
         # Sort by similarity and return top_k
         results.sort(key=lambda x: x["score"], reverse=True)
-        
+
         return {
             "status": "queried",
             "matches": results[:top_k],
@@ -126,13 +125,13 @@ class PineconeAdapter:
         """Delete vectors from Pinecone (mock implementation)."""
         if not self._connected:
             return {"status": "not_connected", "processed": True}
-        
+
         deleted_count = 0
         for vector_id in vector_ids:
             if vector_id in self._vectors:
                 del self._vectors[vector_id]
                 deleted_count += 1
-        
+
         return {
             "status": "deleted",
             "count": deleted_count,

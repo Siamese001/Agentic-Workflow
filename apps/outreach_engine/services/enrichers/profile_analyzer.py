@@ -3,8 +3,7 @@ Relationship Analyzer Service
 LEVEL 5 - Service for analyzing and leveraging relationships in outreach
 """
 
-from typing import Dict, List, Any, Optional
-import asyncio
+from typing import Dict, List, Any
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import logging
@@ -21,10 +20,10 @@ class RelationshipAnalysis:
 
 class RelationshipAnalyzer:
     """Service for analyzing relationships and optimizing outreach approach"""
-    
+
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        
+
         # Relationship types and their characteristics
         self.relationship_types = {
             "stranger": {
@@ -70,7 +69,7 @@ class RelationshipAnalyzer:
                 "engagement_strategy": "mentorship_opportunity"
             }
         }
-        
+
         # Trust indicators
         self.trust_indicators = {
             "mutual_connections": {
@@ -99,7 +98,7 @@ class RelationshipAnalyzer:
                 "indicators": ["mutual_groups", "shared_interests", "industry_recognition"]
             }
         }
-        
+
         # Connection pathways
         self.connection_pathways = {
             "direct": {
@@ -123,7 +122,7 @@ class RelationshipAnalyzer:
                 "description": "No prior connection or pathway"
             }
         }
-    
+
     async def analyze_relationship(
         self,
         recipient_profile: Dict[str, Any],
@@ -145,32 +144,32 @@ class RelationshipAnalyzer:
         """
         try:
             self.logger.info("Analyzing sender-recipient relationship")
-            
+
             # Determine relationship type and strength
             relationship_type, relationship_strength = await self._determine_relationship_type(
                 recipient_profile, sender_profile, context, interaction_history
             )
-            
+
             # Identify connection pathways
             connection_pathways = await self._identify_connection_pathways(
                 recipient_profile, sender_profile, context
             )
-            
+
             # Analyze trust indicators
             trust_indicators = await self._analyze_trust_indicators(
                 recipient_profile, sender_profile, context, interaction_history
             )
-            
+
             # Generate engagement recommendations
             engagement_recommendations = await self._generate_engagement_recommendations(
                 relationship_type, relationship_strength, trust_indicators, connection_pathways
             )
-            
+
             # Generate metadata
             metadata = await self._generate_relationship_metadata(
                 relationship_type, relationship_strength, connection_pathways, trust_indicators
             )
-            
+
             return RelationshipAnalysis(
                 relationship_strength=relationship_strength,
                 relationship_type=relationship_type,
@@ -179,11 +178,11 @@ class RelationshipAnalyzer:
                 engagement_recommendations=engagement_recommendations,
                 metadata=metadata
             )
-            
+
         except Exception as e:
             self.logger.error(f"Error analyzing relationship: {e}")
             raise e
-    
+
     async def _determine_relationship_type(
         self,
         recipient_profile: Dict[str, Any],
@@ -192,7 +191,7 @@ class RelationshipAnalyzer:
         interaction_history: List[Dict[str, Any]] = None
     ) -> tuple[str, float]:
         """Determine relationship type and strength"""
-        
+
         # Start with context-provided relationship
         if context and context.get("relationship"):
             stated_relationship = context["relationship"].lower()
@@ -201,21 +200,21 @@ class RelationshipAnalyzer:
                 strength_range = relationship_config["strength_range"]
                 base_strength = sum(strength_range) / 2
                 return stated_relationship, base_strength
-        
+
         # Analyze from profiles and history
         strength_score = 0.0
-        
+
         # Check for shared company
-        if (recipient_profile.get("company") == sender_profile.get("company") and 
+        if (recipient_profile.get("company") == sender_profile.get("company") and
             recipient_profile.get("company")):
             strength_score += 0.3
-        
+
         # Check for shared education
         recipient_education = recipient_profile.get("background", {}).get("education", "")
         sender_education = sender_profile.get("background", {}).get("education", "")
         if recipient_education and sender_education and recipient_education == sender_education:
             strength_score += 0.2
-        
+
         # Check interaction history
         if interaction_history:
             recent_interactions = [
@@ -223,12 +222,12 @@ class RelationshipAnalyzer:
                 if self._is_recent_interaction(interaction)
             ]
             strength_score += min(len(recent_interactions) * 0.1, 0.3)
-        
+
         # Check mutual connections
         if context and context.get("mutual_connections"):
             mutual_count = len(context["mutual_connections"])
             strength_score += min(mutual_count * 0.05, 0.2)
-        
+
         # Determine relationship type based on strength
         if strength_score >= 0.7:
             return "friend", strength_score
@@ -241,7 +240,7 @@ class RelationshipAnalyzer:
             return "acquaintance", strength_score
         else:
             return "stranger", strength_score
-    
+
     async def _identify_connection_pathways(
         self,
         recipient_profile: Dict[str, Any],
@@ -250,41 +249,41 @@ class RelationshipAnalyzer:
     ) -> List[str]:
         """Identify available connection pathways"""
         pathways = []
-        
+
         # Direct connection (previous interaction)
         if context and context.get("previous_contact"):
             pathways.append("direct")
-        
+
         # Mutual connections
         if context and context.get("mutual_connections"):
             pathways.append("mutual_connection")
-        
+
         # Shared background
-        if (recipient_profile.get("company") == sender_profile.get("company") and 
+        if (recipient_profile.get("company") == sender_profile.get("company") and
             recipient_profile.get("company")):
             pathways.append("shared_background")
-        
+
         # Shared education
         recipient_education = recipient_profile.get("background", {}).get("education", "")
         sender_education = sender_profile.get("background", {}).get("education", "")
         if recipient_education and sender_education and recipient_education == sender_education:
             pathways.append("shared_background")
-        
+
         # Shared industry
-        if (recipient_profile.get("industry") == sender_profile.get("industry") and 
+        if (recipient_profile.get("industry") == sender_profile.get("industry") and
             recipient_profile.get("industry")):
             pathways.append("professional_network")
-        
+
         # Shared interests
         if context and context.get("shared_interests"):
             pathways.append("professional_network")
-        
+
         # Default to cold outreach if no pathways found
         if not pathways:
             pathways.append("cold_outreach")
-        
+
         return pathways
-    
+
     async def _analyze_trust_indicators(
         self,
         recipient_profile: Dict[str, Any],
@@ -294,7 +293,7 @@ class RelationshipAnalyzer:
     ) -> List[str]:
         """Analyze trust indicators for the relationship"""
         indicators = []
-        
+
         # Mutual connections trust
         if context and context.get("mutual_connections"):
             mutual_count = len(context["mutual_connections"])
@@ -302,12 +301,12 @@ class RelationshipAnalyzer:
                 indicators.append("strong_mutual_network")
             elif mutual_count >= 1:
                 indicators.append("verified_connections")
-        
+
         # Shared background trust
-        if (recipient_profile.get("company") == sender_profile.get("company") and 
+        if (recipient_profile.get("company") == sender_profile.get("company") and
             recipient_profile.get("company")):
             indicators.append("same_company")
-        
+
         # Previous interactions trust
         if interaction_history:
             positive_interactions = [
@@ -318,20 +317,20 @@ class RelationshipAnalyzer:
                 indicators.append("positive_history")
             elif interaction_history:
                 indicators.append("past_communication")
-        
+
         # Professional credibility
         if recipient_profile.get("background", {}).get("achievements"):
             indicators.append("industry_recognition")
-        
+
         if sender_profile.get("background", {}).get("achievements"):
             indicators.append("sender_credibility")
-        
+
         # Social proof
         if context and context.get("shared_interests"):
             indicators.append("shared_interests")
-        
+
         return indicators
-    
+
     async def _generate_engagement_recommendations(
         self,
         relationship_type: str,
@@ -341,11 +340,11 @@ class RelationshipAnalyzer:
     ) -> List[str]:
         """Generate recommendations for engaging based on relationship analysis"""
         recommendations = []
-        
+
         # Base recommendations by relationship type
         relationship_config = self.relationship_types.get(relationship_type, {})
         engagement_strategy = relationship_config.get("engagement_strategy", "value_first")
-        
+
         if engagement_strategy == "formal_introduction":
             recommendations.extend([
                 "Start with formal introduction and clear purpose",
@@ -376,27 +375,27 @@ class RelationshipAnalyzer:
                 "Reference personal connection or shared experience",
                 "Focus on relationship building first"
             ])
-        
+
         # Add pathway-specific recommendations
         if "mutual_connection" in connection_pathways:
             recommendations.append("Request warm introduction through mutual connection")
-        
+
         if "shared_background" in connection_pathways:
             recommendations.append("Leverage shared background as conversation starter")
-        
+
         if "cold_outreach" in connection_pathways:
             recommendations.append("Provide clear, compelling reason for outreach")
             recommendations.append("Demonstrate research and personalization")
-        
+
         # Add trust-based recommendations
         if "strong_mutual_network" in trust_indicators:
             recommendations.append("Leverage network credibility for stronger impact")
-        
+
         if not trust_indicators:
             recommendations.append("Build trust through credibility and value demonstration")
-        
+
         return recommendations[:6]  # Limit to top 6 recommendations
-    
+
     async def _generate_relationship_metadata(
         self,
         relationship_type: str,
@@ -406,16 +405,16 @@ class RelationshipAnalyzer:
     ) -> Dict[str, Any]:
         """Generate metadata for relationship analysis"""
         relationship_config = self.relationship_types.get(relationship_type, {})
-        
+
         # Calculate pathway effectiveness
         pathway_effectiveness = 0.0
         for pathway in connection_pathways:
             pathway_config = self.connection_pathways.get(pathway, {})
             pathway_effectiveness += pathway_config.get("effectiveness", 0.5)
-        
+
         if connection_pathways:
             pathway_effectiveness /= len(connection_pathways)
-        
+
         return {
             "relationship_type": relationship_type,
             "relationship_strength": relationship_strength,
@@ -427,19 +426,19 @@ class RelationshipAnalyzer:
             "analysis_timestamp": datetime.utcnow().isoformat(),
             "engagement_strategy": relationship_config.get("engagement_strategy", "value_first")
         }
-    
+
     def _is_recent_interaction(self, interaction: Dict[str, Any]) -> bool:
         """Check if interaction is recent (within last 6 months)"""
         if not interaction.get("date"):
             return False
-        
+
         try:
             interaction_date = datetime.fromisoformat(interaction["date"])
             six_months_ago = datetime.utcnow() - timedelta(days=180)
             return interaction_date > six_months_ago
         except:
             return False
-    
+
     async def get_relationship_insights(
         self,
         relationship_analysis: RelationshipAnalysis
@@ -451,14 +450,14 @@ class RelationshipAnalyzer:
             "engagement_tactics": [],
             "success_probability": 0.0
         }
-        
+
         # Calculate success probability
         strength_factor = relationship_analysis.relationship_strength
         pathway_factor = relationship_analysis.metadata.get("pathway_effectiveness", 0.5)
         trust_factor = len(relationship_analysis.trust_indicators) / 5.0  # Normalize to 0-1
-        
+
         insights["success_probability"] = (strength_factor * 0.4 + pathway_factor * 0.4 + trust_factor * 0.2)
-        
+
         # Trust building actions
         if not relationship_analysis.trust_indicators:
             insights["trust_building_actions"] = [
@@ -472,7 +471,7 @@ class RelationshipAnalyzer:
                 "Reference mutual connections explicitly",
                 "Build on shared background"
             ]
-        
+
         # Engagement tactics
         if relationship_analysis.relationship_strength < 0.4:
             insights["engagement_tactics"] = [
@@ -486,7 +485,7 @@ class RelationshipAnalyzer:
                 "Reference shared experience",
                 "Emphasize mutual benefit"
             ]
-        
+
         return insights
 
 __all__ = ["RelationshipAnalyzer", "RelationshipAnalysis"]

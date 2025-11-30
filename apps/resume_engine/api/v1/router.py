@@ -15,10 +15,8 @@ from fastapi import APIRouter
 # Import shared API components from framework layer
 from agentic_core.api import (
     create_success_response,
-    create_error_response,
     handle_errors,
     log_api_calls,
-    APIException,
     ServiceUnavailableAPIException
 )
 
@@ -53,14 +51,14 @@ async def root():
     """Root endpoint for resume engine"""
     try:
         available_endpoints = []
-        
+
         if HEALTHCHECK_AVAILABLE and healthcheck:
             available_endpoints.extend(["/health/ - Health check endpoints"])
         if GENERATE_RESUME_AVAILABLE and generate_resume:
             available_endpoints.extend(["/resume/generate/ - Generate resume"])
         if VALIDATE_RESUME_AVAILABLE:
             available_endpoints.extend(["/resume/validate/ - Validate resume"])
-        
+
         return create_success_response(
             data={
                 "engine": "resume_engine",
@@ -76,8 +74,8 @@ async def root():
             },
             message="Resume engine API is running"
         )
-        
-    except Exception as e:
+
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Root endpoint unavailable",
             error_code="ROOT_ENDPOINT_ERROR"
@@ -95,14 +93,14 @@ async def engine_status():
             "generate_resume_router": GENERATE_RESUME_AVAILABLE,
             "validate_resume_router": VALIDATE_RESUME_AVAILABLE
         }
-        
+
         # Calculate overall status
         available_routers = sum(router_status.values())
         total_routers = len(router_status)
         health_percentage = (available_routers / total_routers) * 100 if total_routers > 0 else 0
-        
+
         status = "healthy" if health_percentage >= 100 else "degraded" if health_percentage >= 66 else "unhealthy"
-        
+
         status_data = {
             "status": status,
             "health_percentage": health_percentage,
@@ -112,13 +110,13 @@ async def engine_status():
             "shared_api_status": "integrated",
             "architectural_compliance": "L5 compliant"
         }
-        
+
         return create_success_response(
             data=status_data,
             message=f"Engine status: {status}"
         )
-        
-    except Exception as e:
+
+    except Exception:
         raise ServiceUnavailableAPIException(
             message="Engine status unavailable",
             error_code="ENGINE_STATUS_ERROR"

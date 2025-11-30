@@ -94,7 +94,7 @@ class BM25BackendConfig:
 
 __all__ = [
     "ReasoningMode",
-    "ComplexityLevel", 
+    "ComplexityLevel",
     "RetrievalConfig",
     "ContextBudget",
     "RedisCacheConfig",

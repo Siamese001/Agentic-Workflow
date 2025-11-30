@@ -21,20 +21,20 @@ def test_import_dependencies():
         from apps.outreach_engine.services.builders.outreach_builder import OutreachBuilder
         from apps.outreach_engine.services.builders.message_builder import MessageBuilder
         from apps.outreach_engine.services.enrichers.personalization_engine import PersonalizationEngine
-        from apps.outreach_engine.services.enrichers.relationship_analyzer import RelationshipAnalyzer
-        from apps.outreach_engine.services.generators.message_generator import MessageGenerator
-        from apps.outreach_engine.services.generators.template_generator import TemplateGenerator
+        from apps.outreach_engine.services.enrichers.profile_analyzer import RelationshipAnalyzer
+        from apps.outreach_engine.services.generators.outreach_generator import MessageGenerator
+        from apps.outreach_engine.services.generators.personalization_engine import TemplateGenerator
         from apps.outreach_engine.services.pipelines.outreach_pipeline import OutreachPipeline
-        from apps.outreach_engine.services.pipelines.validation_pipeline import ValidationPipeline
+        from apps.outreach_engine.services.pipelines.compliance_pipeline import ValidationPipeline
         from apps.outreach_engine.services.utils.formatting import OutreachFormatter
         from apps.outreach_engine.services.utils.scoring import OutreachScorer
         
         print("✅ Service layer imports successful")
         
         # Test worker imports
-        from apps.outreach_engine.workers.outreach_generate_worker import OutreachGenerateWorker
-        from apps.outreach_engine.workers.contact_enrich_worker import ContactEnrichWorker
-        from apps.outreach_engine.workers.delivery_worker import DeliveryWorker
+        from apps.outreach_engine.workers.enrichment_worker import OutreachGenerateWorker
+        from apps.outreach_engine.workers.linkedin_send_worker import ContactEnrichWorker
+        from apps.outreach_engine.workers.email_send_worker import DeliveryWorker
         
         print("✅ Worker layer imports successful")
         
@@ -49,7 +49,7 @@ def test_import_dependencies():
         
         # Test CLI imports
         from apps.outreach_engine.cli.run_outreach_engine import OutreachEngineCLI
-        from apps.outreach_engine.cli.setup_outreach_engine import OutreachEngineSetup
+        from apps.outreach_engine.cli.debug_tools import OutreachEngineSetup
         
         print("✅ CLI layer imports successful")
         
@@ -68,7 +68,7 @@ def test_pipeline_integration():
     
     try:
         from apps.outreach_engine.services.pipelines.outreach_pipeline import OutreachPipeline
-        from apps.outreach_engine.services.pipelines.validation_pipeline import ValidationPipeline
+        from apps.outreach_engine.services.pipelines.compliance_pipeline import ValidationPipeline
         
         # Instantiate pipelines
         outreach_pipeline = OutreachPipeline()
@@ -93,9 +93,9 @@ def test_worker_integration():
     print("\n🔍 Testing worker integration...")
     
     try:
-        from apps.outreach_engine.workers.outreach_generate_worker import OutreachGenerateWorker
-        from apps.outreach_engine.workers.contact_enrich_worker import ContactEnrichWorker
-        from apps.outreach_engine.workers.delivery_worker import DeliveryWorker
+        from apps.outreach_engine.workers.enrichment_worker import OutreachGenerateWorker
+        from apps.outreach_engine.workers.linkedin_send_worker import ContactEnrichWorker
+        from apps.outreach_engine.workers.email_send_worker import DeliveryWorker
         
         # Instantiate workers
         outreach_worker = OutreachGenerateWorker()
@@ -145,7 +145,7 @@ def test_cli_integration():
     
     try:
         from apps.outreach_engine.cli.run_outreach_engine import OutreachEngineCLI
-        from apps.outreach_engine.cli.setup_outreach_engine import OutreachEngineSetup
+        from apps.outreach_engine.cli.debug_tools import OutreachEngineSetup
         
         # Instantiate CLI components
         cli = OutreachEngineCLI()
@@ -171,7 +171,7 @@ async def test_end_to_end_flow():
     
     try:
         from apps.outreach_engine.services.pipelines.outreach_pipeline import OutreachPipeline
-        from apps.outreach_engine.services.pipelines.validation_pipeline import ValidationPipeline
+        from apps.outreach_engine.services.pipelines.compliance_pipeline import ValidationPipeline
         
         # Create test data
         test_request = {
