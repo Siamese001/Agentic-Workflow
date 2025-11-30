@@ -179,7 +179,13 @@ class SafetyMonitor:
                 "alert": error_alert
             }
 
-    def _generate_alerts(self, filter_result: FilterResult, validation_result: ValidationResult, source: str, context: Dict[str, Any]) -> List[SafetyAlert]:
+    def _generate_alerts(
+        self,
+        filter_result: FilterResult,
+        validation_result: ValidationResult,
+        source: str,
+        context: Dict[str, Any]
+    ) -> List[SafetyAlert]:
         """Generate alerts based on filter and validation results"""
         alerts = []
 
@@ -227,7 +233,13 @@ class SafetyMonitor:
 
         return alerts
 
-    def _generate_operation_alerts(self, validation_result: ValidationResult, rule_violations: List[str], operation: str, context: Dict[str, Any]) -> List[SafetyAlert]:
+    def _generate_operation_alerts(
+        self,
+        validation_result: ValidationResult,
+        rule_violations: List[str],
+        operation: str,
+        context: Dict[str, Any]
+    ) -> List[SafetyAlert]:
         """Generate alerts for operation safety checks"""
         alerts = []
 
