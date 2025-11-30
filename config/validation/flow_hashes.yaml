@@ -1,1 +1,152 @@
-# Placeholder configuration file
+# Flow Hashes Configuration
+# Workflow hash validation and integrity checking
+
+# Flow Hash Framework
+flow_hashes:
+  enabled: true
+  algorithm: SHA256
+  validation_strict: true
+  integrity_checking: true
+
+# Core Workflow Hashes
+core_workflows:
+  resume_processing_workflow:
+    hash: "a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456"
+    version: "1.0.0"
+    last_updated: "2024-01-01T00:00:00Z"
+    components:
+      - resume_upload
+      - ats_analysis
+      - skill_extraction
+      - content_optimization
+      - final_validation
+  
+  outreach_campaign_workflow:
+    hash: "b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef1234567"
+    version: "1.0.0"
+    last_updated: "2024-01-01T00:00:00Z"
+    components:
+      - target_research
+      - contact_identification
+      - message_personalization
+      - campaign_execution
+
+# Layer Workflow Hashes
+layer_workflows:
+  l1_planning:
+    strategy_planning_flow:
+      hash: "c3d4e5f6789012345678901234567890abcdef1234567890abcdef12345678"
+      version: "1.0.0"
+    
+    research_planning_flow:
+      hash: "d4e5f6789012345678901234567890abcdef1234567890abcdef123456789"
+      version: "1.0.0"
+    
+    message_planning_flow:
+      hash: "e5f6789012345678901234567890abcdef1234567890abcdef1234567890"
+      version: "1.0.0"
+    
+    safety_planning_flow:
+      hash: "f6789012345678901234567890abcdef1234567890abcdef12345678901"
+      version: "1.0.0"
+  
+  l2_execution:
+    tool_execution_flow:
+      hash: "789012345678901234567890abcdef1234567890abcdef123456789012"
+      version: "1.0.0"
+    
+    action_costing_flow:
+      hash: "89012345678901234567890abcdef1234567890abcdef1234567890123"
+      version: "1.0.0"
+    
+    retry_logic_flow:
+      hash: "9012345678901234567890abcdef1234567890abcdef12345678901234"
+      version: "1.0.0"
+  
+  l3_orchestration:
+    workflow_orchestration_flow:
+      hash: "012345678901234567890abcdef1234567890abcdef123456789012345"
+      version: "1.0.0"
+    
+    cost_budget_flow:
+      hash: "12345678901234567890abcdef1234567890abcdef1234567890123456"
+      version: "1.0.0"
+    
+    fallback_flow:
+      hash: "2345678901234567890abcdef1234567890abcdef12345678901234567"
+      version: "1.0.0"
+  
+  l4_state:
+    memory_operations_flow:
+      hash: "345678901234567890abcdef1234567890abcdef123456789012345678"
+      version: "1.0.0"
+    
+    vector_cache_flow:
+      hash: "45678901234567890abcdef1234567890abcdef1234567890123456789"
+      version: "1.0.0"
+    
+    persistence_flow:
+      hash: "5678901234567890abcdef1234567890abcdef12345678901234567890"
+      version: "1.0.0"
+  
+  l5_safety:
+    safety_validation_flow:
+      hash: "678901234567890abcdef1234567890abcdef123456789012345678901"
+      version: "1.0.0"
+    
+    pii_detection_flow:
+      hash: "78901234567890abcdef1234567890abcdef1234567890123456789012"
+      version: "1.0.0"
+    
+    content_filtering_flow:
+      hash: "8901234567890abcdef1234567890abcdef12345678901234567890123"
+      version: "1.0.0"
+
+# Engine Workflow Hashes
+engine_workflows:
+  resume_engine:
+    ats_optimization_flow:
+      hash: "901234567890abcdef1234567890abcdef123456789012345678901234"
+      version: "1.0.0"
+    
+    resume_scoring_flow:
+      hash: "01234567890abcdef1234567890abcdef1234567890123456789012345"
+      version: "1.0.0"
+    
+    skill_taxonomy_flow:
+      hash: "1234567890abcdef1234567890abcdef12345678901234567890123456"
+      version: "1.0.0"
+  
+  outreach_engine:
+    campaign_setup_flow:
+      hash: "234567890abcdef1234567890abcdef123456789012345678901234567"
+      version: "1.0.0"
+    
+    message_generation_flow:
+      hash: "34567890abcdef1234567890abcdef1234567890123456789012345678"
+      version: "1.0.0"
+    
+    personalization_flow:
+      hash: "4567890abcdef1234567890abcdef12345678901234567890123456789"
+      version: "1.0.0"
+
+# Hash Validation Rules
+validation_rules:
+  hash_algorithm: SHA256
+  validation_frequency: daily
+  integrity_check_interval: 3600  # seconds
+  hash_mismatch_action: block_and_alert
+  
+# Hash Storage
+storage:
+  backend: file_system
+  base_path: "flow_hashes/"
+  encryption: false
+  backup_enabled: true
+
+# Hash Updates
+update_policy:
+  auto_update: false
+  manual_approval_required: true
+  version_control: true
+  rollback_enabled: true

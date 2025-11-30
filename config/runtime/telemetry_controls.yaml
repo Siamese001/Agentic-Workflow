@@ -1,1 +1,98 @@
-# Placeholder configuration file
+# Runtime Telemetry Controls Configuration
+# Metrics collection and monitoring control settings
+
+# Telemetry Framework
+telemetry_framework:
+  enabled: true
+  collection_interval: 60  # seconds
+  aggregation_window: 300  # seconds
+  export_interval: 300  # seconds
+
+# Metrics Collection
+metrics_collection:
+  system_metrics:
+    cpu_usage: true
+    memory_usage: true
+    disk_usage: true
+    network_io: true
+  
+  application_metrics:
+    request_count: true
+    response_time: true
+    error_rate: true
+    throughput: true
+  
+  business_metrics:
+    resume_processing_count: true
+    outreach_campaign_count: true
+    model_usage_count: true
+    cost_tracking: true
+
+# Layer-Specific Metrics
+layer_metrics:
+  l1_planning:
+    planning_duration: true
+    planning_success_rate: true
+    research_effectiveness: true
+  
+  l2_execution:
+    tool_execution_time: true
+    action_costing_accuracy: true
+    retry_frequency: true
+  
+  l3_orchestration:
+    workflow_completion_rate: true
+    orchestration_efficiency: true
+    budget_utilization: true
+  
+  l4_state:
+    cache_hit_rate: true
+    memory_utilization: true
+    persistence_latency: true
+  
+  l5_safety:
+    safety_violation_rate: true
+    pii_detection_count: true
+  content_filtering_rate: true
+
+# Engine-Specific Metrics
+engine_metrics:
+  resume_engine:
+    resume_processing_time: true
+    ats_compliance_score: true
+    optimization_effectiveness: true
+  
+  outreach_engine:
+    campaign_response_rate: true
+    message_personalization_score: true
+    contact_engagement_rate: true
+
+# Performance Controls
+performance_controls:
+  sampling_rate: 0.1
+  max_metrics_per_interval: 1000
+  aggregation_strategy: time_weighted_average
+  retention_period: 86400  # seconds
+
+# Export Configuration
+export_config:
+  prometheus:
+    enabled: true
+    port: 9090
+    endpoint: /metrics
+  
+  cloud_watch:
+    enabled: false
+    region: us-east-1
+    namespace: agentic-workflow
+
+# Alerting Controls
+alerting:
+  enabled: true
+  thresholds:
+    error_rate_warning: 0.05
+    error_rate_critical: 0.1
+    latency_warning: 2000  # milliseconds
+    latency_critical: 5000  # milliseconds
+    memory_warning: 0.8
+    memory_critical: 0.9
