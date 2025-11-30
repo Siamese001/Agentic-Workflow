@@ -11,7 +11,7 @@ from typing import Dict
 
 from pydantic import BaseModel, Field
 
-from core.models.models import (
+from agentic_core.models.models import (
     RetrievalConfig,
     ContextBudget,
     ReasoningMode,
