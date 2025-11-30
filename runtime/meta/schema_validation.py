@@ -1,6 +1,6 @@
 # schema_validation - Schema validation utilities
 from typing import Dict, Any, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 
 @dataclass
 class SchemaVersion:
@@ -15,11 +15,13 @@ class SchemaVersion:
 
 def validate_schema_version(schema: Dict[str, Any], expected_version: str = "v1", model_type: Any = None) -> SchemaVersion:
     """Validate schema version compatibility"""
-    # Handle Pydantic models by converting to dict
+    # Handle different object types
     if hasattr(schema, 'model_dump'):
         schema_dict = schema.model_dump()
     elif hasattr(schema, 'dict'):
         schema_dict = schema.dict()
+    elif hasattr(schema, '__dataclass_fields__'):
+        schema_dict = asdict(schema)
     else:
         schema_dict = schema
     

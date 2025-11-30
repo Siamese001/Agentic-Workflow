@@ -108,6 +108,15 @@ class SafetyResult:
     error: Optional[str] = None
 
 @dataclass
+class RAGPlan:
+    """RAG execution plan"""
+    name: str = ""
+    query: str = ""
+    retriever_config: RetrievalConfig = field(default_factory=RetrievalConfig)
+    schema_version: str = "v1"
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+@dataclass
 class WorkflowPlanBundle:
     """Bundle of workflow plans"""
     strategy: StrategyPlan = field(default_factory=StrategyPlan)
@@ -115,15 +124,6 @@ class WorkflowPlanBundle:
     drafting: DraftingPlan = field(default_factory=DraftingPlan)
     qa: QAPlan = field(default_factory=QAPlan)
     safety: SafetyPlan = field(default_factory=SafetyPlan)
-    schema_version: str = "v1"
-    metadata: Dict[str, Any] = field(default_factory=dict)
-
-@dataclass
-class RAGPlan:
-    """RAG execution plan"""
-    name: str = ""
-    query: str = ""
-    retriever_config: RetrievalConfig = field(default_factory=RetrievalConfig)
     schema_version: str = "v1"
     metadata: Dict[str, Any] = field(default_factory=dict)
 
