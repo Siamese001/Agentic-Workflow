@@ -1,0 +1,197 @@
+﻿Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:.
+|   apps-folder-tree.txt
+|   
++---api
+|   |   api.py
+|   |   __init__.py
+|   |   
+|   +---admin
+|   |       app_admin_api.py
+|   |       __init__.py
+|   |       
+|   +---health
+|   |       app_health_api.py
+|   |       __init__.py
+|   |       
+|   +---middleware
+|   |       app_api_middleware.py
+|   |       __init__.py
+|   |       
+|   +---outreach
+|   |       app_outreach_api.py
+|   |       __init__.py
+|   |       
+|   +---resume
+|   |       app_resume_api.py
+|   |       __init__.py
+|   |       
+|   \---routers
+|           app_api_router.py
+|           __init__.py
+|           
++---cli
+|       app_admin_cli.py
+|       app_outreach_cli.py
+|       app_resume_cli.py
+|       __init__.py
+|       
++---config
+|   +---environment
+|   |       environment_config.json
+|   |       
+|   +---models
+|   |       model_versions.json
+|   |       
+|   +---system
+|   |       evaluation_results.json
+|   |       launch.json
+|   |       pipeline_pipeline_1764436382_results.json
+|   |       settings.json
+|   |       tasks.json
+|   |       
+|   +---validation
+|   |       mypy.ini
+|   |       pyproject.toml
+|   |       pytest.ini
+|   |       
+|   \---windsurf_rules
+|           windsurf_validation_keys.json
+|           
++---docs
+|   +---architecture
+|   |       Agentic Design Pillars.md
+|   |       PHASE1_STRUCTURAL_GAP_ANALYSIS.md
+|   |       README.md
+|   |       SECTION_3_ALIGNMENT_SUMMARY.md
+|   |       TECHNICAL_DEBT.md
+|   |       
+|   +---reports
+|   |       FINAL_COMPREHENSIVE_REPORT.md
+|   |       INFRASTRUCTURE_ACHIEVEMENTS_REPORT.md
+|   |       
+|   \---validation
+|           COMPREHENSIVE_VALIDATION_REPORT.md
+|           CRITICAL_VIOLATIONS_PROGRESS.md
+|           FINAL_VALIDATION_REPORT.md
+|           fix_validation_plan.md
+|           VALIDATION_KEYS_SUMMARY.md
+|           VALIDATION_SCHEMA_GAP_REPORT.md
+|           
++---outreach_app
+|   |   __init__.py
+|   |   
+|   +---adapters
+|   |       app_outreach_engine_adapter.py
+|   |       app_outreach_memory_adapter.py
+|   |       outreach_adapter.py
+|   |       __init__.py
+|   |       
+|   +---controllers
+|   |       app_outreach_controller.py
+|   |       app_outreach_pipeline_router.py
+|   |       __init__.py
+|   |       
+|   +---serializers
+|   |       app_outreach_message_serializer.py
+|   |       app_outreach_metadata_serializer.py
+|   |       __init__.py
+|   |       
+|   +---validators
+|   |       app_outreach_input_validator.py
+|   |       app_outreach_schema_validator.py
+|   |       __init__.py
+|   |       
+|   \---workflows
+|           app_outreach_generation_workflow.py
+|           app_outreach_research_workflow.py
+|           outreach_pipeline.py
+|           __init__.py
+|           
++---resume_app
+|   |   __init__.py
+|   |   
+|   +---adapters
+|   |       app_resume_engine_adapter.py
+|   |       app_resume_memory_adapter.py
+|   |       resume_adapter.py
+|   |       __init__.py
+|   |       
+|   +---controllers
+|   |       app_resume_controller.py
+|   |       app_resume_pipeline_router.py
+|   |       __init__.py
+|   |       
+|   +---serializers
+|   |       app_resume_metadata_serializer.py
+|   |       app_resume_output_serializer.py
+|   |       __init__.py
+|   |       
+|   +---validators
+|   |       app_resume_input_validator.py
+|   |       app_resume_schema_validator.py
+|   |       __init__.py
+|   |       
+|   \---workflows
+|           app_resume_generation_workflow.py
+|           app_resume_research_workflow.py
+|           resume_pipeline.py
+|           __init__.py
+|           
++---services
+|   +---cache
+|   |       app_cache_service.py
+|   |       __init__.py
+|   |       
+|   +---config_loader
+|   |       app_config_loader_service.py
+|   |       __init__.py
+|   |       
+|   +---errors
+|   |       app_error_service.py
+|   |       __init__.py
+|   |       
+|   +---rate_limiting
+|   |       app_rate_limit_service.py
+|   |       __init__.py
+|   |       
+|   +---security
+|   |       app_security_service.py
+|   |       __init__.py
+|   |       
+|   \---telemetry
+|           app_telemetry_service.py
+|           __init__.py
+|           
+\---shared_app
+    |   config.py
+    |   toolpath_evaluator.py
+    |   __init__.py
+    |   
+    +---adapters
+    |       app_shared_config_adapter.py
+    |       app_shared_logging_adapter.py
+    |       __init__.py
+    |       
+    +---controllers
+    |       app_shared_controller.py
+    |       __init__.py
+    |       
+    +---serializers
+    |       app_shared_error_serializer.py
+    |       app_shared_response_serializer.py
+    |       __init__.py
+    |       
+    +---validators
+    |       app_shared_format_validator.py
+    |       app_shared_request_validator.py
+    |       auth.py
+    |       __init__.py
+    |       
+    \---workflows
+            app_shared_postprocessing.py
+            app_shared_preprocessing.py
+            ci_cd_pipeline.py
+            __init__.py
+            
