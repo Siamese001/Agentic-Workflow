@@ -14,6 +14,9 @@ class QueryType(Enum):
     PATH_FINDING = "path_finding"
     NEIGHBORHOOD_SEARCH = "neighborhood_search"
     REASONING_QUERY = "reasoning_query"
+    NEIGHBORHOOD = "neighborhood"
+    PATTERN_MATCH = "pattern_match"
+    ENTITY_FACTS = "entity_facts"
 
 class HopDirection(Enum):
     """Knowledge graph hop direction enumeration."""
@@ -42,6 +45,25 @@ class KGResult:
     metadata: Dict[str, Any] = field(default_factory=dict)
     created_at: datetime = field(default_factory=datetime.now)
 
+@dataclass
+class KGQueryPlan:
+    """Knowledge graph query plan structure."""
+    query_id: str = ""
+    primary_entity: str = ""
+    target_entity: str = ""
+    query_type: str = "entity_lookup"
+    relationship_types: List[str] = field(default_factory=list)
+    traversal_depth: int = 3
+    constraints: Dict[str, Any] = field(default_factory=dict)
+    reasoning_enabled: bool = True
+    priority: float = 1.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.now)
+    
+    def __post_init__(self):
+        if not self.query_id:
+            self.query_id = f"kg_query_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
 class KGRetrievalPlanner:
     """Knowledge Graph retrieval planning engine."""
     
@@ -49,6 +71,19 @@ class KGRetrievalPlanner:
         self.config = config or {}
         self.kg_endpoint = self.config.get("kg_endpoint", "default")
         self.max_results = self.config.get("max_results", 10)
+        self.planning_history = []
+    
+    def plan_query(self, query: str, context: Dict[str, Any] = None, query_type: str = "entity_lookup") -> KGQueryPlan:
+        """Plan a KG query."""
+        return KGQueryPlan(
+            primary_entity=query,
+            target_entity="",
+            query_type=query_type,
+            relationship_types=["related_to", "part_of"],
+            constraints=context or {},
+            reasoning_enabled=True,
+            metadata={"query_type": query_type}
+        )
     
     def plan_retrieval(self, query: KGQuery) -> KGResult:
         """Plan KG retrieval based on query."""
@@ -87,31 +122,17 @@ class KGRetrievalPlanner:
         return refined
 
 def plan_entity_retrieval(entity_name: str, entity_type: Optional[EntityType] = None,
-                         constraints: Dict[str, Any] = None) -> KGQueryPlan:
+                         entity_id: str = "", constraints: Dict[str, Any] = None, 
+                         predicates: List[str] = None) -> KGQueryPlan:
     """Plan entity retrieval from knowledge graph."""
     return KGQueryPlan(
         primary_entity=entity_name,
         target_entity="",
-        relationship_types=["related_to", "part_of", "works_for"],
+        relationship_types=predicates or ["related_to", "part_of", "works_for"],
         constraints=constraints or {},
         reasoning_enabled=True,
-        metadata={"entity_type": entity_type.value if entity_type else "unknown"}
+        metadata={
+            "entity_type": entity_type.value if entity_type else "unknown",
+            "entity_id": entity_id
+        }
     )
-
-@dataclass
-class KGQueryPlan:
-    """Knowledge graph query plan structure."""
-    query_id: str = ""
-    primary_entity: str = ""
-    target_entity: str = ""
-    relationship_types: List[str] = field(default_factory=list)
-    traversal_depth: int = 3
-    constraints: Dict[str, Any] = field(default_factory=dict)
-    reasoning_enabled: bool = True
-    priority: float = 1.0
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: datetime = field(default_factory=datetime.now)
-    
-    def __post_init__(self):
-        if not self.query_id:
-            self.query_id = f"kg_query_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
