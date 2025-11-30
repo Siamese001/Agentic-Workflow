@@ -1,10 +1,112 @@
 # Framing Injection v1.0
 # Problem definition and perspective framing prompts for optimal solution approaches
+# Integrated with v5 Instructional Injection Framework
 
 framing_injection:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
   
+  # V5 Instructional Injection Framework - Framing Layer
+  v5_framing_injections:
+    enabled: true
+    injection_count: 5
+    
+    # 1. Global Goal-State Injection
+    global_goal_state:
+      description: "Anchor all model reasoning to one clear overarching objective"
+      prompt_template: |
+        Your primary objective is to {goal_state}. All reasoning, analysis, and output must align with this central goal. 
+        Before proceeding, confirm your understanding of the objective and how each step serves this purpose.
+      usage_context:
+        - "Resume optimization"
+        - "Outreach strategy development"
+        - "Quality assessment"
+      success_criteria:
+        - "Clear goal articulation"
+        - "Consistent alignment throughout"
+        - "Objective-driven decision making"
+        
+    # 2. Success Criteria Injection
+    success_criteria:
+      description: "Define explicit quality thresholds and outcome requirements upfront"
+      prompt_template: |
+        Success Criteria:
+        - Quality Threshold: {quality_threshold}
+        - Required Outcomes: {required_outcomes}
+        - Evaluation Metrics: {evaluation_metrics}
+        
+        All outputs must meet or exceed these criteria. If any criterion is not met, revise and improve.
+      usage_context:
+        - "Resume scoring"
+        - "Message effectiveness"
+        - "Content quality assessment"
+      success_criteria:
+        - "Measurable quality standards"
+        - "Clear outcome definitions"
+        - "Specific evaluation metrics"
+        
+    # 3. Task Mode Declaration
+    task_mode_declaration:
+      description: "Specify cognitive mode: analytical, synthesis, adversarial, meta, security"
+      prompt_template: |
+        Task Mode: {cognitive_mode}
+        
+        Operating Mode Parameters:
+        - Cognitive Approach: {cognitive_approach}
+        - Analysis Depth: {analysis_depth}
+        - Output Style: {output_style}
+        - Safety Level: {safety_level}
+        
+        Maintain this mode throughout the entire task execution.
+      usage_context:
+        - "Complex analysis tasks"
+        - "Multi-perspective evaluation"
+        - "Security-sensitive operations"
+      success_criteria:
+        - "Consistent mode application"
+        - "Appropriate cognitive approach"
+        - "Mode-specific output characteristics"
+        
+    # 4. Scope & Boundaries Injection
+    scope_boundaries:
+      description: "State exact constraints and forbidden behaviors for the task"
+      prompt_template: |
+        Task Scope and Boundaries:
+        - Allowed Operations: {allowed_operations}
+        - Forbidden Behaviors: {forbidden_behaviors}
+        - Content Constraints: {content_constraints}
+        - Output Limitations: {output_limitations}
+        
+        Strictly adhere to these boundaries. Do not exceed scope or engage in forbidden behaviors.
+      usage_context:
+        - "Data privacy compliance"
+        - "Content filtering"
+        - "Operational constraints"
+      success_criteria:
+        - "Strict boundary adherence"
+        - "No scope violations"
+        - "Appropriate constraint application"
+        
+    # 5. Cost/Latency Targets
+    cost_latency_targets:
+      description: "Guide model toward concise, efficient reasoning under resource limits"
+      prompt_template: |
+        Resource Constraints:
+        - Maximum Response Time: {max_response_time}
+        - Token Limit: {token_limit}
+        - Processing Cost Target: {cost_target}
+        - Efficiency Requirement: {efficiency_requirement}
+        
+        Optimize for efficiency while maintaining quality. Prioritize concise, direct responses.
+      usage_context:
+        - "Real-time processing"
+        - "High-volume operations"
+        - "Cost-sensitive applications"
+      success_criteria:
+        - "Response within time limits"
+        - "Efficient token usage"
+        - "Cost-effective processing"
+        
   # Global framing principles
   global_principles:
     enabled: true

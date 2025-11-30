@@ -1,10 +1,159 @@
 # Output Governance Injection v1.0
 # Output format and content governance prompts for consistent, high-quality outputs
+# Integrated with v5 Instructional Injection Framework
 
 output_governance:
   version: "1.0"
   last_updated: "2024-01-01T00:00:00Z"
   
+  # V5 Instructional Injection Framework - Output Layer
+  v5_output_injections:
+    enabled: true
+    injection_count: 5
+    
+    # 26. Strict JSON-Only Output Mode
+    strict_json_output:
+      description: "Require deterministic, schema-compliant JSON without extra text"
+      prompt_template: |
+        STRICT JSON OUTPUT MODE ACTIVATED
+        
+        Output Requirements:
+        - Format: Valid JSON only
+        - Schema Compliance: {schema_requirements}
+        - No Additional Text: true
+        - Deterministic Structure: true
+        
+        JSON Schema:
+        {json_schema}
+        
+        Output must be valid JSON that strictly adheres to the provided schema.
+        Do not include any explanatory text, comments, or non-JSON content.
+      usage_context:
+        - "API responses"
+        - "Data exchange"
+        - "Structured output generation"
+      success_criteria:
+        - "Valid JSON format"
+        - "Schema compliance"
+        - "No extra text content"
+        
+    # 27. Schema Enforcement & Examples
+    schema_enforcement:
+      description: "Supply minimal schema and one valid illustrative example"
+      prompt_template: |
+        SCHEMA ENFORCEMENT PROTOCOL
+        
+        Required Schema:
+        {required_schema}
+        
+        Valid Example:
+        {example_output}
+        
+        Enforcement Rules:
+        - Follow exact schema structure
+        - Use specified field types
+        - Maintain required field order
+        - Reference example for format guidance
+        
+        Generate output that conforms to schema while using example as format reference.
+      usage_context:
+        - "Complex data structures"
+        - "Format standardization"
+        - "Data validation"
+      success_criteria:
+        - "Schema structure followed"
+        - "Field types correct"
+        - "Example format referenced"
+        
+    # 28. Stability Contracts
+    stability_contracts:
+      description: "Preserve field order and naming across repeated outputs"
+      prompt_template: |
+        OUTPUT STABILITY CONTRACT
+        
+        Contract Requirements:
+        - Field Order: {field_order}
+        - Field Naming: {field_naming}
+        - Consistent Structure: true
+        - Stable Identifiers: true
+        
+        Stability Guarantees:
+        - Same fields in same order
+        - Consistent naming conventions
+        - Stable data types
+        - Predictable structure
+        
+        Maintain output stability across all generations for this task type.
+      usage_context:
+        - "Repeated operations"
+        - "API consistency"
+        - "Data pipeline stability"
+      success_criteria:
+        - "Field order maintained"
+        - "Naming consistent"
+        - "Structure stable"
+        
+    # 29. Error Envelope Normalization
+    error_envelope:
+      description: "Standardize failures into simple, structured error objects"
+      prompt_template: |
+        ERROR ENVELOPE NORMALIZATION
+        
+        Error Response Schema:
+        {{
+          "success": false,
+          "error": {{
+            "code": "{error_code}",
+            "message": "{error_message}",
+            "details": "{error_details}",
+            "timestamp": "{timestamp}"
+          }}
+        }}
+        
+        Error Handling Rules:
+        - Always use standardized error format
+        - Include specific error codes
+        - Provide clear error messages
+        - Add relevant context details
+        
+        Normalize all failures into the structured error envelope format.
+      usage_context:
+        - "Error handling"
+        - "API responses"
+        - "Failure reporting"
+      success_criteria:
+        - "Standardized error format"
+        - "Clear error codes"
+        - "Comprehensive error details"
+        
+    # 30. Minimality Constraints
+    minimality_constraints:
+      description: "Limit output size to enforce clarity and conciseness"
+      prompt_template: |
+        OUTPUT MINIMALITY CONSTRAINTS
+        
+        Size Limits:
+        - Maximum Characters: {max_characters}
+        - Maximum Fields: {max_fields}
+        - Maximum Depth: {max_depth}
+        - Conciseness Required: {conciseness_level}
+        
+        Minimality Rules:
+        - Include only essential information
+        - Avoid redundant content
+        - Use efficient data structures
+        - Prioritize clarity over verbosity
+        
+        Generate minimal output that meets all requirements while respecting size constraints.
+      usage_context:
+        - "Token optimization"
+        - "Performance requirements"
+        - "Clarity optimization"
+      success_criteria:
+        - "Size constraints respected"
+        - "Essential information retained"
+        - "Output is concise"
+        
   # Global governance principles
   global_principles:
     enabled: true
