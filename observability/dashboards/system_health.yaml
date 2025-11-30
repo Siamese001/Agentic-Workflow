@@ -1,1 +1,200 @@
-# Placeholder YAML configuration file
+# System Health Dashboard Configuration v1.0
+# Grafana-style dashboard for Agentic Workflow System monitoring
+
+dashboard:
+  version: "1.0"
+  title: "Agentic Workflow - System Health"
+  description: "Real-time system health and performance monitoring"
+  
+  # Dashboard metadata
+  metadata:
+    tags: ["agentic", "system", "health", "monitoring"]
+    refresh_interval: "30s"
+    time_range: "last_1h"
+    
+  # Dashboard panels
+  panels:
+    # System Overview
+    - title: "System Status"
+      type: "stat"
+      grid_pos: {"x": 0, "y": 0, "w": 12, "h": 8}
+      targets:
+        - expr: "up{job=\"agentic-workflow\"}"
+          legend_format: "{{instance}}"
+      thresholds:
+        - color: "red"
+          value: 0
+        - color: "green"
+          value: 1
+          
+    - title: "Active Agents"
+      type: "stat"
+      grid_pos: {"x": 12, "y": 0, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(active_agents_total)"
+          legend_format: "Total Active Agents"
+      field_config:
+        defaults:
+          unit: "short"
+          thresholds:
+            steps:
+              - color: "green"
+                value: 0
+              - color: "yellow"
+                value: 50
+              - color: "red"
+                value: 100
+
+    # Resource Utilization
+    - title: "CPU Usage by Layer"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "avg by (layer) (agent_cpu_usage)"
+          legend_format: "{{layer}}"
+      y_axes:
+        - max: 100
+          min: 0
+          unit: "percent"
+          
+    - title: "Memory Usage by Layer"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "avg by (layer) (agent_memory_usage / 1024 / 1024)"
+          legend_format: "{{layer}}"
+      y_axes:
+        - unit: "MB"
+
+    # Performance Metrics
+    - title: "Request Duration"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "histogram_quantile(0.95, rate(request_duration_seconds_bucket[5m]))"
+          legend_format: "95th percentile"
+        - expr: "histogram_quantile(0.50, rate(request_duration_seconds_bucket[5m]))"
+          legend_format: "50th percentile"
+      y_axes:
+        - unit: "seconds"
+        
+    - title: "Request Rate"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (endpoint) (rate(http_requests_total[5m]))"
+          legend_format: "{{endpoint}}"
+      y_axes:
+        - unit: "reqps"
+
+    # Business Metrics
+    - title: "Resumes Processed"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "rate(resumes_processed_total[5m])"
+          legend_format: "{{status}}"
+      y_axes:
+        - unit: "rps"
+        
+    - title: "Outreach Messages Sent"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "rate(outreach_messages_sent_total[5m])"
+          legend_format: "{{channel}}"
+      y_axes:
+        - unit: "msgps"
+
+    # Error Monitoring
+    - title: "Error Rate"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "rate(http_requests_total{status=~\"5..\"}[5m]) / rate(http_requests_total[5m])"
+          legend_format: "5xx Error Rate"
+      y_axes:
+        - unit: "percentunit"
+        - max: 1
+        - min: 0
+          
+    - title: "Active Alerts"
+      type: "stat"
+      grid_pos: {"x": 12, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(ALERTS{alertstate=\"firing\"})"
+          legend_format: "Firing Alerts"
+      thresholds:
+        - color: "green"
+          value: 0
+        - color: "yellow"
+          value: 1
+        - color: "red"
+          value: 5
+
+    # Cost Monitoring
+    - title: "API Cost Rate"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 40, "w": 12, "h": 8}
+      targets:
+        - expr: "rate(api_cost_usd[5m]) * 3600"
+          legend_format: "Cost per Hour ($)"
+      y_axes:
+        - unit: "USD"
+        
+    - title: "Token Usage Rate"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 40, "w": 12, "h": 8}
+      targets:
+        - expr: "rate(token_usage_total[5m])"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "tokens"
+
+  # Dashboard variables
+  variables:
+    - name: "layer"
+      type: "query"
+      query: "label_values(active_agents_total, layer)"
+      include_all: true
+      all_value: ".*"
+      
+    - name: "instance"
+      type: "query"
+      query: "label_values(up, instance)"
+      include_all: true
+      all_value: ".*"
+
+  # Annotations
+  annotations:
+    - name: "Deployments"
+      datasource: "prometheus"
+      expr: "changes(deployment_timestamp[1h])"
+      icon_color: "blue"
+      
+    - name: "Incidents"
+      datasource: "prometheus"
+      expr: "ALERTS{alertname=\"SystemIncident\"}"
+      icon_color: "red"
+
+  # Dashboard links
+  links:
+    - title: "Logs"
+      url: "/explore?orgId=1&left=%7B%22datasource%22:%22loki%22,%22queries%22:%5B%7B%22refId%22:%22A%22,%22expr%22:%22%7Bapp%3D%5C%22agentic-workflow%5C%22%7D%22%7D%5D%7D"
+      
+    - title: "Traces"
+      url: "/trace"
+      
+    - title: "Alerting"
+      url: "/alerting"
+
+  # Time settings
+  time:
+    from: "now-1h"
+    to: "now"
+    
+  # Refresh settings
+  refresh: "30s"
+  
+  # Schema version
+  schema_version: 37
