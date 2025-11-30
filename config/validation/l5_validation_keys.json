@@ -1,3 +1,109 @@
 {
-  "placeholder": true
+  "validation_framework": {
+    "version": "1.0.0",
+    "enabled": true,
+    "strict_mode": true
+  },
+  "l5_safety_keys": {
+    "safety_policies": {
+      "risk_assessment": {
+        "required": true,
+        "validation_type": "policy_compliance",
+        "threshold": 0.8
+      },
+      "content_safety": {
+        "required": true,
+        "validation_type": "content_filter",
+        "threshold": 0.9
+      },
+      "privacy_protection": {
+        "required": true,
+        "validation_type": "privacy_check",
+        "threshold": 0.95
+      },
+      "operational_safety": {
+        "required": true,
+        "validation_type": "operational_check",
+        "threshold": 0.85
+      },
+      "legal_compliance": {
+        "required": true,
+        "validation_type": "compliance_check",
+        "threshold": 0.9
+      }
+    },
+    "pii_filters": {
+      "ssn_detection": {
+        "pattern": "\\b\\d{3}-\\d{2}-\\d{4}\\b",
+        "confidence_threshold": 0.9,
+        "action": "redact"
+      },
+      "email_detection": {
+        "pattern": "\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b",
+        "confidence_threshold": 0.95,
+        "action": "mask"
+      },
+      "phone_detection": {
+        "pattern": "\\b\\d{3}-\\d{3}-\\d{4}\\b",
+        "confidence_threshold": 0.85,
+        "action": "mask"
+      },
+      "credit_card_detection": {
+        "pattern": "\\b\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}\\b",
+        "confidence_threshold": 0.9,
+        "action": "redact"
+      }
+    },
+    "guardrails": {
+      "toxicity_threshold": 0.1,
+      "profanity_threshold": 0.05,
+      "hate_speech_threshold": 0.0,
+      "violence_threshold": 0.1,
+      "self_harm_threshold": 0.0
+    },
+    "redline_rules": {
+      "illegal_content": {
+        "enforcement": "immediate_block",
+        "severity": "critical"
+      },
+      "privacy_violations": {
+        "enforcement": "immediate_redaction",
+        "severity": "critical"
+      },
+      "security_threats": {
+        "enforcement": "immediate_block",
+        "severity": "critical"
+      },
+      "discriminatory_content": {
+        "enforcement": "immediate_block",
+        "severity": "critical"
+      }
+    }
+  },
+  "validation_rules": {
+    "required_fields": [
+      "safety_policies",
+      "pii_filters",
+      "guardrails",
+      "redline_rules"
+    ],
+    "validation_sequence": [
+      "pii_detection",
+      "content_filtering",
+      "safety_policy_check",
+      "redline_validation"
+    ],
+    "failure_actions": {
+      "pii_violation": "redact_and_continue",
+      "content_violation": "block_and_log",
+      "safety_violation": "immediate_stop",
+      "redline_violation": "immediate_block_and_report"
+    }
+  },
+  "monitoring": {
+    "audit_logging": true,
+    "violation_tracking": true,
+    "performance_monitoring": true,
+    "alert_threshold": 0.1
+  }
 }
