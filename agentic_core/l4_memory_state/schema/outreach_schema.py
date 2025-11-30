@@ -1,5 +1,5 @@
 # outreach_schema - Schema definitions for outreach RAG results
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from dataclasses import dataclass
 
 @dataclass
@@ -9,7 +9,7 @@ class SearchResult:
     confidence: float
     metadata: Dict[str, Any]
     temporal_score: float = 0.0
-    
+
     def __post_init__(self):
         if not isinstance(self.metadata, dict):
             self.metadata = {}
@@ -22,7 +22,7 @@ class OutreachRAGResult:
     metadata: Dict[str, Any]
     temporal_score: float = 0.0
     outreach_relevance: float = 0.0
-    
+
     def __post_init__(self):
         if not isinstance(self.metadata, dict):
             self.metadata = {}

@@ -1,5 +1,5 @@
 # lic_plan_schema - Plan schema definitions
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
 @dataclass
@@ -8,15 +8,15 @@ class LICPlan:
     plan_id: str = ""
     content: str = ""
     metadata: Dict[str, Any] = None
-    
+
     def __post_init__(self):
         if self.metadata is None:
             self.metadata = {}
-    
+
     def validate(self) -> bool:
         """Validate the plan structure"""
         return bool(self.plan_id and self.content)
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert plan to dictionary"""
         return {
@@ -27,10 +27,10 @@ class LICPlan:
 
 class PlanSchema:
     """Plan schema validator and manager"""
-    
+
     def __init__(self, schema_version: str = "1.0"):
         self.schema_version = schema_version
-    
+
     def create_plan(self, plan_id: str, content: str, metadata: Dict[str, Any] = None) -> LICPlan:
         """Create a new LIC plan"""
         return LICPlan(
@@ -38,11 +38,11 @@ class PlanSchema:
             content=content,
             metadata=metadata or {}
         )
-    
+
     def validate_plan(self, plan: LICPlan) -> bool:
         """Validate a plan against the schema"""
         return plan.validate()
-    
+
     def get_schema_info(self) -> Dict[str, Any]:
         """Get schema information"""
         return {
