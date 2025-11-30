@@ -13,7 +13,7 @@ class SchemaVersion:
         if self.errors is None:
             self.errors = []
 
-def validate_schema_version(schema: Dict[str, Any], expected_version: str = "1.0") -> SchemaVersion:
+def validate_schema_version(schema: Dict[str, Any], expected_version: str = "v1", model_type: Any = None) -> SchemaVersion:
     """Validate schema version compatibility"""
     # Handle Pydantic models by converting to dict
     if hasattr(schema, 'model_dump'):
@@ -23,16 +23,10 @@ def validate_schema_version(schema: Dict[str, Any], expected_version: str = "1.0
     else:
         schema_dict = schema
     
-    schema_version = schema_dict.get("version", "1.0")
+    schema_version = schema_dict.get("schema_version", "v1")
     
-    # Simple version validation
-    if schema_version == expected_version:
-        return SchemaVersion(version=schema_version, compatible=True)
-    elif schema_version.startswith("1.") and expected_version.startswith("1."):
-        return SchemaVersion(version=schema_version, compatible=True)
-    else:
-        return SchemaVersion(
-            version=schema_version, 
-            compatible=False, 
-            errors=[f"Version mismatch: expected {expected_version}, got {schema_version}"]
-        )
+    # Check for version mismatch
+    if schema_version != expected_version:
+        raise ValueError(f"Unexpected schema_version: expected {expected_version}, got {schema_version}")
+    
+    return SchemaVersion(version=schema_version, compatible=True)
