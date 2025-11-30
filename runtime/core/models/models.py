@@ -41,14 +41,21 @@ class Evidence:
     score: float
     source: str
     metadata: Dict[str, Any] = field(default_factory=dict)
+    
+    def __lt__(self, other: 'Evidence') -> bool:
+        """Support comparison for sorting by score"""
+        if not isinstance(other, Evidence):
+            return NotImplemented
+        return self.score < other.score
 
 @dataclass
 class CouncilVote:
-    """Vote from council member"""
-    voter_id: str
-    vote: str
-    confidence: float
-    reasoning: str = ""
+    """Council voting result for retrieval decisions"""
+    members: int
+    selected_id: str
+    scores: Dict[str, float]
+    ties: List[str]
+    reason: str
     metadata: Dict[str, Any] = field(default_factory=dict)
 
 @dataclass

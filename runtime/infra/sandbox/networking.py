@@ -15,6 +15,12 @@ def default_network_policy() -> Dict[str, Any]:
 
 def is_destination_allowed(policy: Dict[str, Any], destination: str) -> bool:
     """Check if a destination is allowed under the given network policy"""
+    # Check allowlist first (highest priority - overrides allow_outbound)
+    allowlist = policy.get("allowlist", [])
+    if allowlist and destination in allowlist:
+        return True
+    
+    # Then check outbound permission
     if not policy.get("allow_outbound", False):
         return False
     

@@ -21,6 +21,9 @@ def evaluate_hypotheses(hypotheses: List[Hypothesis]) -> List[Hypothesis]:
         if not h.evidence_ids:
             evaluated_h.confidence *= 0.5
         
+        # Clamp confidence to valid range [0.0, 1.0]
+        evaluated_h.confidence = max(0.0, min(1.0, evaluated_h.confidence))
+        
         evaluated.append(evaluated_h)
     
     return evaluated

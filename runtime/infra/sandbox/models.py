@@ -36,11 +36,23 @@ class ToolCallResult:
 @dataclass
 class SandboxEvent:
     """Event emitted by sandbox operations"""
-    event_type: str
+    name: str
     vm_id: Optional[str] = None
     timestamp: Optional[str] = None
+    ts_ms: Optional[int] = None
+    tool_name: Optional[str] = None
     details: Dict[str, Any] = None
     
     def __post_init__(self):
+        # Add attributes property for observability compatibility
         if self.details is None:
             self.details = {}
+        
+        # Create attributes dict that includes vm_id for observability tests
+        self.attributes = self.details.copy()
+        if self.vm_id:
+            self.attributes["vm_id"] = self.vm_id
+        if self.tool_name:
+            self.attributes["tool_name"] = self.tool_name
+        if self.ts_ms:
+            self.attributes["ts_ms"] = self.ts_ms
