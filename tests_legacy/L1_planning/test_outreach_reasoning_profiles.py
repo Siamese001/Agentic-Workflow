@@ -8,8 +8,16 @@ and that ExecutiveReasoningProfile is properly integrated.
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import (
     ArchetypeType,
     EXECUTIVE_REASONING_PROFILES,
+    ExecutiveReasoningProfile,
     compute_reasoning_multiplier
 )
+
+# Debug: Print dictionary keys to diagnose enum identity issue
+print("DEBUG: EXECUTIVE_REASONING_PROFILES keys:")
+for key in EXECUTIVE_REASONING_PROFILES.keys():
+    print(f"  {key} (type: {type(key)}, value: {key.value})")
+print(f"DEBUG: ArchetypeType.C_LEVEL = {ArchetypeType.C_LEVEL} (type: {type(ArchetypeType.C_LEVEL)})")
+print(f"DEBUG: C_LEVEL in keys? {ArchetypeType.C_LEVEL in EXECUTIVE_REASONING_PROFILES}")
 from agentic_core.l1_planning.planners.lic_outreach_archetype_planning import OutreachArchetypePlanner, RecipientProfile, OutreachMission
 
 

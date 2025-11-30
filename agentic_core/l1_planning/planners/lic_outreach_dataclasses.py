@@ -7,7 +7,7 @@ recipient profiles used across the L1-L5 layers.
 
 from enum import Enum
 from dataclasses import dataclass, field
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from datetime import datetime
 
 
@@ -35,11 +35,20 @@ SECTION_TEMPERATURE_SCHEDULE = {
     "conclusion": 0.6
 }
 
-EXECUTIVE_REASONING_PROFILES = {
-    "c_level": {"depth": "deep", "style": "analytical"},
-    "vp_level": {"depth": "medium", "style": "strategic"},
-    "director_level": {"depth": "light", "style": "tactical"}
-}
+@dataclass
+class ExecutiveReasoningProfile:
+    """Profile for executive-level reasoning intensity and cognitive parameters."""
+    reasoning_intensity: str
+    cot_depth: int
+    tot_branches: int
+    reflexion_passes: int
+    sc_k: int
+    require_deep_research: bool
+    cognitive_axes: list
+
+def compute_reasoning_multiplier(profile: ExecutiveReasoningProfile) -> int:
+    """Compute reasoning multiplier from profile parameters."""
+    return profile.cot_depth * profile.tot_branches
 
 @dataclass
 class AgentType(Enum):
@@ -51,19 +60,108 @@ class AgentType(Enum):
 @dataclass
 class ArchetypeContext:
     """Context for archetype-based planning."""
-    archetype: ArchetypeType
-    stage: str
-    constraints: Dict[str, Any] = field(default_factory=dict)
+    archetype: str
+    target_role: str
+    target_company: str
+    value_proposition: str
+    executive_reasoning_profile: Optional[ExecutiveReasoningProfile] = None
+    metadata: Dict[str, Any] = None
+
+    def __post_init__(self):
+        if self.metadata is None:
+            self.metadata = {}
 
 @dataclass
 class RefinementPlan:
-    """Plan for refining research or content."""
+    """Plan for refining research results."""
     needs_refinement: bool
-    suggested_actions: List[str]
-    target_quality: float = 0.8
+    refinement_type: str
+    priority: str
+    additional_queries: list
+    confidence_threshold: float
 
+@dataclass
+class ResearchResult:
+    """Results from research operations."""
+    results: Dict[str, Any]
+    confidence: float
+    sources: List[str]
+    metadata: Dict[str, Any] = None
+    
+    def __post_init__(self):
+        if self.metadata is None:
+            self.metadata = {}
 
-# Functions for temperature and content adjustment
+@dataclass
+class FailureContext:
+    """Context for failure analysis and recovery."""
+    violation_type: str
+    severity: str
+    description: str
+    recovery_options: List[str] = None
+    
+    def __post_init__(self):
+        if self.recovery_options is None:
+            self.recovery_options = []
+
+@dataclass
+class MessageContent:
+    """Content structure for message planning."""
+    recipient_name: str
+    subject: str
+    hook: str
+    value_proposition: str
+    cta: str
+    signature: str
+    metadata: Dict[str, Any] = None
+    
+    def __post_init__(self):
+        if self.metadata is None:
+            self.metadata = {}
+
+# Remove duplicate ArchetypeContextFlat definition
+# ArchetypeContextFlat is already defined at line 83
+
+# Initialize EXECUTIVE_REASONING_PROFILES after all enum definitions are complete
+EXECUTIVE_REASONING_PROFILES = {
+    ArchetypeType.C_LEVEL: ExecutiveReasoningProfile(
+        reasoning_intensity="extreme",
+        cot_depth=12,
+        tot_branches=10,
+        reflexion_passes=3,
+        sc_k=10,
+        require_deep_research=True,
+        cognitive_axes=["analysis", "synthesis", "evaluation", "creativity", "critical_thinking", "strategic_planning", "decision_making", "problem_solving"]
+    ),
+    ArchetypeType.EXECUTIVE: ExecutiveReasoningProfile(
+        reasoning_intensity="high",
+        cot_depth=8,
+        tot_branches=6,
+        reflexion_passes=2,
+        sc_k=6,
+        require_deep_research=True,
+        cognitive_axes=["analysis", "synthesis", "evaluation", "creativity", "critical_thinking", "strategic_planning", "decision_making", "problem_solving"]
+    ),
+    ArchetypeType.SENIOR_TA: ExecutiveReasoningProfile(
+        reasoning_intensity="medium",
+        cot_depth=6,
+        tot_branches=4,
+        reflexion_passes=1,
+        sc_k=4,
+        require_deep_research=False,
+        cognitive_axes=["analysis", "synthesis", "evaluation", "critical_thinking"]
+    ),
+    ArchetypeType.RECRUITER: ExecutiveReasoningProfile(
+        reasoning_intensity="low",
+        cot_depth=4,
+        tot_branches=2,
+        reflexion_passes=1,
+        sc_k=2,
+        require_deep_research=False,
+        cognitive_axes=["analysis", "evaluation"]
+    )
+}
+
 def adjust_temperature_by_intensity(base_temp: float, intensity: str) -> float:
     """Adjust temperature based on reasoning intensity."""
     adjustments = {"low": -0.1, "medium": 0.0, "high": 0.2}
@@ -248,22 +346,7 @@ ARCHETYPE_REGISTRY = {
     )
 }
 
-# Reasoning profiles for different archetypes
-EXECUTIVE_REASONING_PROFILES = {
-    "strategic": {
-        "depth": "high",
-        "creativity": "low",
-        "focus": ["business_impact", "roi", "market_position"],
-        "tone": "formal"
-    },
-    "operational": {
-        "depth": "medium",
-        "creativity": "medium",
-        "focus": ["execution", "metrics", "efficiency"],
-        "tone": "professional"
-    }
-}
-
+# RECRUITER_REASONING_PROFILES - kept for backward compatibility
 RECRUITER_REASONING_PROFILES = {
     "technical": {
         "depth": "medium",
