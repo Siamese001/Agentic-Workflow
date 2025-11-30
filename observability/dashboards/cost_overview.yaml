@@ -1,1 +1,228 @@
-# Placeholder YAML configuration file
+# Cost Overview Dashboard Configuration v1.0
+# Grafana-style dashboard for cost monitoring and optimization
+
+dashboard:
+  version: "1.0"
+  title: "Agentic Workflow - Cost Overview"
+  description: "Comprehensive cost monitoring and optimization insights"
+  
+  # Dashboard metadata
+  metadata:
+    tags: ["agentic", "cost", "monitoring", "optimization"]
+    refresh_interval: "5m"
+    time_range: "last_24h"
+    
+  # Dashboard panels
+  panels:
+    # Cost Overview
+    - title: "Total Daily Cost"
+      type: "stat"
+      grid_pos: {"x": 0, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "sum(increase(api_cost_usd[24h]))"
+          legend_format: "Total Cost ($)"
+      field_config:
+        defaults:
+          unit: "currencyUSD"
+          thresholds:
+            steps:
+              - color: "green"
+                value: 0
+              - color: "yellow"
+                value: 100
+              - color: "red"
+                value: 500
+          
+    - title: "Cost Trend ( 7 Days)"
+      type: "graph"
+      grid_pos: {"x": 8, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "sum(increase(api_cost_usd[1h]))"
+          legend_format: "Hourly Cost"
+      y_axes:
+        - unit: "currencyUSD"
+        
+    - title: "Monthly Budget Utilization"
+      type: "stat"
+      grid_pos: {"x": 16, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "sum(increase(api_cost_usd[30d])) / 3000 * 100"
+          legend_format: "Budget Used (%)"
+      field_config:
+        defaults:
+          unit: "percent"
+          max: 100
+          thresholds:
+            steps:
+              - color: "green"
+                value: 0
+              - color: "yellow"
+                value: 70
+              - color: "red"
+                value: 90
+
+    # Cost by Operation
+    - title: "Cost by Operation Type"
+      type: "piechart"
+      grid_pos: {"x": 0, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (operation_type) (increase(api_cost_usd[24h]))"
+          legend_format: "{{operation_type}}"
+          
+    - title: "Cost per Operation"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (operation_type) (increase(api_cost_usd[1h])) / sum by (operation_type) (increase(operation_count_total[1h]))"
+          legend_format: "{{operation_type}}"
+      y_axes:
+        - unit: "currencyUSD"
+
+    # Cost by Model/Provider
+    - title: "Cost by AI Model"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (model) (increase(api_cost_usd[1h]))"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "currencyUSD"
+        
+    - title: "Cost by Provider"
+      type: "piechart"
+      grid_pos: {"x": 12, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (provider) (increase(api_cost_usd[24h]))"
+          legend_format: "{{provider}}"
+
+    # Efficiency Metrics
+    - title: "Cost per Resume Processed"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(increase(api_cost_usd[1h])) / sum(increase(resumes_processed_total[1h]))"
+          legend_format: "Cost per Resume"
+      y_axes:
+        - unit: "currencyUSD"
+        
+    - title: "Cost per Outreach Generated"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(increase(api_cost_usd[1h])) / sum(increase(outreach_messages_sent_total[1h]))"
+          legend_format: "Cost per Outreach"
+      y_axes:
+        - unit: "currencyUSD"
+
+    # Token Usage and Cost
+    - title: "Token Usage vs Cost"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(increase(token_usage_total[1h]))"
+          legend_format: "Tokens Used"
+          yAxis: 1
+        - expr: "sum(increase(api_cost_usd[1h])) * 1000"
+          legend_format: "Cost ( x1000)"
+          yAxis: 2
+      y_axes:
+        - unit: "short"
+        - unit: "currencyUSD"
+        
+    - title: "Average Cost per 1K Tokens"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "sum(increase(api_cost_usd[1h])) / sum(increase(token_usage_total[1h])) * 1000"
+          legend_format: "Cost per 1K Tokens"
+      y_axes:
+        - unit: "currencyUSD"
+
+    # Cost Optimization Alerts
+    - title: "Cost Optimization Opportunities"
+      type: "table"
+      grid_pos: {"x": 0, "y": 40, "w": 24, "h": 8}
+      targets:
+        - expr: "topk(10, sum by (operation_type, model) (increase(api_cost_usd[24h])))"
+          format: "table"
+          transformations:
+            - type: "organize"
+              options:
+                excludeByName: {"Time": true}
+                indexByName: {}
+                renameByName:
+                  Value: "Cost (24h)"
+                  operation_type: "Operation"
+                  model: "AI Model"
+
+  # Dashboard variables
+  variables:
+    - name: "operation_type"
+      type: "query"
+      query: "label_values(api_cost_usd, operation_type)"
+      include_all: true
+      all_value: ".*"
+      
+    - name: "model"
+      type: "query"
+      query: "label_values(api_cost_usd, model)"
+      include_all: true
+      all_value: ".*"
+      
+    - name: "provider"
+      type: "query"
+      query: "label_values(api_cost_usd, provider)"
+      include_all: true
+      all_value: ".*"
+
+  # Annotations
+  annotations:
+    - name: "Cost Alerts"
+      datasource: "prometheus"
+      expr: "cost_alert_fired"
+      icon_color: "red"
+      
+    - name: "Budget Thresholds"
+      datasource: "prometheus"
+      expr: "budget_threshold_crossed"
+      icon_color: "yellow"
+
+  # Dashboard links
+  links:
+    - title: "Cost Optimization Guide"
+      url: "/docs/cost-optimization"
+      
+    - title: "API Usage Details"
+      url: "/d/api-usage"
+      
+    - title: "Budget Settings"
+      url: "/settings/budgets"
+
+  # Alert thresholds
+  alert_thresholds:
+    hourly_cost:
+      warning: 50
+      critical: 100
+      
+    daily_cost:
+      warning: 500
+      critical: 1000
+      
+    cost_per_resume:
+      warning: 0.25
+      critical: 0.50
+      
+    cost_per_outreach:
+      warning: 0.15
+      critical: 0.30
+
+  # Time settings
+  time:
+    from: "now-24h"
+    to: "now"
+    
+  # Refresh settings
+  refresh: "5m"
+  
+  # Schema version
+  schema_version: 37
