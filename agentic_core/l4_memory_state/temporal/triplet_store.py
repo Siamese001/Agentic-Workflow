@@ -127,6 +127,27 @@ class TripletStore:
             }
         }
     
+    def query(self, query: TripletQuery) -> List[Triplet]:
+        """Query triplets and return list (simplified interface for tests)."""
+        result = self.query_triplets(query)
+        return result["triplets"]
+    
+    def add_triplets(self, triplets: List[Triplet]) -> bool:
+        """Add multiple triplets to the store."""
+        success = True
+        for triplet in triplets:
+            if not self.add_triplet(triplet):
+                success = False
+        return success
+    
+    def invalidate_triplet(self, triplet_id: str) -> bool:
+        """Invalidate a triplet by setting its status to deprecated."""
+        if triplet_id in self.triplets:
+            self.triplets[triplet_id].status = TripletStatus.DEPRECATED
+            self.triplets[triplet_id].updated_at = datetime.now()
+            return True
+        return False
+    
     def _update_indexes(self, triplet: Triplet, operation: str) -> None:
         """Update indexes when adding or removing triplets."""
         if operation == "add":
@@ -150,15 +171,20 @@ class TripletStore:
                 self.indexes["status"][triplet.status.value] = set()
             self.indexes["status"][triplet.status.value].add(triplet.id)
 
-def create_triplet(subject: str, predicate: str, object: str,
+def create_triplet(subject: str, predicate: str, obj: str,
                   confidence: float = 0.8, source: str = "",
                   metadata: Dict[str, Any] = None) -> Triplet:
     """Factory function to create a triplet."""
     return Triplet(
         subject=subject,
         predicate=predicate,
-        object=object,
+        object=obj,
         confidence=confidence,
         source=source,
         metadata=metadata or {}
     )
+
+def execute_entity_query(store: TripletStore, entity_id: str) -> List[Triplet]:
+    """Execute entity query against triplet store."""
+    query = TripletQuery(subject=entity_id)
+    return store.query(query)

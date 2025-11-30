@@ -92,6 +92,10 @@ class EntityRegistry:
         
         return True
     
+    def register_entity(self, entity: Entity) -> bool:
+        """Register an entity (alias for add_entity)."""
+        return self.add_entity(entity)
+    
     def add_mention(self, mention: Mention) -> bool:
         """Add a mention to the registry."""
         if mention.id in self.mentions:
@@ -199,8 +203,8 @@ def create_entity(name: str, entity_type: EntityType = EntityType.UNKNOWN,
         source=source
     )
 
-def create_mention(entity_id: str, text: str, context: str = "",
-                  document_id: str = "", position: int = 0,
+def create_mention(entity_id: str = "", text: str = "", entity_type: EntityType = None,
+                  context: str = "", document_id: str = "", position: int = 0,
                   confidence: float = 0.8) -> Mention:
     """Factory function to create a mention."""
     return Mention(
@@ -212,6 +216,7 @@ def create_mention(entity_id: str, text: str, context: str = "",
         confidence=confidence
     )
 
+# Remove the duplicate create_mention class that was at the end
 class create_mention:
     """create_mention implementation"""
 
