@@ -14,13 +14,16 @@ class TestDAGComponents:
     
     def test_plan_node_init(self):
         """Test PlanNode initialization"""
-        node = PlanNode()
+        node = PlanNode(node_id="test_node", node_type="test")
         assert node is not None
+        assert node.node_id == "test_node"
+        assert node.node_type == "test"
     
     def test_dag_builder_init(self):
         """Test DAGBuilder initialization"""
-        builder = DAGBuilder()
+        builder = DAGBuilder(name="test_dag", description="Test DAG")
         assert builder is not None
+        assert builder.metadata.name == "test_dag"
 
 
 class TestReactComponents:
@@ -37,5 +40,6 @@ class TestControllerComponents:
     
     def test_controller_init(self):
         """Test Controller initialization"""
-        controller = Controller()
+        controller = Controller(name="test_controller")
         assert controller is not None
+        assert controller.name == "test_controller"
