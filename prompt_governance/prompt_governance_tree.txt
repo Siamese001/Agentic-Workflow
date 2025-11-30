@@ -1,314 +1,164 @@
-﻿=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\acls ===
+﻿=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\engines ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\ACLS
-    .gitkeep
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\ENGINES
++---outreach_engine
+|       archetype.yaml
+|       messaging.yaml
+|       personalization.yaml
+|       reflective_checks.yaml
+|       
+\---resume_engine
+        rewriting.yaml
+        scoring.yaml
+        summarization.yaml
+        system_prompts.yaml
+        
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\evaluations ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\EVALUATIONS
+    eval_sets.yaml
+    regression_tests.yaml
+    rubric.yaml
+    style_checks.yaml
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\bundles ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\governance ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\BUNDLES
-    .gitkeep
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\definitions ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\DEFINITIONS
-    .gitkeep
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\Domains ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\DOMAINS
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\governance_metadata ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\GOVERNANCE_METADATA
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\guards ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\GUARDS
-    base.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES
-|   injection_templates.py
-|   __init__.py
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\GOVERNANCE
+|   approval_workflow.yaml
+|   change_history.yaml
+|   guard_base.py
+|   ownership.yaml
+|   policy_base.py
+|   semantic_versioning.yaml
 |   
-\---Layered_Injection_Bundles
-    |   __init__.py
-    |   
-    +---context
-    |       __init__.py
-    |       
-    +---framing
-    |       __init__.py
-    |       
-    +---l1_planning
-    |       __init__.py
-    |       
-    +---l2_execution
-    |       __init__.py
-    |       
-    +---l3_orchestration
-    |       __init__.py
-    |       
-    +---l4_memory
-    |       __init__.py
-    |       
-    +---l5_safety
-    |       __init__.py
-    |       
-    +---output
-    |       __init__.py
-    |       
-    +---reasoning
-    |       __init__.py
-    |       
-    +---safety
-    |       __init__.py
-    |       
-    \---tooling
-            __init__.py
-            
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\manifests ===
+\---schemas
+        prompt_schema.json
+        
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\injections ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\MANIFESTS
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\metadata ===
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONS
+|   constraints.yaml
+|   context_engineering.yaml
+|   framing.yaml
+|   output_governance.yaml
+|   reasoning.yaml
+|   safety.yaml
+|   tool_use.yaml
+|   
+\---layering
+        injection_templates.py
+        
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\registry ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\METADATA
-    .gitkeep
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\policies ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\POLICIES
-    .gitkeep
-    base.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\PromptACLs ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\PROMPTACLS
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\PromptDefinitions ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\PROMPTDEFINITIONS
-    developer_prompts.py
-    system_prompts.py
-    user_prompts.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\prompts ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\PROMPTS
-    analysis_prompt.json
-    draft_executor.json
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\PromptVersions ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\PROMPTVERSIONS
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\schemas ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\SCHEMAS
-    prompt_schema.json
-    
-No subfolders exist 
-
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\REGISTRY
+|   prompt_index.yaml
+|   prompt_manifest.yaml
+|   rollback_policies.yaml
+|   version_map.yaml
+|   
++---prompts
+|       analysis_prompt.json
+|       draft_executor.json
+|       
+\---version_map
+        draft_executor.json
+        
 === C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\templates ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
 C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\TEMPLATES
-    base.py
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\versions ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\VERSIONS
-\---v1.0.0
-        draft_executor.json
-        
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES
+|   base.py
 |   __init__.py
 |   
-+---context
-|       __init__.py
++---outreach
+|       cold_outreach_template.md
+|       connection_request.md
+|       followup_template.md
 |       
-+---framing
-|       __init__.py
-|       
-+---l1_planning
-|       __init__.py
-|       
-+---l2_execution
-|       __init__.py
-|       
-+---l3_orchestration
-|       __init__.py
-|       
-+---l4_memory
-|       __init__.py
-|       
-+---l5_safety
-|       __init__.py
-|       
-+---output
-|       __init__.py
-|       
-+---reasoning
-|       __init__.py
-|       
-+---safety
-|       __init__.py
-|       
-\---tooling
-        __init__.py
+\---resume
+        experience_template.md
+        skills_template.md
+        summary_template.md
         
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\context ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\engines\outreach_engine ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\CONTEXT
-    __init__.py
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\ENGINES\OUTREACH_ENGINE
+    archetype.yaml
+    messaging.yaml
+    personalization.yaml
+    reflective_checks.yaml
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\framing ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\engines\resume_engine ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\FRAMING
-    __init__.py
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\ENGINES\RESUME_ENGINE
+    rewriting.yaml
+    scoring.yaml
+    summarization.yaml
+    system_prompts.yaml
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\l1_planning ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\governance\schemas ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\L1_PLANNING
-    __init__.py
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\GOVERNANCE\SCHEMAS
+    prompt_schema.json
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\l2_execution ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\injections\layering ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\L2_EXECUTION
-    __init__.py
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONS\LAYERING
+    injection_templates.py
     
 No subfolders exist 
 
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\l3_orchestration ===
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\registry\prompts ===
 Folder PATH listing
 Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\L3_ORCHESTRATION
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\l4_memory ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\L4_MEMORY
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\l5_safety ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\L5_SAFETY
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\output ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\OUTPUT
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\reasoning ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\REASONING
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\safety ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\SAFETY
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\InjectionPolicies\Layered_Injection_Bundles\tooling ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\INJECTIONPOLICIES\LAYERED_INJECTION_BUNDLES\TOOLING
-    __init__.py
-    
-No subfolders exist 
-
-=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\versions\v1.0.0 ===
-Folder PATH listing
-Volume serial number is 2C88-ECD7
-C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\VERSIONS\V1.0.0
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\REGISTRY\PROMPTS
+    analysis_prompt.json
     draft_executor.json
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\registry\version_map ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\REGISTRY\VERSION_MAP
+    draft_executor.json
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\templates\outreach ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\TEMPLATES\OUTREACH
+    cold_outreach_template.md
+    connection_request.md
+    followup_template.md
+    
+No subfolders exist 
+
+=== C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\prompt_governance\templates\resume ===
+Folder PATH listing
+Volume serial number is 2C88-ECD7
+C:\USERS\AMITA\DOCUMENTS\WORK\AI JOB SEARCH\AI\ML\DL\GENAI\LLM 101\LLM PIPELINES\RESUME GEN\GIT\AGENTIC_WORKFLOW-10_11\PROMPT_GOVERNANCE\TEMPLATES\RESUME
+    experience_template.md
+    skills_template.md
+    summary_template.md
     
 No subfolders exist 
 
