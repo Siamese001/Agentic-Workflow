@@ -1,8 +1,23 @@
 # evaluator - Golden evaluation utilities
 from typing import Dict, Any, List, Optional
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 from .datasets import GoldenCase, load_golden_cases
+
+@dataclass
+class GoldenOutput:
+    """Output structure for golden evaluation results."""
+    case_id: str = ""
+    content: Dict[str, Any] = field(default_factory=dict)
+    final_verdict: str = "pending"
+    score: float = 0.0
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    created_at: datetime = field(default_factory=datetime.now)
+    
+    def __post_init__(self):
+        if not self.case_id and "case_id" in self.content:
+            self.case_id = self.content["case_id"]
 
 @dataclass
 class EvaluationResult:
