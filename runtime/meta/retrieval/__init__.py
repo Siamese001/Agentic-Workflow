@@ -2,6 +2,7 @@
 from .orchestrate import orchestrate_retrieval
 from .hybrid_ranker import fuse_and_rank
 import types
+import time
 
 def _run_bm25(query: str, config: dict) -> list:
     """Internal BM25 retrieval function for testing"""
@@ -50,6 +51,16 @@ def emit_retrieval_complete(*args, **kwargs) -> None:
     """Emit retrieval complete event for observability"""
     pass
 
-def start_span(*args, **kwargs) -> types.SimpleNamespace:
-    """Start tracing span for observability"""
-    return types.SimpleNamespace()
+def start_span(operation_name: str, **kwargs) -> types.SimpleNamespace:
+    """Start a new span for observability"""
+    return types.SimpleNamespace(
+        operation_name=operation_name,
+        start_time=time.time(),
+        context=kwargs
+    )
+
+def end_span(span: types.SimpleNamespace, **kwargs) -> None:
+    """End a span and record observability data"""
+    span.end_time = time.time()
+    span.duration = span.end_time - span.start_time
+    span.result = kwargs.get('result', None)
