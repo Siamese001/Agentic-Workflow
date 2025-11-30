@@ -5,12 +5,13 @@ AST-based purity & safety validator.
 
 Covers:
 - L1–L5 forbidden imports
-- Inline prompts in forbidden layers
+- Inline prompts in forbidden layers (long string literals)
 - Dangerous builtins: eval, exec
-- Suspicious subprocess.run without timeout
-- Debug prints in core modules
+- subprocess.run without timeout
+- Debug prints in core code
 - Simple secret-pattern detection in string literals
-- Missing type hints for functions in agentic_core/*
+- Tabs and trailing whitespace in core code
+- Missing type hints for functions in core modules
 """
 
 import os
@@ -18,7 +19,10 @@ import sys
 import ast
 import re
 
-REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
+REPO_ROOT = (
+    r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines"
+    r"\Resume Gen\Git\Agentic_Workflow-10_11"
+)
 
 FORBIDDEN_IMPORTS = {
     "agentic_core/l1_planning": [
@@ -87,7 +91,11 @@ def relpath(path: str) -> str:
 
 
 def is_long_string(node):
-    return isinstance(node, ast.Constant) and isinstance(node.value, str) and len(node.value.split()) > 10
+    return (
+        isinstance(node, ast.Constant)
+        and isinstance(node.value, str)
+        and len(node.value.split()) > 10
+    )
 
 
 def check_forbidden_imports(rel, tree, errors):
@@ -124,7 +132,8 @@ def check_subprocess_without_timeout(rel, tree, errors):
             if isinstance(func, ast.Attribute) and func.attr == "run":
                 if isinstance(func.value, ast.Name) and func.value.id == "subprocess":
                     has_timeout = any(
-                        isinstance(kw.arg, str) and kw.arg == "timeout" for kw in node.keywords
+                        isinstance(kw.arg, str) and kw.arg == "timeout"
+                        for kw in node.keywords
                     )
                     if not has_timeout:
                         errors.append(f"[RUNTIME] subprocess.run without timeout in {rel}")
@@ -152,7 +161,6 @@ def check_type_hints(rel, tree, errors):
 
     for node in ast.walk(tree):
         if isinstance(node, ast.FunctionDef):
-            # Skip dunder methods / small helpers if you like, but here we go strict.
             missing = []
             for arg in node.args.args:
                 if arg.arg in ("self", "cls"):
@@ -160,10 +168,24 @@ def check_type_hints(rel, tree, errors):
                 if arg.annotation is None:
                     missing.append(arg.arg)
             if missing:
-                errors.append(f"[TYPEHINT] Function {node.name} in {rel} missing type hints for args: {missing}")
-            # Return annotation
+                errors.append(
+                    f"[TYPEHINT] Function {node.name} in {rel} missing arg type hints: {missing}"
+                )
             if node.returns is None:
-                errors.append(f"[TYPEHINT] Function {node.name} in {rel} missing return type hint")
+                errors.append(
+                    f"[TYPEHINT] Function {node.name} in {rel} missing return type hint"
+                )
+
+
+def check_tabs_and_trailing_ws(rel, source_text, errors):
+    if not any(rel.startswith(p) for p in CORE_CODE_PREFIXES_FOR_DEBUG):
+        return
+    lines = source_text.splitlines()
+    for i, line in enumerate(lines, start=1):
+        if "\t" in line:
+            errors.append(f"[FORMAT] Tab character in {rel}:{i}")
+        if line.rstrip() != line:
+            errors.append(f"[FORMAT] Trailing whitespace in {rel}:{i}")
 
 
 def main():
@@ -172,12 +194,18 @@ def main():
 
     for f in files:
         rel = relpath(f)
-        with open(f, "r", encoding="utf-8") as src:
-            try:
-                tree = ast.parse(src.read(), filename=rel)
-            except SyntaxError as e:
-                errors.append(f"[SYNTAX] {rel}: {e}")
-                continue
+        try:
+            with open(f, "r", encoding="utf-8") as src:
+                source_text = src.read()
+        except UnicodeDecodeError as e:
+            errors.append(f"[ENCODING] {rel}: {e}")
+            continue
+
+        try:
+            tree = ast.parse(source_text, filename=rel)
+        except SyntaxError as e:
+            errors.append(f"[SYNTAX] {rel}: {e}")
+            continue
 
         check_forbidden_imports(rel, tree, errors)
         check_inline_prompts(rel, tree, errors)
@@ -186,14 +214,15 @@ def main():
         check_debug_prints(rel, tree, errors)
         check_simple_secrets(rel, tree, errors)
         check_type_hints(rel, tree, errors)
+        check_tabs_and_trailing_ws(rel, source_text, errors)
 
     if errors:
-        print("\n=== AST PURITY / SAFETY SCAN FAILED ===")
+        print("\n=== AST PURITY / SAFETY / HYGIENE SCAN FAILED ===")
         for e in errors:
             print(e)
         sys.exit(2)
 
-    print("AST purity / safety validation PASSED.")
+    print("AST purity / safety / hygiene validation PASSED.")
     sys.exit(0)
 
 

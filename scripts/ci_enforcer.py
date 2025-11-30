@@ -16,7 +16,10 @@ import sys
 import subprocess
 from datetime import datetime
 
-REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
+REPO_ROOT = (
+    r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines"
+    r"\Resume Gen\Git\Agentic_Workflow-10_11"
+)
 
 VALIDATORS = [
     "manifest_validator.py",
@@ -26,12 +29,16 @@ VALIDATORS = [
     "golden_trace_auditor.py",
 ]
 
-FAIL_FAST = False  # set True if you want stop-on-first-failure
+FAIL_FAST = False  # set True to stop on first failure
 
 
-def run_script(script_path: str):
+def run_script(script_name: str):
+    full_path = os.path.join(REPO_ROOT, script_name)
+    if not os.path.exists(full_path):
+        return 999, "", f"[CI] SCRIPT NOT FOUND: {full_path}"
+
     proc = subprocess.Popen(
-        [sys.executable, script_path],
+        [sys.executable, full_path],
         cwd=REPO_ROOT,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -53,17 +60,8 @@ def main():
     all_pass = True
 
     for script in VALIDATORS:
-        full_path = os.path.join(REPO_ROOT, script)
         print(f"\n--- Running {script} ---")
-        if not os.path.exists(full_path):
-            print(f"[CI] SCRIPT NOT FOUND: {full_path}")
-            results.append((script, 999))
-            all_pass = False
-            if FAIL_FAST:
-                break
-            continue
-
-        code, out, err = run_script(full_path)
+        code, out, err = run_script(script)
         if out.strip():
             print(out)
         if err.strip():
