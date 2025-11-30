@@ -9,6 +9,33 @@ class KGOrchestrationConfig:
     max_concurrent_retrievals: int = 5
     enable_caching: bool = True
     cache_ttl_seconds: int = 300
+    retrieval_timeout_seconds: int = 30
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+class ResumeKGOrchestrator:
+    """Orchestrates knowledge graph retrieval for resume processing."""
+    
+    def __init__(self, config: Optional[KGOrchestrationConfig] = None):
+        self.config = config or KGOrchestrationConfig()
+        self._cache = {}
+    
+    def orchestrate_retrieval(self, query: str, context: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Orchestrate KG retrieval based on query and context."""
+        # Mock implementation
+        return [
+            {
+                "id": f"kg_node_{i}",
+                "type": "experience",
+                "data": f"Experience data {i}",
+                "relevance_score": 0.9 - (i * 0.1)
+            }
+            for i in range(3)
+        ]
+    
+    def get_config(self) -> KGOrchestrationConfig:
+        """Get current orchestration config."""
+        return self.config
+    cache_ttl_seconds: int = 300
     confidence_threshold: float = 0.7
     enable_hybrid_context: bool = True
     timeout_seconds: int = 120
