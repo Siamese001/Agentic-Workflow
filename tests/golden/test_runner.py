@@ -1,6 +1,6 @@
 # FILE: tests/golden_state/test_runner.py
 
-from runtime.core.models.models import ExecutionProfile, RetrievalConfig
+from runtime.core.models import ExecutionProfile, RetrievalConfig
 
 from runtime.eval.golden_state.runner import run_all_golden_tests
 

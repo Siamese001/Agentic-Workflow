@@ -3,6 +3,21 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
+@dataclass
+class GoldenStateTestCase:
+    """Test case for golden state evaluation"""
+    id: str
+    input_text: str
+    expected_behavior: str
+    metadata: Dict[str, Any]
+
+@dataclass
+class JudgeVerdict:
+    """Verdict from a judge evaluation"""
+    score: float
+    rating: str
+    explanation: str
+
 class EvaluationStatus(Enum):
     """Status of golden evaluation"""
     PENDING = "pending"
