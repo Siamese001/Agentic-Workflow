@@ -4,17 +4,20 @@ test_matrix_validator.py
 Ensures strict module <-> test mappings from test_matrix.yaml.
 
 Covers:
-- Every module in matrix exists
-- Every test in matrix exists
-- All tests in tests/ are mapped (no orphans)
-- Every module has >=1 test mapping
+- Every module in matrix exists in repo
+- Every test in matrix exists in repo
+- All tests under tests/ are mapped (no orphans)
+- Every module has >= 1 test mapped
 """
 
 import os
 import sys
 import yaml
 
-REPO_ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11"
+REPO_ROOT = (
+    r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines"
+    r"\Resume Gen\Git\Agentic_Workflow-10_11"
+)
 TEST_MATRIX_PATH = os.path.join(REPO_ROOT, "test_matrix.yaml")
 
 
@@ -42,7 +45,7 @@ def main():
     all_mapped_tests = {t for tests in matrix.values() for t in tests}
 
     repo_files = walk_py_files(REPO_ROOT)
-    repo_tests = [f for f in repo_files if f.startswith("tests/") and f.startswith("tests/")]
+    repo_tests = [f for f in repo_files if f.startswith("tests/")]
 
     # Modules exist
     for mod in all_modules:

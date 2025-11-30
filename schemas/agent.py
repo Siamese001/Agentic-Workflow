@@ -1,7 +1,6 @@
 # Agent schema definitions
 from .base import BaseSchema
-from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 class AgentSchema(BaseSchema):
     """Agent configuration schema"""

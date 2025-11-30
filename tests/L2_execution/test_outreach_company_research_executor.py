@@ -10,7 +10,9 @@ from unittest.mock import Mock
 from agentic_core.l2_execution.engines.outreach.company_research_executor import CompanyResearchExecutor, CompanySearchConfig, CompanyResearchResult, KG_FALLBACK_ARCHETYPES
 from agentic_core.l4_memory_state.temporal.hybrid_search import HybridSearchExecutor, SearchResult
 from agentic_core.l4_memory_state.schema.outreach_schema import OutreachRAGResult
-from l4 import PineconeAdapter, TripletStore, Triplet
+from agentic_core.l4_memory_state.temporal.pinecone_adapter import PineconeAdapter
+from agentic_core.l4_memory_state.temporal.triplet_store import TripletStore
+from agentic_core.l4_memory_state.temporal.triplet_store import Triplet
 from agentic_core.l1_planning.planners.lic_outreach_dataclasses import ArchetypeType
 
 

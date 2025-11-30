@@ -1,1 +1,1 @@
-# Placeholder for L1\planners
+"""Planners module - various planning and strategy implementations"""
