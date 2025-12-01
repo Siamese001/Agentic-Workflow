@@ -1,146 +1,325 @@
 #!/usr/bin/env python3
 """
-Safe-Layer Safety-Phase Component: assess_safety_risk
-L5 Agentic Architecture - Check-Core-Rules Implementation
+Safe-Layer Component: assess_safety_risk
+L5 Agentic Architecture - Safety & Policy Implementation
 """
 
 from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
-from abc import ABC
 import asyncio
 import logging
 from enum import Enum
+import json
+import re
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
-class OperationType(Enum):
-    """Operation types for assess_safety_risk"""
-    DEFAULT = "default"
-    CUSTOM = "custom"
+class SafetyLevel(Enum):
+    """Safety severity levels"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
+
+class PolicyType(Enum):
+    """Policy enforcement types"""
+    CONTENT_SAFETY = "content_safety"
+    DATA_PRIVACY = "data_privacy"
+    EXECUTION_LIMITS = "execution_limits"
+    RESOURCE_CONSTRAINTS = "resource_constraints"
 
 @dataclass
-class OperationContext:
-    """Context for assess_safety_risk operations"""
-    operation_type: OperationType
-    parameters: Dict[str, Any]
+class SafetyContext:
+    """Context for safety operations"""
+    content: str
+    operation_type: str
+    user_context: Dict[str, Any]
     constraints: List[str]
     session_id: str
-    metadata: Dict[str, Any]
+
+@dataclass
+class SafetyResult:
+    """Result of safety operations"""
+    is_safe: bool
+    safety_level: SafetyLevel
+    violations: List[Dict[str, Any]]
+    policy_enforcements: List[Dict[str, Any]]
+    recommendations: List[str]
+    safety_trace_id: str
 
 class AssessSafetyRisk:
     """
-    Robust L5 implementation for assess_safety_risk.
+    Safe-Layer implementation for assess_safety_risk.
     
-    This component handles check-core-rules operations in the safe-layer
-    with proper validation, optimization, and error handling
-    following L5 agentic architecture patterns.
+    This component handles safety checking, policy enforcement, and guardrails
+    without direct execution or planning. It ensures all operations comply
+    with safety policies and regulatory requirements.
     """
     
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        self.operation_registry: Dict[str, callable] = {}
-        self._setup_operations()
+        self.safety_checker = SafetyChecker(self.config)
+        self.policy_enforcer = PolicyEnforcer(self.config)
+        self.guardrail_monitor = GuardrailMonitor(self.config)
+        self.safety_trace = SafetyTrace()
+        self.policy_metrics = PolicyMetrics()
+        self.guardrail_log = GuardrailLog()
     
-    def _setup_operations(self):
-        """Setup operation handlers"""
-        self.operation_registry = {
-            "validate": self._validate_operation,
-            "execute": self._execute_operation,
-            "optimize": self._optimize_operation,
-            "monitor": self._monitor_operation
-        }
-    
-    async def execute(self, context: OperationContext) -> Dict[str, Any]:
+    async def check_safety(self, context: SafetyContext) -> SafetyResult:
         """
-        Execute the primary operation for assess_safety_risk.
-        
-        This is the core implementation that handles the specific
-        functionality for this component in the L5 architecture.
-        """
-        # Core operation logic
-        return {
-            "operation": context.operation_type.value,
-            "status": "completed",
-            "result": "Operation executed successfully",
-            "parameters": context.parameters
-        }
-    
-    async def process(self, context: OperationContext) -> Dict[str, Any]:
-        """
-        Process operation with full L5 lifecycle.
+        Perform comprehensive safety check and policy enforcement.
         
         Args:
-            context: Operation context with parameters and constraints
+            context: Safety context with content and constraints
             
         Returns:
-            Processing result with metadata and recommendations
+            Safety result with violations and policy enforcements
         """
+        trace_id = self.safety_trace.start_trace("check_safety", context)
+        
         try:
-            # Validate operation
-            if not await self._validate_operation(context):
-                raise ValidationError(f"Operation validation failed for {context.operation_type}")
+            # Check content safety
+            safety_check = await self.safety_checker.check_content_safety(context.content)
+            self.policy_metrics.record_safety_check(safety_check)
             
-            # Execute primary operation
-            result = await self.execute(context)
+            # Enforce applicable policies
+            policy_enforcements = await self.policy_enforcer.enforce_policies(context, safety_check)
+            self.policy_metrics.record_policy_enforcement(policy_enforcements)
             
-            # Optimize result
-            optimized_result = await self._optimize_operation(result, context)
+            # Monitor guardrails
+            guardrail_results = await self.guardrail_monitor.check_guardrails(context)
+            self.guardrail_log.record_guardrail_check(guardrail_results)
             
-            # Monitor and log
-            await self._monitor_operation(optimized_result, context)
+            # Aggregate violations
+            all_violations = safety_check.get("violations", []) + guardrail_results.get("violations", [])
             
-            # Add L5 metadata
-            final_result = {
-                **optimized_result,
-                "l5_metadata": {
-                    "component": "assess_safety_risk",
-                    "layer": "safe-layer",
-                    "phase": "safety-phase",
-                    "function_group": "check-core-rules",
-                    "function_type": "adjust-scores",
-                    "timestamp": asyncio.get_event_loop().time(),
-                    "version": "1.0.0"
-                }
-            }
+            # Determine overall safety
+            is_safe = len(all_violations) == 0
+            safety_level = self._determine_safety_level(all_violations)
             
-            logger.info(f"Successfully processed {context.operation_type} operation")
-            return final_result
+            # Generate recommendations
+            recommendations = await self._generate_safety_recommendations(all_violations, context)
+            
+            result = SafetyResult(
+                is_safe=is_safe,
+                safety_level=safety_level,
+                violations=all_violations,
+                policy_enforcements=policy_enforcements,
+                recommendations=recommendations,
+                safety_trace_id=trace_id
+            )
+            
+            self.safety_trace.end_trace(trace_id, result)
+            self.guardrail_log.record_safety_result(result)
+            
+            logger.info(f"Safety check completed for assess_safety_risk - Safe: {is_safe}, Level: {safety_level}")
+            return result
             
         except Exception as e:
-            logger.error(f"Operation processing failed: {e}")
-            raise OperationError(f"Failed to process operation: {e}") from e
+            self.safety_trace.record_error(trace_id, e)
+            logger.error(f"Safety check failed: {e}")
+            raise SafetyError(f"Failed to check safety: {e}") from e
     
-    async def _validate_operation(self, context: OperationContext) -> bool:
-        """Validate operation context and parameters"""
-        if not context.parameters:
-            return False
-        if not context.session_id:
-            return False
-        return True
+    def _determine_safety_level(self, violations: List[Dict[str, Any]]) -> SafetyLevel:
+        """Determine overall safety level from violations"""
+        if not violations:
+            return SafetyLevel.LOW
+        
+        critical_violations = [v for v in violations if v.get("severity") == "critical"]
+        high_violations = [v for v in violations if v.get("severity") == "high"]
+        
+        if critical_violations:
+            return SafetyLevel.CRITICAL
+        elif high_violations:
+            return SafetyLevel.HIGH
+        elif len(violations) > 3:
+            return SafetyLevel.MEDIUM
+        else:
+            return SafetyLevel.LOW
     
-    async def _execute_operation(self, context: OperationContext) -> Dict[str, Any]:
-        """Execute operation with validation"""
-        return await self.execute(context)
-    
-    async def _optimize_operation(self, result: Dict[str, Any], context: OperationContext) -> Dict[str, Any]:
-        """Optimize operation result"""
-        optimized = result.copy()
-        optimized["optimized"] = True
-        return optimized
-    
-    async def _monitor_operation(self, result: Dict[str, Any], context: OperationContext):
-        """Monitor operation execution"""
-        logger.debug(f"Monitoring operation: {context.operation_type}")
+    async def _generate_safety_recommendations(self, violations: List[Dict[str, Any]], context: SafetyContext) -> List[str]:
+        """Generate safety recommendations based on violations"""
+        recommendations = []
+        
+        for violation in violations:
+            if violation.get("type") == "pii_detected":
+                recommendations.append("Remove or mask personally identifiable information")
+            elif violation.get("type") == "malicious_content":
+                recommendations.append("Review and remove potentially harmful content")
+            elif violation.get("type") == "policy_violation":
+                recommendations.append(f"Address policy violation: {violation.get('description')}")
+        
+        if not violations:
+            recommendations.append("Content appears safe and compliant with policies")
+        
+        return recommendations
 
-class OperationError(Exception):
-    """Raised when operation processing fails"""
+class SafetyChecker:
+    """Safety checking component"""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+        self.pii_patterns = [
+            re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'),  # Email
+            re.compile(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-\s]?([0-9]{4})\b'),  # Phone
+            re.compile(r'\b\d{3}-\d{2}-\d{4}\b'),  # SSN
+        ]
+    
+    async def check_content_safety(self, content: str) -> Dict[str, Any]:
+        """Check content for safety violations"""
+        violations = []
+        
+        # Check for PII
+        for pattern in self.pii_patterns:
+            matches = pattern.findall(content)
+            if matches:
+                violations.append({
+                    "type": "pii_detected",
+                    "severity": "high",
+                    "description": f"PII pattern detected: {len(matches)} matches"
+                })
+        
+        # Check for malicious patterns
+        malicious_keywords = ["hack", "exploit", "bypass", "inject"]
+        for keyword in malicious_keywords:
+            if keyword.lower() in content.lower():
+                violations.append({
+                    "type": "malicious_content",
+                    "severity": "medium",
+                    "description": f"Potentially malicious keyword: {keyword}"
+                })
+        
+        return {
+            "is_safe": len(violations) == 0,
+            "violations": violations,
+            "confidence": 0.85
+        }
+
+class PolicyEnforcer:
+    """Policy enforcement component"""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+    
+    async def enforce_policies(self, context: SafetyContext, safety_check: Dict) -> List[Dict[str, Any]]:
+        """Enforce applicable policies"""
+        enforcements = []
+        
+        # Content length policy
+        if len(context.content) > 10000:
+            enforcements.append({
+                "policy": PolicyType.CONTENT_SAFETY.value,
+                "action": "warn",
+                "description": "Content exceeds recommended length"
+            })
+        
+        # Data privacy policy
+        if not safety_check.get("is_safe", True):
+            enforcements.append({
+                "policy": PolicyType.DATA_PRIVACY.value,
+                "action": "block",
+                "description": "Content contains privacy violations"
+            })
+        
+        return enforcements
+
+class GuardrailMonitor:
+    """Guardrail monitoring component"""
+    
+    def __init__(self, config: Dict[str, Any]):
+        self.config = config
+    
+    async def check_guardrails(self, context: SafetyContext) -> Dict[str, Any]:
+        """Check safety guardrails"""
+        violations = []
+        
+        # Check for forbidden operations
+        forbidden_operations = ["delete_all", "override_safety", "bypass_policy"]
+        for op in forbidden_operations:
+            if op in context.content.lower():
+                violations.append({
+                    "type": "forbidden_operation",
+                    "severity": "critical",
+                    "description": f"Forbidden operation detected: {op}"
+                })
+        
+        return {
+            "guardrails_active": True,
+            "violations": violations
+        }
+
+class SafetyTrace:
+    """Safety trace observability hook"""
+    
+    def __init__(self):
+        self.traces = {}
+    
+    def start_trace(self, operation: str, context: Any) -> str:
+        """Start safety trace"""
+        trace_id = f"safety_{datetime.now().isoformat()}"
+        self.traces[trace_id] = {
+            "operation": operation,
+            "start_time": datetime.now().isoformat(),
+            "context": context
+        }
+        return trace_id
+    
+    def end_trace(self, trace_id: str, result: Any):
+        """End safety trace"""
+        if trace_id in self.traces:
+            self.traces[trace_id]["end_time"] = datetime.now().isoformat()
+            self.traces[trace_id]["result"] = result
+    
+    def record_error(self, trace_id: str, error: Exception):
+        """Record safety error"""
+        if trace_id in self.traces:
+            self.traces[trace_id]["error"] = str(error)
+
+class PolicyMetrics:
+    """Policy metrics observability hook"""
+    
+    def __init__(self):
+        self.metrics = {}
+    
+    def record_safety_check(self, safety_check: Dict):
+        """Record safety check metrics"""
+        self.metrics["safety_checks"] = self.metrics.get("safety_checks", 0) + 1
+        self.metrics["violations_detected"] = len(safety_check.get("violations", []))
+    
+    def record_policy_enforcement(self, enforcements: List[Dict]):
+        """Record policy enforcement metrics"""
+        self.metrics["policy_enforcements"] = self.metrics.get("policy_enforcements", 0) + len(enforcements)
+
+class GuardrailLog:
+    """Guardrail log observability hook"""
+    
+    def __init__(self):
+        self.logs = []
+    
+    def record_guardrail_check(self, results: Dict):
+        """Record guardrail check"""
+        self.logs.append({
+            "timestamp": datetime.now().isoformat(),
+            "guardrail_results": results
+        })
+    
+    def record_safety_result(self, result: SafetyResult):
+        """Record safety result"""
+        self.logs.append({
+            "timestamp": datetime.now().isoformat(),
+            "safety_result": {
+                "is_safe": result.is_safe,
+                "safety_level": result.safety_level.value,
+                "violations_count": len(result.violations)
+            }
+        })
+
+class SafetyError(Exception):
+    """Raised when safety operations fail"""
     pass
 
-class ValidationError(Exception):
-    """Raised when validation fails"""
-    pass
-
-# Factory function for easy instantiation
+# Factory function
 def create_assess_safety_risk(config: Optional[Dict[str, Any]] = None) -> AssessSafetyRisk:
     """Factory function for assess_safety_risk creation"""
     return AssessSafetyRisk(config)
@@ -150,20 +329,19 @@ async def main():
     """Main execution function for assess_safety_risk"""
     component = create_assess_safety_risk()
     
-    # Example usage
-    context = OperationContext(
-        operation_type=OperationType.DEFAULT,
-        parameters={"param1": "value1"},
-        constraints=["constraint1"],
-        session_id="example_session",
-        metadata={"source": "example"}
+    context = SafetyContext(
+        content="This is a sample content for safety checking",
+        operation_type="text_processing",
+        user_context={"user_id": "example", "role": "user"},
+        constraints=["no_pii", "no_malicious_content"],
+        session_id="example_session"
     )
     
     try:
-        result = await component.process(context)
-        print(f"Operation result: {result}")
+        result = await component.check_safety(context)
+        print(f"Safety result: {result}")
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Safety error: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())
