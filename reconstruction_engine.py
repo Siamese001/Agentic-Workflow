@@ -140,7 +140,7 @@ class ReconstructionEngine:
         print(f"📁 Scanning {source_type}: {archive_path}")
         
         for file_path in archive_root.rglob('*'):
-            if file_path.is_file() and file_path.suffix in {'.py', '.yaml', '.json'}:
+            if file_path.is_file() and file_path.suffix in {'.py', '.yaml', '.yml', '.json', '.sh', '.txt', '.md', '.toml', '.cfg', '.js', '.html', '.css', '.sql', '.xml'}:
                 try:
                     with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
                         content = f.read()
@@ -193,7 +193,7 @@ class ReconstructionEngine:
                 line = line.strip()
                 if line and len(line) == 40:  # Commit hash
                     current_commit = line
-                elif line and current_commit and line.endswith(('.py', '.yaml', '.json')):
+                elif line and current_commit and line.endswith(('.py', '.yaml', '.yml', '.json', '.sh', '.txt', '.md', '.toml', '.cfg', '.js', '.html', '.css', '.sql', '.xml')):
                     # This is a file path in the current commit
                     github_file = GitHubFile(
                         path=line,
@@ -270,6 +270,12 @@ class ReconstructionEngine:
             # Bonus for exact filename matches
             if target_file.l7_file.lower() in source_file.path.lower():
                 score += 0.2
+            
+            # Bonus for fuzzy filename substring matching
+            target_name = target_file.l7_file.lower().replace('.py', '').replace('.yaml', '').replace('.json', '')
+            source_name = source_file.path.lower().replace('.py', '').replace('.yaml', '').replace('.json', '')
+            if target_name in source_name or source_name in target_name:
+                score += 0.15
                 
             # Bonus for file type matches
             target_ext = os.path.splitext(target_file.l7_file)[1]
@@ -311,7 +317,7 @@ class ReconstructionEngine:
                         best_match = source_file
         
         # Only return matches with reasonable confidence
-        if best_score > 0.3:  # Threshold can be adjusted
+        if best_score > 0.15:  # Lowered threshold from 0.3 to 0.15
             return best_match
         return None
     
