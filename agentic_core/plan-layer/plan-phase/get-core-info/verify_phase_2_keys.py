@@ -262,7 +262,7 @@ class MockOrchestrator:
     
     async def execute_full_workflow(self) -> Dict[str, Any]:
         """Execute the complete workflow and return results"""
-        print("🚀 Starting full workflow execution...")
+        print("Starting full workflow execution...")
         
         # Execute all phases
         general_result = await self.execute_general_phase()
@@ -301,7 +301,7 @@ class MockOrchestrator:
 
 async def test_successful_workflow():
     """Test that successful workflow returns phase_2_keys = TRUE"""
-    print("\n🧪 Testing successful workflow...")
+    print("\nTesting successful workflow...")
     
     orchestrator = MockOrchestrator()
     response = await orchestrator.execute_full_workflow()
@@ -316,13 +316,13 @@ async def test_successful_workflow():
     for phase_name in ["general", "specific", "utility"]:
         assert response["phase_completion_status"][phase_name] is True, f"Phase {phase_name} should be completed"
     
-    print("✅ SUCCESSFUL WORKFLOW TEST PASSED: phase_2_keys = TRUE")
+    print("SUCCESSFUL WORKFLOW TEST PASSED: phase_2_keys = TRUE")
     return True
 
 
 async def test_failed_phase_workflow():
     """Test that failed phase returns phase_2_keys = FALSE"""
-    print("\n🧪 Testing failed phase workflow...")
+    print("\nTesting failed phase workflow...")
     
     orchestrator = MockOrchestrator()
     
@@ -345,13 +345,13 @@ async def test_failed_phase_workflow():
     # Verify specific phase failed
     assert response["phase_completion_status"]["specific"] is False
     
-    print("✅ FAILED PHASE WORKFLOW TEST PASSED: phase_2_keys = FALSE")
+    print("FAILED PHASE WORKFLOW TEST PASSED: phase_2_keys = FALSE")
     return True
 
 
 async def test_partial_workflow():
     """Test that partial workflow returns phase_2_keys = FALSE"""
-    print("\n🧪 Testing partial workflow...")
+    print("\nTesting partial workflow...")
     
     # Create response with only general phase
     general_result = PhaseResult(
@@ -379,13 +379,13 @@ async def test_partial_workflow():
     assert completion_status["specific"].is_completed is False
     assert completion_status["utility"].is_completed is False
     
-    print("✅ PARTIAL WORKFLOW TEST PASSED: phase_2_keys = FALSE")
+    print("PARTIAL WORKFLOW TEST PASSED: phase_2_keys = FALSE")
     return True
 
 
 async def test_phase_completion_criteria():
     """Test the specific phase completion criteria"""
-    print("\n🧪 Testing phase completion criteria...")
+    print("\nTesting phase completion criteria...")
     
     checker = PhaseCompletionChecker()
     
@@ -428,7 +428,7 @@ async def test_phase_completion_criteria():
     completion_status = checker.check_phase_completion([failed_specific])
     assert completion_status["specific"].is_completed is False, "Specific phase should be incomplete with failed component"
     
-    print("✅ PHASE COMPLETION CRITERIA TEST PASSED")
+    print("PHASE COMPLETION CRITERIA TEST PASSED")
     return True
 
 
@@ -468,7 +468,7 @@ if __name__ == "__main__":
     success = asyncio.run(main())
     
     if success:
-        print("\n🚀 READY FOR PRODUCTION: phase_2_keys = TRUE implementation verified!")
+        print("\nREADY FOR PRODUCTION: phase_2_keys = TRUE implementation verified!")
     else:
-        print("\n⚠️  NEEDS FIXES: Verification failed - check implementation")
+        print("\nNEEDS FIXES: Verification failed - check implementation")
         exit(1)

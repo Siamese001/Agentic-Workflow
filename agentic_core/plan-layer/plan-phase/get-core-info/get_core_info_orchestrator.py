@@ -535,9 +535,16 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Core Query Builder
             try:
-                # Create core query request (simplified for this example)
-                core_query_result = await self.general_subsystem["core_query_builder"].build_core_query(
-                    # Core query request parameters
+                # Create core query request
+                from .general.understand_request.build_core_query import CoreQueryRequest
+                core_query_request = CoreQueryRequest(
+                    layer_name=request.layer_name,
+                    query_type="standard",
+                    query_purpose="analysis",
+                    query_context=request.context.copy()
+                )
+                core_query_result = await self.general_subsystem["core_query_builder"].build_query(
+                    core_query_request
                 )
                 general_output["core_query"] = core_query_result
                 components_completed.append("core_query_builder")
@@ -547,9 +554,16 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Layer Parameter Extractor
             try:
-                # Extract layer parameters (simplified)
+                # Extract layer parameters
+                from .general.understand_request.extract_layer_parameters import LayerParameterRequest
+                parameter_request = LayerParameterRequest(
+                    layer_spec=request.layer_spec,
+                    extraction_scope="all",
+                    parameter_types=["config", "dependencies", "interfaces"],
+                    context=request.context.copy()
+                )
                 parameter_result = await self.general_subsystem["layer_parameter_extractor"].extract_parameters(
-                    # Parameter extraction request parameters
+                    parameter_request
                 )
                 general_output["parameters"] = parameter_result
                 components_completed.append("layer_parameter_extractor")
@@ -559,9 +573,15 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Registry Intent Parser
             try:
-                # Parse registry intent (simplified)
-                intent_result = await self.general_subsystem["registry_intent_parser"].parse_registry_intent(
-                    # Intent parsing request parameters
+                # Parse registry intent
+                from .general.understand_request.parse_registry_intent import RegistryIntentRequest
+                intent_request = RegistryIntentRequest(
+                    intent_text=f"Process layer {request.layer_name}",
+                    intent_context=request.context.copy(),
+                    parsing_options={"extract_parameters": True, "validate_semantics": True}
+                )
+                intent_result = await self.general_subsystem["registry_intent_parser"].parse_intent(
+                    intent_request
                 )
                 general_output["intent"] = intent_result
                 components_completed.append("registry_intent_parser")
@@ -616,8 +636,15 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Layer Requirements Analyzer
             try:
+                from .specific.analyze_layer_requirements import LayerRequirementsRequest
+                requirements_request = LayerRequirementsRequest(
+                    layer_spec=request.layer_spec,
+                    analysis_scope="comprehensive",
+                    requirement_types=["functional", "non-functional", "constraints"],
+                    context=request.context.copy()
+                )
                 requirements_result = await self.specific_subsystem["layer_requirements_analyzer"].analyze_requirements(
-                    # Requirements analysis request parameters
+                    requirements_request
                 )
                 specific_output["requirements"] = requirements_result
                 components_completed.append("layer_requirements_analyzer")
@@ -627,8 +654,15 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Layer Dependency Extractor
             try:
+                from .specific.extract_layer_dependencies import LayerDependenciesRequest
+                dependency_request = LayerDependenciesRequest(
+                    layer_spec=request.layer_spec,
+                    extraction_scope="all",
+                    dependency_types=["runtime", "build", "test"],
+                    context=request.context.copy()
+                )
                 dependency_result = await self.specific_subsystem["layer_dependency_extractor"].extract_dependencies(
-                    # Dependency extraction request parameters
+                    dependency_request
                 )
                 specific_output["dependencies"] = dependency_result
                 components_completed.append("layer_dependency_extractor")
@@ -638,8 +672,16 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Layer ID Generator
             try:
+                from .specific.generate_layer_id import LayerIdRequest
+                id_request = LayerIdRequest(
+                    layer_name=request.layer_name,
+                    layer_spec=request.layer_spec,
+                    id_generation_type="composite",
+                    namespace="agentic_core",
+                    context=request.context.copy()
+                )
                 id_result = await self.specific_subsystem["layer_id_generator"].generate_layer_id(
-                    # ID generation request parameters
+                    id_request
                 )
                 specific_output["layer_id"] = id_result
                 components_completed.append("layer_id_generator")
@@ -649,8 +691,15 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Layer Interface Mapper
             try:
+                from .specific.map_layer_interfaces import LayerInterfacesRequest
+                interface_request = LayerInterfacesRequest(
+                    layer_spec=request.layer_spec,
+                    mapping_scope="all",
+                    interface_types=["api", "data", "event"],
+                    context=request.context.copy()
+                )
                 interface_result = await self.specific_subsystem["layer_interface_mapper"].map_interfaces(
-                    # Interface mapping request parameters
+                    interface_request
                 )
                 specific_output["interfaces"] = interface_result
                 components_completed.append("layer_interface_mapper")
@@ -660,8 +709,15 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Layer Compatibility Validator
             try:
+                from .specific.validate_layer_compatibility import LayerCompatibilityRequest
+                compatibility_request = LayerCompatibilityRequest(
+                    layer_spec=request.layer_spec,
+                    target_layers=request.context.get("target_layers", []),
+                    compatibility_types=["version", "interface", "data"],
+                    context=request.context.copy()
+                )
                 compatibility_result = await self.specific_subsystem["layer_compatibility_validator"].validate_compatibility(
-                    # Compatibility validation request parameters
+                    compatibility_request
                 )
                 specific_output["compatibility"] = compatibility_result
                 components_completed.append("layer_compatibility_validator")
@@ -671,8 +727,15 @@ class GetCoreInfoOrchestrator(GetCoreInfoOrchestratorInterface):
             
             # Layer Spec Validator
             try:
-                spec_result = await self.specific_subsystem["layer_spec_validator"].validate_spec(
-                    # Spec validation request parameters
+                from .specific.validate_layer_spec import LayerSpecValidationRequest
+                spec_request = LayerSpecValidationRequest(
+                    layer_spec=request.layer_spec,
+                    validation_scope="comprehensive",
+                    validation_rules=["structure", "semantics", "security"],
+                    context=request.context.copy()
+                )
+                spec_result = await self.specific_subsystem["layer_spec_validator"].validate_specification(
+                    spec_request
                 )
                 specific_output["spec_validation"] = spec_result
                 components_completed.append("layer_spec_validator")

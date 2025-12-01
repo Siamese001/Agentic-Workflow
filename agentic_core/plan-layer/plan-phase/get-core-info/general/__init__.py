@@ -18,9 +18,9 @@ from .understand_request import (
     CoreQuerySafetyPolicy,
     LayerParameterSafetyPolicy,
     RegistryIntentSafetyPolicy,
-    validate_core_query_request,
-    validate_parameter_extraction_request,
-    validate_intent_parsing_request
+    validate_query_request,
+    validate_parameter_request,
+    validate_intent_request
 )
 
 # Export main classes
@@ -46,9 +46,9 @@ __all__ = [
     "RegistryIntentSafetyPolicy",
     
     # Request validators
-    "validate_core_query_request",
-    "validate_parameter_extraction_request",
-    "validate_intent_parsing_request"
+    "validate_query_request",
+    "validate_parameter_request",
+    "validate_intent_request"
 ]
 
 # Version information
