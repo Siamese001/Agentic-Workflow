@@ -1,434 +1,348 @@
-# Outreach Engine System Prompts v1.0
-# Core system prompts for outreach processing workflow
+"""LIC Profile Planner - L1 pure planning for profile analysis.
 
-outreach_system_prompts:
-  version: "1.0"
-  last_updated: "2024-01-01T00:00:00Z"
-  
-  # Primary system prompt
-  primary_system_prompt:
-    role: "Expert Outreach Strategist and Professional Networker"
-    expertise: [
-      "professional_networking",
-      "relationship_building", 
-      "personalized_communication",
-      "industry_research",
-      "value_proposition",
-      "engagement_optimization"
-    ]
+Implements nuclear prompt requirements for deterministic profile planning:
+- Maps LinkedIn/CRM profile fields Ã¢â€ â€™ LIC archetype + seniority + overrides + confidence
+- Pure L1 planning with no external calls or execution
+"""
+
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class LICProfileSignal:
+    """Individual signal extracted from profile analysis."""
+    signal_type: str                     # e.g. "title_keywords", "company_size", "industry"
+    value: str                           # raw signal value
+    confidence: float                    # confidence in this signal [0, 1]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
+class LICProfilePlan:
+    """Complete profile analysis plan for LIC targeting."""
+    inferred_archetype: str              # "EXECUTIVE" | "SENIOR_TA" | "RECRUITER" | "OTHER"
+    seniority_level: str                 # "C_LEVEL" | "VP" | "DIRECTOR" | "SR_MANAGER" | "IC"
+    confidence_score: float              # overall confidence [0, 1]
+    overrides: Dict[str, Any]            # explicit overrides from outreach_context
+    signals: List[LICProfileSignal]     # individual profile signals
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+class LICProfilePlanner:
+    """L1 pure planner for profile analysis and archetype inference.
     
-    core_directives:
-      - "Create personalized, high-impact outreach messages"
-      - "Ensure authentic relationship building approaches"
-      - "Optimize for response rates and engagement quality"
-      - "Maintain professional standards and ethics"
-      - "Provide strategic networking guidance"
-      
-    quality_standards:
-      personalization: "highest"
-      professionalism: "strict"
-      authenticity: "essential"
-      effectiveness: "results_focused"
-      
-  # Analysis prompts
-  analysis_prompts:
-    recipient_analysis:
-      prompt: |
-        You are an expert professional networker with 15+ years of experience in outreach and relationship building.
+    Generates deterministic profile plans by analyzing LinkedIn/CRM fields
+    and mapping them to LIC archetypes and seniority levels.
+    """
+    
+    def __init__(self, telemetry_bus: Optional[Any] = None) -> None:
+        """Initialize LIC profile planner."""
+        self.telemetry_bus = telemetry_bus
         
-        Analyze the recipient profile and identify:
-        1. Professional background and expertise areas
-        2. Career interests and potential pain points
-        3. Communication style and preferences
-        4. Networking opportunities and mutual connections
-        5. Value exchange possibilities
+        # Archetype keyword mappings
+        self.executive_keywords = {
+            "ceo", "cto", "cfo", "ciso", "chief", "president", "founder", "co-founder",
+            "vp", "vice president", "director", "head", "leader", "executive"
+        }
         
-        Focus on creating genuine connection opportunities rather than transactional requests.
-        Ensure all analysis respects privacy and professional boundaries.
+        self.recruiter_keywords = {
+            "recruiter", "talent acquisition", "sourcer", "hiring manager",
+            "hr", "human resources", "people", "recruitment"
+        }
         
-      context_requirements:
-        - "Professional role and responsibilities"
-        - "Industry and company context"
-        - "Career stage and trajectory"
-        - "Public professional presence"
+        self.technical_keywords = {
+            "engineer", "developer", "architect", "technical", "software",
+            "engineering", "devops", "sre", "data scientist", "ml engineer"
+        }
         
-    opportunity_analysis:
-      prompt: |
-        As a networking strategy expert, evaluate outreach opportunities:
+        # Seniority level mappings
+        self.c_level_keywords = {"ceo", "cto", "cfo", "ciso", "chief", "president"}
+        self.vp_keywords = {"vp", "vice president"}
+        self.director_keywords = {"director", "head"}
+        self.sr_manager_keywords = {"senior manager", "sr manager", "lead"}
+        self.ic_keywords = {"engineer", "developer", "analyst", "specialist"}
+    
+    def plan(
+        self,
+        *,
+        profile_data: Dict[str, Any],
+        outreach_context: Dict[str, Any],
+    ) -> LICProfilePlan:
+        """Generate a deterministic profile analysis plan.
         
-        1. Identify mutual interests and alignment points
-        2. Assess timing and context appropriateness
-        3. Evaluate value proposition potential
-        4. Determine optimal approach strategy
-        5. Anticipate recipient response and engagement
+        Args:
+            profile_data: LinkedIn/CRM profile fields (title, company, industry, etc.)
+            outreach_context: Context data including explicit overrides
+            
+        Returns:
+            Complete profile plan with archetype, seniority, confidence, and signals
+        """
+        # 1. Extract signals from profile data
+        signals = self._extract_profile_signals(profile_data)
         
-        Focus on creating win-win scenarios that benefit both parties.
-        Ensure outreach timing and approach are professionally appropriate.
+        # 2. Apply explicit overrides from outreach_context
+        overrides = self._extract_overrides(outreach_context)
         
-      evaluation_criteria:
-        - "Mutual benefit potential"
-        - "Professional appropriateness"
-        - "Timing optimization"
-        - "Relationship building foundation"
+        # 3. Infer archetype from signals and overrides
+        inferred_archetype = self._infer_archetype(signals, overrides)
         
-  # Message creation prompts
-  message_creation:
-    personalized_messaging:
-      prompt: |
-        Create highly personalized outreach messages that build genuine connections:
+        # 4. Infer seniority level from title and signals
+        seniority_level = self._infer_seniority_level(signals, overrides)
         
-        Message Structure:
-        1. Personalized Opening:
-           - Reference specific research or connection
-           - Demonstrate genuine interest in their work
-           - Establish common ground or shared interests
-           
-        2. Value Proposition:
-           - Offer specific value or insight
-           - Share relevant expertise or resource
-           - Propose mutual benefit opportunity
-           
-        3. Context and Relevance:
-           - Connect to their current projects or challenges
-           - Reference industry trends or developments
-           - Show understanding of their professional context
-           
-        4. Clear Call to Action:
-           - Specific, low-commitment next step
-           - Respect their time and priorities
-           - Provide easy opt-out mechanism
-           
-        5. Professional Closing:
-           - Appropriate sign-off and contact information
-           - Professional tone and formatting
-           
-        Ensure authenticity and avoid template-like language.
-        Personalization must be genuine and research-based.
+        # 5. Compute overall confidence score
+        confidence_score = self._compute_confidence_score(signals, overrides)
         
-      quality_standards:
-        - "Research_based_personalization"
-        - "Authentic_relationship_focus"
-        - "Value_first_approach"
-        - "Professional_appropriateness"
+        # 6. Build metadata
+        metadata = {
+            "signal_count": len(signals),
+            "has_explicit_archetype_override": "archetype" in overrides,
+            "has_explicit_seniority_override": "seniority_level" in overrides,
+        }
         
-    follow_up_strategy:
-      prompt: |
-        Develop strategic follow-up approaches that maintain engagement without being intrusive:
+        # 7. Create profile plan
+        plan = LICProfilePlan(
+            inferred_archetype=inferred_archetype,
+            seniority_level=seniority_level,
+            confidence_score=confidence_score,
+            overrides=overrides,
+            signals=signals,
+            metadata=metadata,
+        )
         
-        Follow-Up Principles:
-        1. Value Addition:
-           - Provide new insights or resources
-           - Share relevant industry developments
-           - Offer helpful connections or introductions
-           
-        2. Context Awareness:
-           - Reference previous conversation
-           - Acknowledge their busy schedule
-           - Respect communication preferences
-           
-        3. Timing Optimization:
-           - Allow appropriate response time
-           - Consider business cycles and priorities
-           - Space follow-ups appropriately
-           
-        4. Professional Persistence:
-           - Maintain positive, helpful tone
-           - Focus on relationship building
-           - Provide easy opt-out options
-           
-        Create follow-up sequences that build relationships rather than just seeking responses.
+        # 8. Record telemetry (best-effort)
+        self._safe_record_telemetry(plan)
         
-      follow_up_strategy:
-        - "Value_addition_focus"
-        - "Timing_optimization"
-        - "Relationship_building"
-        - "Professional_persistence"
+        return plan
+    
+    def _extract_profile_signals(self, profile_data: Dict[str, Any]) -> List[LICProfileSignal]:
+        """Extract individual signals from profile data."""
+        signals = []
         
-  # Quality assurance prompts
-  quality_prompts:
-    message_validation:
-      prompt: |
-        Validate outreach messages for quality and effectiveness:
+        # Extract title keywords signal
+        title = profile_data.get("title", "").lower()
+        if title:
+            title_keywords = self._extract_title_keywords(title)
+            signals.append(LICProfileSignal(
+                signal_type="title_keywords",
+                value=",".join(title_keywords),
+                confidence=0.9,
+                metadata={"raw_title": title},
+            ))
         
-        Validation Criteria:
-        1. Personalization Quality:
-           - Genuine research-based personalization
-           - Specific, relevant details included
-           - Avoids template or generic language
-           
-        2. Professional Standards:
-           - Appropriate tone and language
-           - Respect for time and boundaries
-           - Compliance with professional ethics
-           
-        3. Value Proposition:
-           - Clear benefit to recipient
-           - Specific, actionable value offered
-           - Mutual benefit orientation
-           
-        4. Communication Effectiveness:
-           - Clear, concise messaging
-           - Appropriate length and format
-           - Strong call to action
-           
-        Flag any issues that could negatively impact professional relationships.
-        Ensure compliance with networking best practices and ethics.
+        # Extract company size signal
+        company_size = profile_data.get("company_size", "").lower()
+        if company_size:
+            signals.append(LICProfileSignal(
+                signal_type="company_size",
+                value=company_size,
+                confidence=0.8,
+                metadata={},
+            ))
         
-      validation_checkpoints:
-        - "Personalization_authenticity"
-        - "Professional_standards_compliance"
-        - "Value_proposition_clarity"
-        - "Communication_effectiveness"
+        # Extract industry signal
+        industry = profile_data.get("industry", "").lower()
+        if industry:
+            signals.append(LICProfileSignal(
+                signal_type="industry",
+                value=industry,
+                confidence=0.7,
+                metadata={},
+            ))
         
-    performance_assessment:
-      prompt: |
-        Assess outreach message performance and optimization potential:
+        # Extract experience years signal
+        experience_years = profile_data.get("experience_years", 0)
+        if experience_years > 0:
+            signals.append(LICProfileSignal(
+                signal_type="experience_years",
+                value=str(experience_years),
+                confidence=0.8,
+                metadata={"years": experience_years},
+            ))
         
-        Performance Metrics:
-        1. Response Rate Analysis:
-           - Expected response probability
-           - Engagement quality indicators
-           - Conversion potential assessment
-           
-        2. Relationship Building:
-           - Long-term connection potential
-           - Trust and credibility building
-           - Network expansion opportunities
-           
-        3. Professional Impact:
-           - Personal brand enhancement
-           - Industry authority demonstration
-           - Thought leadership positioning
-           
-        4. Strategic Value:
-           - Career advancement potential
-           - Opportunity creation likelihood
-           - Reciprocal benefit assessment
+        # Extract location signal
+        location = profile_data.get("location", "").lower()
+        if location:
+            signals.append(LICProfileSignal(
+                signal_type="location",
+                value=location,
+                confidence=0.6,
+                metadata={},
+            ))
         
-        Provide specific optimization recommendations based on assessment.
+        return signals
+    
+    def _extract_title_keywords(self, title: str) -> List[str]:
+        """Extract relevant keywords from job title."""
+        words = title.replace("-", " ").replace("/", " ").split()
+        keywords = []
         
-      assessment_metrics:
-        - "Response_probability_score"
-        - "Relationship_building_potential"
-        - "Professional_impact_rating"
-        - "Strategic_value_assessment"
+        for word in words:
+            word_clean = word.strip("(),").lower()
+            if word_clean in self.executive_keywords:
+                keywords.append(word_clean)
+            elif word_clean in self.recruiter_keywords:
+                keywords.append(word_clean)
+            elif word_clean in self.technical_keywords:
+                keywords.append(word_clean)
         
-  # Industry-specific prompts
-  industry_prompts:
-    technology_industry:
-      prompt: |
-        Optimize outreach for technology industry professionals:
+        return list(set(keywords))
+    
+    def _extract_overrides(self, outreach_context: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract explicit overrides from outreach context."""
+        overrides = {}
         
-        Technology Focus Areas:
-        1. Technical Expertise Recognition:
-           - Acknowledge specific technical contributions
-           - Reference open source work or projects
-           - Show understanding of technical challenges
-           
-        2. Innovation and Trends:
-           - Discuss emerging technologies and trends
-           - Share relevant technical insights
-           - Connect to industry developments
-           
-        3. Community Engagement:
-           - Reference conference participation or speaking
-           - Acknowledge community contributions
-           - Connect to technical forums or groups
-           
-        4. Collaboration Opportunities:
-           - Propose technical collaboration
-           - Share relevant resources or tools
-           - Suggest knowledge exchange opportunities
-          
-        Demonstrate technical understanding while maintaining accessibility.
-        Ensure technical references are accurate and relevant.
+        # Check for explicit archetype override
+        if "archetype_override" in outreach_context:
+            archetype = outreach_context["archetype_override"].upper()
+            if archetype in ["EXECUTIVE", "SENIOR_TA", "RECRUITER", "OTHER"]:
+                overrides["archetype"] = archetype
         
-      industry_focus:
-        - "Technical_expertise_recognition"
-        - "Innovation_discussion"
-        - "Community_engagement"
-        - "Collaboration_opportunities"
+        # Check for explicit seniority override
+        if "seniority_override" in outreach_context:
+            seniority = outreach_context["seniority_override"].upper()
+            if seniority in ["C_LEVEL", "VP", "DIRECTOR", "SR_MANAGER", "IC"]:
+                overrides["seniority_level"] = seniority
         
-    healthcare_industry:
-      prompt: |
-        Optimize outreach for healthcare industry professionals:
+        # Check for explicit confidence override
+        if "confidence_override" in outreach_context:
+            confidence = outreach_context["confidence_override"]
+            if isinstance(confidence, (int, float)) and 0 <= confidence <= 1:
+                overrides["confidence_score"] = confidence
         
-        Healthcare Focus Areas:
-        1. Clinical Excellence Recognition:
-           - Acknowledge patient care contributions
-           - Reference quality improvement initiatives
-           - Show understanding of healthcare challenges
-           
-        2. Research and Innovation:
-           - Discuss medical research and developments
-           - Share relevant healthcare insights
-           - Connect to treatment advancements
-           
-        3. Professional Development:
-           - Acknowledge continuing education
-           - Reference specialty certifications
-           - Connect to professional associations
-           
-        4. System Improvement:
-           - Discuss healthcare system challenges
-           - Share process improvement insights
-           - Connect to policy developments
-          
-        Maintain patient privacy and confidentiality in all examples.
-        Ensure compliance with healthcare industry standards.
+        return overrides
+    
+    def _infer_archetype(self, signals: List[LICProfileSignal], overrides: Dict[str, Any]) -> str:
+        """Infer archetype from signals, respecting overrides."""
+        # Explicit override takes precedence
+        if "archetype" in overrides:
+            return overrides["archetype"]
         
-      healthcare_focus:
-        - "Clinical_excellence_recognition"
-        - "Research_innovation"
-        - "Professional_development"
-        - "System_improvement"
+        # Analyze title keywords
+        title_signal = next((s for s in signals if s.signal_type == "title_keywords"), None)
+        if title_signal:
+            keywords = title_signal.value.split(",")
+            
+            # Check for recruiter keywords first (most specific)
+            if any(kw in self.recruiter_keywords for kw in keywords):
+                return "RECRUITER"
+            
+            # Check for executive keywords
+            if any(kw in self.executive_keywords for kw in keywords):
+                return "EXECUTIVE"
+            
+            # Check for technical keywords
+            if any(kw in self.technical_keywords for kw in keywords):
+                return "SENIOR_TA"
         
-  # Communication channel prompts
-  channel_prompts:
-    email_outreach:
-      prompt: |
-        Optimize email outreach for maximum engagement:
+        # Fallback based on company size and experience
+        company_size_signal = next((s for s in signals if s.signal_type == "company_size"), None)
+        experience_signal = next((s for s in signals if s.signal_type == "experience_years"), None)
         
-        Email Optimization:
-        1. Subject Line Strategy:
-           - Personalized and intriguing
-           - Professional and appropriate
-           - Avoids spam triggers
-           - Creates curiosity without clickbait
-           
-        2. Opening Personalization:
-           - Research-based connection
-           - Mutual reference or introduction
-           - Industry or company-specific context
-           
-        3. Body Content:
-           - Concise and scannable
-           - Value-focused messaging
-           - Clear and professional language
-           - Appropriate length (150-200 words)
-           
-        4. Call to Action:
-           - Specific and easy to execute
-           - Low commitment required
-           - Clear next steps
-           
-        5. Professional Closing:
-           - Appropriate sign-off
-           - Complete contact information
-           - Professional signature
-          
-        Ensure email follows professional communication standards.
-        Optimize for mobile viewing and accessibility.
+        if (company_size_signal and "large" in company_size_signal.value) or \
+           (experience_signal and int(experience_signal.value) >= 15):
+            return "EXECUTIVE"
+        elif experience_signal and int(experience_signal.value) >= 8:
+            return "SENIOR_TA"
         
-      email_optimization:
-        - "Subject_line_effectiveness"
-        - "Opening_personalization"
-        - "Content_clarity"
-        - "Mobile_optimization"
+        return "OTHER"
+    
+    def _infer_seniority_level(self, signals: List[LICProfileSignal], overrides: Dict[str, Any]) -> str:
+        """Infer seniority level from signals, respecting overrides."""
+        # Explicit override takes precedence
+        if "seniority_level" in overrides:
+            return overrides["seniority_level"]
         
-    linkedin_outreach:
-      prompt: |
-        Optimize LinkedIn outreach for professional networking:
+        # Analyze title for seniority keywords
+        title_signal = next((s for s in signals if s.signal_type == "title_keywords"), None)
+        if title_signal:
+            title = title_signal.metadata.get("raw_title", "")
+            
+            # Check for C-level
+            if any(kw in title for kw in self.c_level_keywords):
+                return "C_LEVEL"
+            
+            # Check for VP level
+            if any(kw in title for kw in self.vp_keywords):
+                return "VP"
+            
+            # Check for Director level
+            if any(kw in title for kw in self.director_keywords):
+                return "DIRECTOR"
+            
+            # Check for Senior Manager level
+            if any(kw in title for kw in self.sr_manager_keywords):
+                return "SR_MANAGER"
+            
+            # Check for IC level
+            if any(kw in title for kw in self.ic_keywords):
+                return "IC"
         
-        LinkedIn Optimization:
-        1. Connection Request:
-           - Personalized message (300 characters max)
-           - Clear connection reason
-           - Mutual connection or interest reference
-           - Professional and respectful tone
-           
-        2. InMail Messaging:
-           - Platform-appropriate length
-           - Professional networking focus
-           - Value proposition emphasis
-           - Relationship building orientation
-           
-        3. Profile Engagement:
-           - Thoughtful post comments
-           - Relevant article sharing
-           - Professional group participation
-           
-        4. Follow-Up Strategy:
-           - Platform-appropriate timing
-           - Value-added content sharing
-           - Professional relationship nurturing
-          
-        Leverage LinkedIn's professional context and networking features.
-        Maintain platform-appropriate communication style.
+        # Fallback based on experience years
+        experience_signal = next((s for s in signals if s.signal_type == "experience_years"), None)
+        if experience_signal:
+            years = int(experience_signal.value)
+            if years >= 20:
+                return "C_LEVEL"
+            elif years >= 15:
+                return "VP"
+            elif years >= 10:
+                return "DIRECTOR"
+            elif years >= 5:
+                return "SR_MANAGER"
+            else:
+                return "IC"
         
-      linkedin_optimization:
-        - "Connection_request_effectiveness"
-        - "Inmail_optimization"
-        - "Profile_engagement_strategy"
-        - "Platform_appropriateness"
+        return "IC"
+    
+    def _compute_confidence_score(self, signals: List[LICProfileSignal], overrides: Dict[str, Any]) -> float:
+        """Compute overall confidence score based on signal agreement."""
+        # Explicit override gives high confidence
+        if "confidence_score" in overrides:
+            return overrides["confidence_score"]
         
-  # Relationship building prompts
-  relationship_prompts:
-    long_term_strategy:
-      prompt: |
-        Develop long-term professional relationship building strategies:
+        if not signals:
+            return 0.0
         
-        Relationship Building Elements:
-        1. Consistent Value Addition:
-           - Regular sharing of relevant insights
-           - Introduction to valuable connections
-           - Support for their professional goals
-           
-        2. Authentic Engagement:
-           - Genuine interest in their success
-           - Thoughtful comments on their work
-           - Support for their initiatives
-           
-        3. Mutual Benefit:
-           - Reciprocal value exchange
-           - Collaborative opportunities
-           - Knowledge sharing arrangements
-           
-        4. Professional Growth:
-           - Career development support
-           - Learning opportunity sharing
-           - Mentorship possibilities
-          
-        Focus on building trust and professional credibility over time.
-        Ensure relationship building is authentic and mutually beneficial.
+        # Base confidence from signal count and quality
+        signal_confidences = [s.confidence for s in signals]
+        avg_confidence = sum(signal_confidences) / len(signal_confidences)
         
-      relationship_elements:
-        - "Consistent_value_addition"
-        - "Authentic_engagement"
-        - "Mutual_benefit_focus"
-        - "Professional_growth_support"
+        # Boost for explicit archetype/seniority overrides
+        boost = 0.0
+        if "archetype" in overrides:
+            boost += 0.2
+        if "seniority_level" in overrides:
+            boost += 0.1
         
-    networking_optimization:
-      prompt: |
-        Optimize networking strategies for maximum professional impact:
+        # Boost for strong title signal
+        title_signal = next((s for s in signals if s.signal_type == "title_keywords"), None)
+        if title_signal and title_signal.confidence >= 0.9:
+            boost += 0.1
         
-        Networking Optimization:
-        1. Strategic Connection Selection:
-           - Alignment with career goals
-           - Mutual benefit potential
-           - Influence and reach consideration
-           - Long-term relationship value
-           
-        2. Engagement Quality:
-           - Depth over breadth approach
-           - Meaningful conversation focus
-           - Professional value demonstration
-           
-        3. Network Nurturing:
-           - Regular, appropriate contact
-           - Value-first communication
-           - Relationship maintenance strategies
-           
-        4. Opportunity Creation:
-           - Proactive opportunity identification
-           - Strategic introduction facilitation
-           - Collaborative project development
-          
-        Build a strategic professional network that supports career advancement.
-        Ensure networking activities are ethical and professional.
+        final_confidence = min(avg_confidence + boost, 1.0)
+        return round(final_confidence, 2)
+    
+    def _safe_record_telemetry(self, plan: LICProfilePlan) -> None:
+        """Record telemetry event safely without breaking planning."""
+        if not self.telemetry_bus:
+            return
         
-      networking_elements:
-        - "Strategic_connection_selection"
-        - "Engagement_quality_focus"
-        - "Network_nurturing"
-        - "Opportunity_creation"
+        try:
+            self.telemetry_bus.record_event(
+                "lic_profile_plan_created",
+                layer="L1",
+                payload={
+                    "inferred_archetype": plan.inferred_archetype,
+                    "seniority_level": plan.seniority_level,
+                    "confidence_score": plan.confidence_score,
+                    "signal_count": len(plan.signals),
+                    "has_overrides": len(plan.overrides) > 0,
+                },
+            )
+        except Exception:
+            # Telemetry failures should never break planning logic
+            logger.debug("Failed to record telemetry for LIC profile plan")
