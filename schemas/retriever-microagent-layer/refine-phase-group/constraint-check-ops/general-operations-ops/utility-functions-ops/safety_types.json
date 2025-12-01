@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-workflow-10-11/schemas/l5_safety/safety_types.json",
+  "title": "L5 Safety Types Schema",
+  "description": "Data types for L5 safety layer - filters, policies, validators",
+  "type": "object",
+  "properties": {
+    "safety_request": {
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "description": "Content to be safety-checked"
+        },
+        "safety_type": {
+          "type": "string",
+          "enum": ["pii_detection", "hallucination_check", "toxicity_detection", "injection_shield", "constitutional_guardrail"],
+          "description": "Type of safety check to perform"
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "engine": {
+              "type": "string",
+              "enum": ["resume", "outreach"],
+              "description": "Engine context for safety check"
+            },
+            "user_role": {
+              "type": "string",
+              "enum": ["admin", "user", "agent"],
+              "description": "Role of content creator"
+            },
+            "destination": {
+              "type": "string",
+              "enum": ["internal", "external", "user_facing"],
+              "description": "Where content will be sent"
+            }
+          }
+        }
+      },
+      "required": ["content", "safety_type"]
+    },
+    "safety_response": {
+      "type": "object",
+      "properties": {
+        "safe": {
+          "type": "boolean",
+          "description": "Whether content passed safety checks"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence in safety assessment"
+        },
+        "violations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string"},
+              "severity": {"type": "string", "enum": ["low", "medium", "high", "critical"]},
+              "description": {"type": "string"},
+              "location": {"type": "string"}
+            }
+          },
+          "description": "List of safety violations found"
+        },
+        "sanitized_content": {
+          "type": "string",
+          "description": "Content after safety sanitization"
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": ["allow", "block", "sanitize", "review"],
+          "description": "Recommended action"
+        }
+      },
+      "required": ["safe", "confidence", "recommendation"]
+    }
+  }
+}
