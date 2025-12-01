@@ -33,10 +33,10 @@ from prompts.prompt_system_v10_10 import PROMPT_REGISTRY
 # =============================================================================
 
 # Each strategy defines:
-#   â€¢ retrieval_mode: "bm25" | "dense" | "hybrid"
-#   â€¢ use_hyde:       bool
-#   â€¢ use_rrf:        bool
-#   â€¢ top_k:          int
+#   Ã¢â‚¬Â¢ retrieval_mode: "bm25" | "dense" | "hybrid"
+#   Ã¢â‚¬Â¢ use_hyde:       bool
+#   Ã¢â‚¬Â¢ use_rrf:        bool
+#   Ã¢â‚¬Â¢ top_k:          int
 
 
 @dataclass(frozen=True)
@@ -143,13 +143,13 @@ def build_default_prompt_registry() -> PromptRegistry:
 
 def build_retrieval_config(strategy: RAGStrategyDefinition) -> RetrievalConfig:
     """
-    Convert a RAGStrategyDefinition â†’ RetrievalConfig (Phase 3).
+    Convert a RAGStrategyDefinition Ã¢â€ â€™ RetrievalConfig (Phase 3).
 
     Mapping:
-        retrieval_mode â†’ RetrievalConfig.strategy
-        use_hyde      â†’ RetrievalConfig.allow_hyde
-        use_rrf       â†’ RetrievalConfig.use_rrf
-        top_k         â†’ RetrievalConfig.max_hits
+        retrieval_mode Ã¢â€ â€™ RetrievalConfig.strategy
+        use_hyde      Ã¢â€ â€™ RetrievalConfig.allow_hyde
+        use_rrf       Ã¢â€ â€™ RetrievalConfig.use_rrf
+        top_k         Ã¢â€ â€™ RetrievalConfig.max_hits
     """
     return RetrievalConfig(
         strategy=strategy.retrieval_mode,

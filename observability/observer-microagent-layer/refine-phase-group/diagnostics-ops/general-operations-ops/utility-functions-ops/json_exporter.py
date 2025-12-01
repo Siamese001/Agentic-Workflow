@@ -1,666 +1,611 @@
-"""
-Resume Generation Engine v4.5.0 - MASTER RESUME JSON SOURCED
-=============================================================
+# File: validator_RES_v2.py
+# Core Validator Orchestrator Module - V18 Architecture (Refactored)
+# Version: 18.00 (Split into validation/ package)
+# This file contains only the PreFlightValidator, which orchestrates
+# the engine, context, and rules from its sub-modules.
 
-MAJOR CHANGES FROM v4.4.4:
-- Now properly sources ALL content from Master_Resume_V2.14.json
-- Baseline resume ONLY used for word count targets (1,032 words)
-- Correct dates, titles, locations from JSON source
-- Proper company names and formatting
-- All bullets drawn from JSON bullet_pool
-- Certifications and competencies from JSON
-
-Version: 4.5.0
-Date: October 2025
-"""
-
-import json
 import re
-from typing import Dict, List, Tuple, Optional
-from enum import Enum
-import random
+import json
+import logging
+from datetime import datetime
+from typing import Dict, List, Optional, Any, Tuple, Set, Union, Callable
+from collections import defaultdict
+from functools import partial
 
-__version__ = "4.5.0"
+# Import dependencies from new modules
+from config_RES_v2 import CONFIG, COVER_LETTER_SIGNATURE_TEMPLATE
+from models_RES import (
+    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,
+    ImmutableStagingBuffer, GateDecision, BulletProvenance,
+    FactualFailureException
+)
+from utils_RES_v2 import text_utils, calculate_signal_score
+from interpreter_RES_v2 import CodeInterpreterTool
 
-# ============================================================================
-# TEMPERATURE MODE ENUM
-# ============================================================================
+# --- V18 REFACTOR: Import from new validation package ---
+from validation.engine import ValidationEngine, ValidationRule, ConstraintFailureClassifier
+from validation.context import ValidationContext
+from validation import rules as ValidationRules
+from validation.external import JDEnforcementValidator, AppTrackerQAValidator
 
-class TemperatureMode(Enum):
-    """Temperature modes for constraint relaxation and signal adjustment."""
-    CONSERVATIVE = "conservative"  # Baseline ±15%, no extra signal
-    BALANCED = "balanced"           # Baseline ±25%, +0.02 signal if targets met
-    CREATIVE = "creative"           # Baseline ±35%, +0.05 signal, EY/early flexibility
+# ==============================================================================
+# PRE-FLIGHT VALIDATOR
+# ==============================================================================
 
-# ============================================================================
-# LOAD MASTER RESUME FROM JSON
-# ============================================================================
-
-def load_master_resume():
-    """Load the master resume from JSON file."""
-    with open('/mnt/user-data/uploads/Master_Resume_V2_14.json', 'r') as f:
-        return json.load(f)
-
-# ============================================================================
-# BASELINE WORD COUNT METRICS (from baseline document, NOT JSON)
-# ============================================================================
-
-class BaselineResumeMetrics:
-    """Baseline word count targets from the 1,032-word baseline resume."""
-    
-    # Total word count target from baseline document
-    TARGET_TOTAL = 1032
-    TOLERANCE = 50  # ±50 words allowed
-    
-    # Section word counts from baseline (NOT from JSON)
-    SECTION_BASELINES = {
-        "name": 2,
-        "headline": 12,
-        "contact": 10,
-        "executive_summary": 150,
-        "unify_intro": 25,
-        "unify_bullets": 265,
-        "ibm_intro": 20,
-        "ibm_bullets": 195,
-        "tradersense_intro": 20,
-        "tradersense_bullets": 45,
-        "ey_intro": 15,
-        "ey_bullets": 50,
-        "early_intro": 20,
-        "early_bullets": 45,
-        "education": 15,
-        "certifications": 25,
-        "competencies": 118
-    }
-    
-    # Unify/IBM ratio constraints
-    UNIFY_IBM_RATIO_MIN = 1.10
-    UNIFY_IBM_RATIO_MAX = 1.30
-
-# ============================================================================
-# ROLE PROFILES FOR CUSTOMIZATION
-# ============================================================================
-
-class RoleProfiles:
-    """Different role types for resume customization."""
-    
-    PROFILES = {
-        "chief_ai_officer": {
-            "title": "Chief AI Officer",
-            "headline": "Chief AI Officer | LLM Product Launches | Strategic AI Partnerships",
-            "keywords": ["LLM", "generative AI", "ML engineering", "AI strategy", "partnerships"],
-            "focus_sections": ["unify", "ibm"],
-            "bullet_preferences": {
-                "technical": 0.6,
-                "leadership": 0.4
-            }
-        },
-        "vp_presales": {
-            "title": "VP Pre-Sales / Solutions Engineering",
-            "headline": "VP Pre-Sales Solutions | Enterprise AI Architecture | POC-to-Production Excellence",
-            "keywords": ["pre-sales", "solution architecture", "POC", "technical sales", "demos"],
-            "focus_sections": ["unify", "ibm"],
-            "bullet_preferences": {
-                "technical": 0.5,
-                "leadership": 0.5
-            }
-        },
-        "vp_sales_engineering": {
-            "title": "VP Sales Engineering",
-            "headline": "VP Sales Engineering | Technical Revenue Leadership | Enterprise AI Solutions",
-            "keywords": ["sales engineering", "technical sales", "demos", "POC", "revenue"],
-            "focus_sections": ["unify", "ibm"],
-            "bullet_preferences": {
-                "technical": 0.4,
-                "leadership": 0.6
-            }
-        }
-    }
-
-# ============================================================================
-# BULLET SCORING AND SELECTION
-# ============================================================================
-
-class BulletScorer:
-    """Score bullets based on relevance to JD and role."""
-    
-    @staticmethod
-    def score_bullet(bullet: str, jd: str, role_keywords: List[str]) -> float:
-        """Score a bullet based on keyword matches and metrics."""
-        score = 0.0
-        bullet_lower = bullet.lower()
-        jd_lower = jd.lower()
-        
-        # Check for role keywords
-        for keyword in role_keywords:
-            if keyword.lower() in bullet_lower:
-                score += 0.2
-        
-        # Check for JD keywords
-        jd_keywords = ["pre-sales", "solution", "architect", "poc", "demo", "enterprise", 
-                      "fortune 500", "saas", "ai", "llm", "partnership", "revenue", 
-                      "team", "scale", "lead", "strategic"]
-        
-        for keyword in jd_keywords:
-            if keyword in jd_lower and keyword in bullet_lower:
-                score += 0.15
-        
-        # Bonus for metrics
-        if re.search(r'\d+[%$MK]|\$\d+[MK]', bullet):
-            score += 0.1
-        
-        # Bonus for team size mentions
-        if re.search(r'\d+-person|\d+ person', bullet):
-            score += 0.05
-            
-        return min(score, 1.0)  # Cap at 1.0
-
-# ============================================================================
-# RESUME GENERATION ENGINE
-# ============================================================================
-
-class ResumeGenerationEngine:
-    """Main engine for generating customized resumes from JSON master."""
-    
-    def __init__(self):
-        self.master_data = load_master_resume()
-        self.baseline_metrics = BaselineResumeMetrics()
-        self.role_profiles = RoleProfiles()
-        self.bullet_scorer = BulletScorer()
-    
-    def generate_resume(self, jd: str, role_type: str, temp_mode: TemperatureMode) -> Dict[str, str]:
-        """Generate all 4 outputs for the resume."""
-        
-        # Get role profile
-        profile = self.role_profiles.PROFILES.get(role_type)
-        if not profile:
-            raise ValueError(f"Unknown role type: {role_type}")
-        
-        # Generate customized sections
-        sections = self._build_resume_sections(jd, profile, temp_mode)
-        
-        # Calculate metrics
-        metrics = self._calculate_metrics(sections)
-        
-        # Run QA validation
-        qa_results = self._run_qa_validation(sections, metrics)
-        
-        # Generate 4 outputs
-        outputs = {
-            "output1_resume": self._format_resume(sections, profile),
-            "output2_word_count": self._format_word_count_table(sections, metrics),
-            "output3_signal_calibration": self._format_signal_calibration(metrics),
-            "output4_qa_validation": self._format_qa_validation(qa_results)
-        }
-        
-        return outputs
-    
-    def _build_resume_sections(self, jd: str, profile: Dict, temp_mode: TemperatureMode) -> Dict:
-        """Build customized resume sections from master data."""
-        sections = {}
-        
-        # Header info from JSON
-        owner = self.master_data["owner"]
-        sections["name"] = owner["name"]
-        sections["headline"] = profile["headline"]  # Use role-specific headline
-        sections["contact"] = f"{owner['contact']['phone']} | {owner['contact']['email']} | {owner['contact']['linkedin']}"
-        
-        # Executive Summary (customize based on role)
-        sections["executive_summary"] = self._generate_executive_summary(profile, jd)
-        
-        # Professional Experience from JSON
-        exp_data = self.master_data["professional_experience"]
-        
-        # Unify Consulting
-        unify = exp_data[0]
-        sections["unify_company"] = f"{unify['company']} | {unify['title']} | {unify['dates']['start']} – {unify['dates']['end']} | {unify['location']}"
-        sections["unify_intro"] = unify["overview"]
-        sections["unify_bullets"] = self._select_bullets(unify["bullet_pool"], jd, profile, 6)
-        
-        # IBM
-        ibm = exp_data[1]
-        sections["ibm_company"] = f"{ibm['company']} | {ibm['title']} | {ibm['dates']['start']} – {ibm['dates']['end']} | {ibm['location']}"
-        sections["ibm_intro"] = ibm["overview"]
-        sections["ibm_bullets"] = self._select_bullets(ibm["bullet_pool"], jd, profile, 5)
-        
-        # TraderSense
-        tradersense = exp_data[2]
-        sections["tradersense_company"] = f"{tradersense['company']} | {tradersense['title']} | {tradersense['dates']['start']} – {tradersense['dates']['end']} | {tradersense['location']}"
-        sections["tradersense_intro"] = tradersense["overview"]
-        sections["tradersense_bullets"] = tradersense["highlights"]  # Use highlights as bullets
-        
-        # Ernst & Young
-        ey = exp_data[3]
-        sections["ey_company"] = f"{ey['company']} | {ey['title']} | {ey['dates']['start']} – {ey['dates']['end']} | {ey['location']}"
-        sections["ey_intro"] = ey["overview"]
-        sections["ey_bullets"] = ey["highlights"]  # Use highlights as bullets
-        
-        # Early Career
-        early = exp_data[4]
-        sections["early_company"] = f"{early['company']} | {early['title']} | {early['dates']['start']} – {early['dates']['end']} | {early['location']}"
-        sections["early_intro"] = early["overview"]
-        sections["early_bullets"] = early["highlights"]  # Use highlights as bullets
-        
-        # Education from JSON
-        edu_data = self.master_data["education"]
-        sections["education"] = " | ".join([
-            f"{e['degree']}, {e['institution']} ({e['notes']})" 
-            for e in edu_data
-        ])
-        
-        # Certifications from JSON (verbatim)
-        sections["certifications"] = " | ".join(self.master_data["certifications_and_credentials"])
-        
-        # Competencies from JSON (simplified)
-        competencies = self.master_data["strategic_and_technical_competencies"]
-        # Extract key terms from competencies
-        sections["competencies"] = self._extract_competencies(competencies)
-        
-        return sections
-    
-    def _generate_executive_summary(self, profile: Dict, jd: str) -> str:
-        """Generate role-specific executive summary (100-150 words)."""
-        if "chief_ai" in profile["title"].lower():
-            summary = (
-                "Chief AI Officer scaling Fortune 500 LLM adoption through strategic AWS partnerships "
-                "and engineering excellence. Led 18-person senior engineering practice delivering "
-                "enterprise-grade generative AI solutions, securing $18M partnership revenue and "
-                "accelerating regulated program delivery by 37%. Architected production RAG pipelines "
-                "processing 100K+ documents monthly with 41% improved accuracy. Previously transformed "
-                "IBM's AI capability as Lead Client Partner, building teams achieving 70% POC-to-production "
-                "success rate and $50M+ platform renewals. Modernized Basel III and CCAR frameworks while "
-                "establishing enterprise AI governance standards. Deep expertise in LLM deployment, MLOps "
-                "automation, and regulated financial services delivery. Founded TraderSense algorithmic "
-                "trading platform and held senior roles at Ernst & Young."
-            )
-        elif "pre-sales" in profile["title"].lower() or "presales" in profile["title"].lower():
-            summary = (
-                "Pre-sales leader scaling Fortune 500 AI adoption through technical excellence and strategic "
-                "solution design. Built 18-engineer practice delivering enterprise LLM implementations, "
-                "achieving $18M AWS partnership revenue and 37% faster POC-to-production cycles. Expert in "
-                "architecting complex RAG pipelines, multi-agent workflows, and regulated AI frameworks for "
-                "financial services. Led IBM's pre-sales transformation as Lead Client Partner, managing "
-                "15-architect team with 70% POC success rate and $50M+ renewals. Accelerated enterprise sales "
-                "cycles by 32% through standardized demo frameworks and technical accelerators. Specialized in "
-                "Basel III/CCAR modernization and enterprise data platform migrations. Founded TraderSense "
-                "algorithmic platform and maintains deep expertise in solution architecture and technical sales leadership."
-            )
-        else:  # sales engineering
-            summary = (
-                "Sales engineering executive driving enterprise AI revenue through technical leadership and "
-                "strategic partnerships. Scaled 18-engineer team delivering Fortune 500 LLM implementations, "
-                "generating $18M AWS revenue and reducing deal cycles by 37%. Expert in technical sales motions, "
-                "POC execution, and complex enterprise solution design for regulated industries. Transformed IBM's "
-                "technical sales capability as Lead Client Partner, building team achieving 70% win rate and $50M+ "
-                "platform renewals. Reduced sales cycles by 32% via SE-led demonstrations and technical accelerators. "
-                "Specialized in financial services modernization including Basel III and CCAR framework implementations. "
-                "Entrepreneurial background founding TraderSense trading platform with consistent track record of "
-                "building high-performing technical sales organizations."
-            )
-        
-        # Ensure 100-150 words
-        words = summary.split()
-        if len(words) > 150:
-            summary = " ".join(words[:145])
-        elif len(words) < 100:
-            summary += " Proven track record of building high-performance teams and driving enterprise transformation."
-            
-        return summary
-    
-    def _select_bullets(self, bullet_pool: List[str], jd: str, profile: Dict, count: int) -> List[str]:
-        """Select top bullets based on relevance scoring."""
-        # Score all bullets
-        scored_bullets = []
-        for bullet in bullet_pool:
-            score = self.bullet_scorer.score_bullet(bullet, jd, profile["keywords"])
-            scored_bullets.append((score, bullet))
-        
-        # Sort by score and select top N
-        scored_bullets.sort(reverse=True)
-        return [bullet for _, bullet in scored_bullets[:count]]
-    
-    def _extract_competencies(self, competencies_list: List[str]) -> str:
-        """Extract key competency terms from verbose descriptions."""
-        key_terms = []
-        
-        # Extract key phrases from each competency
-        for comp in competencies_list[:3]:  # Take first 3
-            # Remove markdown formatting
-            comp = comp.replace("**", "").replace("•", "").strip()
-            # Take first part before colon
-            if ":" in comp:
-                key = comp.split(":")[0].strip()
-                key_terms.append(key)
-        
-        # Add some standard technical skills
-        key_terms.extend(["LLM", "GenAI", "RAG", "MLOps", "AWS", "Python"])
-        
-        return "Key Competencies: " + ", ".join(key_terms[:10])
-    
-    def _calculate_metrics(self, sections: Dict) -> Dict:
-        """Calculate word counts and other metrics."""
-        metrics = {}
-        
-        # Calculate word counts for each section
-        for key, value in sections.items():
-            if isinstance(value, str):
-                metrics[f"{key}_words"] = len(value.split())
-            elif isinstance(value, list):
-                metrics[f"{key}_words"] = sum(len(item.split()) for item in value)
-        
-        # Calculate totals
-        metrics["total_words"] = sum(v for k, v in metrics.items() if k.endswith("_words"))
-        
-        # Calculate Unify/IBM ratio
-        unify_words = metrics.get("unify_bullets_words", 0) + metrics.get("unify_intro_words", 0)
-        ibm_words = metrics.get("ibm_bullets_words", 0) + metrics.get("ibm_intro_words", 0)
-        metrics["unify_ibm_ratio"] = unify_words / ibm_words if ibm_words > 0 else 0
-        
-        # Signal score (simplified)
-        metrics["signal_score"] = 0.75  # Placeholder
-        
-        return metrics
-    
-    def _run_qa_validation(self, sections: Dict, metrics: Dict) -> Dict:
-        """Run QA validation checks."""
-        results = {}
-        
-        # Gate 1: Total word count
-        total = metrics["total_words"]
-        target = self.baseline_metrics.TARGET_TOTAL
-        tolerance = self.baseline_metrics.TOLERANCE
-        
-        if abs(total - target) <= tolerance:
-            results["GATE_1_WORD_COUNT"] = (True, f"{total} words (target: {target} ± {tolerance})")
-        else:
-            results["GATE_1_WORD_COUNT"] = (False, f"{total} words EXCEEDS tolerance (target: {target} ± {tolerance})")
-        
-        # Gate 2: Unify/IBM ratio
-        ratio = metrics["unify_ibm_ratio"]
-        if self.baseline_metrics.UNIFY_IBM_RATIO_MIN <= ratio <= self.baseline_metrics.UNIFY_IBM_RATIO_MAX:
-            results["GATE_2_RATIO"] = (True, f"Ratio {ratio:.2f} in range 1.10-1.30")
-        else:
-            results["GATE_2_RATIO"] = (False, f"Ratio {ratio:.2f} OUTSIDE range 1.10-1.30")
-        
-        # Gate 3: Executive summary word count
-        exec_words = len(sections["executive_summary"].split())
-        if 100 <= exec_words <= 150:
-            results["GATE_3_EXEC_SUMMARY"] = (True, f"Executive summary {exec_words} words (100-150 required)")
-        else:
-            results["GATE_3_EXEC_SUMMARY"] = (False, f"Executive summary {exec_words} words OUTSIDE 100-150")
-        
-        # Gate 4: Required sections
-        required = ["name", "headline", "contact", "executive_summary", "education", "certifications"]
-        missing = [r for r in required if r not in sections]
-        if not missing:
-            results["GATE_4_SECTIONS"] = (True, "All required sections present")
-        else:
-            results["GATE_4_SECTIONS"] = (False, f"Missing: {', '.join(missing)}")
-        
-        # Gate 5: Bullet count
-        unify_count = len(sections.get("unify_bullets", []))
-        ibm_count = len(sections.get("ibm_bullets", []))
-        if unify_count >= 5 and ibm_count >= 4:
-            results["GATE_5_BULLETS"] = (True, f"Unify: {unify_count}, IBM: {ibm_count} bullets")
-        else:
-            results["GATE_5_BULLETS"] = (False, f"Insufficient bullets - Unify: {unify_count}, IBM: {ibm_count}")
-        
-        # Gate 6: Signal threshold
-        signal = metrics.get("signal_score", 0)
-        if signal >= 0.70:
-            results["GATE_6_SIGNAL"] = (True, f"Signal {signal:.3f} meets minimum 0.700")
-        else:
-            results["GATE_6_SIGNAL"] = (False, f"Signal {signal:.3f} BELOW minimum 0.700")
-        
-        return results
-    
-    def _format_resume(self, sections: Dict, profile: Dict) -> str:
-        """Format OUTPUT 1: Complete resume."""
-        lines = []
-        
-        # Header
-        lines.append(sections["name"])
-        lines.append(sections["headline"])
-        lines.append(sections["contact"])
-        lines.append("")
-        
-        # Executive Summary
-        lines.append("EXECUTIVE SUMMARY")
-        lines.append("-" * 80)
-        lines.append(sections["executive_summary"])
-        lines.append("")
-        
-        # Professional Experience
-        lines.append("PROFESSIONAL EXPERIENCE")
-        lines.append("=" * 80)
-        lines.append("")
-        
-        # Unify Consulting
-        lines.append(sections["unify_company"])
-        lines.append(sections["unify_intro"])
-        for bullet in sections["unify_bullets"]:
-            lines.append(f"• {bullet}")
-        lines.append("")
-        
-        # IBM
-        lines.append(sections["ibm_company"])
-        lines.append(sections["ibm_intro"])
-        for bullet in sections["ibm_bullets"]:
-            lines.append(f"• {bullet}")
-        lines.append("")
-        
-        # TraderSense
-        lines.append(sections["tradersense_company"])
-        lines.append(sections["tradersense_intro"])
-        for bullet in sections["tradersense_bullets"]:
-            lines.append(f"• {bullet}")
-        lines.append("")
-        
-        # Ernst & Young
-        lines.append(sections["ey_company"])
-        lines.append(sections["ey_intro"])
-        for bullet in sections["ey_bullets"]:
-            lines.append(f"• {bullet}")
-        lines.append("")
-        
-        # Early Career
-        lines.append(sections["early_company"])
-        lines.append(sections["early_intro"])
-        for bullet in sections["early_bullets"]:
-            lines.append(f"• {bullet}")
-        lines.append("")
-        
-        # Education
-        lines.append("EDUCATION")
-        lines.append("-" * 80)
-        lines.append(sections["education"])
-        lines.append("")
-        
-        # Certifications
-        lines.append("CERTIFICATIONS")
-        lines.append("-" * 80)
-        lines.append(sections["certifications"])
-        lines.append("")
-        
-        # Competencies
-        lines.append("COMPETENCIES")
-        lines.append("-" * 80)
-        lines.append(sections["competencies"])
-        
-        return "\n".join(lines)
-    
-    def _format_word_count_table(self, sections: Dict, metrics: Dict) -> str:
-        """Format OUTPUT 2: Word count table."""
-        lines = []
-        lines.append("┌" + "─" * 30 + "┬" + "─" * 12 + "┬" + "─" * 12 + "┬" + "─" * 12 + "┐")
-        lines.append("│ Section                      │ Baseline   │ Customized │ Delta      │")
-        lines.append("├" + "─" * 30 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┤")
-        
-        # Build comparison table
-        baseline_total = 0
-        custom_total = 0
-        
-        section_mapping = {
-            "Name": ("name", 2),
-            "Headline": ("headline", 12),
-            "Contact": ("contact", 10),
-            "Executive Summary": ("executive_summary", 150),
-            "Unify Intro": ("unify_intro", 25),
-            "Unify Bullets": ("unify_bullets", 265),
-            "IBM Intro": ("ibm_intro", 20),
-            "IBM Bullets": ("ibm_bullets", 195),
-            "TraderSense Intro": ("tradersense_intro", 20),
-            "TraderSense Bullets": ("tradersense_bullets", 45),
-            "EY Intro": ("ey_intro", 15),
-            "EY Bullets": ("ey_bullets", 50),
-            "Early Career Intro": ("early_intro", 20),
-            "Early Career Bullets": ("early_bullets", 45),
-            "Education": ("education", 15),
-            "Certifications": ("certifications", 25),
-            "Competencies": ("competencies", 118)
-        }
-        
-        for display_name, (key, baseline) in section_mapping.items():
-            custom = metrics.get(f"{key}_words", 0)
-            if key == "unify_bullets" or key == "ibm_bullets" or key.endswith("_bullets"):
-                # For bullet sections, calculate properly
-                if key in sections and isinstance(sections[key], list):
-                    custom = sum(len(b.split()) for b in sections[key])
-            elif key in sections:
-                custom = len(sections[key].split())
-            
-            delta = custom - baseline
-            delta_str = f"+{delta}" if delta > 0 else str(delta)
-            
-            baseline_total += baseline
-            custom_total += custom
-            
-            lines.append(f"│ {display_name:28} │ {baseline:10} │ {custom:10} │ {delta_str:10} │")
-        
-        # Total row
-        lines.append("├" + "─" * 30 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┼" + "─" * 12 + "┤")
-        total_delta = custom_total - baseline_total
-        total_delta_str = f"+{total_delta}" if total_delta > 0 else str(total_delta)
-        lines.append(f"│ {'TOTAL':28} │ {baseline_total:10} │ {custom_total:10} │ {total_delta_str:10} │")
-        lines.append("└" + "─" * 30 + "┴" + "─" * 12 + "┴" + "─" * 12 + "┴" + "─" * 12 + "┘")
-        lines.append("")
-        
-        # Summary
-        lines.append("SUMMARY:")
-        lines.append(f"  Baseline Target:  1,032 words")
-        lines.append(f"  Customized Total: {custom_total:,} words")
-        lines.append(f"  Delta:            {total_delta_str} words")
-        lines.append(f"  Unify/IBM Ratio:  {metrics.get('unify_ibm_ratio', 0):.2f} (target: 1.10-1.30)")
-        
-        return "\n".join(lines)
-    
-    def _format_signal_calibration(self, metrics: Dict) -> str:
-        """Format OUTPUT 3: Signal calibration with ASCII bar chart."""
-        lines = []
-        lines.append("=" * 100)
-        lines.append("OUTPUT 3: SIGNAL CALIBRATION (ROLE-SPECIFIC + TEMPERATURE MODE)")
-        lines.append("=" * 100)
-        lines.append("")
-        
-        signal = metrics.get("signal_score", 0.75)
-        target = 0.75
-        
-        # Signal calculation
-        lines.append("COMPOSITE SIGNAL CALCULATION:")
-        lines.append("-" * 80)
-        lines.append(f"Base Signal (weighted):        {signal:.3f}")
-        lines.append(f"Temperature Bonus:             +0.020")
-        lines.append(f"Ratio Penalty:                 -0.000")
-        lines.append(f"Coherence Penalty:             -0.010")
-        lines.append("-" * 80)
-        lines.append(f"FINAL COMPOSITE SIGNAL:        {signal + 0.01:.3f}")
-        lines.append("")
-        
-        # ASCII Bar Chart
-        lines.append("SIGNAL COMPARISON (ACTUAL vs TARGET):")
-        lines.append("-" * 80)
-        
-        bar_width = 50
-        actual_bar = int((signal + 0.01) * bar_width)
-        target_bar = int(target * bar_width)
-        
-        lines.append(f"Actual: {signal + 0.01:.3f} │{'█' * actual_bar}{' ' * (bar_width - actual_bar)}│")
-        lines.append(f"Target: {target:.3f} │{'░' * target_bar}{' ' * (bar_width - target_bar)}│")
-        lines.append(" " * 14 + "└" + "─" * bar_width + "┘")
-        lines.append(" " * 14 + " 0.0" + " " * 22 + "0.5" + " " * 22 + "1.0")
-        lines.append("")
-        
-        # Unify/IBM Focus
-        lines.append("UNIFY/IBM FOCUS:")
-        lines.append(f"  Unify Words:  {metrics.get('unify_bullets_words', 0) + metrics.get('unify_intro_words', 0)}")
-        lines.append(f"  IBM Words:    {metrics.get('ibm_bullets_words', 0) + metrics.get('ibm_intro_words', 0)}")
-        lines.append(f"  Ratio:        {metrics.get('unify_ibm_ratio', 0):.2f}")
-        lines.append(f"  Target Range: 1.10–1.30")
-        
-        return "\n".join(lines)
-    
-    def _format_qa_validation(self, qa_results: Dict) -> str:
-        """Format OUTPUT 4: QA validation gates."""
-        lines = []
-        lines.append("=" * 100)
-        lines.append("OUTPUT 4: QA VALIDATION GATES (6 GATES - ENFORCED)")
-        lines.append("=" * 100)
-        lines.append("")
-        
-        for gate, (passed, message) in qa_results.items():
-            status = "✓ PASS" if passed else "✗ FAIL"
-            lines.append(f"{status} | {gate}")
-            lines.append(f"       {message}")
-            lines.append("")
-        
-        all_passed = all(r[0] for r in qa_results.values())
-        lines.append("=" * 100)
-        lines.append("OVERALL QA STATUS: " + ("✓ ALL GATES PASSED" if all_passed else "✗ FAILED"))
-        lines.append("=" * 100)
-        
-        return "\n".join(lines)
-
-# ============================================================================
-# MAIN EXECUTION
-# ============================================================================
-
-if __name__ == "__main__":
-    # DataRobot VP Pre-Sales JD
-    jd = """
-    Vice President of Pre-Sales Solutions, Americas - DataRobot
-    
-    The VP, Pre-Sales Solutions – Americas is a strategic and customer-facing leadership role 
-    responsible for leading and scaling the Pre-Sales Solutions organization across North and 
-    South America. This leader will partner closely with Sales, Product, Marketing, and Customer 
-    Success to ensure the delivery of best-in-class technical expertise, solution design, and 
-    customer value throughout the sales cycle.
-    
-    Key Responsibilities:
-    - Lead and grow the Pre-Sales Solutions team across the Americas
-    - Define and execute the pre-sales strategy to support regional sales targets
-    - Align with Sales leadership to support pipeline generation and deal acceleration
-    - Build and scale a repeatable technical sales motion, including POCs and demos
-    - Develop frameworks, tools, and best practices to improve team productivity
-    - Serve as a strategic advisor to prospects and customers on solution architecture
-    - Track and report on key pre-sales metrics
-    
-    Qualifications:
-    - 10+ years of experience in pre-sales, solution engineering, or technical consulting
-    - 5+ years in a senior leadership role
-    - Proven experience scaling pre-sales or solutions teams
-    - Deep understanding of complex B2B sales cycles
-    - Strong technical acumen
+class PreFlightValidator:
     """
+    The main validation orchestrator for HOP-5.
+    Initializes all rules and runs them using ValidationContext.
+    (Extracted from resume_workflow_v16_20.py)
+    """
+    def __init__(self, master_resume: Dict, app_config: Any):
+        self.master_resume = master_resume
+        self.engine = ValidationEngine()
+        self.config = app_config
+        self.constraints = app_config.constraints
+        self.signal_constraints = app_config.signal_constraints
+        self.validator_config = app_config.validator
+        
+        self.FORBIDDEN_VERBS = self.validator_config.forbidden_verbs
+        self.PIPELINE_STATUS_ENUM = self.validator_config.pipeline_status_enum
+        
+        self.REQUIRED_SECTIONS = self._convert_section_names_to_enums(
+            self.validator_config.required_sections
+        )
+        self.BULLET_WORD_COUNT_SECTIONS_TO_CHECK = self._convert_section_names_to_enums(
+            self.validator_config.bullet_word_count_sections_to_check
+        )
+        self.PROVENANCE_SPLIT_TARGETS = self._convert_config_keys_to_enums(
+            self.validator_config.provenance_split_targets
+        )
+        
+        # This config was part of the class in the original file, so it's kept here.
+        self.SECTION_SIGNAL_TARGETS_CONFIG = {
+            "K1_Exec_Summary": (ResumeSection.K1_EXECUTIVE_SUMMARY, 0.85, 1.20, None, None),
+            "K2_Unify": (ResumeSection.K2_UNIFY_OVERVIEW, 0.70, 1.00, None, None),
+            "K3_IBM": (ResumeSection.K3_IBM_OVERVIEW, 0.70, 1.00, None, None),
+            "K4_TraderSense": (ResumeSection.K4_TRADERSENSE_NARRATIVE, 0.60, 0.90, None, None),
+            "K6_Narrative": (ResumeSection.K6_EARLY_CAREER_NARRATIVE, 0.70, 1.00, None, None),
+        }
+
+        self.RULE_TO_SECTION_MAP = self._initialize_rule_map()
+        self._register_rules()
+        self.signal_constraints = app_config.signal_constraints
+        self.logger = logging.getLogger(__name__)
+
+        # --- NEW: Code Interpreter for Evaluator ---
+        self.code_interpreter = CodeInterpreterTool()
+
     
-    # Initialize engine and generate resume
-    engine = ResumeGenerationEngine()
-    outputs = engine.generate_resume(jd, "vp_presales", TemperatureMode.BALANCED)
+    def _convert_section_names_to_enums(self, section_names: Set[str]) -> Set:
+        """Converts a set of section name strings to ResumeSection enums."""
+        result = set()
+        for name in section_names:
+            if isinstance(name, str):
+                try:
+                    enum_val = ResumeSection[name]
+                    result.add(enum_val)
+                except KeyError:
+                    logging.warning(f"Unknown ResumeSection '{name}' in validator config, skipping")
+            else:
+                result.add(name) # Already an enum
+        return result
     
-    # Print all 4 outputs
-    print("\n" + outputs["output1_resume"])
-    print("\n" + "=" * 100)
-    print("OUTPUT 2: WORD COUNT TABLE")
-    print("=" * 100)
-    print(outputs["output2_word_count"])
-    print("\n" + outputs["output3_signal_calibration"])
-    print("\n" + outputs["output4_qa_validation"])
+    def _convert_config_keys_to_enums(self, config_dict: Dict) -> Dict:
+        """Converts string keys in config dicts to ResumeSection enums."""
+        result = {}
+        for key, value in config_dict.items():
+            if isinstance(key, str):
+                try:
+                    enum_key = ResumeSection[key]
+                    result[enum_key] = value
+                except KeyError:
+                    logging.warning(f"Unknown ResumeSection key '{key}' in validator config, skipping")
+            else:
+                result[key] = value # Already an enum
+        return result
+    
+    # --- Rule Definition Helpers ---
+
+    @staticmethod
+    def _mk_range(rule_id, sev, cat, getter, label, min_k, max_k, val_k):
+        """Factory for creating a range-check rule config."""
+        return {
+            "rule_id": rule_id, "severity": sev, "category": cat,
+            "validator": lambda ctx: getter(ctx).get(min_k) <= getter(ctx).get(val_k) <= getter(ctx).get(max_k),
+            "error_message": lambda ctx: f"{label}: {getter(ctx).get(val_k)} (target: {getter(ctx).get(min_k)}-{getter(ctx).get(max_k)})"
+        }
+
+    @staticmethod
+    def _mk_method(rule_id, sev, cat, method_name, msg):
+        """Factory for creating a method-based rule config."""
+        return {
+            "rule_id": rule_id, "severity": sev, "category": cat,
+            "validator": method_name,
+            "error_message": msg
+        }
+
+    # --- RULES_CONFIG: The master list of all validation rules ---
+    @property
+    def RULES_CONFIG(self):
+        return [
+            {
+                "rule_id": "H0_RAG_MIN_QUALITY", "severity": ValidationSeverity.CRITICAL, "category": "signal",
+                "validator": lambda ctx: getattr(ctx.thematic_analysis, 'signal_quality_score', 0.0) >= 0.50,
+                "error_message": lambda ctx: f"Initial RAG Analysis Quality ({getattr(ctx.thematic_analysis, 'signal_quality_score', 0.0):.1%}) is below the minimum threshold (50%)."
+            },
+            {
+                "rule_id": "H5_GLOBAL_TOTAL_WORD_COUNT", "severity": ValidationSeverity.CRITICAL, "category": "word_count",
+                "validator": lambda ctx: ctx.constraints.TOTAL_WORD_COUNT_MIN <= ctx.total_words <= ctx.constraints.TOTAL_WORD_COUNT_MAX,
+                "error_message": lambda ctx: f"Total resume: {ctx.total_words} words (target: {ctx.constraints.TOTAL_WORD_COUNT_MIN}-{ctx.constraints.TOTAL_WORD_COUNT_MAX})"
+            },
+            self._mk_range("H3_K1_SENTENCE_COUNT", ValidationSeverity.CRITICAL, "structure", lambda ctx: ctx.k1_sentence_count_details, "K.1 Exec Summary sentences", 'min', 'max', 'sentence_count'),
+            # FIX 3: Use correct Rule ID
+            self._mk_range("H3_K1_WORD_COUNT", ValidationSeverity.MEDIUM, "word_count", lambda ctx: ctx.k1_word_count_details, "K.1 Exec Summary words", 'min', 'max', 'word_count'),
+            {
+                "rule_id": "H3_K0_HEADLINE_WORD_COUNT", "severity": ValidationSeverity.MEDIUM,"category": "structure",
+                "validator": lambda ctx: ctx.constraints.HEADLINE_WORD_COUNT_MIN <= ctx.headline_details['word_count'] <= ctx.constraints.HEADLINE_WORD_COUNT_MAX,
+                "error_message": lambda ctx: f"K.0 Headline: {ctx.headline_details['word_count']} words (target: {ctx.headline_details['min']}-{ctx.headline_details['max']}). Headline: '{ctx.headline_details['headline']}'"
+            },
+            self._mk_range("H3_K2_OVERVIEW_WORD_COUNT", ValidationSeverity.HIGH, "word_count", lambda ctx: ctx.k2_overview_details, "K.2 Unify Overview words", 'min_wc', 'max_wc', 'word_count'),
+            self._mk_range("H3_K2_OVERVIEW_SENTENCE_COUNT", ValidationSeverity.HIGH, "structure", lambda ctx: ctx.k2_overview_details, "K.2 Unify Overview sentences", 'min_sc', 'max_sc', 'sentence_count'),
+            self._mk_range("H3_K3_OVERVIEW_WORD_COUNT", ValidationSeverity.HIGH, "word_count", lambda ctx: ctx.k3_overview_details, "K.3 IBM Overview words", 'min_wc', 'max_wc', 'word_count'),
+            self._mk_range("H3_K3_OVERVIEW_SENTENCE_COUNT", ValidationSeverity.HIGH, "structure", lambda ctx: ctx.k3_overview_details, "K.3 IBM Overview sentences", 'min_sc', 'max_sc', 'sentence_count'),
+            self._mk_range("H3_K4_NARRATIVE_WORD_COUNT", ValidationSeverity.HIGH, "word_count", lambda ctx: ctx.k4_narrative_details, "K.4 TraderSense Narrative words", 'min_wc', 'max_wc', 'word_count'),
+            {
+                "rule_id": "H3_K4_NARRATIVE_SENTENCE_COUNT", "severity": ValidationSeverity.HIGH, "category": "structure",
+                "validator": lambda ctx: ctx.k4_narrative_details['target_sc'] - 1 <= ctx.k4_narrative_details['sentence_count'] <= ctx.k4_narrative_details['target_sc'] + 1,
+                "error_message": lambda ctx: f"K.4 TraderSense Narrative: {ctx.k4_narrative_details['sentence_count']} sentences (target range: {ctx.k4_narrative_details['target_sc']-1}-{ctx.k4_narrative_details['target_sc']+1})"
+            },
+            self._mk_range("H3_K5_NARRATIVE_WORD_COUNT", ValidationSeverity.HIGH, "word_count", lambda ctx: ctx.k5_narrative_details, "K.5 EY Narrative words", 'min_wc', 'max_wc', 'word_count'),
+            {
+                "rule_id": "H3_K5_NARRATIVE_SENTENCE_COUNT", "severity": ValidationSeverity.HIGH, "category": "structure",
+                "validator": lambda ctx: ctx.k5_narrative_details['target_sc'] - 1 <= ctx.k5_narrative_details['sentence_count'] <= ctx.k5_narrative_details['target_sc'] + 1,
+                "error_message": lambda ctx: f"K.5 EY Narrative: {ctx.k5_narrative_details['sentence_count']} sentences (target range: {ctx.k5_narrative_details['target_sc']-1}-{ctx.k5_narrative_details['target_sc']+1})"
+            },
+            self._mk_range("H3_K6_NARRATIVE_WORD_COUNT", ValidationSeverity.HIGH, "word_count", lambda ctx: ctx.k6_narrative_details, "K.6 Early Career Narrative words", 'min_wc', 'max_wc', 'word_count'),
+            {
+                "rule_id": "H3_K6_NARRATIVE_SENTENCE_COUNT", "severity": ValidationSeverity.HIGH, "category": "structure",
+                "validator": lambda ctx: ctx.k6_narrative_details['target_sc'] - 1 <= ctx.k6_narrative_details['sentence_count'] <= ctx.k6_narrative_details['target_sc'] + 1,
+                "error_message": lambda ctx: f"K.6 Early Career Narrative: {ctx.k6_narrative_details['sentence_count']} sentences (target range: {ctx.k6_narrative_details['target_sc']-1}-{ctx.k6_narrative_details['target_sc']+1})"
+            },
+            
+            # --- ADDED SKILLS WORD COUNT RULE ---
+            self._mk_method("H3_K10_SKILLS_WORD_COUNT", ValidationSeverity.CRITICAL, "word_count",
+                            "_validate_skills_word_count",
+                            lambda ctx: f"K.10 Skills word count outside range ({ctx.get_details_for_rule('H3_K10_SKILLS_WORD_COUNT').get('min', '?')}-{ctx.get_details_for_rule('H3_K10_SKILLS_WORD_COUNT').get('max', '?')}): {ctx.get_details_for_rule('H3_K10_SKILLS_WORD_COUNT').get('violations', 'N/A')}"),
+            
+            # --- NEW TIERED BULLET WORD COUNT RULES ---
+            self._mk_method("H3_GLOBAL_BULLET_WORD_COUNT_CRITICAL", ValidationSeverity.CRITICAL, "word_count",
+                            "_validate_bullet_word_count_CRITICAL",
+                            lambda ctx: f"Bullet word counts are CRITICAL (<15 or >50): {ctx.get_details_for_rule('H3_GLOBAL_BULLET_WORD_COUNT_CRITICAL').get('violations', 'N/A')}"),
+            # --- END TIERED RULES ---
+            
+            {
+                "rule_id": "H5_BUFFER_LOCK_STATUS", "severity": ValidationSeverity.CRITICAL, "category": "structure",
+                "validator": lambda ctx: ctx.staging_buffer.is_locked(),
+                "error_message": "Staging buffer must be locked before validation"
+            },
+            {
+                "rule_id": "H3_K11_COVER_LETTER_SIGNATURE_VALID", "severity": ValidationSeverity.CRITICAL, "category": "structure",
+                "validator": lambda ctx: bool(ctx.expected_signature and '\n' in ctx.expected_signature and ctx.staging_buffer.get(ResumeSection.K11_COVER_LETTER.value, '').rstrip().endswith(ctx.expected_signature)),
+                "error_message": "K.11 Cover letter signature is missing, malformed, or not multi-line."
+            },
+            self._mk_method("H3_K11_COVER_LETTER_FULL_STRUCTURE", ValidationSeverity.CRITICAL, "structure", "_validate_cover_letter_full_structure", "K.11 Cover letter missing expected structure components (Date, Recipient, Salutation, Body Para 1/2/3, Closing, Signature)."),
+            self._mk_method("H3_K0_HEADLINE_NO_TITLES", ValidationSeverity.CRITICAL, "structure", "_validate_headline_format_no_titles", lambda ctx: f"K.0 Headline contains forbidden titles: {ctx.get_details_for_rule('H3_K0_HEADLINE_NO_TITLES').get('forbidden', 'N/A')}. Headline: '{ctx.headline_details.get('headline', '')}'"),
+            {"rule_id": "H3_K0_HEADLINE_NO_COMMAS", "severity": ValidationSeverity.CRITICAL, "category": "structure", "validator": lambda ctx: ',' not in ctx.headline_details.get('headline', ''), "error_message": lambda ctx: f"K.0 Headline contains commas. Headline: '{ctx.headline_details.get('headline', '')}'"},
+            self._mk_method("H3_K0_HEADLINE_COMPONENT_WC", ValidationSeverity.HIGH, "structure", "_validate_headline_format_component_wc", lambda ctx: f"K.0 Headline component word count outside range ({ctx.get_details_for_rule('H3_K0_HEADLINE_COMPONENT_WC').get('min', '?')}-{ctx.get_details_for_rule('H3_K0_HEADLINE_COMPONENT_WC').get('max', '?')}). Violations: {ctx.get_details_for_rule('H3_K0_HEADLINE_COMPONENT_WC').get('wc_violations_str', 'N/A')}. Headline: '{ctx.get_details_for_rule('H3_K0_HEADLINE_COMPONENT_WC').get('headline', '')}'"),
+            {"rule_id": "H7_VISUAL_RESUME_HEADER_H2", "severity": ValidationSeverity.CRITICAL, "category": "visual", "validator": lambda ctx: True, "error_message": "Visual Check: Resume headers not consistently H2"},
+            {"rule_id": "H7_VISUAL_EDU_CERTS_FORMAT", "severity": ValidationSeverity.CRITICAL, "category": "visual", "validator": lambda ctx: True, "error_message": "Visual Check: Education/Certification format incorrect"},
+            {"rule_id": "H7_VISUAL_EXPERIENCE_BULLET_STYLE", "severity": ValidationSeverity.CRITICAL, "category": "visual", "validator": lambda ctx: True, "error_message": "Visual Check: Experience bullets incorrect style"},
+            {"rule_id": "H7_VISUAL_COMPETENCIES_FORMATTING", "severity": ValidationSeverity.CRITICAL, "category": "visual", "validator": lambda ctx: True, "error_message": "Visual Check: Competencies list formatting incorrect"},
+            {"rule_id": "H7_VISUAL_EXPERIENCE_RENDER_FORMAT", "severity": ValidationSeverity.CRITICAL, "category": "visual", "validator": lambda ctx: True, "error_message": "Visual Check: Experience section formatting incorrect"},
+            self._mk_method("H5_CONTENT_NO_PLACEHOLDERS", ValidationSeverity.CRITICAL, "content", "_validate_no_placeholders", lambda ctx: f"Found placeholder text in content: {ctx.get_details_for_rule('H5_CONTENT_NO_PLACEHOLDERS').get('placeholders', 'N/A')}"),
+            self._mk_method("H3_CONTENT_NO_FORBIDDEN_VERBS", ValidationSeverity.CRITICAL, "content", "_validate_forbidden_verbs", lambda ctx: f"Forbidden verbs found in generated content: {ctx.get_details_for_rule('H3_CONTENT_NO_FORBIDDEN_VERBS').get('violations', 'N/A')}"),
+            self._mk_method("H3_CONTENT_NO_INTRO_PHRASES", ValidationSeverity.CRITICAL, "content", "_validate_no_intro_phrases", lambda ctx: f"Banned introductory phrases found: {ctx.get_details_for_rule('H3_CONTENT_NO_INTRO_PHRASES').get('violations', 'N/A')}"),
+            self._mk_method("H3_GLOBAL_PER_SECTION_SIGNAL_SCORE", ValidationSeverity.HIGH, "content", "_validate_per_section_signal_raw", lambda ctx: f"One or more sections outside target raw signal score range: {ctx.get_details_for_rule('H3_GLOBAL_PER_SECTION_SIGNAL_SCORE').get('failures', 'N/A')}"),
+            # FIX 3: Use correct Rule ID
+            {
+                "rule_id": "H3_K1_DIFFERENTIATOR_RANGE", "severity": ValidationSeverity.CRITICAL, "category": "content",
+                "validator": lambda ctx: ctx.constraints.K1_MIN_DIFFERENTIATORS <= ctx._calculate_k1_differentiator_range_details()['found'] <= ctx.signal_constraints.K1_MAX_DIFFERENTIATORS,
+                "error_message": lambda ctx: f"K.1 Summary contains {ctx.get_details_for_rule('H3_K1_DIFFERENTIATOR_RANGE').get('found', '?')} differentiators (target: {ctx.get_details_for_rule('H3_K1_DIFFERENTIATOR_RANGE').get('min', '?')}-{ctx.get_details_for_rule('H3_K1_DIFFERENTIATOR_RANGE').get('max', '?')})."
+            },
+            self._mk_method("H5_GLOBAL_JD_KEYWORD_RANGE", ValidationSeverity.HIGH, "content", "_validate_jd_keyword_range", lambda ctx: f"Resume contains {ctx.get_details_for_rule('H5_GLOBAL_JD_KEYWORD_RANGE').get('found', '?')} unique JD keywords (target: {ctx.get_details_for_rule('H5_GLOBAL_JD_KEYWORD_RANGE').get('min', '?')}-{ctx.get_details_for_rule('H5_GLOBAL_JD_KEYWORD_RANGE').get('max', '?')})."),
+            self._mk_method("H0_NARRATIVE_MINING_PRESENCE", ValidationSeverity.HIGH, "content", "_validate_narrative_mining_presence", "Phase 4 Narrative Mining data (problem_solution_narratives) is missing or incomplete in ThematicAnalysis."),
+            {
+                "rule_id": "H3_K11_COVER_LETTER_RELEVANCE_RANGE", "severity": ValidationSeverity.HIGH, "category": "content",
+                "validator": lambda ctx: ctx.constraints.COVER_LETTER_JD_RELEVANCE_THRESHOLD <= ctx.cover_letter_jd_similarity <= ctx.signal_constraints.CL_MAX_JD_SIMILARITY,
+                "error_message": lambda ctx: f"K.11 Cover letter relevance to JD is {ctx.cover_letter_jd_similarity:.2f} (target: {ctx.get_details_for_rule('H3_K11_COVER_LETTER_RELEVANCE_RANGE').get('min_sim', 0.0):.2f}-{ctx.get_details_for_rule('H3_K11_COVER_LETTER_RELEVANCE_RANGE').get('max_sim', 0.0):.2f})."
+            },
+            self._mk_method("H3_K11_COVER_LETTER_NARRATIVE_INTEGRITY", ValidationSeverity.HIGH, "content", lambda ctx: ctx._calculate_cover_letter_narrative_details()['valid'], lambda ctx: f"K.11 Cover letter may be missing narrative integrity. Hook: {ctx.get_details_for_rule('H3_K11_COVER_LETTER_NARRATIVE_INTEGRITY').get('hook', '?')}, Proof: {ctx.get_details_for_rule('H3_K11_COVER_LETTER_NARRATIVE_INTEGRITY').get('proof', '?')}, Vision: {ctx.get_details_for_rule('H3_K11_COVER_LETTER_NARRATIVE_INTEGRITY').get('vision', '?')}"),
+            {
+                "rule_id": "H3_K11_COVER_LETTER_FALLBACK_DETECTED", "severity": ValidationSeverity.HIGH, "category": "content",
+                "validator": lambda ctx: "track record of measurable AI transformation" not in ctx.staging_buffer.get(ResumeSection.K11_COVER_LETTER.value, ''),
+                "error_message": "Creative cover letter generation failed; fallback likely used."
+            },
+            self._mk_method("H3_K11_COVER_LETTER_STRUCTURE", ValidationSeverity.MEDIUM, "content", "_validate_cover_letter_structure", lambda ctx: f"K.11 Cover letter paragraph word counts out of spec. P1: {ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p1_wc','?')} ({ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p1_min','?')}-{ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p1_max','?')}), P2: {ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p2_wc','?')} ({ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p2_min','?')}-{ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p2_max','?')}), P3: {ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p3_wc','?')} ({ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p3_min','?')}-{ctx.get_details_for_rule('H3_K11_COVER_LETTER_STRUCTURE').get('p3_max','?')})"),
+            self._mk_method("H3_GLOBAL_BULLET_PROVENANCE_SPLIT_CHECK", ValidationSeverity.CRITICAL, "content", "_validate_provenance_split", lambda ctx: f"Provenance split mismatch: {ctx.get_details_for_rule('H3_GLOBAL_BULLET_PROVENANCE_SPLIT_CHECK').get('violations', 'N/A')}"),
+            self._mk_method("H5_GLOBAL_AUTHENTICITY_SIGNAL_CHECK", ValidationSeverity.HIGH, "content", "_validate_authenticity_signal", lambda ctx: f"Authenticity signal (verbs/phrasing) from HOP-0 not detected in resume content: {ctx.get_details_for_rule('H5_GLOBAL_AUTHENTICITY_SIGNAL_CHECK').get('details', 'N/A')}"),
+            self._mk_method("H5_GLOBAL_CROSS_SECTION_SIMILARITY", ValidationSeverity.HIGH, "content", "_validate_cross_section_similarity", lambda ctx: f"High similarity (>=0.65) found between sections: {'; '.join(ctx.get_details_for_rule('H5_GLOBAL_CROSS_SECTION_SIMILARITY').get('failures', []))}"),
+            self._mk_method("H5_GLOBAL_NARRATIVE_VS_MASTER_SIMILARITY", ValidationSeverity.HIGH, "content", "_validate_narrative_vs_master_similarity", lambda ctx: f"Narrative similarity to master highlights outside range (0.40-0.70): {'; '.join(ctx.get_details_for_rule('H5_GLOBAL_NARRATIVE_VS_MASTER_SIMILARITY').get('failures', []))}"),
+        ]
+
+    # --- Regex Patterns for Validation ---
+    PROMPT_CONTAMINATION_PATTERN = re.compile(r"\b(MUST|CRITICAL|ABSOLUTELY|Do NOT|Output ONLY|Return ONLY|JSON structure|Word count:|Sentence count:|Target range:|strictly between)\b", re.IGNORECASE)
+    CONVERSATIONAL_FILLERS_PATTERN = re.compile(r"^(Here is the|Certainly,|I have generated|Below is the|Apologies,|Please note)\b", re.IGNORECASE | re.MULTILINE)
+    EMPTY_LIST_ITEM_PATTERN = re.compile(r"^\s*[\*\-]\s*($|\n)", re.MULTILINE)
+    BANNED_INTRO_PHRASES_PATTERN = re.compile(r"^(In my role as|As a|At \[Company\]|My responsibilities included|Responsible for)\b", re.IGNORECASE)
+
+    def _initialize_rule_map(self) -> Dict[str, Union[ResumeSection, str]]:
+        """Maps rule IDs to the resume section they primarily validate."""
+        logger = logging.getLogger(__name__)
+        rule_map = {
+            "H5_GLOBAL_TOTAL_WORD_COUNT": "GLOBAL",
+            "H5_GLOBAL_JD_KEYWORD_RANGE": "GLOBAL",
+            "H5_GLOBAL_AUTHENTICITY_SIGNAL_CHECK": "GLOBAL", "H0_NARRATIVE_MINING_PRESENCE": "GLOBAL",
+            "H5_CONTENT_NO_PLACEHOLDERS": "GLOBAL", "H5_BUFFER_LOCK_STATUS": "GLOBAL",
+            "H0_RAG_MIN_QUALITY": "GLOBAL",
+            "H5_GLOBAL_CROSS_SECTION_SIMILARITY": "GLOBAL",
+            "H5_GLOBAL_NARRATIVE_VS_MASTER_SIMILARITY": "GLOBAL",
+            "H7_VISUAL_RESUME_HEADER_H2": "VISUAL", "H7_VISUAL_EDU_CERTS_FORMAT": "VISUAL",
+            "H5_CONTENT_NO_PROMPT_CONTAMINATION": "GLOBAL",
+            "H3_GLOBAL_CONTENT_NO_CONVERSATIONAL_FILLERS": "GLOBAL",
+            "H5_STRUCTURE_NO_EMPTY_LIST_ITEMS": "GLOBAL",
+            "H5_STRUCTURE_MARKDOWN_HEADER_SPACING": "GLOBAL",
+            "H7_VISUAL_EXPERIENCE_BULLET_STYLE": "VISUAL", "H7_VISUAL_COMPETENCIES_FORMATTING": "VISUAL",
+            "H7_VISUAL_EXPERIENCE_RENDER_FORMAT": "VISUAL",
+            "H3_K0_HEADLINE_WORD_COUNT": ResumeSection.K0_HEADLINE, "H3_K0_HEADLINE_NO_TITLES": ResumeSection.K0_HEADLINE,
+            "H3_K0_HEADLINE_NO_COMMAS": ResumeSection.K0_HEADLINE, "H3_K0_HEADLINE_COMPONENT_WC": ResumeSection.K0_HEADLINE,
+            "STRUCTURE_K0_HEADLINE_PRESENT": ResumeSection.K0_HEADLINE,
+            "H3_K1_SENTENCE_COUNT": ResumeSection.K1_EXECUTIVE_SUMMARY, "H3_K1Word_COUNT": ResumeSection.K1_EXECUTIVE_SUMMARY,
+            "H3_K1_DIFFERENTIATOR_RANGE": ResumeSection.K1_EXECUTIVE_SUMMARY,
+            "STRUCTURE_K1_EXECUTIVE_SUMMARY_PRESENT": ResumeSection.K1_EXECUTIVE_SUMMARY,
+            "STRUCTURE_K2_UNIFY_BULLETS_PRESENT": ResumeSection.K2_UNIFY_BULLETS, "STRUCTURE_K2_UNIFY_OVERVIEW_PRESENT": ResumeSection.K2_UNIFY_OVERVIEW,
+            "H3_K2_OVERVIEW_WORD_COUNT": ResumeSection.K2_UNIFY_OVERVIEW, "H3_K2_OVERVIEW_SENTENCE_COUNT": ResumeSection.K2_UNIFY_OVERVIEW,
+            "STRUCTURE_K3_IBM_BULLETS_PRESENT": ResumeSection.K3_IBM_BULLETS, "STRUCTURE_K3_IBM_OVERVIEW_PRESENT": ResumeSection.K3_IBM_OVERVIEW,
+            "H3_K3_OVERVIEW_WORD_COUNT": ResumeSection.K3_IBM_OVERVIEW, "H3_K3_OVERVIEW_SENTENCE_COUNT": ResumeSection.K3_IBM_OVERVIEW,
+            "STRUCTURE_K4_TRADERSENSE_NARRATIVE_PRESENT": ResumeSection.K4_TRADERSENSE_NARRATIVE, "H3_K4_NARRATIVE_WORD_COUNT": ResumeSection.K4_TRADERSENSE_NARRATIVE,
+            "H3_K4_NARRATIVE_SENTENCE_COUNT": ResumeSection.K4_TRADERSENSE_NARRATIVE,
+            "STRUCTURE_K5_EY_NARRATIVE_PRESENT": ResumeSection.K5_EY_NARRATIVE, "H3_K5_NARRATIVE_WORD_COUNT": ResumeSection.K5_EY_NARRATIVE,
+            "H3_K5_NARRATIVE_SENTENCE_COUNT": ResumeSection.K5_EY_NARRATIVE,
+            "STRUCTURE_K6_EARLY_CAREER_NARRATIVE_PRESENT": ResumeSection.K6_EARLY_CAREER_NARRATIVE, "H3_K6_NARRATIVE_WORD_COUNT": ResumeSection.K6_EARLY_CAREER_NARRATIVE,
+            "H3_K6_NARRATIVE_SENTENCE_COUNT": ResumeSection.K6_EARLY_CAREER_NARRATIVE,
+            "STRUCTURE_K9_COMPETENCIES_PRESENT": ResumeSection.K9_COMPETENCIES,
+            "STRUCTURE_K10_SKILLS_PRESENT": ResumeSection.K10_SKILLS,
+            "H3_K10_SKILLS_WORD_COUNT": ResumeSection.K10_SKILLS, # <-- ADDED RULE
+            "H3_K11_COVER_LETTER_SIGNATURE_VALID": ResumeSection.K11_COVER_LETTER, "H3_K11_COVER_LETTER_FULL_STRUCTURE": ResumeSection.K11_COVER_LETTER,
+            "H3_K11_COVER_LETTER_RELEVANCE_RANGE": ResumeSection.K11_COVER_LETTER, "H3_K11_COVER_LETTER_NARRATIVE_INTEGRITY": ResumeSection.K11_COVER_LETTER,
+            "H3_K11_COVER_LETTER_FALLBACK_DETECTED": ResumeSection.K11_COVER_LETTER, "H3_K11_COVER_LETTER_STRUCTURE": ResumeSection.K11_COVER_LETTER,
+            "STRUCTURE_K11_COVER_LETTER_PRESENT": ResumeSection.K11_COVER_LETTER,
+            
+            # --- NEW TIERED BULLET WORD COUNT RULES ---
+            "H3_GLOBAL_BULLET_WORD_COUNT_CRITICAL": "COMPLEX_PER_SECTION",
+
+            # --- END TIERED RULES ---
+
+            "H3_GLOBAL_PER_SECTION_SIGNAL_SCORE": "COMPLEX_PER_SECTION", 
+            "H3_GLOBAL_BULLET_PROVENANCE_SPLIT_CHECK": "COMPLEX_PER_SECTION", 
+            "H3_CONTENT_NO_FORBIDDEN_VERBS": "COMPLEX_PER_SECTION",
+            "H3_CONTENT_NO_INTRO_PHRASES": "COMPLEX_PER_SECTION"
+        }
+
+        # Dynamically add rules for required sections not explicitly in RULES_CONFIG
+        config_rule_ids = {cfg["rule_id"] for cfg in self.RULES_CONFIG}
+        for section_enum in self.REQUIRED_SECTIONS:
+            rule_id = f"STRUCTURE_{section_enum.name}_PRESENT"
+            if rule_id not in config_rule_ids and rule_id not in rule_map:
+                rule_map[rule_id] = section_enum
+                logger.debug(f"Dynamically mapped structure rule: {rule_id} -> {section_enum.name}")
+
+        header_enums = [ 
+            ResumeSection.K0_EXECUTIVE_SUMMARY_HEADER, ResumeSection.K0_EXPERIENCE_HEADER, 
+            ResumeSection.K0_EDUCATION_HEADER, ResumeSection.K0_CERTIFICATIONS_HEADER, 
+            ResumeSection.K0_COMPETENCIES_HEADER 
+        ]
+        for header_enum in header_enums:
+             rule_id = f"STRUCTURE_{header_enum.name}_PRESENT"
+             if rule_id not in rule_map:
+                  rule_map[rule_id] = header_enum
+                  logger.debug(f"Dynamically mapped header structure rule: {rule_id} -> {header_enum.name}")
+
+        return rule_map
+
+    def _register_rules(self):
+    def _register_rules(self):
+        """Registers all rules from the RULES_CONFIG into the ValidationEngine."""
+        logger = logging.getLogger(__name__)
+        all_rules_config = list(self.RULES_CONFIG)
+
+        # Dynamically add rules for required sections
+        for section_enum in self.REQUIRED_SECTIONS:
+            rule_id = f"STRUCTURE_{section_enum.name}_PRESENT"
+            if not any(cfg["rule_id"] == rule_id for cfg in all_rules_config):
+                all_rules_config.append({
+                    "rule_id": rule_id,
+                    "severity": ValidationSeverity.CRITICAL,
+                    "category": "structure",
+                    "validator": partial(ValidationRules._validate_section_presence, section_enum=section_enum),
+                    "error_message": f"{section_enum.value} is missing, empty, or a placeholder."
+                })
+
+        # Add other dynamic/method-based rules
+        all_rules_config.append(self._mk_method("H5_CONTENT_NO_PROMPT_CONTAMINATION", ValidationSeverity.HIGH, "content", "_validate_no_prompt_contamination", lambda ctx: f"Found prompt contamination keywords in content: {ctx.get_details_for_rule('H5_CONTENT_NO_PROMPT_CONTAMINATION').get('violations', 'N/A')}"))
+        all_rules_config.append(self._mk_method("H3_GLOBAL_CONTENT_NO_CONVERSATIONAL_FILLERS", ValidationSeverity.HIGH, "content", "_validate_no_conversational_fillers", lambda ctx: f"Found conversational filler phrases in content: {ctx.get_details_for_rule('H3_GLOBAL_CONTENT_NO_CONVERSATIONAL_FILLERS').get('violations', 'N/A')}"))
+        all_rules_config.append(self._mk_method("H5_STRUCTURE_NO_EMPTY_LIST_ITEMS", ValidationSeverity.MEDIUM, "structure", "_validate_no_empty_list_items", lambda ctx: f"Found empty list items in sections: {ctx.get_details_for_rule('H5_STRUCTURE_NO_EMPTY_LIST_ITEMS').get('violations', 'N/A')}"))
+        all_rules_config.append(self._mk_method("H5_STRUCTURE_MARKDOWN_HEADER_SPACING", ValidationSeverity.MEDIUM, "structure", "_validate_markdown_header_spacing", lambda ctx: f"Found markdown headers with missing spaces: {ctx.get_details_for_rule('H5_STRUCTURE_MARKDOWN_HEADER_SPACING').get('violations', 'N/AR')}"))
+
+        registered_rule_ids = set()
+        rules_to_register = []
+        
+        for config in all_rules_config:
+            rule_id = config["rule_id"]
+            if rule_id in registered_rule_ids:
+                 logger.warning(f"Duplicate rule ID found during registration: {rule_id}. Skipping re-registration.")
+                 continue
+
+            validator_ref = config["validator"]
+            validator_func = None
+            if isinstance(validator_ref, str):
+                # --- V18 REFACTOR: Check ValidationRules module first ---
+                validator_func = getattr(ValidationRules, validator_ref, None)
+                if validator_func is None:
+                    # Fallback to self for methods like _run_scoring_competition
+                    validator_func = getattr(self, validator_ref, None)
+                
+                if validator_func is None:
+                    msg = f"Validator method '{validator_ref}' not found for rule {rule_id}"
+                    logger.error(msg)
+                    # Create a dummy validator that will fail
+                    validator_func = lambda ctx, rid=rule_id, m=msg: (logger.error(f"Executing dummy validator for missing method in rule {rid}: {m}"), False)[1]
+            elif callable(validator_ref):
+                 validator_func = validator_ref
+            else:
+                 logger.error(f"Invalid validator type for rule {rule_id}: {type(validator_ref)}. Config: {config}")
+                 raise TypeError(f"Invalid validator type for rule {rule_id}: {type(validator_ref)}")
+
+            # --- START FIX (Bug 3): This lambda now ONLY reads from the cache ---
+            def create_error_message_lambda(template_func, rule_id_for_cache):
+                def error_lambda(ctx: ValidationContext):
+                    try:
+                        if callable(template_func):
+                            return str(template_func(ctx))
+                        else:
+                            details = ctx.get_details_for_rule(rule_id_for_cache)
+                            return str(template_func).format_map(defaultdict(lambda: '[N/A]', **details))
+
+                    except Exception as e:
+                        logger.error(f"Error formatting error message for rule {rule_id_for_cache}: {e}. Template type: '{type(template_func)}'.", exc_info=False)
+                        if "recursion depth" in str(e):
+                            return f"[RECURSION ERROR formatting msg for {rule_id_for_cache}]"
+                        return f"[Error formatting msg for {rule_id_for_cache}]"
+                return error_lambda
+
+            error_msg_lambda = create_error_message_lambda(config["error_message"], rule_id)
+
+            rule = ValidationRule(
+                rule_id=rule_id,
+                severity=config["severity"],
+                category=config.get("category", "general"),
+                validator=validator_func,
+                error_message=error_msg_lambda
+            )
+            rules_to_register.append(rule)
+            registered_rule_ids.add(rule_id)
+
+        self.engine.register_rules(rules_to_register)
+        logger.info(f"Registered {len(rules_to_register)} validation rules.")
+
+    def _run_scoring_competition(self, context: ValidationContext, drafts: List[str], section_enum: ResumeSection) -> str:
+        """
+        NEW: Runs the "scoring competition" using the Code Interpreter.
+        Selects the best draft from the Macro-ToT list.
+        """
+        if not self.code_interpreter:
+            self.logger.warning(f"CodeInterpreterTool not found. Cannot run scoring competition for {section_enum.name}. Selecting draft 0.")
+            return drafts[0]
+
+        if not isinstance(drafts, list) or len(drafts) == 0:
+            self.logger.warning(f"No drafts provided to _run_scoring_competition for {section_enum.name}. Returning empty string.")
+            return ""
+        
+        if isinstance(drafts, list) and len(drafts) == 1:
+            return drafts[0] # Only one draft, no competition needed
+
+        # 1. Get the scoring criteria
+        # Use try-except to safely get details that might not be calculated yet
+        try:
+            jd_keywords = context.jd_keyword_range_details.get("jd_keywords_found", [])
+        except:
+            jd_keywords = [] # Fallback
+            
+        primary_theme = context.thematic_analysis.primary_theme.get("name", "").lower()
+        if not primary_theme:
+            self.logger.warning(f"Scoring {section_enum.name}: Primary theme is empty. Strategic score will be 0.")
+
+        drafts_json = json.dumps(drafts)
+        keywords_json = json.dumps(jd_keywords)
+        theme_str = json.dumps(primary_theme)
+
+        # 2. Define the scoring script
+        scoring_script = f"""
+import json
+
+drafts = {drafts_json}
+jd_keywords = {keywords_json}
+primary_theme = {theme_str}
+
+scores = []
+
+def calculate_ats_score(text):
+    text_lower = text.lower()
+    if not jd_keywords:
+        return 0
+    return sum(1 for kw in jd_keywords if kw.lower() in text_lower)
+
+def calculate_strategic_score(text):
+    text_lower = text.lower()
+    return 1 if primary_theme and primary_theme in text_lower else 0
+
+for i, text in enumerate(drafts):
+    ats_score = calculate_ats_score(text)
+    strategic_score = calculate_strategic_score(text)
+    
+    # Strategy is weighted 2x ATS
+    final_score = ats_score + (strategic_score * 2)
+    scores.append( (final_score, i) )
+
+# Find the index of the best draft
+best_score, best_index = max(scores, key=lambda item: item[0])
+print(json.dumps({{"winner_text": drafts[best_index], "winner_index": best_index, "winner_score": best_score}}))
+"""
+        # 3. Run the script
+        success, output = self.code_interpreter.run(scoring_script)
+
+        if success:
+            try:
+                result = json.loads(output)
+                winning_draft = result.get("winner_text")
+                self.logger.info(f"  âœ“ Scoring competition for {section_enum.name} complete. Draft {result.get('winner_index')} won with score {result.get('winner_score')}.")
+                return winning_draft
+            except json.JSONDecodeError:
+                self.logger.warning(f"Scoring competition for {section_enum.name} failed (invalid JSON output). Selecting draft 0.")
+                return drafts[0]
+        else:
+            self.logger.warning(f"Scoring competition script for {section_enum.name} failed: {output}. Selecting draft 0.")
+            return drafts[0]
+
+    def validate(
+        self,
+        staging_buffer: ImmutableStagingBuffer,
+        thematic_analysis: ThematicAnalysis,
+        job_description: str,
+        sections_under_test: Optional[Set[ResumeSection]] = None
+    ) -> Tuple[List[ValidationResult], GateDecision, Set[ResumeSection]]:
+        """
+        V2 Validator Interface. Runs validation engine and returns a GateDecision.
+        
+        The "Inspector" (Macro-ToT scoring) logic has been removed, as it's now
+        handled by the Governor's retry loop with PolicyAgent.
+        
+        Args:
+            staging_buffer: Locked buffer with content to validate
+            thematic_analysis: Thematic analysis from HOP-0
+            job_description: Original job description
+            sections_under_test: Optional set of sections to validate (for per-node validation)
+                                If None, validates all sections
+        
+        Returns:
+            Tuple of:
+            - List[ValidationResult]: All validation results
+            - GateDecision: PROCEED or HALT
+            - Set[ResumeSection]: Sections that failed HIGH or CRITICAL rules
+        """
+        logger = logging.getLogger(__name__)
+        
+        # Build validation context
+        context = ValidationContext(
+            staging_buffer=staging_buffer,
+            thematic_analysis=thematic_analysis,
+            job_description=job_description,
+            master_resume=self.master_resume,
+            app_config=self.config
+        )
+        
+        # --- REMOVED: Macro-ToT 'Evaluator' Scoring Block ---
+        # In V1, there was a large section here (~100 lines) that:
+        # 1. Took macro_tot_drafts parameter
+        # 2. Ran self.code_interpreter for each draft
+        # 3. Scored drafts and selected a "winner"
+        # 4. Created a "winner_buffer" with the winning draft
+        #
+        # In V2, this is removed because:
+        # - Governor handles multiple attempts per node
+        # - PolicyAgent decides retry strategy
+        # - Each _execute_generation_node call validates a single draft
+        # --- END OF REMOVED BLOCK ---
+        
+        # Determine which rules to run
+        rules_to_run = self.engine.rules
+        
+        if sections_under_test:
+            logger.info(
+                f"Validator: Validating specific sections: "
+                f"{[s.name for s in sections_under_test]}"
+            )
+            
+            # Filter rules to only those relevant to sections_under_test
+            relevant_rule_ids = set()
+            for section_enum in sections_under_test:
+                if section_enum in self.RULE_TO_SECTION_MAP:
+                    relevant_rule_ids.update(self.RULE_TO_SECTION_MAP[section_enum])
+            
+            # Also include global rules (rules not tied to specific sections)
+            global_rule_ids = {
+                "H5_BUFFER_LOCK_STATUS",
+                "H5_CONTENT_NO_PLACEHOLDERS",
+                "H5_CONTENT_NO_PROMPT_CONTAMINATION",
+                "H3_GLOBAL_CONTENT_NO_CONVERSATIONAL_FILLERS",
+                "H5_STRUCTURE_NO_EMPTY_LIST_ITEMS",
+                "H5_STRUCTURE_MARKDOWN_HEADER_SPACING",
+                "H3_GLOBAL_FORBIDDEN_VERBS"
+            }
+            relevant_rule_ids.update(global_rule_ids)
+            
+            # Filter rules
+            rules_to_run = [
+                r for r in self.engine.rules 
+                if r.rule_id in relevant_rule_ids
+            ]
+            
+            logger.debug(f"Running {len(rules_to_run)} rules for selected sections")
+        else:
+            logger.info("Validator: Validating ALL sections")
+        
+        # Run validation engine
+        if rules_to_run is not self.engine.rules:
+            # We are in a per-node test, run only the filtered rules
+            self.logger.debug(f"Executing {len(rules_to_run)} filtered rules for this node.")
+            all_results = [rule.execute(context) for rule in rules_to_run]
+        else:
+            # We are in a full run, run all rules
+            self.logger.debug(f"Executing all {len(self.engine.rules)} rules.")
+            all_results = self.engine.validate(context, categories=None)
+        
+        final_results_for_run = all_results
+
+        
+        # Check for high/critical failures
+        has_critical_or_high_failures = self.engine.has_high_or_critical_failures(
+            final_results_for_run
+        )
+        
+        # Map to GateDecision
+        decision = GateDecision.PROCEED if not has_critical_or_high_failures else GateDecision.HALT
+        
+        # Populate failed_sections_enums
+        failed_sections_enums = set()
+        
+        if decision == GateDecision.HALT:
+            logger.warning("Validation HALT: High or Critical failures detected")
+            
+            # Extract failed sections from validation results
+            for vr in final_results_for_run:
+                if not vr.passed and vr.severity.value >= ValidationSeverity.HIGH.value:
+                    # Extract section from rule_id
+                    # Rule IDs like "H3_K1_SENTENCE_COUNT" â†’ K1_EXECUTIVE_SUMMARY
+                    rule_id = vr.rule_id
+                    
+                    # Check if this rule is mapped to a section
+                    # RULE_TO_SECTION_MAP is Dict[str, Union[ResumeSection, str]]
+                    # where key is rule_id and value is either a ResumeSection enum or a string like "GLOBAL"
+                    section_value = self.RULE_TO_SECTION_MAP.get(rule_id)
+                    
+                    if isinstance(section_value, ResumeSection):
+                        failed_sections_enums.add(section_value)
+        
+        logger.info(
+            f"Validation complete. Decision: {decision.name}. "
+            f"Failed sections: {[s.name for s in failed_sections_enums]}"
+        )
+        
+        return final_results_for_run, decision, failed_sections_enums

@@ -1,38 +1,442 @@
+#!/usr/bin/env python3
 """
-Test Safety Schema Validation
-LEVEL 5 - Unit tests for safety policy schema validation functionality
+Production Safety Layer Implementation
+Implements comprehensive safety checks for all outbound content and mutating actions
 """
 
-import pytest
-from agentic_core.l5_safety.policies.policy_engine import PolicyEngine, PolicyRule, PolicyEngineConfig
+import re
+import hashlib
+import logging
+from typing import Dict, List, Any, Optional, Set
+from dataclasses import dataclass
+from enum import Enum
+import json
+import os
 
+logger = logging.getLogger(__name__)
 
-class TestSafetySchemaValidation:
-    """Test suite for safety policy schema validation"""
-    
-    def setup_method(self):
-        """Setup test fixtures"""
-        self.config = PolicyEngineConfig()
-        self.engine = PolicyEngine(self.config)
-    
-    @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
-    def test_safety_schema_validation(self):
-        """Test safety policy schema validation"""
-        # Placeholder implementation
-        assert self.engine is not None
-    
-    @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
-    def test_policy_rule_schema_compliance(self):
-        """Test policy rule schema compliance"""
-        # Placeholder implementation
-        rule = PolicyRule("test_rule", PolicyType.CONTENT_FILTER, "test", PolicyAction.ALLOW, PolicySeverity.LOW)
-        assert rule.rule_id == "test_rule"
-    
-    @pytest.mark.skip(reason="Placeholder test for zero-tolerance compliance")
-    def test_safety_config_validation(self):
-        """Test safety configuration validation"""
-        # Placeholder implementation
-        validation = self.engine.validate_config({})
-        assert isinstance(validation, dict)
+class SafetyLevel(Enum):
+    """Safety severity levels"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
 
-__all__ = ["TestSafetySchemaValidation"]
+class SafetyViolationType(Enum):
+    """Types of safety violations"""
+    PII_DETECTED = "pii_detected"
+    HALLUCINATION_DETECTED = "hallucination_detected"
+    INJECTION_DETECTED = "injection_detected"
+    MALICIOUS_CONTENT = "malicious_content"
+    SENSITIVE_DATA = "sensitive_data"
+
+@dataclass
+class SafetyViolation:
+    """Safety violation details"""
+    violation_type: SafetyViolationType
+    severity: SafetyLevel
+    content: str
+    confidence: float
+    location: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+@dataclass
+class SafetyResult:
+    """Safety check result"""
+    is_safe: bool
+    violations: List[SafetyViolation]
+    confidence: float
+    processed_content: Optional[str] = None
+
+class PIIDetector:
+    """Personally Identifiable Information detector"""
+    
+    def __init__(self):
+        # PII patterns
+        self.email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+        self.phone_pattern = re.compile(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b')
+        self.ssn_pattern = re.compile(r'\b\d{3}-\d{2}-\d{4}\b')
+        self.credit_card_pattern = re.compile(r'\b(?:\d{4}[-\s]?){3}\d{4}\b')
+        
+        # Sensitive keywords
+        self.sensitive_keywords = {
+            'password', 'secret', 'token', 'api_key', 'private_key', 'credential',
+            'social_security', 'credit_card', 'bank_account', 'passport', 'driver_license'
+        }
+        
+        # Common PII indicators
+        self.pii_indicators = {
+            'ssn', 'social security', 'tax id', 'ein', 'itin', 'dob', 'date of birth',
+            'address', 'phone', 'mobile', 'email', 'mail', 'contact'
+        }
+    
+    def detect_pii(self, content: str) -> List[SafetyViolation]:
+        """Detect PII in content"""
+        violations = []
+        
+        # Check for email addresses
+        emails = self.email_pattern.findall(content)
+        for email in emails:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.HIGH,
+                content=email,
+                confidence=0.95,
+                metadata={"type": "email"}
+            ))
+        
+        # Check for phone numbers
+        phones = self.phone_pattern.findall(content)
+        for phone in phones:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.HIGH,
+                content=phone,
+                confidence=0.90,
+                metadata={"type": "phone"}
+            ))
+        
+        # Check for SSN
+        ssns = self.ssn_pattern.findall(content)
+        for ssn in ssns:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.CRITICAL,
+                content=ssn,
+                confidence=0.98,
+                metadata={"type": "ssn"}
+            ))
+        
+        # Check for credit cards
+        cards = self.credit_card_pattern.findall(content)
+        for card in cards:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.CRITICAL,
+                content=card,
+                confidence=0.85,
+                metadata={"type": "credit_card"}
+            ))
+        
+        # Check for sensitive keywords
+        content_lower = content.lower()
+        for keyword in self.sensitive_keywords:
+            if keyword in content_lower:
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.SENSITIVE_DATA,
+                    severity=SafetyLevel.MEDIUM,
+                    content=keyword,
+                    confidence=0.70,
+                    metadata={"type": "sensitive_keyword"}
+                ))
+        
+        return violations
+
+class HallucinationDetector:
+    """Hallucination detection system"""
+    
+    def __init__(self):
+        # Known facts database (simplified)
+        self.known_facts = self._load_known_facts()
+        
+        # Hallucination indicators
+        self.hallucination_patterns = [
+            r'\b(I think|I believe|maybe|perhaps|possibly|might be)\b',
+            r'\b(approximately|roughly|about|around)\b.*\b\d+\b',
+            r'\b(never|always|every|all|none)\b.*\b(people|things|cases)\b'
+        ]
+        
+        # Confidence thresholds
+        self.confidence_threshold = 0.7
+    
+    def _load_known_facts(self) -> Set[str]:
+        """Load known facts database"""
+        # In production, this would load from a database
+        return {
+            "python is a programming language",
+            "javascript is used for web development",
+            "machine learning requires data",
+            "AI models need training",
+            "databases store information"
+        }
+    
+    def detect_hallucination(self, content: str, context: Optional[Dict[str, Any]] = None) -> List[SafetyViolation]:
+        """Detect potential hallucinations"""
+        violations = []
+        
+        content_lower = content.lower()
+        
+        # Check for uncertainty indicators
+        for pattern in self.hallucination_patterns:
+            matches = re.findall(pattern, content_lower, re.IGNORECASE)
+            for match in matches:
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.HALLUCINATION_DETECTED,
+                    severity=SafetyLevel.LOW,
+                    content=match,
+                    confidence=0.60,
+                    metadata={"type": "uncertainty_indicator"}
+                ))
+        
+        # Check against known facts (simplified)
+        for fact in self.known_facts:
+            if fact.lower() in content_lower:
+                # This is actually good - matches known facts
+                continue
+        
+        # Check for fabricated statistics or numbers
+        number_pattern = re.findall(r'\b\d+(?:\.\d+)?%?\b', content)
+        if len(number_pattern) > 3:  # Too many numbers might indicate fabrication
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.HALLUCINATION_DETECTED,
+                severity=SafetyLevel.MEDIUM,
+                content="multiple_unverified_numbers",
+                confidence=0.65,
+                metadata={"type": "unverified_statistics", "count": len(number_pattern)}
+            ))
+        
+        return violations
+
+class InjectionDetector:
+    """Injection attack detection system"""
+    
+    def __init__(self):
+        # SQL injection patterns
+        self.sql_patterns = [
+            r"('|(\\')|(;)|(\\;))",
+            r"((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))",
+            r"union.*select",
+            r"drop.*table",
+            r"insert.*into",
+            r"delete.*from"
+        ]
+        
+        # Command injection patterns (more specific)
+        self.command_patterns = [
+            r"[;&|`$]\s*[a-zA-Z]",  # Command operators followed by letters
+            r"\$\([^(]*\)",  # Command substitution
+            r"`[^`]*`",  # Backtick commands
+            r"&&\s*[a-zA-Z]",  # AND operator followed by command
+            r"\|\|\s*[a-zA-Z]",  # OR operator followed by command
+            r";\s*(rm|cat|ls|cd|pwd|whoami|id)",  # Semicolon followed by dangerous commands
+        ]
+        
+        # XSS patterns
+        self.xss_patterns = [
+            r"<script.*?>.*?</script>",
+            r"javascript:",
+            r"on\\w+\\s*=",
+            r"<iframe.*?>",
+            r"<object.*?>",
+            r"<embed.*?>"
+        ]
+        
+        # Prompt injection patterns
+        self.prompt_patterns = [
+            r"ignore.*previous.*instructions",
+            r"system.*prompt",
+            r"act.*as.*different.*assistant",
+            r"forget.*everything",
+            r"new.*role.*play"
+        ]
+    
+    def detect_injection(self, content: str) -> List[SafetyViolation]:
+        """Detect injection attempts"""
+        violations = []
+        
+        # Check SQL injection
+        for pattern in self.sql_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.HIGH,
+                    content="sql_injection_attempt",
+                    confidence=0.85,
+                    metadata={"type": "sql_injection", "pattern": pattern}
+                ))
+        
+        # Check command injection
+        for pattern in self.command_patterns:
+            if re.search(pattern, content):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.CRITICAL,
+                    content="command_injection_attempt",
+                    confidence=0.90,
+                    metadata={"type": "command_injection", "pattern": pattern}
+                ))
+        
+        # Check XSS
+        for pattern in self.xss_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.HIGH,
+                    content="xss_attempt",
+                    confidence=0.80,
+                    metadata={"type": "xss", "pattern": pattern}
+                ))
+        
+        # Check prompt injection
+        for pattern in self.prompt_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.MEDIUM,
+                    content="prompt_injection_attempt",
+                    confidence=0.75,
+                    metadata={"type": "prompt_injection", "pattern": pattern}
+                ))
+        
+        return violations
+
+class SafetyLayer:
+    """Main safety layer implementation"""
+    
+    def __init__(self):
+        self.pii_detector = PIIDetector()
+        self.hallucination_detector = HallucinationDetector()
+        self.injection_detector = InjectionDetector()
+        
+        # Safety configuration
+        self.strict_mode = True
+        self.max_violations_per_content = 5
+        
+        # Logging
+        self.logger = logging.getLogger(__name__)
+    
+    def check_outbound_content(self, content: str, context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+        """Check outbound content for safety violations"""
+        violations = []
+        
+        # PII detection
+        pii_violations = self.pii_detector.detect_pii(content)
+        violations.extend(pii_violations)
+        
+        # Hallucination detection
+        hallucination_violations = self.hallucination_detector.detect_hallucination(content, context)
+        violations.extend(hallucination_violations)
+        
+        # Injection detection
+        injection_violations = self.injection_detector.detect_injection(content)
+        violations.extend(injection_violations)
+        
+        # Calculate overall safety
+        is_safe = len(violations) == 0 or (not self.strict_mode and all(v.severity == SafetyLevel.LOW for v in violations))
+        
+        # Calculate confidence
+        if violations:
+            confidence = 1.0 - max(v.confidence for v in violations)
+        else:
+            confidence = 1.0
+        
+        # Process content (redact PII if found)
+        processed_content = self._redact_pii(content) if pii_violations else content
+        
+        # Log safety check
+        self.logger.info(f"Safety check completed: {len(violations)} violations found, is_safe={is_safe}")
+        
+        return SafetyResult(
+            is_safe=is_safe,
+            violations=violations,
+            confidence=confidence,
+            processed_content=processed_content
+        )
+    
+    def check_mutating_action(self, action: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+        """Check mutating actions for safety violations"""
+        violations = []
+        
+        # Extract action content
+        action_content = json.dumps(action, default=str)
+        
+        # Check all safety aspects
+        pii_violations = self.pii_detector.detect_pii(action_content)
+        violations.extend(pii_violations)
+        
+        hallucination_violations = self.hallucination_detector.detect_hallucination(action_content, context)
+        violations.extend(hallucination_violations)
+        
+        injection_violations = self.injection_detector.detect_injection(action_content)
+        violations.extend(injection_violations)
+        
+        # Additional checks for mutating actions
+        if action.get("type") in ["delete", "update", "modify"]:
+            # Check for dangerous operations
+            dangerous_patterns = [r"drop.*database", r"delete.*all", r"rm.*-rf", r"format.*disk"]
+            for pattern in dangerous_patterns:
+                if re.search(pattern, action_content, re.IGNORECASE):
+                    violations.append(SafetyViolation(
+                        violation_type=SafetyViolationType.MALICIOUS_CONTENT,
+                        severity=SafetyLevel.CRITICAL,
+                        content="dangerous_operation",
+                        confidence=0.95,
+                        metadata={"type": "dangerous_mutating_action", "pattern": pattern}
+                    ))
+        
+        # Calculate safety
+        is_safe = len(violations) == 0 or (not self.strict_mode and all(v.severity in [SafetyLevel.LOW, SafetyLevel.MEDIUM] for v in violations))
+        
+        # Calculate confidence
+        if violations:
+            confidence = 1.0 - max(v.confidence for v in violations)
+        else:
+            confidence = 1.0
+        
+        # Log action check
+        self.logger.info(f"Mutating action safety check: {len(violations)} violations, is_safe={is_safe}")
+        
+        return SafetyResult(
+            is_safe=is_safe,
+            violations=violations,
+            confidence=confidence
+        )
+    
+    def _redact_pii(self, content: str) -> str:
+        """Redact PII from content"""
+        redacted = content
+        
+        # Redact emails
+        redacted = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[REDACTED_EMAIL]', redacted)
+        
+        # Redact phone numbers
+        redacted = re.sub(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b', '[REDACTED_PHONE]', redacted)
+        
+        # Redact SSN
+        redacted = re.sub(r'\b\d{3}-\d{2}-\d{4}\b', '[REDACTED_SSN]', redacted)
+        
+        # Redact credit cards
+        redacted = re.sub(r'\b(?:\d{4}[-\s]?){3}\d{4}\b', '[REDACTED_CARD]', redacted)
+        
+        return redacted
+
+# Global safety layer instance
+_safety_layer = None
+
+def get_safety_layer() -> SafetyLayer:
+    """Get the global safety layer instance"""
+    global _safety_layer
+    if _safety_layer is None:
+        _safety_layer = SafetyLayer()
+    return _safety_layer
+
+def check_outbound_content_safety(content: str, context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+    """Check outbound content for safety violations"""
+    safety_layer = get_safety_layer()
+    return safety_layer.check_outbound_content(content, context)
+
+def check_mutating_action_safety(action: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+    """Check mutating actions for safety violations"""
+    safety_layer = get_safety_layer()
+    return safety_layer.check_mutating_action(action, context)
+
+# Convenience functions
+def is_content_safe(content: str, context: Optional[Dict[str, Any]] = None) -> bool:
+    """Quick check if content is safe"""
+    result = check_outbound_content_safety(content, context)
+    return result.is_safe
+
+def is_action_safe(action: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> bool:
+    """Quick check if action is safe"""
+    result = check_mutating_action_safety(action, context)
+    return result.is_safe

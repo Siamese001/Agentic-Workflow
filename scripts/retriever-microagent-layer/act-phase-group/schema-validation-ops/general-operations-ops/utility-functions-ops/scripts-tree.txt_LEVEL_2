@@ -1,77 +1,67 @@
-import os
-import shutil
-
-ROOT = r"C:\Users\amita\Documents\Work\AI Job Search\AI\ML\DL\GenAI\LLM 101\LLM Pipelines\Resume Gen\Git\Agentic_Workflow-10_11\scripts"
-
-# --- New folder structure ---
-NEW_FOLDERS = {
-    "maintenance": [],
-    "validation": [],
-    "ingestion": [],
-    "dev_tools": [],
-    "ci_pipeline": [],
-    "utils": [],
-    "pipeline_artifacts": [],
-    "pipeline_logs": [],
-    "runtime": [],
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentic-workflow-10-11/schemas/l2_execution/execution_types.json",
+  "title": "L2 Execution Types Schema",
+  "description": "Data types for L2 execution layer - tool execution, engine coordination",
+  "type": "object",
+  "properties": {
+    "execution_request": {
+      "type": "object",
+      "properties": {
+        "tool_name": {
+          "type": "string",
+          "description": "Name of the tool to execute"
+        },
+        "tool_args": {
+          "type": "object",
+          "description": "Arguments for the tool execution"
+        },
+        "execution_type": {
+          "type": "string",
+          "enum": ["rag", "search", "http", "sql", "file", "embedding"],
+          "description": "Type of execution to perform"
+        },
+        "engine": {
+          "type": "string",
+          "enum": ["resume", "outreach"],
+          "description": "Engine context for execution"
+        },
+        "timeout_ms": {
+          "type": "integer",
+          "minimum": 100,
+          "maximum": 300000,
+          "description": "Timeout in milliseconds"
+        }
+      },
+      "required": ["tool_name", "tool_args", "execution_type"]
+    },
+    "execution_response": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "object",
+          "description": "Tool execution result"
+        },
+        "success": {
+          "type": "boolean",
+          "description": "Whether execution was successful"
+        },
+        "error": {
+          "type": "string",
+          "description": "Error message if execution failed"
+        },
+        "latency_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Execution latency in milliseconds"
+        },
+        "tokens_used": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Tokens consumed during execution"
+        }
+      },
+      "required": ["result", "success", "latency_ms"]
+    }
+  }
 }
-
-# --- Mapping of existing files â†’ new folders ---
-ROUTING = {
-    "ast_purity_scanner.py": "maintenance",
-    "contract_registry_validator.py": "validation",
-    "manifest_validator.py": "validation",
-    "semantic_validation_engine.py": "validation",
-    "test_matrix_validator.py": "validation",
-    "ci_enforcer.py": "ci_pipeline",
-    "golden_trace_auditor.py": "validation",
-    "pipeline_artifacts": "pipeline_artifacts",
-    "pipeline_logs": "pipeline_logs",
-    "runtime": "runtime",
-}
-
-def ensure_new_folders():
-    for folder in NEW_FOLDERS:
-        path = os.path.join(ROOT, folder)
-        if not os.path.exists(path):
-            os.makedirs(path)
-
-def move_file(src, dest_folder):
-    dest = os.path.join(ROOT, dest_folder, os.path.basename(src))
-    print(f"MOVE: {src} â†’ {dest}")
-    shutil.move(src, dest)
-
-def migrate():
-    ensure_new_folders()
-
-    for item in os.listdir(ROOT):
-        full = os.path.join(ROOT, item)
-
-        # folder routing (artifacts, logs, runtime) - skip if same destination
-        if os.path.isdir(full):
-            if item in ROUTING:
-                dest = ROUTING[item]
-                if item != dest:  # only move if different destination
-                    new_path = os.path.join(ROOT, dest)
-                    print(f"MOVE FOLDER CONTENTS: {item} â†’ {dest}")
-                    for f in os.listdir(full):
-                        shutil.move(os.path.join(full, f), new_path)
-                    try:
-                        os.rmdir(full)
-                    except:
-                        pass
-            continue
-
-        # file routing
-        if item in ROUTING:
-            move_file(full, ROUTING[item])
-
-    # delete empty folders
-    for f in os.listdir(ROOT):
-        full = os.path.join(ROOT, f)
-        if os.path.isdir(full) and not os.listdir(full):
-            print(f"DELETE EMPTY FOLDER: {full}")
-            os.rmdir(full)
-
-if __name__ == "__main__":
-    migrate()

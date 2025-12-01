@@ -1,7 +1,7 @@
 """
-DAG executor for rÃ©sumÃ© processing workflow orchestration.
+DAG executor for rÃƒÂ©sumÃƒÂ© processing workflow orchestration.
 
-Provides minimal async execution engine for comprehensive rÃ©sumÃ© improvement operations.
+Provides minimal async execution engine for comprehensive rÃƒÂ©sumÃƒÂ© improvement operations.
 """
 
 from typing import Any, Dict, Iterable, Optional, Set, List
@@ -12,9 +12,9 @@ from .models import Graph
 
 class DAGExecutor:
     """
-    Executes directed acyclic graphs for rÃ©sumÃ© processing workflows.
+    Executes directed acyclic graphs for rÃƒÂ©sumÃƒÂ© processing workflows.
 
-    Orchestrates node execution with proper dependency resolution for rÃ©sumÃ© enhancement.
+    Orchestrates node execution with proper dependency resolution for rÃƒÂ©sumÃƒÂ© enhancement.
     """
 
     def __init__(self, graph: Graph, agent_registry: AgentRegistry | None = None) -> None:
@@ -27,9 +27,9 @@ class DAGExecutor:
 
     def _select_agent_for_node(self, node_id: str) -> str | None:
         """
-        Selects optimal agent for rÃ©sumÃ© processing DAG nodes.
+        Selects optimal agent for rÃƒÂ©sumÃƒÂ© processing DAG nodes.
 
-        Ensures proper agent assignment based on capabilities for rÃ©sumÃ© improvement workflows.
+        Ensures proper agent assignment based on capabilities for rÃƒÂ©sumÃƒÂ© improvement workflows.
         """
 
         if self._agent_registry is None:
@@ -68,9 +68,9 @@ class DAGExecutor:
         ctx: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
-        Executes rÃ©sumÃ© processing DAG with proper dependency resolution.
+        Executes rÃƒÂ©sumÃƒÂ© processing DAG with proper dependency resolution.
 
-        Ensures comprehensive workflow orchestration for rÃ©sumÃ© improvement operations.
+        Ensures comprehensive workflow orchestration for rÃƒÂ©sumÃƒÂ© improvement operations.
         """
         if ctx is None:
             ctx = {}

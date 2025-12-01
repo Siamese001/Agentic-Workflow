@@ -1,30 +1,235 @@
-from __future__ import annotations
+# Model Routing Dashboard Configuration v1.0
+# Grafana-style dashboard for AI model routing and performance monitoring
 
-from typing import List
+dashboard:
+  version: "1.0"
+  title: "Agentic Workflow - Model Routing"
+  description: "AI model routing decisions, performance, and optimization insights"
+  
+  # Dashboard metadata
+  metadata:
+    tags: ["agentic", "model-routing", "ai", "performance"]
+    refresh_interval: "30s"
+    time_range: "last_1h"
+    
+  # Dashboard panels
+  panels:
+    # Model Overview
+    - title: "Active Models"
+      type: "stat"
+      grid_pos: {"x": 0, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "count(count by (model) (model_requests_total))"
+          legend_format: "Active Models"
+      field_config:
+        defaults:
+          unit: "short"
+          thresholds:
+            steps:
+              - color: "green"
+                value: 0
+              - color: "yellow"
+                value: 3
+              - color: "red"
+                value: 5
+          
+    - title: "Model Request Rate"
+      type: "graph"
+      grid_pos: {"x": 8, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "sum by (model) (rate(model_requests_total[5m]))"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "reqps"
+        
+    - title: "Routing Success Rate"
+      type: "stat"
+      grid_pos: {"x": 16, "y": 0, "w": 8, "h": 8}
+      targets:
+        - expr: "sum(model_requests_total{status=\"success\"}) / sum(model_requests_total) * 100"
+          legend_format: "Success Rate (%)"
+      field_config:
+        defaults:
+          unit: "percent"
+          max: 100
+          thresholds:
+            steps:
+              - color: "red"
+                value: 0
+              - color: "yellow"
+                value: 90
+              - color: "green"
+                value: 95
 
-from config.agent_profile import AgentCard
-from orchestration.agent_registry import AgentRegistry
+    # Model Performance
+    - title: "Model Response Time (P95)"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "histogram_quantile(0.95, sum by (le, model) (rate(model_response_time_seconds_bucket[5m])))"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "seconds"
+        
+    - title: "Model Error Rate"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 8, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (model) (rate(model_requests_total{status=\"error\"}[5m])) / sum by (model) (rate(model_requests_total[5m])) * 100"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "percent"
 
-"""Defines simple routing rules that pick which specialist agents handle planning, drafting, review, and safety so each resume step is done by the right expertise."""
+    # Routing Decisions
+    - title: "Routing Decisions by Reason"
+      type: "piechart"
+      grid_pos: {"x": 0, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (routing_reason) (model_routing_decisions_total)"
+          legend_format: "{{routing_reason}}"
+          
+    - title: "Model Selection Distribution"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 16, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (selected_model, operation_type) (model_routing_decisions_total)"
+          legend_format: "{{selected_model}} - {{operation_type}}"
+      y_axes:
+        - unit: "short"
 
+    # Cost and Efficiency
+    - title: "Cost per Request by Model"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (model) (rate(model_cost_usd[5m])) / sum by (model) (rate(model_requests_total[5m]))"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "currencyUSD"
+        
+    - title: "Tokens per Request by Model"
+      type: "graph"
+      grid_pos: {"x": 12, "y": 24, "w": 12, "h": 8}
+      targets:
+        - expr: "sum by (model) (rate(model_tokens_used_total[5m])) / sum by (model) (rate(model_requests_total[5m]))"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "short"
 
-def choose_agents_for_task(task_type: str, registry: AgentRegistry) -> List[AgentCard]:
-    """Chooses agents for a given task type so planning, retrieval, drafting, QA, and safety work are handled by specialists, leading to clearer, more relevant, and safer resumes."""
+    # Quality Metrics
+    - title: "Model Quality Scores"
+      type: "graph"
+      grid_pos: {"x": 0, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "avg by (model) (model_quality_score)"
+          legend_format: "{{model}}"
+      y_axes:
+        - unit: "percent"
+        - max: 1
+        - min: 0
+        
+    - title: "Model Accuracy by Operation"
+      type: "table"
+      grid_pos: {"x": 12, "y": 32, "w": 12, "h": 8}
+      targets:
+        - expr: "avg by (model, operation_type) (model_accuracy_score)"
+          format: "table"
+          transformations:
+            - type: "organize"
+              options:
+                excludeByName: {"Time": true}
+                indexByName: {}
+                renameByName:
+                  Value: "Accuracy"
+                  model: "Model"
+                  operation_type: "Operation"
 
-    mapping = {
-        "strategy": "planner",
-        "planning": "planner",
-        "retrieval": "researcher",
-        "rag": "researcher",
-        "drafting": "drafter",
-        "qa": "qa",
-        "safety": "safety",
-    }
-    desired_type = mapping.get(task_type)
-    if desired_type is None:
-        return list(registry.agents.values())
-    candidates = registry.find_agents_by_type(desired_type)
-    return candidates or list(registry.agents.values())
+    # Routing Optimization
+    - title: "Routing Optimization Opportunities"
+      type: "table"
+      grid_pos: {"x": 0, "y": 40, "w": 24, "h": 8}
+      targets:
+        - expr: "topk(10, model_routing_inefficiency_score)"
+          format: "table"
+          transformations:
+            - type: "organize"
+              options:
+                excludeByName: {"Time": true}
+                indexByName: {}
+                renameByName:
+                  Value: "Inefficiency Score"
+                  model: "Current Model"
+                  suggested_model: "Suggested Model"
+                  operation_type: "Operation"
 
+  # Dashboard variables
+  variables:
+    - name: "model"
+      type: "query"
+      query: "label_values(model_requests_total, model)"
+      include_all: true
+      all_value: ".*"
+      
+    - name: "operation_type"
+      type: "query"
+      query: "label_values(model_routing_decisions_total, operation_type)"
+      include_all: true
+      all_value: ".*"
+      
+    - name: "routing_reason"
+      type: "query"
+      query: "label_values(model_routing_decisions_total, routing_reason)"
+      include_all: true
+      all_value: ".*"
 
+  # Annotations
+  annotations:
+    - name: "Model Changes"
+      datasource: "prometheus"
+      expr: "model_routing_config_changed"
+      icon_color: "blue"
+      
+    - name: "Performance Degradation"
+      datasource: "prometheus"
+      expr: "model_performance_degraded"
+      icon_color: "red"
 
+  # Dashboard links
+  links:
+    - title: "Model Configuration"
+      url: "/config/models"
+      
+    - title: "Routing Rules"
+      url: "/config/routing"
+      
+    - title: "Performance Analysis"
+      url: "/analysis/model-performance"
+
+  # Alert thresholds
+  alert_thresholds:
+    response_time_p95:
+      warning: 5.0  # seconds
+      critical: 10.0  # seconds
+      
+    error_rate:
+      warning: 5.0  # percent
+      critical: 10.0  # percent
+      
+    cost_per_request:
+      warning: 0.10  # USD
+      critical: 0.25  # USD
+      
+    quality_score:
+      warning: 0.8
+      critical: 0.7
+
+  # Time settings
+  time:
+    from: "now-1h"
+    to: "now"
+    
+  # Refresh settings
+  refresh: "30s"
+  
+  # Schema version
+  schema_version: 37
