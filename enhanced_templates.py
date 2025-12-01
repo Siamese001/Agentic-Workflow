@@ -4,11 +4,10 @@ ENHANCED TEMPLATES FOR AGENTIC_CORE PHASE 2
 Addresses all 12 failing validation keys with comprehensive implementations
 """
 
-import json
 import asyncio
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import List, Optional
 from datetime import datetime
 from dataclasses import dataclass
 
