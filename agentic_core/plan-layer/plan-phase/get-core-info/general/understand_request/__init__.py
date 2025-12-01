@@ -10,7 +10,7 @@ from .build_core_query import (
     CoreQueryBuilderInterface,
     create_core_query_builder,
     CoreQuerySafetyPolicy,
-    validate_core_query_request
+    validate_query_request
 )
 
 from .extract_layer_parameters import (
@@ -18,7 +18,7 @@ from .extract_layer_parameters import (
     LayerParameterExtractorInterface,
     create_layer_parameter_extractor,
     LayerParameterSafetyPolicy,
-    validate_parameter_extraction_request
+    validate_parameter_request
 )
 
 from .parse_registry_intent import (
@@ -26,7 +26,7 @@ from .parse_registry_intent import (
     RegistryIntentParserInterface,
     create_registry_intent_parser,
     RegistryIntentSafetyPolicy,
-    validate_intent_parsing_request
+    validate_intent_request
 )
 
 # Export main classes
@@ -52,9 +52,9 @@ __all__ = [
     "RegistryIntentSafetyPolicy",
     
     # Request validators
-    "validate_core_query_request",
-    "validate_parameter_extraction_request",
-    "validate_intent_parsing_request"
+    "validate_query_request",
+    "validate_parameter_request",
+    "validate_intent_request"
 ]
 
 # Version information

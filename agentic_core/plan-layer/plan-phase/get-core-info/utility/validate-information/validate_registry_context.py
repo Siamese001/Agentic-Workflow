@@ -766,86 +766,825 @@ class RegistryContextValidator(RegistryContextValidatorInterface):
     # Security validation implementations (simplified)
     async def _validate_access_controls(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate access controls"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if access control policies are defined
+        if "access_policies" not in context:
+            errors.append(ContextValidationError(
+                field="access_policies",
+                message="Access control policies not defined",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        
+        # Validate role-based access control
+        if "rbac" in context:
+            rbac = context["rbac"]
+            if not isinstance(rbac, dict):
+                errors.append(ContextValidationError(
+                    field="rbac",
+                    message="RBAC configuration must be a dictionary",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+            elif "roles" not in rbac or "permissions" not in rbac:
+                errors.append(ContextValidationError(
+                    field="rbac",
+                    message="RBAC must define both roles and permissions",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     async def _validate_encryption_status(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate encryption status"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if encryption is configured
+        if "encryption" not in context:
+            errors.append(ContextValidationError(
+                field="encryption",
+                message="Encryption configuration not defined",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        encryption = context["encryption"]
+        
+        # Validate encryption algorithm
+        if "algorithm" not in encryption:
+            errors.append(ContextValidationError(
+                field="encryption.algorithm",
+                message="Encryption algorithm not specified",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        elif encryption["algorithm"] not in ["AES-256", "RSA-2048", "ChaCha20"]:
+            errors.append(ContextValidationError(
+                field="encryption.algorithm",
+                message=f"Unsupported encryption algorithm: {encryption['algorithm']}",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        
+        # Validate key management
+        if "key_rotation" not in encryption:
+            errors.append(ContextValidationError(
+                field="encryption.key_rotation",
+                message="Key rotation policy not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        
+        return errors
     
     async def _validate_audit_trail(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate audit trail"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if audit trail is configured
+        if "audit_trail" not in context:
+            errors.append(ContextValidationError(
+                field="audit_trail",
+                message="Audit trail configuration not defined",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        audit = context["audit_trail"]
+        
+        # Validate audit log retention
+        if "retention_days" not in audit:
+            errors.append(ContextValidationError(
+                field="audit_trail.retention_days",
+                message="Audit log retention period not specified",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        elif audit["retention_days"] < 90:
+            errors.append(ContextValidationError(
+                field="audit_trail.retention_days",
+                message="Audit log retention should be at least 90 days",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        
+        # Validate audit logging level
+        if "log_level" not in audit:
+            errors.append(ContextValidationError(
+                field="audit_trail.log_level",
+                message="Audit log level not specified",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        elif audit["log_level"] not in ["INFO", "DEBUG", "TRACE"]:
+            errors.append(ContextValidationError(
+                field="audit_trail.log_level",
+                message="Audit log level should be INFO, DEBUG, or TRACE",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        
+        return errors
     
     async def _validate_security_headers(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate security headers"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if security headers are configured
+        if "security_headers" not in context:
+            errors.append(ContextValidationError(
+                field="security_headers",
+                message="Security headers configuration not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        headers = context["security_headers"]
+        
+        # Validate required security headers
+        required_headers = ["X-Content-Type-Options", "X-Frame-Options", "X-XSS-Protection"]
+        for header in required_headers:
+            if header not in headers:
+                errors.append(ContextValidationError(
+                    field=f"security_headers.{header}",
+                    message=f"Required security header missing: {header}",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        # Validate CSP header if present
+        if "Content-Security-Policy" in headers:
+            csp = headers["Content-Security-Policy"]
+            if "default-src" not in csp:
+                errors.append(ContextValidationError(
+                    field="security_headers.Content-Security-Policy",
+                    message="CSP should define default-src directive",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     # Compliance validation implementations (simplified)
     async def _validate_regulatory_compliance(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate regulatory compliance"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if compliance framework is defined
+        if "compliance" not in context:
+            errors.append(ContextValidationError(
+                field="compliance",
+                message="Compliance framework not defined",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        compliance = context["compliance"]
+        
+        # Validate GDPR compliance if applicable
+        if "gdpr" in compliance:
+            gdpr = compliance["gdpr"]
+            if not gdpr.get("data_processing_agreement", False):
+                errors.append(ContextValidationError(
+                    field="compliance.gdpr.data_processing_agreement",
+                    message="GDPR data processing agreement required",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+            if not gdpr.get("data_protection_officer", False):
+                errors.append(ContextValidationError(
+                    field="compliance.gdpr.data_protection_officer",
+                    message="GDPR data protection officer required",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        # Validate SOC 2 compliance if applicable
+        if "soc2" in compliance:
+            soc2 = compliance["soc2"]
+            required_criteria = ["security", "availability", "processing_integrity", "confidentiality", "privacy"]
+            for criterion in required_criteria:
+                if criterion not in soc2 or not soc2[criterion]:
+                    errors.append(ContextValidationError(
+                        field=f"compliance.soc2.{criterion}",
+                        message=f"SOC 2 {criterion} criteria not met",
+                        severity="warning",
+                        rule_id=rule.rule_id
+                    ))
+        
+        return errors
     
     async def _validate_policy_adherence(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate policy adherence"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if policies are defined
+        if "policies" not in context:
+            errors.append(ContextValidationError(
+                field="policies",
+                message="Security policies not defined",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        policies = context["policies"]
+        
+        # Validate password policy
+        if "password_policy" in policies:
+            pwd_policy = policies["password_policy"]
+            if pwd_policy.get("min_length", 0) < 8:
+                errors.append(ContextValidationError(
+                    field="policies.password_policy.min_length",
+                    message="Password minimum length should be at least 8 characters",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+            if not pwd_policy.get("require_special_chars", False):
+                errors.append(ContextValidationError(
+                    field="policies.password_policy.require_special_chars",
+                    message="Password policy should require special characters",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        # Validate access policy
+        if "access_policy" in policies:
+            access_policy = policies["access_policy"]
+            if access_policy.get("session_timeout", 0) < 30:
+                errors.append(ContextValidationError(
+                    field="policies.access_policy.session_timeout",
+                    message="Session timeout should be at least 30 minutes",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     async def _validate_documentation_completeness(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate documentation completeness"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if documentation is present
+        if "documentation" not in context:
+            errors.append(ContextValidationError(
+                field="documentation",
+                message="Documentation not provided",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        docs = context["documentation"]
+        
+        # Validate required documentation sections
+        required_sections = ["api_reference", "user_guide", "security_policy", "deployment_guide"]
+        for section in required_sections:
+            if section not in docs or not docs[section]:
+                errors.append(ContextValidationError(
+                    field=f"documentation.{section}",
+                    message=f"Required documentation section missing: {section}",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        # Validate documentation version
+        if "version" not in docs:
+            errors.append(ContextValidationError(
+                field="documentation.version",
+                message="Documentation version not specified",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        
+        return errors
     
     async def _validate_version_compliance(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate version compliance"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if version information is present
+        if "version" not in context:
+            errors.append(ContextValidationError(
+                field="version",
+                message="Version information not specified",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        version = context["version"]
+        
+        # Validate semantic versioning
+        if not isinstance(version, str):
+            errors.append(ContextValidationError(
+                field="version",
+                message="Version must be a string",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        else:
+            # Check if version follows semantic versioning
+            import re
+            if not re.match(r'^\d+\.\d+\.\d+(-[a-zA-Z0-9]+)?$', version):
+                errors.append(ContextValidationError(
+                    field="version",
+                    message="Version should follow semantic versioning (e.g., 1.0.0)",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        # Validate version compatibility
+        if "min_compatible_version" in context:
+            min_version = context["min_compatible_version"]
+            if not isinstance(min_version, str):
+                errors.append(ContextValidationError(
+                    field="min_compatible_version",
+                    message="Minimum compatible version must be a string",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     # Business logic validation implementations (simplified)
     async def _validate_workflow_compliance(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate workflow compliance"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if workflow is defined
+        if "workflow" not in context:
+            errors.append(ContextValidationError(
+                field="workflow",
+                message="Workflow configuration not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        workflow = context["workflow"]
+        
+        # Validate workflow stages
+        if "stages" not in workflow:
+            errors.append(ContextValidationError(
+                field="workflow.stages",
+                message="Workflow stages not defined",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        elif not isinstance(workflow["stages"], list) or len(workflow["stages"]) == 0:
+            errors.append(ContextValidationError(
+                field="workflow.stages",
+                message="Workflow stages must be a non-empty list",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        
+        # Validate workflow dependencies
+        if "dependencies" in workflow:
+            deps = workflow["dependencies"]
+            if not isinstance(deps, dict):
+                errors.append(ContextValidationError(
+                    field="workflow.dependencies",
+                    message="Workflow dependencies must be a dictionary",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     async def _validate_business_rules(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate business rules"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if business rules are defined
+        if "business_rules" not in context:
+            errors.append(ContextValidationError(
+                field="business_rules",
+                message="Business rules not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        rules = context["business_rules"]
+        
+        # Validate rule structure
+        if not isinstance(rules, list):
+            errors.append(ContextValidationError(
+                field="business_rules",
+                message="Business rules must be a list",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        # Validate individual rules
+        for i, rule_obj in enumerate(rules):
+            if not isinstance(rule_obj, dict):
+                errors.append(ContextValidationError(
+                    field=f"business_rules[{i}]",
+                    message="Each business rule must be a dictionary",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+                continue
+            
+            if "name" not in rule_obj:
+                errors.append(ContextValidationError(
+                    field=f"business_rules[{i}].name",
+                    message="Business rule must have a name",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+            
+            if "condition" not in rule_obj:
+                errors.append(ContextValidationError(
+                    field=f"business_rules[{i}].condition",
+                    message="Business rule must have a condition",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     async def _validate_state_transitions(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate state transitions"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if state machine is defined
+        if "state_machine" not in context:
+            errors.append(ContextValidationError(
+                field="state_machine",
+                message="State machine configuration not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        sm = context["state_machine"]
+        
+        # Validate states
+        if "states" not in sm:
+            errors.append(ContextValidationError(
+                field="state_machine.states",
+                message="State machine states not defined",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        elif not isinstance(sm["states"], list) or len(sm["states"]) == 0:
+            errors.append(ContextValidationError(
+                field="state_machine.states",
+                message="States must be a non-empty list",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        
+        # Validate transitions
+        if "transitions" in sm:
+            transitions = sm["transitions"]
+            if not isinstance(transitions, list):
+                errors.append(ContextValidationError(
+                    field="state_machine.transitions",
+                    message="Transitions must be a list",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+            else:
+                for i, transition in enumerate(transitions):
+                    if not isinstance(transition, dict):
+                        errors.append(ContextValidationError(
+                            field=f"state_machine.transitions[{i}]",
+                            message="Each transition must be a dictionary",
+                            severity="error",
+                            rule_id=rule.rule_id
+                        ))
+                    elif "from_state" not in transition or "to_state" not in transition:
+                        errors.append(ContextValidationError(
+                            field=f"state_machine.transitions[{i}]",
+                            message="Transition must define from_state and to_state",
+                            severity="error",
+                            rule_id=rule.rule_id
+                        ))
+        
+        return errors
     
     async def _validate_dependency_validation(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate dependency validation"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies are defined
+        if "dependencies" not in context:
+            errors.append(ContextValidationError(
+                field="dependencies",
+                message="Dependencies not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        deps = context["dependencies"]
+        
+        # Validate dependency structure
+        if not isinstance(deps, list):
+            errors.append(ContextValidationError(
+                field="dependencies",
+                message="Dependencies must be a list",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        # Validate individual dependencies
+        for i, dep in enumerate(deps):
+            if not isinstance(dep, dict):
+                errors.append(ContextValidationError(
+                    field=f"dependencies[{i}]",
+                    message="Each dependency must be a dictionary",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+                continue
+            
+            if "name" not in dep:
+                errors.append(ContextValidationError(
+                    field=f"dependencies[{i}].name",
+                    message="Dependency must have a name",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+            
+            if "version" not in dep:
+                errors.append(ContextValidationError(
+                    field=f"dependencies[{i}].version",
+                    message="Dependency must specify a version",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+            
+            # Check for circular dependencies
+            if "depends_on" in dep:
+                if not isinstance(dep["depends_on"], list):
+                    errors.append(ContextValidationError(
+                        field=f"dependencies[{i}].depends_on",
+                        message="Depends on must be a list",
+                        severity="warning",
+                        rule_id=rule.rule_id
+                    ))
+        
+        return errors
     
     # Data integrity validation implementations (simplified)
     async def _validate_checksum_validation(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate checksum validation"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if checksum is present
+        if "checksum" not in context:
+            errors.append(ContextValidationError(
+                field="checksum",
+                message="Checksum not provided",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        checksum = context["checksum"]
+        
+        # Validate checksum format
+        if not isinstance(checksum, str):
+            errors.append(ContextValidationError(
+                field="checksum",
+                message="Checksum must be a string",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        else:
+            # Check if it's a valid hex string
+            import re
+            if not re.match(r'^[a-fA-F0-9]{32,64}$', checksum):
+                errors.append(ContextValidationError(
+                    field="checksum",
+                    message="Checksum must be a valid hex string (32-64 characters)",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+        
+        # Validate checksum algorithm
+        if "checksum_algorithm" not in context:
+            errors.append(ContextValidationError(
+                field="checksum_algorithm",
+                message="Checksum algorithm not specified",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        else:
+            algorithm = context["checksum_algorithm"]
+            if algorithm not in ["SHA-256", "SHA-512", "MD5"]:
+                errors.append(ContextValidationError(
+                    field="checksum_algorithm",
+                    message=f"Unsupported checksum algorithm: {algorithm}",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     async def _validate_referential_integrity(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate referential integrity"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if references are defined
+        if "references" not in context:
+            errors.append(ContextValidationError(
+                field="references",
+                message="References not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        refs = context["references"]
+        
+        # Validate reference structure
+        if not isinstance(refs, dict):
+            errors.append(ContextValidationError(
+                field="references",
+                message="References must be a dictionary",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        # Validate individual references
+        for ref_name, ref_data in refs.items():
+            if not isinstance(ref_data, dict):
+                errors.append(ContextValidationError(
+                    field=f"references.{ref_name}",
+                    message="Each reference must be a dictionary",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+                continue
+            
+            if "target" not in ref_data:
+                errors.append(ContextValidationError(
+                    field=f"references.{ref_name}.target",
+                    message="Reference must specify a target",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+            
+            if "type" not in ref_data:
+                errors.append(ContextValidationError(
+                    field=f"references.{ref_name}.type",
+                    message="Reference must specify a type",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     async def _validate_temporal_consistency(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate temporal consistency"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if timestamps are present
+        if "timestamps" not in context:
+            errors.append(ContextValidationError(
+                field="timestamps",
+                message="Timestamp information not provided",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        timestamps = context["timestamps"]
+        
+        # Validate timestamp structure
+        if not isinstance(timestamps, dict):
+            errors.append(ContextValidationError(
+                field="timestamps",
+                message="Timestamps must be a dictionary",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        # Check for required timestamps
+        required_ts = ["created_at", "updated_at"]
+        for ts_name in required_ts:
+            if ts_name not in timestamps:
+                errors.append(ContextValidationError(
+                    field=f"timestamps.{ts_name}",
+                    message=f"Required timestamp missing: {ts_name}",
+                    severity="warning",
+                    rule_id=rule.rule_id
+                ))
+        
+        # Validate timestamp format and consistency
+        if "created_at" in timestamps and "updated_at" in timestamps:
+            created = timestamps["created_at"]
+            updated = timestamps["updated_at"]
+            
+            # Check if timestamps are in ISO format
+            import re
+            iso_pattern = r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$'
+            
+            for ts_name, ts_value in [("created_at", created), ("updated_at", updated)]:
+                if not isinstance(ts_value, str) or not re.match(iso_pattern, ts_value):
+                    errors.append(ContextValidationError(
+                        field=f"timestamps.{ts_name}",
+                        message=f"Timestamp {ts_name} must be in ISO 8601 format",
+                        severity="warning",
+                        rule_id=rule.rule_id
+                    ))
+            
+            # Check temporal consistency
+            if updated < created:
+                errors.append(ContextValidationError(
+                    field="timestamps.updated_at",
+                    message="Updated timestamp cannot be earlier than created timestamp",
+                    severity="error",
+                    rule_id=rule.rule_id
+                ))
+        
+        return errors
     
     async def _validate_data_consistency(self, context: Dict[str, Any], rule: ContextValidationRule) -> List[ContextValidationError]:
         """Validate data consistency"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if data schema is defined
+        if "data_schema" not in context:
+            errors.append(ContextValidationError(
+                field="data_schema",
+                message="Data schema not defined",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        schema = context["data_schema"]
+        
+        # Validate schema structure
+        if not isinstance(schema, dict):
+            errors.append(ContextValidationError(
+                field="data_schema",
+                message="Data schema must be a dictionary",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+            return errors
+        
+        # Check for required schema fields
+        if "type" not in schema:
+            errors.append(ContextValidationError(
+                field="data_schema.type",
+                message="Schema must define a type",
+                severity="error",
+                rule_id=rule.rule_id
+            ))
+        elif schema["type"] not in ["object", "array", "string", "number", "boolean"]:
+            errors.append(ContextValidationError(
+                field="data_schema.type",
+                message=f"Unsupported schema type: {schema['type']}",
+                severity="warning",
+                rule_id=rule.rule_id
+            ))
+        
+        # Validate object schema consistency
+        if schema.get("type") == "object":
+            if "properties" in schema:
+                if not isinstance(schema["properties"], dict):
+                    errors.append(ContextValidationError(
+                        field="data_schema.properties",
+                        message="Properties must be a dictionary",
+                        severity="error",
+                        rule_id=rule.rule_id
+                    ))
+        
+        # Check data consistency with actual data
+        if "data" in context and schema.get("type") == "object":
+            data = context["data"]
+            if isinstance(data, dict) and "properties" in schema:
+                schema_props = schema["properties"]
+                for prop_name in schema_props:
+                    if prop_name not in data:
+                        errors.append(ContextValidationError(
+                            field=f"data.{prop_name}",
+                            message=f"Required property missing from data: {prop_name}",
+                            severity="warning",
+                            rule_id=rule.rule_id
+                        ))
+        
+        return errors
     
     def _get_nested_value(self, obj: Dict[str, Any], path: str) -> Any:
         """Get nested value from object using dot notation"""
@@ -865,28 +1604,89 @@ class RegistryContextValidator(RegistryContextValidatorInterface):
     
     def _check_timestamp_consistency(self, context: Dict[str, Any]) -> bool:
         """Check timestamp consistency across context"""
-        # Simplified implementation
+        if "timestamps" not in context:
+            return False
+        
+        timestamps = context["timestamps"]
+        if not isinstance(timestamps, dict):
+            return False
+        
+        # Check if created_at and updated_at exist and are consistent
+        if "created_at" in timestamps and "updated_at" in timestamps:
+            try:
+                from datetime import datetime
+                created = datetime.fromisoformat(timestamps["created_at"].replace('Z', '+00:00'))
+                updated = datetime.fromisoformat(timestamps["updated_at"].replace('Z', '+00:00'))
+                return updated >= created
+            except (ValueError, AttributeError):
+                return False
+        
         return True
     
     def _check_reference_validity(self, context: Dict[str, Any]) -> bool:
         """Check reference validity"""
-        # Simplified implementation
+        if "references" not in context:
+            return True  # No references to validate
+        
+        refs = context["references"]
+        if not isinstance(refs, dict):
+            return False
+        
+        # Check if all references have required fields
+        for ref_name, ref_data in refs.items():
+            if not isinstance(ref_data, dict):
+                return False
+            if "target" not in ref_data:
+                return False
+        
         return True
     
     def _check_no_duplicate_keys(self, context: Dict[str, Any]) -> bool:
         """Check for duplicate keys"""
-        # Simplified implementation
-        return True
+        # In Python dict, duplicate keys are automatically overwritten
+        # This is a structural check for potential issues in nested structures
+        def check_duplicates(obj, path=""):
+            if isinstance(obj, dict):
+                keys = list(obj.keys())
+                if len(keys) != len(set(keys)):
+                    return False
+                for key, value in obj.items():
+                    if not check_duplicates(value, f"{path}.{key}" if path else key):
+                        return False
+            elif isinstance(obj, list):
+                for i, item in enumerate(obj):
+                    if not check_duplicates(item, f"{path}[{i}]"):
+                        return False
+            return True
+        
+        return check_duplicates(context)
     
     def _check_valid_structure(self, context: Dict[str, Any]) -> bool:
         """Check valid structure"""
-        # Simplified implementation
-        return isinstance(context, dict)
+        # Basic structural validation
+        if not isinstance(context, dict):
+            return False
+        
+        # Check for required top-level keys
+        required_keys = ["id", "type"]
+        for key in required_keys:
+            if key not in context:
+                return False
+        
+        return True
     
     def _check_data_completeness(self, context: Dict[str, Any]) -> bool:
         """Check data completeness"""
-        # Simplified implementation
-        return len(context) > 0
+        # Check if context has meaningful data
+        if not context or len(context) < 2:
+            return False
+        
+        # Check for essential data sections
+        essential_sections = ["metadata", "content"]
+        found_sections = sum(1 for section in essential_sections if section in context)
+        
+        # At least one essential section should be present
+        return found_sections > 0
     
     def _calculate_compliance_score(self, context: Dict[str, Any], errors: List[ContextValidationError]) -> float:
         """Calculate compliance score based on validation results"""
