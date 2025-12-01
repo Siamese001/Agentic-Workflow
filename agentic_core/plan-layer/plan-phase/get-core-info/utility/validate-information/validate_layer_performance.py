@@ -2157,8 +2157,246 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
         rule: PerformanceValidationRule
     ) -> List[PerformanceValidationError]:
         """Validate load balancing"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if metrics are provided
+        if not metrics:
+            errors.append(PerformanceValidationError(
+                metric_name="load_balancing",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_metrics_provided",
+                error_message="No metrics provided for load balancing validation",
+                actual_value=None,
+                expected_value="metrics dictionary",
+                severity="error"
+            ))
+            return errors
+        
+        # Get load balancing metrics
+        lb_metrics = metrics.get("load_balancing", {})
+        algorithm = lb_metrics.get("algorithm", "")
+        backend_instances = lb_metrics.get("backend_instances", [])
+        health_checks = lb_metrics.get("health_checks", {})
+        distribution_metrics = lb_metrics.get("distribution", {})
+        
+        # Validate load balancer configuration
+        if not algorithm:
+            errors.append(PerformanceValidationError(
+                metric_name="load_balancing_algorithm",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="missing_load_balancing_algorithm",
+                error_message="Load balancing algorithm not configured",
+                actual_value=algorithm,
+                expected_value="valid algorithm (round_robin, least_connections, ip_hash, etc.)",
+                severity="error"
+            ))
+        
+        # Validate backend instances
+        if not backend_instances:
+            errors.append(PerformanceValidationError(
+                metric_name="backend_instances",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_backend_instances",
+                error_message="No backend instances configured for load balancing",
+                actual_value=len(backend_instances),
+                expected_value=">= 1",
+                severity="error"
+            ))
+            return errors
+        
+        # Check minimum number of backend instances
+        min_instances = rule.criteria.get("min_backend_instances", 2)
+        if len(backend_instances) < min_instances:
+            errors.append(PerformanceValidationError(
+                metric_name="backend_instances_count",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="insufficient_backend_instances",
+                error_message=f"Insufficient backend instances: {len(backend_instances)} (minimum: {min_instances})",
+                actual_value=len(backend_instances),
+                expected_value=f">= {min_instances}",
+                severity="warning"
+            ))
+        
+        # Validate backend instance health
+        healthy_instances = [inst for inst in backend_instances if inst.get("healthy", False)]
+        unhealthy_instances = [inst for inst in backend_instances if not inst.get("healthy", False)]
+        
+        if len(healthy_instances) == 0:
+            errors.append(PerformanceValidationError(
+                metric_name="healthy_backend_instances",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_healthy_instances",
+                error_message="No healthy backend instances available",
+                actual_value=len(healthy_instances),
+                expected_value=">= 1",
+                severity="error"
+            ))
+        elif len(healthy_instances) < len(backend_instances) * 0.5:  # Less than 50% healthy
+            errors.append(PerformanceValidationError(
+                metric_name="healthy_instance_ratio",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="low_healthy_instance_ratio",
+                error_message=f"Low healthy instance ratio: {len(healthy_instances)}/{len(backend_instances)}",
+                actual_value=len(healthy_instances),
+                expected_value=f">= {len(backend_instances) // 2}",
+                severity="error"
+            ))
+        
+        # Validate health check configuration
+        if health_checks:
+            health_check_enabled = health_checks.get("enabled", False)
+            health_check_interval = health_checks.get("interval_seconds", 0)
+            health_check_timeout = health_checks.get("timeout_seconds", 0)
+            
+            if not health_check_enabled:
+                errors.append(PerformanceValidationError(
+                    metric_name="health_check_enabled",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="health_checks_disabled",
+                    error_message="Health checks are disabled for load balancer",
+                    actual_value=health_check_enabled,
+                    expected_value=True,
+                    severity="warning"
+                ))
+            
+            if health_check_interval == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="health_check_interval",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_health_check_interval",
+                    error_message="Health check interval not configured",
+                    actual_value=health_check_interval,
+                    expected_value="> 0",
+                    severity="warning"
+                ))
+            
+            if health_check_timeout == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="health_check_timeout",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_health_check_timeout",
+                    error_message="Health check timeout not configured",
+                    actual_value=health_check_timeout,
+                    expected_value="> 0",
+                    severity="warning"
+                ))
+            
+            # Check if timeout is reasonable compared to interval
+            if health_check_interval > 0 and health_check_timeout > 0:
+                if health_check_timeout >= health_check_interval:
+                    errors.append(PerformanceValidationError(
+                        metric_name="health_check_timing",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="health_check_timeout_too_high",
+                        error_message=f"Health check timeout ({health_check_timeout}s) should be less than interval ({health_check_interval}s)",
+                        actual_value=health_check_timeout,
+                        expected_value=f"< {health_check_interval}",
+                        severity="warning"
+                    ))
+        
+        # Validate load distribution if provided
+        if distribution_metrics:
+            # Check request distribution across instances
+            request_counts = distribution_metrics.get("request_counts", {})
+            total_requests = sum(request_counts.values()) if request_counts else 0
+            
+            if total_requests > 0:
+                # Calculate distribution balance (coefficient of variation)
+                import statistics
+                counts = list(request_counts.values())
+                mean_requests = statistics.mean(counts)
+                std_dev = statistics.stdev(counts) if len(counts) > 1 else 0
+                
+                cv = (std_dev / mean_requests * 100) if mean_requests > 0 else 0
+                max_cv_threshold = rule.criteria.get("max_distribution_cv", 25)  # percentage
+                
+                if cv > max_cv_threshold:
+                    errors.append(PerformanceValidationError(
+                        metric_name="load_distribution_balance",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="unbalanced_load_distribution",
+                        error_message=f"Load distribution coefficient of variation {cv:.2f}% exceeds threshold {max_cv_threshold}%",
+                        actual_value=cv,
+                        expected_value=f"<= {max_cv_threshold}%",
+                        severity="warning"
+                    ))
+            
+            # Check response time distribution across instances
+            response_times = distribution_metrics.get("response_times", {})
+            if response_times:
+                avg_response_times = []
+                for instance_id, times in response_times.items():
+                    if times:
+                        avg_response_times.append(statistics.mean(times))
+                
+                if avg_response_times:
+                    max_response_time = max(avg_response_times)
+                    min_response_time = min(avg_response_times)
+                    
+                    if max_response_time > 0:
+                        response_time_variance = ((max_response_time - min_response_time) / max_response_time) * 100
+                        max_variance_threshold = rule.criteria.get("max_response_time_variance", 50)  # percentage
+                        
+                        if response_time_variance > max_variance_threshold:
+                            errors.append(PerformanceValidationError(
+                                metric_name="response_time_distribution",
+                                rule_id=rule.rule_id,
+                                validation_type=rule.validation_type,
+                                error_category="uneven_response_time_distribution",
+                                error_message=f"Response time variance {response_time_variance:.2f}% across instances exceeds threshold",
+                                actual_value=response_time_variance,
+                                expected_value=f"<= {max_variance_threshold}%",
+                                severity="warning"
+                            ))
+        
+        # Validate session persistence if configured
+        session_persistence = lb_metrics.get("session_persistence", {})
+        if session_persistence:
+            persistence_enabled = session_persistence.get("enabled", False)
+            persistence_type = session_persistence.get("type", "")
+            
+            if persistence_enabled and not persistence_type:
+                errors.append(PerformanceValidationError(
+                    metric_name="session_persistence_type",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_session_persistence_type",
+                    error_message="Session persistence enabled but type not specified",
+                    actual_value=persistence_type,
+                    expected_value="valid persistence type (cookie, ip_hash, etc.)",
+                    severity="warning"
+                ))
+        
+        # Check for failover configuration
+        failover_config = lb_metrics.get("failover", {})
+        if failover_config:
+            failover_enabled = failover_config.get("enabled", False)
+            failover_threshold = failover_config.get("failure_threshold", 0)
+            
+            if failover_enabled and failover_threshold == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="failover_threshold",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_failover_threshold",
+                    error_message="Failover enabled but failure threshold not configured",
+                    actual_value=failover_threshold,
+                    expected_value="> 0",
+                    severity="warning"
+                ))
+        
+        return errors
     
     async def _validate_network_latency(
         self, 
@@ -2166,8 +2404,232 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
         rule: PerformanceValidationRule
     ) -> List[PerformanceValidationError]:
         """Validate network latency"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if metrics are provided
+        if not metrics:
+            errors.append(PerformanceValidationError(
+                metric_name="network_latency",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_metrics_provided",
+                error_message="No metrics provided for network latency validation",
+                actual_value=None,
+                expected_value="metrics dictionary",
+                severity="error"
+            ))
+            return errors
+        
+        # Get network latency metrics
+        latency_metrics = metrics.get("network_latency", {})
+        current_latency = latency_metrics.get("current_latency_ms", 0)
+        latency_history = latency_metrics.get("latency_history_ms", [])
+        latency_percentiles = latency_metrics.get("percentiles", {})
+        connection_metrics = latency_metrics.get("connections", {})
+        
+        # Validate current network latency
+        max_latency_threshold = rule.criteria.get("max_latency_ms", 100)
+        if current_latency > max_latency_threshold:
+            errors.append(PerformanceValidationError(
+                metric_name="current_network_latency",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="high_network_latency",
+                error_message=f"Current network latency {current_latency:.2f}ms exceeds threshold {max_latency_threshold}ms",
+                actual_value=current_latency,
+                expected_value=f"<= {max_latency_threshold}ms",
+                severity="error"
+            ))
+        elif current_latency > max_latency_threshold * 0.8:  # Warning threshold
+            errors.append(PerformanceValidationError(
+                metric_name="current_network_latency",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="elevated_network_latency",
+                error_message=f"Network latency {current_latency:.2f}ms approaching threshold {max_latency_threshold}ms",
+                actual_value=current_latency,
+                expected_value=f"<= {max_latency_threshold * 0.8}ms",
+                severity="warning"
+            ))
+        
+        # Validate latency history if provided
+        if latency_history:
+            if len(latency_history) < 5:
+                errors.append(PerformanceValidationError(
+                    metric_name="latency_history",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_latency_history",
+                    error_message=f"Insufficient latency history data: {len(latency_history)} samples (minimum 5 required)",
+                    actual_value=len(latency_history),
+                    expected_value=">= 5",
+                    severity="warning"
+                ))
+            
+            # Calculate latency statistics
+            import statistics
+            try:
+                avg_latency = statistics.mean(latency_history)
+                std_dev = statistics.stdev(latency_history) if len(latency_history) > 1 else 0
+                
+                # Check average latency threshold
+                max_avg_latency = rule.criteria.get("max_avg_latency_ms", 80)
+                if avg_latency > max_avg_latency:
+                    errors.append(PerformanceValidationError(
+                        metric_name="avg_network_latency",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_avg_latency",
+                        error_message=f"Average network latency {avg_latency:.2f}ms exceeds threshold {max_avg_latency}ms",
+                        actual_value=avg_latency,
+                        expected_value=f"<= {max_avg_latency}ms",
+                        severity="error"
+                    ))
+                
+                # Check latency consistency (lower standard deviation is better)
+                max_std_dev = rule.criteria.get("max_latency_std_dev_ms", 20)
+                if std_dev > max_std_dev:
+                    errors.append(PerformanceValidationError(
+                        metric_name="latency_consistency",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="inconsistent_latency",
+                        error_message=f"Network latency standard deviation {std_dev:.2f}ms exceeds threshold {max_std_dev}ms",
+                        actual_value=std_dev,
+                        expected_value=f"<= {max_std_dev}ms",
+                        severity="warning"
+                    ))
+                
+                # Check for latency trends
+                if len(latency_history) >= 3:
+                    recent_avg = statistics.mean(latency_history[-3:])
+                    older_avg = statistics.mean(latency_history[:3])
+                    
+                    if older_avg > 0:
+                        latency_growth = ((recent_avg - older_avg) / older_avg) * 100
+                        max_growth_threshold = rule.criteria.get("max_latency_growth_percent", 15)
+                        
+                        if latency_growth > max_growth_threshold:
+                            errors.append(PerformanceValidationError(
+                                metric_name="latency_trend",
+                                rule_id=rule.rule_id,
+                                validation_type=rule.validation_type,
+                                error_category="increasing_latency_trend",
+                                error_message=f"Network latency increasing by {latency_growth:.2f}% over time",
+                                actual_value=latency_growth,
+                                expected_value=f"<= {max_growth_threshold}%",
+                                severity="warning"
+                            ))
+                
+            except statistics.StatisticsError as e:
+                errors.append(PerformanceValidationError(
+                    metric_name="latency_statistics",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="latency_statistics_error",
+                    error_message=f"Error calculating latency statistics: {str(e)}",
+                    actual_value=str(e),
+                    expected_value="valid statistics",
+                    severity="error"
+                ))
+        
+        # Validate latency percentiles if provided
+        if latency_percentiles:
+            p50 = latency_percentiles.get("p50", 0)
+            p95 = latency_percentiles.get("p95", 0)
+            p99 = latency_percentiles.get("p99", 0)
+            
+            # Check 95th percentile latency
+            max_p95_latency = rule.criteria.get("max_p95_latency_ms", 150)
+            if p95 > max_p95_latency:
+                errors.append(PerformanceValidationError(
+                    metric_name="p95_network_latency",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_p95_latency",
+                    error_message=f"95th percentile network latency {p95:.2f}ms exceeds threshold {max_p95_latency}ms",
+                    actual_value=p95,
+                    expected_value=f"<= {max_p95_latency}ms",
+                    severity="error"
+                ))
+            
+            # Check 99th percentile latency
+            max_p99_latency = rule.criteria.get("max_p99_latency_ms", 200)
+            if p99 > max_p99_latency:
+                errors.append(PerformanceValidationError(
+                    metric_name="p99_network_latency",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_p99_latency",
+                    error_message=f"99th percentile network latency {p99:.2f}ms exceeds threshold {max_p99_latency}ms",
+                    actual_value=p99,
+                    expected_value=f"<= {max_p99_latency}ms",
+                    severity="warning"
+                ))
+        
+        # Validate connection metrics if provided
+        if connection_metrics:
+            active_connections = connection_metrics.get("active_connections", 0)
+            max_connections = connection_metrics.get("max_connections", 0)
+            connection_errors = connection_metrics.get("connection_errors", 0)
+            
+            # Check connection error rate
+            total_connections = connection_metrics.get("total_connections", 1)
+            if total_connections > 0:
+                error_rate = (connection_errors / total_connections) * 100
+                max_error_rate = rule.criteria.get("max_connection_error_rate", 1)  # percentage
+                
+                if error_rate > max_error_rate:
+                    errors.append(PerformanceValidationError(
+                        metric_name="connection_error_rate",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_connection_error_rate",
+                        error_message=f"Connection error rate {error_rate:.2f}% exceeds threshold {max_error_rate}%",
+                        actual_value=error_rate,
+                        expected_value=f"<= {max_error_rate}%",
+                        severity="error"
+                    ))
+            
+            # Check connection pool utilization
+            if max_connections > 0:
+                utilization = (active_connections / max_connections) * 100
+                max_utilization = rule.criteria.get("max_connection_utilization", 80)  # percentage
+                
+                if utilization > max_utilization:
+                    errors.append(PerformanceValidationError(
+                        metric_name="connection_pool_utilization",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_connection_utilization",
+                        error_message=f"Connection pool utilization {utilization:.2f}% exceeds threshold {max_utilization}%",
+                        actual_value=utilization,
+                        expected_value=f"<= {max_utilization}%",
+                        severity="warning"
+                    ))
+        
+        # Check for network latency SLA compliance if configured
+        sla_config = latency_metrics.get("sla", {})
+        if sla_config:
+            sla_target = sla_config.get("target_latency_ms", 0)
+            sla_compliance = sla_config.get("compliance_percentage", 0)
+            
+            if sla_target > 0 and sla_compliance > 0:
+                min_sla_compliance = rule.criteria.get("min_sla_compliance", 95)  # percentage
+                
+                if sla_compliance < min_sla_compliance:
+                    errors.append(PerformanceValidationError(
+                        metric_name="sla_compliance",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="sla_compliance_failure",
+                        error_message=f"Network latency SLA compliance {sla_compliance:.2f}% below target {min_sla_compliance}% for {sla_target}ms target",
+                        actual_value=sla_compliance,
+                        expected_value=f">= {min_sla_compliance}%",
+                        severity="error"
+                    ))
+        
+        return errors
     
     async def _validate_processing_latency(
         self, 
@@ -2175,8 +2637,267 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
         rule: PerformanceValidationRule
     ) -> List[PerformanceValidationError]:
         """Validate processing latency"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if metrics are provided
+        if not metrics:
+            errors.append(PerformanceValidationError(
+                metric_name="processing_latency",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_metrics_provided",
+                error_message="No metrics provided for processing latency validation",
+                actual_value=None,
+                expected_value="metrics dictionary",
+                severity="error"
+            ))
+            return errors
+        
+        # Get processing latency metrics
+        processing_metrics = metrics.get("processing_latency", {})
+        current_processing_time = processing_metrics.get("current_processing_time_ms", 0)
+        processing_history = processing_metrics.get("processing_history_ms", [])
+        queue_metrics = processing_metrics.get("queue", {})
+        worker_metrics = processing_metrics.get("workers", {})
+        
+        # Validate current processing time
+        max_processing_time = rule.criteria.get("max_processing_time_ms", 200)
+        if current_processing_time > max_processing_time:
+            errors.append(PerformanceValidationError(
+                metric_name="current_processing_latency",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="high_processing_latency",
+                error_message=f"Current processing time {current_processing_time:.2f}ms exceeds threshold {max_processing_time}ms",
+                actual_value=current_processing_time,
+                expected_value=f"<= {max_processing_time}ms",
+                severity="error"
+            ))
+        elif current_processing_time > max_processing_time * 0.8:  # Warning threshold
+            errors.append(PerformanceValidationError(
+                metric_name="current_processing_latency",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="elevated_processing_latency",
+                error_message=f"Processing time {current_processing_time:.2f}ms approaching threshold {max_processing_time}ms",
+                actual_value=current_processing_time,
+                expected_value=f"<= {max_processing_time * 0.8}ms",
+                severity="warning"
+            ))
+        
+        # Validate processing history if provided
+        if processing_history:
+            if len(processing_history) < 5:
+                errors.append(PerformanceValidationError(
+                    metric_name="processing_history",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_processing_history",
+                    error_message=f"Insufficient processing history data: {len(processing_history)} samples (minimum 5 required)",
+                    actual_value=len(processing_history),
+                    expected_value=">= 5",
+                    severity="warning"
+                ))
+            
+            # Calculate processing statistics
+            import statistics
+            try:
+                avg_processing_time = statistics.mean(processing_history)
+                std_dev = statistics.stdev(processing_history) if len(processing_history) > 1 else 0
+                
+                # Check average processing time threshold
+                max_avg_processing_time = rule.criteria.get("max_avg_processing_time_ms", 150)
+                if avg_processing_time > max_avg_processing_time:
+                    errors.append(PerformanceValidationError(
+                        metric_name="avg_processing_latency",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_avg_processing_time",
+                        error_message=f"Average processing time {avg_processing_time:.2f}ms exceeds threshold {max_avg_processing_time}ms",
+                        actual_value=avg_processing_time,
+                        expected_value=f"<= {max_avg_processing_time}ms",
+                        severity="error"
+                    ))
+                
+                # Check processing consistency
+                max_processing_std_dev = rule.criteria.get("max_processing_std_dev_ms", 30)
+                if std_dev > max_processing_std_dev:
+                    errors.append(PerformanceValidationError(
+                        metric_name="processing_consistency",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="inconsistent_processing_time",
+                        error_message=f"Processing time standard deviation {std_dev:.2f}ms exceeds threshold {max_processing_std_dev}ms",
+                        actual_value=std_dev,
+                        expected_value=f"<= {max_processing_std_dev}ms",
+                        severity="warning"
+                    ))
+                
+                # Check for processing bottlenecks (increasing trend)
+                if len(processing_history) >= 3:
+                    recent_avg = statistics.mean(processing_history[-3:])
+                    older_avg = statistics.mean(processing_history[:3])
+                    
+                    if older_avg > 0:
+                        processing_growth = ((recent_avg - older_avg) / older_avg) * 100
+                        max_growth_threshold = rule.criteria.get("max_processing_growth_percent", 20)
+                        
+                        if processing_growth > max_growth_threshold:
+                            errors.append(PerformanceValidationError(
+                                metric_name="processing_trend",
+                                rule_id=rule.rule_id,
+                                validation_type=rule.validation_type,
+                                error_category="increasing_processing_time",
+                                error_message=f"Processing time increasing by {processing_growth:.2f}% over time",
+                                actual_value=processing_growth,
+                                expected_value=f"<= {max_growth_threshold}%",
+                                severity="warning"
+                            ))
+                
+            except statistics.StatisticsError as e:
+                errors.append(PerformanceValidationError(
+                    metric_name="processing_statistics",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="processing_statistics_error",
+                    error_message=f"Error calculating processing statistics: {str(e)}",
+                    actual_value=str(e),
+                    expected_value="valid statistics",
+                    severity="error"
+                ))
+        
+        # Validate queue metrics if provided
+        if queue_metrics:
+            queue_size = queue_metrics.get("current_size", 0)
+            max_queue_size = queue_metrics.get("max_size", 0)
+            queue_wait_time = queue_metrics.get("avg_wait_time_ms", 0)
+            
+            # Check queue size
+            max_allowed_queue_size = rule.criteria.get("max_queue_size", 100)
+            if queue_size > max_allowed_queue_size:
+                errors.append(PerformanceValidationError(
+                    metric_name="queue_size",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="large_queue_size",
+                    error_message=f"Queue size {queue_size} exceeds threshold {max_allowed_queue_size}",
+                    actual_value=queue_size,
+                    expected_value=f"<= {max_allowed_queue_size}",
+                    severity="warning"
+                ))
+            
+            # Check queue utilization
+            if max_queue_size > 0:
+                queue_utilization = (queue_size / max_queue_size) * 100
+                max_queue_utilization = rule.criteria.get("max_queue_utilization", 80)  # percentage
+                
+                if queue_utilization > max_queue_utilization:
+                    errors.append(PerformanceValidationError(
+                        metric_name="queue_utilization",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_queue_utilization",
+                        error_message=f"Queue utilization {queue_utilization:.2f}% exceeds threshold {max_queue_utilization}%",
+                        actual_value=queue_utilization,
+                        expected_value=f"<= {max_queue_utilization}%",
+                        severity="error"
+                    ))
+            
+            # Check queue wait time
+            max_queue_wait_time = rule.criteria.get("max_queue_wait_time_ms", 50)
+            if queue_wait_time > max_queue_wait_time:
+                errors.append(PerformanceValidationError(
+                    metric_name="queue_wait_time",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_queue_wait_time",
+                    error_message=f"Average queue wait time {queue_wait_time:.2f}ms exceeds threshold {max_queue_wait_time}ms",
+                    actual_value=queue_wait_time,
+                    expected_value=f"<= {max_queue_wait_time}ms",
+                    severity="warning"
+                ))
+        
+        # Validate worker metrics if provided
+        if worker_metrics:
+            active_workers = worker_metrics.get("active_workers", 0)
+            total_workers = worker_metrics.get("total_workers", 0)
+            worker_utilization = worker_metrics.get("utilization_percent", 0)
+            
+            # Check worker availability
+            min_active_workers = rule.criteria.get("min_active_workers", 1)
+            if active_workers < min_active_workers:
+                errors.append(PerformanceValidationError(
+                    metric_name="active_workers",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_active_workers",
+                    error_message=f"Active workers {active_workers} below minimum {min_active_workers}",
+                    actual_value=active_workers,
+                    expected_value=f">= {min_active_workers}",
+                    severity="error"
+                ))
+            
+            # Check worker utilization
+            max_worker_utilization = rule.criteria.get("max_worker_utilization", 85)  # percentage
+            if worker_utilization > max_worker_utilization:
+                errors.append(PerformanceValidationError(
+                    metric_name="worker_utilization",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_worker_utilization",
+                    error_message=f"Worker utilization {worker_utilization:.2f}% exceeds threshold {max_worker_utilization}%",
+                    actual_value=worker_utilization,
+                    expected_value=f"<= {max_worker_utilization}%",
+                    severity="warning"
+                ))
+            
+            # Check for worker saturation
+            if total_workers > 0:
+                saturation_ratio = active_workers / total_workers
+                max_saturation_ratio = rule.criteria.get("max_worker_saturation", 0.9)
+                
+                if saturation_ratio > max_saturation_ratio:
+                    errors.append(PerformanceValidationError(
+                        metric_name="worker_saturation",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="worker_saturation",
+                        error_message=f"Worker saturation ratio {saturation_ratio:.2f} exceeds threshold {max_saturation_ratio}",
+                        actual_value=saturation_ratio,
+                        expected_value=f"<= {max_saturation_ratio}",
+                        severity="error"
+                    ))
+        
+        # Check for processing pipeline bottlenecks if configured
+        pipeline_metrics = processing_metrics.get("pipeline", {})
+        if pipeline_metrics:
+            pipeline_stages = pipeline_metrics.get("stages", [])
+            bottleneck_stage = pipeline_metrics.get("bottleneck_stage", "")
+            
+            if pipeline_stages:
+                # Check if any stage is taking significantly longer than others
+                stage_times = [stage.get("processing_time_ms", 0) for stage in pipeline_stages]
+                if stage_times:
+                    max_stage_time = max(stage_times)
+                    avg_stage_time = statistics.mean(stage_times)
+                    
+                    if avg_stage_time > 0:
+                        bottleneck_ratio = max_stage_time / avg_stage_time
+                        max_bottleneck_ratio = rule.criteria.get("max_bottleneck_ratio", 3.0)
+                        
+                        if bottleneck_ratio > max_bottleneck_ratio:
+                            errors.append(PerformanceValidationError(
+                                metric_name="pipeline_bottleneck",
+                                rule_id=rule.rule_id,
+                                validation_type=rule.validation_type,
+                                error_category="pipeline_bottleneck_detected",
+                                error_message=f"Pipeline bottleneck detected: stage ratio {bottleneck_ratio:.2f} exceeds threshold",
+                                actual_value=bottleneck_ratio,
+                                expected_value=f"<= {max_bottleneck_ratio}",
+                                severity="warning"
+                            ))
+        
+        return errors
     
     async def _validate_latency_percentiles(
         self, 
