@@ -1,0 +1,962 @@
+agentic-directory:
+  agentic_core:
+    layer-registry:
+      layer-definitions:
+        planning-registry:
+          plan-phase-group:
+            retrieval-ops:
+              general-operations:
+                query-parsing:
+                  - build_retrieval_query.py
+                  - parse_user_intent.py
+                  - extract_query_params.py
+              utility-operations:
+                payload-preparation:
+                  - prepare_search_payload.py
+                  - format_query_context.py
+                  - build_metadata_filters.py
+            constraint-check-ops:
+              policy-enforcement:
+                safety-screening:
+                  - validate_input_constraints.py
+                  - check_policy_compliance.py
+                  - enforce_boundary_rules.py
+          expand-phase-group:
+            vectorization-ops:
+              embedding-operations:
+                vector-similarity:
+                  - compute_embeddings.py
+                  - normalize_embeddings.py
+                  - calculate_similarity_scores.py
+              semantic-evaluators:
+                score-normalization:
+                  - normalize_vector_scores.py
+                  - apply_score_weights.py
+                  - compute_confidence_metrics.py
+          refine-phase-group:
+            ranking-ops:
+              general-operations:
+                query-parsing:
+                  - rank_candidates.py
+                  - apply_ranking_algorithm.py
+                  - sort_results_by_score.py
+              response-refinement:
+                score-normalization:
+                  - compute_rrf_scores.py
+                  - merge_ranking_signals.py
+                  - calibrate_final_scores.py
+        orchestration-registry:
+          plan-phase-group:
+            retrieval-ops:
+              general-operations:
+                query-parsing:
+                  - orchestrate_plan_retrieval.py
+                  - coordinate_plan_queries.py
+                  - manage_plan_context.py
+          act-phase-group:
+            tool-adapter-ops:
+              general-operations:
+                tool-dispatch:
+                  - dispatch_tool_calls.py
+                  - route_tool_requests.py
+                  - manage_tool_lifecycle.py
+              model-routing:
+                retry-backoff:
+                  - implement_retry_logic.py
+                  - apply_backoff_strategy.py
+                  - handle_tool_failures.py
+          inspect-phase-group:
+            diagnostics-ops:
+              general-operations:
+                state-mutation:
+                  - inspect_execution_state.py
+                  - capture_diagnostic_data.py
+                  - log_inspection_results.py
+        execution-registry:
+          act-phase-group:
+            tool-adapter-ops:
+              general-operations:
+                tool-dispatch:
+                  - execute_tool_action.py
+                  - invoke_external_api.py
+                  - process_tool_response.py
+              utility-operations:
+                payload-preparation:
+                  - prepare_tool_payload.py
+                  - format_api_request.py
+                  - serialize_tool_params.py
+          validate-phase-group:
+            schema-validation-ops:
+              policy-enforcement:
+                safety-screening:
+                  - validate_schema_fields.py
+                  - check_schema_compliance.py
+                  - enforce_data_contracts.py
+              semantic-evaluators:
+                score-normalization:
+                  - validate_output_quality.py
+                  - assess_result_confidence.py
+                  - compute_validation_score.py
+        memory-state-registry:
+          retrieve-phase-group:
+            retrieval-ops:
+              general-operations:
+                query-parsing:
+                  - retrieve_memory_context.py
+                  - query_state_store.py
+                  - fetch_historical_data.py
+              embedding-operations:
+                vector-similarity:
+                  - search_memory_vectors.py
+                  - match_semantic_context.py
+                  - retrieve_similar_states.py
+          aggregate-phase-group:
+            state-management-ops:
+              general-operations:
+                state-mutation:
+                  - aggregate_state_data.py
+                  - merge_memory_contexts.py
+                  - consolidate_state_updates.py
+              utility-operations:
+                payload-preparation:
+                  - prepare_state_snapshot.py
+                  - serialize_memory_state.py
+                  - format_state_payload.py
+        safety-policy-registry:
+          safety-phase-group:
+            constraint-check-ops:
+              policy-enforcement:
+                safety-screening:
+                  - apply_safety_policies.py
+                  - enforce_content_filters.py
+                  - validate_ethical_bounds.py
+              semantic-evaluators:
+                score-normalization:
+                  - assess_safety_risk.py
+                  - compute_risk_score.py
+                  - evaluate_policy_adherence.py
+            cost-budget-ops:
+              general-operations:
+                state-mutation:
+                  - update_budget_state.py
+                  - track_resource_usage.py
+                  - enforce_cost_limits.py
+              utility-operations:
+                retry-backoff:
+                  - manage_rate_limits.py
+                  - apply_throttling_policy.py
+                  - handle_quota_exceeded.py
+  apps:
+    rg-resume-engine:
+      planning-layer:
+        plan-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - parse_job_description.py
+                - extract_resume_requirements.py
+                - build_skill_query.py
+            utility-operations:
+              payload-preparation:
+                - prepare_resume_context.py
+                - format_job_metadata.py
+                - build_search_filters.py
+          constraint-check-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_resume_constraints.py
+                - check_content_policy.py
+                - enforce_privacy_rules.py
+        expand-phase-group:
+          vectorization-ops:
+            embedding-operations:
+              vector-similarity:
+                - embed_job_description.py
+                - embed_resume_sections.py
+                - compute_skill_similarity.py
+            semantic-evaluators:
+              score-normalization:
+                - normalize_skill_scores.py
+                - weight_experience_match.py
+                - calibrate_fit_score.py
+          ranking-ops:
+            general-operations:
+              query-parsing:
+                - rank_resume_sections.py
+                - prioritize_achievements.py
+                - order_skills_by_relevance.py
+        refine-phase-group:
+          ranking-ops:
+            response-refinement:
+              score-normalization:
+                - refine_resume_ranking.py
+                - adjust_section_weights.py
+                - optimize_content_order.py
+          schema-validation-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_resume_schema.py
+                - check_format_compliance.py
+                - enforce_structure_rules.py
+      orchestration-layer:
+        plan-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - orchestrate_resume_planning.py
+                - coordinate_section_generation.py
+                - manage_content_workflow.py
+        act-phase-group:
+          tool-adapter-ops:
+            general-operations:
+              tool-dispatch:
+                - dispatch_resume_tools.py
+                - invoke_generation_service.py
+                - call_formatting_api.py
+            model-routing:
+              retry-backoff:
+                - retry_generation_failures.py
+                - handle_api_timeouts.py
+                - implement_fallback_strategy.py
+        inspect-phase-group:
+          diagnostics-ops:
+            general-operations:
+              state-mutation:
+                - inspect_resume_quality.py
+                - diagnose_generation_issues.py
+                - log_orchestration_metrics.py
+      execution-layer:
+        act-phase-group:
+          tool-adapter-ops:
+            general-operations:
+              tool-dispatch:
+                - execute_resume_generation.py
+                - generate_summary_section.py
+                - create_experience_bullets.py
+            utility-operations:
+              payload-preparation:
+                - prepare_generation_payload.py
+                - format_llm_prompt.py
+                - serialize_resume_data.py
+        validate-phase-group:
+          schema-validation-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_generated_content.py
+                - check_output_quality.py
+                - enforce_length_limits.py
+            semantic-evaluators:
+              score-normalization:
+                - assess_content_relevance.py
+                - evaluate_writing_quality.py
+                - score_resume_effectiveness.py
+      memory-state-layer:
+        retrieve-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - retrieve_resume_history.py
+                - query_past_generations.py
+                - fetch_user_preferences.py
+            embedding-operations:
+              vector-similarity:
+                - search_similar_resumes.py
+                - match_job_patterns.py
+                - find_relevant_templates.py
+        aggregate-phase-group:
+          state-management-ops:
+            general-operations:
+              state-mutation:
+                - aggregate_resume_state.py
+                - merge_generation_history.py
+                - update_user_profile.py
+            utility-operations:
+              payload-preparation:
+                - snapshot_resume_state.py
+                - serialize_generation_context.py
+                - format_state_data.py
+      safety-policy-layer:
+        safety-phase-group:
+          constraint-check-ops:
+            policy-enforcement:
+              safety-screening:
+                - apply_resume_safety_policy.py
+                - filter_inappropriate_content.py
+                - validate_ethical_standards.py
+            semantic-evaluators:
+              score-normalization:
+                - assess_content_risk.py
+                - compute_safety_score.py
+                - evaluate_compliance_level.py
+          cost-budget-ops:
+            general-operations:
+              state-mutation:
+                - track_resume_generation_cost.py
+                - update_token_usage.py
+                - enforce_budget_limits.py
+    lic-outreach-engine:
+      planning-layer:
+        plan-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - parse_outreach_target.py
+                - extract_contact_info.py
+                - build_personalization_query.py
+            utility-operations:
+              payload-preparation:
+                - prepare_outreach_context.py
+                - format_recipient_metadata.py
+                - build_message_filters.py
+          constraint-check-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_outreach_constraints.py
+                - check_spam_policy.py
+                - enforce_contact_rules.py
+        expand-phase-group:
+          vectorization-ops:
+            embedding-operations:
+              vector-similarity:
+                - embed_recipient_profile.py
+                - embed_message_template.py
+                - compute_personalization_match.py
+            semantic-evaluators:
+              score-normalization:
+                - normalize_relevance_scores.py
+                - weight_personalization_factors.py
+                - calibrate_engagement_score.py
+          ranking-ops:
+            general-operations:
+              query-parsing:
+                - rank_message_variants.py
+                - prioritize_talking_points.py
+                - order_call_to_actions.py
+        refine-phase-group:
+          ranking-ops:
+            response-refinement:
+              score-normalization:
+                - refine_message_ranking.py
+                - adjust_tone_weights.py
+                - optimize_message_structure.py
+          schema-validation-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_message_schema.py
+                - check_format_requirements.py
+                - enforce_length_constraints.py
+      orchestration-layer:
+        plan-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - orchestrate_outreach_planning.py
+                - coordinate_message_generation.py
+                - manage_campaign_workflow.py
+        act-phase-group:
+          tool-adapter-ops:
+            general-operations:
+              tool-dispatch:
+                - dispatch_outreach_tools.py
+                - invoke_message_service.py
+                - call_personalization_api.py
+            model-routing:
+              retry-backoff:
+                - retry_generation_failures.py
+                - handle_service_errors.py
+                - implement_fallback_templates.py
+        inspect-phase-group:
+          diagnostics-ops:
+            general-operations:
+              state-mutation:
+                - inspect_message_quality.py
+                - diagnose_personalization_issues.py
+                - log_campaign_metrics.py
+      execution-layer:
+        act-phase-group:
+          tool-adapter-ops:
+            general-operations:
+              tool-dispatch:
+                - execute_message_generation.py
+                - generate_subject_line.py
+                - create_message_body.py
+            utility-operations:
+              payload-preparation:
+                - prepare_message_payload.py
+                - format_personalization_prompt.py
+                - serialize_outreach_data.py
+        validate-phase-group:
+          schema-validation-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_generated_message.py
+                - check_message_quality.py
+                - enforce_tone_guidelines.py
+            semantic-evaluators:
+              score-normalization:
+                - assess_message_relevance.py
+                - evaluate_personalization_quality.py
+                - score_engagement_potential.py
+      memory-state-layer:
+        retrieve-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - retrieve_outreach_history.py
+                - query_past_campaigns.py
+                - fetch_recipient_interactions.py
+            embedding-operations:
+              vector-similarity:
+                - search_similar_messages.py
+                - match_recipient_patterns.py
+                - find_effective_templates.py
+        aggregate-phase-group:
+          state-management-ops:
+            general-operations:
+              state-mutation:
+                - aggregate_campaign_state.py
+                - merge_outreach_history.py
+                - update_recipient_profiles.py
+            utility-operations:
+              payload-preparation:
+                - snapshot_campaign_state.py
+                - serialize_outreach_context.py
+                - format_interaction_data.py
+      safety-policy-layer:
+        safety-phase-group:
+          constraint-check-ops:
+            policy-enforcement:
+              safety-screening:
+                - apply_outreach_safety_policy.py
+                - filter_spam_content.py
+                - validate_contact_ethics.py
+            semantic-evaluators:
+              score-normalization:
+                - assess_message_risk.py
+                - compute_spam_score.py
+                - evaluate_ethical_compliance.py
+          cost-budget-ops:
+            general-operations:
+              state-mutation:
+                - track_outreach_generation_cost.py
+                - update_api_usage.py
+                - enforce_campaign_budget.py
+    shared-agent-core:
+      planning-layer:
+        plan-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - parse_generic_query.py
+                - extract_intent_parameters.py
+                - build_universal_search.py
+            utility-operations:
+              payload-preparation:
+                - prepare_shared_context.py
+                - format_common_metadata.py
+                - build_generic_filters.py
+          constraint-check-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_shared_constraints.py
+                - check_universal_policy.py
+                - enforce_common_rules.py
+        expand-phase-group:
+          vectorization-ops:
+            embedding-operations:
+              vector-similarity:
+                - embed_generic_content.py
+                - compute_universal_similarity.py
+                - calculate_shared_scores.py
+            semantic-evaluators:
+              score-normalization:
+                - normalize_generic_scores.py
+                - apply_universal_weights.py
+                - calibrate_shared_metrics.py
+        refine-phase-group:
+          ranking-ops:
+            response-refinement:
+              score-normalization:
+                - refine_generic_ranking.py
+                - adjust_universal_weights.py
+                - optimize_shared_results.py
+      orchestration-layer:
+        plan-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - orchestrate_shared_planning.py
+                - coordinate_generic_workflow.py
+                - manage_universal_context.py
+        act-phase-group:
+          tool-adapter-ops:
+            general-operations:
+              tool-dispatch:
+                - dispatch_shared_tools.py
+                - invoke_common_services.py
+                - call_universal_apis.py
+            model-routing:
+              retry-backoff:
+                - retry_shared_operations.py
+                - handle_common_failures.py
+                - implement_universal_fallback.py
+        inspect-phase-group:
+          diagnostics-ops:
+            general-operations:
+              state-mutation:
+                - inspect_shared_state.py
+                - diagnose_common_issues.py
+                - log_universal_metrics.py
+      execution-layer:
+        act-phase-group:
+          tool-adapter-ops:
+            general-operations:
+              tool-dispatch:
+                - execute_shared_action.py
+                - perform_generic_operation.py
+                - invoke_universal_tool.py
+            utility-operations:
+              payload-preparation:
+                - prepare_shared_payload.py
+                - format_common_request.py
+                - serialize_generic_params.py
+        validate-phase-group:
+          schema-validation-ops:
+            policy-enforcement:
+              safety-screening:
+                - validate_shared_schema.py
+                - check_universal_compliance.py
+                - enforce_common_contracts.py
+            semantic-evaluators:
+              score-normalization:
+                - assess_generic_quality.py
+                - evaluate_universal_output.py
+                - score_shared_effectiveness.py
+      memory-state-layer:
+        retrieve-phase-group:
+          retrieval-ops:
+            general-operations:
+              query-parsing:
+                - retrieve_shared_memory.py
+                - query_common_state.py
+                - fetch_universal_history.py
+            embedding-operations:
+              vector-similarity:
+                - search_shared_vectors.py
+                - match_generic_patterns.py
+                - find_universal_context.py
+        aggregate-phase-group:
+          state-management-ops:
+            general-operations:
+              state-mutation:
+                - aggregate_shared_state.py
+                - merge_common_contexts.py
+                - update_universal_profile.py
+            utility-operations:
+              payload-preparation:
+                - snapshot_shared_state.py
+                - serialize_common_context.py
+                - format_universal_data.py
+      safety-policy-layer:
+        safety-phase-group:
+          constraint-check-ops:
+            policy-enforcement:
+              safety-screening:
+                - apply_shared_safety_policy.py
+                - filter_universal_content.py
+                - validate_common_ethics.py
+            semantic-evaluators:
+              score-normalization:
+                - assess_shared_risk.py
+                - compute_universal_safety_score.py
+                - evaluate_common_compliance.py
+          cost-budget-ops:
+            general-operations:
+              state-mutation:
+                - track_shared_cost.py
+                - update_universal_usage.py
+                - enforce_common_budget.py
+  config:
+    environment-config:
+      dev-environment:
+        api-configuration:
+          endpoint-settings:
+            connection-management:
+              - dev_api_endpoints.yaml
+              - dev_connection_pools.json
+              - dev_timeout_config.yaml
+        model-configuration:
+          model-registry:
+            provider-settings:
+              - dev_model_providers.yaml
+              - dev_model_routing.json
+              - dev_fallback_config.yaml
+      prod-environment:
+        api-configuration:
+          endpoint-settings:
+            connection-management:
+              - prod_api_endpoints.yaml
+              - prod_connection_pools.json
+              - prod_timeout_config.yaml
+        model-configuration:
+          model-registry:
+            provider-settings:
+              - prod_model_providers.yaml
+              - prod_model_routing.json
+              - prod_fallback_config.yaml
+    layer-config:
+      planning-config:
+        retrieval-settings:
+          query-configuration:
+            parameter-tuning:
+              - planning_retrieval_params.yaml
+              - planning_query_templates.json
+              - planning_filter_rules.yaml
+      orchestration-config:
+        workflow-settings:
+          execution-configuration:
+            flow-management:
+              - orchestration_workflow_defs.yaml
+              - orchestration_state_machine.json
+              - orchestration_transition_rules.yaml
+      execution-config:
+        tool-settings:
+          adapter-configuration:
+            integration-management:
+              - execution_tool_registry.yaml
+              - execution_adapter_config.json
+              - execution_timeout_settings.yaml
+  data:
+    training-data:
+      resume-corpus:
+        skill-taxonomy:
+          technical-skills:
+            programming-languages:
+              - python_skills.json
+              - javascript_skills.json
+              - java_skills.json
+          domain-expertise:
+            industry-knowledge:
+              - finance_domain.json
+              - healthcare_domain.json
+              - technology_domain.json
+      outreach-corpus:
+        message-templates:
+          cold-outreach:
+            introduction-templates:
+              - linkedin_intro_templates.json
+              - email_intro_templates.json
+              - twitter_intro_templates.json
+          follow-up:
+            engagement-templates:
+              - follow_up_sequences.json
+              - reminder_templates.json
+              - thank_you_templates.json
+    validation-data:
+      test-datasets:
+        resume-test-set:
+          job-description-samples:
+            industry-samples:
+              - tech_job_descriptions.json
+              - finance_job_descriptions.json
+              - healthcare_job_descriptions.json
+        outreach-test-set:
+          recipient-profiles:
+            persona-samples:
+              - hiring_manager_profiles.json
+              - recruiter_profiles.json
+              - executive_profiles.json
+  observability:
+    trace:
+      span-collection:
+        execution-traces:
+          layer-spans:
+            operation-tracking:
+              - collect_planning_spans.py
+              - collect_orchestration_spans.py
+              - collect_execution_spans.py
+        distributed-traces:
+          correlation-tracking:
+            trace-propagation:
+              - propagate_trace_context.py
+              - correlate_distributed_spans.py
+              - aggregate_trace_data.py
+    metrics:
+      performance-metrics:
+        latency-tracking:
+          operation-timing:
+            duration-measurement:
+              - measure_operation_latency.py
+              - track_p99_latency.py
+              - compute_latency_percentiles.py
+        throughput-tracking:
+          rate-measurement:
+            volume-monitoring:
+              - measure_request_rate.py
+              - track_operation_throughput.py
+              - compute_qps_metrics.py
+    logs:
+      structured-logging:
+        application-logs:
+          event-logging:
+            log-formatting:
+              - format_json_logs.py
+              - enrich_log_context.py
+              - sanitize_sensitive_data.py
+        audit-logs:
+          compliance-logging:
+            audit-formatting:
+              - log_policy_decisions.py
+              - track_data_access.py
+              - record_safety_events.py
+    cost:
+      token-tracking:
+        usage-monitoring:
+          consumption-tracking:
+            token-counting:
+              - count_input_tokens.py
+              - count_output_tokens.py
+              - aggregate_token_usage.py
+        budget-monitoring:
+          cost-calculation:
+            expense-tracking:
+              - calculate_api_cost.py
+              - track_model_expenses.py
+              - aggregate_budget_usage.py
+  prompt_governance:
+    template-library:
+      resume-templates:
+        section-templates:
+          summary-templates:
+            generation-prompts:
+              - summary_generation_prompt.txt
+              - summary_refinement_prompt.txt
+              - summary_personalization_prompt.txt
+        bullet-templates:
+          achievement-templates:
+            formatting-prompts:
+              - achievement_bullet_prompt.txt
+              - quantified_impact_prompt.txt
+              - action_verb_prompt.txt
+      outreach-templates:
+        message-templates:
+          cold-email-templates:
+            personalization-prompts:
+              - cold_email_intro_prompt.txt
+              - value_proposition_prompt.txt
+              - call_to_action_prompt.txt
+        subject-templates:
+          attention-templates:
+            generation-prompts:
+              - subject_line_generation_prompt.txt
+              - curiosity_hook_prompt.txt
+              - personalization_token_prompt.txt
+    version-control:
+      template-versioning:
+        version-registry:
+          change-tracking:
+            version-management:
+              - track_template_versions.py
+              - manage_template_rollback.py
+              - compare_template_diffs.py
+      prompt-testing:
+        ab-testing:
+          experiment-tracking:
+            variant-management:
+              - create_prompt_variants.py
+              - track_variant_performance.py
+              - analyze_ab_results.py
+  runtime:
+    cache:
+      embedding-cache:
+        vector-storage:
+          cache-management:
+            retrieval-optimization:
+              - cache_embeddings.py
+              - retrieve_cached_vectors.py
+              - invalidate_stale_cache.py
+      response-cache:
+        result-storage:
+          cache-operations:
+            hit-optimization:
+              - cache_llm_responses.py
+              - retrieve_cached_results.py
+              - manage_cache_eviction.py
+    state:
+      session-state:
+        user-sessions:
+          state-persistence:
+            session-management:
+              - create_user_session.py
+              - persist_session_state.py
+              - restore_session_context.py
+      workflow-state:
+        execution-state:
+          state-tracking:
+            progress-management:
+              - track_workflow_progress.py
+              - persist_execution_state.py
+              - resume_interrupted_workflow.py
+    locks:
+      distributed-locks:
+        concurrency-control:
+          lock-management:
+            coordination-primitives:
+              - acquire_distributed_lock.py
+              - release_distributed_lock.py
+              - handle_lock_timeout.py
+  schemas:
+    input-schemas:
+      resume-input:
+        job-description-schema:
+          validation-rules:
+            field-definitions:
+              - job_description_schema.json
+              - job_requirements_schema.json
+              - company_info_schema.json
+      outreach-input:
+        recipient-schema:
+          validation-rules:
+            field-definitions:
+              - recipient_profile_schema.json
+              - contact_info_schema.json
+              - personalization_data_schema.json
+    output-schemas:
+      resume-output:
+        generated-resume-schema:
+          validation-rules:
+            structure-definitions:
+              - resume_document_schema.json
+              - resume_section_schema.json
+              - resume_metadata_schema.json
+      outreach-output:
+        generated-message-schema:
+          validation-rules:
+            structure-definitions:
+              - message_document_schema.json
+              - message_metadata_schema.json
+              - delivery_config_schema.json
+    internal-schemas:
+      state-schemas:
+        workflow-state-schema:
+          validation-rules:
+            state-definitions:
+              - workflow_state_schema.json
+              - execution_context_schema.json
+              - checkpoint_schema.json
+  scripts:
+    deployment-scripts:
+      infrastructure-deployment:
+        cloud-provisioning:
+          resource-creation:
+            provisioning-automation:
+              - provision_compute_resources.py
+              - setup_networking.py
+              - configure_storage.py
+      application-deployment:
+        service-deployment:
+          container-orchestration:
+            deployment-automation:
+              - build_docker_images.py
+              - deploy_kubernetes_manifests.py
+              - configure_load_balancers.py
+    validation-scripts:
+      schema-validation:
+        input-validation:
+          validation-execution:
+            validation-automation:
+              - validate_resume_inputs.py
+              - validate_outreach_inputs.py
+              - validate_config_files.py
+      structure-validation:
+        directory-validation:
+          structure-checking:
+            validation-automation:
+              - validate_directory_structure.py
+              - check_layer_compliance.py
+              - verify_file_organization.py
+    migration-scripts:
+      data-migration:
+        schema-migration:
+          migration-execution:
+            migration-automation:
+              - migrate_resume_data.py
+              - migrate_outreach_data.py
+              - migrate_state_data.py
+  tests:
+    unit-tests:
+      planning-tests:
+        retrieval-tests:
+          query-parsing-tests:
+            test-execution:
+              - test_parse_job_description.py
+              - test_extract_resume_requirements.py
+              - test_build_skill_query.py
+        vectorization-tests:
+          embedding-tests:
+            test-execution:
+              - test_compute_embeddings.py
+              - test_normalize_embeddings.py
+              - test_calculate_similarity_scores.py
+      orchestration-tests:
+        workflow-tests:
+          coordination-tests:
+            test-execution:
+              - test_orchestrate_planning.py
+              - test_coordinate_execution.py
+              - test_manage_workflow.py
+        tool-dispatch-tests:
+          adapter-tests:
+            test-execution:
+              - test_dispatch_tool_calls.py
+              - test_route_tool_requests.py
+              - test_handle_tool_failures.py
+      execution-tests:
+        action-tests:
+          generation-tests:
+            test-execution:
+              - test_execute_resume_generation.py
+              - test_generate_summary_section.py
+              - test_create_experience_bullets.py
+        validation-tests:
+          schema-tests:
+            test-execution:
+              - test_validate_schema_fields.py
+              - test_check_schema_compliance.py
+              - test_enforce_data_contracts.py
+    integration-tests:
+      end-to-end-tests:
+        resume-workflow-tests:
+          full-pipeline-tests:
+            test-execution:
+              - test_resume_generation_pipeline.py
+              - test_resume_personalization_flow.py
+              - test_resume_validation_workflow.py
+        outreach-workflow-tests:
+          full-pipeline-tests:
+            test-execution:
+              - test_outreach_generation_pipeline.py
+              - test_message_personalization_flow.py
+              - test_outreach_validation_workflow.py
+      layer-integration-tests:
+        cross-layer-tests:
+          interaction-tests:
+            test-execution:
+              - test_planning_orchestration_integration.py
+              - test_orchestration_execution_integration.py
+              - test_execution_memory_integration.py
+    performance-tests:
+      load-tests:
+        throughput-tests:
+          stress-testing:
+            test-execution:
+              - test_resume_generation_throughput.py
+              - test_outreach_generation_throughput.py
+              - test_concurrent_request_handling.py
+      latency-tests:
+        response-time-tests:
+          performance-benchmarking:
+            test-execution:
+              - test_planning_layer_latency.py
+              - test_orchestration_layer_latency.py
+              - test_execution_layer_latency.py
