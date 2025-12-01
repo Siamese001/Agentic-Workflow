@@ -480,7 +480,18 @@ class RegistryPayloadPreparer:
 
 class SecurityError(Exception):
     """Security violation exception"""
-    pass
+    
+    def __init__(self, message: str, policy_violation: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.policy_violation = policy_violation
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        if self.policy_violation:
+            return f"[SAFETY_VIOLATION: {self.policy_violation}] {base_msg}"
+        return f"[SAFETY_ERROR] {base_msg}"
 
 # L5 Compliance and Integration
 def validate_l5_compliance() -> Dict[str, bool]:

@@ -1442,12 +1442,36 @@ class LayerCompatibilityValidator(LayerCompatibilityValidatorInterface):
 
 class SafetyError(Exception):
     """Raised when compatibility validation violates safety policies"""
-    pass
+    
+    def __init__(self, message: str, policy_violation: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.policy_violation = policy_violation
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        if self.policy_violation:
+            return f"[SAFETY_VIOLATION: {self.policy_violation}] {base_msg}"
+        return f"[SAFETY_ERROR] {base_msg}"
 
 
 class LayerCompatibilityValidationError(Exception):
     """Raised for general layer compatibility validation errors"""
-    pass
+    
+    def __init__(self, message: str, error_code: Optional[str] = None, operation: Optional[str] = None, compatibility_type: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.error_code = error_code or "LAYER_COMPATIBILITY_VALIDATION_ERROR"
+        self.operation = operation
+        self.compatibility_type = compatibility_type
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        op_info = f" in {self.operation}" if self.operation else ""
+        type_info = f" for {self.compatibility_type}" if self.compatibility_type else ""
+        return f"[{self.error_code}]{op_info}{type_info} {base_msg}"
 
 
 # ============================================================================
