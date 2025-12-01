@@ -8,8 +8,8 @@
     "tokens": [
       "definitions",
       "expand",
-      "planner",
-      "goal"
+      "goal",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -21,9 +21,9 @@
     "l7_file": "error_handling.py",
     "tokens": [
       "error",
+      "handling",
       "expand",
-      "planner",
-      "handling"
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -34,10 +34,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "plan_optimizer.py",
     "tokens": [
-      "planner",
-      "rank",
+      "plan",
       "optimizer",
-      "plan"
+      "planner",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -48,10 +48,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "graph_builder.py",
     "tokens": [
-      "planner",
-      "rank",
+      "builder",
       "graph",
-      "builder"
+      "planner",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -62,8 +62,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "scoring.py",
     "tokens": [
-      "planner",
       "scoring",
+      "planner",
       "aggregate"
     ],
     "is_synthetic": true
@@ -89,10 +89,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "format_constraints.py",
     "tokens": [
-      "planner",
-      "format",
       "inspect",
-      "constraints"
+      "constraints",
+      "format",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -103,9 +103,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "versioning.py",
     "tokens": [
+      "inspect",
       "versioning",
-      "planner",
-      "inspect"
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -116,10 +116,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "hybrid_fuser.py",
     "tokens": [
-      "retry",
-      "planner",
       "fuser",
-      "hybrid"
+      "retry",
+      "hybrid",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -131,9 +131,9 @@
     "l7_file": "jailbreak_patterns.yaml",
     "tokens": [
       "patterns",
-      "planner",
       "act",
-      "jailbreak"
+      "jailbreak",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -145,9 +145,9 @@
     "l7_file": "schema_helpers.py",
     "tokens": [
       "schema",
-      "validate",
+      "helpers",
       "planner",
-      "helpers"
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -159,9 +159,9 @@
     "l7_file": "find_in_file.py",
     "tokens": [
       "find",
+      "refine",
       "planner",
-      "file",
-      "refine"
+      "file"
     ],
     "is_synthetic": true
   },
@@ -172,10 +172,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "goal_constraints.py",
     "tokens": [
+      "executor",
       "goal",
-      "constraints",
       "refine",
-      "executor"
+      "constraints"
     ],
     "is_synthetic": true
   },
@@ -186,9 +186,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "parsing.py",
     "tokens": [
-      "parsing",
+      "executor",
       "refine",
-      "executor"
+      "parsing"
     ],
     "is_synthetic": true
   },
@@ -199,11 +199,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "plan_safety_checks.py",
     "tokens": [
-      "plan",
-      "executor",
-      "expand",
+      "safety",
       "checks",
-      "safety"
+      "expand",
+      "plan",
+      "executor"
     ],
     "is_synthetic": true
   },
@@ -214,10 +214,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "graph_optimizer.py",
     "tokens": [
-      "expand",
       "graph",
-      "optimizer",
-      "executor"
+      "expand",
+      "executor",
+      "optimizer"
     ],
     "is_synthetic": true
   },
@@ -228,9 +228,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "classification.py",
     "tokens": [
-      "rank",
+      "executor",
       "classification",
-      "executor"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -243,8 +243,8 @@
     "tokens": [
       "controller",
       "escalate",
-      "rank",
-      "executor"
+      "executor",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -255,10 +255,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "answer_templates.yaml",
     "tokens": [
-      "aggregate",
-      "answer",
       "templates",
-      "executor"
+      "answer",
+      "executor",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -269,10 +269,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "execution_context.py",
     "tokens": [
-      "aggregate",
+      "executor",
       "execution",
       "context",
-      "executor"
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -283,9 +283,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "scoring_models.py",
     "tokens": [
-      "models",
       "inspect",
       "scoring",
+      "models",
       "executor"
     ],
     "is_synthetic": true
@@ -298,9 +298,9 @@
     "l7_file": "rule_engine.py",
     "tokens": [
       "retry",
+      "executor",
       "engine",
-      "rule",
-      "executor"
+      "rule"
     ],
     "is_synthetic": true
   },
@@ -311,10 +311,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "context_pruning.py",
     "tokens": [
-      "pruning",
-      "context",
       "act",
-      "executor"
+      "executor",
+      "pruning",
+      "context"
     ],
     "is_synthetic": true
   },
@@ -325,10 +325,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "summarization_utils.py",
     "tokens": [
-      "validate",
-      "utils",
       "summarization",
-      "executor"
+      "executor",
+      "utils",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -339,9 +339,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "goal_templates.yaml",
     "tokens": [
+      "templates",
       "observer",
       "goal",
-      "templates",
       "validate"
     ],
     "is_synthetic": true
@@ -353,8 +353,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "serialization.py",
     "tokens": [
-      "serialization",
       "observer",
+      "serialization",
       "validate"
     ],
     "is_synthetic": true
@@ -368,8 +368,8 @@
     "tokens": [
       "task",
       "observer",
-      "segmentation",
-      "refine"
+      "refine",
+      "segmentation"
     ],
     "is_synthetic": true
   },
@@ -381,8 +381,8 @@
     "l7_file": "graph_validator.py",
     "tokens": [
       "validator",
-      "observer",
       "graph",
+      "observer",
       "refine"
     ],
     "is_synthetic": true
@@ -396,8 +396,8 @@
     "tokens": [
       "observer",
       "expand",
-      "extraction",
-      "intent"
+      "intent",
+      "extraction"
     ],
     "is_synthetic": true
   },
@@ -422,9 +422,9 @@
     "l7_file": "verification_rules.py",
     "tokens": [
       "observer",
+      "rules",
       "verification",
-      "rank",
-      "rules"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -436,9 +436,9 @@
     "l7_file": "thread_state.py",
     "tokens": [
       "observer",
-      "rank",
       "thread",
-      "state"
+      "state",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -449,9 +449,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "vector_db_selection.py",
     "tokens": [
-      "vector",
       "observer",
       "selection",
+      "vector",
       "aggregate"
     ],
     "is_synthetic": true
@@ -463,10 +463,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "policy_map.yaml",
     "tokens": [
-      "observer",
-      "map",
       "inspect",
-      "policy"
+      "observer",
+      "policy",
+      "map"
     ],
     "is_synthetic": true
   },
@@ -477,10 +477,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "scoring_utils.py",
     "tokens": [
-      "observer",
-      "utils",
       "scoring",
-      "retry"
+      "observer",
+      "retry",
+      "utils"
     ],
     "is_synthetic": true
   },
@@ -492,9 +492,9 @@
     "l7_file": "openai_client.py",
     "tokens": [
       "observer",
-      "openai",
       "act",
-      "client"
+      "client",
+      "openai"
     ],
     "is_synthetic": true
   },
@@ -505,10 +505,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "signal_types.py",
     "tokens": [
-      "retriever",
-      "signal",
+      "act",
       "types",
-      "act"
+      "signal",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -519,9 +519,9 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "io_limits.py",
     "tokens": [
-      "retriever",
+      "act",
       "limits",
-      "act"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -533,10 +533,10 @@
     "l7_file": "task_graph_builder.py",
     "tokens": [
       "graph",
-      "builder",
-      "retriever",
+      "task",
       "validate",
-      "task"
+      "retriever",
+      "builder"
     ],
     "is_synthetic": true
   },
@@ -547,10 +547,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "think_step.py",
     "tokens": [
-      "retriever",
+      "step",
       "validate",
       "think",
-      "step"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -561,9 +561,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "disambiguation.py",
     "tokens": [
-      "retriever",
       "disambiguation",
-      "refine"
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -574,9 +574,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "summarizer.py",
     "tokens": [
-      "retriever",
       "summarizer",
-      "refine"
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -587,10 +587,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "expansion_hyde.py",
     "tokens": [
-      "retriever",
-      "expand",
       "hyde",
-      "expansion"
+      "expand",
+      "expansion",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -601,9 +601,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "persistence.py",
     "tokens": [
-      "retriever",
       "expand",
-      "persistence"
+      "persistence",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -614,10 +614,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "cross_db_balancing.py",
     "tokens": [
-      "retriever",
       "rank",
       "cross",
-      "balancing"
+      "balancing",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -628,10 +628,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "severity_levels.yaml",
     "tokens": [
-      "retriever",
-      "levels",
       "severity",
-      "aggregate"
+      "aggregate",
+      "levels",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -642,10 +642,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "run_search.py",
     "tokens": [
-      "retriever",
-      "run",
+      "inspect",
       "search",
-      "inspect"
+      "run",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -656,10 +656,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "anthropic_client.py",
     "tokens": [
-      "retriever",
       "retry",
+      "anthropic",
       "client",
-      "anthropic"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -684,10 +684,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "plan_node.py",
     "tokens": [
-      "retry",
-      "node",
       "plan",
-      "router"
+      "retry",
+      "router",
+      "node"
     ],
     "is_synthetic": true
   },
@@ -698,8 +698,8 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "task_normalization.py",
     "tokens": [
-      "task",
       "normalization",
+      "task",
       "act",
       "router"
     ],
@@ -725,10 +725,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "rag_blueprints.py",
     "tokens": [
-      "validate",
       "rag",
       "blueprints",
-      "router"
+      "router",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -739,10 +739,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "eviction_policy.py",
     "tokens": [
-      "validate",
-      "eviction",
       "policy",
-      "router"
+      "eviction",
+      "router",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -753,8 +753,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "query_rewriting.py",
     "tokens": [
-      "query",
       "rewriting",
+      "query",
       "refine",
       "router"
     ],
@@ -768,9 +768,9 @@
     "l7_file": "retrieval_budgeting.py",
     "tokens": [
       "expand",
-      "budgeting",
       "retrieval",
-      "router"
+      "router",
+      "budgeting"
     ],
     "is_synthetic": true
   },
@@ -781,9 +781,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "redact.py",
     "tokens": [
-      "rank",
       "redact",
-      "router"
+      "router",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -794,9 +794,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "scrape.py",
     "tokens": [
-      "aggregate",
       "scrape",
-      "router"
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -807,10 +807,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "retry_backoff.py",
     "tokens": [
-      "retry",
-      "backoff",
       "inspect",
-      "router"
+      "retry",
+      "router",
+      "backoff"
     ],
     "is_synthetic": true
   },
@@ -821,11 +821,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "signal_weights.yaml",
     "tokens": [
-      "inspect",
-      "signal",
-      "budget",
+      "weights",
       "manager",
-      "weights"
+      "budget",
+      "inspect",
+      "signal"
     ],
     "is_synthetic": true
   },
@@ -836,11 +836,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "act_node.py",
     "tokens": [
-      "node",
-      "inspect",
       "act",
+      "manager",
       "budget",
-      "manager"
+      "inspect",
+      "node"
     ],
     "is_synthetic": true
   },
@@ -851,10 +851,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "validator.py",
     "tokens": [
-      "validator",
-      "retry",
       "budget",
-      "manager"
+      "retry",
+      "manager",
+      "validator"
     ],
     "is_synthetic": true
   },
@@ -865,11 +865,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "observe_step.py",
     "tokens": [
-      "observe",
       "step",
       "retry",
+      "manager",
       "budget",
-      "manager"
+      "observe"
     ],
     "is_synthetic": true
   },
@@ -880,11 +880,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ranking_strategies.py",
     "tokens": [
-      "ranking",
       "strategies",
       "act",
+      "manager",
       "budget",
-      "manager"
+      "ranking"
     ],
     "is_synthetic": true
   },
@@ -895,11 +895,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "embeddings_store.py",
     "tokens": [
-      "store",
-      "act",
       "embeddings",
+      "act",
+      "manager",
       "budget",
-      "manager"
+      "store"
     ],
     "is_synthetic": true
   },
@@ -910,11 +910,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "signal_weighting.py",
     "tokens": [
-      "validate",
       "weighting",
-      "signal",
+      "manager",
+      "validate",
       "budget",
-      "manager"
+      "signal"
     ],
     "is_synthetic": true
   },
@@ -925,8 +925,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "pii.py",
     "tokens": [
-      "pii",
       "budget",
+      "pii",
       "manager",
       "refine"
     ],
@@ -939,8 +939,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "rephrase.py",
     "tokens": [
-      "expand",
       "budget",
+      "expand",
       "manager",
       "rephrase"
     ],
@@ -953,11 +953,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "extraction_utils.py",
     "tokens": [
-      "extraction",
-      "budget",
-      "manager",
       "rank",
-      "utils"
+      "manager",
+      "budget",
+      "utils",
+      "extraction"
     ],
     "is_synthetic": true
   },
@@ -968,10 +968,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "tool_invocation.py",
     "tokens": [
-      "invocation",
-      "budget",
-      "manager",
       "tool",
+      "invocation",
+      "manager",
+      "budget",
       "aggregate"
     ],
     "is_synthetic": true
@@ -983,8 +983,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "plan_schema.py",
     "tokens": [
-      "plan",
       "safety",
+      "plan",
       "schema",
       "guard",
       "aggregate"
@@ -998,11 +998,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "observe_node.py",
     "tokens": [
-      "observe",
       "safety",
-      "node",
       "guard",
-      "aggregate"
+      "aggregate",
+      "node",
+      "observe"
     ],
     "is_synthetic": true
   },
@@ -1013,11 +1013,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "redundancy_pruning.py",
     "tokens": [
-      "inspect",
-      "redundancy",
       "pruning",
+      "safety",
       "guard",
-      "safety"
+      "redundancy",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -1028,11 +1028,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "loop_controller.py",
     "tokens": [
-      "inspect",
-      "controller",
+      "safety",
       "loop",
+      "controller",
       "guard",
-      "safety"
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -1043,11 +1043,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "fallback_routes.yaml",
     "tokens": [
+      "safety",
       "routes",
-      "fallback",
       "retry",
-      "guard",
-      "safety"
+      "fallback",
+      "guard"
     ],
     "is_synthetic": true
   },
@@ -1058,11 +1058,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "document_index.py",
     "tokens": [
+      "safety",
       "index",
-      "document",
       "retry",
       "guard",
-      "safety"
+      "document"
     ],
     "is_synthetic": true
   },
@@ -1087,10 +1087,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "toxicity.py",
     "tokens": [
-      "validate",
       "guard",
       "toxicity",
-      "safety"
+      "safety",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -1101,8 +1101,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "block.py",
     "tokens": [
-      "guard",
       "block",
+      "guard",
       "refine",
       "safety"
     ],
@@ -1115,11 +1115,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "load_file.py",
     "tokens": [
-      "load",
+      "safety",
       "expand",
-      "file",
+      "load",
       "guard",
-      "safety"
+      "file"
     ],
     "is_synthetic": true
   },
@@ -1130,10 +1130,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "validation.py",
     "tokens": [
-      "validation",
       "guard",
-      "rank",
-      "safety"
+      "validation",
+      "safety",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -1144,8 +1144,8 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "pii_filter.py",
     "tokens": [
-      "pii",
       "filter",
+      "pii",
       "refine",
       "router"
     ],
@@ -1158,11 +1158,11 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "violence_filter.py",
     "tokens": [
-      "violence",
-      "validate",
       "filter",
+      "manager",
+      "validate",
       "budget",
-      "manager"
+      "violence"
     ],
     "is_synthetic": true
   },
@@ -1173,11 +1173,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "policy_classifier.py",
     "tokens": [
-      "classifier",
-      "act",
       "policy",
+      "safety",
+      "act",
       "guard",
-      "safety"
+      "classifier"
     ],
     "is_synthetic": true
   },
@@ -1189,9 +1189,9 @@
     "l7_file": "enforcement_engine.py",
     "tokens": [
       "retry",
-      "planner",
+      "enforcement",
       "engine",
-      "enforcement"
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -1202,10 +1202,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "safety_events.py",
     "tokens": [
-      "events",
-      "safety",
       "inspect",
-      "executor"
+      "events",
+      "executor",
+      "safety"
     ],
     "is_synthetic": true
   },
@@ -1216,9 +1216,9 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "runtime_blocks.py",
     "tokens": [
-      "blocks",
-      "observer",
       "runtime",
+      "observer",
+      "blocks",
       "aggregate"
     ],
     "is_synthetic": true
@@ -1230,11 +1230,11 @@
     "l6_ops": "tool-adapter-ops",
     "l7_file": "logging.py",
     "tokens": [
+      "tool",
       "logging",
-      "adapter",
-      "retriever",
       "rank",
-      "tool"
+      "adapter",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -1245,12 +1245,12 @@
     "l6_ops": "backoff-policy-ops",
     "l7_file": "trace_capture.py",
     "tokens": [
-      "backoff",
+      "policy",
+      "trace",
       "capture",
       "expand",
-      "policy",
       "router",
-      "trace"
+      "backoff"
     ],
     "is_synthetic": true
   },
@@ -1261,12 +1261,12 @@
     "l6_ops": "diagnostics-ops",
     "l7_file": "safety_reports.py",
     "tokens": [
-      "diagnostics",
-      "refine",
+      "safety",
       "reports",
-      "budget",
       "manager",
-      "safety"
+      "budget",
+      "refine",
+      "diagnostics"
     ],
     "is_synthetic": true
   },
@@ -1277,11 +1277,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "generate_resume.py      # LEVEL 5",
     "tokens": [
+      "safety",
       "validate",
-      "generate",
-      "resume.py      # level 5",
       "guard",
-      "safety"
+      "resume.py      # level 5",
+      "generate"
     ],
     "is_synthetic": true
   },
@@ -1293,8 +1293,8 @@
     "l7_file": "router.py                   # LEVEL 4",
     "tokens": [
       "guard",
-      "router.py                   # level 4",
       "refine",
+      "router.py                   # level 4",
       "safety"
     ],
     "is_synthetic": true
@@ -1306,11 +1306,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "resume_pipeline.py          # LEVEL 4",
     "tokens": [
+      "safety",
       "pipeline.py          # level 4",
       "expand",
       "resume",
-      "guard",
-      "safety"
+      "guard"
     ],
     "is_synthetic": true
   },
@@ -1321,12 +1321,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "run_resume_engine.py            # LEVEL 3",
     "tokens": [
+      "safety",
       "run",
-      "resume",
-      "engine.py            # level 3",
-      "guard",
       "rank",
-      "safety"
+      "resume",
+      "guard",
+      "engine.py            # level 3"
     ],
     "is_synthetic": true
   },
@@ -1337,12 +1337,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_error_recovery.py      # LEVEL 4",
     "tokens": [
-      "recovery.py      # level 4",
       "safety",
-      "test",
+      "recovery.py      # level 4",
       "error",
       "guard",
-      "aggregate"
+      "aggregate",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -1353,11 +1353,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_generator.py       # LEVEL 4",
     "tokens": [
+      "safety",
       "outreach",
-      "inspect",
       "guard",
-      "generator.py       # level 4",
-      "safety"
+      "inspect",
+      "generator.py       # level 4"
     ],
     "is_synthetic": true
   },
@@ -1368,12 +1368,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "email_send_worker.py            # LEVEL 3",
     "tokens": [
+      "safety",
       "send",
-      "email",
-      "worker.py            # level 3",
       "retry",
       "guard",
-      "safety"
+      "email",
+      "worker.py            # level 3"
     ],
     "is_synthetic": true
   },
@@ -1384,10 +1384,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "validate_resume.py",
     "tokens": [
-      "validate",
-      "planner",
+      "act",
       "resume",
-      "act"
+      "planner",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -1399,9 +1399,9 @@
     "l7_file": "resume_builder.py           # LEVEL 4",
     "tokens": [
       "builder.py           # level 4",
-      "validate",
+      "resume",
       "planner",
-      "resume"
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -1412,10 +1412,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "validation_pipeline.py      # LEVEL 4",
     "tokens": [
-      "validation",
-      "planner",
       "pipeline.py      # level 4",
-      "refine"
+      "validation",
+      "refine",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -1427,8 +1427,8 @@
     "l7_file": "debug_tools.py                  # LEVEL 3",
     "tokens": [
       "expand",
-      "planner",
       "debug",
+      "planner",
       "tools.py                  # level 3"
     ],
     "is_synthetic": true
@@ -1440,10 +1440,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "send_outreach.py        # LEVEL 5",
     "tokens": [
-      "planner",
-      "rank",
+      "send",
       "outreach.py        # level 5",
-      "send"
+      "planner",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -1455,8 +1455,8 @@
     "l7_file": "personalization_engine.py   # LEVEL 4",
     "tokens": [
       "engine.py   # level 4",
-      "planner",
       "personalization",
+      "planner",
       "aggregate"
     ],
     "is_synthetic": true
@@ -1470,9 +1470,9 @@
     "tokens": [
       "run",
       "outreach",
-      "inspect",
       "engine.py          # level 3",
-      "planner"
+      "planner",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -1496,10 +1496,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ats_optimizer.py            # LEVEL 4",
     "tokens": [
-      "optimizer.py            # level 4",
-      "ats",
       "act",
-      "executor"
+      "executor",
+      "ats",
+      "optimizer.py            # level 4"
     ],
     "is_synthetic": true
   },
@@ -1510,9 +1510,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "formatting.py               # LEVEL 4",
     "tokens": [
-      "validate",
       "formatting.py               # level 4",
-      "executor"
+      "executor",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -1523,11 +1523,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_resume_builder.py      # LEVEL 4",
     "tokens": [
-      "test",
       "builder.py      # level 4",
-      "executor",
       "resume",
-      "refine"
+      "executor",
+      "refine",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -1540,8 +1540,8 @@
     "tokens": [
       "message",
       "expand",
-      "preview",
-      "executor"
+      "executor",
+      "preview"
     ],
     "is_synthetic": true
   },
@@ -1552,10 +1552,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "contact_enricher.py         # LEVEL 4",
     "tokens": [
-      "enricher.py         # level 4",
-      "rank",
       "contact",
-      "executor"
+      "executor",
+      "enricher.py         # level 4",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -1567,10 +1567,10 @@
     "l7_file": "test_message_planner.py     # LEVEL 4",
     "tokens": [
       "message",
-      "test",
-      "planner.py     # level 4",
+      "aggregate",
       "executor",
-      "aggregate"
+      "test",
+      "planner.py     # level 4"
     ],
     "is_synthetic": true
   },
@@ -1581,9 +1581,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "resume_request.json      # LEVEL 5",
     "tokens": [
+      "inspect",
       "observer",
       "resume",
-      "inspect",
       "request.json      # level 5"
     ],
     "is_synthetic": true
@@ -1595,10 +1595,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "skill_expander.py           # LEVEL 4",
     "tokens": [
-      "skill",
       "observer",
-      "expander.py           # level 4",
-      "retry"
+      "retry",
+      "skill",
+      "expander.py           # level 4"
     ],
     "is_synthetic": true
   },
@@ -1609,8 +1609,8 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "scoring.py                  # LEVEL 4",
     "tokens": [
-      "observer",
       "scoring.py                  # level 4",
+      "observer",
       "act"
     ],
     "is_synthetic": true
@@ -1622,11 +1622,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_skill_expander.py      # LEVEL 4",
     "tokens": [
-      "test",
+      "expander.py      # level 4",
       "validate",
-      "skill",
+      "test",
       "observer",
-      "expander.py      # level 4"
+      "skill"
     ],
     "is_synthetic": true
   },
@@ -1637,8 +1637,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_request.json   # LEVEL 5",
     "tokens": [
-      "observer",
       "outreach",
+      "observer",
       "request.json   # level 5",
       "refine"
     ],
@@ -1651,9 +1651,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "profile_analyzer.py         # LEVEL 4",
     "tokens": [
+      "analyzer.py         # level 4",
       "observer",
       "expand",
-      "analyzer.py         # level 4",
       "profile"
     ],
     "is_synthetic": true
@@ -1665,11 +1665,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_outreach_generator.py  # LEVEL 4",
     "tokens": [
-      "outreach",
-      "generator.py  # level 4",
+      "rank",
       "test",
+      "outreach",
       "observer",
-      "rank"
+      "generator.py  # level 4"
     ],
     "is_synthetic": true
   },
@@ -1680,10 +1680,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "resume_response.json",
     "tokens": [
-      "retriever",
+      "aggregate",
       "response",
       "resume",
-      "aggregate"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -1694,10 +1694,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "job_alignment.py            # LEVEL 4",
     "tokens": [
-      "retriever",
       "inspect",
       "job",
-      "alignment.py            # level 4"
+      "alignment.py            # level 4",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -1708,11 +1708,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "job_ingest_worker.py            # LEVEL 3",
     "tokens": [
-      "ingest",
-      "retriever",
-      "worker.py            # level 3",
+      "job",
       "retry",
-      "job"
+      "worker.py            # level 3",
+      "retriever",
+      "ingest"
     ],
     "is_synthetic": true
   },
@@ -1723,11 +1723,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_resume_pipeline.py     # LEVEL 4",
     "tokens": [
-      "retriever",
-      "test",
       "act",
       "resume",
-      "pipeline.py     # level 4"
+      "retriever",
+      "pipeline.py     # level 4",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -1738,10 +1738,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_response.json",
     "tokens": [
-      "retriever",
-      "validate",
       "outreach",
-      "response"
+      "response",
+      "validate",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -1752,10 +1752,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_pipeline.py        # LEVEL 4",
     "tokens": [
-      "retriever",
       "outreach",
       "pipeline.py        # level 4",
-      "refine"
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -1766,11 +1766,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_outreach_pipeline.py   # LEVEL 4",
     "tokens": [
-      "outreach",
+      "pipeline.py   # level 4",
+      "expand",
       "retriever",
       "test",
-      "expand",
-      "pipeline.py   # level 4"
+      "outreach"
     ],
     "is_synthetic": true
   },
@@ -1781,9 +1781,9 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "auth.py                 # LEVEL 5",
     "tokens": [
-      "rank",
       "auth.py                 # level 5",
-      "router"
+      "router",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -1795,9 +1795,9 @@
     "l7_file": "section_generator.py        # LEVEL 4",
     "tokens": [
       "section",
-      "aggregate",
       "generator.py        # level 4",
-      "router"
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -1808,11 +1808,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "resume_generate_worker.py       # LEVEL 3",
     "tokens": [
-      "inspect",
-      "generate",
-      "resume",
       "worker.py       # level 3",
-      "router"
+      "resume",
+      "router",
+      "inspect",
+      "generate"
     ],
     "is_synthetic": true
   },
@@ -1823,11 +1823,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_api_endpoints.py       # LEVEL 4",
     "tokens": [
-      "test",
-      "api",
-      "endpoints.py       # level 4",
+      "retry",
       "router",
-      "retry"
+      "endpoints.py       # level 4",
+      "test",
+      "api"
     ],
     "is_synthetic": true
   },
@@ -1839,9 +1839,9 @@
     "l7_file": "message_planner.py          # LEVEL 4",
     "tokens": [
       "message",
-      "planner.py          # level 4",
       "act",
-      "router"
+      "router",
+      "planner.py          # level 4"
     ],
     "is_synthetic": true
   },
@@ -1852,10 +1852,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "compliance_pipeline.py      # LEVEL 4",
     "tokens": [
-      "validate",
-      "pipeline.py      # level 4",
       "compliance",
-      "router"
+      "pipeline.py      # level 4",
+      "router",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -1866,12 +1866,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_full_outreach_flow.py  # LEVEL 4",
     "tokens": [
-      "outreach",
-      "test",
       "full",
-      "flow.py  # level 4",
       "router",
-      "refine"
+      "flow.py  # level 4",
+      "refine",
+      "test",
+      "outreach"
     ],
     "is_synthetic": true
   },
@@ -1884,9 +1884,9 @@
     "tokens": [
       "limit",
       "expand",
-      "rate",
+      "manager",
       "budget",
-      "manager"
+      "rate"
     ],
     "is_synthetic": true
   },
@@ -1897,11 +1897,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "summary_generator.py        # LEVEL 4",
     "tokens": [
+      "rank",
+      "manager",
       "budget",
       "generator.py        # level 4",
-      "summary",
-      "rank",
-      "manager"
+      "summary"
     ],
     "is_synthetic": true
   },
@@ -1912,10 +1912,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "enrichment_worker.py            # LEVEL 3",
     "tokens": [
+      "manager",
+      "budget",
       "enrichment",
       "worker.py            # level 3",
-      "budget",
-      "manager",
       "aggregate"
     ],
     "is_synthetic": true
@@ -1927,13 +1927,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_full_resume_flow.py    # LEVEL 4",
     "tokens": [
-      "flow.py    # level 4",
-      "test",
-      "full",
-      "inspect",
+      "manager",
       "resume",
+      "full",
       "budget",
-      "manager"
+      "test",
+      "inspect",
+      "flow.py    # level 4"
     ],
     "is_synthetic": true
   },
@@ -1944,11 +1944,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "cadence_planner.py          # LEVEL 4",
     "tokens": [
-      "planner.py          # level 4",
-      "cadence",
       "retry",
-      "budget",
-      "manager"
+      "manager",
+      "cadence",
+      "planner.py          # level 4",
+      "budget"
     ],
     "is_synthetic": true
   },
@@ -1960,11 +1960,11 @@
     "l7_file": "linkedin_send_worker.py         # LEVEL 3",
     "tokens": [
       "send",
-      "worker.py         # level 3",
-      "act",
       "linkedin",
-      "budget",
-      "manager"
+      "act",
+      "manager",
+      "worker.py         # level 3",
+      "budget"
     ],
     "is_synthetic": true
   },
@@ -1975,10 +1975,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "logging.py                      # LEVEL 3",
     "tokens": [
-      "logging.py                      # level 3",
-      "validate",
       "budget",
-      "manager"
+      "logging.py                      # level 3",
+      "manager",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -2003,9 +2003,9 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "time.py                         # LEVEL 3",
     "tokens": [
+      "time.py                         # level 3",
       "retry",
-      "planner",
-      "time.py                         # level 3"
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -2016,10 +2016,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "linkedin_adapter.py             # LEVEL 3",
     "tokens": [
-      "linkedin",
-      "adapter.py             # level 3",
       "inspect",
-      "executor"
+      "linkedin",
+      "executor",
+      "adapter.py             # level 3"
     ],
     "is_synthetic": true
   },
@@ -2030,9 +2030,9 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "email_adapter.py                # LEVEL 3",
     "tokens": [
-      "observer",
-      "adapter.py                # level 3",
       "email",
+      "adapter.py                # level 3",
+      "observer",
       "aggregate"
     ],
     "is_synthetic": true
@@ -2044,10 +2044,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "redis_adapter.py                # LEVEL 3",
     "tokens": [
-      "retriever",
       "redis",
       "rank",
-      "adapter.py                # level 3"
+      "adapter.py                # level 3",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2058,9 +2058,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "model_routing.yaml",
     "tokens": [
-      "routing",
-      "expand",
       "model",
+      "expand",
+      "routing",
       "router"
     ],
     "is_synthetic": true
@@ -2072,10 +2072,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "pii_policies.yaml",
     "tokens": [
-      "policies",
       "pii",
-      "rank",
-      "router"
+      "policies",
+      "router",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -2086,10 +2086,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "resume_strategy.schema.json",
     "tokens": [
-      "aggregate",
-      "resume",
       "strategy.schema",
-      "router"
+      "resume",
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -2100,8 +2100,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "compliance.yaml",
     "tokens": [
-      "compliance",
       "inspect",
+      "compliance",
       "router"
     ],
     "is_synthetic": true
@@ -2128,8 +2128,8 @@
     "l7_file": "knowledge_profiles.yaml",
     "tokens": [
       "knowledge",
-      "profiles",
       "act",
+      "profiles",
       "router"
     ],
     "is_synthetic": true
@@ -2141,10 +2141,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "safety_overrides.yaml",
     "tokens": [
-      "validate",
-      "safety",
       "overrides",
-      "router"
+      "safety",
+      "router",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -2168,11 +2168,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "safety_routing.yaml",
     "tokens": [
-      "refine",
-      "routing",
-      "budget",
+      "safety",
       "manager",
-      "safety"
+      "budget",
+      "routing",
+      "refine"
     ],
     "is_synthetic": true
   },
@@ -2184,10 +2184,10 @@
     "l7_file": "output_policies.yaml",
     "tokens": [
       "output",
-      "policies",
       "expand",
+      "manager",
       "budget",
-      "manager"
+      "policies"
     ],
     "is_synthetic": true
   },
@@ -2198,11 +2198,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_model_routing.yaml",
     "tokens": [
-      "outreach",
-      "budget",
-      "routing",
       "rank",
       "manager",
+      "budget",
+      "routing",
+      "outreach",
       "model"
     ],
     "is_synthetic": true
@@ -2215,9 +2215,9 @@
     "l7_file": "cadence_defaults.yaml",
     "tokens": [
       "cadence",
-      "defaults",
-      "budget",
       "manager",
+      "budget",
+      "defaults",
       "aggregate"
     ],
     "is_synthetic": true
@@ -2229,11 +2229,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "api_settings.yaml",
     "tokens": [
-      "inspect",
-      "api",
       "settings",
+      "manager",
       "budget",
-      "manager"
+      "inspect",
+      "api"
     ],
     "is_synthetic": true
   },
@@ -2244,10 +2244,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "search.yaml",
     "tokens": [
-      "retry",
-      "search",
       "budget",
-      "manager"
+      "retry",
+      "manager",
+      "search"
     ],
     "is_synthetic": true
   },
@@ -2258,11 +2258,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "llm_overrides.yaml",
     "tokens": [
-      "llm",
-      "act",
       "overrides",
+      "act",
+      "manager",
       "budget",
-      "manager"
+      "llm"
     ],
     "is_synthetic": true
   },
@@ -2273,11 +2273,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "data_retention.yaml",
     "tokens": [
-      "validate",
-      "data",
       "retention",
-      "budget",
-      "manager"
+      "data",
+      "manager",
+      "validate",
+      "budget"
     ],
     "is_synthetic": true
   },
@@ -2289,10 +2289,10 @@
     "l7_file": "cost_routing.yaml",
     "tokens": [
       "cost",
+      "safety",
       "validate",
-      "routing",
       "guard",
-      "safety"
+      "routing"
     ],
     "is_synthetic": true
   },
@@ -2304,9 +2304,9 @@
     "l7_file": "inference_defaults.yaml",
     "tokens": [
       "safety",
-      "defaults",
-      "guard",
       "inference",
+      "guard",
+      "defaults",
       "refine"
     ],
     "is_synthetic": true
@@ -2318,11 +2318,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "personalization_routing.yaml",
     "tokens": [
-      "personalization",
-      "routing",
+      "safety",
       "expand",
       "guard",
-      "safety"
+      "routing",
+      "personalization"
     ],
     "is_synthetic": true
   },
@@ -2333,11 +2333,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "template_defaults.yaml",
     "tokens": [
+      "template",
       "safety",
-      "defaults",
-      "guard",
       "rank",
-      "template"
+      "guard",
+      "defaults"
     ],
     "is_synthetic": true
   },
@@ -2348,11 +2348,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "event_schema.yaml",
     "tokens": [
-      "event",
       "safety",
       "schema",
       "guard",
-      "aggregate"
+      "aggregate",
+      "event"
     ],
     "is_synthetic": true
   },
@@ -2363,10 +2363,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "browser.yaml",
     "tokens": [
-      "guard",
       "inspect",
-      "browser",
-      "safety"
+      "guard",
+      "safety",
+      "browser"
     ],
     "is_synthetic": true
   },
@@ -2379,9 +2379,9 @@
     "tokens": [
       "cost",
       "overrides",
+      "safety",
       "retry",
-      "guard",
-      "safety"
+      "guard"
     ],
     "is_synthetic": true
   },
@@ -2405,10 +2405,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "system_prompts.yaml",
     "tokens": [
-      "system",
-      "planner",
+      "act",
       "prompts",
-      "act"
+      "planner",
+      "system"
     ],
     "is_synthetic": true
   },
@@ -2420,9 +2420,9 @@
     "l7_file": "embeddings_defaults.yaml",
     "tokens": [
       "embeddings",
-      "validate",
+      "defaults",
       "planner",
-      "defaults"
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -2433,9 +2433,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_planner.yaml",
     "tokens": [
-      "planner",
       "outreach",
-      "refine"
+      "refine",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -2446,10 +2446,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_plan.schema.json",
     "tokens": [
-      "expand",
-      "planner",
       "outreach",
-      "plan.schema"
+      "expand",
+      "plan.schema",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -2460,10 +2460,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "metric_counters.yaml",
     "tokens": [
-      "planner",
-      "rank",
+      "counters",
       "metric",
-      "counters"
+      "planner",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -2474,8 +2474,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "codeexec.yaml",
     "tokens": [
-      "planner",
       "codeexec",
+      "planner",
       "aggregate"
     ],
     "is_synthetic": true
@@ -2487,10 +2487,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "prompt_registry.yaml",
     "tokens": [
-      "prompt",
-      "planner",
       "inspect",
-      "registry"
+      "registry",
+      "prompt",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -2501,10 +2501,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "agent_boundary.yaml",
     "tokens": [
-      "boundary",
+      "agent",
       "retry",
-      "planner",
-      "agent"
+      "boundary",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -2516,9 +2516,9 @@
     "l7_file": "planner_prompts.yaml",
     "tokens": [
       "retry",
+      "executor",
       "planner",
-      "prompts",
-      "executor"
+      "prompts"
     ],
     "is_synthetic": true
   },
@@ -2529,10 +2529,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "retry_defaults.yaml",
     "tokens": [
-      "defaults",
-      "retry",
       "act",
-      "executor"
+      "executor",
+      "defaults",
+      "retry"
     ],
     "is_synthetic": true
   },
@@ -2543,10 +2543,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_writer.yaml",
     "tokens": [
-      "validate",
       "outreach",
       "writer",
-      "executor"
+      "executor",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -2557,10 +2557,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_message.schema.json",
     "tokens": [
-      "message.schema",
       "outreach",
+      "executor",
       "refine",
-      "executor"
+      "message.schema"
     ],
     "is_synthetic": true
   },
@@ -2573,8 +2573,8 @@
     "tokens": [
       "cost",
       "expand",
-      "tracking",
-      "executor"
+      "executor",
+      "tracking"
     ],
     "is_synthetic": true
   },
@@ -2585,9 +2585,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "settings.yaml",
     "tokens": [
-      "rank",
+      "executor",
       "settings",
-      "executor"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -2598,10 +2598,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "version_map.yaml",
     "tokens": [
-      "aggregate",
-      "map",
+      "executor",
       "version",
-      "executor"
+      "map",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -2612,10 +2612,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "llm_governance.yaml",
     "tokens": [
-      "governance",
-      "llm",
       "inspect",
-      "executor"
+      "executor",
+      "llm",
+      "governance"
     ],
     "is_synthetic": true
   },
@@ -2626,9 +2626,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "generator_prompts.yaml",
     "tokens": [
-      "prompts",
-      "observer",
       "inspect",
+      "observer",
+      "prompts",
       "generator"
     ],
     "is_synthetic": true
@@ -2640,10 +2640,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "resume_plan.schema.json",
     "tokens": [
-      "observer",
-      "resume",
       "plan.schema",
-      "retry"
+      "observer",
+      "retry",
+      "resume"
     ],
     "is_synthetic": true
   },
@@ -2654,9 +2654,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_style.yaml",
     "tokens": [
-      "observer",
       "outreach",
       "style",
+      "observer",
       "act"
     ],
     "is_synthetic": true
@@ -2668,9 +2668,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "outreach_strategy.schema.json",
     "tokens": [
-      "strategy.schema",
-      "observer",
       "outreach",
+      "observer",
+      "strategy.schema",
       "validate"
     ],
     "is_synthetic": true
@@ -2682,10 +2682,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "cache_settings.yaml",
     "tokens": [
-      "cache",
       "observer",
-      "settings",
-      "refine"
+      "refine",
+      "cache",
+      "settings"
     ],
     "is_synthetic": true
   },
@@ -2696,9 +2696,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "routing_overrides.yaml",
     "tokens": [
-      "routing",
       "observer",
       "expand",
+      "routing",
       "overrides"
     ],
     "is_synthetic": true
@@ -2710,10 +2710,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "rollout_policies.yaml",
     "tokens": [
+      "policies",
       "observer",
-      "rank",
       "rollout",
-      "policies"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -2724,10 +2724,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "safety_policies.yaml",
     "tokens": [
-      "retriever",
+      "aggregate",
       "policies",
       "safety",
-      "aggregate"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2738,10 +2738,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "resume_message.schema.json",
     "tokens": [
-      "retriever",
-      "resume",
       "inspect",
-      "message.schema"
+      "message.schema",
+      "resume",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2752,10 +2752,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "linkedin_policies.yaml",
     "tokens": [
-      "retriever",
-      "retry",
       "linkedin",
-      "policies"
+      "policies",
+      "retry",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2766,10 +2766,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "model_profiles.yaml",
     "tokens": [
-      "retriever",
-      "profiles",
       "model",
-      "act"
+      "act",
+      "profiles",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2780,10 +2780,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "redis_settings.yaml",
     "tokens": [
-      "retriever",
-      "validate",
       "redis",
-      "settings"
+      "settings",
+      "validate",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2794,10 +2794,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "telemetry_overrides.yaml",
     "tokens": [
-      "retriever",
-      "overrides",
       "telemetry",
-      "refine"
+      "overrides",
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2808,10 +2808,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "fallback_policies.yaml",
     "tokens": [
-      "retriever",
+      "policies",
       "expand",
       "fallback",
-      "policies"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2836,10 +2836,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "yaml_loader.py",
     "tokens": [
-      "retriever",
-      "yaml",
       "rank",
-      "loader"
+      "yaml",
+      "loader",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -2850,10 +2850,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "policy_loader.py",
     "tokens": [
-      "expand",
-      "loader",
       "policy",
-      "router"
+      "expand",
+      "router",
+      "loader"
     ],
     "is_synthetic": true
   },
@@ -2864,10 +2864,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "registry_loader.py",
     "tokens": [
+      "registry",
+      "manager",
       "loader",
       "budget",
-      "manager",
-      "registry",
       "refine"
     ],
     "is_synthetic": true
@@ -2879,11 +2879,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "2025_Q1_call.pkl",
     "tokens": [
+      "safety",
       "validate",
-      "2025",
-      "call.pkl",
       "guard",
-      "safety"
+      "call.pkl",
+      "2025"
     ],
     "is_synthetic": true
   },
@@ -2909,10 +2909,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "2025_Q2_call.pkl",
     "tokens": [
-      "call.pkl",
-      "planner",
       "act",
-      "2025"
+      "call.pkl",
+      "2025",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -2924,8 +2924,8 @@
     "l7_file": "invalidations.parquet",
     "tokens": [
       "invalidations.parquet",
-      "validate",
-      "planner"
+      "planner",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -2949,9 +2949,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "predicate_definitions.yaml",
     "tokens": [
+      "act",
       "definitions",
       "predicate",
-      "act",
       "executor"
     ],
     "is_synthetic": true
@@ -2963,9 +2963,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "people.json",
     "tokens": [
-      "people",
+      "inspect",
       "observer",
-      "inspect"
+      "people"
     ],
     "is_synthetic": true
   },
@@ -2976,11 +2976,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "entity_type_ontology.yaml",
     "tokens": [
+      "entity",
+      "retry",
       "type",
       "ontology",
-      "retry",
-      "observer",
-      "entity"
+      "observer"
     ],
     "is_synthetic": true
   },
@@ -2991,9 +2991,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "products.json",
     "tokens": [
-      "retriever",
+      "aggregate",
       "products",
-      "aggregate"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3004,11 +3004,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "temporal_labeling_rules.yaml",
     "tokens": [
-      "retriever",
-      "inspect",
-      "rules",
       "labeling",
-      "temporal"
+      "rules",
+      "temporal",
+      "retriever",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -3020,9 +3020,9 @@
     "l7_file": "graph_edges.parquet",
     "tokens": [
       "edges.parquet",
-      "rank",
       "graph",
-      "router"
+      "router",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -3034,10 +3034,10 @@
     "l7_file": "graph_nodes.parquet",
     "tokens": [
       "graph",
-      "nodes.parquet",
       "expand",
-      "budget",
-      "manager"
+      "manager",
+      "nodes.parquet",
+      "budget"
     ],
     "is_synthetic": true
   },
@@ -3048,10 +3048,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "console_logger.py",
     "tokens": [
-      "aggregate",
-      "console",
       "logger",
-      "router"
+      "console",
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -3062,10 +3062,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "metadata_enricher.py",
     "tokens": [
-      "enricher",
-      "metadata",
       "inspect",
-      "router"
+      "metadata",
+      "router",
+      "enricher"
     ],
     "is_synthetic": true
   },
@@ -3077,10 +3077,10 @@
     "l7_file": "http_api_logger.py",
     "tokens": [
       "logger",
-      "api",
-      "router",
       "retry",
-      "http"
+      "router",
+      "http",
+      "api"
     ],
     "is_synthetic": true
   },
@@ -3104,9 +3104,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "span.py",
     "tokens": [
-      "validate",
       "span",
-      "router"
+      "router",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -3119,9 +3119,9 @@
     "tokens": [
       "parent",
       "sampler",
-      "refine",
       "router",
-      "based"
+      "based",
+      "refine"
     ],
     "is_synthetic": true
   },
@@ -3132,10 +3132,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "audit_schema.json",
     "tokens": [
-      "schema",
       "expand",
       "audit",
-      "router"
+      "router",
+      "schema"
     ],
     "is_synthetic": true
   },
@@ -3147,9 +3147,9 @@
     "l7_file": "pii_redaction.py",
     "tokens": [
       "pii",
-      "rank",
       "redaction",
-      "router"
+      "router",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -3161,10 +3161,10 @@
     "l7_file": "file_logger.py",
     "tokens": [
       "logger",
-      "budget",
-      "file",
       "rank",
-      "manager"
+      "manager",
+      "budget",
+      "file"
     ],
     "is_synthetic": true
   },
@@ -3175,11 +3175,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "sampling_processor.py",
     "tokens": [
-      "processor",
-      "sampling",
-      "budget",
       "manager",
-      "aggregate"
+      "budget",
+      "aggregate",
+      "processor",
+      "sampling"
     ],
     "is_synthetic": true
   },
@@ -3190,11 +3190,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "base_collector.py",
     "tokens": [
-      "collector",
-      "inspect",
       "base",
+      "manager",
       "budget",
-      "manager"
+      "collector",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -3205,9 +3205,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "gauge.py",
     "tokens": [
-      "retry",
-      "gauge",
       "budget",
+      "gauge",
+      "retry",
       "manager"
     ],
     "is_synthetic": true
@@ -3219,10 +3219,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "span_context.py",
     "tokens": [
-      "act",
       "span",
-      "budget",
+      "act",
       "manager",
+      "budget",
       "context"
     ],
     "is_synthetic": true
@@ -3234,11 +3234,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "otlp_exporter.py",
     "tokens": [
-      "otlp",
+      "manager",
       "exporter",
       "validate",
       "budget",
-      "manager"
+      "otlp"
     ],
     "is_synthetic": true
   },
@@ -3249,12 +3249,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "sqlite_audit_store.py",
     "tokens": [
-      "sqlite",
-      "store",
-      "audit",
-      "budget",
       "manager",
-      "refine"
+      "budget",
+      "refine",
+      "sqlite",
+      "audit",
+      "store"
     ],
     "is_synthetic": true
   },
@@ -3265,12 +3265,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "audit_event_normalizer.py",
     "tokens": [
-      "event",
-      "normalizer",
       "expand",
-      "audit",
+      "manager",
+      "normalizer",
       "budget",
-      "manager"
+      "audit",
+      "event"
     ],
     "is_synthetic": true
   },
@@ -3281,12 +3281,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "structured_json_logger.py",
     "tokens": [
-      "json",
-      "structured",
+      "safety",
       "logger",
+      "json",
       "expand",
       "guard",
-      "safety"
+      "structured"
     ],
     "is_synthetic": true
   },
@@ -3297,10 +3297,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "logger.py",
     "tokens": [
-      "logger",
       "guard",
-      "rank",
-      "safety"
+      "safety",
+      "logger",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -3311,11 +3311,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "runtime_metrics_collector.py",
     "tokens": [
-      "metrics",
-      "collector",
       "safety",
+      "metrics",
       "runtime",
       "guard",
+      "collector",
       "aggregate"
     ],
     "is_synthetic": true
@@ -3327,9 +3327,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "histogram.py",
     "tokens": [
+      "inspect",
       "guard",
       "histogram",
-      "inspect",
       "safety"
     ],
     "is_synthetic": true
@@ -3341,11 +3341,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "span_config.py",
     "tokens": [
-      "config",
       "span",
+      "config",
+      "safety",
       "retry",
-      "guard",
-      "safety"
+      "guard"
     ],
     "is_synthetic": true
   },
@@ -3356,12 +3356,12 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "json_trace_exporter.py",
     "tokens": [
-      "json",
-      "exporter",
-      "act",
-      "guard",
+      "safety",
       "trace",
-      "safety"
+      "json",
+      "act",
+      "exporter",
+      "guard"
     ],
     "is_synthetic": true
   },
@@ -3372,12 +3372,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "file_audit_store.py",
     "tokens": [
+      "safety",
       "validate",
-      "store",
-      "audit",
-      "file",
       "guard",
-      "safety"
+      "file",
+      "audit",
+      "store"
     ],
     "is_synthetic": true
   },
@@ -3388,10 +3388,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "base_formatter.py",
     "tokens": [
-      "planner",
-      "formatter",
       "base",
-      "refine"
+      "refine",
+      "planner",
+      "formatter"
     ],
     "is_synthetic": true
   },
@@ -3402,9 +3402,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "log_event.py",
     "tokens": [
+      "event",
       "expand",
       "planner",
-      "event",
       "log"
     ],
     "is_synthetic": true
@@ -3416,11 +3416,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "pipeline_metrics_collector.py",
     "tokens": [
+      "rank",
       "metrics",
       "collector",
       "planner",
-      "pipeline",
-      "rank"
+      "pipeline"
     ],
     "is_synthetic": true
   },
@@ -3431,9 +3431,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "metric_registry.py",
     "tokens": [
-      "planner",
       "metric",
       "registry",
+      "planner",
       "aggregate"
     ],
     "is_synthetic": true
@@ -3445,11 +3445,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "w3c_trace_context.py",
     "tokens": [
-      "w3c",
-      "inspect",
-      "planner",
       "trace",
-      "context"
+      "planner",
+      "inspect",
+      "context",
+      "w3c"
     ],
     "is_synthetic": true
   },
@@ -3460,11 +3460,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "console_trace_exporter.py",
     "tokens": [
-      "exporter",
-      "planner",
-      "console",
+      "trace",
       "retry",
-      "trace"
+      "exporter",
+      "console",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -3475,11 +3475,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "append_only_store.py",
     "tokens": [
-      "append",
-      "store",
       "act",
+      "append",
+      "only",
       "planner",
-      "only"
+      "store"
     ],
     "is_synthetic": true
   },
@@ -3490,10 +3490,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "json_formatter.py",
     "tokens": [
-      "validate",
-      "formatter",
       "json",
-      "executor"
+      "executor",
+      "formatter",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -3505,9 +3505,9 @@
     "l7_file": "log_config.py",
     "tokens": [
       "config",
-      "log",
+      "executor",
       "refine",
-      "executor"
+      "log"
     ],
     "is_synthetic": true
   },
@@ -3518,10 +3518,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "prometheus_exporter.py",
     "tokens": [
-      "exporter",
-      "expand",
       "prometheus",
-      "executor"
+      "expand",
+      "executor",
+      "exporter"
     ],
     "is_synthetic": true
   },
@@ -3533,9 +3533,9 @@
     "l7_file": "metric_config.py",
     "tokens": [
       "config",
-      "rank",
+      "executor",
       "metric",
-      "executor"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -3546,10 +3546,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "baggage_propagator.py",
     "tokens": [
-      "baggage",
-      "aggregate",
       "propagator",
-      "executor"
+      "executor",
+      "baggage",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -3560,11 +3560,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "opentelemetry_tracing_adapter.py",
     "tokens": [
-      "adapter",
-      "inspect",
-      "executor",
       "tracing",
-      "opentelemetry"
+      "opentelemetry",
+      "adapter",
+      "executor",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -3575,11 +3575,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "hash_chain_verifier.py",
     "tokens": [
+      "verifier",
+      "retry",
       "chain",
       "executor",
-      "hash",
-      "verifier",
-      "retry"
+      "hash"
     ],
     "is_synthetic": true
   },
@@ -3591,9 +3591,9 @@
     "l7_file": "color_formatter.py",
     "tokens": [
       "observer",
-      "formatter",
       "act",
-      "color"
+      "color",
+      "formatter"
     ],
     "is_synthetic": true
   },
@@ -3604,11 +3604,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "openai_logger_adapter.py",
     "tokens": [
-      "adapter",
       "logger",
+      "adapter",
+      "openai",
       "validate",
-      "observer",
-      "openai"
+      "observer"
     ],
     "is_synthetic": true
   },
@@ -3619,9 +3619,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "json_exporter.py",
     "tokens": [
-      "exporter",
-      "observer",
       "json",
+      "observer",
+      "exporter",
       "refine"
     ],
     "is_synthetic": true
@@ -3633,9 +3633,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "opentelemetry_adapter.py",
     "tokens": [
+      "adapter",
       "observer",
       "expand",
-      "adapter",
       "opentelemetry"
     ],
     "is_synthetic": true
@@ -3647,10 +3647,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "always_on_sampler.py",
     "tokens": [
+      "sampler",
       "observer",
       "always",
-      "rank",
-      "sampler"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -3661,9 +3661,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "jaeger_adapter.py",
     "tokens": [
+      "adapter",
       "observer",
       "jaeger",
-      "adapter",
       "aggregate"
     ],
     "is_synthetic": true
@@ -3675,9 +3675,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "signature_verifier.py",
     "tokens": [
+      "inspect",
       "observer",
       "signature",
-      "inspect",
       "verifier"
     ],
     "is_synthetic": true
@@ -3689,10 +3689,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "pii_sanitizer.py",
     "tokens": [
-      "retriever",
-      "retry",
+      "sanitizer",
       "pii",
-      "sanitizer"
+      "retry",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3703,11 +3703,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "mcp_tool_logger.py",
     "tokens": [
-      "retriever",
+      "tool",
       "logger",
       "mcp",
       "act",
-      "tool"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3718,10 +3718,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "in_memory_exporter.py",
     "tokens": [
-      "retriever",
-      "validate",
       "memory",
-      "exporter"
+      "exporter",
+      "validate",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3732,10 +3732,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "cloudwatch_adapter.py",
     "tokens": [
-      "retriever",
       "adapter",
       "cloudwatch",
-      "refine"
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3746,10 +3746,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "probabilistic_sampler.py",
     "tokens": [
-      "retriever",
+      "sampler",
       "expand",
       "probabilistic",
-      "sampler"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3760,10 +3760,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "audit_event.py",
     "tokens": [
-      "retriever",
       "rank",
       "event",
-      "audit"
+      "audit",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3774,10 +3774,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "tamper_detector.py",
     "tokens": [
-      "retriever",
-      "detector",
+      "aggregate",
       "tamper",
-      "aggregate"
+      "detector",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3789,10 +3789,10 @@
     "l7_file": "cpu_check.py",
     "tokens": [
       "safety",
-      "guard",
       "cpu",
-      "check",
-      "refine"
+      "guard",
+      "refine",
+      "check"
     ],
     "is_synthetic": true
   },
@@ -3803,12 +3803,12 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "token_budget_inspector.py",
     "tokens": [
-      "inspector",
+      "safety",
       "expand",
-      "guard",
       "budget",
-      "token",
-      "safety"
+      "guard",
+      "inspector",
+      "token"
     ],
     "is_synthetic": true
   },
@@ -3819,10 +3819,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "memory_check.py",
     "tokens": [
-      "validate",
-      "planner",
+      "check",
       "memory",
-      "check"
+      "planner",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -3833,11 +3833,11 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "dag_runtime_inspector.py",
     "tokens": [
-      "inspector",
-      "planner",
-      "runtime",
       "dag",
-      "refine"
+      "runtime",
+      "refine",
+      "planner",
+      "inspector"
     ],
     "is_synthetic": true
   },
@@ -3848,10 +3848,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "dependency_check.py",
     "tokens": [
-      "check",
-      "dependency",
       "act",
-      "executor"
+      "check",
+      "executor",
+      "dependency"
     ],
     "is_synthetic": true
   },
@@ -3864,8 +3864,8 @@
     "tokens": [
       "profiler",
       "observer",
-      "time",
-      "retry"
+      "retry",
+      "time"
     ],
     "is_synthetic": true
   },
@@ -3876,10 +3876,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "async_profiler.py",
     "tokens": [
-      "retriever",
-      "async",
       "inspect",
-      "profiler"
+      "async",
+      "profiler",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -3890,10 +3890,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "cost_profiler.py",
     "tokens": [
-      "cost",
-      "aggregate",
       "profiler",
-      "router"
+      "cost",
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -3904,11 +3904,11 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "state_inspector.py",
     "tokens": [
-      "inspector",
-      "budget",
-      "state",
       "rank",
-      "manager"
+      "manager",
+      "budget",
+      "inspector",
+      "state"
     ],
     "is_synthetic": true
   },
@@ -3920,10 +3920,10 @@
     "l7_file": "runtime_snapshot.py",
     "tokens": [
       "validate",
-      "snapshot",
-      "executor",
+      "dag",
       "runtime",
-      "dag"
+      "executor",
+      "snapshot"
     ],
     "is_synthetic": true
   },
@@ -3934,10 +3934,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "planning_snapshot.py",
     "tokens": [
-      "planning",
       "observer",
-      "snapshot",
-      "act"
+      "act",
+      "planning",
+      "snapshot"
     ],
     "is_synthetic": true
   },
@@ -3948,11 +3948,11 @@
     "l6_ops": "vectorization-ops",
     "l7_file": "execution_snapshot.py",
     "tokens": [
-      "retriever",
-      "snapshot",
-      "vectorization",
       "retry",
-      "execution"
+      "execution",
+      "vectorization",
+      "retriever",
+      "snapshot"
     ],
     "is_synthetic": true
   },
@@ -3964,8 +3964,8 @@
     "l7_file": "archetype.yaml",
     "tokens": [
       "inspect",
-      "archetype",
-      "router"
+      "router",
+      "archetype"
     ],
     "is_synthetic": true
   },
@@ -3976,10 +3976,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "system_prompts.yaml",
     "tokens": [
-      "system",
       "retry",
       "prompts",
-      "router"
+      "router",
+      "system"
     ],
     "is_synthetic": true
   },
@@ -3991,8 +3991,8 @@
     "l7_file": "guard_base.py",
     "tokens": [
       "guard",
-      "base",
       "act",
+      "base",
       "router"
     ],
     "is_synthetic": true
@@ -4005,8 +4005,8 @@
     "l7_file": "framing.yaml",
     "tokens": [
       "framing",
-      "validate",
-      "router"
+      "router",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -4017,10 +4017,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "prompt_manifest.yaml",
     "tokens": [
-      "prompt",
       "manifest",
       "refine",
-      "router"
+      "router",
+      "prompt"
     ],
     "is_synthetic": true
   },
@@ -4046,9 +4046,9 @@
     "l7_file": "eval_sets.yaml",
     "tokens": [
       "eval",
-      "inspect",
-      "budget",
       "manager",
+      "budget",
+      "inspect",
       "sets"
     ],
     "is_synthetic": true
@@ -4060,10 +4060,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ownership.yaml",
     "tokens": [
-      "retry",
-      "ownership",
       "budget",
-      "manager"
+      "retry",
+      "manager",
+      "ownership"
     ],
     "is_synthetic": true
   },
@@ -4075,10 +4075,10 @@
     "l7_file": "output_governance.yaml",
     "tokens": [
       "output",
-      "governance",
       "act",
+      "manager",
       "budget",
-      "manager"
+      "governance"
     ],
     "is_synthetic": true
   },
@@ -4089,11 +4089,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "rollback_policies.yaml",
     "tokens": [
-      "validate",
-      "policies",
       "rollback",
+      "manager",
+      "validate",
       "budget",
-      "manager"
+      "policies"
     ],
     "is_synthetic": true
   },
@@ -4105,9 +4105,9 @@
     "l7_file": "personalization.yaml",
     "tokens": [
       "guard",
-      "rank",
       "personalization",
-      "safety"
+      "safety",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -4118,11 +4118,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "regression_tests.yaml",
     "tokens": [
-      "safety",
-      "regression",
       "tests",
+      "safety",
       "guard",
-      "aggregate"
+      "aggregate",
+      "regression"
     ],
     "is_synthetic": true
   },
@@ -4133,11 +4133,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "policy_base.py",
     "tokens": [
-      "inspect",
-      "base",
       "policy",
+      "safety",
+      "base",
       "guard",
-      "safety"
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -4149,8 +4149,8 @@
     "l7_file": "reasoning.yaml",
     "tokens": [
       "reasoning",
-      "retry",
       "guard",
+      "retry",
       "safety"
     ],
     "is_synthetic": true
@@ -4162,11 +4162,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "version_map.yaml",
     "tokens": [
-      "guard",
+      "safety",
       "act",
-      "version",
       "map",
-      "safety"
+      "guard",
+      "version"
     ],
     "is_synthetic": true
   },
@@ -4177,10 +4177,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "reflective_checks.yaml",
     "tokens": [
-      "reflective",
+      "checks",
       "expand",
-      "planner",
-      "checks"
+      "reflective",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -4191,9 +4191,9 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "rubric.yaml",
     "tokens": [
+      "rubric",
       "planner",
-      "rank",
-      "rubric"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -4204,9 +4204,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "semantic_versioning.yaml",
     "tokens": [
+      "semantic",
       "versioning",
       "planner",
-      "semantic",
       "aggregate"
     ],
     "is_synthetic": true
@@ -4218,9 +4218,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "safety.yaml",
     "tokens": [
-      "planner",
       "inspect",
-      "safety"
+      "safety",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -4231,10 +4231,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "analysis_prompt.json",
     "tokens": [
-      "prompt",
+      "analysis",
       "retry",
-      "planner",
-      "analysis"
+      "prompt",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -4246,8 +4246,8 @@
     "l7_file": "rewriting.yaml",
     "tokens": [
       "rewriting",
-      "refine",
-      "executor"
+      "executor",
+      "refine"
     ],
     "is_synthetic": true
   },
@@ -4258,10 +4258,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "style_checks.yaml",
     "tokens": [
-      "expand",
       "style",
-      "checks",
-      "executor"
+      "expand",
+      "executor",
+      "checks"
     ],
     "is_synthetic": true
   },
@@ -4272,10 +4272,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "prompt_schema.json",
     "tokens": [
-      "prompt",
-      "rank",
       "schema",
-      "executor"
+      "executor",
+      "prompt",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -4286,10 +4286,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "tool_use.yaml",
     "tokens": [
-      "aggregate",
-      "use",
       "tool",
-      "executor"
+      "executor",
+      "use",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -4301,8 +4301,8 @@
     "l7_file": "draft_executor.json",
     "tokens": [
       "inspect",
-      "draft",
-      "executor"
+      "executor",
+      "draft"
     ],
     "is_synthetic": true
   },
@@ -4313,8 +4313,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "scoring.yaml",
     "tokens": [
-      "observer",
       "scoring",
+      "observer",
       "validate"
     ],
     "is_synthetic": true
@@ -4327,9 +4327,9 @@
     "l7_file": "approval_workflow.yaml",
     "tokens": [
       "observer",
-      "approval",
       "workflow",
-      "refine"
+      "refine",
+      "approval"
     ],
     "is_synthetic": true
   },
@@ -4353,10 +4353,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "injection_templates.py",
     "tokens": [
-      "observer",
       "injection",
-      "rank",
-      "templates"
+      "observer",
+      "templates",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -4367,9 +4367,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "summarization.yaml",
     "tokens": [
-      "retriever",
       "summarization",
-      "act"
+      "act",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4380,10 +4380,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "change_history.yaml",
     "tokens": [
-      "retriever",
-      "validate",
+      "history",
       "change",
-      "history"
+      "validate",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4394,10 +4394,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "context_engineering.yaml",
     "tokens": [
-      "retriever",
       "engineering",
       "context",
-      "refine"
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4408,10 +4408,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "prompt_index.yaml",
     "tokens": [
-      "retriever",
-      "expand",
       "index",
-      "prompt"
+      "expand",
+      "prompt",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4435,9 +4435,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "__init__.py",
     "tokens": [
-      "retriever",
       "rank",
-      "init"
+      "init",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4448,11 +4448,11 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "cold_outreach_template.md",
     "tokens": [
-      "outreach",
-      "cold",
-      "template.md",
       "expand",
-      "router"
+      "router",
+      "cold",
+      "outreach",
+      "template.md"
     ],
     "is_synthetic": true
   },
@@ -4464,10 +4464,10 @@
     "l7_file": "connection_request.md",
     "tokens": [
       "request.md",
-      "connection",
-      "budget",
       "manager",
-      "refine"
+      "budget",
+      "refine",
+      "connection"
     ],
     "is_synthetic": true
   },
@@ -4478,11 +4478,11 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "followup_template.md",
     "tokens": [
+      "safety",
       "followup",
       "validate",
-      "template.md",
       "guard",
-      "safety"
+      "template.md"
     ],
     "is_synthetic": true
   },
@@ -4493,12 +4493,12 @@
     "l6_ops": "tool-adapter-ops",
     "l7_file": "experience_template.md",
     "tokens": [
+      "tool",
       "adapter",
-      "template.md",
+      "experience",
       "act",
       "planner",
-      "experience",
-      "tool"
+      "template.md"
     ],
     "is_synthetic": true
   },
@@ -4509,12 +4509,12 @@
     "l6_ops": "backoff-policy-ops",
     "l7_file": "skills_template.md",
     "tokens": [
-      "backoff",
-      "skills",
-      "template.md",
-      "executor",
       "policy",
-      "retry"
+      "skills",
+      "retry",
+      "executor",
+      "backoff",
+      "template.md"
     ],
     "is_synthetic": true
   },
@@ -4526,10 +4526,10 @@
     "l7_file": "summary_template.md",
     "tokens": [
       "template.md",
+      "observer",
       "inspect",
       "diagnostics",
-      "summary",
-      "observer"
+      "summary"
     ],
     "is_synthetic": true
   },
@@ -4540,9 +4540,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "__init__.py",
     "tokens": [
-      "retriever",
+      "aggregate",
       "init",
-      "aggregate"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4553,10 +4553,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "rest_interface.py",
     "tokens": [
-      "retriever",
+      "aggregate",
       "rest",
       "interface",
-      "aggregate"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4567,10 +4567,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "agent_profile.py",
     "tokens": [
-      "retriever",
-      "profile",
       "inspect",
-      "agent"
+      "agent",
+      "profile",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4581,9 +4581,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "observability.py",
     "tokens": [
-      "retriever",
       "inspect",
-      "observability"
+      "observability",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4594,10 +4594,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "lic_seniority.py",
     "tokens": [
-      "retriever",
-      "retry",
+      "seniority",
       "lic",
-      "seniority"
+      "retry",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4608,10 +4608,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "safety_profile.py",
     "tokens": [
-      "retriever",
-      "profile",
       "act",
-      "safety"
+      "profile",
+      "safety",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4622,10 +4622,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "cost_tracking.json",
     "tokens": [
-      "retriever",
-      "validate",
+      "tracking",
       "cost",
-      "tracking"
+      "validate",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4636,10 +4636,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "context_manager.py",
     "tokens": [
-      "retriever",
-      "manager",
       "context",
-      "refine"
+      "manager",
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4650,9 +4650,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "networking.py",
     "tokens": [
-      "retriever",
+      "networking",
       "expand",
-      "networking"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4663,9 +4663,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "scoring.py",
     "tokens": [
-      "retriever",
       "rank",
-      "scoring"
+      "scoring",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -4677,8 +4677,8 @@
     "l7_file": ".cache/",
     "tokens": [
       ".cache",
-      "rank",
-      "router"
+      "router",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -4689,10 +4689,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "session_manager.py",
     "tokens": [
-      "rank",
-      "manager",
       "session",
-      "router"
+      "manager",
+      "router",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -4703,10 +4703,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "budget_profile.py",
     "tokens": [
-      "aggregate",
       "budget",
       "profile",
-      "router"
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -4717,9 +4717,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "lic_tone.py",
     "tokens": [
-      "tone",
-      "lic",
       "inspect",
+      "lic",
+      "tone",
       "router"
     ],
     "is_synthetic": true
@@ -4731,8 +4731,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "routing.py",
     "tokens": [
-      "routing",
       "retry",
+      "routing",
       "router"
     ],
     "is_synthetic": true
@@ -4744,8 +4744,8 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "datasets.py",
     "tokens": [
-      "datasets",
       "act",
+      "datasets",
       "router"
     ],
     "is_synthetic": true
@@ -4757,11 +4757,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "execution_budget_manager.py",
     "tokens": [
-      "validate",
-      "router",
-      "budget",
+      "execution",
       "manager",
-      "execution"
+      "router",
+      "validate",
+      "budget"
     ],
     "is_synthetic": true
   },
@@ -4788,8 +4788,8 @@
     "tokens": [
       "expand",
       "hybrid",
-      "ranker",
-      "router"
+      "router",
+      "ranker"
     ],
     "is_synthetic": true
   },
@@ -4800,9 +4800,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": ".gitkeep",
     "tokens": [
-      ".gitkeep",
-      "expand",
       "budget",
+      "expand",
+      ".gitkeep",
       "manager"
     ],
     "is_synthetic": true
@@ -4814,11 +4814,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "policy_engine.py",
     "tokens": [
-      "engine",
-      "expand",
       "policy",
+      "expand",
+      "manager",
       "budget",
-      "manager"
+      "engine"
     ],
     "is_synthetic": true
   },
@@ -4829,12 +4829,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "config_profiles_v10_10.py",
     "tokens": [
-      "profiles",
-      "v10",
       "config",
-      "budget",
+      "profiles",
       "rank",
-      "manager"
+      "manager",
+      "budget",
+      "v10"
     ],
     "is_synthetic": true
   },
@@ -4846,9 +4846,9 @@
     "l7_file": "lic_validation.py",
     "tokens": [
       "validation",
-      "lic",
-      "budget",
       "manager",
+      "budget",
+      "lic",
       "aggregate"
     ],
     "is_synthetic": true
@@ -4860,10 +4860,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "models.py",
     "tokens": [
-      "inspect",
-      "models",
       "budget",
-      "manager"
+      "models",
+      "manager",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -4874,8 +4874,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "evaluator.py",
     "tokens": [
-      "retry",
       "budget",
+      "retry",
       "manager",
       "evaluator"
     ],
@@ -4889,8 +4889,8 @@
     "l7_file": "executor.py",
     "tokens": [
       "budget",
-      "manager",
       "act",
+      "manager",
       "executor"
     ],
     "is_synthetic": true
@@ -4902,9 +4902,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "vm_manager.py",
     "tokens": [
-      "validate",
       "budget",
-      "manager"
+      "manager",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -4915,8 +4915,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "orchestrate.py",
     "tokens": [
-      "orchestrate",
       "budget",
+      "orchestrate",
       "manager",
       "refine"
     ],
@@ -4929,11 +4929,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": ".mypy_cache/",
     "tokens": [
-      ".mypy",
       "safety",
-      "cache",
+      ".mypy",
       "guard",
-      "refine"
+      "refine",
+      "cache"
     ],
     "is_synthetic": true
   },
@@ -4944,10 +4944,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "tool_registry.py",
     "tokens": [
-      "safety",
-      "guard",
-      "registry",
       "tool",
+      "safety",
+      "registry",
+      "guard",
       "refine"
     ],
     "is_synthetic": true
@@ -4959,11 +4959,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "context_profile.py",
     "tokens": [
-      "profile",
+      "safety",
       "expand",
       "guard",
-      "context",
-      "safety"
+      "profile",
+      "context"
     ],
     "is_synthetic": true
   },
@@ -4974,11 +4974,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "llm_profile.py",
     "tokens": [
-      "profile",
-      "llm",
-      "guard",
+      "safety",
       "rank",
-      "safety"
+      "guard",
+      "profile",
+      "llm"
     ],
     "is_synthetic": true
   },
@@ -4989,9 +4989,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "gating.py",
     "tokens": [
+      "inspect",
       "guard",
       "gating",
-      "inspect",
       "safety"
     ],
     "is_synthetic": true
@@ -5003,11 +5003,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "runtime_utils.py",
     "tokens": [
-      "runtime",
+      "safety",
       "retry",
+      "runtime",
       "guard",
-      "utils",
-      "safety"
+      "utils"
     ],
     "is_synthetic": true
   },
@@ -5018,11 +5018,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "schema_validation.py",
     "tokens": [
+      "safety",
       "validation",
       "act",
       "schema",
-      "guard",
-      "safety"
+      "guard"
     ],
     "is_synthetic": true
   },
@@ -5034,10 +5034,10 @@
     "l7_file": "cost_tracker.py",
     "tokens": [
       "cost",
-      "validate",
+      "safety",
       "tracker",
-      "guard",
-      "safety"
+      "validate",
+      "guard"
     ],
     "is_synthetic": true
   },
@@ -5048,9 +5048,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "3.13/",
     "tokens": [
-      "validate",
+      "3.13",
       "planner",
-      "3.13"
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -5062,8 +5062,8 @@
     "l7_file": "metrics.json",
     "tokens": [
       "metrics",
-      "validate",
-      "planner"
+      "planner",
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -5074,10 +5074,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "lic_assembly.py",
     "tokens": [
-      "planner",
       "lic",
       "assembly",
-      "refine"
+      "refine",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -5089,9 +5089,9 @@
     "l7_file": "meta_profile.py",
     "tokens": [
       "expand",
-      "planner",
       "meta",
-      "profile"
+      "profile",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -5102,8 +5102,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "judge.py",
     "tokens": [
-      "planner",
       "judge",
+      "planner",
       "aggregate"
     ],
     "is_synthetic": true
@@ -5115,9 +5115,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "policies.py",
     "tokens": [
+      "inspect",
       "planner",
-      "policies",
-      "inspect"
+      "policies"
     ],
     "is_synthetic": true
   },
@@ -5141,10 +5141,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "golden_datasets.py",
     "tokens": [
-      "golden",
-      "planner",
       "act",
-      "datasets"
+      "datasets",
+      "planner",
+      "golden"
     ],
     "is_synthetic": true
   },
@@ -5155,10 +5155,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "<*.data.json / *.meta.json artifacts>",
     "tokens": [
-      " *.meta.json artifacts>",
-      "<*.data.json ",
       "act",
-      "executor"
+      "<*.data.json ",
+      "executor",
+      " *.meta.json artifacts>"
     ],
     "is_synthetic": true
   },
@@ -5169,9 +5169,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "metrics.py",
     "tokens": [
-      "metrics",
       "act",
-      "executor"
+      "executor",
+      "metrics"
     ],
     "is_synthetic": true
   },
@@ -5182,10 +5182,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "lic_cta.py",
     "tokens": [
-      "validate",
       "lic",
+      "executor",
       "cta",
-      "executor"
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -5197,9 +5197,9 @@
     "l7_file": "retrieval_profile.py",
     "tokens": [
       "retrieval",
+      "executor",
       "profile",
-      "refine",
-      "executor"
+      "refine"
     ],
     "is_synthetic": true
   },
@@ -5211,8 +5211,8 @@
     "l7_file": "runner.py",
     "tokens": [
       "runner",
-      "rank",
-      "executor"
+      "executor",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -5223,9 +5223,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "fs_template.py",
     "tokens": [
-      "aggregate",
       "template",
-      "executor"
+      "executor",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -5236,8 +5236,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "refinement.py",
     "tokens": [
-      "refinement",
       "inspect",
+      "refinement",
       "executor"
     ],
     "is_synthetic": true
@@ -5250,9 +5250,9 @@
     "l7_file": "llm_judge.py",
     "tokens": [
       "retry",
+      "executor",
       "llm",
-      "judge",
-      "executor"
+      "judge"
     ],
     "is_synthetic": true
   },
@@ -5263,8 +5263,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": ".keep",
     "tokens": [
-      "observer",
       ".keep",
+      "observer",
       "retry"
     ],
     "is_synthetic": true
@@ -5276,8 +5276,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "telemetry.py",
     "tokens": [
-      "observer",
       "telemetry",
+      "observer",
       "retry"
     ],
     "is_synthetic": true
@@ -5289,10 +5289,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "lic_routing.py",
     "tokens": [
-      "routing",
-      "observer",
       "lic",
-      "act"
+      "observer",
+      "act",
+      "routing"
     ],
     "is_synthetic": true
   },
@@ -5330,8 +5330,8 @@
     "l7_file": "microvm.py",
     "tokens": [
       "observer",
-      "rank",
-      "microvm"
+      "microvm",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -5355,9 +5355,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "reliability_scorer.py",
     "tokens": [
+      "inspect",
       "observer",
       "reliability",
-      "inspect",
       "scorer"
     ],
     "is_synthetic": true
@@ -5369,12 +5369,12 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "execution_budget_manager.*.pyc",
     "tokens": [
-      "execution",
       "safety",
-      "manager.*.pyc",
-      "guard",
+      "execution",
       "budget",
-      "aggregate"
+      "guard",
+      "aggregate",
+      "manager.*.pyc"
     ],
     "is_synthetic": true
   },
@@ -5385,10 +5385,10 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "runtime_utils.*.pyc",
     "tokens": [
-      "planner",
-      "rank",
+      "runtime",
       "utils.*.pyc",
-      "runtime"
+      "planner",
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -5399,9 +5399,9 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "telemetry.*.pyc",
     "tokens": [
-      "telemetry.*.pyc",
       "expand",
-      "executor"
+      "executor",
+      "telemetry.*.pyc"
     ],
     "is_synthetic": true
   },
@@ -5412,8 +5412,8 @@
     "l6_ops": "general-operations-ops",
     "l7_file": "__init__.*.pyc",
     "tokens": [
-      "observer",
       ".*.pyc",
+      "observer",
       "init",
       "refine"
     ],
@@ -5426,10 +5426,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "migration_report.json",
     "tokens": [
-      "aggregate",
       "report",
       "migration",
-      "router"
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -5440,9 +5440,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "agent.cpython-314.pyc",
     "tokens": [
+      "inspect",
       "314.pyc",
       "agent.cpython",
-      "inspect",
       "router"
     ],
     "is_synthetic": true
@@ -5454,11 +5454,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "execution_schemas.cpython-314.pyc",
     "tokens": [
-      "schemas.cpython",
-      "314.pyc",
-      "router",
       "retry",
-      "execution"
+      "execution",
+      "router",
+      "314.pyc",
+      "schemas.cpython"
     ],
     "is_synthetic": true
   },
@@ -5482,11 +5482,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "safety_schemas.cpython-314.pyc",
     "tokens": [
-      "schemas.cpython",
+      "safety",
+      "router",
       "validate",
       "314.pyc",
-      "router",
-      "safety"
+      "schemas.cpython"
     ],
     "is_synthetic": true
   },
@@ -5497,11 +5497,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "schemas-tree.txt",
     "tokens": [
-      "budget",
-      "tree.txt",
       "schemas",
       "rank",
-      "manager"
+      "manager",
+      "budget",
+      "tree.txt"
     ],
     "is_synthetic": true
   },
@@ -5512,11 +5512,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "base.cpython-314.pyc",
     "tokens": [
-      "314.pyc",
       "base.cpython",
-      "budget",
       "manager",
-      "aggregate"
+      "budget",
+      "aggregate",
+      "314.pyc"
     ],
     "is_synthetic": true
   },
@@ -5527,11 +5527,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "memory_schemas.py",
     "tokens": [
-      "inspect",
       "schemas",
-      "memory",
+      "manager",
       "budget",
-      "manager"
+      "memory",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -5542,11 +5542,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "planning_schemas.py",
     "tokens": [
-      "planning",
       "schemas",
       "retry",
+      "manager",
       "budget",
-      "manager"
+      "planning"
     ],
     "is_synthetic": true
   },
@@ -5557,8 +5557,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "__init__.py",
     "tokens": [
-      "expand",
       "guard",
+      "expand",
       "init",
       "safety"
     ],
@@ -5571,12 +5571,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "base_schemas.cpython-314.pyc",
     "tokens": [
-      "schemas.cpython",
-      "314.pyc",
+      "safety",
+      "rank",
       "base",
       "guard",
-      "rank",
-      "safety"
+      "314.pyc",
+      "schemas.cpython"
     ],
     "is_synthetic": true
   },
@@ -5588,8 +5588,8 @@
     "l7_file": "memory_types.json",
     "tokens": [
       "safety",
-      "types",
       "guard",
+      "types",
       "memory",
       "aggregate"
     ],
@@ -5602,11 +5602,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "planning_types.json",
     "tokens": [
-      "planning",
-      "types",
-      "inspect",
+      "safety",
       "guard",
-      "safety"
+      "types",
+      "planning",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -5617,9 +5617,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "agent.py",
     "tokens": [
-      "planner",
       "agent",
-      "refine"
+      "refine",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -5630,11 +5630,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "__init__.cpython-314.pyc",
     "tokens": [
-      "314.pyc",
-      "expand",
-      "planner",
       ".cpython",
-      "init"
+      "expand",
+      "init",
+      "planner",
+      "314.pyc"
     ],
     "is_synthetic": true
   },
@@ -5645,11 +5645,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "memory_schemas.cpython-314.pyc",
     "tokens": [
-      "schemas.cpython",
-      "314.pyc",
-      "planner",
+      "rank",
       "memory",
-      "rank"
+      "planner",
+      "314.pyc",
+      "schemas.cpython"
     ],
     "is_synthetic": true
   },
@@ -5660,9 +5660,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "plan.cpython-314.pyc",
     "tokens": [
+      "314.pyc",
       "plan.cpython",
       "planner",
-      "314.pyc",
       "aggregate"
     ],
     "is_synthetic": true
@@ -5674,9 +5674,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "base.py",
     "tokens": [
-      "validate",
+      "executor",
       "base",
-      "executor"
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -5687,9 +5687,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": ".gitkeep",
     "tokens": [
+      "executor",
       ".gitkeep",
-      "refine",
-      "executor"
+      "refine"
     ],
     "is_synthetic": true
   },
@@ -5701,9 +5701,9 @@
     "l7_file": "orchestration_schemas.py",
     "tokens": [
       "expand",
+      "executor",
       "orchestration",
-      "schemas",
-      "executor"
+      "schemas"
     ],
     "is_synthetic": true
   },
@@ -5714,11 +5714,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "planning_schemas.cpython-314.pyc",
     "tokens": [
-      "planning",
-      "schemas.cpython",
-      "314.pyc",
+      "rank",
       "executor",
-      "rank"
+      "planning",
+      "314.pyc",
+      "schemas.cpython"
     ],
     "is_synthetic": true
   },
@@ -5730,9 +5730,9 @@
     "l7_file": "base_schemas.py",
     "tokens": [
       "observer",
+      "act",
       "base",
-      "schemas",
-      "act"
+      "schemas"
     ],
     "is_synthetic": true
   },
@@ -5757,8 +5757,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "orchestration_types.json",
     "tokens": [
-      "observer",
       "orchestration",
+      "observer",
       "types",
       "refine"
     ],
@@ -5773,8 +5773,8 @@
     "tokens": [
       "observer",
       "expand",
-      "schemas",
-      "safety"
+      "safety",
+      "schemas"
     ],
     "is_synthetic": true
   },
@@ -5785,10 +5785,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "shared_types.json",
     "tokens": [
-      "retriever",
-      "retry",
       "shared",
-      "types"
+      "retry",
+      "types",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -5799,10 +5799,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "execution_types.json",
     "tokens": [
-      "retriever",
       "types",
       "act",
-      "execution"
+      "execution",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -5813,11 +5813,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "orchestration_schemas.cpython-314.pyc",
     "tokens": [
-      "schemas.cpython",
       "orchestration",
-      "retriever",
       "validate",
-      "314.pyc"
+      "retriever",
+      "314.pyc",
+      "schemas.cpython"
     ],
     "is_synthetic": true
   },
@@ -5828,10 +5828,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "safety_types.json",
     "tokens": [
-      "retriever",
       "safety",
       "types",
-      "refine"
+      "refine",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -5842,14 +5842,14 @@
     "l6_ops": "tool-adapter-ops",
     "l7_file": "__init__.cpython-314.pyc",
     "tokens": [
+      "tool",
       "adapter",
-      "314.pyc",
-      "act",
       ".cpython",
-      "init",
-      "budget",
+      "act",
       "manager",
-      "tool"
+      "budget",
+      "init",
+      "314.pyc"
     ],
     "is_synthetic": true
   },
@@ -5860,10 +5860,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ci_enforcer.py                     # LEVEL 3",
     "tokens": [
-      "retry",
       "guard",
-      "enforcer.py                     # level 3",
-      "safety"
+      "retry",
+      "safety",
+      "enforcer.py                     # level 3"
     ],
     "is_synthetic": true
   },
@@ -5874,11 +5874,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "cleanup_observability.py           # LEVEL 3 (placeholder)",
     "tokens": [
+      "safety",
       "cleanup",
       "act",
-      "observability.py           # level 3 (placeholder)",
       "guard",
-      "safety"
+      "observability.py           # level 3 (placeholder)"
     ],
     "is_synthetic": true
   },
@@ -5889,11 +5889,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "manifest_validator.py               # LEVEL 3",
     "tokens": [
-      "validate",
+      "safety",
       "validator.py               # level 3",
-      "manifest",
+      "validate",
       "guard",
-      "safety"
+      "manifest"
     ],
     "is_synthetic": true
   },
@@ -5907,9 +5907,9 @@
       "safety",
       "prompt",
       "validate",
-      "governance.py       # level 3 (placeholder)",
       "guard",
-      "refine"
+      "refine",
+      "governance.py       # level 3 (placeholder)"
     ],
     "is_synthetic": true
   },
@@ -5920,12 +5920,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "show_repo_summary.py                # LEVEL 3 (placeholder)",
     "tokens": [
-      "summary.py                # level 3 (placeholder)",
-      "repo",
+      "safety",
       "expand",
-      "show",
+      "summary.py                # level 3 (placeholder)",
       "guard",
-      "safety"
+      "show",
+      "repo"
     ],
     "is_synthetic": true
   },
@@ -5936,13 +5936,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "pipeline_test_001_results.json      # LEVEL 3",
     "tokens": [
-      "results.json      # level 3",
-      "test",
-      "pipeline",
+      "safety",
+      "rank",
       "001",
       "guard",
-      "rank",
-      "safety"
+      "test",
+      "pipeline",
+      "results.json      # level 3"
     ],
     "is_synthetic": true
   },
@@ -5953,10 +5953,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "build_artifacts.py                 # LEVEL 3 (placeholder, if added)",
     "tokens": [
-      "artifacts.py                 # level 3 (placeholder, if added)",
-      "planner",
       "inspect",
-      "build"
+      "artifacts.py                 # level 3 (placeholder, if added)",
+      "build",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -5967,10 +5967,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "enforce_config_structure.py        # LEVEL 3 (placeholder)",
     "tokens": [
-      "config",
       "structure.py        # level 3 (placeholder)",
-      "planner",
+      "config",
       "retry",
+      "planner",
       "enforce"
     ],
     "is_synthetic": true
@@ -5983,8 +5983,8 @@
     "l7_file": "semantic_validation_engine.py       # LEVEL 3",
     "tokens": [
       "validation",
-      "engine.py       # level 3",
       "act",
+      "engine.py       # level 3",
       "planner",
       "semantic"
     ],
@@ -5998,9 +5998,9 @@
     "l7_file": "validate_test_structure.py          # LEVEL 3 (placeholder)",
     "tokens": [
       "test",
-      "validate",
+      "structure.py          # level 3 (placeholder)",
       "planner",
-      "structure.py          # level 3 (placeholder)"
+      "validate"
     ],
     "is_synthetic": true
   },
@@ -6012,10 +6012,10 @@
     "l7_file": "diff_folder_structure.py            # LEVEL 3 (placeholder)",
     "tokens": [
       "folder",
-      "planner",
-      "diff",
+      "refine",
       "structure.py            # level 3 (placeholder)",
-      "refine"
+      "planner",
+      "diff"
     ],
     "is_synthetic": true
   },
@@ -6027,8 +6027,8 @@
     "l7_file": ".gitkeep                            # LEVEL 3",
     "tokens": [
       "expand",
-      "planner",
-      ".gitkeep                            # level 3"
+      ".gitkeep                            # level 3",
+      "planner"
     ],
     "is_synthetic": true
   },
@@ -6039,10 +6039,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "run_tests.py                       # LEVEL 3 (placeholder)",
     "tokens": [
-      "aggregate",
-      "run",
       "tests.py                       # level 3 (placeholder)",
-      "executor"
+      "executor",
+      "run",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -6053,11 +6053,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "enforce_data_structure.py          # LEVEL 3 (placeholder)",
     "tokens": [
-      "inspect",
       "data",
       "executor",
-      "structure.py          # level 3 (placeholder)",
-      "enforce"
+      "enforce",
+      "inspect",
+      "structure.py          # level 3 (placeholder)"
     ],
     "is_synthetic": true
   },
@@ -6068,11 +6068,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_matrix_validator.py            # LEVEL 3",
     "tokens": [
-      "matrix",
+      "retry",
+      "executor",
       "validator.py            # level 3",
       "test",
-      "executor",
-      "retry"
+      "matrix"
     ],
     "is_synthetic": true
   },
@@ -6083,11 +6083,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ingest_job_descriptions.py          # LEVEL 3 (placeholder)",
     "tokens": [
-      "ingest",
-      "descriptions.py          # level 3 (placeholder)",
+      "job",
       "act",
+      "descriptions.py          # level 3 (placeholder)",
       "executor",
-      "job"
+      "ingest"
     ],
     "is_synthetic": true
   },
@@ -6099,10 +6099,10 @@
     "l7_file": "check_for_large_files.py            # LEVEL 3 (placeholder)",
     "tokens": [
       "large",
-      "validate",
-      "for",
-      "executor",
       "files.py            # level 3 (placeholder)",
+      "for",
+      "validate",
+      "executor",
       "check"
     ],
     "is_synthetic": true
@@ -6115,8 +6115,8 @@
     "l7_file": "metrics.json                        # LEVEL 3",
     "tokens": [
       "metrics.json                        # level 3",
-      "refine",
-      "executor"
+      "executor",
+      "refine"
     ],
     "is_synthetic": true
   },
@@ -6127,10 +6127,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "run_lint.py                        # LEVEL 3 (placeholder)",
     "tokens": [
+      "lint.py                        # level 3 (placeholder)",
       "observer",
       "run",
-      "rank",
-      "lint.py                        # level 3 (placeholder)"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -6155,9 +6155,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "validate_root_folders.py            # LEVEL 3 (placeholder)",
     "tokens": [
+      "root",
       "folders.py            # level 3 (placeholder)",
       "validate",
-      "root",
       "inspect",
       "observer"
     ],
@@ -6170,11 +6170,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ingest_resume_inputs.py             # LEVEL 3 (placeholder)",
     "tokens": [
-      "ingest",
       "inputs.py             # level 3 (placeholder)",
-      "resume",
       "retry",
-      "observer"
+      "resume",
+      "observer",
+      "ingest"
     ],
     "is_synthetic": true
   },
@@ -6198,9 +6198,9 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "migrate_scripts.py                      # LEVEL 2",
     "tokens": [
-      "migrate",
-      "observer",
       "scripts.py                      # level 2",
+      "observer",
+      "migrate",
       "validate"
     ],
     "is_synthetic": true
@@ -6212,10 +6212,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "check_schemas.py                   # LEVEL 3 (placeholder)",
     "tokens": [
-      "retriever",
       "expand",
       "check",
-      "schemas.py                   # level 3 (placeholder)"
+      "schemas.py                   # level 3 (placeholder)",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -6226,10 +6226,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "remove_pycache.py                  # LEVEL 3 (placeholder)",
     "tokens": [
-      "retriever",
       "pycache.py                  # level 3 (placeholder)",
+      "rank",
       "remove",
-      "rank"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -6241,9 +6241,9 @@
     "l7_file": "validate_config_schemas.py          # LEVEL 3 (placeholder)",
     "tokens": [
       "config",
-      "retriever",
-      "validate",
       "schemas.py          # level 3 (placeholder)",
+      "validate",
+      "retriever",
       "aggregate"
     ],
     "is_synthetic": true
@@ -6255,11 +6255,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ingest_taxonomy_data.py             # LEVEL 3 (placeholder)",
     "tokens": [
+      "taxonomy",
       "data.py             # level 3 (placeholder)",
-      "ingest",
       "retriever",
       "inspect",
-      "taxonomy"
+      "ingest"
     ],
     "is_synthetic": true
   },
@@ -6270,10 +6270,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "file_ops.py                         # LEVEL 3 (placeholder)",
     "tokens": [
-      "retriever",
       "retry",
+      "file",
       "ops.py                         # level 3 (placeholder)",
-      "file"
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -6284,10 +6284,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "scripts-tree.txt                        # LEVEL 2",
     "tokens": [
-      "retriever",
       "tree.txt                        # level 2",
       "act",
-      "scripts"
+      "scripts",
+      "retriever"
     ],
     "is_synthetic": true
   },
@@ -6298,10 +6298,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "verify_golden_sets.py              # LEVEL 3 (placeholder)",
     "tokens": [
-      "golden",
+      "verify",
       "sets.py              # level 3 (placeholder)",
       "router",
-      "verify",
+      "golden",
       "refine"
     ],
     "is_synthetic": true
@@ -6313,11 +6313,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "contract_registry_validator.py      # LEVEL 3",
     "tokens": [
-      "registry",
+      "validator.py      # level 3",
       "expand",
-      "contract",
+      "registry",
       "router",
-      "validator.py      # level 3"
+      "contract"
     ],
     "is_synthetic": true
   },
@@ -6328,10 +6328,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "validate_observability_structure.py # LEVEL 3 (placeholder)",
     "tokens": [
-      "validate",
-      "router",
-      "structure.py # level 3 (placeholder)",
       "rank",
+      "structure.py # level 3 (placeholder)",
+      "router",
+      "validate",
       "observability"
     ],
     "is_synthetic": true
@@ -6343,10 +6343,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "sanitize_inputs.py                  # LEVEL 3 (placeholder)",
     "tokens": [
-      "aggregate",
       "inputs.py                  # level 3 (placeholder)",
       "sanitize",
-      "router"
+      "router",
+      "aggregate"
     ],
     "is_synthetic": true
   },
@@ -6357,8 +6357,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "hashing.py                          # LEVEL 3 (placeholder)",
     "tokens": [
-      "hashing.py                          # level 3 (placeholder)",
       "inspect",
+      "hashing.py                          # level 3 (placeholder)",
       "router"
     ],
     "is_synthetic": true
@@ -6370,12 +6370,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "ast_purity_scanner.py              # LEVEL 3",
     "tokens": [
-      "scanner.py              # level 3",
-      "ast",
+      "purity",
+      "manager",
       "validate",
       "budget",
-      "manager",
-      "purity"
+      "scanner.py              # level 3",
+      "ast"
     ],
     "is_synthetic": true
   },
@@ -6386,12 +6386,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "golden_trace_auditor.py             # LEVEL 3",
     "tokens": [
+      "trace",
+      "manager",
       "auditor.py             # level 3",
       "golden",
-      "refine",
       "budget",
-      "manager",
-      "trace"
+      "refine"
     ],
     "is_synthetic": true
   },
@@ -6402,12 +6402,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "validate_runtime_integrity.py       # LEVEL 3 (placeholder)",
     "tokens": [
-      "validate",
       "integrity.py       # level 3 (placeholder)",
       "expand",
-      "runtime",
+      "manager",
+      "validate",
       "budget",
-      "manager"
+      "runtime"
     ],
     "is_synthetic": true
   },
@@ -6418,11 +6418,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "tree_export.ps1                     # LEVEL 3 (placeholder)",
     "tokens": [
-      "tree",
+      "rank",
+      "manager",
       "budget",
       "export.ps1                     # level 3 (placeholder)",
-      "rank",
-      "manager"
+      "tree"
     ],
     "is_synthetic": true
   },
@@ -6434,10 +6434,10 @@
     "l7_file": "logging_utils.py                    # LEVEL 3 (placeholder)",
     "tokens": [
       "logging",
-      "utils.py                    # level 3 (placeholder)",
-      "budget",
       "manager",
-      "aggregate"
+      "budget",
+      "aggregate",
+      "utils.py                    # level 3 (placeholder)"
     ],
     "is_synthetic": true
   },
@@ -6448,8 +6448,8 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "__init__.py",
     "tokens": [
-      "retry",
       "init",
+      "retry",
       "router"
     ],
     "is_synthetic": true
@@ -6461,11 +6461,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rg_memory_mappings.py",
     "tokens": [
-      "test",
+      "retry",
       "mappings",
       "router",
-      "retry",
-      "memory"
+      "memory",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6476,10 +6476,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "memory_fixtures.py",
     "tokens": [
-      "fixtures",
-      "memory",
       "act",
-      "router"
+      "memory",
+      "router",
+      "fixtures"
     ],
     "is_synthetic": true
   },
@@ -6490,13 +6490,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_e2e_safety_blocking_flows.py",
     "tokens": [
-      "blocking",
-      "flows",
-      "test",
-      "validate",
+      "safety",
       "e2e",
       "router",
-      "safety"
+      "validate",
+      "blocking",
+      "test",
+      "flows"
     ],
     "is_synthetic": true
   },
@@ -6507,11 +6507,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_observability_integration.py",
     "tokens": [
-      "test",
-      "integration",
       "router",
-      "observability",
-      "refine"
+      "integration",
+      "refine",
+      "test",
+      "observability"
     ],
     "is_synthetic": true
   },
@@ -6522,11 +6522,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_l1_rg_planning_integration.py",
     "tokens": [
-      "planning",
-      "test",
-      "integration",
       "expand",
-      "router"
+      "router",
+      "integration",
+      "planning",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6537,12 +6537,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_message_planner.py",
     "tokens": [
-      "lic",
       "message",
-      "test",
-      "planner",
+      "rank",
       "router",
-      "rank"
+      "lic",
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6553,12 +6553,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_l2_lic_execution_integration.py",
     "tokens": [
-      "lic",
-      "test",
-      "integration",
-      "router",
       "execution",
-      "aggregate"
+      "router",
+      "aggregate",
+      "lic",
+      "integration",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6569,12 +6569,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_tool_request_builder.py",
     "tokens": [
-      "builder",
+      "tool",
+      "router",
       "test",
       "inspect",
       "request",
-      "router",
-      "tool"
+      "builder"
     ],
     "is_synthetic": true
   },
@@ -6585,12 +6585,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "sample_rg_resume_input.json",
     "tokens": [
-      "input",
-      "inspect",
+      "manager",
       "resume",
-      "sample",
       "budget",
-      "manager"
+      "sample",
+      "inspect",
+      "input"
     ],
     "is_synthetic": true
   },
@@ -6601,12 +6601,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rg_temporal_memory.py",
     "tokens": [
-      "test",
-      "inspect",
+      "manager",
+      "budget",
       "temporal",
       "memory",
-      "budget",
-      "manager"
+      "test",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -6617,11 +6617,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "rag_fixtures.py",
     "tokens": [
-      "fixtures",
       "retry",
-      "rag",
+      "manager",
+      "fixtures",
       "budget",
-      "manager"
+      "rag"
     ],
     "is_synthetic": true
   },
@@ -6632,12 +6632,12 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "test_cross_layer_purity.py",
     "tokens": [
-      "test",
+      "purity",
       "act",
-      "budget",
       "manager",
+      "budget",
       "cross",
-      "purity"
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6648,13 +6648,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_regression_rg_resume_outputs.py",
     "tokens": [
-      "test",
-      "validate",
-      "regression",
+      "manager",
       "resume",
-      "outputs",
+      "validate",
       "budget",
-      "manager"
+      "outputs",
+      "test",
+      "regression"
     ],
     "is_synthetic": true
   },
@@ -6665,13 +6665,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_l1_lic_planning_integration.py",
     "tokens": [
-      "planning",
-      "lic",
-      "test",
-      "integration",
-      "budget",
       "manager",
-      "refine"
+      "budget",
+      "lic",
+      "refine",
+      "planning",
+      "test",
+      "integration"
     ],
     "is_synthetic": true
   },
@@ -6682,13 +6682,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_research_planner.py",
     "tokens": [
-      "lic",
-      "test",
+      "research",
       "expand",
-      "planner",
-      "budget",
       "manager",
-      "research"
+      "budget",
+      "lic",
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6699,13 +6699,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rg_company_research_executor.py",
     "tokens": [
-      "test",
+      "research",
+      "rank",
+      "manager",
       "budget",
       "company",
       "executor",
-      "rank",
-      "manager",
-      "research"
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6716,13 +6716,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_tool_response_parser.py",
     "tokens": [
-      "response",
-      "test",
-      "parser",
-      "budget",
-      "manager",
       "tool",
-      "aggregate"
+      "response",
+      "parser",
+      "manager",
+      "budget",
+      "aggregate",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6733,13 +6733,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "sample_lic_outreach_input.json",
     "tokens": [
-      "lic",
-      "outreach",
       "safety",
-      "input",
-      "sample",
       "guard",
-      "aggregate"
+      "lic",
+      "aggregate",
+      "sample",
+      "outreach",
+      "input"
     ],
     "is_synthetic": true
   },
@@ -6750,13 +6750,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_memory_mappings.py",
     "tokens": [
-      "lic",
       "safety",
-      "test",
       "mappings",
       "guard",
+      "lic",
+      "aggregate",
       "memory",
-      "aggregate"
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6767,12 +6767,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "model_stub_fixtures.py",
     "tokens": [
+      "safety",
       "fixtures",
+      "guard",
       "inspect",
       "stub",
-      "guard",
-      "model",
-      "safety"
+      "model"
     ],
     "is_synthetic": true
   },
@@ -6783,12 +6783,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_model_routing.py",
     "tokens": [
-      "test",
-      "routing",
+      "safety",
       "retry",
       "guard",
-      "model",
-      "safety"
+      "routing",
+      "test",
+      "model"
     ],
     "is_synthetic": true
   },
@@ -6799,14 +6799,14 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_regression_lic_outreach_outputs.py",
     "tokens": [
-      "lic",
-      "outreach",
-      "test",
-      "regression",
+      "safety",
       "act",
-      "outputs",
       "guard",
-      "safety"
+      "lic",
+      "outputs",
+      "test",
+      "outreach",
+      "regression"
     ],
     "is_synthetic": true
   },
@@ -6818,11 +6818,11 @@
     "l7_file": "test_rg_message_planner.py",
     "tokens": [
       "message",
-      "test",
+      "safety",
       "validate",
-      "planner",
       "guard",
-      "safety"
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6833,13 +6833,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_strategy_planner.py",
     "tokens": [
-      "lic",
-      "safety",
-      "test",
       "strategy",
-      "planner",
+      "safety",
       "guard",
-      "refine"
+      "lic",
+      "refine",
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6850,13 +6850,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rg_contact_research_executor.py",
     "tokens": [
-      "test",
-      "contact",
+      "safety",
       "research",
-      "executor",
       "expand",
+      "contact",
       "guard",
-      "safety"
+      "executor",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6867,13 +6867,13 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "test_rg_resume_engine_dag.py",
     "tokens": [
-      "engine",
-      "test",
-      "resume",
-      "guard",
+      "safety",
       "rank",
+      "resume",
       "dag",
-      "safety"
+      "guard",
+      "test",
+      "engine"
     ],
     "is_synthetic": true
   },
@@ -6884,10 +6884,10 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "sample_company_kg.json",
     "tokens": [
+      "sample",
       "company",
       "planner",
-      "rank",
-      "sample"
+      "rank"
     ],
     "is_synthetic": true
   },
@@ -6898,12 +6898,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_temporal_memory.py",
     "tokens": [
+      "rank",
       "lic",
-      "test",
-      "planner",
       "temporal",
       "memory",
-      "rank"
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6914,12 +6914,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_e2e_rg_resume_flow.py",
     "tokens": [
-      "test",
-      "e2e",
-      "planner",
-      "resume",
       "flow",
-      "aggregate"
+      "e2e",
+      "resume",
+      "aggregate",
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6930,10 +6930,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rag_pipeline_integration.py",
     "tokens": [
-      "test",
       "integration",
-      "inspect",
       "planner",
+      "test",
+      "inspect",
       "pipeline",
       "rag"
     ],
@@ -6946,12 +6946,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_regression_temporal_memory.py",
     "tokens": [
-      "test",
-      "regression",
-      "planner",
       "retry",
+      "temporal",
       "memory",
-      "temporal"
+      "planner",
+      "test",
+      "regression"
     ],
     "is_synthetic": true
   },
@@ -6962,10 +6962,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rg_research_planner.py",
     "tokens": [
-      "test",
-      "planner",
       "act",
-      "research"
+      "research",
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6976,11 +6976,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_safety_planner.py",
     "tokens": [
-      "lic",
-      "test",
+      "safety",
       "validate",
+      "lic",
       "planner",
-      "safety"
+      "test"
     ],
     "is_synthetic": true
   },
@@ -6992,11 +6992,11 @@
     "l7_file": "test_rg_message_generation_executor.py",
     "tokens": [
       "message",
-      "test",
-      "executor",
-      "planner",
       "generation",
-      "refine"
+      "executor",
+      "refine",
+      "planner",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7007,13 +7007,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_outreach_engine_dag.py",
     "tokens": [
-      "lic",
-      "outreach",
-      "engine",
-      "test",
       "expand",
+      "dag",
+      "lic",
       "planner",
-      "dag"
+      "test",
+      "outreach",
+      "engine"
     ],
     "is_synthetic": true
   },
@@ -7024,10 +7024,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "sample_contact_kg.json",
     "tokens": [
-      "expand",
       "contact",
-      "sample",
-      "executor"
+      "expand",
+      "executor",
+      "sample"
     ],
     "is_synthetic": true
   },
@@ -7038,11 +7038,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_provider_registry.py",
     "tokens": [
-      "test",
+      "expand",
+      "registry",
       "provider",
       "executor",
-      "expand",
-      "registry"
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7053,13 +7053,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_e2e_lic_outreach_flow.py",
     "tokens": [
-      "lic",
-      "outreach",
-      "test",
-      "e2e",
-      "executor",
       "flow",
-      "rank"
+      "rank",
+      "e2e",
+      "lic",
+      "executor",
+      "test",
+      "outreach"
     ],
     "is_synthetic": true
   },
@@ -7070,11 +7070,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_kg_pipeline_integration.py",
     "tokens": [
-      "test",
-      "integration",
+      "aggregate",
       "executor",
-      "pipeline",
-      "aggregate"
+      "integration",
+      "test",
+      "pipeline"
     ],
     "is_synthetic": true
   },
@@ -7085,11 +7085,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_api_stability.py",
     "tokens": [
+      "executor",
       "test",
-      "stability",
-      "api",
       "inspect",
-      "executor"
+      "stability",
+      "api"
     ],
     "is_synthetic": true
   },
@@ -7101,10 +7101,10 @@
     "l7_file": "test_rg_strategy_planner.py",
     "tokens": [
       "strategy",
-      "test",
+      "retry",
       "executor",
       "planner",
-      "retry"
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7115,11 +7115,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "test_lic_refinement_planner.py",
     "tokens": [
-      "lic",
-      "test",
       "act",
+      "lic",
       "executor",
       "planner",
+      "test",
       "refinement"
     ],
     "is_synthetic": true
@@ -7131,12 +7131,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_company_research_executor.py",
     "tokens": [
-      "lic",
-      "test",
+      "research",
       "validate",
-      "company",
+      "lic",
       "executor",
-      "research"
+      "company",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7147,12 +7147,12 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_self_correction_loops.py",
     "tokens": [
-      "self",
-      "test",
-      "correction",
       "executor",
-      "loops",
-      "refine"
+      "correction",
+      "refine",
+      "test",
+      "self",
+      "loops"
     ],
     "is_synthetic": true
   },
@@ -7163,10 +7163,10 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "rg_resume_fixtures.py",
     "tokens": [
-      "fixtures",
       "observer",
       "resume",
-      "refine"
+      "refine",
+      "fixtures"
     ],
     "is_synthetic": true
   },
@@ -7178,11 +7178,11 @@
     "l7_file": "test_long_term_memory.py",
     "tokens": [
       "long",
-      "test",
       "term",
-      "observer",
+      "refine",
       "memory",
-      "refine"
+      "test",
+      "observer"
     ],
     "is_synthetic": true
   },
@@ -7193,13 +7193,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_e2e_tool_error_recovery.py",
     "tokens": [
-      "test",
+      "tool",
       "e2e",
-      "recovery",
       "expand",
       "error",
+      "test",
       "observer",
-      "tool"
+      "recovery"
     ],
     "is_synthetic": true
   },
@@ -7210,11 +7210,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_memory_integration.py",
     "tokens": [
-      "test",
-      "integration",
-      "observer",
+      "rank",
       "memory",
-      "rank"
+      "integration",
+      "test",
+      "observer"
     ],
     "is_synthetic": true
   },
@@ -7226,10 +7226,10 @@
     "l7_file": "test_output_stability.py",
     "tokens": [
       "output",
+      "aggregate",
       "test",
-      "stability",
       "observer",
-      "aggregate"
+      "stability"
     ],
     "is_synthetic": true
   },
@@ -7240,11 +7240,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rg_safety_planner.py",
     "tokens": [
+      "safety",
+      "planner",
       "test",
       "inspect",
-      "planner",
-      "observer",
-      "safety"
+      "observer"
     ],
     "is_synthetic": true
   },
@@ -7255,11 +7255,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_planning_schema_validation.py",
     "tokens": [
-      "planning",
       "validation",
-      "test",
-      "schema",
       "retry",
+      "schema",
+      "planning",
+      "test",
       "observer"
     ],
     "is_synthetic": true
@@ -7271,13 +7271,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_contact_research_executor.py",
     "tokens": [
-      "lic",
-      "test",
-      "contact",
+      "research",
       "act",
+      "contact",
+      "lic",
       "executor",
-      "observer",
-      "research"
+      "test",
+      "observer"
     ],
     "is_synthetic": true
   },
@@ -7288,11 +7288,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_dag_validity.py",
     "tokens": [
-      "test",
       "validity",
       "validate",
-      "observer",
-      "dag"
+      "dag",
+      "test",
+      "observer"
     ],
     "is_synthetic": true
   },
@@ -7304,10 +7304,10 @@
     "l7_file": "lic_outreach_fixtures.py",
     "tokens": [
       "fixtures",
+      "validate",
       "lic",
-      "outreach",
       "retriever",
-      "validate"
+      "outreach"
     ],
     "is_synthetic": true
   },
@@ -7319,11 +7319,11 @@
     "l7_file": "test_memory_schema_validation.py",
     "tokens": [
       "validation",
-      "retriever",
-      "validate",
-      "test",
       "schema",
-      "memory"
+      "validate",
+      "retriever",
+      "memory",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7334,13 +7334,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_e2e_multi_turn_state.py",
     "tokens": [
-      "retriever",
-      "test",
-      "e2e",
-      "state",
-      "turn",
       "multi",
-      "refine"
+      "e2e",
+      "turn",
+      "retriever",
+      "refine",
+      "test",
+      "state"
     ],
     "is_synthetic": true
   },
@@ -7351,11 +7351,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_tool_calls.py",
     "tokens": [
-      "retriever",
-      "test",
-      "expand",
       "tool",
-      "calls"
+      "expand",
+      "retriever",
+      "calls",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7366,11 +7366,11 @@
     "l6_ops": "helper-methods-ops",
     "l7_file": "test_performance_stability.py",
     "tokens": [
+      "rank",
       "retriever",
       "performance",
       "test",
-      "stability",
-      "rank"
+      "stability"
     ],
     "is_synthetic": true
   },
@@ -7381,11 +7381,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_rg_refinement_planner.py",
     "tokens": [
-      "retriever",
       "test",
+      "retriever",
       "planner",
-      "refinement",
-      "aggregate"
+      "aggregate",
+      "refinement"
     ],
     "is_synthetic": true
   },
@@ -7396,11 +7396,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_l2_rg_execution_integration.py",
     "tokens": [
+      "execution",
       "retriever",
-      "test",
       "integration",
-      "inspect",
-      "execution"
+      "test",
+      "inspect"
     ],
     "is_synthetic": true
   },
@@ -7411,13 +7411,13 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_lic_message_generation_executor.py",
     "tokens": [
-      "lic",
       "message",
-      "retriever",
-      "test",
-      "executor",
+      "generation",
       "retry",
-      "generation"
+      "retriever",
+      "lic",
+      "executor",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7428,11 +7428,11 @@
     "l6_ops": "utility-functions-ops",
     "l7_file": "test_fallback_paths.py",
     "tokens": [
-      "retriever",
-      "test",
+      "paths",
       "act",
       "fallback",
-      "paths"
+      "retriever",
+      "test"
     ],
     "is_synthetic": true
   },
@@ -7456,11 +7456,11 @@
     "l6_ops": "vectorization-ops",
     "l7_file": "__init__.py",
     "tokens": [
-      "vectorization",
-      "init",
       "retry",
+      "manager",
       "budget",
-      "manager"
+      "vectorization",
+      "init"
     ],
     "is_synthetic": true
   },
@@ -7471,13 +7471,13 @@
     "l6_ops": "constraint-check-ops",
     "l7_file": "test_filters.py",
     "tokens": [
-      "test",
-      "inspect",
-      "constraint",
+      "safety",
       "guard",
       "filters",
+      "test",
+      "inspect",
       "check",
-      "safety"
+      "constraint"
     ],
     "is_synthetic": true
   },
@@ -7488,12 +7488,12 @@
     "l6_ops": "retrieval-ops",
     "l7_file": "test_policy_engine.py",
     "tokens": [
-      "engine",
-      "retrieval",
-      "test",
-      "planner",
       "policy",
-      "aggregate"
+      "aggregate",
+      "planner",
+      "test",
+      "retrieval",
+      "engine"
     ],
     "is_synthetic": true
   },
@@ -7504,14 +7504,14 @@
     "l6_ops": "tool-adapter-ops",
     "l7_file": "test_prompt_injection_protection.py",
     "tokens": [
-      "protection",
+      "tool",
+      "prompt",
+      "rank",
       "injection",
       "adapter",
-      "test",
-      "prompt",
       "executor",
-      "rank",
-      "tool"
+      "test",
+      "protection"
     ],
     "is_synthetic": true
   },
@@ -7522,12 +7522,12 @@
     "l6_ops": "backoff-policy-ops",
     "l7_file": "test_validators.py",
     "tokens": [
-      "backoff",
-      "test",
-      "expand",
       "policy",
+      "expand",
+      "test",
+      "validators",
       "observer",
-      "validators"
+      "backoff"
     ],
     "is_synthetic": true
   },
@@ -7538,13 +7538,13 @@
     "l6_ops": "diagnostics-ops",
     "l7_file": "test_safety_schema_validation.py",
     "tokens": [
+      "safety",
       "validation",
-      "retriever",
-      "test",
-      "diagnostics",
-      "refine",
       "schema",
-      "safety"
+      "retriever",
+      "refine",
+      "test",
+      "diagnostics"
     ],
     "is_synthetic": true
   },
@@ -7555,13 +7555,13 @@
     "l6_ops": "state-management-ops",
     "l7_file": "test_llm_guardrails.py",
     "tokens": [
+      "router",
+      "validate",
       "management",
       "test",
-      "validate",
+      "guardrails",
       "llm",
-      "state",
-      "router",
-      "guardrails"
+      "state"
     ],
     "is_synthetic": true
   }
