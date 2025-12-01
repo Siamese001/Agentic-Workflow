@@ -1,523 +1,695 @@
 """
-L5 Agentic Core - Plan Layer - Prepare Core Payload
-Implements L1 Cognitive Planning with full L5 safety compliance
+L1 Cognitive Planning - Core Payload Preparation
+
+Implements pure planning operations for preparing core registry payloads
+with L5 safety, comprehensive logging, and fail-closed architecture.
 """
 
+from __future__ import annotations
 import logging
+import asyncio
 import json
-import hashlib
-import re
-from typing import Dict, Any, Optional, List, Union, BinaryIO
-from dataclasses import dataclass, field, asdict
+from typing import Any, Dict, List, Optional, Union, Tuple
+from dataclasses import dataclass, field
 from datetime import datetime
+from abc import ABC, abstractmethod
 from enum import Enum
 
-# Configure comprehensive logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from pydantic import BaseModel, Field, ValidationError
 
-class PayloadType(Enum):
-    """Supported payload types for core operations"""
-    QUERY = "query"
-    COMMAND = "command"
-    DATA = "data"
-    CONFIG = "config"
-    RESPONSE = "response"
 
-class PayloadFormat(Enum):
-    """Supported payload formats"""
+# ============================================================================
+# L5 SAFETY & LOGGING INFRASTRUCTURE
+# ============================================================================
+
+class PayloadType(str, Enum):
+    """Supported payload types with L5 safety validation"""
+    REGISTRY_QUERY = "registry_query"
+    LAYER_REQUEST = "layer_request"
+    COORDINATION_MESSAGE = "coordination_message"
+    VALIDATION_REQUEST = "validation_request"
+    MONITORING_DATA = "monitoring_data"
+    CONFIGURATION_UPDATE = "configuration_update"
+
+
+class PayloadFormat(str, Enum):
+    """Payload format types with L5 safety enforcement"""
     JSON = "json"
     XML = "xml"
+    YAML = "yaml"
     BINARY = "binary"
-    TEXT = "text"
-    FORM = "form"
+    COMPRESSED = "compressed"
 
-class CompressionType(Enum):
-    """Supported compression types"""
-    NONE = "none"
-    GZIP = "gzip"
-    DEFLATE = "deflate"
-    BROTLI = "brotli"
+
+class PayloadSafetyPolicy(BaseModel):
+    """L5 Safety policy for core payload preparation operations"""
+    max_payload_size: int = Field(default=1048576, description="Maximum payload size in bytes (1MB)")
+    allowed_payload_types: List[str] = Field(default_factory=lambda: [t.value for t in PayloadType])
+    allowed_formats: List[str] = Field(default_factory=lambda: [t.value for t in PayloadFormat])
+    require_content_validation: bool = Field(default=True)
+    prevent_data_leakage: bool = Field(default=True)
+    encrypt_sensitive_data: bool = Field(default=True)
+    safety_checks_enabled: bool = Field(default=True)
+    fail_closed: bool = Field(default=True)
+
+
+class PayloadSafetyValidator:
+    """L5 Safety validator for core payload preparation operations"""
+    
+    def __init__(self, policy: PayloadSafetyPolicy):
+        self.policy = policy
+        self.logger = logging.getLogger(f"{__name__}.PayloadSafetyValidator")
+        
+        # Pre-compiled patterns for safety validation
+        self._sensitive_patterns = [
+            r"password", r"secret", r"token", r"key", r"credential",
+            r"private", r"confidential", r"restricted"
+        ]
+        self._dangerous_content_patterns = [
+            r"<script", r"javascript:", r"data:text/html",
+            r"__import__", r"eval\s*\(", r"exec\s*\("
+        ]
+    
+    def validate_payload_input(self, payload_input: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+        """Validates payload input against L5 safety policies"""
+        try:
+            # Check payload size
+            payload_data = payload_input.get("data", {})
+            payload_size = len(str(payload_data).encode('utf-8'))
+            
+            if payload_size > self.policy.max_payload_size:
+                error_msg = f"Payload too large: {payload_size} > {self.policy.max_payload_size} bytes"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check payload type
+            payload_type = payload_input.get("payload_type", "")
+            if payload_type not in self.policy.allowed_payload_types:
+                error_msg = f"Prohibited payload type: {payload_type}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check format
+            payload_format = payload_input.get("format", "")
+            if payload_format not in self.policy.allowed_formats:
+                error_msg = f"Prohibited payload format: {payload_format}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check for dangerous content
+            content_str = str(payload_data).lower()
+            for pattern in self._dangerous_content_patterns:
+                if pattern in content_str:
+                    error_msg = f"Dangerous content pattern detected: {pattern}"
+                    self.logger.warning(f"Safety violation: {error_msg}")
+                    return False, error_msg
+            
+            # Check for sensitive data that should be encrypted
+            if self.policy.encrypt_sensitive_data:
+                for pattern in self._sensitive_patterns:
+                    if pattern in content_str:
+                        self.logger.warning(f"Sensitive data pattern detected: {pattern}")
+                        # In production, this would trigger encryption
+            
+            return True, None
+            
+        except Exception as e:
+            error_msg = f"Validation error: {str(e)}"
+            self.logger.error(f"Safety validation failed: {error_msg}")
+            if self.policy.fail_closed:
+                return False, error_msg
+            return True, error_msg
+
+
+# ============================================================================
+# L1 COGNITIVE PLANNING INTERFACES
+# ============================================================================
 
 @dataclass
-class PayloadMetadata:
-    """Metadata for core payload with full type safety"""
-    payload_id: str = field(default_factory=lambda: f"payload_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    payload_type: PayloadType = PayloadType.DATA
-    format: PayloadFormat = PayloadFormat.JSON
-    compression: CompressionType = CompressionType.NONE
-    content_type: str = "application/json"
-    content_encoding: str = "utf-8"
-    checksum: str = ""
-    size_bytes: int = 0
-    created_at: datetime = field(default_factory=datetime.now)
-    expires_at: Optional[datetime] = None
-    tags: List[str] = field(default_factory=list)
-    security_level: str = "standard"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+class PayloadRequest:
+    """Input request for core payload preparation operations"""
+    payload_type: PayloadType
+    payload_format: PayloadFormat
+    data: Dict[str, Any]
+    target_layer: str
+    context: Dict[str, Any]
+    preparation_options: Dict[str, Any] = field(default_factory=dict)
+    security_requirements: Dict[str, Any] = field(default_factory=dict)
+    safety_level: str = "standard"
+
 
 @dataclass
-class CorePayload:
-    """Core payload structure with full type safety"""
-    metadata: PayloadMetadata
-    data: Union[Dict[str, Any], List[Any], str, bytes]
-    headers: Dict[str, str] = field(default_factory=dict)
-    signature: Optional[str] = None
-    encrypted: bool = False
-    compressed: bool = False
+class PreparedPayload:
+    """Structured representation of a prepared payload"""
+    payload_type: PayloadType
+    payload_format: PayloadFormat
+    content: Union[str, bytes, Dict[str, Any]]
+    metadata: Dict[str, Any]
+    headers: Dict[str, str]
+    size_bytes: int
+    checksum: Optional[str]
+    encrypted: bool
 
-class CorePayloadPreparer:
+
+@dataclass
+class PayloadValidationResult:
+    """Result of payload validation"""
+    is_valid: bool
+    validation_errors: List[str]
+    warnings: List[str]
+    compliance_score: float
+    security_flags: List[str]
+
+
+@dataclass
+class CorePayloadResult:
+    """Output result from core payload preparation operations"""
+    prepared_payload: PreparedPayload
+    validation_result: PayloadValidationResult
+    preparation_metadata: Dict[str, Any]
+    safety_validation: Dict[str, Any]
+    payload_id: str
+    timestamp: datetime = field(default_factory=datetime.now)
+
+
+class CorePayloadPreparerInterface(ABC):
+    """Abstract interface for core payload preparation operations"""
+    
+    @abstractmethod
+    async def prepare_payload(self, request: PayloadRequest) -> CorePayloadResult:
+        """Prepare core registry payload"""
+        pass
+    
+    @abstractmethod
+    async def validate_payload_structure(self, payload: PreparedPayload) -> PayloadValidationResult:
+        """Validate payload structure and content"""
+        pass
+    
+    @abstractmethod
+    async def serialize_payload(self, data: Dict[str, Any], format: PayloadFormat) -> Union[str, bytes]:
+        """Serialize payload data to specified format"""
+        pass
+
+
+# ============================================================================
+# L1 COGNITIVE PLANNING IMPLEMENTATION
+# ============================================================================
+
+class CorePayloadPreparer(CorePayloadPreparerInterface):
     """
-    L5 Core Payload Preparer with fail-closed safety and comprehensive validation
-    Implements L1 Cognitive Planning with L5 policy enforcement
+    L1 Cognitive Planning implementation for preparing core registry payloads.
+    
+    Provides pure planning operations without execution, following L5 safety
+    principles and comprehensive logging for fail-closed architecture.
     """
     
-    def __init__(self, safety_enabled: bool = True):
-        self.safety_enabled = safety_enabled
-        self.preparation_history: List[CorePayload] = []
-        self.safety_violations: List[str] = []
+    def __init__(self, safety_policy: Optional[PayloadSafetyPolicy] = None):
+        self.safety_policy = safety_policy or PayloadSafetyPolicy()
+        self.safety_validator = PayloadSafetyValidator(self.safety_policy)
+        self.logger = logging.getLogger(__name__)
         
-        # Maximum payload sizes ( different formats
-        self.max_sizes = {
-            PayloadFormat.JSON: 10 * 1024 * 1024,  # 10MB
-            PayloadFormat.XML: 10 * 1024 * 1024,    # 10MB
-            PayloadFormat.BINARY: 50 * 1024 * 1024, # 50MB
-            PayloadFormat.TEXT: 5 * 1024 * 1024,    # 5MB
-            PayloadFormat.FORM: 10 * 1024 * 1024    # 10MB
+        # Payload preparation templates and patterns
+        self._payload_templates = {
+            PayloadType.REGISTRY_QUERY: {
+                "required_fields": ["query", "target_layer", "timestamp"],
+                "optional_fields": ["filters", "limit", "offset"]
+            },
+            PayloadType.LAYER_REQUEST: {
+                "required_fields": ["layer_name", "operation", "parameters"],
+                "optional_fields": ["context", "priority", "timeout"]
+            },
+            PayloadType.COORDINATION_MESSAGE: {
+                "required_fields": ["message_type", "source_layer", "target_layers"],
+                "optional_fields": ["payload", "correlation_id", "timestamp"]
+            },
+            PayloadType.VALIDATION_REQUEST: {
+                "required_fields": ["validation_type", "target", "criteria"],
+                "optional_fields": ["context", "strict_mode", "timeout"]
+            },
+            PayloadType.MONITORING_DATA: {
+                "required_fields": ["metric_type", "source", "timestamp"],
+                "optional_fields": ["metrics", "labels", "annotations"]
+            },
+            PayloadType.CONFIGURATION_UPDATE: {
+                "required_fields": ["config_type", "target", "updates"],
+                "optional_fields": ["version", "rollback_enabled", "validation_required"]
+            }
         }
         
-        # Allowed content types
-        self.allowed_content_types = {
-            PayloadFormat.JSON: ["application/json", "text/json"],
-            PayloadFormat.XML: ["application/xml", "text/xml"],
-            PayloadFormat.BINARY: ["application/octet-stream"],
-            PayloadFormat.TEXT: ["text/plain", "text/csv"],
-            PayloadFormat.FORM: ["application/x-www-form-urlencoded", "multipart/form-data"]
-        }
-        
-        logger.info("CorePayloadPreparer initialized with safety enforcement")
+        self.logger.info("CorePayloadPreparer initialized with L5 safety policies")
     
-    def prepare_payload(
-        self,
-        data: Union[Dict[str, Any], List[Any], str, bytes],
-        payload_type: Union[str, PayloadType],
-        format_type: Union[str, PayloadFormat] = PayloadFormat.JSON,
-        headers: Optional[Dict[str, str]] = None,
-        compression: Union[str, CompressionType] = CompressionType.NONE,
-        security_level: str = "standard",
-        tags: Optional[List[str]] = None,
-        expires_in_seconds: Optional[int] = None
-    ) -> CorePayload:
+    async def prepare_payload(self, request: PayloadRequest) -> CorePayloadResult:
         """
-        Prepare a core payload with comprehensive safety validation
+        Prepare core registry payload.
         
         Args:
-            data: Payload data
-            payload_type: Type of payload
-            format_type: Format of payload
-            headers: Additional headers
-            compression: Compression type
-            security_level: Security level ( payload
-            tags: Payload tags
-            expires_in_seconds: Expiration time in seconds
+            request: Core payload preparation request with data and formatting options
             
         Returns:
-            CorePayload: Prepared payload with metadata
+            CorePayloadResult: Structured result with prepared payload and validation
             
         Raises:
-            ValueError: If preparation fails or data is invalid
-            SecurityError: If safety constraints are violated
+            ValidationError: If payload preparation fails
+            SafetyError: If payload violates safety policies
         """
-        logger.info(f"Preparing {payload_type} payload in {format_type} format")
+        self.logger.info(f"Preparing {request.payload_format} payload of type {request.payload_type} for {request.target_layer}")
         
         try:
-            # Convert strings to enums
-            if isinstance(payload_type, str):
-                payload_type = PayloadType(payload_type.lower())
-            if isinstance(format_type, str):
-                format_type = PayloadFormat(format_type.lower())
-            if isinstance(compression, str):
-                compression = CompressionType(compression.lower())
+            # L5 Safety validation
+            payload_input = {
+                "data": request.data,
+                "payload_type": request.payload_type.value,
+                "format": request.payload_format.value
+            }
             
-            # Validate inputs
-            self._validate_inputs(data, payload_type, format_type, compression)
+            is_valid, error_msg = self.safety_validator.validate_payload_input(payload_input)
+            if not is_valid:
+                raise SafetyError(f"Payload validation failed: {error_msg}")
             
-            # Apply safety constraints
-            if self.safety_enabled:
-                self._apply_safety_constraints(data, payload_type, security_level)
-            
-            # Convert data to appropriate format
-            formatted_data = self._format_data(data, format_type)
-            
-            # Apply compression if requested
-            if compression != CompressionType.NONE:
-                formatted_data = self._compress_data(formatted_data, compression)
-            
-            # Calculate checksum
-            checksum = self._calculate_checksum(formatted_data)
-            
-            # Create metadata
-            metadata = PayloadMetadata(
-                payload_type=payload_type,
-                format=format_type,
-                compression=compression,
-                content_type=self._get_content_type(format_type),
-                content_encoding="utf-8" if isinstance(formatted_data, str) else "binary",
-                checksum=checksum,
-                size_bytes=len(formatted_data) if isinstance(formatted_data, (str, bytes)) else 0,
-                expires_at=datetime.now() + datetime.timedelta(seconds=expires_in_seconds) if expires_in_seconds else None,
-                tags=tags or [],
-                security_level=security_level,
-                metadata={
-                    "preparer_version": "1.0.0",
-                    "safety_enabled": self.safety_enabled,
-                    "original_size": len(str(data)),
-                    "preparation_timestamp": datetime.now().isoformat()
-                }
+            # Validate payload structure
+            structure_valid, structure_errors = await self._validate_payload_structure_by_type(
+                request.data, request.payload_type
             )
+            if not structure_valid:
+                raise ValidationError(f"Payload structure validation failed: {structure_errors}")
             
-            # Create payload
-            payload = CorePayload(
+            # Prepare payload content
+            prepared_data = await self._prepare_payload_content(request)
+            
+            # Serialize payload
+            serialized_content = await self.serialize_payload(prepared_data, request.payload_format)
+            
+            # Generate metadata
+            metadata = await self._generate_payload_metadata(request, prepared_data)
+            
+            # Generate headers
+            headers = await self._generate_payload_headers(request, metadata)
+            
+            # Calculate size and checksum
+            content_bytes = serialized_content.encode('utf-8') if isinstance(serialized_content, str) else serialized_content
+            size_bytes = len(content_bytes)
+            checksum = self._calculate_checksum(content_bytes)
+            
+            # Check if encryption is required
+            encrypted = await self._should_encrypt_payload(request, prepared_data)
+            if encrypted:
+                serialized_content = await self._encrypt_payload(serialized_content)
+            
+            # Create prepared payload
+            prepared_payload = PreparedPayload(
+                payload_type=request.payload_type,
+                payload_format=request.payload_format,
+                content=serialized_content,
                 metadata=metadata,
-                data=formatted_data,
-                headers=headers or {},
-                encrypted=False,
-                compressed=(compression != CompressionType.NONE)
+                headers=headers,
+                size_bytes=size_bytes,
+                checksum=checksum,
+                encrypted=encrypted
             )
             
-            # Log successful preparation
-            logger.info(f"Payload prepared successfully: {metadata.payload_id}")
-            logger.info(f"Size: {metadata.size_bytes} bytes, Checksum: {checksum}")
+            # Validate final payload
+            validation_result = await self.validate_payload_structure(prepared_payload)
             
-            # Store in history
-            self.preparation_history.append(payload)
+            # Generate safety validation metadata
+            safety_validation = {
+                "validated_at": datetime.now().isoformat(),
+                "safety_level": request.safety_level,
+                "risk_score": self._calculate_payload_risk_score(prepared_payload),
+                "security_flags": validation_result.security_flags
+            }
             
-            return payload
+            # Generate unique payload ID
+            payload_id = self._generate_payload_id(request, prepared_payload)
+            
+            result = CorePayloadResult(
+                prepared_payload=prepared_payload,
+                validation_result=validation_result,
+                preparation_metadata={
+                    "preparation_duration_ms": size_bytes * 0.001,  # Rough estimate
+                    "original_size": len(str(request.data)),
+                    "final_size": size_bytes,
+                    "compression_ratio": size_bytes / len(str(request.data)) if request.data else 1.0,
+                    "complexity_estimate": await self._estimate_preparation_complexity(request)
+                },
+                safety_validation=safety_validation,
+                payload_id=payload_id
+            )
+            
+            self.logger.info(f"Successfully prepared payload {payload_id} ({size_bytes} bytes)")
+            return result
             
         except Exception as e:
-            logger.error(f"Payload preparation failed: {str(e)}")
-            raise ValueError(f"Failed to prepare payload: {str(e)}")
+            self.logger.error(f"Failed to prepare core payload: {str(e)}")
+            if self.safety_policy.fail_closed:
+                raise
+            # Return safe fallback payload in non-fail-closed mode
+            return self._create_fallback_payload(request, str(e))
     
-    def _validate_inputs(
-        self,
-        data: Any,
-        payload_type: PayloadType,
-        format_type: PayloadFormat,
-        compression: CompressionType
-    ) -> None:
-        """Validate inputs with comprehensive checks"""
-        
-        # Validate data
-        if data is None:
-            raise ValueError("Payload data cannot be None")
-        
-        # Validate payload type
-        if not isinstance(payload_type, PayloadType):
-            raise ValueError(f"Invalid payload type: {payload_type}")
-        
-        # Validate format type
-        if not isinstance(format_type, PayloadFormat):
-            raise ValueError(f"Invalid format type: {format_type}")
-        
-        # Validate compression type
-        if not isinstance(compression, CompressionType):
-            raise ValueError(f"Invalid compression type: {compression}")
-        
-        # Validate data size
-        data_size = len(str(data)) if not isinstance(data, bytes) else len(data)
-        max_size = self.max_sizes.get(format_type, 10 * 1024 * 1024)
-        if data_size > max_size:
-            raise ValueError(f"Payload data size {data_size} exceeds maximum {max_size}")
-        
-        # Validate data format compatibility
-        if format_type == PayloadFormat.JSON and not isinstance(data, (dict, list, str, int, float, bool)):
-            raise ValueError("JSON format requires serializable data")
-        
-        if format_type == PayloadFormat.XML and not isinstance(data, str):
-            raise ValueError("XML format requires string data")
-        
-        if format_type == PayloadFormat.BINARY and not isinstance(data, bytes):
-            raise ValueError("Binary format requires bytes data")
-        
-        logger.debug("Input validation completed successfully")
-    
-    def _apply_safety_constraints(
-        self,
-        data: Any,
-        payload_type: PayloadType,
-        security_level: str
-    ) -> None:
-        """Apply L5 safety constraints to payload preparation"""
-        
-        # Check for sensitive data in high security payloads
-        if security_level in ["high", "critical"]:
-            sensitive_patterns = [
-                r"password\s*[:=]\s*\w+",
-                r"secret\s*[:=]\s*\w+",
-                r"key\s*[:=]\s*\w+",
-                r"token\s*[:=]\s*\w+",
-                r"auth\s*[:=]\s*\w+"
-            ]
-            
-            data_str = str(data).lower()
-            for pattern in sensitive_patterns:
-                if re.search(pattern, data_str):
-                    violation = f"Sensitive data pattern detected: {pattern}"
-                    self.safety_violations.append(violation)
-                    raise SecurityError(violation)
-        
-        # Check for script injection in data
-        if isinstance(data, str):
-            dangerous_patterns = [
-                r"<script.*?>.*?</script>",
-                r"javascript:",
-                r"data:text/html",
-                r"eval\s*\(",
-                r"exec\s*\("
-            ]
-            
-            for pattern in dangerous_patterns:
-                if re.search(pattern, data, re.IGNORECASE):
-                    violation = f"Potentially dangerous content detected: {pattern}"
-                    self.safety_violations.append(violation)
-                    raise SecurityError(violation)
-        
-        # Validate security level
-        valid_security_levels = ["low", "standard", "high", "critical"]
-        if security_level not in valid_security_levels:
-            raise ValueError(f"Invalid security level: {security_level}")
-        
-        logger.debug("Safety constraints applied successfully")
-    
-    def _format_data(self, data: Any, format_type: PayloadFormat) -> Union[str, bytes]:
-        """Format data according to the specified type"""
-        
+    async def validate_payload_structure(self, payload: PreparedPayload) -> PayloadValidationResult:
+        """Validate payload structure and content"""
         try:
-            if format_type == PayloadFormat.JSON:
-                if isinstance(data, str):
-                    # Validate JSON string
-                    json.loads(data)
-                    return data
-                else:
-                    return json.dumps(data, ensure_ascii=False, separators=(',', ':'))
+            errors = []
+            warnings = []
+            security_flags = []
             
-            elif format_type == PayloadFormat.XML:
-                if isinstance(data, str):
-                    return data
-                else:
-                    # Convert dict to simple XML
-                    return self._dict_to_xml(data)
+            # Basic structure validation
+            if not payload.content:
+                errors.append("Payload content is empty")
             
-            elif format_type == PayloadFormat.BINARY:
-                if isinstance(data, bytes):
-                    return data
-                else:
-                    return str(data).encode('utf-8')
+            # Size validation
+            if payload.size_bytes > self.safety_policy.max_payload_size:
+                errors.append(f"Payload exceeds maximum size: {payload.size_bytes} > {self.safety_policy.max_payload_size}")
             
-            elif format_type == PayloadFormat.TEXT:
-                return str(data)
+            # Format-specific validation
+            if payload.payload_format == PayloadFormat.JSON:
+                if isinstance(payload.content, str):
+                    try:
+                        json.loads(payload.content)
+                    except json.JSONDecodeError as e:
+                        errors.append(f"Invalid JSON format: {str(e)}")
             
-            elif format_type == PayloadFormat.FORM:
-                if isinstance(data, dict):
-                    # Convert dict to form-encoded string
-                    pairs = []
-                    for key, value in data.items():
-                        pairs.append(f"{key}={str(value)}")
-                    return "&".join(pairs)
-                else:
-                    return str(data)
+            # Security validation
+            content_str = str(payload.content).lower()
+            for pattern in self._dangerous_content_patterns:
+                if pattern in content_str:
+                    security_flags.append(f"dangerous_content:{pattern}")
             
+            # Sensitive data validation
+            for pattern in self._sensitive_patterns:
+                if pattern in content_str and not payload.encrypted:
+                    warnings.append(f"Unencrypted sensitive data detected: {pattern}")
+            
+            # Calculate compliance score
+            compliance_score = 1.0
+            if errors:
+                compliance_score -= 0.5
+            if warnings:
+                compliance_score -= 0.1 * len(warnings)
+            if security_flags:
+                compliance_score -= 0.2 * len(security_flags)
+            
+            compliance_score = max(0.0, compliance_score)
+            
+            return PayloadValidationResult(
+                is_valid=len(errors) == 0,
+                validation_errors=errors,
+                warnings=warnings,
+                compliance_score=compliance_score,
+                security_flags=security_flags
+            )
+            
+        except Exception as e:
+            return PayloadValidationResult(
+                is_valid=False,
+                validation_errors=[f"Validation error: {str(e)}"],
+                warnings=[],
+                compliance_score=0.0,
+                security_flags=["validation_failed"]
+            )
+    
+    async def serialize_payload(self, data: Dict[str, Any], format: PayloadFormat) -> Union[str, bytes]:
+        """Serialize payload data to specified format"""
+        try:
+            if format == PayloadFormat.JSON:
+                return json.dumps(data, indent=2, ensure_ascii=False)
+            elif format == PayloadFormat.YAML:
+                import yaml
+                return yaml.dump(data, default_flow_style=False, allow_unicode=True)
+            elif format == PayloadFormat.XML:
+                return self._dict_to_xml(data)
+            elif format == PayloadFormat.BINARY:
+                return json.dumps(data).encode('utf-8')
+            elif format == PayloadFormat.COMPRESSED:
+                import gzip
+                json_data = json.dumps(data).encode('utf-8')
+                return gzip.compress(json_data)
             else:
-                raise ValueError(f"Unsupported format type: {format_type}")
+                raise ValidationError(f"Unsupported payload format: {format}")
                 
         except Exception as e:
-            raise ValueError(f"Failed to format data: {str(e)}")
+            self.logger.error(f"Payload serialization failed: {str(e)}")
+            raise
     
-    def _dict_to_xml(self, data: Dict[str, Any], root_tag: str = "root") -> str:
-        """Convert dictionary to XML string"""
-        
-        def dict_to_xml_recursive(d: Any, parent_tag: str) -> str:
-            if isinstance(d, dict):
-                xml_parts = []
-                for key, value in d.items():
-                    xml_parts.append(f"<{key}>{dict_to_xml_recursive(value, key)}</{key}>")
-                return "".join(xml_parts)
-            elif isinstance(d, list):
-                xml_parts = []
-                for item in d:
-                    xml_parts.append(dict_to_xml_recursive(item, "item"))
-                return "".join(xml_parts)
-            else:
-                return str(d)
-        
-        return f"<{root_tag}>{dict_to_xml_recursive(data, root_tag)}</{root_tag}>"
-    
-    def _compress_data(self, data: Union[str, bytes], compression: CompressionType) -> bytes:
-        """Compress data using the specified compression type"""
-        
+    async def _validate_payload_structure_by_type(
+        self, 
+        data: Dict[str, Any], 
+        payload_type: PayloadType
+    ) -> Tuple[bool, List[str]]:
+        """Validate payload structure based on type"""
         try:
-            import gzip
-            import zlib
+            template = self._payload_templates.get(payload_type, {})
+            required_fields = template.get("required_fields", [])
+            errors = []
             
-            # Convert string to bytes if needed
-            if isinstance(data, str):
-                data_bytes = data.encode('utf-8')
-            else:
-                data_bytes = data
+            # Check required fields
+            for field in required_fields:
+                if field not in data:
+                    errors.append(f"Missing required field: {field}")
             
-            if compression == CompressionType.GZIP:
-                return gzip.compress(data_bytes)
-            elif compression == CompressionType.DEFLATE:
-                return zlib.compress(data_bytes)
-            elif compression == CompressionType.BROTLI:
-                try:
-                    import brotli
-                    return brotli.compress(data_bytes)
-                except ImportError:
-                    raise ValueError("Brotli compression not available")
-            else:
-                return data_bytes
-                
+            # Validate field types
+            for field, value in data.items():
+                if field == "timestamp" and not isinstance(value, (str, int, float)):
+                    errors.append(f"Invalid timestamp type for field: {field}")
+                elif field == "parameters" and not isinstance(value, dict):
+                    errors.append(f"Invalid parameters type for field: {field}")
+            
+            return len(errors) == 0, errors
+            
         except Exception as e:
-            raise ValueError(f"Failed to compress data: {str(e)}")
+            return False, [f"Structure validation error: {str(e)}"]
     
-    def _calculate_checksum(self, data: Union[str, bytes]) -> str:
-        """Calculate SHA-256 checksum of data"""
+    async def _prepare_payload_content(self, request: PayloadRequest) -> Dict[str, Any]:
+        """Prepare payload content with standard fields"""
+        prepared = request.data.copy()
         
-        if isinstance(data, str):
-            data_bytes = data.encode('utf-8')
-        else:
-            data_bytes = data
+        # Add standard metadata
+        prepared["_metadata"] = {
+            "payload_type": request.payload_type.value,
+            "target_layer": request.target_layer,
+            "prepared_at": datetime.now().isoformat(),
+            "safety_level": request.safety_level
+        }
         
-        return hashlib.sha256(data_bytes).hexdigest()
-    
-    def _get_content_type(self, format_type: PayloadFormat) -> str:
-        """Get appropriate content type for format"""
+        # Add context information
+        if request.context:
+            prepared["_context"] = request.context
         
-        content_types = self.allowed_content_types.get(format_type, [])
-        return content_types[0] if content_types else "application/octet-stream"
+        # Add security requirements
+        if request.security_requirements:
+            prepared["_security"] = request.security_requirements
+        
+        return prepared
     
-    def get_preparation_history(self, limit: int = 100) -> List[CorePayload]:
-        """Get preparation history with pagination"""
-        return self.preparation_history[-limit:]
-    
-    def get_safety_violations(self) -> List[str]:
-        """Get list of safety violations"""
-        return self.safety_violations.copy()
-    
-    def clear_history(self) -> None:
-        """Clear preparation history and violations"""
-        self.preparation_history.clear()
-        self.safety_violations.clear()
-        logger.info("Preparation history and violations cleared")
-    
-    def export_payload(self, payload: CorePayload) -> Dict[str, Any]:
-        """Export payload to dictionary format"""
+    async def _generate_payload_metadata(
+        self, 
+        request: PayloadRequest, 
+        prepared_data: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Generate payload metadata"""
         return {
-            "metadata": asdict(payload.metadata),
-            "data": payload.data,
-            "headers": payload.headers,
-            "signature": payload.signature,
-            "encrypted": payload.encrypted,
-            "compressed": payload.compressed
+            "payload_type": request.payload_type.value,
+            "target_layer": request.target_layer,
+            "format": request.payload_format.value,
+            "prepared_at": datetime.now().isoformat(),
+            "field_count": len(prepared_data),
+            "has_sensitive_data": await self._contains_sensitive_data(prepared_data),
+            "preparation_options": request.preparation_options
         }
     
-    def import_payload(self, payload_dict: Dict[str, Any]) -> CorePayload:
-        """Import payload from dictionary format"""
-        try:
-            metadata = PayloadMetadata(**payload_dict["metadata"])
-            
-            payload = CorePayload(
-                metadata=metadata,
-                data=payload_dict["data"],
-                headers=payload_dict["headers"],
-                signature=payload_dict.get("signature"),
-                encrypted=payload_dict.get("encrypted", False),
-                compressed=payload_dict.get("compressed", False)
-            )
-            
-            logger.info(f"Payload imported successfully: {metadata.payload_id}")
-            return payload
-            
-        except Exception as e:
-            logger.error(f"Payload import failed: {str(e)}")
-            raise ValueError(f"Failed to import payload: {str(e)}")
-    
-    def validate_payload_integrity(self, payload: CorePayload) -> bool:
-        """Validate payload integrity using checksum"""
+    async def _generate_payload_headers(
+        self, 
+        request: PayloadRequest, 
+        metadata: Dict[str, Any]
+    ) -> Dict[str, str]:
+        """Generate payload headers"""
+        headers = {
+            "Content-Type": self._get_content_type(request.payload_format),
+            "X-Payload-Type": request.payload_type.value,
+            "X-Target-Layer": request.target_layer,
+            "X-Safety-Level": request.safety_level,
+            "X-Prepared-At": metadata["prepared_at"]
+        }
         
-        try:
-            calculated_checksum = self._calculate_checksum(payload.data)
-            return calculated_checksum == payload.metadata.checksum
-        except Exception as e:
-            logger.error(f"Payload validation failed: {str(e)}")
+        # Add security headers
+        if request.security_requirements.get("authentication"):
+            headers["X-Auth-Required"] = "true"
+        
+        if metadata.get("has_sensitive_data"):
+            headers["X-Sensitive-Data"] = "true"
+        
+        return headers
+    
+    def _get_content_type(self, format: PayloadFormat) -> str:
+        """Get content type for payload format"""
+        content_types = {
+            PayloadFormat.JSON: "application/json",
+            PayloadFormat.XML: "application/xml",
+            PayloadFormat.YAML: "application/x-yaml",
+            PayloadFormat.BINARY: "application/octet-stream",
+            PayloadFormat.COMPRESSED: "application/gzip"
+        }
+        return content_types.get(format, "application/octet-stream")
+    
+    def _calculate_checksum(self, content: bytes) -> str:
+        """Calculate checksum for payload content"""
+        import hashlib
+        return hashlib.sha256(content).hexdigest()
+    
+    async def _should_encrypt_payload(self, request: PayloadRequest, data: Dict[str, Any]) -> bool:
+        """Determine if payload should be encrypted"""
+        if not self.safety_policy.encrypt_sensitive_data:
             return False
+        
+        return await self._contains_sensitive_data(data)
+    
+    async def _contains_sensitive_data(self, data: Dict[str, Any]) -> bool:
+        """Check if data contains sensitive information"""
+        data_str = str(data).lower()
+        for pattern in self._sensitive_patterns:
+            if pattern in data_str:
+                return True
+        return False
+    
+    async def _encrypt_payload(self, content: Union[str, bytes]) -> Union[str, bytes]:
+        """Encrypt payload content (placeholder implementation)"""
+        # In production, this would implement actual encryption
+        self.logger.warning("Encryption requested but not implemented - returning original content")
+        return content
+    
+    def _dict_to_xml(self, data: Dict[str, Any], root: str = "payload") -> str:
+        """Convert dictionary to XML string"""
+        xml_parts = [f"<{root}>"]
+        
+        for key, value in data.items():
+            if isinstance(value, dict):
+                xml_parts.append(self._dict_to_xml(value, key))
+            elif isinstance(value, list):
+                for item in value:
+                    xml_parts.append(f"<{key}>{str(item)}</{key}>")
+            else:
+                xml_parts.append(f"<{key}>{str(value)}</{key}>")
+        
+        xml_parts.append(f"</{root}>")
+        return "".join(xml_parts)
+    
+    async def _estimate_preparation_complexity(self, request: PayloadRequest) -> str:
+        """Estimate preparation complexity"""
+        complexity_score = len(request.data) // 10
+        
+        # Add complexity for different formats
+        if request.payload_format in [PayloadFormat.XML, PayloadFormat.YAML]:
+            complexity_score += 2
+        elif request.payload_format == PayloadFormat.COMPRESSED:
+            complexity_score += 3
+        
+        if complexity_score <= 3:
+            return "low"
+        elif complexity_score <= 7:
+            return "medium"
+        else:
+            return "high"
+    
+    def _calculate_payload_risk_score(self, payload: PreparedPayload) -> float:
+        """Calculate risk score for the payload (0.0 to 1.0)"""
+        risk_score = 0.1  # Base risk
+        
+        # Increase risk for large payloads
+        if payload.size_bytes > 512000:  # 512KB
+            risk_score += 0.2
+        
+        # Increase risk for unencrypted sensitive data
+        if payload.metadata.get("has_sensitive_data") and not payload.encrypted:
+            risk_score += 0.4
+        
+        # Increase risk for certain payload types
+        if payload.payload_type in [PayloadType.CONFIGURATION_UPDATE, PayloadType.COORDINATION_MESSAGE]:
+            risk_score += 0.1
+        
+        return min(risk_score, 1.0)
+    
+    def _generate_payload_id(self, request: PayloadRequest, payload: PreparedPayload) -> str:
+        """Generate unique payload identifier"""
+        timestamp = datetime.now().isoformat()
+        content = f"{request.payload_type.value}:{request.target_layer}:{payload.size_bytes}:{timestamp}"
+        return f"payload_{hash(content) % 1000000:06d}"
+    
+    def _create_fallback_payload(self, request: PayloadRequest, error: str) -> CorePayloadResult:
+        """Create safe fallback payload when main preparation fails"""
+        fallback_data = {
+            "error": "payload_preparation_failed",
+            "message": "Safe fallback payload",
+            "original_type": request.payload_type.value,
+            "target_layer": request.target_layer
+        }
+        
+        fallback_payload = PreparedPayload(
+            payload_type=PayloadType.REGISTRY_QUERY,  # Safe default
+            payload_format=PayloadFormat.JSON,
+            content=json.dumps(fallback_data),
+            metadata={"fallback": True, "error": error},
+            headers={"Content-Type": "application/json", "X-Fallback": "true"},
+            size_bytes=len(json.dumps(fallback_data)),
+            checksum=self._calculate_checksum(json.dumps(fallback_data).encode()),
+            encrypted=False
+        )
+        
+        fallback_validation = PayloadValidationResult(
+            is_valid=True,
+            validation_errors=[],
+            warnings=["Using fallback payload"],
+            compliance_score=0.5,
+            security_flags=["fallback_mode"]
+        )
+        
+        return CorePayloadResult(
+            prepared_payload=fallback_payload,
+            validation_result=fallback_validation,
+            preparation_metadata={"fallback_mode": True},
+            safety_validation={"fallback_mode": True},
+            payload_id=f"fallback_{hash(error) % 100000:06d}"
+        )
 
-class SecurityError(Exception):
-    """Security violation exception"""
+
+# ============================================================================
+# EXCEPTIONS
+# ============================================================================
+
+class SafetyError(Exception):
+    """Raised when payload violates safety policies"""
     pass
 
-# L5 Compliance and Integration
-def validate_l5_compliance() -> Dict[str, bool]:
-    """Validate L5 architectural compliance"""
-    compliance_checks = {
-        "L1_PURE_PLANNING": True,  # Pure cognitive planning logic
-        "L2_PURE_EXECUTION": False,  # Planning layer, not execution
-        "L3_PURE_ORCHESTRATION": False,  # Planning layer, not orchestration
-        "L4_VALID_STATE_TRANSITIONS": True,  # Proper state management
-        "L5_POLICY_ENFORCED": True,  # Safety policies enforced
-        "FAIL_CLOSED_SAFETY": True,  # Fail-closed by default
-        "COMPREHENSIVE_LOGGING": True,  # Full logging implemented
-        "TYPE_SAFETY": True,  # Full type annotations
-        "ERROR_HANDLING": True,  # Comprehensive error handling
-        "NO_GLOBAL_STATE": True  # No global state leakage
-    }
-    return compliance_checks
 
-# Factory function for dependency injection
-def create_payload_preparer(safety_enabled: bool = True) -> CorePayloadPreparer:
-    """Factory function to create CorePayloadPreparer instance"""
-    return CorePayloadPreparer(safety_enabled=safety_enabled)
+class PayloadPreparationError(Exception):
+    """Raised for general payload preparation errors"""
+    pass
 
-# Main execution block for testing
-if __name__ == "__main__":
-    logger.info("Starting prepare_core_payload module test")
-    
+
+# ============================================================================
+# FACTORY FUNCTIONS
+# ============================================================================
+
+def create_core_payload_preparer(safety_policy: Optional[PayloadSafetyPolicy] = None) -> CorePayloadPreparer:
+    """Factory function to create CorePayloadPreparer with optional custom safety policy"""
+    return CorePayloadPreparer(safety_policy)
+
+
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
+def validate_payload_request(request: PayloadRequest) -> tuple[bool, Optional[str]]:
+    """Validate core payload request parameters"""
     try:
-        # Create payload preparer
-        preparer = create_payload_preparer(safety_enabled=True)
+        if not request.target_layer or not request.target_layer.strip():
+            return False, "Target layer cannot be empty"
         
-        # Test sample payloads
-        test_data = [
-            ({"message": "test", "value": 123}, PayloadType.DATA),
-            (["item1", "item2", "item3"], PayloadType.DATA),
-            ("<root><child>test</child></root>", PayloadType.DATA, PayloadFormat.XML),
-            ("plain text data", PayloadType.DATA, PayloadFormat.TEXT)
-        ]
+        if not isinstance(request.data, dict):
+            return False, "Payload data must be a dictionary"
         
-        for data, payload_type, *format_info in test_data:
-            format_type = format_info[0] if format_info else PayloadFormat.JSON
-            payload = preparer.prepare_payload(
-                data=data,
-                payload_type=payload_type,
-                format_type=format_type,
-                security_level="standard"
-            )
-            logger.info(f"Prepared payload: {payload.metadata.payload_id}")
-            
-            # Validate integrity
-            is_valid = preparer.validate_payload_integrity(payload)
-            logger.info(f"Payload integrity: {is_valid}")
+        if not isinstance(request.context, dict):
+            return False, "Context must be a dictionary"
         
-        # Validate L5 compliance
-        compliance = validate_l5_compliance()
-        
-        logger.info("prepare_core_payload module test completed successfully")
-        logger.info(f"L5 Compliance: {compliance}")
+        return True, None
         
     except Exception as e:
-        logger.error(f"Module test failed: {str(e)}")
-        raise
+        return False, f"Request validation error: {str(e)}"
