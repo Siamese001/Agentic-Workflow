@@ -763,8 +763,122 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate version compatibility"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for version compatibility validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Validate version compatibility across dependencies
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                errors.append(DependencyValidationError(
+                    dependency_id="invalid",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_dependency_format",
+                    error_message="Dependency must be a dictionary",
+                    actual_value=dependency,
+                    expected_value="dependency dictionary",
+                    severity="error"
+                ))
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            version = dependency.get("version", "")
+            version_constraint = dependency.get("version_constraint", "")
+            
+            if not version:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_version",
+                    error_message="Dependency version is missing",
+                    actual_value=version,
+                    expected_value="semantic version (e.g., 1.0.0)",
+                    severity="warning"
+                ))
+            else:
+                # Validate semantic version format
+                import re
+                semver_pattern = r'^\d+\.\d+\.\d+(-[a-zA-Z0-9\-\.]+)?(\+[a-zA-Z0-9\-\.]+)?$'
+                if not re.match(semver_pattern, version):
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="invalid_version_format",
+                        error_message=f"Dependency version '{version}' is not in semantic version format",
+                        actual_value=version,
+                        expected_value="semantic version (e.g., 1.0.0)",
+                        severity="warning"
+                    ))
+            
+            # Validate version constraint format
+            if version_constraint:
+                valid_operators = ["==", "!=", ">=", "<=", ">", "<", "~=", "^"]
+                has_valid_operator = any(op in version_constraint for op in valid_operators)
+                
+                if not has_valid_operator and not re.match(semver_pattern, version_constraint):
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="invalid_version_constraint",
+                        error_message=f"Invalid version constraint: {version_constraint}",
+                        actual_value=version_constraint,
+                        expected_value="valid version constraint (e.g., >=1.0.0, ^2.3.0)",
+                        severity="warning"
+                    ))
+            
+            # Check for known incompatible versions
+            dependency_name = dependency.get("name", "")
+            known_incompatible = {
+                "python": ["2.7", "3.0", "3.1", "3.2", "3.3"],
+                "node": ["< 14.0.0"],
+                "npm": ["< 6.0.0"]
+            }
+            
+            for name, incompatible_versions in known_incompatible.items():
+                if name.lower() in dependency_name.lower():
+                    for incompatible in incompatible_versions:
+                        if incompatible.startswith("<"):
+                            # Handle version ranges
+                            if version < incompatible.replace("< ", ""):
+                                errors.append(DependencyValidationError(
+                                    dependency_id=dependency_id,
+                                    rule_id=rule.rule_id,
+                                    validation_type=rule.validation_type,
+                                    error_category="incompatible_version",
+                                    error_message=f"Dependency '{dependency_name}' version {version} is incompatible",
+                                    actual_value=version,
+                                    expected_value=f"> {incompatible.replace('< ', '')}",
+                                    severity="error"
+                                ))
+                        elif incompatible in version:
+                            errors.append(DependencyValidationError(
+                                dependency_id=dependency_id,
+                                rule_id=rule.rule_id,
+                                validation_type=rule.validation_type,
+                                error_category="incompatible_version",
+                                error_message=f"Dependency '{dependency_name}' version {version} is known to be incompatible",
+                                actual_value=version,
+                                expected_value="compatible version",
+                                severity="error"
+                            ))
+        
+        return errors
     
     async def _validate_interface_compatibility(
         self, 
@@ -772,8 +886,120 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate interface compatibility"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for interface compatibility validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Validate interface compatibility across dependencies
+        dependency_interfaces = {}
+        
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                errors.append(DependencyValidationError(
+                    dependency_id="invalid",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_dependency_format",
+                    error_message="Dependency must be a dictionary",
+                    actual_value=dependency,
+                    expected_value="dependency dictionary",
+                    severity="error"
+                ))
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            interfaces = dependency.get("interfaces", [])
+            
+            # Track interfaces for compatibility checking
+            for interface in interfaces:
+                if isinstance(interface, dict):
+                    interface_name = interface.get("name", "")
+                    interface_version = interface.get("version", "")
+                    interface_type = interface.get("type", "")
+                    
+                    if interface_name:
+                        if interface_name not in dependency_interfaces:
+                            dependency_interfaces[interface_name] = []
+                        dependency_interfaces[interface_name].append({
+                            "dependency_id": dependency_id,
+                            "version": interface_version,
+                            "type": interface_type,
+                            "interface": interface
+                        })
+        
+        # Check for interface conflicts across dependencies
+        for interface_name, implementations in dependency_interfaces.items():
+            if len(implementations) > 1:
+                # Check for version conflicts
+                versions = [impl["version"] for impl in implementations if impl["version"]]
+                if len(set(versions)) > 1:
+                    errors.append(DependencyValidationError(
+                        dependency_id="multiple",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="interface_version_conflict",
+                        error_message=f"Interface '{interface_name}' has conflicting versions across dependencies: {set(versions)}",
+                        actual_value=versions,
+                        expected_value="consistent version across all dependencies",
+                        severity="error"
+                    ))
+                
+                # Check for type conflicts
+                types = [impl["type"] for impl in implementations if impl["type"]]
+                if len(set(types)) > 1:
+                    errors.append(DependencyValidationError(
+                        dependency_id="multiple",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="interface_type_conflict",
+                        error_message=f"Interface '{interface_name}' has conflicting types across dependencies: {set(types)}",
+                        actual_value=types,
+                        expected_value="consistent type across all dependencies",
+                        severity="error"
+                    ))
+                
+                # Check for signature compatibility
+                signatures = []
+                for impl in implementations:
+                    interface = impl["interface"]
+                    methods = interface.get("methods", [])
+                    signature = set()
+                    for method in methods:
+                        if isinstance(method, dict):
+                            method_name = method.get("name", "")
+                            params = tuple(sorted([p.get("name", "") for p in method.get("parameters", [])]))
+                            signature.add((method_name, params))
+                    signatures.append(signature)
+                
+                # Check if all signatures are compatible
+                if len(signatures) > 1:
+                    base_signature = signatures[0]
+                    for i, signature in enumerate(signatures[1:], 1):
+                        if signature != base_signature:
+                            errors.append(DependencyValidationError(
+                                dependency_id="multiple",
+                                rule_id=rule.rule_id,
+                                validation_type=rule.validation_type,
+                                error_category="interface_signature_incompatible",
+                                error_message=f"Interface '{interface_name}' has incompatible method signatures across dependencies",
+                                actual_value=f"signature {i}: {signature}",
+                                expected_value=f"base signature: {base_signature}",
+                                severity="error"
+                            ))
+        
+        return errors
     
     async def _validate_protocol_compatibility(
         self, 
@@ -781,8 +1007,130 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate protocol compatibility"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for protocol compatibility validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Validate protocol compatibility across dependencies
+        dependency_protocols = {}
+        
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                errors.append(DependencyValidationError(
+                    dependency_id="invalid",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_dependency_format",
+                    error_message="Dependency must be a dictionary",
+                    actual_value=dependency,
+                    expected_value="dependency dictionary",
+                    severity="error"
+                ))
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            protocol = dependency.get("protocol", "")
+            protocol_version = dependency.get("protocol_version", "")
+            
+            # Track protocols for compatibility checking
+            if protocol:
+                if protocol not in dependency_protocols:
+                    dependency_protocols[protocol] = []
+                dependency_protocols[protocol].append({
+                    "dependency_id": dependency_id,
+                    "version": protocol_version,
+                    "protocol": protocol
+                })
+        
+        # Check for protocol conflicts
+        for protocol, implementations in dependency_protocols.items():
+            if len(implementations) > 1:
+                # Check for version conflicts within same protocol
+                versions = [impl["version"] for impl in implementations if impl["version"]]
+                if len(set(versions)) > 1:
+                    errors.append(DependencyValidationError(
+                        dependency_id="multiple",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="protocol_version_conflict",
+                        error_message=f"Protocol '{protocol}' has conflicting versions across dependencies: {set(versions)}",
+                        actual_value=versions,
+                        expected_value="consistent protocol version across all dependencies",
+                        severity="error"
+                    ))
+        
+        # Validate individual dependency protocols
+        supported_protocols = ["http", "https", "grpc", "websocket", "tcp", "udp", "mqtt", "amqp"]
+        
+        for dependency in dependencies:
+            dependency_id = dependency.get("id", "unknown")
+            protocol = dependency.get("protocol", "")
+            
+            if not protocol:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_protocol",
+                    error_message="Dependency protocol is not specified",
+                    actual_value=protocol,
+                    expected_value="supported protocol",
+                    severity="warning"
+                ))
+            elif protocol.lower() not in supported_protocols:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="unsupported_protocol",
+                    error_message=f"Unsupported protocol: {protocol}",
+                    actual_value=protocol,
+                    expected_value="one of: " + ", ".join(supported_protocols),
+                    severity="warning"
+                ))
+            
+            # Validate protocol-specific requirements
+            if protocol.lower() == "https":
+                ssl_config = dependency.get("ssl_config", {})
+                if not ssl_config:
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="missing_ssl_config",
+                        error_message="HTTPS protocol requires SSL configuration",
+                        actual_value=ssl_config,
+                        expected_value="SSL configuration",
+                        severity="error"
+                    ))
+            
+            elif protocol.lower() == "grpc":
+                grpc_config = dependency.get("grpc_config", {})
+                if not grpc_config:
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="missing_grpc_config",
+                        error_message="gRPC protocol requires gRPC configuration",
+                        actual_value=grpc_config,
+                        expected_value="gRPC configuration",
+                        severity="warning"
+                    ))
+        
+        return errors
     
     async def _validate_data_format_compatibility(
         self, 
@@ -790,8 +1138,150 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate data format compatibility"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for data format compatibility validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Validate data format compatibility across dependencies
+        dependency_formats = {}
+        
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                errors.append(DependencyValidationError(
+                    dependency_id="invalid",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_dependency_format",
+                    error_message="Dependency must be a dictionary",
+                    actual_value=dependency,
+                    expected_value="dependency dictionary",
+                    severity="error"
+                ))
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            data_format = dependency.get("data_format", "")
+            format_version = dependency.get("format_version", "")
+            
+            # Track data formats for compatibility checking
+            if data_format:
+                if data_format not in dependency_formats:
+                    dependency_formats[data_format] = []
+                dependency_formats[data_format].append({
+                    "dependency_id": dependency_id,
+                    "version": format_version,
+                    "format": data_format
+                })
+        
+        # Check for data format conflicts
+        for data_format, implementations in dependency_formats.items():
+            if len(implementations) > 1:
+                # Check for version conflicts within same format
+                versions = [impl["version"] for impl in implementations if impl["version"]]
+                if len(set(versions)) > 1:
+                    errors.append(DependencyValidationError(
+                        dependency_id="multiple",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="data_format_version_conflict",
+                        error_message=f"Data format '{data_format}' has conflicting versions across dependencies: {set(versions)}",
+                        actual_value=versions,
+                        expected_value="consistent data format version across all dependencies",
+                        severity="error"
+                    ))
+        
+        # Validate individual dependency data formats
+        supported_formats = ["json", "xml", "yaml", "protobuf", "avro", "csv", "parquet"]
+        
+        for dependency in dependencies:
+            dependency_id = dependency.get("id", "unknown")
+            data_format = dependency.get("data_format", "")
+            
+            if not data_format:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_data_format",
+                    error_message="Dependency data format is not specified",
+                    actual_value=data_format,
+                    expected_value="supported data format",
+                    severity="warning"
+                ))
+            elif data_format.lower() not in supported_formats:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="unsupported_data_format",
+                    error_message=f"Unsupported data format: {data_format}",
+                    actual_value=data_format,
+                    expected_value="one of: " + ", ".join(supported_formats),
+                    severity="warning"
+                ))
+            
+            # Validate format-specific requirements
+            if data_format.lower() == "json":
+                json_config = dependency.get("json_config", {})
+                if json_config:
+                    # Check for JSON schema if specified
+                    schema = json_config.get("schema", "")
+                    if schema and not isinstance(schema, dict):
+                        errors.append(DependencyValidationError(
+                            dependency_id=dependency_id,
+                            rule_id=rule.rule_id,
+                            validation_type=rule.validation_type,
+                            error_category="invalid_json_schema",
+                            error_message="JSON schema must be a dictionary",
+                            actual_value=schema,
+                            expected_value="JSON schema dictionary",
+                            severity="error"
+                        ))
+            
+            elif data_format.lower() == "xml":
+                xml_config = dependency.get("xml_config", {})
+                if xml_config:
+                    # Check for XML namespace if required
+                    namespace = xml_config.get("namespace", "")
+                    if xml_config.get("require_namespace", False) and not namespace:
+                        errors.append(DependencyValidationError(
+                            dependency_id=dependency_id,
+                            rule_id=rule.rule_id,
+                            validation_type=rule.validation_type,
+                            error_category="missing_xml_namespace",
+                            error_message="XML format requires namespace",
+                            actual_value=namespace,
+                            expected_value="XML namespace",
+                            severity="error"
+                        ))
+            
+            elif data_format.lower() == "protobuf":
+                proto_config = dependency.get("protobuf_config", {})
+                if not proto_config:
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="missing_protobuf_config",
+                        error_message="Protocol Buffers format requires protobuf configuration",
+                        actual_value=proto_config,
+                        expected_value="protobuf configuration",
+                        severity="warning"
+                    ))
+        
+        return errors
     
     async def _validate_trusted_sources(
         self, 
@@ -827,8 +1317,135 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate security policies"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for security policy validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Validate security policies across dependencies
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                errors.append(DependencyValidationError(
+                    dependency_id="invalid",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_dependency_format",
+                    error_message="Dependency must be a dictionary",
+                    actual_value=dependency,
+                    expected_value="dependency dictionary",
+                    severity="error"
+                ))
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            security_policy = dependency.get("security_policy", {})
+            
+            if not security_policy:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_security_policy",
+                    error_message="Dependency security policy is not defined",
+                    actual_value=security_policy,
+                    expected_value="security policy configuration",
+                    severity="warning"
+                ))
+                continue
+            
+            # Validate authentication requirements
+            auth_required = security_policy.get("authentication_required", False)
+            if not auth_required:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="authentication_not_required",
+                    error_message="Dependency should require authentication for security",
+                    actual_value=auth_required,
+                    expected_value=True,
+                    severity="warning"
+                ))
+            
+            # Validate encryption requirements
+            encryption = security_policy.get("encryption", {})
+            if not encryption:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="encryption_not_configured",
+                    error_message="Dependency encryption policy is not configured",
+                    actual_value=encryption,
+                    expected_value="encryption configuration",
+                    severity="warning"
+                ))
+            else:
+                # Check for encryption in transit
+                if not encryption.get("in_transit", False):
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="encryption_in_transit_not_enabled",
+                        error_message="Dependency should enable encryption in transit",
+                        actual_value=encryption.get("in_transit"),
+                        expected_value=True,
+                        severity="warning"
+                    ))
+                
+                # Check for encryption at rest
+                if not encryption.get("at_rest", False):
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="encryption_at_rest_not_enabled",
+                        error_message="Dependency should enable encryption at rest",
+                        actual_value=encryption.get("at_rest"),
+                        expected_value=True,
+                        severity="warning"
+                    ))
+            
+            # Validate access control
+            access_control = security_policy.get("access_control", {})
+            if not access_control:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="access_control_not_configured",
+                    error_message="Dependency access control policy is not configured",
+                    actual_value=access_control,
+                    expected_value="access control configuration",
+                    severity="warning"
+                ))
+            else:
+                # Check for role-based access control
+                if not access_control.get("rbac_enabled", False):
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="rbac_not_enabled",
+                        error_message="Dependency should enable role-based access control",
+                        actual_value=access_control.get("rbac_enabled"),
+                        expected_value=True,
+                        severity="warning"
+                    ))
+        
+        return errors
     
     async def _validate_vulnerability_check(
         self, 
@@ -836,8 +1453,146 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate vulnerability check"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for vulnerability check validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Validate vulnerability checks across dependencies
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                errors.append(DependencyValidationError(
+                    dependency_id="invalid",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_dependency_format",
+                    error_message="Dependency must be a dictionary",
+                    actual_value=dependency,
+                    expected_value="dependency dictionary",
+                    severity="error"
+                ))
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            vulnerability_scan = dependency.get("vulnerability_scan", {})
+            
+            if not vulnerability_scan:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="vulnerability_scan_not_configured",
+                    error_message="Dependency vulnerability scan is not configured",
+                    actual_value=vulnerability_scan,
+                    expected_value="vulnerability scan configuration",
+                    severity="warning"
+                ))
+                continue
+            
+            # Validate scan frequency
+            scan_frequency = vulnerability_scan.get("frequency", "")
+            valid_frequencies = ["daily", "weekly", "monthly", "on_update"]
+            if scan_frequency not in valid_frequencies:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_scan_frequency",
+                    error_message=f"Invalid scan frequency: {scan_frequency}",
+                    actual_value=scan_frequency,
+                    expected_value="one of: " + ", ".join(valid_frequencies),
+                    severity="warning"
+                ))
+            
+            # Validate severity threshold
+            severity_threshold = vulnerability_scan.get("severity_threshold", "")
+            valid_severities = ["low", "medium", "high", "critical"]
+            if severity_threshold not in valid_severities:
+                errors.append(DependencyValidationError(
+                    dependency_id=dependency_id,
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_severity_threshold",
+                    error_message=f"Invalid severity threshold: {severity_threshold}",
+                    actual_value=severity_threshold,
+                    expected_value="one of: " + ", ".join(valid_severities),
+                    severity="warning"
+                ))
+            
+            # Check for recent scan results
+            last_scan_date = vulnerability_scan.get("last_scan_date", "")
+            if last_scan_date:
+                try:
+                    from datetime import datetime, timedelta
+                    scan_date = datetime.fromisoformat(last_scan_date.replace('Z', '+00:00'))
+                    days_since_scan = (datetime.now() - scan_date).days
+                    
+                    # Warn if scan is older than 30 days
+                    if days_since_scan > 30:
+                        errors.append(DependencyValidationError(
+                            dependency_id=dependency_id,
+                            rule_id=rule.rule_id,
+                            validation_type=rule.validation_type,
+                            error_category="stale_scan_results",
+                            error_message=f"Vulnerability scan results are {days_since_scan} days old",
+                            actual_value=days_since_scan,
+                            expected_value="< 30 days",
+                            severity="warning"
+                        ))
+                except ValueError:
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="invalid_scan_date_format",
+                        error_message="Last scan date format is invalid",
+                        actual_value=last_scan_date,
+                        expected_value="ISO 8601 date",
+                        severity="warning"
+                    ))
+            
+            # Check for known vulnerabilities
+            known_vulnerabilities = vulnerability_scan.get("known_vulnerabilities", [])
+            if known_vulnerabilities:
+                critical_vulns = [v for v in known_vulnerabilities if v.get("severity", "").lower() == "critical"]
+                high_vulns = [v for v in known_vulnerabilities if v.get("severity", "").lower() == "high"]
+                
+                if critical_vulns:
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="critical_vulnerabilities_found",
+                        error_message=f"Found {len(critical_vulns)} critical vulnerabilities",
+                        actual_value=len(critical_vulns),
+                        expected_value=0,
+                        severity="error"
+                    ))
+                
+                if high_vulns:
+                    errors.append(DependencyValidationError(
+                        dependency_id=dependency_id,
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_vulnerabilities_found",
+                        error_message=f"Found {len(high_vulns)} high severity vulnerabilities",
+                        actual_value=len(high_vulns),
+                        expected_value=0,
+                        severity="warning"
+                    ))
+        
+        return errors
     
     async def _validate_circular_detection(
         self, 
@@ -869,8 +1624,119 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate cycle analysis"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for cycle analysis validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Build dependency graph for cycle analysis
+        dependency_graph = {}
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            depends_on = dependency.get("depends_on", [])
+            
+            if dependency_id not in dependency_graph:
+                dependency_graph[dependency_id] = set()
+            
+            for dep in depends_on:
+                if isinstance(dep, str):
+                    dependency_graph[dependency_id].add(dep)
+                elif isinstance(dep, dict):
+                    dep_id = dep.get("id", "")
+                    if dep_id:
+                        dependency_graph[dependency_id].add(dep_id)
+        
+        # Detect cycles using depth-first search
+        visited = set()
+        recursion_stack = set()
+        cycles = []
+        
+        def dfs(node, path):
+            if node in recursion_stack:
+                # Found a cycle
+                cycle_start = path.index(node)
+                cycle = path[cycle_start:] + [node]
+                cycles.append(" -> ".join(cycle))
+                return
+            
+            if node in visited:
+                return
+            
+            visited.add(node)
+            recursion_stack.add(node)
+            
+            for neighbor in dependency_graph.get(node, []):
+                if neighbor in dependency_graph:
+                    dfs(neighbor, path + [node])
+            
+            recursion_stack.remove(node)
+        
+        # Run DFS on all nodes
+        for node in dependency_graph:
+            if node not in visited:
+                dfs(node, [])
+        
+        # Report detected cycles
+        for cycle in cycles:
+            errors.append(DependencyValidationError(
+                dependency_id="cycle_detected",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="dependency_cycle",
+                error_message=f"Dependency cycle detected: {cycle}",
+                actual_value=cycle,
+                expected_value="acyclic dependency graph",
+                severity="error"
+            ))
+        
+        # Analyze cycle complexity
+        if cycles:
+            errors.append(DependencyValidationError(
+                dependency_id="complexity_analysis",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="cycle_complexity",
+                error_message=f"Found {len(cycles)} dependency cycles affecting system maintainability",
+                actual_value=len(cycles),
+                expected_value=0,
+                severity="warning"
+            ))
+        
+        # Check for potential circular dependencies (indirect)
+        indirect_cycles = []
+        for node in dependency_graph:
+            for neighbor in dependency_graph.get(node, []):
+                if neighbor in dependency_graph and node in dependency_graph.get(neighbor, set()):
+                    if f"{node} <-> {neighbor}" not in indirect_cycles and f"{neighbor} <-> {node}" not in indirect_cycles:
+                        indirect_cycles.append(f"{node} <-> {neighbor}")
+        
+        for indirect_cycle in indirect_cycles:
+            errors.append(DependencyValidationError(
+                dependency_id="indirect_cycle",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="potential_circular_dependency",
+                error_message=f"Potential circular dependency detected: {indirect_cycle}",
+                actual_value=indirect_cycle,
+                expected_value="no bidirectional dependencies",
+                severity="warning"
+            ))
+        
+        return errors
     
     async def _validate_transitive_analysis(
         self, 
@@ -878,8 +1744,153 @@ class LayerDependenciesValidator(LayerDependenciesValidatorInterface):
         rule: DependencyValidationRule
     ) -> List[DependencyValidationError]:
         """Validate transitive analysis"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if dependencies list is provided
+        if not dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id="unknown",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_dependencies_provided",
+                error_message="No dependencies provided for transitive analysis validation",
+                actual_value=None,
+                expected_value="list of dependencies",
+                severity="error"
+            ))
+            return errors
+        
+        # Build dependency graph for transitive analysis
+        dependency_graph = {}
+        for dependency in dependencies:
+            if not isinstance(dependency, dict):
+                continue
+            
+            dependency_id = dependency.get("id", "unknown")
+            depends_on = dependency.get("depends_on", [])
+            
+            if dependency_id not in dependency_graph:
+                dependency_graph[dependency_id] = set()
+            
+            for dep in depends_on:
+                if isinstance(dep, str):
+                    dependency_graph[dependency_id].add(dep)
+                elif isinstance(dep, dict):
+                    dep_id = dep.get("id", "")
+                    if dep_id:
+                        dependency_graph[dependency_id].add(dep_id)
+        
+        # Calculate transitive dependencies for each node
+        transitive_deps = {}
+        
+        def get_transitive_dependencies(node, visited=None):
+            if visited is None:
+                visited = set()
+            
+            if node in visited:
+                return set()
+            
+            visited.add(node)
+            transitive = set()
+            
+            for neighbor in dependency_graph.get(node, []):
+                transitive.add(neighbor)
+                transitive.update(get_transitive_dependencies(neighbor, visited.copy()))
+            
+            return transitive
+        
+        for node in dependency_graph:
+            transitive_deps[node] = get_transitive_dependencies(node)
+        
+        # Analyze transitive dependency depth
+        max_depth = 0
+        deep_dependencies = []
+        
+        for node, transitive in transitive_deps.items():
+            if len(transitive) > max_depth:
+                max_depth = len(transitive)
+            
+            # Warn about dependencies with too many transitive dependencies
+            if len(transitive) > 10:
+                deep_dependencies.append({
+                    "dependency": node,
+                    "transitive_count": len(transitive),
+                    "transitive_deps": list(transitive)
+                })
+        
+        for deep_dep in deep_dependencies:
+            errors.append(DependencyValidationError(
+                dependency_id=deep_dep["dependency"],
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="excessive_transitive_dependencies",
+                error_message=f"Dependency '{deep_dep['dependency']}' has {deep_dep['transitive_count']} transitive dependencies",
+                actual_value=deep_dep["transitive_count"],
+                expected_value="<= 10 transitive dependencies",
+                severity="warning"
+            ))
+        
+        # Check for potential diamond dependencies
+        diamond_patterns = []
+        for node in dependency_graph:
+            direct_deps = dependency_graph[node]
+            
+            # Check if any two direct dependencies share common transitive dependencies
+            for dep1 in direct_deps:
+                for dep2 in direct_deps:
+                    if dep1 != dep2:
+                        transitive1 = transitive_deps.get(dep1, set())
+                        transitive2 = transitive_deps.get(dep2, set())
+                        common = transitive1.intersection(transitive2)
+                        
+                        if common:
+                            diamond_patterns.append({
+                                "root": node,
+                                "branch1": dep1,
+                                "branch2": dep2,
+                                "common": list(common)
+                            })
+        
+        for pattern in diamond_patterns:
+            errors.append(DependencyValidationError(
+                dependency_id=pattern["root"],
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="diamond_dependency_pattern",
+                error_message=f"Diamond dependency pattern detected: {pattern['root']} -> {pattern['branch1']} and {pattern['branch2']} both depend on {pattern['common']}",
+                actual_value=pattern,
+                expected_value="avoid diamond dependency patterns",
+                severity="warning"
+            ))
+        
+        # Validate transitive dependency stability
+        unstable_transitive = []
+        for node, transitive in transitive_deps.items():
+            for transitive_dep in transitive:
+                # Check if transitive dependency is marked as unstable
+                for dependency in dependencies:
+                    if dependency.get("id") == transitive_dep:
+                        stability = dependency.get("stability", "stable")
+                        if stability.lower() in ["unstable", "experimental", "deprecated"]:
+                            unstable_transitive.append({
+                                "dependency": node,
+                                "transitive": transitive_dep,
+                                "stability": stability
+                            })
+        
+        for unstable in unstable_transitive:
+            errors.append(DependencyValidationError(
+                dependency_id=unstable["dependency"],
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="unstable_transitive_dependency",
+                error_message=f"Dependency '{unstable['dependency']}' transitively depends on unstable '{unstable['transitive']}' ({unstable['stability']})",
+                actual_value=unstable["stability"],
+                expected_value="stable transitive dependencies",
+                severity="warning"
+            ))
+        
+        return errors
     
     async def _validate_dependency_depth(
         self, 
