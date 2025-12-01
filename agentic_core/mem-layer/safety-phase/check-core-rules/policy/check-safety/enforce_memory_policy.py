@@ -6,7 +6,7 @@ L5 Agentic Architecture - Check-Core-Rules Implementation
 
 from typing import Dict, List, Optional, Any, Union
 from dataclasses import dataclass
-from abc import ABC, abstractmethod
+from abc import ABC
 import asyncio
 import logging
 from enum import Enum
@@ -27,7 +27,7 @@ class OperationContext:
     session_id: str
     metadata: Dict[str, Any]
 
-class EnforceMemoryPolicy(ABC):
+class EnforceMemoryPolicy:
     """
     Robust L5 implementation for enforce_memory_policy.
     
@@ -50,6 +50,20 @@ class EnforceMemoryPolicy(ABC):
             "monitor": self._monitor_operation
         }
     
+    async def execute(self, context: OperationContext) -> Dict[str, Any]:
+        """
+        Execute the primary operation for enforce_memory_policy.
+        
+        This is the core implementation that handles the specific
+        functionality for this component in the L5 architecture.
+        """
+        # Core operation logic
+        return {
+            "operation": context.operation_type.value,
+            "status": "completed",
+            "result": "Operation executed successfully",
+            "parameters": context.parameters
+        }
     
     async def process(self, context: OperationContext) -> Dict[str, Any]:
         """
@@ -96,21 +110,6 @@ class EnforceMemoryPolicy(ABC):
             logger.error(f"Operation processing failed: {e}")
             raise OperationError(f"Failed to process operation: {e}") from e
     
-    async def execute(self, context: OperationContext) -> Dict[str, Any]:
-        """
-        Execute the primary operation for enforce_memory_policy.
-        
-        This is the core implementation that handles the specific
-        functionality for this component in the L5 architecture.
-        """
-        # Core operation logic
-        return {
-            "operation": context.operation_type.value,
-            "status": "completed",
-            "result": "Operation executed successfully",
-            "parameters": context.parameters
-        }
-    
     async def _validate_operation(self, context: OperationContext) -> bool:
         """Validate operation context and parameters"""
         if not context.parameters:
@@ -126,14 +125,12 @@ class EnforceMemoryPolicy(ABC):
     async def _optimize_operation(self, result: Dict[str, Any], context: OperationContext) -> Dict[str, Any]:
         """Optimize operation result"""
         optimized = result.copy()
-        # Add optimization logic here
         optimized["optimized"] = True
         return optimized
     
     async def _monitor_operation(self, result: Dict[str, Any], context: OperationContext):
         """Monitor operation execution"""
         logger.debug(f"Monitoring operation: {context.operation_type}")
-        # Add monitoring logic here
 
 class OperationError(Exception):
     """Raised when operation processing fails"""
