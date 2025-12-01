@@ -1,13 +1,13 @@
 """
-Temporal fact invalidation executor for rÃ©sumÃ© processing workflows.
+Temporal fact invalidation executor for rÃƒÂ©sumÃƒÂ© processing workflows.
 
-Implements L2 executor for detecting and marking outdated or contradictory facts in rÃ©sumÃ© enhancement operations.
+Implements L2 executor for detecting and marking outdated or contradictory facts in rÃƒÂ©sumÃƒÂ© enhancement operations.
 
 Layer: L2 (Execution)
 Responsibilities:
-- Execute invalidation checks based on L1 plans for rÃ©sumÃ© fact management
-- Detect contradictory facts in rÃ©sumÃ© processing data
-- Mark facts as invalidated for accurate rÃ©sumÃ© enhancement
+- Execute invalidation checks based on L1 plans for rÃƒÂ©sumÃƒÂ© fact management
+- Detect contradictory facts in rÃƒÂ©sumÃƒÂ© processing data
+- Mark facts as invalidated for accurate rÃƒÂ©sumÃƒÂ© enhancement
 - Return invalidation results for workflow coordination
 
 Non-responsibilities:
@@ -28,7 +28,7 @@ from state.triplet_store import Triplet, TripletStore, TripletStatus, TripletQue
 
 
 class InvalidationReason(str, Enum):
-    """Reasons for fact invalidation in rÃ©sumÃ© processing workflows."""
+    """Reasons for fact invalidation in rÃƒÂ©sumÃƒÂ© processing workflows."""
     SUPERSEDED = "superseded"           # Replaced by newer fact
     CONTRADICTED = "contradicted"       # Contradicts another fact
     EXPIRED = "expired"                 # Temporal validity expired
@@ -39,7 +39,7 @@ class InvalidationReason(str, Enum):
 
 @dataclass
 class InvalidationRule:
-    """Rule for automatic invalidation in rÃ©sumÃ© processing fact management."""
+    """Rule for automatic invalidation in rÃƒÂ©sumÃƒÂ© processing fact management."""
     
     id: str
     name: str
@@ -55,9 +55,9 @@ class InvalidationRule:
     
     def matches_triplet(self, triplet: Triplet) -> bool:
         """
-        Checks if invalidation rule applies to a rÃ©sumÃ© processing triplet.
+        Checks if invalidation rule applies to a rÃƒÂ©sumÃƒÂ© processing triplet.
 
-        Ensures proper fact validation for accurate rÃ©sumÃ© enhancement workflows.
+        Ensures proper fact validation for accurate rÃƒÂ©sumÃƒÂ© enhancement workflows.
         """
         if self.predicate_pattern:
             if triplet.predicate != self.predicate_pattern:
@@ -67,7 +67,7 @@ class InvalidationRule:
 
 @dataclass
 class InvalidationResult:
-    """Result of invalidation check for rÃ©sumÃ© processing fact management."""
+    """Result of invalidation check for rÃƒÂ©sumÃƒÂ© processing fact management."""
     
     triplet_id: str
     invalidated: bool
@@ -78,7 +78,7 @@ class InvalidationResult:
 
 @dataclass
 class InvalidationPlan:
-    """Plan for invalidation execution in rÃ©sumÃ© processing workflows (from L1)."""
+    """Plan for invalidation execution in rÃƒÂ©sumÃƒÂ© processing workflows (from L1)."""
     
     target_subject: Optional[str] = None
     target_predicate: Optional[str] = None
@@ -91,17 +91,17 @@ class InvalidationPlan:
 
 class InvalidationExecutor:
     """
-    Executor for fact invalidation in rÃ©sumÃ© processing workflows.
+    Executor for fact invalidation in rÃƒÂ©sumÃƒÂ© processing workflows.
     
-    Checks triplets against invalidation rules and marks outdated or contradictory facts for accurate rÃ©sumÃ© enhancement.
+    Checks triplets against invalidation rules and marks outdated or contradictory facts for accurate rÃƒÂ©sumÃƒÂ© enhancement.
     """
     
     def __init__(self, triplet_store: TripletStore):
         """
-        Initializes invalidation executor for rÃ©sumÃ© processing fact management.
+        Initializes invalidation executor for rÃƒÂ©sumÃƒÂ© processing fact management.
         
         Args:
-            triplet_store: L4 TripletStore instance for rÃ©sumÃ© workflow coordination
+            triplet_store: L4 TripletStore instance for rÃƒÂ©sumÃƒÂ© workflow coordination
         """
         self.store = triplet_store
         self._default_rules = self._build_default_rules()

@@ -1,22 +1,27 @@
-"""
-Checks import validity to ensure resume generation system works properly.
+"""Base models for simulations."""
 
-Verifies all modules can be imported without errors to maintain
-code quality and ensure smooth resume generation functionality.
-"""
+from typing import Any, Dict, List
 
-import pkgutil
-
-print("=== IMPORT CHECK START ===")
-for m in pkgutil.walk_packages([""]):
-    name = (m.name or "").lstrip("")
-    if not name:
-        # Skip empty or invalid module names.
-        continue
-    try:
-        __import__(name)
-    except Exception as e:
-        print("FAILED:", name, "->", type(e).__name__, str(e))
-print("=== IMPORT CHECK END ===")
+from pydantic import BaseModel, Field
 
 
+class SimulationInput(BaseModel):
+    """Base class for simulation input payloads."""
+
+    simulation_id: str = Field(...)
+    payload: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SimulationResult(BaseModel):
+    """Base class for simulation results."""
+
+    simulation_id: str
+    success: bool
+    metrics: Dict[str, Any] = Field(default_factory=dict)
+    details: Dict[str, Any] = Field(default_factory=dict)
+
+
+class SimulationBatchResult(BaseModel):
+    """Aggregated simulation result container."""
+
+    results: List[SimulationResult] = Field(default_factory=list)
