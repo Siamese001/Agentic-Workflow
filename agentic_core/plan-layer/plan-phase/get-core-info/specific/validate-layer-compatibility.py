@@ -728,62 +728,636 @@ class LayerCompatibilityValidator(LayerCompatibilityValidatorInterface):
     # Additional compatibility check implementations (simplified)
     async def _check_dependency_compatibility(self, source: Dict[str, Any], target: Dict[str, Any]) -> CompatibilityCheckResult:
         """Check dependency compatibility between layers"""
-        # Simplified implementation
+        import time
+        start_time = time.time()
+        
+        source_layer = source.get("name", "unknown")
+        target_layer = target.get("name", "unknown")
+        issues = []
+        recommendations = []
+        
+        # Check source dependencies
+        source_deps = source.get("dependencies", [])
+        target_deps = target.get("dependencies", [])
+        
+        # Check for conflicting dependency versions
+        dep_versions = {}
+        for dep in source_deps + target_deps:
+            if isinstance(dep, dict):
+                dep_name = dep.get("name", "")
+                dep_version = dep.get("version", "")
+                
+                if dep_name:
+                    if dep_name not in dep_versions:
+                        dep_versions[dep_name] = []
+                    dep_versions[dep_name].append(dep_version)
+        
+        for dep_name, versions in dep_versions.items():
+            if len(set(versions)) > 1:
+                issues.append({
+                    "type": "version_conflict",
+                    "dependency": dep_name,
+                    "conflicting_versions": list(set(versions)),
+                    "severity": "error"
+                })
+                recommendations.append({
+                    "action": "resolve_version_conflict",
+                    "dependency": dep_name,
+                    "suggestion": f"Align {dep_name} to a single version across both layers"
+                })
+        
+        # Check for circular dependencies
+        source_dep_names = [dep.get("name") if isinstance(dep, dict) else dep for dep in source_deps if dep]
+        target_dep_names = [dep.get("name") if isinstance(dep, dict) else dep for dep in target_deps if dep]
+        
+        if source_layer in target_dep_names and target_layer in source_dep_names:
+            issues.append({
+                "type": "circular_dependency",
+                "cycle": f"{source_layer} -> {target_layer} -> {source_layer}",
+                "severity": "critical"
+            })
+            recommendations.append({
+                "action": "break_circular_dependency",
+                "suggestion": "Refactor to eliminate circular dependency between layers"
+            })
+        
+        # Check for incompatible dependency types
+        source_dep_types = set(dep.get("type", "unknown") for dep in source_deps if isinstance(dep, dict))
+        target_dep_types = set(dep.get("type", "unknown") for dep in target_deps if isinstance(dep, dict))
+        
+        incompatible_types = source_dep_types.symmetric_difference(target_dep_types)
+        if incompatible_types and "unknown" not in incompatible_types:
+            issues.append({
+                "type": "incompatible_dependency_types",
+                "incompatible_types": list(incompatible_types),
+                "severity": "warning"
+            })
+        
+        # Determine compatibility level
+        if any(issue["severity"] == "critical" for issue in issues):
+            compatibility_level = CompatibilityLevel.INCOMPATIBLE
+        elif any(issue["severity"] == "error" for issue in issues):
+            compatibility_level = CompatibilityLevel.PARTIALLY_COMPATIBLE
+        elif issues:
+            compatibility_level = CompatibilityLevel.COMPATIBLE_WITH_WARNINGS
+        else:
+            compatibility_level = CompatibilityLevel.COMPATIBLE
+        
+        execution_time = (time.time() - start_time) * 1000
+        
         return CompatibilityCheckResult(
             rule_id="dependency_compatibility",
             rule_type=CompatibilityType.DEPENDENCY,
-            source_layer=source.get("name", ""),
-            target_layer=target.get("name", ""),
-            compatibility_level=CompatibilityLevel.COMPATIBLE,
-            details={"message": "Dependency compatibility check not fully implemented"},
-            issues=[],
-            recommendations=[],
-            execution_time_ms=1.0
+            source_layer=source_layer,
+            target_layer=target_layer,
+            compatibility_level=compatibility_level,
+            details={
+                "source_dependencies": len(source_deps),
+                "target_dependencies": len(target_deps),
+                "version_conflicts": len([i for i in issues if i["type"] == "version_conflict"]),
+                "circular_dependencies": len([i for i in issues if i["type"] == "circular_dependency"])
+            },
+            issues=issues,
+            recommendations=recommendations,
+            execution_time_ms=execution_time
         )
     
     async def _check_data_format_compatibility(self, source: Dict[str, Any], target: Dict[str, Any]) -> CompatibilityCheckResult:
         """Check data format compatibility between layers"""
-        # Simplified implementation
+        import time
+        start_time = time.time()
+        
+        source_layer = source.get("name", "unknown")
+        target_layer = target.get("name", "unknown")
+        issues = []
+        recommendations = []
+        
+        # Get data formats from both layers
+        source_formats = source.get("data_formats", [])
+        target_formats = target.get("data_formats", [])
+        
+        # Check for format compatibility
+        supported_formats = ["json", "xml", "yaml", "protobuf", "avro", "csv", "parquet"]
+        
+        # Validate source formats
+        invalid_source_formats = [f for f in source_formats if f not in supported_formats]
+        for fmt in invalid_source_formats:
+            issues.append({
+                "type": "unsupported_source_format",
+                "format": fmt,
+                "layer": source_layer,
+                "severity": "error"
+            })
+            recommendations.append({
+                "action": "replace_unsupported_format",
+                "format": fmt,
+                "suggestion": f"Replace {fmt} with a supported format like JSON or XML"
+            })
+        
+        # Validate target formats
+        invalid_target_formats = [f for f in target_formats if f not in supported_formats]
+        for fmt in invalid_target_formats:
+            issues.append({
+                "type": "unsupported_target_format",
+                "format": fmt,
+                "layer": target_layer,
+                "severity": "error"
+            })
+            recommendations.append({
+                "action": "replace_unsupported_format",
+                "format": fmt,
+                "suggestion": f"Replace {fmt} with a supported format like JSON or XML"
+            })
+        
+        # Check for format compatibility between layers
+        source_set = set(source_formats)
+        target_set = set(target_formats)
+        
+        # Find common formats
+        common_formats = source_set.intersection(target_set)
+        
+        # Check if there are any compatible formats
+        if not common_formats:
+            issues.append({
+                "type": "no_common_formats",
+                "source_formats": list(source_set),
+                "target_formats": list(target_set),
+                "severity": "error"
+            })
+            recommendations.append({
+                "action": "establish_common_format",
+                "suggestion": "Implement a common data format or data transformation layer"
+            })
+        else:
+            # Check format-specific compatibility
+            for fmt in common_formats:
+                if fmt == "json":
+                    # Check JSON schema compatibility
+                    source_schema = source.get("json_schema", {})
+                    target_schema = target.get("json_schema", {})
+                    
+                    if source_schema and target_schema:
+                        # Basic schema compatibility check
+                        if not self._check_json_schema_compatibility(source_schema, target_schema):
+                            issues.append({
+                                "type": "json_schema_incompatible",
+                                "format": "json",
+                                "severity": "warning"
+                            })
+                
+                elif fmt == "xml":
+                    # Check XML namespace compatibility
+                    source_ns = source.get("xml_namespace", "")
+                    target_ns = target.get("xml_namespace", "")
+                    
+                    if source_ns and target_ns and source_ns != target_ns:
+                        issues.append({
+                            "type": "xml_namespace_mismatch",
+                            "source_namespace": source_ns,
+                            "target_namespace": target_ns,
+                            "severity": "warning"
+                        })
+        
+        # Check for format version conflicts
+        source_versions = source.get("format_versions", {})
+        target_versions = target.get("format_versions", {})
+        
+        for fmt in common_formats:
+            source_ver = source_versions.get(fmt, "")
+            target_ver = target_versions.get(fmt, "")
+            
+            if source_ver and target_ver and source_ver != target_ver:
+                issues.append({
+                    "type": "format_version_conflict",
+                    "format": fmt,
+                    "source_version": source_ver,
+                    "target_version": target_ver,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "align_format_versions",
+                    "format": fmt,
+                    "suggestion": f"Align {fmt} versions between {source_layer} and {target_layer}"
+                })
+        
+        # Determine compatibility level
+        if any(issue["severity"] == "error" for issue in issues):
+            compatibility_level = CompatibilityLevel.INCOMPATIBLE
+        elif any(issue["severity"] == "warning" for issue in issues):
+            compatibility_level = CompatibilityLevel.COMPATIBLE_WITH_WARNINGS
+        else:
+            compatibility_level = CompatibilityLevel.COMPATIBLE
+        
+        execution_time = (time.time() - start_time) * 1000
+        
         return CompatibilityCheckResult(
             rule_id="data_format_compatibility",
             rule_type=CompatibilityType.DATA_FORMAT,
-            source_layer=source.get("name", ""),
-            target_layer=target.get("name", ""),
-            compatibility_level=CompatibilityLevel.COMPATIBLE,
-            details={"message": "Data format compatibility check not fully implemented"},
-            issues=[],
-            recommendations=[],
-            execution_time_ms=1.0
+            source_layer=source_layer,
+            target_layer=target_layer,
+            compatibility_level=compatibility_level,
+            details={
+                "source_formats": source_formats,
+                "target_formats": target_formats,
+                "common_formats": list(common_formats),
+                "format_conflicts": len([i for i in issues if i["type"] in ["no_common_formats", "format_version_conflict"]])
+            },
+            issues=issues,
+            recommendations=recommendations,
+            execution_time_ms=execution_time
         )
     
     async def _check_protocol_compatibility(self, source: Dict[str, Any], target: Dict[str, Any]) -> CompatibilityCheckResult:
         """Check protocol compatibility between layers"""
-        # Simplified implementation
+        import time
+        start_time = time.time()
+        
+        source_layer = source.get("name", "unknown")
+        target_layer = target.get("name", "unknown")
+        issues = []
+        recommendations = []
+        
+        # Get protocols from both layers
+        source_protocol = source.get("protocol", "")
+        target_protocol = target.get("protocol", "")
+        
+        # Supported protocols with compatibility matrix
+        protocol_compatibility = {
+            "http": {"http": "full", "https": "partial", "websocket": "partial"},
+            "https": {"http": "partial", "https": "full", "websocket": "partial"},
+            "websocket": {"http": "partial", "https": "partial", "websocket": "full"},
+            "grpc": {"grpc": "full", "http": "partial"},
+            "tcp": {"tcp": "full", "udp": "none"},
+            "udp": {"udp": "full", "tcp": "none"},
+            "mqtt": {"mqtt": "full", "amqp": "none"},
+            "amqp": {"amqp": "full", "mqtt": "none"}
+        }
+        
+        # Validate protocols are specified
+        if not source_protocol:
+            issues.append({
+                "type": "missing_source_protocol",
+                "layer": source_layer,
+                "severity": "error"
+            })
+            recommendations.append({
+                "action": "specify_protocol",
+                "layer": source_layer,
+                "suggestion": "Specify a communication protocol for the source layer"
+            })
+        
+        if not target_protocol:
+            issues.append({
+                "type": "missing_target_protocol",
+                "layer": target_layer,
+                "severity": "error"
+            })
+            recommendations.append({
+                "action": "specify_protocol",
+                "layer": target_layer,
+                "suggestion": "Specify a communication protocol for the target layer"
+            })
+        
+        # Check protocol compatibility if both are specified
+        if source_protocol and target_protocol:
+            source_lower = source_protocol.lower()
+            target_lower = target_protocol.lower()
+            
+            # Check if protocols are supported
+            supported_protocols = list(protocol_compatibility.keys())
+            
+            if source_lower not in supported_protocols:
+                issues.append({
+                    "type": "unsupported_source_protocol",
+                    "protocol": source_protocol,
+                    "layer": source_layer,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "use_supported_protocol",
+                    "protocol": source_protocol,
+                    "suggestion": f"Use a supported protocol: {', '.join(supported_protocols)}"
+                })
+            
+            if target_lower not in supported_protocols:
+                issues.append({
+                    "type": "unsupported_target_protocol",
+                    "protocol": target_protocol,
+                    "layer": target_layer,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "use_supported_protocol",
+                    "protocol": target_protocol,
+                    "suggestion": f"Use a supported protocol: {', '.join(supported_protocols)}"
+                })
+            
+            # Check compatibility matrix
+            if source_lower in supported_protocols and target_lower in supported_protocols:
+                compatibility = protocol_compatibility[source_lower].get(target_lower, "none")
+                
+                if compatibility == "none":
+                    issues.append({
+                        "type": "incompatible_protocols",
+                        "source_protocol": source_protocol,
+                        "target_protocol": target_protocol,
+                        "severity": "error"
+                    })
+                    recommendations.append({
+                        "action": "align_protocols",
+                        "suggestion": f"Change protocols to be compatible. {source_protocol} and {target_protocol} are incompatible"
+                    })
+                elif compatibility == "partial":
+                    issues.append({
+                        "type": "partial_protocol_compatibility",
+                        "source_protocol": source_protocol,
+                        "target_protocol": target_protocol,
+                        "severity": "warning"
+                    })
+                    recommendations.append({
+                        "action": "improve_protocol_compatibility",
+                        "suggestion": f"Consider using fully compatible protocols or implement protocol translation"
+                    })
+        
+        # Check protocol versions
+        source_version = source.get("protocol_version", "")
+        target_version = target.get("protocol_version", "")
+        
+        if source_version and target_version and source_protocol == target_protocol:
+            # Basic version compatibility check
+            if source_version != target_version:
+                issues.append({
+                    "type": "protocol_version_mismatch",
+                    "protocol": source_protocol,
+                    "source_version": source_version,
+                    "target_version": target_version,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "align_protocol_versions",
+                    "protocol": source_protocol,
+                    "suggestion": f"Align {source_protocol} protocol versions between layers"
+                })
+        
+        # Check protocol-specific requirements
+        if source_protocol.lower() == "https":
+            source_ssl = source.get("ssl_config", {})
+            if not source_ssl:
+                issues.append({
+                    "type": "missing_ssl_config",
+                    "layer": source_layer,
+                    "protocol": "HTTPS",
+                    "severity": "error"
+                })
+        
+        if target_protocol.lower() == "https":
+            target_ssl = target.get("ssl_config", {})
+            if not target_ssl:
+                issues.append({
+                    "type": "missing_ssl_config",
+                    "layer": target_layer,
+                    "protocol": "HTTPS",
+                    "severity": "error"
+                })
+        
+        if source_protocol.lower() == "grpc":
+            source_grpc = source.get("grpc_config", {})
+            if not source_grpc:
+                issues.append({
+                    "type": "missing_grpc_config",
+                    "layer": source_layer,
+                    "protocol": "gRPC",
+                    "severity": "warning"
+                })
+        
+        # Determine compatibility level
+        if any(issue["severity"] == "error" for issue in issues):
+            compatibility_level = CompatibilityLevel.INCOMPATIBLE
+        elif any(issue["severity"] == "warning" for issue in issues):
+            compatibility_level = CompatibilityLevel.COMPATIBLE_WITH_WARNINGS
+        else:
+            compatibility_level = CompatibilityLevel.COMPATIBLE
+        
+        execution_time = (time.time() - start_time) * 1000
+        
         return CompatibilityCheckResult(
             rule_id="protocol_compatibility",
             rule_type=CompatibilityType.PROTOCOL,
-            source_layer=source.get("name", ""),
-            target_layer=target.get("name", ""),
-            compatibility_level=CompatibilityLevel.COMPATIBLE,
-            details={"message": "Protocol compatibility check not fully implemented"},
-            issues=[],
-            recommendations=[],
-            execution_time_ms=1.0
+            source_layer=source_layer,
+            target_layer=target_layer,
+            compatibility_level=compatibility_level,
+            details={
+                "source_protocol": source_protocol,
+                "target_protocol": target_protocol,
+                "source_version": source_version,
+                "target_version": target_version,
+                "protocol_issues": len([i for i in issues if i["type"].startswith("protocol")])
+            },
+            issues=issues,
+            recommendations=recommendations,
+            execution_time_ms=execution_time
         )
     
     async def _check_configuration_compatibility(self, source: Dict[str, Any], target: Dict[str, Any]) -> CompatibilityCheckResult:
         """Check configuration compatibility between layers"""
-        # Simplified implementation
+        import time
+        start_time = time.time()
+        
+        source_layer = source.get("name", "unknown")
+        target_layer = target.get("name", "unknown")
+        issues = []
+        recommendations = []
+        
+        # Get configurations from both layers
+        source_config = source.get("configuration", {})
+        target_config = target.get("configuration", {})
+        
+        # Check for required configuration fields
+        required_fields = ["version", "environment", "settings"]
+        
+        for field in required_fields:
+            if field not in source_config:
+                issues.append({
+                    "type": "missing_source_config_field",
+                    "field": field,
+                    "layer": source_layer,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "add_config_field",
+                    "layer": source_layer,
+                    "field": field,
+                    "suggestion": f"Add '{field}' field to {source_layer} configuration"
+                })
+            
+            if field not in target_config:
+                issues.append({
+                    "type": "missing_target_config_field",
+                    "field": field,
+                    "layer": target_layer,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "add_config_field",
+                    "layer": target_layer,
+                    "field": field,
+                    "suggestion": f"Add '{field}' field to {target_layer} configuration"
+                })
+        
+        # Check environment compatibility
+        source_env = source_config.get("environment", "")
+        target_env = target_config.get("environment", "")
+        
+        if source_env and target_env:
+            compatible_envs = {
+                "development": ["development", "testing"],
+                "testing": ["development", "testing", "staging"],
+                "staging": ["testing", "staging", "production"],
+                "production": ["production"]
+            }
+            
+            if source_env not in compatible_envs.get(target_env, []):
+                issues.append({
+                    "type": "environment_incompatible",
+                    "source_environment": source_env,
+                    "target_environment": target_env,
+                    "severity": "error"
+                })
+                recommendations.append({
+                    "action": "align_environments",
+                    "suggestion": f"Align environments: {source_env} and {target_env} are incompatible"
+                })
+        
+        # Check version compatibility
+        source_version = source_config.get("version", "")
+        target_version = target_config.get("version", "")
+        
+        if source_version and target_version:
+            # Basic semantic version compatibility check
+            try:
+                import re
+                semver_pattern = r'^(\d+)\.(\d+)\.(\d+)$'
+                
+                source_match = re.match(semver_pattern, source_version.split('-')[0])
+                target_match = re.match(semver_pattern, target_version.split('-')[0])
+                
+                if source_match and target_match:
+                    source_major = int(source_match.group(1))
+                    target_major = int(target_match.group(1))
+                    
+                    # Major version differences indicate potential incompatibility
+                    if source_major != target_major:
+                        issues.append({
+                            "type": "major_version_mismatch",
+                            "source_version": source_version,
+                            "target_version": target_version,
+                            "severity": "warning"
+                        })
+                        recommendations.append({
+                            "action": "verify_version_compatibility",
+                            "suggestion": "Verify compatibility between different major versions"
+                        })
+            except (ValueError, AttributeError):
+                # If version parsing fails, just note it as a warning
+                issues.append({
+                    "type": "unparseable_version",
+                    "source_version": source_version,
+                    "target_version": target_version,
+                    "severity": "warning"
+                })
+        
+        # Check settings compatibility
+        source_settings = source_config.get("settings", {})
+        target_settings = target_config.get("settings", {})
+        
+        # Check for conflicting settings
+        common_settings = set(source_settings.keys()).intersection(set(target_settings.keys()))
+        
+        for setting in common_settings:
+            source_value = source_settings[setting]
+            target_value = target_settings[setting]
+            
+            if source_value != target_value:
+                # Check if this setting should be consistent across layers
+                if setting in ["timeout", "retry_count", "log_level", "security_level"]:
+                    issues.append({
+                        "type": "conflicting_setting",
+                        "setting": setting,
+                        "source_value": source_value,
+                        "target_value": target_value,
+                        "severity": "warning"
+                    })
+                    recommendations.append({
+                        "action": "align_setting",
+                        "setting": setting,
+                        "suggestion": f"Align '{setting}' setting between layers for consistency"
+                    })
+        
+        # Check for security configuration compatibility
+        source_security = source_config.get("security", {})
+        target_security = target_config.get("security", {})
+        
+        if source_security and target_security:
+            # Check authentication requirements
+            source_auth = source_security.get("authentication_required", False)
+            target_auth = target_security.get("authentication_required", False)
+            
+            # If one layer requires auth and the other doesn't, it's a potential issue
+            if source_auth != target_auth:
+                issues.append({
+                    "type": "authentication_mismatch",
+                    "source_auth": source_auth,
+                    "target_auth": target_auth,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "align_authentication",
+                    "suggestion": "Align authentication requirements between layers"
+                })
+            
+            # Check encryption requirements
+            source_encryption = source_security.get("encryption_required", False)
+            target_encryption = target_security.get("encryption_required", False)
+            
+            if source_encryption != target_encryption:
+                issues.append({
+                    "type": "encryption_mismatch",
+                    "source_encryption": source_encryption,
+                    "target_encryption": target_encryption,
+                    "severity": "warning"
+                })
+                recommendations.append({
+                    "action": "align_encryption",
+                    "suggestion": "Align encryption requirements between layers"
+                })
+        
+        # Determine compatibility level
+        if any(issue["severity"] == "error" for issue in issues):
+            compatibility_level = CompatibilityLevel.INCOMPATIBLE
+        elif any(issue["severity"] == "warning" for issue in issues):
+            compatibility_level = CompatibilityLevel.COMPATIBLE_WITH_WARNINGS
+        else:
+            compatibility_level = CompatibilityLevel.COMPATIBLE
+        
+        execution_time = (time.time() - start_time) * 1000
+        
         return CompatibilityCheckResult(
             rule_id="configuration_compatibility",
             rule_type=CompatibilityType.CONFIGURATION,
-            source_layer=source.get("name", ""),
-            target_layer=target.get("name", ""),
-            compatibility_level=CompatibilityLevel.COMPATIBLE,
-            details={"message": "Configuration compatibility check not fully implemented"},
-            issues=[],
-            recommendations=[],
-            execution_time_ms=1.0
+            source_layer=source_layer,
+            target_layer=target_layer,
+            compatibility_level=compatibility_level,
+            details={
+                "source_environment": source_env,
+                "target_environment": target_env,
+                "source_version": source_version,
+                "target_version": target_version,
+                "conflicting_settings": len([i for i in issues if i["type"] == "conflicting_setting"]),
+                "security_issues": len([i for i in issues if "auth" in i["type"] or "encryption" in i["type"]])
+            },
+            issues=issues,
+            recommendations=recommendations,
+            execution_time_ms=execution_time
         )
     
     # Version compatibility helper methods (simplified)
