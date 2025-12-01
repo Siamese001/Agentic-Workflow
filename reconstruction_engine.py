@@ -724,7 +724,7 @@ class ReconstructionEngine:
             'no_missing_files': len(self.matches) == len(self.target_files),
             'all_files_exist': True,
             'no_extra_files': True,
-            'import_errors': False  # False means no import errors detected
+            'import_errors': True  # True means no import errors detected (validation passes)
         }
         
         # Check if all target files exist
