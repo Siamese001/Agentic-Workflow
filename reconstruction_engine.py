@@ -387,6 +387,42 @@ class ReconstructionEngine:
         
         return len(unmatched_files) == 0
     
+    def sanitize_path_component(self, component: str) -> str:
+        """Sanitize a single path component for Windows compatibility"""
+        if not component:
+            return ""
+            
+        # Sanitize component for Windows compatibility
+        sanitized = component.replace('*', 'star').replace('<', 'lt').replace('>', 'gt')
+        sanitized = sanitized.replace('?', 'question').replace(':', 'colon').replace('|', 'pipe')
+        sanitized = sanitized.replace('"', 'quote').replace('\\', 'backslash')
+        
+        # Handle special case for problematic components
+        if 'data_meta' in sanitized or 'artifacts' in sanitized:
+            sanitized = 'data_meta_artifacts'
+        
+        # Remove any remaining invalid characters
+        import re
+        sanitized = re.sub(r'[^\w\-_]', '_', sanitized)
+        sanitized = re.sub(r'_+', '_', sanitized).strip('_')
+        
+        return sanitized
+    
+    def sanitize_directory_path(self, dir_path: str) -> str:
+        """Sanitize an entire directory path"""
+        if not dir_path:
+            return ""
+            
+        dir_components = dir_path.split('/')
+        sanitized_components = []
+        
+        for component in dir_components:
+            sanitized = self.sanitize_path_component(component)
+            if sanitized:
+                sanitized_components.append(sanitized)
+        
+        return '/'.join(sanitized_components)
+    
     def create_directory_structure(self):
         """Create the exact directory structure from YAML"""
         print("\n🏗️ Creating directory structure from YAML...")
@@ -397,34 +433,8 @@ class ReconstructionEngine:
             # Extract directory path from full yaml_path
             dir_path = os.path.dirname(yaml_path)
             
-            # Sanitize directory path components
-            dir_components = dir_path.split('/')
-            sanitized_components = []
-            
-            for component in dir_components:
-                # Skip empty components
-                if not component:
-                    continue
-                    
-                # Sanitize component for Windows compatibility
-                sanitized = component.replace('*', 'star').replace('<', 'lt').replace('>', 'gt')
-                sanitized = sanitized.replace('?', 'question').replace(':', 'colon').replace('|', 'pipe')
-                sanitized = sanitized.replace('"', 'quote').replace('\\', 'backslash')
-                
-                # Handle special case for problematic components
-                if 'data_meta' in sanitized or 'artifacts' in sanitized:
-                    sanitized = 'data_meta_artifacts'
-                
-                # Remove any remaining invalid characters
-                import re
-                sanitized = re.sub(r'[^\w\-_]', '_', sanitized)
-                sanitized = re.sub(r'_+', '_', sanitized).strip('_')
-                
-                if sanitized:
-                    sanitized_components.append(sanitized)
-            
-            # Reconstruct sanitized directory path
-            sanitized_dir_path = '/'.join(sanitized_components)
+            # Use shared sanitization method
+            sanitized_dir_path = self.sanitize_directory_path(dir_path)
             full_dir_path = self.agentic_workflow_path / sanitized_dir_path
             
             if not full_dir_path.exists():
@@ -455,27 +465,24 @@ class ReconstructionEngine:
                 target_filename = target_filename.replace('?', 'question').replace(':', 'colon').replace('|', 'pipe')
                 target_filename = target_filename.replace('"', 'quote').replace('/', 'slash').replace('\\', 'backslash')
                 
+                # Handle special case for problematic filenames (after sanitization)
+                if 'data_meta' in target_filename or 'artifacts' in target_filename:
+                    target_filename = 'data_meta_artifacts.json'
+                
                 # Remove any remaining invalid characters and spaces
                 import re
                 target_filename = re.sub(r'[^\w\-_\.]', '_', target_filename)
                 # Clean up multiple underscores and trailing underscores
                 target_filename = re.sub(r'_+', '_', target_filename).strip('_')
                 
-                # Handle special case for problematic filenames (after sanitization)
-                if 'data_meta' in target_filename or 'artifacts' in target_filename:
-                    target_filename = 'data_meta_artifacts.json'
-                
-                # Debug output for problematic case
-                if 'executor-microagent-layer' in yaml_path and 'helper-methods-ops' in yaml_path:
-                    print(f"🐛 DEBUG: Original filename: {self.target_files[yaml_path].l7_file}")
-                    print(f"🐛 DEBUG: Sanitized filename: '{target_filename}'")
-                
                 # Ensure filename is not empty
                 if not target_filename or target_filename == '_':
                     target_filename = 'placeholder_file.py'
                 
-                # Create full target path
-                target_dir = self.agentic_workflow_path / os.path.dirname(yaml_path)
+                # Create full target path using shared sanitization
+                dir_path = os.path.dirname(yaml_path)
+                sanitized_dir_path = self.sanitize_directory_path(dir_path)
+                target_dir = self.agentic_workflow_path / sanitized_dir_path
                 target_path = target_dir / target_filename
                 
                 # Ensure directory exists
