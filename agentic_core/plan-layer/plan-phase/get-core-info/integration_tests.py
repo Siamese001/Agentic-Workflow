@@ -12,7 +12,7 @@ from typing import Dict, Any, List
 from datetime import datetime
 
 # Import all get core info components
-from .get_core_info_orchestrator import (
+from get_core_info_orchestrator import (
     GetCoreInfoOrchestrator,
     GetCoreInfoRequest,
     GetCoreInfoResponse,
@@ -23,13 +23,13 @@ from .get_core_info_orchestrator import (
 )
 
 # Import subsystem components for testing
-from .general.understand_request import (
+from general.understand_request import (
     create_core_query_builder,
     create_layer_parameter_extractor,
     create_registry_intent_parser
 )
 
-from .specific import (
+from specific import (
     create_layer_requirements_analyzer,
     create_layer_dependency_extractor,
     create_layer_id_generator,
@@ -38,8 +38,8 @@ from .specific import (
     create_layer_spec_validator
 )
 
-from .utility.prepare_information import create_prepare_information_orchestrator
-from .utility.validate_information import create_validation_orchestrator
+from utility.prepare_information import create_prepare_information_orchestrator
+from utility.validate_information import create_validation_orchestrator
 
 
 class TestGetCoreInfoOrchestrator:
