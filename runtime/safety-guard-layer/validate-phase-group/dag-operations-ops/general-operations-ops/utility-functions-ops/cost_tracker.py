@@ -1,27 +1,25 @@
-from __future__ import annotations
-
-import time
-from dataclasses import dataclass, field
-from typing import Any, Dict, List
+from core_v10_7 import CostTracker
 
 
-@dataclass
-class CostTracker:
-    spans: Dict[str, Dict[str, float]] = field(default_factory=dict)
+def test_cost_tracker_records_calls_and_sums():
+    tracker = CostTracker()
+    tracker.record_call("wf1", "google", "gemini-2.5-pro", input_tokens=1000, output_tokens=500)
+    summary = tracker.get_cost_summary("wf1")
+    assert abs(summary["total_workflow_cost"] - 0.005) < 1e-9
+    assert summary["calls"]
 
-    def start_span(self, name: str) -> None:
-        self.spans[name] = {"start": time.perf_counter(), "end": None}
 
-    def end_span(self, name: str) -> None:
-        if name in self.spans and self.spans[name]["end"] is None:
-            self.spans[name]["end"] = time.perf_counter()
+def test_unknown_provider_no_cost():
+    tracker = CostTracker()
+    tracker.record_call("wf2", "unknown", "mystery-model", input_tokens=1000, output_tokens=1000)
+    summary = tracker.get_cost_summary("wf2")
+    assert summary["total_workflow_cost"] == 0
 
-    def snapshot(self) -> Dict[str, Any]:
-        snapshot_spans: List[Dict[str, float]] = []
-        for span_name in sorted(self.spans.keys()):
-            span = self.spans[span_name]
-            start = span.get("start", 0.0) or 0.0
-            end = span.get("end", start)
-            duration_ms = max((end - start) * 1000.0, 0.0)
-            snapshot_spans.append({"name": span_name, "duration_ms": duration_ms})
-        return {"spans": snapshot_spans}
+
+def test_multiple_calls_aggregated():
+    tracker = CostTracker()
+    tracker.record_call("wf3", "google", "gemini-2.5-flash", input_tokens=500, output_tokens=500)
+    tracker.record_call("wf3", "google", "gemini-2.5-pro", input_tokens=500, output_tokens=500)
+    summary = tracker.get_cost_summary("wf3")
+    assert summary["total_workflow_cost"] > 0
+    assert len(summary["calls"]) == 2
