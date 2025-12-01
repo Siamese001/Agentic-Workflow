@@ -1,0 +1,63 @@
+# L5 Agentic Core - Goal Templates
+# YAML configuration for goal templates with L5 safety constraints
+
+templates:
+  primary_goal:
+    type: "primary"
+    description: "Primary objective template"
+    constraints:
+      max_depth: 5
+      priority_range: [1, 10]
+      required_fields: ["description", "success_criteria"]
+    safety_level: "strict"
+    
+  secondary_goal:
+    type: "secondary"
+    description: "Supporting objective template"
+    constraints:
+      max_depth: 3
+      priority_range: [3, 8]
+      required_fields: ["description", "parent_goal"]
+    safety_level: "moderate"
+    
+  constraint_goal:
+    type: "constraint"
+    description: "Constraint or boundary condition template"
+    constraints:
+      max_depth: 2
+      priority_range: [8, 10]
+      required_fields: ["constraint_type", "boundary_value"]
+    safety_level: "high"
+    
+  safety_goal:
+    type: "safety"
+    description: "Safety and security objective template"
+    constraints:
+      max_depth: 1
+      priority_range: [9, 10]
+      required_fields: ["safety_criteria", "failure_mode"]
+    safety_level: "critical"
+
+validation_rules:
+  - name: "no_code_injection"
+    pattern: "<script|javascript:|eval\\(|exec\\(|__import__"
+    action: "reject"
+    
+  - name: "description_length"
+    max_length: 500
+    action: "warn"
+    
+  - name: "priority_bounds"
+    min: 1
+    max: 10
+    action: "reject"
+    
+  - name: "depth_limit"
+    max_depth: 5
+    action: "reject"
+
+safety_policies:
+  fail_closed: true
+  max_size_kb: 100
+  required_validation: true
+  audit_trail: true
