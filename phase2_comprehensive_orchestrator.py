@@ -6,10 +6,9 @@ Implements full 3-tier restoration with validation criteria tracking
 
 import json
 import asyncio
-import hashlib
 import logging
 from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
+from typing import List
 from datetime import datetime
 from dataclasses import dataclass, asdict
 
