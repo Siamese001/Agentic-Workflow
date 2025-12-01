@@ -8,9 +8,10 @@ with L5 safety, comprehensive logging, and fail-closed architecture.
 from __future__ import annotations
 import logging
 import asyncio
+import statistics
 from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from abc import ABC, abstractmethod
 from enum import Enum
 
@@ -1827,7 +1828,7 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
                                if event.get("status") == "success" and "duration_seconds" in event]
             
             if successful_events:
-                import statistics
+                # Calculate scaling latencies
                 scaling_latencies = [event["duration_seconds"] for event in successful_events]
                 avg_scaling_latency = statistics.mean(scaling_latencies)
                 
@@ -1864,17 +1865,28 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
     
     def _is_recent_event(self, event: Dict[str, Any], hours: int = 24) -> bool:
         """Helper method to check if an event is recent"""
+        return self._is_recent_timestamped_item(event, hours)
+    
+    def _is_recent_violation(self, violation: Dict[str, Any], hours: int = 24) -> bool:
+        """Helper method to check if a violation is recent"""
+        return self._is_recent_timestamped_item(violation, hours)
+    
+    def _is_recent_deadlock(self, deadlock: Dict[str, Any], hours: int = 24) -> bool:
+        """Helper method to check if a deadlock is recent"""
+        return self._is_recent_timestamped_item(deadlock, hours)
+    
+    def _is_recent_timestamped_item(self, item: Dict[str, Any], hours: int = 24) -> bool:
+        """Consolidated helper method to check if any timestamped item is recent"""
         try:
-            from datetime import datetime, timedelta
-            event_time = event.get("timestamp")
-            if isinstance(event_time, str):
-                event_time = datetime.fromisoformat(event_time.replace('Z', '+00:00'))
-            elif isinstance(event_time, (int, float)):
-                event_time = datetime.fromtimestamp(event_time)
+            item_time = item.get("timestamp")
+            if isinstance(item_time, str):
+                item_time = datetime.fromisoformat(item_time.replace('Z', '+00:00'))
+            elif isinstance(item_time, (int, float)):
+                item_time = datetime.fromtimestamp(item_time)
             else:
                 return False
             
-            return datetime.now(event_time.tzinfo) - event_time < timedelta(hours=hours)
+            return datetime.now(item_time.tzinfo) - item_time < timedelta(hours=hours)
         except (ValueError, TypeError, AttributeError):
             return False
     
@@ -2467,7 +2479,6 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
                 ))
             
             # Calculate latency statistics
-            import statistics
             try:
                 avg_latency = statistics.mean(latency_history)
                 std_dev = statistics.stdev(latency_history) if len(latency_history) > 1 else 0
@@ -2700,7 +2711,6 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
                 ))
             
             # Calculate processing statistics
-            import statistics
             try:
                 avg_processing_time = statistics.mean(processing_history)
                 std_dev = statistics.stdev(processing_history) if len(processing_history) > 1 else 0
@@ -3272,7 +3282,6 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
                 ))
             
             # Calculate user statistics
-            import statistics
             try:
                 avg_users = statistics.mean(user_history)
                 std_dev = statistics.stdev(user_history) if len(user_history) > 1 else 0

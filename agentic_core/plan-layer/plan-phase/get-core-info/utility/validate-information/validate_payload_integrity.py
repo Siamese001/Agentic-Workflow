@@ -727,12 +727,36 @@ class PayloadIntegrityValidator(PayloadIntegrityValidatorInterface):
 
 class SafetyError(Exception):
     """Raised when payload violates safety policies"""
-    pass
+    
+    def __init__(self, message: str, policy_violation: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.policy_violation = policy_violation
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        if self.policy_violation:
+            return f"[SAFETY_VIOLATION: {self.policy_violation}] {base_msg}"
+        return f"[SAFETY_ERROR] {base_msg}"
 
 
 class PayloadIntegrityValidationError(Exception):
     """Raised for general payload integrity validation errors"""
-    pass
+    
+    def __init__(self, message: str, error_code: Optional[str] = None, operation: Optional[str] = None, integrity_check: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.error_code = error_code or "PAYLOAD_INTEGRITY_VALIDATION_ERROR"
+        self.operation = operation
+        self.integrity_check = integrity_check
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        op_info = f" in {self.operation}" if self.operation else ""
+        check_info = f" for {self.integrity_check}" if self.integrity_check else ""
+        return f"[{self.error_code}]{op_info}{check_info} {base_msg}"
 
 
 # ============================================================================
