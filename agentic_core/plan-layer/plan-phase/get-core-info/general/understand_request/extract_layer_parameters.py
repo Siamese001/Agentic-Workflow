@@ -709,12 +709,36 @@ class LayerParameterExtractor(LayerParameterExtractorInterface):
 
 class SafetyError(Exception):
     """Raised when parameters violate safety policies"""
-    pass
+    
+    def __init__(self, message: str, policy_violation: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.policy_violation = policy_violation
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        if self.policy_violation:
+            return f"[SAFETY_VIOLATION: {self.policy_violation}] {base_msg}"
+        return f"[SAFETY_ERROR] {base_msg}"
 
 
 class ParameterExtractionError(Exception):
     """Raised for general parameter extraction errors"""
-    pass
+    
+    def __init__(self, message: str, error_code: Optional[str] = None, operation: Optional[str] = None, parameter_type: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.error_code = error_code or "PARAMETER_EXTRACTION_ERROR"
+        self.operation = operation
+        self.parameter_type = parameter_type
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        op_info = f" in {self.operation}" if self.operation else ""
+        type_info = f" for {self.parameter_type}" if self.parameter_type else ""
+        return f"[{self.error_code}]{op_info}{type_info} {base_msg}"
 
 
 # ============================================================================
