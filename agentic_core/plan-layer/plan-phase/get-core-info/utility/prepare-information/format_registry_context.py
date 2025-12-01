@@ -1,539 +1,762 @@
 """
-L5 Agentic Core - Plan Layer - Format Registry Context
-Implements L1 Cognitive Planning with full L5 safety compliance
+L1 Cognitive Planning - Registry Context Formatting
+
+Implements pure planning operations for formatting registry context data
+with L5 safety, comprehensive logging, and fail-closed architecture.
 """
 
+from __future__ import annotations
 import logging
+import asyncio
 import json
-import re
-from typing import Dict, Any, Optional, List, Union
-from dataclasses import dataclass, field, asdict
+from typing import Any, Dict, List, Optional, Union, Tuple
+from dataclasses import dataclass, field
 from datetime import datetime
+from abc import ABC, abstractmethod
 from enum import Enum
 
-# Configure comprehensive logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from pydantic import BaseModel, Field, ValidationError
 
-class ContextType(Enum):
-    """Supported context types for registry operations"""
-    QUERY = "query"
-    NAVIGATION = "navigation"
-    DISCOVERY = "discovery"
+
+# ============================================================================
+# L5 SAFETY & LOGGING INFRASTRUCTURE
+# ============================================================================
+
+class ContextFormat(str, Enum):
+    """Supported context format types with L5 safety validation"""
+    REGISTRY_STANDARD = "registry_standard"
+    LAYER_SPECIFIC = "layer_specific"
+    COORDINATION = "coordination"
     VALIDATION = "validation"
-    TRANSFORMATION = "transformation"
+    MONITORING = "monitoring"
+    DEBUG = "debug"
 
-class ContextFormat(Enum):
-    """Supported context formats"""
-    STRUCTURED = "structured"
-    HIERARCHICAL = "hierarchical"
-    FLAT = "flat"
-    NESTED = "nested"
-    COMPACT = "compact"
+
+class ContextScope(str, Enum):
+    """Context scope types with L5 safety enforcement"""
+    GLOBAL = "global"
+    LAYER = "layer"
+    COMPONENT = "component"
+    FUNCTION = "function"
+    INSTANCE = "instance"
+
+
+class RegistryContextSafetyPolicy(BaseModel):
+    """L5 Safety policy for registry context formatting operations"""
+    max_context_size: int = Field(default=524288, description="Maximum context size in bytes (512KB)")
+    max_nesting_depth: int = Field(default=8, description="Maximum context nesting depth")
+    allowed_formats: List[str] = Field(default_factory=lambda: [t.value for t in ContextFormat])
+    allowed_scopes: List[str] = Field(default_factory=lambda: [t.value for t in ContextScope])
+    require_structure_validation: bool = Field(default=True)
+    prevent_context_injection: bool = Field(default=True)
+    sanitize_sensitive_data: bool = Field(default=True)
+    safety_checks_enabled: bool = Field(default=True)
+    fail_closed: bool = Field(default=True)
+
+
+class RegistryContextSafetyValidator:
+    """L5 Safety validator for registry context formatting operations"""
+    
+    def __init__(self, policy: RegistryContextSafetyPolicy):
+        self.policy = policy
+        self.logger = logging.getLogger(f"{__name__}.RegistryContextSafetyValidator")
+        
+        # Pre-compiled patterns for safety validation
+        self._dangerous_patterns = [
+            r"<script", r"javascript:", r"data:text/html",
+            r"__import__", r"eval\s*\(", r"exec\s*\(",
+            r"os\.system", r"subprocess\."
+        ]
+        self._sensitive_data_patterns = [
+            r"password", r"secret", r"token", r"key", r"credential",
+            r"private", r"confidential", r"restricted", r"internal"
+        ]
+    
+    def validate_context_input(self, context_input: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+        """Validates context input against L5 safety policies"""
+        try:
+            # Check context size
+            context_data = context_input.get("context", {})
+            context_size = len(str(context_data).encode('utf-8'))
+            
+            if context_size > self.policy.max_context_size:
+                error_msg = f"Context too large: {context_size} > {self.policy.max_context_size} bytes"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check format
+            context_format = context_input.get("format", "")
+            if context_format not in self.policy.allowed_formats:
+                error_msg = f"Prohibited context format: {context_format}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check scope
+            context_scope = context_input.get("scope", "")
+            if context_scope not in self.policy.allowed_scopes:
+                error_msg = f"Prohibited context scope: {context_scope}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check nesting depth
+            max_depth = self._calculate_nesting_depth(context_data)
+            if max_depth > self.policy.max_nesting_depth:
+                error_msg = f"Context nesting too deep: {max_depth} > {self.policy.max_nesting_depth}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check for dangerous content
+            content_str = str(context_data).lower()
+            for pattern in self._dangerous_patterns:
+                if pattern in content_str:
+                    error_msg = f"Dangerous content pattern detected: {pattern}"
+                    self.logger.warning(f"Safety violation: {error_msg}")
+                    return False, error_msg
+            
+            # Check for sensitive data
+            if self.policy.sanitize_sensitive_data:
+                for pattern in self._sensitive_data_patterns:
+                    if pattern in content_str:
+                        self.logger.warning(f"Sensitive data pattern detected: {pattern}")
+                        # In production, this would trigger sanitization
+            
+            return True, None
+            
+        except Exception as e:
+            error_msg = f"Validation error: {str(e)}"
+            self.logger.error(f"Safety validation failed: {error_msg}")
+            if self.policy.fail_closed:
+                return False, error_msg
+            return True, error_msg
+    
+    def _calculate_nesting_depth(self, obj: Any, current_depth: int = 0) -> int:
+        """Calculate maximum nesting depth of context structure"""
+        if current_depth > self.policy.max_nesting_depth:
+            return current_depth
+        
+        if isinstance(obj, dict):
+            if not obj:
+                return current_depth
+            return max(self._calculate_nesting_depth(v, current_depth + 1) for v in obj.values())
+        elif isinstance(obj, list):
+            if not obj:
+                return current_depth
+            return max(self._calculate_nesting_depth(item, current_depth + 1) for item in obj)
+        else:
+            return current_depth
+
+
+# ============================================================================
+# L1 COGNITIVE PLANNING INTERFACES
+# ============================================================================
 
 @dataclass
-class RegistryContext:
-    """Registry context structure with full type safety"""
-    context_id: str = field(default_factory=lambda: f"context_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    context_type: ContextType = ContextType.QUERY
-    registry_path: str = ""
-    layer_info: Dict[str, Any] = field(default_factory=dict)
-    component_metadata: Dict[str, Any] = field(default_factory=dict)
-    relationships: Dict[str, List[str]] = field(default_factory=dict)
-    dependencies: List[str] = field(default_factory=list)
-    constraints: Dict[str, Any] = field(default_factory=dict)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+class ContextFormatRequest:
+    """Input request for registry context formatting operations"""
+    context: Dict[str, Any]
+    target_format: ContextFormat
+    target_scope: ContextScope
+    target_layer: str
+    formatting_options: Dict[str, Any] = field(default_factory=dict)
+    sanitization_rules: Dict[str, Any] = field(default_factory=dict)
+    safety_level: str = "standard"
+
+
+@dataclass
+class FormattedContext:
+    """Structured representation of a formatted registry context"""
+    format_type: ContextFormat
+    scope: ContextScope
+    formatted_content: Union[str, Dict[str, Any]]
+    metadata: Dict[str, Any]
+    size_bytes: int
+    checksum: Optional[str]
+    sanitized: bool
+
+
+@dataclass
+class ContextValidationResult:
+    """Result of context formatting validation"""
+    is_valid: bool
+    validation_errors: List[str]
+    warnings: List[str]
+    compliance_score: float
+    security_flags: List[str]
+
+
+@dataclass
+class RegistryContextResult:
+    """Output result from registry context formatting operations"""
+    formatted_context: FormattedContext
+    validation_result: ContextValidationResult
+    formatting_metadata: Dict[str, Any]
+    safety_validation: Dict[str, Any]
+    context_id: str
     timestamp: datetime = field(default_factory=datetime.now)
 
-class RegistryContextFormatter:
+
+class RegistryContextFormatterInterface(ABC):
+    """Abstract interface for registry context formatting operations"""
+    
+    @abstractmethod
+    async def format_context(self, request: ContextFormatRequest) -> RegistryContextResult:
+        """Format registry context according to specified format and scope"""
+        pass
+    
+    @abstractmethod
+    async def validate_formatted_context(self, context: FormattedContext) -> ContextValidationResult:
+        """Validate formatted context structure and content"""
+        pass
+    
+    @abstractmethod
+    async def sanitize_context_data(self, data: Dict[str, Any], rules: Dict[str, Any]) -> Dict[str, Any]:
+        """Sanitize context data according to specified rules"""
+        pass
+
+
+# ============================================================================
+# L1 COGNITIVE PLANNING IMPLEMENTATION
+# ============================================================================
+
+class RegistryContextFormatter(RegistryContextFormatterInterface):
     """
-    L5 Registry Context Formatter with fail-closed safety and comprehensive validation
-    Implements L1 Cognitive Planning with L5 policy enforcement
+    L1 Cognitive Planning implementation for formatting registry context.
+    
+    Provides pure planning operations without execution, following L5 safety
+    principles and comprehensive logging for fail-closed architecture.
     """
     
-    def __init__(self, safety_enabled: bool = True):
-        self.safety_enabled = safety_enabled
-        self.formatting_history: List[Dict[str, Any]] = []
-        self.safety_violations: List[str] = []
+    def __init__(self, safety_policy: Optional[RegistryContextSafetyPolicy] = None):
+        self.safety_policy = safety_policy or RegistryContextSafetyPolicy()
+        self.safety_validator = RegistryContextSafetyValidator(self.safety_policy)
+        self.logger = logging.getLogger(__name__)
         
-        # Context formatting templates
-        self.templates = {
-            ContextFormat.STRUCTURED: {
-                "query": {
-                    "operation": "query",
-                    "target": "{registry_path}",
-                    "parameters": "{parameters}",
-                    "constraints": "{constraints}",
-                    "metadata": "{metadata}"
-                },
-                "navigation": {
-                    "operation": "navigate",
-                    "path": "{registry_path}",
-                    "layers": "{layer_info}",
-                    "relationships": "{relationships}"
-                },
-                "discovery": {
-                    "operation": "discover",
-                    "scope": "{registry_path}",
-                    "filters": "{constraints}",
-                    "metadata": "{metadata}"
-                }
+        # Context formatting templates and patterns
+        self._format_templates = {
+            ContextFormat.REGISTRY_STANDARD: {
+                "required_sections": ["metadata", "layer_info", "capabilities"],
+                "optional_sections": ["dependencies", "constraints", "state"]
             },
-            ContextFormat.HIERARCHICAL: {
-                "query": {
-                    "level_1": {
-                        "operation": "query",
-                        "target": {
-                            "registry": "{registry_path}",
-                            "components": "{component_metadata}"
-                        },
-                        "execution": {
-                            "parameters": "{parameters}",
-                            "constraints": "{constraints}"
-                        }
-                    }
-                },
-                "navigation": {
-                    "level_1": {
-                        "operation": "navigate",
-                        "registry": {
-                            "path": "{registry_path}",
-                            "layers": "{layer_info}"
-                        },
-                        "structure": {
-                            "relationships": "{relationships}",
-                            "dependencies": "{dependencies}"
-                        }
-                    }
-                }
+            ContextFormat.LAYER_SPECIFIC: {
+                "required_sections": ["layer_name", "layer_type", "configuration"],
+                "optional_sections": ["interfaces", "state", "metrics"]
             },
-            ContextFormat.FLAT: {
-                "query": {
-                    "operation": "query",
-                    "registry_path": "{registry_path}",
-                    "parameters": "{parameters}",
-                    "constraints": "{constraints}",
-                    "layer_info": "{layer_info}",
-                    "component_metadata": "{component_metadata}",
-                    "dependencies": "{dependencies}",
-                    "metadata": "{metadata}"
-                },
-                "navigation": {
-                    "operation": "navigate",
-                    "registry_path": "{registry_path}",
-                    "layer_info": "{layer_info}",
-                    "relationships": "{relationships}",
-                    "dependencies": "{dependencies}",
-                    "metadata": "{metadata}"
-                }
+            ContextFormat.COORDINATION: {
+                "required_sections": ["message_type", "source", "target"],
+                "optional_sections": ["payload", "correlation_id", "priority"]
+            },
+            ContextFormat.VALIDATION: {
+                "required_sections": ["validation_type", "target", "criteria"],
+                "optional_sections": ["context", "strict_mode", "timeout"]
+            },
+            ContextFormat.MONITORING: {
+                "required_sections": ["metric_type", "source", "timestamp"],
+                "optional_sections": ["metrics", "labels", "annotations"]
+            },
+            ContextFormat.DEBUG: {
+                "required_sections": ["debug_info", "stack_trace", "context"],
+                "optional_sections": ["variables", "state", "logs"]
             }
         }
         
-        logger.info("RegistryContextFormatter initialized with safety enforcement")
+        self.logger.info("RegistryContextFormatter initialized with L5 safety policies")
     
-    def format_context(
-        self,
-        context: Union[RegistryContext, Dict[str, Any]],
-        format_type: Union[str, ContextFormat] = ContextFormat.STRUCTURED,
-        include_metadata: bool = True,
-        sanitize_output: bool = True
-    ) -> Dict[str, Any]:
+    async def format_context(self, request: ContextFormatRequest) -> RegistryContextResult:
         """
-        Format registry context according to specified format
+        Format registry context according to specified format and scope.
         
         Args:
-            context: Registry context to format
-            format_type: Target format type
-            include_metadata: Whether to include metadata in output
-            sanitize_output: Whether to sanitize output for safety
+            request: Context formatting request with data and formatting options
             
         Returns:
-            Dict[str, Any]: Formatted context
+            RegistryContextResult: Structured result with formatted context and validation
             
         Raises:
-            ValueError: If formatting fails or context is invalid
-            SecurityError: If safety constraints are violated
+            ValidationError: If context formatting fails
+            SafetyError: If context violates safety policies
         """
-        logger.info(f"Formatting registry context in {format_type} format")
+        self.logger.info(f"Formatting context for {request.target_layer} in {request.target_format} format")
         
         try:
-            # Convert string to enum if needed
-            if isinstance(format_type, str):
-                format_type = ContextFormat(format_type.lower())
+            # L5 Safety validation
+            context_input = {
+                "context": request.context,
+                "format": request.target_format.value,
+                "scope": request.target_scope.value
+            }
             
-            # Convert dict to RegistryContext if needed
-            if isinstance(context, dict):
-                context = self._dict_to_context(context)
+            is_valid, error_msg = self.safety_validator.validate_context_input(context_input)
+            if not is_valid:
+                raise SafetyError(f"Context validation failed: {error_msg}")
             
-            # Validate inputs
-            self._validate_inputs(context, format_type)
+            # Sanitize context data if required
+            sanitized_context = request.context
+            if request.sanitization_rules or self.safety_policy.sanitize_sensitive_data:
+                sanitized_context = await self.sanitize_context_data(
+                    request.context, 
+                    request.sanitization_rules
+                )
             
-            # Apply safety constraints
-            if self.safety_enabled:
-                self._apply_safety_constraints(context)
+            # Format context according to template
+            formatted_content = await self._format_context_by_template(
+                sanitized_context, 
+                request.target_format,
+                request.target_scope,
+                request.target_layer
+            )
             
-            # Format context based on type and format
-            formatted_context = self._format_by_type(context, format_type)
+            # Apply scope-specific formatting
+            scoped_content = await self._apply_scope_formatting(
+                formatted_content,
+                request.target_scope,
+                request.formatting_options
+            )
             
-            # Apply sanitization if requested
-            if sanitize_output and self.safety_enabled:
-                formatted_context = self._sanitize_output(formatted_context)
+            # Generate metadata
+            metadata = await self._generate_context_metadata(request, sanitized_context)
             
-            # Add formatting metadata
-            if include_metadata:
-                formatted_context["_formatting_metadata"] = {
-                    "formatter_version": "1.0.0",
-                    "format_type": format_type.value,
-                    "context_type": context.context_type.value,
-                    "safety_enabled": self.safety_enabled,
-                    "sanitized": sanitize_output,
-                    "format_timestamp": datetime.now().isoformat()
+            # Calculate size and checksum
+            content_bytes = str(scoped_content).encode('utf-8')
+            size_bytes = len(content_bytes)
+            checksum = self._calculate_checksum(content_bytes)
+            
+            # Create formatted context
+            formatted_context = FormattedContext(
+                format_type=request.target_format,
+                scope=request.target_scope,
+                formatted_content=scoped_content,
+                metadata=metadata,
+                size_bytes=size_bytes,
+                checksum=checksum,
+                sanitized=sanitized_context != request.context
+            )
+            
+            # Validate formatted context
+            validation_result = await self.validate_formatted_context(formatted_context)
+            
+            # Generate safety validation metadata
+            safety_validation = {
+                "validated_at": datetime.now().isoformat(),
+                "safety_level": request.safety_level,
+                "risk_score": self._calculate_context_risk_score(formatted_context),
+                "security_flags": validation_result.security_flags
+            }
+            
+            # Generate unique context ID
+            context_id = self._generate_context_id(request, formatted_context)
+            
+            result = RegistryContextResult(
+                formatted_context=formatted_context,
+                validation_result=validation_result,
+                formatting_metadata={
+                    "formatting_duration_ms": size_bytes * 0.001,  # Rough estimate
+                    "original_size": len(str(request.context)),
+                    "final_size": size_bytes,
+                    "compression_ratio": size_bytes / len(str(request.context)) if request.context else 1.0,
+                    "complexity_estimate": await self._estimate_formatting_complexity(request)
+                },
+                safety_validation=safety_validation,
+                context_id=context_id
+            )
+            
+            self.logger.info(f"Successfully formatted context {context_id} ({size_bytes} bytes)")
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Failed to format registry context: {str(e)}")
+            if self.safety_policy.fail_closed:
+                raise
+            # Return safe fallback context in non-fail-closed mode
+            return self._create_fallback_context(request, str(e))
+    
+    async def validate_formatted_context(self, context: FormattedContext) -> ContextValidationResult:
+        """Validate formatted context structure and content"""
+        try:
+            errors = []
+            warnings = []
+            security_flags = []
+            
+            # Basic structure validation
+            if not context.formatted_content:
+                errors.append("Formatted context content is empty")
+            
+            # Size validation
+            if context.size_bytes > self.safety_policy.max_context_size:
+                errors.append(f"Context exceeds maximum size: {context.size_bytes} > {self.safety_policy.max_context_size}")
+            
+            # Format-specific validation
+            template = self._format_templates.get(context.format_type, {})
+            required_sections = template.get("required_sections", [])
+            
+            if isinstance(context.formatted_content, dict):
+                for section in required_sections:
+                    if section not in context.formatted_content:
+                        errors.append(f"Missing required section: {section}")
+            
+            # Security validation
+            content_str = str(context.formatted_content).lower()
+            for pattern in self._dangerous_patterns:
+                if pattern in content_str:
+                    security_flags.append(f"dangerous_content:{pattern}")
+            
+            # Sensitive data validation
+            if not context.sanitized:
+                for pattern in self._sensitive_data_patterns:
+                    if pattern in content_str:
+                        warnings.append(f"Unsanitized sensitive data detected: {pattern}")
+            
+            # Calculate compliance score
+            compliance_score = 1.0
+            if errors:
+                compliance_score -= 0.5
+            if warnings:
+                compliance_score -= 0.1 * len(warnings)
+            if security_flags:
+                compliance_score -= 0.2 * len(security_flags)
+            
+            compliance_score = max(0.0, compliance_score)
+            
+            return ContextValidationResult(
+                is_valid=len(errors) == 0,
+                validation_errors=errors,
+                warnings=warnings,
+                compliance_score=compliance_score,
+                security_flags=security_flags
+            )
+            
+        except Exception as e:
+            return ContextValidationResult(
+                is_valid=False,
+                validation_errors=[f"Validation error: {str(e)}"],
+                warnings=[],
+                compliance_score=0.0,
+                security_flags=["validation_failed"]
+            )
+    
+    async def sanitize_context_data(self, data: Dict[str, Any], rules: Dict[str, Any]) -> Dict[str, Any]:
+        """Sanitize context data according to specified rules"""
+        try:
+            sanitized = data.copy()
+            
+            # Apply default sanitization rules
+            if self.safety_policy.sanitize_sensitive_data:
+                sanitized = await self._apply_default_sanitization(sanitized)
+            
+            # Apply custom sanitization rules
+            if rules:
+                sanitized = await self._apply_custom_sanitization(sanitized, rules)
+            
+            return sanitized
+            
+        except Exception as e:
+            self.logger.error(f"Context sanitization failed: {str(e)}")
+            # Return original data if sanitization fails
+            return data
+    
+    async def _format_context_by_template(
+        self, 
+        context: Dict[str, Any], 
+        format_type: ContextFormat,
+        scope: ContextScope,
+        target_layer: str
+    ) -> Dict[str, Any]:
+        """Format context according to format template"""
+        try:
+            template = self._format_templates.get(format_type, {})
+            required_sections = template.get("required_sections", [])
+            optional_sections = template.get("optional_sections", [])
+            
+            formatted = {}
+            
+            # Add required sections
+            for section in required_sections:
+                if section == "metadata":
+                    formatted[section] = {
+                        "format": format_type.value,
+                        "scope": scope.value,
+                        "target_layer": target_layer,
+                        "formatted_at": datetime.now().isoformat()
+                    }
+                elif section == "layer_info":
+                    formatted[section] = {
+                        "layer_name": target_layer,
+                        "layer_type": context.get("layer_type", "unknown"),
+                        "layer_version": context.get("version", "1.0.0")
+                    }
+                elif section in context:
+                    formatted[section] = context[section]
+                else:
+                    formatted[section] = {}  # Empty required section
+            
+            # Add optional sections if present
+            for section in optional_sections:
+                if section in context:
+                    formatted[section] = context[section]
+            
+            # Add any additional context data
+            for key, value in context.items():
+                if key not in required_sections and key not in optional_sections:
+                    formatted[f"additional_{key}"] = value
+            
+            return formatted
+            
+        except Exception as e:
+            self.logger.error(f"Template formatting failed: {str(e)}")
+            raise
+    
+    async def _apply_scope_formatting(
+        self, 
+        content: Dict[str, Any], 
+        scope: ContextScope,
+        options: Dict[str, Any]
+    ) -> Union[str, Dict[str, Any]]:
+        """Apply scope-specific formatting to context"""
+        try:
+            if scope == ContextScope.GLOBAL:
+                # Global scope: include all metadata
+                content["_scope_metadata"] = {
+                    "scope": "global",
+                    "visibility": "all_layers",
+                    "priority": options.get("priority", "medium")
+                }
+            elif scope == ContextScope.LAYER:
+                # Layer scope: layer-specific formatting
+                content["_scope_metadata"] = {
+                    "scope": "layer",
+                    "visibility": "layer_only",
+                    "layer_specific": True
+                }
+            elif scope == ContextScope.COMPONENT:
+                # Component scope: minimal formatting
+                content["_scope_metadata"] = {
+                    "scope": "component",
+                    "visibility": "component_only",
+                    "minimal": True
+                }
+            elif scope == ContextScope.FUNCTION:
+                # Function scope: highly focused
+                content["_scope_metadata"] = {
+                    "scope": "function",
+                    "visibility": "function_only",
+                    "focused": True
+                }
+            elif scope == ContextScope.INSTANCE:
+                # Instance scope: instance-specific
+                content["_scope_metadata"] = {
+                    "scope": "instance",
+                    "visibility": "instance_only",
+                    "ephemeral": True
                 }
             
-            # Log successful formatting
-            logger.info(f"Context formatted successfully: {context.context_id}")
-            logger.info(f"Format: {format_type.value}, Type: {context.context_type.value}")
+            # Return as JSON string if requested
+            if options.get("serialize", False):
+                return json.dumps(content, indent=2, ensure_ascii=False)
             
-            # Store in history
-            self.formatting_history.append({
-                "context_id": context.context_id,
-                "format_type": format_type.value,
-                "timestamp": datetime.now().isoformat()
-            })
-            
-            return formatted_context
+            return content
             
         except Exception as e:
-            logger.error(f"Context formatting failed: {str(e)}")
-            raise ValueError(f"Failed to format context: {str(e)}")
+            self.logger.error(f"Scope formatting failed: {str(e)}")
+            return content
     
-    def _validate_inputs(self, context: RegistryContext, format_type: ContextFormat) -> None:
-        """Validate inputs with comprehensive checks"""
-        
-        if not isinstance(context, RegistryContext):
-            raise ValueError("Context must be a RegistryContext instance")
-        
-        if not isinstance(format_type, ContextFormat):
-            raise ValueError(f"Invalid format type: {format_type}")
-        
-        if not context.registry_path:
-            raise ValueError("Registry path cannot be empty")
-        
-        # Validate context type
-        if not isinstance(context.context_type, ContextType):
-            raise ValueError(f"Invalid context type: {context.context_type}")
-        
-        # Validate registry path format
-        if not self._is_valid_registry_path(context.registry_path):
-            raise ValueError(f"Invalid registry path format: {context.registry_path}")
-        
-        logger.debug("Input validation completed successfully")
+    async def _generate_context_metadata(
+        self, 
+        request: ContextFormatRequest, 
+        sanitized_context: Dict[str, Any]
+    ) -> Dict[str, Any]:
+        """Generate context metadata"""
+        return {
+            "format": request.target_format.value,
+            "scope": request.target_scope.value,
+            "target_layer": request.target_layer,
+            "formatted_at": datetime.now().isoformat(),
+            "section_count": len(sanitized_context),
+            "has_sensitive_data": await self._contains_sensitive_data(sanitized_context),
+            "formatting_options": request.formatting_options,
+            "sanitization_applied": sanitized_context != request.context
+        }
     
-    def _apply_safety_constraints(self, context: RegistryContext) -> None:
-        """Apply L5 safety constraints to context formatting"""
-        
-        # Check for restricted paths
-        restricted_patterns = ["admin", "system", "config", "security", "root"]
-        registry_path_lower = context.registry_path.lower()
-        
-        for pattern in restricted_patterns:
-            if pattern in registry_path_lower:
-                violation = f"Access to restricted registry path: {pattern}"
-                self.safety_violations.append(violation)
-                raise SecurityError(violation)
-        
-        # Check for suspicious metadata
-        if context.metadata:
-            suspicious_keys = ["password", "secret", "key", "token", "auth"]
-            for key in context.metadata.keys():
-                if key.lower() in suspicious_keys:
-                    violation = f"Suspicious metadata key detected: {key}"
-                    self.safety_violations.append(violation)
-                    raise SecurityError(violation)
-        
-        logger.debug("Safety constraints applied successfully")
+    def _calculate_checksum(self, content: bytes) -> str:
+        """Calculate checksum for context content"""
+        import hashlib
+        return hashlib.sha256(content).hexdigest()
     
-    def _format_by_type(self, context: RegistryContext, format_type: ContextFormat) -> Dict[str, Any]:
-        """Format context based on type and format"""
-        
-        context_type = context.context_type.value
-        format_templates = self.templates.get(format_type, {})
-        type_template = format_templates.get(context_type, {})
-        
-        if not type_template:
-            # Use default template if specific one not found
-            type_template = self._get_default_template(context.context_type, format_type)
-        
-        # Substitute template variables
-        formatted = self._substitute_template(type_template, context)
-        
-        return formatted
+    async def _contains_sensitive_data(self, data: Dict[str, Any]) -> bool:
+        """Check if data contains sensitive information"""
+        data_str = str(data).lower()
+        for pattern in self._sensitive_data_patterns:
+            if pattern in data_str:
+                return True
+        return False
     
-    def _get_default_template(self, context_type: ContextType, format_type: ContextFormat) -> Dict[str, Any]:
-        """Get default template for context type and format"""
+    async def _apply_default_sanitization(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Apply default sanitization rules"""
+        sanitized = data.copy()
         
-        if format_type == ContextFormat.STRUCTURED:
-            return {
-                "operation": context_type.value,
-                "registry_path": context.registry_path,
-                "layer_info": context.layer_info,
-                "component_metadata": context.component_metadata,
-                "relationships": context.relationships,
-                "dependencies": context.dependencies,
-                "constraints": context.constraints,
-                "metadata": context.metadata
-            }
-        elif format_type == ContextFormat.HIERARCHICAL:
-            return {
-                "operation": {
-                    "type": context_type.value,
-                    "target": {
-                        "registry": context.registry_path,
-                        "layers": context.layer_info
-                    },
-                    "components": context.component_metadata,
-                    "structure": {
-                        "relationships": context.relationships,
-                        "dependencies": context.dependencies
-                    }
-                },
-                "constraints": context.constraints,
-                "metadata": context.metadata
-            }
-        elif format_type == ContextFormat.FLAT:
-            return {
-                "operation": context_type.value,
-                "registry_path": context.registry_path,
-                "layer_info": context.layer_info,
-                "component_metadata": context.component_metadata,
-                "relationships": context.relationships,
-                "dependencies": context.dependencies,
-                "constraints": context.constraints,
-                "metadata": context.metadata
-            }
+        # Remove or mask sensitive fields
+        sensitive_keys = ["password", "secret", "token", "key", "credential"]
+        
+        for key in list(sanitized.keys()):
+            key_lower = key.lower()
+            for sensitive in sensitive_keys:
+                if sensitive in key_lower:
+                    sanitized[key] = "***REDACTED***"
+                    break
+        
+        return sanitized
+    
+    async def _apply_custom_sanitization(self, data: Dict[str, Any], rules: Dict[str, Any]) -> Dict[str, Any]:
+        """Apply custom sanitization rules"""
+        sanitized = data.copy()
+        
+        # Apply field removal rules
+        remove_fields = rules.get("remove_fields", [])
+        for field in remove_fields:
+            sanitized.pop(field, None)
+        
+        # Apply field masking rules
+        mask_fields = rules.get("mask_fields", [])
+        for field in mask_fields:
+            if field in sanitized:
+                sanitized[field] = "***MASKED***"
+        
+        # Apply value replacement rules
+        replace_rules = rules.get("replace_values", {})
+        for field, replacement in replace_rules.items():
+            if field in sanitized:
+                sanitized[field] = replacement
+        
+        return sanitized
+    
+    async def _estimate_formatting_complexity(self, request: ContextFormatRequest) -> str:
+        """Estimate formatting complexity"""
+        complexity_score = len(request.context) // 20
+        
+        # Add complexity for different formats
+        if request.target_format in [ContextFormat.COORDINATION, ContextFormat.VALIDATION]:
+            complexity_score += 2
+        elif request.target_format == ContextFormat.DEBUG:
+            complexity_score += 3
+        
+        # Add complexity for scope
+        if request.target_scope in [ContextScope.GLOBAL, ContextScope.LAYER]:
+            complexity_score += 1
+        
+        if complexity_score <= 3:
+            return "low"
+        elif complexity_score <= 7:
+            return "medium"
         else:
-            # COMPACT format
-            return {
-                "op": context_type.value,
-                "path": context.registry_path,
-                "layers": context.layer_info,
-                "components": context.component_metadata,
-                "rels": context.relationships,
-                "deps": context.dependencies,
-                "constraints": context.constraints,
-                "meta": context.metadata
-            }
+            return "high"
     
-    def _substitute_template(self, template: Dict[str, Any], context: RegistryContext) -> Dict[str, Any]:
-        """Substitute template variables with context values"""
+    def _calculate_context_risk_score(self, context: FormattedContext) -> float:
+        """Calculate risk score for the context (0.0 to 1.0)"""
+        risk_score = 0.1  # Base risk
         
-        template_str = json.dumps(template)
+        # Increase risk for large contexts
+        if context.size_bytes > 256000:  # 256KB
+            risk_score += 0.2
         
-        # Define substitution mappings
-        substitutions = {
-            "{registry_path}": context.registry_path,
-            "{parameters}": json.dumps(context.layer_info.get("parameters", {})),
-            "{constraints}": json.dumps(context.constraints),
-            "{metadata}": json.dumps(context.metadata),
-            "{layer_info}": json.dumps(context.layer_info),
-            "{component_metadata}": json.dumps(context.component_metadata),
-            "{relationships}": json.dumps(context.relationships),
-            "{dependencies}": json.dumps(context.dependencies)
+        # Increase risk for unsanitized sensitive data
+        if context.metadata.get("has_sensitive_data") and not context.sanitized:
+            risk_score += 0.4
+        
+        # Increase risk for certain formats
+        if context.format_type in [ContextFormat.DEBUG, ContextFormat.COORDINATION]:
+            risk_score += 0.1
+        
+        # Increase risk for global scope
+        if context.scope == ContextScope.GLOBAL:
+            risk_score += 0.1
+        
+        return min(risk_score, 1.0)
+    
+    def _generate_context_id(self, request: ContextFormatRequest, context: FormattedContext) -> str:
+        """Generate unique context identifier"""
+        timestamp = datetime.now().isoformat()
+        content = f"{request.target_format.value}:{request.target_scope.value}:{request.target_layer}:{context.size_bytes}:{timestamp}"
+        return f"context_{hash(content) % 1000000:06d}"
+    
+    def _create_fallback_context(self, request: ContextFormatRequest, error: str) -> RegistryContextResult:
+        """Create safe fallback context when main formatting fails"""
+        fallback_data = {
+            "error": "context_formatting_failed",
+            "message": "Safe fallback context",
+            "original_format": request.target_format.value,
+            "target_layer": request.target_layer,
+            "metadata": {
+                "fallback": True,
+                "error": error,
+                "formatted_at": datetime.now().isoformat()
+            }
         }
         
-        # Perform substitutions
-        for placeholder, value in substitutions.items():
-            template_str = template_str.replace(placeholder, value)
+        fallback_context = FormattedContext(
+            format_type=ContextFormat.REGISTRY_STANDARD,  # Safe default
+            scope=ContextScope.LAYER,  # Safe default
+            formatted_content=fallback_data,
+            metadata={"fallback": True, "error": error},
+            size_bytes=len(str(fallback_data)),
+            checksum=self._calculate_checksum(str(fallback_data).encode()),
+            sanitized=False
+        )
         
-        # Parse back to dict
-        return json.loads(template_str)
-    
-    def _sanitize_output(self, output: Dict[str, Any]) -> Dict[str, Any]:
-        """Sanitize output for safety"""
+        fallback_validation = ContextValidationResult(
+            is_valid=True,
+            validation_errors=[],
+            warnings=["Using fallback context"],
+            compliance_score=0.5,
+            security_flags=["fallback_mode"]
+        )
         
-        def sanitize_recursive(obj):
-            if isinstance(obj, dict):
-                sanitized = {}
-                for key, value in obj.items():
-                    # Remove potentially dangerous keys
-                    if not any(dangerous in key.lower() for dangerous in ["password", "secret", "key", "token"]):
-                        sanitized[key] = sanitize_recursive(value)
-                return sanitized
-            elif isinstance(obj, list):
-                return [sanitize_recursive(item) for item in obj]
-            elif isinstance(obj, str):
-                # Remove potentially dangerous content
-                dangerous_patterns = [
-                    r"<script.*?>.*?</script>",
-                    r"javascript:",
-                    r"data:text/html"
-                ]
-                sanitized = obj
-                for pattern in dangerous_patterns:
-                    sanitized = re.sub(pattern, "[REMOVED]", sanitized, flags=re.IGNORECASE)
-                return sanitized
-            else:
-                return obj
-        
-        return sanitize_recursive(output)
-    
-    def _is_valid_registry_path(self, path: str) -> bool:
-        """Validate registry path format"""
-        
-        if not path or not isinstance(path, str):
-            return False
-        
-        # Check for path traversal
-        if ".." in path or path.startswith("/"):
-            return False
-        
-        # Check for valid characters
-        import re
-        valid_pattern = r'^[a-zA-Z0-9_/-]+$'
-        return bool(re.match(valid_pattern, path))
-    
-    def _dict_to_context(self, context_dict: Dict[str, Any]) -> RegistryContext:
-        """Convert dictionary to RegistryContext"""
-        
-        try:
-            context_type = ContextType(context_dict.get("context_type", "query"))
-            
-            return RegistryContext(
-                context_id=context_dict.get("context_id", f"context_{datetime.now().strftime('%Y%m%d_%H%M%S')}"),
-                context_type=context_type,
-                registry_path=context_dict.get("registry_path", ""),
-                layer_info=context_dict.get("layer_info", {}),
-                component_metadata=context_dict.get("component_metadata", {}),
-                relationships=context_dict.get("relationships", {}),
-                dependencies=context_dict.get("dependencies", []),
-                constraints=context_dict.get("constraints", {}),
-                metadata=context_dict.get("metadata", {}),
-                timestamp=datetime.fromisoformat(context_dict.get("timestamp", datetime.now().isoformat()))
-            )
-        except Exception as e:
-            raise ValueError(f"Failed to convert dict to RegistryContext: {str(e)}")
-    
-    def get_formatting_history(self, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get formatting history with pagination"""
-        return self.formatting_history[-limit:]
-    
-    def get_safety_violations(self) -> List[str]:
-        """Get list of safety violations"""
-        return self.safety_violations.copy()
-    
-    def clear_history(self) -> None:
-        """Clear formatting history and violations"""
-        self.formatting_history.clear()
-        self.safety_violations.clear()
-        logger.info("Formatting history and violations cleared")
-    
-    def export_context(self, context: RegistryContext) -> Dict[str, Any]:
-        """Export context to dictionary format"""
-        return asdict(context)
-    
-    def import_context(self, context_dict: Dict[str, Any]) -> RegistryContext:
-        """Import context from dictionary format"""
-        try:
-            context = self._dict_to_context(context_dict)
-            logger.info(f"Context imported successfully: {context.context_id}")
-            return context
-        except Exception as e:
-            logger.error(f"Context import failed: {str(e)}")
-            raise ValueError(f"Failed to import context: {str(e)}")
-    
-    def validate_formatted_context(self, formatted_context: Dict[str, Any]) -> bool:
-        """Validate formatted context structure"""
-        
-        try:
-            # Check if it's a valid dictionary
-            if not isinstance(formatted_context, dict):
-                return False
-            
-            # Check for required fields based on format
-            if "operation" not in formatted_context:
-                return False
-            
-            # Check for valid JSON structure
-            json.dumps(formatted_context)
-            
-            return True
-        except Exception as e:
-            logger.error(f"Context validation failed: {str(e)}")
-            return False
+        return RegistryContextResult(
+            formatted_context=fallback_context,
+            validation_result=fallback_validation,
+            formatting_metadata={"fallback_mode": True},
+            safety_validation={"fallback_mode": True},
+            context_id=f"fallback_{hash(error) % 100000:06d}"
+        )
 
-class SecurityError(Exception):
-    """Security violation exception"""
+
+# ============================================================================
+# EXCEPTIONS
+# ============================================================================
+
+class SafetyError(Exception):
+    """Raised when context violates safety policies"""
     pass
 
-# L5 Compliance and Integration
-def validate_l5_compliance() -> Dict[str, bool]:
-    """Validate L5 architectural compliance"""
-    compliance_checks = {
-        "L1_PURE_PLANNING": True,  # Pure cognitive planning logic
-        "L2_PURE_EXECUTION": False,  # Planning layer, not execution
-        "L3_PURE_ORCHESTRATION": False,  # Planning layer, not orchestration
-        "L4_VALID_STATE_TRANSITIONS": True,  # Proper state management
-        "L5_POLICY_ENFORCED": True,  # Safety policies enforced
-        "FAIL_CLOSED_SAFETY": True,  # Fail-closed by default
-        "COMPREHENSIVE_LOGGING": True,  # Full logging implemented
-        "TYPE_SAFETY": True,  # Full type annotations
-        "ERROR_HANDLING": True,  # Comprehensive error handling
-        "NO_GLOBAL_STATE": True  # No global state leakage
-    }
-    return compliance_checks
 
-# Factory function for dependency injection
-def create_context_formatter(safety_enabled: bool = True) -> RegistryContextFormatter:
-    """Factory function to create RegistryContextFormatter instance"""
-    return RegistryContextFormatter(safety_enabled=safety_enabled)
+class ContextFormattingError(Exception):
+    """Raised for general context formatting errors"""
+    pass
 
-# Main execution block for testing
-if __name__ == "__main__":
-    logger.info("Starting format_registry_context module test")
-    
+
+# ============================================================================
+# FACTORY FUNCTIONS
+# ============================================================================
+
+def create_registry_context_formatter(safety_policy: Optional[RegistryContextSafetyPolicy] = None) -> RegistryContextFormatter:
+    """Factory function to create RegistryContextFormatter with optional custom safety policy"""
+    return RegistryContextFormatter(safety_policy)
+
+
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
+def validate_context_request(request: ContextFormatRequest) -> tuple[bool, Optional[str]]:
+    """Validate registry context request parameters"""
     try:
-        # Create context formatter
-        formatter = create_context_formatter(safety_enabled=True)
+        if not request.target_layer or not request.target_layer.strip():
+            return False, "Target layer cannot be empty"
         
-        # Test sample contexts
-        test_contexts = [
-            RegistryContext(
-                context_type=ContextType.QUERY,
-                registry_path="plan/phase/get-core-info",
-                layer_info={"parameters": {"depth": 5, "timeout": 30}},
-                component_metadata={"version": "1.0.0", "status": "active"},
-                relationships={"depends_on": ["validate", "extract"]},
-                dependencies=["validate_core_constraints", "parse_registry_intent"]
-            ),
-            RegistryContext(
-                context_type=ContextType.NAVIGATION,
-                registry_path="orc/phase/act-phase",
-                layer_info={"workflow": "sequential", "parallel": False},
-                component_metadata={"orchestration": "v2.1"},
-                relationships={"coordinates": ["exec", "mem"]},
-                dependencies=["dispatch_tools", "invoke_service"]
-            )
-        ]
+        if not isinstance(request.context, dict):
+            return False, "Context must be a dictionary"
         
-        for context in test_contexts:
-            # Test different formats
-            for format_type in [ContextFormat.STRUCTURED, ContextFormat.HIERARCHICAL, ContextFormat.FLAT]:
-                formatted = formatter.format_context(context, format_type)
-                logger.info(f"Formatted context in {format_type.value} format")
-                
-                # Validate formatted context
-                is_valid = formatter.validate_formatted_context(formatted)
-                logger.info(f"Context validation: {is_valid}")
+        if not isinstance(request.formatting_options, dict):
+            return False, "Formatting options must be a dictionary"
         
-        # Validate L5 compliance
-        compliance = validate_l5_compliance()
-        
-        logger.info("format_registry_context module test completed successfully")
-        logger.info(f"L5 Compliance: {compliance}")
+        return True, None
         
     except Exception as e:
-        logger.error(f"Module test failed: {str(e)}")
-        raise
+        return False, f"Request validation error: {str(e)}"

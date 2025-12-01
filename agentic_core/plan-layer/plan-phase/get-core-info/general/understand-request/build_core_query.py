@@ -1,303 +1,463 @@
 """
-L5 Agentic Core - Plan Layer - Build Core Query
-Implements L1 Cognitive Planning with full L5 safety compliance
+L1 Cognitive Planning - Core Query Building
+
+Implements pure planning operations for building core registry queries
+with L5 safety, comprehensive logging, and fail-closed architecture.
 """
 
+from __future__ import annotations
 import logging
-import json
-from typing import Dict, Any, Optional, List, Union
+import asyncio
+from typing import Any, Dict, List, Optional, Union, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime
+from abc import ABC, abstractmethod
 from enum import Enum
 
-# Configure comprehensive logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+from pydantic import BaseModel, Field, ValidationError
 
-class QueryType(Enum):
-    """Supported query types for core operations"""
+
+# ============================================================================
+# L5 SAFETY & LOGGING INFRASTRUCTURE
+# ============================================================================
+
+class QueryType(str, Enum):
+    """Supported core query types with L5 safety validation"""
     REGISTRY_LOOKUP = "registry_lookup"
     LAYER_DISCOVERY = "layer_discovery"
-    COMPONENT_QUERY = "component_query"
-    VALIDATION_REQUEST = "validation_request"
+    INTERFACE_QUERY = "interface_query"
+    CAPABILITY_SCAN = "capability_scan"
+    STATE_INSPECTION = "state_inspection"
+
+
+class QueryPurpose(str, Enum):
+    """Query purpose types with L5 safety enforcement"""
+    DISCOVERY = "discovery"
+    VALIDATION = "validation"
+    COORDINATION = "coordination"
+    MONITORING = "monitoring"
+    DEBUGGING = "debugging"
+
+
+class CoreQuerySafetyPolicy(BaseModel):
+    """L5 Safety policy for core query building operations"""
+    max_query_depth: int = Field(default=10, description="Maximum query nesting depth")
+    max_result_items: int = Field(default=1000, description="Maximum result items per query")
+    allowed_query_types: List[str] = Field(default_factory=lambda: [t.value for t in QueryType])
+    require_context_validation: bool = Field(default=True)
+    prevent_injection: bool = Field(default=True)
+    safety_checks_enabled: bool = Field(default=True)
+    fail_closed: bool = Field(default=True)
+
+
+class CoreQuerySafetyValidator:
+    """L5 Safety validator for core query building operations"""
+    
+    def __init__(self, policy: CoreQuerySafetyPolicy):
+        self.policy = policy
+        self.logger = logging.getLogger(f"{__name__}.CoreQuerySafetyValidator")
+        
+        # Pre-compiled patterns for safety validation
+        self._dangerous_patterns = ["drop", "delete", "truncate", "exec", "eval"]
+        self._max_query_length = 2048  # Maximum query string length
+    
+    def validate_query_input(self, query_input: Dict[str, Any]) -> tuple[bool, Optional[str]]:
+        """Validates query input against L5 safety policies"""
+        try:
+            # Check query depth
+            query_depth = query_input.get("depth", 0)
+            if query_depth > self.policy.max_query_depth:
+                error_msg = f"Query too deep: {query_depth} > {self.policy.max_query_depth}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check query type
+            query_type = query_input.get("query_type", "")
+            if query_type not in self.policy.allowed_query_types:
+                error_msg = f"Prohibited query type: {query_type}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Check for dangerous patterns
+            query_string = str(query_input.get("query", "")).lower()
+            for pattern in self._dangerous_patterns:
+                if pattern in query_string:
+                    error_msg = f"Dangerous pattern detected: {pattern}"
+                    self.logger.warning(f"Safety violation: {error_msg}")
+                    return False, error_msg
+            
+            # Check query length
+            if len(query_string) > self._max_query_length:
+                error_msg = f"Query too long: {len(query_string)} > {self._max_query_length}"
+                self.logger.warning(f"Safety violation: {error_msg}")
+                return False, error_msg
+            
+            # Validate context if required
+            if self.policy.require_context_validation:
+                context = query_input.get("context", {})
+                if not isinstance(context, dict):
+                    error_msg = "Invalid context: must be dictionary"
+                    self.logger.warning(f"Safety violation: {error_msg}")
+                    return False, error_msg
+            
+            return True, None
+            
+        except Exception as e:
+            error_msg = f"Validation error: {str(e)}"
+            self.logger.error(f"Safety validation failed: {error_msg}")
+            if self.policy.fail_closed:
+                return False, error_msg
+            return True, error_msg
+
+
+# ============================================================================
+# L1 COGNITIVE PLANNING INTERFACES
+# ============================================================================
 
 @dataclass
-class QueryConstraints:
-    """Query constraints for safety and policy enforcement"""
-    max_depth: int = 10
-    max_results: int = 100
-    timeout_seconds: int = 30
-    allowed_layers: List[str] = field(default_factory=lambda: ["plan", "orc", "exec", "mem", "safe"])
-    restricted_paths: List[str] = field(default_factory=list)
+class CoreQueryRequest:
+    """Input request for core query building operations"""
+    query_intent: str
+    target_layer: str
+    query_type: QueryType
+    purpose: QueryPurpose
+    context: Dict[str, Any]
+    constraints: Optional[Dict[str, Any]] = None
+    query_options: Dict[str, Any] = field(default_factory=dict)
+    safety_level: str = "standard"
+
 
 @dataclass
-class CoreQuery:
-    """Core query structure with full type safety"""
-    query_id: str = field(default_factory=lambda: f"query_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    query_type: QueryType = QueryType.REGISTRY_LOOKUP
-    target_layer: str = ""
-    component_path: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    constraints: QueryConstraints = field(default_factory=QueryConstraints)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+class CoreQueryResult:
+    """Output result from core query building operations"""
+    built_query: str
+    query_parameters: Dict[str, Any]
+    execution_plan: Dict[str, Any]
+    safety_metadata: Dict[str, Any]
+    estimated_complexity: str
+    query_id: str
     timestamp: datetime = field(default_factory=datetime.now)
 
-class QueryBuilder:
+
+class CoreQueryBuilderInterface(ABC):
+    """Abstract interface for core query building operations"""
+    
+    @abstractmethod
+    async def build_query(self, request: CoreQueryRequest) -> CoreQueryResult:
+        """Build a core registry query based on the request"""
+        pass
+    
+    @abstractmethod
+    async def validate_query_structure(self, query: str) -> tuple[bool, Optional[str]]:
+        """Validate the structure of a built query"""
+        pass
+    
+    @abstractmethod
+    async def estimate_query_complexity(self, query: str, context: Dict[str, Any]) -> str:
+        """Estimate the complexity of executing the query"""
+        pass
+
+
+# ============================================================================
+# L1 COGNITIVE PLANNING IMPLEMENTATION
+# ============================================================================
+
+class CoreQueryBuilder(CoreQueryBuilderInterface):
     """
-    L5 Query Builder with fail-closed safety and comprehensive validation
-    Implements L1 Cognitive Planning with L5 policy enforcement
+    L1 Cognitive Planning implementation for building core registry queries.
+    
+    Provides pure planning operations without execution, following L5 safety
+    principles and comprehensive logging for fail-closed architecture.
     """
     
-    def __init__(self, safety_enabled: bool = True):
-        self.safety_enabled = safety_enabled
-        self.query_history: List[CoreQuery] = []
-        self.safety_violations: List[str] = []
-        logger.info("QueryBuilder initialized with safety enforcement")
+    def __init__(self, safety_policy: Optional[CoreQuerySafetyPolicy] = None):
+        self.safety_policy = safety_policy or CoreQuerySafetyPolicy()
+        self.safety_validator = CoreQuerySafetyValidator(self.safety_policy)
+        self.logger = logging.getLogger(__name__)
+        
+        # Query building templates and patterns
+        self._query_templates = {
+            QueryType.REGISTRY_LOOKUP: "SELECT * FROM registry WHERE layer = '{target}' AND type = '{query_type}'",
+            QueryType.LAYER_DISCOVERY: "DISCOVER LAYERS WHERE capabilities CONTAINS '{capability}'",
+            QueryType.INTERFACE_QUERY: "QUERY INTERFACES FOR '{target}' WITH METHOD '{method}'",
+            QueryType.CAPABILITY_SCAN: "SCAN CAPABILITIES IN LAYER '{layer}' FILTER BY {filters}",
+            QueryType.STATE_INSPECTION: "INSPECT STATE OF '{target}' WITH CONTEXT {context}"
+        }
+        
+        self.logger.info("CoreQueryBuilder initialized with L5 safety policies")
     
-    def build_query(
-        self,
-        query_type: Union[str, QueryType],
-        target_layer: str,
-        component_path: str,
-        parameters: Optional[Dict[str, Any]] = None,
-        constraints: Optional[QueryConstraints] = None
-    ) -> CoreQuery:
+    async def build_query(self, request: CoreQueryRequest) -> CoreQueryResult:
         """
-        Build a core query with comprehensive safety validation
+        Build a core registry query based on the request parameters.
         
         Args:
-            query_type: Type of query to build
-            target_layer: Target layer for the query
-            component_path: Path to the target component
-            parameters: Query parameters
-            constraints: Query constraints
+            request: Core query building request with all necessary parameters
             
         Returns:
-            CoreQuery: Validated query object
+            CoreQueryResult: Structured result with built query and metadata
             
         Raises:
-            ValueError: If query validation fails
-            SecurityError: If safety constraints are violated
+            ValidationError: If request parameters are invalid
+            SafetyError: If query violates safety policies
         """
-        logger.info(f"Building query: {query_type} for layer {target_layer}")
+        self.logger.info(f"Building core query for {request.query_type} on {request.target_layer}")
         
         try:
-            # Convert string to enum if needed
-            if isinstance(query_type, str):
-                query_type = QueryType(query_type)
+            # L5 Safety validation
+            query_input = {
+                "query_type": request.query_type.value,
+                "depth": request.query_options.get("depth", 1),
+                "query": request.query_intent,
+                "context": request.context
+            }
             
-            # Validate inputs
-            self._validate_query_inputs(query_type, target_layer, component_path)
+            is_valid, error_msg = self.safety_validator.validate_query_input(query_input)
+            if not is_valid:
+                raise SafetyError(f"Query validation failed: {error_msg}")
             
-            # Apply safety constraints
-            if self.safety_enabled:
-                self._apply_safety_constraints(target_layer, component_path, constraints)
+            # Build query based on type and intent
+            template = self._query_templates.get(request.query_type)
+            if not template:
+                raise ValidationError(f"Unsupported query type: {request.query_type}")
             
-            # Create query object
-            query = CoreQuery(
-                query_type=query_type,
-                target_layer=target_layer,
-                component_path=component_path,
-                parameters=parameters or {},
-                constraints=constraints or QueryConstraints(),
-                metadata={
-                    "builder_version": "1.0.0",
-                    "safety_enabled": self.safety_enabled,
-                    "build_timestamp": datetime.now().isoformat()
-                }
+            # Substitute parameters in template
+            built_query = self._substitute_query_parameters(
+                template, 
+                request.target_layer, 
+                request.query_intent,
+                request.query_options
             )
             
-            # Log query creation
-            logger.info(f"Query built successfully: {query.query_id}")
+            # Validate query structure
+            structure_valid, structure_error = await self.validate_query_structure(built_query)
+            if not structure_valid:
+                raise ValidationError(f"Invalid query structure: {structure_error}")
             
-            # Store in history
-            self.query_history.append(query)
+            # Estimate complexity
+            complexity = await self.estimate_query_complexity(built_query, request.context)
             
-            return query
+            # Generate execution plan
+            execution_plan = self._generate_execution_plan(request, built_query)
+            
+            # Generate safety metadata
+            safety_metadata = {
+                "validated_at": datetime.now().isoformat(),
+                "safety_level": request.safety_level,
+                "risk_score": self._calculate_risk_score(built_query, request),
+                "constraints_applied": request.constraints or {}
+            }
+            
+            # Generate unique query ID
+            query_id = self._generate_query_id(request)
+            
+            result = CoreQueryResult(
+                built_query=built_query,
+                query_parameters={
+                    "target_layer": request.target_layer,
+                    "query_type": request.query_type.value,
+                    "purpose": request.purpose.value,
+                    "options": request.query_options
+                },
+                execution_plan=execution_plan,
+                safety_metadata=safety_metadata,
+                estimated_complexity=complexity,
+                query_id=query_id
+            )
+            
+            self.logger.info(f"Successfully built query {query_id} with complexity {complexity}")
+            return result
             
         except Exception as e:
-            logger.error(f"Query building failed: {str(e)}")
-            raise ValueError(f"Failed to build query: {str(e)}")
+            self.logger.error(f"Failed to build core query: {str(e)}")
+            if self.safety_policy.fail_closed:
+                raise
+            # Return safe fallback query in non-fail-closed mode
+            return self._create_fallback_query(request, str(e))
     
-    def _validate_query_inputs(
-        self,
-        query_type: QueryType,
-        target_layer: str,
-        component_path: str
-    ) -> None:
-        """Validate query inputs with comprehensive checks"""
-        
-        # Validate query type
-        if not isinstance(query_type, QueryType):
-            raise ValueError(f"Invalid query type: {query_type}")
-        
-        # Validate target layer
-        valid_layers = ["plan", "orc", "exec", "mem", "safe"]
-        if target_layer not in valid_layers:
-            raise ValueError(f"Invalid target layer: {target_layer}. Must be one of {valid_layers}")
-        
-        # Validate component path
-        if not component_path or not isinstance(component_path, str):
-            raise ValueError("Component path must be a non-empty string")
-        
-        # Check for path traversal attempts
-        if ".." in component_path or component_path.startswith("/"):
-            raise SecurityError(f"Invalid component path detected: {component_path}")
-        
-        logger.debug("Query inputs validated successfully")
+    async def validate_query_structure(self, query: str) -> tuple[bool, Optional[str]]:
+        """Validate the structure of a built query"""
+        try:
+            if not query or not query.strip():
+                return False, "Query is empty"
+            
+            # Check for balanced parentheses/brackets
+            if query.count('(') != query.count(')'):
+                return False, "Unbalanced parentheses"
+            
+            if query.count('{') != query.count('}'):
+                return False, "Unbalanced braces"
+            
+            # Check for proper query termination
+            if not query.rstrip().endswith(';') and not query.rstrip().endswith(')'):
+                return False, "Query not properly terminated"
+            
+            # Additional structural checks based on query type
+            if "SELECT" in query.upper():
+                if "FROM" not in query.upper():
+                    return False, "SELECT query missing FROM clause"
+            
+            return True, None
+            
+        except Exception as e:
+            return False, f"Structure validation error: {str(e)}"
     
-    def _apply_safety_constraints(
-        self,
-        target_layer: str,
-        component_path: str,
-        constraints: Optional[QueryConstraints]
-    ) -> None:
-        """Apply L5 safety constraints to query"""
-        
-        # Check restricted paths
-        restricted_patterns = ["admin", "system", "config", "security"]
-        for pattern in restricted_patterns:
-            if pattern in component_path.lower():
-                violation = f"Access to restricted path pattern: {pattern}"
-                self.safety_violations.append(violation)
-                raise SecurityError(violation)
-        
-        # Apply default constraints if none provided
-        if constraints is None:
-            constraints = QueryConstraints()
-        
-        # Validate constraints
-        if constraints.max_depth > 20:
-            raise SecurityError(f"Max depth constraint too high: {constraints.max_depth}")
-        
-        if constraints.max_results > 1000:
-            raise SecurityError(f"Max results constraint too high: {constraints.max_results}")
-        
-        if constraints.timeout_seconds > 300:
-            raise SecurityError(f"Timeout constraint too high: {constraints.timeout_seconds}")
-        
-        logger.debug("Safety constraints applied successfully")
+    async def estimate_query_complexity(self, query: str, context: Dict[str, Any]) -> str:
+        """Estimate the complexity of executing the query"""
+        try:
+            complexity_score = 0
+            
+            # Base complexity from query length
+            complexity_score += len(query) // 100
+            
+            # Complexity from query type
+            if "JOIN" in query.upper():
+                complexity_score += 3
+            if "SUBQUERY" in query.upper() or "EXISTS" in query.upper():
+                complexity_score += 2
+            if "AGGREGATE" in query.upper() or "GROUP BY" in query.upper():
+                complexity_score += 2
+            
+            # Complexity from context size
+            context_size = len(str(context))
+            complexity_score += context_size // 500
+            
+            # Map score to complexity level
+            if complexity_score <= 3:
+                return "low"
+            elif complexity_score <= 7:
+                return "medium"
+            else:
+                return "high"
+                
+        except Exception as e:
+            self.logger.warning(f"Complexity estimation failed: {str(e)}")
+            return "medium"  # Safe default
     
-    def get_query_history(self, limit: int = 100) -> List[CoreQuery]:
-        """Get query history with pagination"""
-        return self.query_history[-limit:]
+    def _substitute_query_parameters(
+        self, 
+        template: str, 
+        target_layer: str, 
+        query_intent: str,
+        options: Dict[str, Any]
+    ) -> str:
+        """Substitute parameters into query template"""
+        try:
+            substitutions = {
+                "{target}": target_layer,
+                "{query_type}": query_intent,
+                "{capability}": options.get("capability", ""),
+                "{method}": options.get("method", ""),
+                "{layer}": target_layer,
+                "{filters}": str(options.get("filters", {})),
+                "{context}": str(options.get("context", {}))
+            }
+            
+            result = template
+            for placeholder, value in substitutions.items():
+                result = result.replace(placeholder, str(value))
+            
+            return result
+            
+        except Exception as e:
+            self.logger.error(f"Parameter substitution failed: {str(e)}")
+            raise
     
-    def get_safety_violations(self) -> List[str]:
-        """Get list of safety violations"""
-        return self.safety_violations.copy()
-    
-    def clear_history(self) -> None:
-        """Clear query history and violations"""
-        self.query_history.clear()
-        self.safety_violations.clear()
-        logger.info("Query history and violations cleared")
-    
-    def export_query(self, query: CoreQuery) -> Dict[str, Any]:
-        """Export query to dictionary format"""
+    def _generate_execution_plan(self, request: CoreQueryRequest, query: str) -> Dict[str, Any]:
+        """Generate execution plan for the built query"""
         return {
-            "query_id": query.query_id,
-            "query_type": query.query_type.value,
-            "target_layer": query.target_layer,
-            "component_path": query.component_path,
-            "parameters": query.parameters,
-            "constraints": {
-                "max_depth": query.constraints.max_depth,
-                "max_results": query.constraints.max_results,
-                "timeout_seconds": query.constraints.timeout_seconds,
-                "allowed_layers": query.constraints.allowed_layers,
-                "restricted_paths": query.constraints.restricted_paths
-            },
-            "metadata": query.metadata,
-            "timestamp": query.timestamp.isoformat()
+            "query": query,
+            "target_layer": request.target_layer,
+            "execution_order": [
+                "validate_permissions",
+                "establish_connection", 
+                "execute_query",
+                "process_results",
+                "cleanup_resources"
+            ],
+            "estimated_duration_ms": len(query) * 2,  # Rough estimate
+            "required_resources": ["connection_pool", "query_parser", "result_processor"],
+            "fallback_strategy": "cached_result_if_available"
         }
     
-    def import_query(self, query_dict: Dict[str, Any]) -> CoreQuery:
-        """Import query from dictionary format"""
-        try:
-            constraints = QueryConstraints(
-                max_depth=query_dict["constraints"]["max_depth"],
-                max_results=query_dict["constraints"]["max_results"],
-                timeout_seconds=query_dict["constraints"]["timeout_seconds"],
-                allowed_layers=query_dict["constraints"]["allowed_layers"],
-                restricted_paths=query_dict["constraints"]["restricted_paths"]
-            )
-            
-            query = CoreQuery(
-                query_id=query_dict["query_id"],
-                query_type=QueryType(query_dict["query_type"]),
-                target_layer=query_dict["target_layer"],
-                component_path=query_dict["component_path"],
-                parameters=query_dict["parameters"],
-                constraints=constraints,
-                metadata=query_dict["metadata"],
-                timestamp=datetime.fromisoformat(query_dict["timestamp"])
-            )
-            
-            # Re-validate imported query
-            self._validate_query_inputs(query.query_type, query.target_layer, query.component_path)
-            
-            logger.info(f"Query imported successfully: {query.query_id}")
-            return query
-            
-        except Exception as e:
-            logger.error(f"Query import failed: {str(e)}")
-            raise ValueError(f"Failed to import query: {str(e)}")
+    def _calculate_risk_score(self, query: str, request: CoreQueryRequest) -> float:
+        """Calculate risk score for the query (0.0 to 1.0)"""
+        risk_score = 0.1  # Base risk
+        
+        # Increase risk for complex queries
+        if len(query) > 500:
+            risk_score += 0.2
+        
+        # Increase risk for certain query types
+        if request.query_type in [QueryType.STATE_INSPECTION, QueryType.CAPABILITY_SCAN]:
+            risk_score += 0.1
+        
+        # Increase risk for deep queries
+        depth = request.query_options.get("depth", 1)
+        if depth > 5:
+            risk_score += 0.2
+        
+        return min(risk_score, 1.0)
+    
+    def _generate_query_id(self, request: CoreQueryRequest) -> str:
+        """Generate unique query identifier"""
+        timestamp = datetime.now().isoformat()
+        content = f"{request.query_type.value}:{request.target_layer}:{timestamp}"
+        return f"query_{hash(content) % 1000000:06d}"
+    
+    def _create_fallback_query(self, request: CoreQueryRequest, error: str) -> CoreQueryResult:
+        """Create safe fallback query when main building fails"""
+        fallback_query = f"SELECT * FROM registry WHERE layer = '{request.target_layer}' LIMIT 10;"
+        
+        return CoreQueryResult(
+            built_query=fallback_query,
+            query_parameters={"fallback": True, "error": error},
+            execution_plan={"fallback": True},
+            safety_metadata={"fallback_mode": True},
+            estimated_complexity="low",
+            query_id=f"fallback_{hash(error) % 100000:06d}"
+        )
 
-class SecurityError(Exception):
-    """Security violation exception"""
+
+# ============================================================================
+# EXCEPTIONS
+# ============================================================================
+
+class SafetyError(Exception):
+    """Raised when query violates safety policies"""
     pass
 
-# L5 Compliance and Integration
-def validate_l5_compliance() -> Dict[str, bool]:
-    """Validate L5 architectural compliance"""
-    compliance_checks = {
-        "L1_PURE_PLANNING": True,  # Pure cognitive planning logic
-        "L2_PURE_EXECUTION": False,  # Planning layer, not execution
-        "L3_PURE_ORCHESTRATION": False,  # Planning layer, not orchestration
-        "L4_VALID_STATE_TRANSITIONS": True,  # Proper state management
-        "L5_POLICY_ENFORCED": True,  # Safety policies enforced
-        "FAIL_CLOSED_SAFETY": True,  # Fail-closed by default
-        "COMPREHENSIVE_LOGGING": True,  # Full logging implemented
-        "TYPE_SAFETY": True,  # Full type annotations
-        "ERROR_HANDLING": True,  # Comprehensive error handling
-        "NO_GLOBAL_STATE": True  # No global state leakage
-    }
-    return compliance_checks
 
-# Factory function for dependency injection
-def create_query_builder(safety_enabled: bool = True) -> QueryBuilder:
-    """Factory function to create QueryBuilder instance"""
-    return QueryBuilder(safety_enabled=safety_enabled)
+class QueryBuilderError(Exception):
+    """Raised for general query building errors"""
+    pass
 
-# Main execution block for testing
-if __name__ == "__main__":
-    logger.info("Starting build_core_query module test")
-    
+
+# ============================================================================
+# FACTORY FUNCTIONS
+# ============================================================================
+
+def create_core_query_builder(safety_policy: Optional[CoreQuerySafetyPolicy] = None) -> CoreQueryBuilder:
+    """Factory function to create CoreQueryBuilder with optional custom safety policy"""
+    return CoreQueryBuilder(safety_policy)
+
+
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
+def validate_query_request(request: CoreQueryRequest) -> tuple[bool, Optional[str]]:
+    """Validate core query request parameters"""
     try:
-        # Create query builder
-        builder = create_query_builder(safety_enabled=True)
+        if not request.query_intent or not request.query_intent.strip():
+            return False, "Query intent cannot be empty"
         
-        # Build sample query
-        query = builder.build_query(
-            query_type=QueryType.REGISTRY_LOOKUP,
-            target_layer="plan",
-            component_path="plan-phase/get-core-info",
-            parameters={"search_term": "core_registry"}
-        )
+        if not request.target_layer or not request.target_layer.strip():
+            return False, "Target layer cannot be empty"
         
-        # Export and validate
-        exported = builder.export_query(query)
-        imported = builder.import_query(exported)
+        if not isinstance(request.context, dict):
+            return False, "Context must be a dictionary"
         
-        # Validate L5 compliance
-        compliance = validate_l5_compliance()
-        
-        logger.info("build_core_query module test completed successfully")
-        logger.info(f"L5 Compliance: {compliance}")
+        return True, None
         
     except Exception as e:
-        logger.error(f"Module test failed: {str(e)}")
-        raise
+        return False, f"Request validation error: {str(e)}"
