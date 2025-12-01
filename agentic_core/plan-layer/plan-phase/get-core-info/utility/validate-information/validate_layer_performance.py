@@ -2905,8 +2905,241 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
         rule: PerformanceValidationRule
     ) -> List[PerformanceValidationError]:
         """Validate latency percentiles"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if metrics are provided
+        if not metrics:
+            errors.append(PerformanceValidationError(
+                metric_name="latency_percentiles",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_metrics_provided",
+                error_message="No metrics provided for latency percentiles validation",
+                actual_value=None,
+                expected_value="metrics dictionary",
+                severity="error"
+            ))
+            return errors
+        
+        # Get latency percentile metrics
+        percentile_metrics = metrics.get("latency_percentiles", {})
+        percentiles = percentile_metrics.get("values", {})
+        sample_size = percentile_metrics.get("sample_size", 0)
+        calculation_time = percentile_metrics.get("calculation_time_ms", 0)
+        
+        # Validate sample size
+        min_sample_size = rule.criteria.get("min_sample_size", 100)
+        if sample_size < min_sample_size:
+            errors.append(PerformanceValidationError(
+                metric_name="percentile_sample_size",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="insufficient_sample_size",
+                error_message=f"Sample size {sample_size} insufficient for percentile calculation (minimum: {min_sample_size})",
+                actual_value=sample_size,
+                expected_value=f">= {min_sample_size}",
+                severity="warning"
+            ))
+        
+        # Validate required percentiles
+        required_percentiles = rule.criteria.get("required_percentiles", [50, 90, 95, 99])
+        missing_percentiles = []
+        
+        for p in required_percentiles:
+            if f"p{p}" not in percentiles:
+                missing_percentiles.append(f"p{p}")
+        
+        if missing_percentiles:
+            errors.append(PerformanceValidationError(
+                metric_name="required_percentiles",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="missing_required_percentiles",
+                error_message=f"Missing required percentiles: {', '.join(missing_percentiles)}",
+                actual_value=list(percentiles.keys()),
+                expected_value=required_percentiles,
+                severity="error"
+            ))
+        
+        # Validate percentile values if provided
+        if percentiles:
+            # Check 50th percentile (median)
+            p50 = percentiles.get("p50", 0)
+            max_p50 = rule.criteria.get("max_p50_ms", 50)
+            if p50 > max_p50:
+                errors.append(PerformanceValidationError(
+                    metric_name="p50_latency",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_p50_latency",
+                    error_message=f"50th percentile latency {p50:.2f}ms exceeds threshold {max_p50}ms",
+                    actual_value=p50,
+                    expected_value=f"<= {max_p50}ms",
+                    severity="error"
+                ))
+            
+            # Check 90th percentile
+            p90 = percentiles.get("p90", 0)
+            max_p90 = rule.criteria.get("max_p90_ms", 100)
+            if p90 > max_p90:
+                errors.append(PerformanceValidationError(
+                    metric_name="p90_latency",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_p90_latency",
+                    error_message=f"90th percentile latency {p90:.2f}ms exceeds threshold {max_p90}ms",
+                    actual_value=p90,
+                    expected_value=f"<= {max_p90}ms",
+                    severity="error"
+                ))
+            
+            # Check 95th percentile
+            p95 = percentiles.get("p95", 0)
+            max_p95 = rule.criteria.get("max_p95_ms", 150)
+            if p95 > max_p95:
+                errors.append(PerformanceValidationError(
+                    metric_name="p95_latency",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_p95_latency",
+                    error_message=f"95th percentile latency {p95:.2f}ms exceeds threshold {max_p95}ms",
+                    actual_value=p95,
+                    expected_value=f"<= {max_p95}ms",
+                    severity="error"
+                ))
+            
+            # Check 99th percentile
+            p99 = percentiles.get("p99", 0)
+            max_p99 = rule.criteria.get("max_p99_ms", 250)
+            if p99 > max_p99:
+                errors.append(PerformanceValidationError(
+                    metric_name="p99_latency",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_p99_latency",
+                    error_message=f"99th percentile latency {p99:.2f}ms exceeds threshold {max_p99}ms",
+                    actual_value=p99,
+                    expected_value=f"<= {max_p99}ms",
+                    severity="warning"
+                ))
+            
+            # Check 99.9th percentile if available
+            p999 = percentiles.get("p99_9", 0)
+            if p999 > 0:
+                max_p999 = rule.criteria.get("max_p99_9_ms", 500)
+                if p999 > max_p999:
+                    errors.append(PerformanceValidationError(
+                        metric_name="p99_9_latency",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_p99_9_latency",
+                        error_message=f"99.9th percentile latency {p999:.2f}ms exceeds threshold {max_p999}ms",
+                        actual_value=p999,
+                        expected_value=f"<= {max_p999}ms",
+                        severity="warning"
+                    ))
+        
+        # Validate percentile distribution consistency
+        if all(p in percentiles for p in ["p50", "p90", "p95", "p99"]):
+            p50 = percentiles["p50"]
+            p90 = percentiles["p90"]
+            p95 = percentiles["p95"]
+            p99 = percentiles["p99"]
+            
+            # Check if percentiles are in ascending order
+            if not (p50 <= p90 <= p95 <= p99):
+                errors.append(PerformanceValidationError(
+                    metric_name="percentile_order",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_percentile_order",
+                    error_message="Percentiles are not in ascending order: p50={}, p90={}, p95={}, p99={}".format(p50, p90, p95, p99),
+                    actual_value=[p50, p90, p95, p99],
+                    expected_value="ascending order",
+                    severity="error"
+                ))
+            
+            # Check for reasonable percentile ratios
+            if p50 > 0:
+                p90_p50_ratio = p90 / p50
+                p95_p50_ratio = p95 / p50
+                p99_p50_ratio = p99 / p50
+                
+                max_p90_p50_ratio = rule.criteria.get("max_p90_p50_ratio", 3.0)
+                max_p95_p50_ratio = rule.criteria.get("max_p95_p50_ratio", 4.0)
+                max_p99_p50_ratio = rule.criteria.get("max_p99_p50_ratio", 6.0)
+                
+                if p90_p50_ratio > max_p90_p50_ratio:
+                    errors.append(PerformanceValidationError(
+                        metric_name="p90_p50_ratio",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="excessive_p90_p50_ratio",
+                        error_message=f"P90/P50 ratio {p90_p50_ratio:.2f} exceeds threshold {max_p90_p50_ratio}",
+                        actual_value=p90_p50_ratio,
+                        expected_value=f"<= {max_p90_p50_ratio}",
+                        severity="warning"
+                    ))
+                
+                if p95_p50_ratio > max_p95_p50_ratio:
+                    errors.append(PerformanceValidationError(
+                        metric_name="p95_p50_ratio",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="excessive_p95_p50_ratio",
+                        error_message=f"P95/P50 ratio {p95_p50_ratio:.2f} exceeds threshold {max_p95_p50_ratio}",
+                        actual_value=p95_p50_ratio,
+                        expected_value=f"<= {max_p95_p50_ratio}",
+                        severity="warning"
+                    ))
+                
+                if p99_p50_ratio > max_p99_p50_ratio:
+                    errors.append(PerformanceValidationError(
+                        metric_name="p99_p50_ratio",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="excessive_p99_p50_ratio",
+                        error_message=f"P99/P50 ratio {p99_p50_ratio:.2f} exceeds threshold {max_p99_p50_ratio}",
+                        actual_value=p99_p50_ratio,
+                        expected_value=f"<= {max_p99_p50_ratio}",
+                        severity="warning"
+                    ))
+        
+        # Validate calculation performance
+        max_calculation_time = rule.criteria.get("max_calculation_time_ms", 100)
+        if calculation_time > max_calculation_time:
+            errors.append(PerformanceValidationError(
+                metric_name="percentile_calculation_time",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="slow_percentile_calculation",
+                error_message=f"Percentile calculation time {calculation_time:.2f}ms exceeds threshold {max_calculation_time}ms",
+                actual_value=calculation_time,
+                expected_value=f"<= {max_calculation_time}ms",
+                severity="warning"
+            ))
+        
+        # Check for percentile SLA compliance if configured
+        sla_config = percentile_metrics.get("sla", {})
+        if sla_config:
+            sla_percentiles = sla_config.get("percentiles", {})
+            sla_targets = sla_config.get("targets", {})
+            
+            for percentile, target in sla_targets.items():
+                actual_value = percentiles.get(percentile, 0)
+                if actual_value > target:
+                    errors.append(PerformanceValidationError(
+                        metric_name=f"sla_{percentile}",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="sla_percentile_violation",
+                        error_message=f"SLA violation: {percentile} latency {actual_value:.2f}ms exceeds target {target}ms",
+                        actual_value=actual_value,
+                        expected_value=f"<= {target}ms",
+                        severity="error"
+                    ))
+        
+        return errors
     
     async def _validate_concurrent_users(
         self, 
@@ -2914,8 +3147,283 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
         rule: PerformanceValidationRule
     ) -> List[PerformanceValidationError]:
         """Validate concurrent users"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if metrics are provided
+        if not metrics:
+            errors.append(PerformanceValidationError(
+                metric_name="concurrent_users",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_metrics_provided",
+                error_message="No metrics provided for concurrent users validation",
+                actual_value=None,
+                expected_value="metrics dictionary",
+                severity="error"
+            ))
+            return errors
+        
+        # Get concurrent user metrics
+        user_metrics = metrics.get("concurrent_users", {})
+        current_users = user_metrics.get("current_count", 0)
+        peak_users = user_metrics.get("peak_count", 0)
+        max_capacity = user_metrics.get("max_capacity", 0)
+        user_history = user_metrics.get("history", [])
+        session_metrics = user_metrics.get("sessions", {})
+        
+        # Validate current concurrent users
+        if current_users == 0:
+            errors.append(PerformanceValidationError(
+                metric_name="current_concurrent_users",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_active_users",
+                error_message="No concurrent users detected",
+                actual_value=current_users,
+                expected_value=">= 1",
+                severity="warning"
+            ))
+        
+        # Validate capacity configuration
+        if max_capacity == 0:
+            errors.append(PerformanceValidationError(
+                metric_name="max_user_capacity",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_capacity_configured",
+                error_message="Maximum user capacity not configured",
+                actual_value=max_capacity,
+                expected_value="> 0",
+                severity="error"
+            ))
+        else:
+            # Check if current users exceed capacity
+            if current_users > max_capacity:
+                errors.append(PerformanceValidationError(
+                    metric_name="current_vs_capacity",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="capacity_exceeded",
+                    error_message=f"Current concurrent users {current_users} exceeds maximum capacity {max_capacity}",
+                    actual_value=current_users,
+                    expected_value=f"<= {max_capacity}",
+                    severity="error"
+                ))
+            
+            # Check capacity utilization
+            utilization = (current_users / max_capacity) * 100
+            max_utilization = rule.criteria.get("max_user_utilization", 85)  # percentage
+            
+            if utilization > max_utilization:
+                errors.append(PerformanceValidationError(
+                    metric_name="user_capacity_utilization",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_capacity_utilization",
+                    error_message=f"User capacity utilization {utilization:.2f}% exceeds threshold {max_utilization}%",
+                    actual_value=utilization,
+                    expected_value=f"<= {max_utilization}%",
+                    severity="warning"
+                ))
+        
+        # Validate peak users if provided
+        if peak_users > 0:
+            if peak_users > max_capacity:
+                errors.append(PerformanceValidationError(
+                    metric_name="peak_vs_capacity",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="peak_exceeds_capacity",
+                    error_message=f"Peak concurrent users {peak_users} exceeds maximum capacity {max_capacity}",
+                    actual_value=peak_users,
+                    expected_value=f"<= {max_capacity}",
+                    severity="error"
+                ))
+            
+            # Check peak-to-current ratio
+            if current_users > 0:
+                peak_ratio = peak_users / current_users
+                max_peak_ratio = rule.criteria.get("max_peak_to_current_ratio", 2.0)
+                
+                if peak_ratio > max_peak_ratio:
+                    errors.append(PerformanceValidationError(
+                        metric_name="peak_to_current_ratio",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="excessive_peak_ratio",
+                        error_message=f"Peak-to-current user ratio {peak_ratio:.2f} indicates potential load spikes",
+                        actual_value=peak_ratio,
+                        expected_value=f"<= {max_peak_ratio}",
+                        severity="warning"
+                    ))
+        
+        # Validate user history if provided
+        if user_history:
+            if len(user_history) < 5:
+                errors.append(PerformanceValidationError(
+                    metric_name="user_history",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_user_history",
+                    error_message=f"Insufficient user history data: {len(user_history)} samples (minimum 5 required)",
+                    actual_value=len(user_history),
+                    expected_value=">= 5",
+                    severity="warning"
+                ))
+            
+            # Calculate user statistics
+            import statistics
+            try:
+                avg_users = statistics.mean(user_history)
+                std_dev = statistics.stdev(user_history) if len(user_history) > 1 else 0
+                
+                # Check average users threshold
+                min_avg_users = rule.criteria.get("min_avg_concurrent_users", 1)
+                if avg_users < min_avg_users:
+                    errors.append(PerformanceValidationError(
+                        metric_name="avg_concurrent_users",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="low_avg_concurrent_users",
+                        error_message=f"Average concurrent users {avg_users:.2f} below minimum {min_avg_users}",
+                        actual_value=avg_users,
+                        expected_value=f">= {min_avg_users}",
+                        severity="warning"
+                    ))
+                
+                # Check user count consistency
+                max_user_std_dev = rule.criteria.get("max_user_std_dev", 50)
+                if std_dev > max_user_std_dev:
+                    errors.append(PerformanceValidationError(
+                        metric_name="user_count_consistency",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="inconsistent_user_count",
+                        error_message=f"User count standard deviation {std_dev:.2f} exceeds threshold {max_user_std_dev}",
+                        actual_value=std_dev,
+                        expected_value=f"<= {max_user_std_dev}",
+                        severity="warning"
+                    ))
+                
+                # Check for user growth trends
+                if len(user_history) >= 3:
+                    recent_avg = statistics.mean(user_history[-3:])
+                    older_avg = statistics.mean(user_history[:3])
+                    
+                    if older_avg > 0:
+                        user_growth = ((recent_avg - older_avg) / older_avg) * 100
+                        max_growth_threshold = rule.criteria.get("max_user_growth_percent", 25)
+                        
+                        if user_growth > max_growth_threshold:
+                            errors.append(PerformanceValidationError(
+                                metric_name="user_growth_trend",
+                                rule_id=rule.rule_id,
+                                validation_type=rule.validation_type,
+                                error_category="rapid_user_growth",
+                                error_message=f"Concurrent users growing by {user_growth:.2f}% over time",
+                                actual_value=user_growth,
+                                expected_value=f"<= {max_growth_threshold}%",
+                                severity="warning"
+                            ))
+                
+            except statistics.StatisticsError as e:
+                errors.append(PerformanceValidationError(
+                    metric_name="user_statistics",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="user_statistics_error",
+                    error_message=f"Error calculating user statistics: {str(e)}",
+                    actual_value=str(e),
+                    expected_value="valid statistics",
+                    severity="error"
+                ))
+        
+        # Validate session metrics if provided
+        if session_metrics:
+            active_sessions = session_metrics.get("active_sessions", 0)
+            session_duration_avg = session_metrics.get("avg_duration_minutes", 0)
+            session_timeout_rate = session_metrics.get("timeout_rate_percent", 0)
+            
+            # Check session consistency
+            if active_sessions != current_users:
+                max_session_discrepancy = rule.criteria.get("max_session_discrepancy", 5)
+                discrepancy = abs(active_sessions - current_users)
+                
+                if discrepancy > max_session_discrepancy:
+                    errors.append(PerformanceValidationError(
+                        metric_name="session_user_consistency",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="session_user_discrepancy",
+                        error_message=f"Session count ({active_sessions}) differs from user count ({current_users}) by {discrepancy}",
+                        actual_value=discrepancy,
+                        expected_value=f"<= {max_session_discrepancy}",
+                        severity="warning"
+                    ))
+            
+            # Check session duration
+            max_session_duration = rule.criteria.get("max_session_duration_minutes", 60)
+            if session_duration_avg > max_session_duration:
+                errors.append(PerformanceValidationError(
+                    metric_name="session_duration",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="long_session_duration",
+                    error_message=f"Average session duration {session_duration_avg:.2f} minutes exceeds threshold {max_session_duration}",
+                    actual_value=session_duration_avg,
+                    expected_value=f"<= {max_session_duration}",
+                    severity="warning"
+                ))
+            
+            # Check session timeout rate
+            max_timeout_rate = rule.criteria.get("max_session_timeout_rate", 5)  # percentage
+            if session_timeout_rate > max_timeout_rate:
+                errors.append(PerformanceValidationError(
+                    metric_name="session_timeout_rate",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_session_timeout_rate",
+                    error_message=f"Session timeout rate {session_timeout_rate:.2f}% exceeds threshold {max_timeout_rate}%",
+                    actual_value=session_timeout_rate,
+                    expected_value=f"<= {max_timeout_rate}%",
+                    severity="warning"
+                ))
+        
+        # Check for user capacity planning if configured
+        capacity_planning = user_metrics.get("capacity_planning", {})
+        if capacity_planning:
+            projected_growth = capacity_planning.get("projected_growth_percent", 0)
+            recommended_capacity = capacity_planning.get("recommended_capacity", 0)
+            
+            if recommended_capacity > 0 and max_capacity > 0:
+                if recommended_capacity > max_capacity:
+                    capacity_gap = recommended_capacity - max_capacity
+                    errors.append(PerformanceValidationError(
+                        metric_name="capacity_planning_gap",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="capacity_planning_gap",
+                        error_message=f"Recommended capacity {recommended_capacity} exceeds current capacity {max_capacity} by {capacity_gap}",
+                        actual_value=capacity_gap,
+                        expected_value=0,
+                        severity="warning"
+                    ))
+            
+            if projected_growth > 0:
+                max_projected_growth = rule.criteria.get("max_projected_growth_percent", 50)
+                if projected_growth > max_projected_growth:
+                    errors.append(PerformanceValidationError(
+                        metric_name="projected_growth",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_projected_growth",
+                        error_message=f"Projected user growth {projected_growth:.2f}% exceeds threshold {max_projected_growth}%",
+                        actual_value=projected_growth,
+                        expected_value=f"<= {max_projected_growth}%",
+                        severity="warning"
+                    ))
+        
+        return errors
     
     async def _validate_thread_safety(
         self, 
@@ -2923,8 +3431,276 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
         rule: PerformanceValidationRule
     ) -> List[PerformanceValidationError]:
         """Validate thread safety"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if metrics are provided
+        if not metrics:
+            errors.append(PerformanceValidationError(
+                metric_name="thread_safety",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_metrics_provided",
+                error_message="No metrics provided for thread safety validation",
+                actual_value=None,
+                expected_value="metrics dictionary",
+                severity="error"
+            ))
+            return errors
+        
+        # Get thread safety metrics
+        thread_metrics = metrics.get("thread_safety", {})
+        concurrent_threads = thread_metrics.get("concurrent_threads", 0)
+        thread_contentions = thread_metrics.get("contentions", 0)
+        deadlocks = thread_metrics.get("deadlocks", 0)
+        race_conditions = thread_metrics.get("race_conditions", 0)
+        lock_metrics = thread_metrics.get("locks", {})
+        thread_pool_metrics = thread_metrics.get("thread_pool", {})
+        
+        # Validate concurrent threads
+        max_concurrent_threads = rule.criteria.get("max_concurrent_threads", 100)
+        if concurrent_threads > max_concurrent_threads:
+            errors.append(PerformanceValidationError(
+                metric_name="concurrent_threads",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="excessive_concurrent_threads",
+                error_message=f"Concurrent threads {concurrent_threads} exceeds threshold {max_concurrent_threads}",
+                actual_value=concurrent_threads,
+                expected_value=f"<= {max_concurrent_threads}",
+                severity="warning"
+            ))
+        
+        # Validate thread contentions
+        max_contentions = rule.criteria.get("max_thread_contentions", 10)
+        if thread_contentions > max_contentions:
+            errors.append(PerformanceValidationError(
+                metric_name="thread_contentions",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="high_thread_contentions",
+                error_message=f"Thread contentions {thread_contentions} exceeds threshold {max_contentions}",
+                actual_value=thread_contentions,
+                expected_value=f"<= {max_contentions}",
+                severity="error"
+            ))
+        
+        # Validate deadlocks (should be zero)
+        if deadlocks > 0:
+            errors.append(PerformanceValidationError(
+                metric_name="deadlocks",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="deadlocks_detected",
+                error_message=f"Deadlocks detected: {deadlocks} occurrences",
+                actual_value=deadlocks,
+                expected_value=0,
+                severity="error"
+            ))
+        
+        # Validate race conditions (should be zero)
+        if race_conditions > 0:
+            errors.append(PerformanceValidationError(
+                metric_name="race_conditions",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="race_conditions_detected",
+                error_message=f"Race conditions detected: {race_conditions} occurrences",
+                actual_value=race_conditions,
+                expected_value=0,
+                severity="error"
+            ))
+        
+        # Validate lock metrics if provided
+        if lock_metrics:
+            lock_wait_time = lock_metrics.get("avg_wait_time_ms", 0)
+            lock_holders = lock_metrics.get("active_locks", 0)
+            lock_contentions = lock_metrics.get("contention_rate", 0)
+            
+            # Check lock wait time
+            max_lock_wait_time = rule.criteria.get("max_lock_wait_time_ms", 10)
+            if lock_wait_time > max_lock_wait_time:
+                errors.append(PerformanceValidationError(
+                    metric_name="lock_wait_time",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_lock_wait_time",
+                    error_message=f"Average lock wait time {lock_wait_time:.2f}ms exceeds threshold {max_lock_wait_time}ms",
+                    actual_value=lock_wait_time,
+                    expected_value=f"<= {max_lock_wait_time}ms",
+                    severity="warning"
+                ))
+            
+            # Check number of active locks
+            max_active_locks = rule.criteria.get("max_active_locks", 50)
+            if lock_holders > max_active_locks:
+                errors.append(PerformanceValidationError(
+                    metric_name="active_locks",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="excessive_active_locks",
+                    error_message=f"Active locks {lock_holders} exceeds threshold {max_active_locks}",
+                    actual_value=lock_holders,
+                    expected_value=f"<= {max_active_locks}",
+                    severity="warning"
+                ))
+            
+            # Check lock contention rate
+            max_contention_rate = rule.criteria.get("max_lock_contention_rate", 0.1)  # 10%
+            if lock_contentions > max_contention_rate:
+                errors.append(PerformanceValidationError(
+                    metric_name="lock_contention_rate",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="high_lock_contention_rate",
+                    error_message=f"Lock contention rate {lock_contentions:.2f} exceeds threshold {max_contention_rate}",
+                    actual_value=lock_contentions,
+                    expected_value=f"<= {max_contention_rate}",
+                    severity="warning"
+                ))
+        
+        # Validate thread pool metrics if provided
+        if thread_pool_metrics:
+            pool_size = thread_pool_metrics.get("pool_size", 0)
+            active_threads = thread_pool_metrics.get("active_threads", 0)
+            queue_size = thread_pool_metrics.get("queue_size", 0)
+            rejected_tasks = thread_pool_metrics.get("rejected_tasks", 0)
+            
+            # Check thread pool utilization
+            if pool_size > 0:
+                utilization = (active_threads / pool_size) * 100
+                max_pool_utilization = rule.criteria.get("max_thread_pool_utilization", 80)  # percentage
+                
+                if utilization > max_pool_utilization:
+                    errors.append(PerformanceValidationError(
+                        metric_name="thread_pool_utilization",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="high_thread_pool_utilization",
+                        error_message=f"Thread pool utilization {utilization:.2f}% exceeds threshold {max_pool_utilization}%",
+                        actual_value=utilization,
+                        expected_value=f"<= {max_pool_utilization}%",
+                        severity="warning"
+                    ))
+            
+            # Check queue size
+            max_queue_size = rule.criteria.get("max_thread_pool_queue_size", 100)
+            if queue_size > max_queue_size:
+                errors.append(PerformanceValidationError(
+                    metric_name="thread_pool_queue_size",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="large_thread_pool_queue",
+                    error_message=f"Thread pool queue size {queue_size} exceeds threshold {max_queue_size}",
+                    actual_value=queue_size,
+                    expected_value=f"<= {max_queue_size}",
+                    severity="warning"
+                ))
+            
+            # Check rejected tasks (should be zero or minimal)
+            max_rejected_tasks = rule.criteria.get("max_rejected_tasks", 5)
+            if rejected_tasks > max_rejected_tasks:
+                errors.append(PerformanceValidationError(
+                    metric_name="rejected_tasks",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="excessive_rejected_tasks",
+                    error_message=f"Rejected tasks {rejected_tasks} exceeds threshold {max_rejected_tasks}",
+                    actual_value=rejected_tasks,
+                    expected_value=f"<= {max_rejected_tasks}",
+                    severity="error"
+                ))
+        
+        # Check for thread safety violations history if provided
+        violations_history = thread_metrics.get("violations_history", [])
+        if violations_history:
+            # Count recent violations
+            recent_violations = [v for v in violations_history 
+                               if self._is_recent_violation(v, hours=24)]
+            
+            max_violations_per_day = rule.criteria.get("max_violations_per_day", 5)
+            if len(recent_violations) > max_violations_per_day:
+                errors.append(PerformanceValidationError(
+                    metric_name="thread_safety_violations",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="excessive_thread_safety_violations",
+                    error_message=f"Thread safety violations in last 24 hours: {len(recent_violations)} (threshold: {max_violations_per_day})",
+                    actual_value=len(recent_violations),
+                    expected_value=f"<= {max_violations_per_day}",
+                    severity="error"
+                ))
+            
+            # Check violation types
+            violation_types = {}
+            for violation in recent_violations:
+                vtype = violation.get("type", "unknown")
+                violation_types[vtype] = violation_types.get(vtype, 0) + 1
+            
+            critical_types = ["deadlock", "race_condition", "data_corruption"]
+            for vtype in critical_types:
+                if vtype in violation_types:
+                    errors.append(PerformanceValidationError(
+                        metric_name=f"critical_violation_{vtype}",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="critical_thread_safety_violation",
+                        error_message=f"Critical thread safety violation detected: {vtype} ({violation_types[vtype]} occurrences)",
+                        actual_value=violation_types[vtype],
+                        expected_value=0,
+                        severity="error"
+                    ))
+        
+        # Validate thread safety testing coverage if provided
+        testing_metrics = thread_metrics.get("testing", {})
+        if testing_metrics:
+            coverage_percentage = testing_metrics.get("coverage_percentage", 0)
+            concurrent_tests = testing_metrics.get("concurrent_tests", 0)
+            
+            # Check test coverage
+            min_coverage = rule.criteria.get("min_thread_safety_coverage", 80)  # percentage
+            if coverage_percentage < min_coverage:
+                errors.append(PerformanceValidationError(
+                    metric_name="thread_safety_test_coverage",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_thread_safety_coverage",
+                    error_message=f"Thread safety test coverage {coverage_percentage:.2f}% below minimum {min_coverage}%",
+                    actual_value=coverage_percentage,
+                    expected_value=f">= {min_coverage}%",
+                    severity="warning"
+                ))
+            
+            # Check concurrent test count
+            min_concurrent_tests = rule.criteria.get("min_concurrent_tests", 10)
+            if concurrent_tests < min_concurrent_tests:
+                errors.append(PerformanceValidationError(
+                    metric_name="concurrent_thread_tests",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_concurrent_tests",
+                    error_message=f"Concurrent thread tests {concurrent_tests} below minimum {min_concurrent_tests}",
+                    actual_value=concurrent_tests,
+                    expected_value=f">= {min_concurrent_tests}",
+                    severity="warning"
+                ))
+        
+        return errors
+    
+    def _is_recent_violation(self, violation: Dict[str, Any], hours: int = 24) -> bool:
+        """Helper method to check if a violation is recent"""
+        try:
+            from datetime import datetime, timedelta
+            violation_time = violation.get("timestamp")
+            if isinstance(violation_time, str):
+                violation_time = datetime.fromisoformat(violation_time.replace('Z', '+00:00'))
+            elif isinstance(violation_time, (int, float)):
+                violation_time = datetime.fromtimestamp(violation_time)
+            else:
+                return False
+            
+            return datetime.now(violation_time.tzinfo) - violation_time < timedelta(hours=hours)
+        except (ValueError, TypeError, AttributeError):
+            return False
     
     async def _validate_deadlock_prevention(
         self, 
@@ -2932,8 +3708,350 @@ class LayerPerformanceValidator(LayerPerformanceValidatorInterface):
         rule: PerformanceValidationRule
     ) -> List[PerformanceValidationError]:
         """Validate deadlock prevention"""
-        # Simplified implementation
-        return []
+        errors = []
+        
+        # Check if metrics are provided
+        if not metrics:
+            errors.append(PerformanceValidationError(
+                metric_name="deadlock_prevention",
+                rule_id=rule.rule_id,
+                validation_type=rule.validation_type,
+                error_category="no_metrics_provided",
+                error_message="No metrics provided for deadlock prevention validation",
+                actual_value=None,
+                expected_value="metrics dictionary",
+                severity="error"
+            ))
+            return errors
+        
+        # Get deadlock prevention metrics
+        deadlock_metrics = metrics.get("deadlock_prevention", {})
+        deadlock_detection = deadlock_metrics.get("detection", {})
+        prevention_mechanisms = deadlock_metrics.get("prevention_mechanisms", {})
+        lock_ordering = deadlock_metrics.get("lock_ordering", {})
+        timeout_config = deadlock_metrics.get("timeouts", {})
+        monitoring = deadlock_metrics.get("monitoring", {})
+        
+        # Validate deadlock detection configuration
+        if deadlock_detection:
+            detection_enabled = deadlock_detection.get("enabled", False)
+            detection_interval = deadlock_detection.get("interval_seconds", 0)
+            
+            if not detection_enabled:
+                errors.append(PerformanceValidationError(
+                    metric_name="deadlock_detection_enabled",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="deadlock_detection_disabled",
+                    error_message="Deadlock detection is disabled",
+                    actual_value=detection_enabled,
+                    expected_value=True,
+                    severity="warning"
+                ))
+            
+            if detection_enabled and detection_interval == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="deadlock_detection_interval",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="invalid_detection_interval",
+                    error_message="Deadlock detection interval not configured",
+                    actual_value=detection_interval,
+                    expected_value="> 0",
+                    severity="error"
+                ))
+            
+            # Check detection interval is reasonable
+            max_detection_interval = rule.criteria.get("max_deadlock_detection_interval", 60)  # seconds
+            if detection_interval > max_detection_interval:
+                errors.append(PerformanceValidationError(
+                    metric_name="deadlock_detection_interval",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="excessive_detection_interval",
+                    error_message=f"Deadlock detection interval {detection_interval}s exceeds threshold {max_detection_interval}s",
+                    actual_value=detection_interval,
+                    expected_value=f"<= {max_detection_interval}s",
+                    severity="warning"
+                ))
+        
+        # Validate prevention mechanisms
+        if prevention_mechanisms:
+            mechanisms_enabled = prevention_mechanisms.get("enabled_mechanisms", [])
+            required_mechanisms = rule.criteria.get("required_prevention_mechanisms", ["lock_timeout", "lock_ordering"])
+            
+            missing_mechanisms = [m for m in required_mechanisms if m not in mechanisms_enabled]
+            if missing_mechanisms:
+                errors.append(PerformanceValidationError(
+                    metric_name="prevention_mechanisms",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_prevention_mechanisms",
+                    error_message=f"Missing required deadlock prevention mechanisms: {', '.join(missing_mechanisms)}",
+                    actual_value=mechanisms_enabled,
+                    expected_value=required_mechanisms,
+                    severity="error"
+                ))
+            
+            # Check if sufficient mechanisms are enabled
+            min_mechanisms = rule.criteria.get("min_prevention_mechanisms", 2)
+            if len(mechanisms_enabled) < min_mechanisms:
+                errors.append(PerformanceValidationError(
+                    metric_name="prevention_mechanisms_count",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_prevention_mechanisms",
+                    error_message=f"Insufficient deadlock prevention mechanisms: {len(mechanisms_enabled)} (minimum: {min_mechanisms})",
+                    actual_value=len(mechanisms_enabled),
+                    expected_value=f">= {min_mechanisms}",
+                    severity="warning"
+                ))
+        
+        # Validate lock ordering configuration
+        if lock_ordering:
+            ordering_enabled = lock_ordering.get("enabled", False)
+            lock_hierarchy = lock_ordering.get("hierarchy", {})
+            
+            if not ordering_enabled:
+                errors.append(PerformanceValidationError(
+                    metric_name="lock_ordering_enabled",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="lock_ordering_disabled",
+                    error_message="Lock ordering is disabled (important for deadlock prevention)",
+                    actual_value=ordering_enabled,
+                    expected_value=True,
+                    severity="warning"
+                ))
+            
+            if ordering_enabled and not lock_hierarchy:
+                errors.append(PerformanceValidationError(
+                    metric_name="lock_hierarchy",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="missing_lock_hierarchy",
+                    error_message="Lock ordering enabled but no lock hierarchy defined",
+                    actual_value=lock_hierarchy,
+                    expected_value="non-empty hierarchy",
+                    severity="error"
+                ))
+            
+            # Check for circular dependencies in lock hierarchy
+            if lock_hierarchy:
+                has_circular_deps = self._check_circular_dependencies(lock_hierarchy)
+                if has_circular_deps:
+                    errors.append(PerformanceValidationError(
+                        metric_name="lock_hierarchy_circular_deps",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="circular_lock_dependencies",
+                        error_message="Circular dependencies detected in lock hierarchy",
+                        actual_value="circular dependencies present",
+                        expected_value="no circular dependencies",
+                        severity="error"
+                    ))
+        
+        # Validate timeout configuration
+        if timeout_config:
+            lock_timeout = timeout_config.get("lock_timeout_ms", 0)
+            transaction_timeout = timeout_config.get("transaction_timeout_ms", 0)
+            
+            # Check lock timeout
+            if lock_timeout == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="lock_timeout",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="no_lock_timeout",
+                    error_message="Lock timeout not configured (essential for deadlock prevention)",
+                    actual_value=lock_timeout,
+                    expected_value="> 0",
+                    severity="error"
+                ))
+            else:
+                max_lock_timeout = rule.criteria.get("max_lock_timeout_ms", 30000)  # 30 seconds
+                if lock_timeout > max_lock_timeout:
+                    errors.append(PerformanceValidationError(
+                        metric_name="lock_timeout",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="excessive_lock_timeout",
+                        error_message=f"Lock timeout {lock_timeout}ms exceeds threshold {max_lock_timeout}ms",
+                        actual_value=lock_timeout,
+                        expected_value=f"<= {max_lock_timeout}ms",
+                        severity="warning"
+                    ))
+            
+            # Check transaction timeout
+            if transaction_timeout == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="transaction_timeout",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="no_transaction_timeout",
+                    error_message="Transaction timeout not configured",
+                    actual_value=transaction_timeout,
+                    expected_value="> 0",
+                    severity="warning"
+                ))
+            
+            # Check timeout relationship
+            if lock_timeout > 0 and transaction_timeout > 0:
+                if transaction_timeout <= lock_timeout:
+                    errors.append(PerformanceValidationError(
+                        metric_name="timeout_relationship",
+                        rule_id=rule.rule_id,
+                        validation_type=rule.validation_type,
+                        error_category="invalid_timeout_relationship",
+                        error_message=f"Transaction timeout ({transaction_timeout}ms) should be greater than lock timeout ({lock_timeout}ms)",
+                        actual_value=f"transaction: {transaction_timeout}ms, lock: {lock_timeout}ms",
+                        expected_value="transaction_timeout > lock_timeout",
+                        severity="error"
+                    ))
+        
+        # Validate monitoring configuration
+        if monitoring:
+            monitoring_enabled = monitoring.get("enabled", False)
+            alert_threshold = monitoring.get("deadlock_alert_threshold", 0)
+            monitoring_interval = monitoring.get("monitoring_interval_seconds", 0)
+            
+            if not monitoring_enabled:
+                errors.append(PerformanceValidationError(
+                    metric_name="deadlock_monitoring_enabled",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="deadlock_monitoring_disabled",
+                    error_message="Deadlock monitoring is disabled",
+                    actual_value=monitoring_enabled,
+                    expected_value=True,
+                    severity="warning"
+                ))
+            
+            if monitoring_enabled and alert_threshold == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="deadlock_alert_threshold",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="no_alert_threshold",
+                    error_message="Deadlock alert threshold not configured",
+                    actual_value=alert_threshold,
+                    expected_value="> 0",
+                    severity="warning"
+                ))
+            
+            if monitoring_enabled and monitoring_interval == 0:
+                errors.append(PerformanceValidationError(
+                    metric_name="deadlock_monitoring_interval",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="no_monitoring_interval",
+                    error_message="Deadlock monitoring interval not configured",
+                    actual_value=monitoring_interval,
+                    expected_value="> 0",
+                    severity="warning"
+                ))
+        
+        # Check for recent deadlocks if history is provided
+        deadlock_history = deadlock_metrics.get("deadlock_history", [])
+        if deadlock_history:
+            recent_deadlocks = [d for d in deadlock_history 
+                              if self._is_recent_deadlock(d, hours=24)]
+            
+            max_deadlocks_per_day = rule.criteria.get("max_deadlocks_per_day", 0)  # Should be zero
+            if len(recent_deadlocks) > max_deadlocks_per_day:
+                errors.append(PerformanceValidationError(
+                    metric_name="recent_deadlocks",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="recent_deadlocks_detected",
+                    error_message=f"Deadlocks detected in last 24 hours: {len(recent_deadlocks)} (should be zero)",
+                    actual_value=len(recent_deadlocks),
+                    expected_value=0,
+                    severity="error"
+                ))
+        
+        # Validate deadlock testing if provided
+        testing_metrics = deadlock_metrics.get("testing", {})
+        if testing_metrics:
+            deadlock_tests = testing_metrics.get("deadlock_tests", 0)
+            concurrency_tests = testing_metrics.get("concurrency_tests", 0)
+            
+            # Check deadlock test coverage
+            min_deadlock_tests = rule.criteria.get("min_deadlock_tests", 5)
+            if deadlock_tests < min_deadlock_tests:
+                errors.append(PerformanceValidationError(
+                    metric_name="deadlock_test_coverage",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_deadlock_tests",
+                    error_message=f"Deadlock tests {deadlock_tests} below minimum {min_deadlock_tests}",
+                    actual_value=deadlock_tests,
+                    expected_value=f">= {min_deadlock_tests}",
+                    severity="warning"
+                ))
+            
+            # Check concurrency test coverage
+            min_concurrency_tests = rule.criteria.get("min_concurrency_tests", 10)
+            if concurrency_tests < min_concurrency_tests:
+                errors.append(PerformanceValidationError(
+                    metric_name="concurrency_test_coverage",
+                    rule_id=rule.rule_id,
+                    validation_type=rule.validation_type,
+                    error_category="insufficient_concurrency_tests",
+                    error_message=f"Concurrency tests {concurrency_tests} below minimum {min_concurrency_tests}",
+                    actual_value=concurrency_tests,
+                    expected_value=f">= {min_concurrency_tests}",
+                    severity="warning"
+                ))
+        
+        return errors
+    
+    def _check_circular_dependencies(self, lock_hierarchy: Dict[str, Any]) -> bool:
+        """Helper method to check for circular dependencies in lock hierarchy"""
+        try:
+            visited = set()
+            recursion_stack = set()
+            
+            def has_cycle(lock_name: str) -> bool:
+                if lock_name in recursion_stack:
+                    return True
+                if lock_name in visited:
+                    return False
+                
+                visited.add(lock_name)
+                recursion_stack.add(lock_name)
+                
+                dependencies = lock_hierarchy.get(lock_name, [])
+                for dep in dependencies:
+                    if has_cycle(dep):
+                        return True
+                
+                recursion_stack.remove(lock_name)
+                return False
+            
+            for lock_name in lock_hierarchy:
+                if has_cycle(lock_name):
+                    return True
+            
+            return False
+        except (TypeError, AttributeError):
+            return True  # Assume circular dependency if structure is invalid
+    
+    def _is_recent_deadlock(self, deadlock: Dict[str, Any], hours: int = 24) -> bool:
+        """Helper method to check if a deadlock is recent"""
+        try:
+            from datetime import datetime, timedelta
+            deadlock_time = deadlock.get("timestamp")
+            if isinstance(deadlock_time, str):
+                deadlock_time = datetime.fromisoformat(deadlock_time.replace('Z', '+00:00'))
+            elif isinstance(deadlock_time, (int, float)):
+                deadlock_time = datetime.fromtimestamp(deadlock_time)
+            else:
+                return False
+            
+            return datetime.now(deadlock_time.tzinfo) - deadlock_time < timedelta(hours=hours)
+        except (ValueError, TypeError, AttributeError):
+            return False
     
     def _calculate_performance_score(self, errors: List[PerformanceValidationError]) -> float:
         """Calculate performance score based on validation errors"""
