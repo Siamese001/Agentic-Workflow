@@ -1,169 +1,274 @@
 #!/usr/bin/env python3
 """
-Mem-Layer Retrieve-Phase Component: query_core_state
-L5 Agentic Architecture - Get-Core-Info Implementation
+Enhanced Mem-Layer Component: query_core_state
+L5 Agentic Architecture - Memory Management with Persistence
 """
 
-from typing import Dict, List, Optional, Any, Union
-from dataclasses import dataclass
-from abc import ABC
+from typing import Dict, List, Optional, Any, Union, Protocol
+from dataclasses import dataclass, field
+from abc import ABC, abstractmethod
 import asyncio
 import logging
-from enum import Enum
+import json
+import pickle
+import sqlite3
+from pathlib import Path
+from datetime import datetime, timedelta
+import uuid
 
 logger = logging.getLogger(__name__)
 
-class OperationType(Enum):
-    """Operation types for query_core_state"""
-    DEFAULT = "default"
-    CUSTOM = "custom"
+@dataclass
+class MemoryContext:
+    """Enhanced context for memory operations"""
+    operation_type: str
+    data: Dict[str, Any]
+    session_id: str = field(default_factory=lambda: str(uuid.uuid4()))
+    persist: bool = True
+    timestamp: datetime = field(default_factory=datetime.now)
 
 @dataclass
-class OperationContext:
-    """Context for query_core_state operations"""
-    operation_type: OperationType
-    parameters: Dict[str, Any]
-    constraints: List[str]
-    session_id: str
-    metadata: Dict[str, Any]
+class MemoryResult:
+    """Enhanced result of memory operations"""
+    success: bool
+    data: Dict[str, Any]
+    persisted: bool
+    memory_id: str
+    timestamp: datetime = field(default_factory=datetime.now)
 
-class QueryCoreState:
-    """
-    Robust L5 implementation for query_core_state.
-    
-    This component handles get-core-info operations in the mem-layer
-    with proper validation, optimization, and error handling
-    following L5 agentic architecture patterns.
-    """
+class MemoryInterface(Protocol):
+    """Protocol for memory components"""
+    async def store(self, context: MemoryContext) -> MemoryResult: ...
+    async def retrieve(self, memory_id: str) -> Optional[MemoryResult]: ...
+    async def persist_state(self, state: Dict[str, Any]) -> bool: ...
+
+class BaseMemoryManager(ABC):
+    """Abstract base class for memory managers"""
     
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         self.config = config or {}
-        self.operation_registry: Dict[str, callable] = {}
-        self._setup_operations()
+        self.storage_path = Path(self.config.get("storage_path", "./memory_storage"))
+        self.storage_path.mkdir(exist_ok=True)
+        self.db_path = self.storage_path / "memory.db"
+        self._setup_database()
     
-    def _setup_operations(self):
-        """Setup operation handlers"""
-        self.operation_registry = {
-            "validate": self._validate_operation,
-            "execute": self._execute_operation,
-            "optimize": self._optimize_operation,
-            "monitor": self._monitor_operation
-        }
+    @abstractmethod
+    async def _store_data(self, context: MemoryContext) -> MemoryResult:
+        """Store data in memory system"""
+        pass
     
-    async def execute(self, context: OperationContext) -> Dict[str, Any]:
-        """
-        Execute the primary operation for query_core_state.
-        
-        This is the core implementation that handles the specific
-        functionality for this component in the L5 architecture.
-        """
-        # Core operation logic
-        return {
-            "operation": context.operation_type.value,
-            "status": "completed",
-            "result": "Operation executed successfully",
-            "parameters": context.parameters
-        }
+    @abstractmethod
+    async def _retrieve_data(self, memory_id: str) -> Optional[MemoryResult]:
+        """Retrieve data from memory system"""
+        pass
     
-    async def process(self, context: OperationContext) -> Dict[str, Any]:
-        """
-        Process operation with full L5 lifecycle.
-        
-        Args:
-            context: Operation context with parameters and constraints
-            
-        Returns:
-            Processing result with metadata and recommendations
-        """
+    def _setup_database(self):
+        """Setup SQLite database for persistence"""
+        conn = sqlite3.connect(self.db_path)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS memory_store (
+                id TEXT PRIMARY KEY,
+                data TEXT,
+                timestamp TEXT,
+                session_id TEXT,
+                operation_type TEXT
+            )
+        """)
+        conn.commit()
+        conn.close()
+    
+    async def persist_state(self, state: Dict[str, Any]) -> bool:
+        """Enhanced state persistence"""
         try:
-            # Validate operation
-            if not await self._validate_operation(context):
-                raise ValidationError(f"Operation validation failed for {context.operation_type}")
+            conn = sqlite3.connect(self.db_path)
+            state_id = str(uuid.uuid4())
+            conn.execute(
+                'INSERT INTO memory_store (id, data, timestamp, session_id, operation_type) VALUES (?, ?, ?, ?, ?)',
+                (state_id, json.dumps(state), datetime.now().isoformat(), "system", "state_persistence")
+            )
+            conn.commit()
+            conn.close()
+            logger.info(f"State persisted with ID: {state_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Failed to persist state: {e}")
+            return False
+    
+    async def store(self, context: MemoryContext) -> MemoryResult:
+        """Enhanced store operation with persistence"""
+        try:
+            result = await self._store_data(context)
             
-            # Execute primary operation
-            result = await self.execute(context)
+            if context.persist:
+                # Persist to database
+                persist_success = await self._persist_to_database(context, result)
+                result.persisted = persist_success
             
-            # Optimize result
-            optimized_result = await self._optimize_operation(result, context)
-            
-            # Monitor and log
-            await self._monitor_operation(optimized_result, context)
-            
-            # Add L5 metadata
-            final_result = {
-                **optimized_result,
-                "l5_metadata": {
-                    "component": "query_core_state",
-                    "layer": "mem-layer",
-                    "phase": "retrieve-phase",
-                    "function_group": "get-core-info",
-                    "function_type": "understand-request",
-                    "timestamp": asyncio.get_event_loop().time(),
-                    "version": "1.0.0"
-                }
-            }
-            
-            logger.info(f"Successfully processed {context.operation_type} operation")
-            return final_result
+            logger.info(f"Enhanced memory store completed for query_core_state")
+            return result
             
         except Exception as e:
-            logger.error(f"Operation processing failed: {e}")
-            raise OperationError(f"Failed to process operation: {e}") from e
+            logger.error(f"Enhanced memory store failed: {e}")
+            raise MemoryError(f"Failed to store memory: {e}") from e
     
-    async def _validate_operation(self, context: OperationContext) -> bool:
-        """Validate operation context and parameters"""
-        if not context.parameters:
+    async def retrieve(self, memory_id: str) -> Optional[MemoryResult]:
+        """Enhanced retrieve operation"""
+        try:
+            result = await self._retrieve_data(memory_id)
+            if result:
+                logger.info(f"Enhanced memory retrieve completed for query_core_state")
+            return result
+            
+        except Exception as e:
+            logger.error(f"Enhanced memory retrieve failed: {e}")
+            raise MemoryError(f"Failed to retrieve memory: {e}") from e
+    
+    async def _persist_to_database(self, context: MemoryContext, result: MemoryResult) -> bool:
+        """Persist memory operation to database"""
+        try:
+            conn = sqlite3.connect(self.db_path)
+            conn.execute(
+                'INSERT INTO memory_store (id, data, timestamp, session_id, operation_type) VALUES (?, ?, ?, ?, ?)',
+                (result.memory_id, json.dumps(context.data), context.timestamp.isoformat(), context.session_id, context.operation_type)
+            )
+            conn.commit()
+            conn.close()
+            return True
+        except Exception as e:
+            logger.error(f"Database persistence failed: {e}")
             return False
-        if not context.session_id:
-            return False
-        return True
-    
-    async def _execute_operation(self, context: OperationContext) -> Dict[str, Any]:
-        """Execute operation with validation"""
-        return await self.execute(context)
-    
-    async def _optimize_operation(self, result: Dict[str, Any], context: OperationContext) -> Dict[str, Any]:
-        """Optimize operation result"""
-        optimized = result.copy()
-        optimized["optimized"] = True
-        return optimized
-    
-    async def _monitor_operation(self, result: Dict[str, Any], context: OperationContext):
-        """Monitor operation execution"""
-        logger.debug(f"Monitoring operation: {context.operation_type}")
 
-class OperationError(Exception):
-    """Raised when operation processing fails"""
+class QueryCoreState(BaseMemoryManager):
+    """
+    Enhanced Mem-Layer implementation for query_core_state.
+    
+    This component provides comprehensive memory management with full
+    persistence, database integration, and enhanced data handling.
+    """
+    
+    async def _store_data(self, context: MemoryContext) -> MemoryResult:
+        """Enhanced data storage for query_core_state"""
+        memory_id = str(uuid.uuid4())
+        
+        # Store in memory cache
+        if not hasattr(self, '_memory_cache'):
+            self._memory_cache = {}
+        
+        self._memory_cache[memory_id] = {
+            "data": context.data,
+            "timestamp": context.timestamp,
+            "session_id": context.session_id
+        }
+        
+        return MemoryResult(
+            success=True,
+            data={"stored": True, "memory_id": memory_id},
+            persisted=False,  # Will be set by parent method
+            memory_id=memory_id
+        )
+    
+    async def _retrieve_data(self, memory_id: str) -> Optional[MemoryResult]:
+        """Enhanced data retrieval for query_core_state"""
+        if not hasattr(self, '_memory_cache'):
+            return None
+        
+        cached_data = self._memory_cache.get(memory_id)
+        if cached_data:
+            return MemoryResult(
+                success=True,
+                data=cached_data["data"],
+                persisted=True,
+                memory_id=memory_id,
+                timestamp=cached_data["timestamp"]
+            )
+        
+        # Try database retrieval
+        try:
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.execute('SELECT data, timestamp FROM memory_store WHERE id = ?', (memory_id,))
+            row = cursor.fetchone()
+            conn.close()
+            
+            if row:
+                data = json.loads(row[0])
+                timestamp = datetime.fromisoformat(row[1])
+                return MemoryResult(
+                    success=True,
+                    data=data,
+                    persisted=True,
+                    memory_id=memory_id,
+                    timestamp=timestamp
+                )
+        except Exception as e:
+            logger.error(f"Database retrieval failed: {e}")
+        
+        return None
+
+class MemoryError(Exception):
+    """Enhanced error for memory operations"""
     pass
 
-class ValidationError(Exception):
-    """Raised when validation fails"""
-    pass
-
-# Factory function for easy instantiation
+# Factory function
 def create_query_core_state(config: Optional[Dict[str, Any]] = None) -> QueryCoreState:
-    """Factory function for query_core_state creation"""
+    """Enhanced factory function for query_core_state creation"""
     return QueryCoreState(config)
+
+# Test function for validation
+async def test_query_core_state():
+    """Test function for query_core_state validation"""
+    component = create_query_core_state()
+    context = MemoryContext(
+        operation_type="test",
+        data={"test": "value"},
+        persist=True
+    )
+    result = await component.store(context)
+    assert result.success
+    assert result.persisted
+    
+    # Test retrieval
+    retrieved = await component.retrieve(result.memory_id)
+    assert retrieved is not None
+    assert retrieved.success
+    
+    # Test state persistence
+    state_result = await component.persist_state({"test_state": "value"})
+    assert state_result
+    
+    return True
 
 # Main execution function
 async def main():
-    """Main execution function for query_core_state"""
+    """Enhanced main execution function for query_core_state"""
     component = create_query_core_state()
     
-    # Example usage
-    context = OperationContext(
-        operation_type=OperationType.DEFAULT,
-        parameters={"param1": "value1"},
-        constraints=["constraint1"],
-        session_id="example_session",
-        metadata={"source": "example"}
+    context = MemoryContext(
+        operation_type="enhanced_test",
+        data={"filename": "query_core_state", "enhanced": True, "persistence": "enabled"},
+        persist=True,
+        metadata={"source": "enhanced_mem_layer", "version": "2.0"}
     )
     
     try:
-        result = await component.process(context)
-        print(f"Operation result: {result}")
+        # Test storage
+        result = await component.store(context)
+        print(f"Enhanced memory store result: {result}")
+        
+        # Test retrieval
+        retrieved = await component.retrieve(result.memory_id)
+        print(f"Enhanced memory retrieve result: {retrieved}")
+        
+        # Test state persistence
+        state_result = await component.persist_state({"test": "enhanced_memory_state"})
+        print(f"State persistence result: {state_result}")
+        
+        # Run validation test
+        test_result = await test_query_core_state()
+        print(f"Test result: {test_result}")
+        
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Enhanced memory error: {e}")
+        logger.error(f"Enhanced memory failed: {e}")
 
 if __name__ == "__main__":
     asyncio.run(main())
