@@ -7,16 +7,14 @@ Phase 3: File placement and import fixing
 Phase 4: Cleanup and validation
 """
 
-import yaml
-import json
 import os
+import json
 import re
 import subprocess
+import yaml
 from pathlib import Path
-from typing import Dict, List, Tuple, Set, Optional
 from dataclasses import dataclass, asdict
-import hashlib
-from collections import defaultdict
+from typing import List, Dict, Optional
 
 @dataclass
 class FileInfo:
@@ -110,9 +108,12 @@ class ReconstructionEngine:
                 
                 # Extract tokens from all levels
                 all_tokens = []
-                if l4: all_tokens.extend(self.tokenize_path(l4))
-                if l5: all_tokens.extend(self.tokenize_path(l5))
-                if l6: all_tokens.extend(self.tokenize_path(l6))
+                if l4:
+                    all_tokens.extend(self.tokenize_path(l4))
+                if l5:
+                    all_tokens.extend(self.tokenize_path(l5))
+                if l6:
+                    all_tokens.extend(self.tokenize_path(l6))
                 all_tokens.extend(self.tokenize_path(actual_filename))
                 
                 file_info = FileInfo(
@@ -365,9 +366,9 @@ class ReconstructionEngine:
                 unmatched_files.append(yaml_path)
                 print(f"❌ No match found for {target_file.l7_file}")
         
-        print(f"\n📊 Matching Results:")
+        print("\n📊 Matching Results:")
         print(f"   Matched: {matched_count}/{len(self.target_files)} ({matched_count/len(self.target_files)*100:.1f}%)")
-        print(f"   Unmatched: {len(unmatched_files)}")
+        print(f"   Unmatched: {len(self.target_files) - matched_count}")
         
         # Save matching results
         matches_path = self.agentic_workflow_path / "matching_results.json"
@@ -499,7 +500,7 @@ class ReconstructionEngine:
                 failed_copies.append((yaml_path, str(e)))
                 print(f"❌ Failed to copy {yaml_path}: {e}")
         
-        print(f"\n📊 File Copy Results:")
+        print("\n📊 File Copy Results:")
         print(f"   Successfully copied: {files_copied}")
         print(f"   Failed copies: {len(failed_copies)}")
         
@@ -569,7 +570,7 @@ class ReconstructionEngine:
                 additional_matches += 1
                 print(f"✅ Additional match: {target_file.l7_file} -> {best_match.path} ({best_match.source_type}) - score: {best_score:.2f}")
         
-        print(f"\n📊 Additional matching results:")
+        print("\n📊 Additional matching results:")
         print(f"   Additional matches found: {additional_matches}")
         print(f"   Total matches now: {len(self.matches)}/{len(self.target_files)} ({len(self.matches)/len(self.target_files)*100:.1f}%)")
         
@@ -806,12 +807,12 @@ if __name__ == "__main__":
             # Run Phase 4
             if engine.run_phase4():
                 print("\n✅ Phase 4 completed successfully")
-                print(f"\n🎉 COMPLETE RECONSTRUCTION SUCCESSFUL!")
+                print("\n🎉 COMPLETE RECONSTRUCTION SUCCESSFUL!")
                 print(f"📊 Final Results:")
                 print(f"   Target files: {len(engine.target_files)}")
                 print(f"   Matched files: {len(engine.matches)} ({len(engine.matches)/len(engine.target_files)*100:.1f}%)")
                 print(f"   Unmatched files: {len(engine.target_files) - len(engine.matches)}")
-                print(f"   ✅ All phases completed - Ready for validation!")
+                print("   ✅ All phases completed - Ready for validation!")
             else:
                 print("\n❌ Phase 4 failed")
         else:
