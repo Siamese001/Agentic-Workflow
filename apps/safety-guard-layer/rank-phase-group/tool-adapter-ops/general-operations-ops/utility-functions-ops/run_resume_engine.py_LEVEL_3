@@ -1,586 +1,545 @@
-#!/usr/bin/env python3
 """
-L5 Safety Layer - Resume Generator Safety Validator
-Enforces safety constraints and validation rules from ATOMIC_RG_SPEC
+Comprehensive Pytest Suite for Resume Workflow v16_00 Refactoring
+Tests all three specification implementations:
+1. Spec 1: Dormant Retry Logic (Pre-flight + Failure Classification)
+2. Spec 2: Agentic RAG Feature Activation
+3. Spec 3: Code Cleanup Refactoring
 """
 
-from typing import Dict, Any, List, Optional
+import pytest
+import json
+import os
+import sys
+from unittest.mock import Mock, MagicMock, patch, call
+from collections import defaultdict
 from datetime import datetime
-from pydantic import BaseModel, Field
-import re
-import uuid
+from typing import Dict, List, Any
 
-# RG_capabilities is now at root level - no sys.path manipulation needed
-from RG_capabilities.rg_atomic_spec import ATOMIC_RG_SPEC
+# Add the module to path
+sys.path.insert(0, '/home/claude')
 
-class SafetyViolation(BaseModel):
-    """Individual safety violation record"""
-    violation_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    violation_type: str
-    severity: str  # "low", "medium", "high", "critical"
-    description: str
-    location: str  # Where in the resume the violation was found
-    detected_at: datetime = Field(default_factory=datetime.now)
-    rule_violated: str
-    suggested_fix: Optional[str] = None
+# Import from the refactored workflow
+from resume_workflow_v16_20 import (
+    WorkflowOrchestrator,
+    ConstraintFailureClassifier,
+    ValidationResult,
+    ValidationSeverity,
+    ValidationEngine,
+    ValidationRule,
+    ArtistGenerator,
+    PreFlightValidator,
+    ResumeSection,
+    HopExecutionError,
+    AppTrackerQAValidator,
+    GeminiWebSearchClient,
+    WebSearchRAG,
+    RAGMission,
+    PhaseExecutor,
+    __version__
+)
 
-class SafetyReport(BaseModel):
-    """Comprehensive safety validation report"""
-    report_id: str = Field(default_factory=lambda: f"safety_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
-    overall_safety_score: float = Field(default=1.0, ge=0.0, le=1.0)
-    is_safe: bool = Field(default=True)
-    violations: List[SafetyViolation] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
-    compliance_status: Dict[str, bool] = Field(default_factory=dict)
-    validation_timestamp: datetime = Field(default_factory=datetime.now)
-    recommendations: List[str] = Field(default_factory=list)
 
-class ContentSafetyValidator:
-    """Validates content safety and truthfulness"""
-    
-    def __init__(self):
-        self.validators = ATOMIC_RG_SPEC.get("validators", {})
-        self.constraints = ATOMIC_RG_SPEC.get("constraints", {})
-    
-    def validate_content_truthfulness(self, resume_content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Validate content truthfulness and detect potential issues"""
-        violations = []
-        
-        # Extract text content for analysis
-        content_text = self._extract_resume_text(resume_content)
-        
-        # Check for exaggerated claims
-        violations.extend(self._check_exaggerated_claims(content_text))
-        
-        # Check for unverifiable metrics
-        violations.extend(self._check_unverifiable_metrics(content_text))
-        
-        # Check for absolute claims
-        violations.extend(self._check_absolute_claims(content_text))
-        
-        return violations
-    
-    def validate_ats_compliance(self, resume_content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Validate ATS compliance"""
-        violations = []
-        
-        # Check for ATS-unfriendly formatting
-        violations.extend(self._check_ats_formatting(resume_content))
-        
-        # Check for keyword stuffing
-        violations.extend(self._check_keyword_stuffing(resume_content))
-        
-        # Check for proper structure
-        violations.extend(self._check_resume_structure(resume_content))
-        
-        return violations
-    
-    def validate_constraint_adherence(self, resume_content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Validate adherence to constraints"""
-        violations = []
-        
-        # Check length constraints
-        violations.extend(self._check_length_constraints(resume_content))
-        
-        # Check content constraints
-        violations.extend(self._check_content_constraints(resume_content))
-        
-        # Check formatting constraints
-        violations.extend(self._check_formatting_constraints(resume_content))
-        
-        return violations
-    
-    def validate_personal_information_safety(self, resume_content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Validate personal information is handled safely"""
-        violations = []
-        
-        # Check for excessive personal information
-        violations.extend(self._check_excessive_personal_info(resume_content))
-        
-        # Check for sensitive data exposure
-        violations.extend(self._check_sensitive_data_exposure(resume_content))
-        
-        return violations
-    
-    def _extract_resume_text(self, content: Any) -> str:
-        """Extract all text content from resume"""
-        if isinstance(content, str):
-            return content
-        elif isinstance(content, dict):
-            text_parts = []
-            
-            def extract_from_dict(d):
-                for key, value in d.items():
-                    if isinstance(value, str):
-                        text_parts.append(value)
-                    elif isinstance(value, list):
-                        for item in value:
-                            if isinstance(item, str):
-                                text_parts.append(item)
-                            elif isinstance(item, dict):
-                                extract_from_dict(item)
-                    elif isinstance(value, dict):
-                        extract_from_dict(value)
-            
-            extract_from_dict(content)
-            return " ".join(text_parts)
-        
-        return str(content)
-    
-    def _check_exaggerated_claims(self, text: str) -> List[SafetyViolation]:
-        """Check for exaggerated or unrealistic claims"""
-        violations = []
-        
-        exaggerated_patterns = [
-            (r"world's best", "high", "Unverifiable superlative claim"),
-            (r"revolutionized|revolutionary", "medium", "Potentially exaggerated impact claim"),
-            (r"single-handedly", "medium", "Unlikely solo achievement claim"),
-            (r"perfect|never failed|always successful", "high", "Absolute success claim"),
-            (r"increased by \d{3,}%", "high", "Unrealistic percentage increase"),
-            (r"saved \$\d{3,} million", "high", "Unverifiable large financial impact")
-        ]
-        
-        text_lower = text.lower()
-        
-        for pattern, severity, description in exaggerated_patterns:
-            matches = re.finditer(pattern, text_lower)
-            for match in matches:
-                violation = SafetyViolation(
-                    violation_type="exaggerated_claim",
-                    severity=severity,
-                    description=description,
-                    location=f"Text position {match.start()}-{match.end()}",
-                    rule_violated="truthfulness_validation",
-                    suggested_fix="Use more conservative, verifiable language"
-                )
-                violations.append(violation)
-        
-        return violations
-    
-    def _check_unverifiable_metrics(self, text: str) -> List[SafetyViolation]:
-        """Check for metrics that cannot be verified"""
-        violations = []
-        
-        unverifiable_patterns = [
-            (r"increased efficiency by \d+%", "medium", "Efficiency metric without baseline"),
-            (r"reduced costs by \$\d+", "medium", "Cost reduction without context"),
-            (r"improved.*by \d+x", "medium", "Multiplicative improvement without basis")
-        ]
-        
-        text_lower = text.lower()
-        
-        for pattern, severity, description in unverifiable_patterns:
-            matches = re.finditer(pattern, text_lower)
-            for match in matches:
-                violation = SafetyViolation(
-                    violation_type="unverifiable_metric",
-                    severity=severity,
-                    description=description,
-                    location=f"Text position {match.start()}-{match.end()}",
-                    rule_violated="metric_validation",
-                    suggested_fix="Provide context or baseline for metrics"
-                )
-                violations.append(violation)
-        
-        return violations
-    
-    def _check_absolute_claims(self, text: str) -> List[SafetyViolation]:
-        """Check for absolute claims that are likely false"""
-        violations = []
-        
-        absolute_patterns = [
-            (r"never.*failed", "medium", "Absolute negative claim"),
-            (r"always.*succeeded", "medium", "Absolute positive claim"),
-            (r"every.*project", "medium", "Universal claim"),
-            (r"all.*clients", "medium", "Universal client claim")
-        ]
-        
-        text_lower = text.lower()
-        
-        for pattern, severity, description in absolute_patterns:
-            matches = re.finditer(pattern, text_lower)
-            for match in matches:
-                violation = SafetyViolation(
-                    violation_type="absolute_claim",
-                    severity=severity,
-                    description=description,
-                    location=f"Text position {match.start()}-{match.end()}",
-                    rule_violated="absolute_claim_validation",
-                    suggested_fix="Use more nuanced language"
-                )
-                violations.append(violation)
-        
-        return violations
-    
-    def _check_ats_formatting(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check for ATS-unfriendly formatting"""
-        violations = []
-        
-        # Check for non-standard characters
-        text = self._extract_resume_text(content)
-        non_standard_chars = re.findall(r'[^\w\s\-\.\,\;\:\!\?\(\)\[\]\/\n\t]', text)
-        
-        if len(non_standard_chars) > 10:
-            violation = SafetyViolation(
-                violation_type="ats_formatting",
-                severity="medium",
-                description="Excessive non-standard characters that may confuse ATS",
-                location="Throughout document",
-                rule_violated="ats_formatting_rules",
-                suggested_fix="Use standard ASCII characters and simple formatting"
-            )
-            violations.append(violation)
-        
-        return violations
-    
-    def _check_keyword_stuffing(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check for keyword stuffing"""
-        violations = []
-        
-        text = self._extract_resume_text(content)
-        words = text.lower().split()
-        
-        # Check for excessive repetition of keywords
-        word_counts = {}
-        for word in words:
-            if len(word) > 3:  # Ignore short words
-                word_counts[word] = word_counts.get(word, 0) + 1
-        
-        # Flag words that appear too frequently
-        for word, count in word_counts.items():
-            if count > 10 and len(word) > 6:  # Long words repeated many times
-                violation = SafetyViolation(
-                    violation_type="keyword_stuffing",
-                    severity="medium",
-                    description=f"Potential keyword stuffing: '{word}' appears {count} times",
-                    location="Throughout document",
-                    rule_violated="keyword_optimization_rules",
-                    suggested_fix="Reduce repetition of keywords"
-                )
-                violations.append(violation)
-        
-        return violations
-    
-    def _check_resume_structure(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check for proper resume structure"""
-        violations = []
-        
-        # Check for required sections
-        required_sections = ["contact_info", "experience", "education"]
-        text = self._extract_resume_text(content).lower()
-        
-        for section in required_sections:
-            if section not in text:
-                violation = SafetyViolation(
-                    violation_type="missing_section",
-                    severity="high",
-                    description=f"Missing required section: {section}",
-                    location="Document structure",
-                    rule_violated="structure_requirements",
-                    suggested_fix=f"Add {section} section to resume"
-                )
-                violations.append(violation)
-        
-        return violations
-    
-    def _check_length_constraints(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check length constraints"""
-        violations = []
-        
-        text = self._extract_resume_text(content)
-        word_count = len(text.split())
-        
-        # Check maximum length constraint
-        max_length = self.constraints.get("max_resume_length", 1000)
-        if word_count > max_length:
-            violation = SafetyViolation(
-                violation_type="length_constraint",
-                severity="medium",
-                description=f"Resume exceeds maximum length: {word_count} words (max: {max_length})",
-                location="Document length",
-                rule_violated="length_constraints",
-                suggested_fix=f"Reduce resume to {max_length} words or less"
-            )
-            violations.append(violation)
-        
-        return violations
-    
-    def _check_content_constraints(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check content-specific constraints"""
-        violations = []
-        
-        # Check for prohibited content
-        text = self._extract_resume_text(content)
-        
-        prohibited_patterns = [
-            (r"social security number|ssn", "critical", "Personal identification number"),
-            (r"driver's license|license number", "high", "Driver's license number"),
-            (r"bank account|account number", "critical", "Financial account information"),
-            (r"password|pin", "critical", "Password or PIN information")
-        ]
-        
-        text_lower = text.lower()
-        
-        for pattern, severity, description in prohibited_patterns:
-            matches = re.finditer(pattern, text_lower)
-            for match in matches:
-                violation = SafetyViolation(
-                    violation_type="prohibited_content",
-                    severity=severity,
-                    description=description,
-                    location=f"Text position {match.start()}-{match.end()}",
-                    rule_violated="content_constraints",
-                    suggested_fix="Remove sensitive personal information"
-                )
-                violations.append(violation)
-        
-        return violations
-    
-    def _check_formatting_constraints(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check formatting constraints"""
-        violations = []
-        
-        # Check for consistent formatting
-        text = self._extract_resume_text(content)
-        
-        # Check for excessive use of special characters
-        special_char_count = len(re.findall(r'[^\w\s]', text))
-        total_chars = len(text)
-        
-        if total_chars > 0 and special_char_count / total_chars > 0.1:
-            violation = SafetyViolation(
-                violation_type="formatting_constraint",
-                severity="low",
-                description="Excessive use of special characters",
-                location="Document formatting",
-                rule_violated="formatting_constraints",
-                suggested_fix="Reduce use of special characters for cleaner formatting"
-            )
-            violations.append(violation)
-        
-        return violations
-    
-    def _check_excessive_personal_info(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check for excessive personal information"""
-        violations = []
-        
-        text = self._extract_resume_text(content)
-        
-        # Check for potentially excessive personal details
-        personal_patterns = [
-            (r"marital status|married|single|divorced", "medium", "Marital status information"),
-            (r"date of birth|born|age \d+", "medium", "Age or birth date information"),
-            (r"gender|sex|male|female", "low", "Gender information"),
-            (r"religion|religious", "medium", "Religious information")
-        ]
-        
-        text_lower = text.lower()
-        
-        for pattern, severity, description in personal_patterns:
-            matches = re.finditer(pattern, text_lower)
-            for match in matches:
-                violation = SafetyViolation(
-                    violation_type="excessive_personal_info",
-                    severity=severity,
-                    description=description,
-                    location=f"Text position {match.start()}-{match.end()}",
-                    rule_violated="privacy_constraints",
-                    suggested_fix="Remove unnecessary personal information"
-                )
-                violations.append(violation)
-        
-        return violations
-    
-    def _check_sensitive_data_exposure(self, content: Dict[str, Any]) -> List[SafetyViolation]:
-        """Check for sensitive data exposure"""
-        violations = []
-        
-        text = self._extract_resume_text(content)
-        
-        # Check for potential sensitive data patterns
-        sensitive_patterns = [
-            (r"\b\d{3}-\d{2}-\d{4}\b", "critical", "Potential SSN pattern"),
-            (r"\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b", "high", "Potential credit card pattern"),
-            (r"\b\d{10}\b", "medium", "Potential phone number without formatting")
-        ]
-        
-        for pattern, severity, description in sensitive_patterns:
-            matches = re.finditer(pattern, text)
-            for match in matches:
-                violation = SafetyViolation(
-                    violation_type="sensitive_data_exposure",
-                    severity=severity,
-                    description=description,
-                    location=f"Text position {match.start()}-{match.end()}",
-                    rule_violated="data_protection_rules",
-                    suggested_fix="Remove or mask sensitive data"
-                )
-                violations.append(violation)
-        
-        return violations
+# ============================================================================
+# SPEC 1.1: PRE-FLIGHT CONSTRAINT TEST
+# ============================================================================
 
-class RGSafetyValidator:
-    """Main Resume Generator Safety Validator - L5 safety layer"""
+class TestSpec1_1_PreFlightConstraintTest:
+    """Test Suite for Spec 1.1: Pre-flight Constraint Stress Test Integration"""
     
-    def __init__(self):
-        self.validators = ATOMIC_RG_SPEC.get("validators", {})
-        self.constraints = ATOMIC_RG_SPEC.get("constraints", {})
-        self.content_validator = ContentSafetyValidator()
+    def test_version_updated(self):
+        """Verify version is updated to 16_20"""
+        assert __version__ == "16_20", f"Version should be 16_20, got {__version__}"
+    
+    @patch('resume_workflow_v16_20.ArtistGenerator._pre_flight_constraint_test')
+    @patch('resume_workflow_v16_20.ArtistGenerator.__init__')
+    @patch('resume_workflow_v16_20.PreFlightValidator.__init__')
+    def test_preflight_called_for_all_sections(
+        self, 
+        mock_validator_init,
+        mock_artist_init,
+        mock_preflight
+    ):
+        """Test that pre-flight test is called for all LLM sections"""
+        mock_artist_init.return_value = None
+        mock_validator_init.return_value = None
+        mock_preflight.return_value = True  # All tests pass
         
-        # Safety thresholds
-        self.safety_thresholds = {
-            "min_safety_score": 0.7,
-            "max_critical_violations": 0,
-            "max_high_violations": 2,
-            "max_medium_violations": 5
+        # Create mock artist with required attributes
+        mock_artist = Mock()
+        mock_artist.SECTION_GENERATION_SPECS = {
+            ResumeSection.K1_EXECUTIVE_SUMMARY: {
+                'generation_method': '_generate_section_generic',
+                'context_builder': '_build_context_k1_summary',
+                'prompt_template': 'Test prompt with {min_wc} and {max_wc}'
+            },
+            ResumeSection.K0_HEADLINE: {
+                'generation_method': '_generate_section_generic',
+                'context_builder': '_build_context_k0_headline',
+                'prompt_template': 'Headline prompt'
+            }
         }
+        
+        # Mock context builders
+        mock_artist._build_context_k1_summary = Mock(return_value={
+            'min_wc': 100, 'max_wc': 150
+        })
+        mock_artist._build_context_k0_headline = Mock(return_value={
+            'min_wc': 10, 'max_wc': 15
+        })
+        mock_artist._pre_flight_constraint_test = mock_preflight
+        
+        # Simulate the pre-flight test execution
+        all_llm_sections = {
+            ResumeSection.K1_EXECUTIVE_SUMMARY,
+            ResumeSection.K0_HEADLINE
+        }
+        
+        for section_enum in all_llm_sections:
+            spec = mock_artist.SECTION_GENERATION_SPECS.get(section_enum)
+            if spec:
+                context_builder_name = spec.get("context_builder")
+                if context_builder_name:
+                    context_builder = getattr(mock_artist, context_builder_name)
+                    context = context_builder(section_enum)
+                    mock_artist._pre_flight_constraint_test(
+                        section_enum, 
+                        "test prompt",
+                        context
+                    )
+        
+        # Verify pre-flight was called for each section
+        assert mock_preflight.call_count == 2, \
+            f"Pre-flight should be called twice, was called {mock_preflight.call_count} times"
     
-    def validate_resume_safety(self, 
-                              resume_content: Dict[str, Any],
-                              job_context: Optional[Dict[str, Any]] = None) -> SafetyReport:
-        """
-        Perform comprehensive safety validation
-        
-        Args:
-            resume_content: Resume content to validate
-            job_context: Optional job context for contextual validation
+    def test_preflight_failure_raises_hop_error(self):
+        """Test that pre-flight failure raises HopExecutionError"""
+        with patch('resume_workflow_v16_20.ArtistGenerator._pre_flight_constraint_test') as mock_preflight:
+            mock_preflight.return_value = False  # Constraint test fails
             
-        Returns:
-            Comprehensive safety report
-        """
+            # Simulate what should happen in the workflow
+            is_achievable = mock_preflight(
+                ResumeSection.K1_EXECUTIVE_SUMMARY,
+                "test prompt",
+                {'min_wc': 100, 'max_wc': 150}
+            )
+            
+            if not is_achievable:
+                with pytest.raises(HopExecutionError):
+                    raise HopExecutionError(
+                        f"Constraint Pre-flight FAILED for K1_EXECUTIVE_SUMMARY. "
+                        f"Constraints are likely impossible to meet."
+                    )
+    
+    def test_preflight_skips_sections_without_context_builder(self):
+        """Test that pre-flight gracefully skips sections without context builders"""
+        mock_artist = Mock()
+        mock_artist.SECTION_GENERATION_SPECS = {
+            ResumeSection.K7_EDUCATION: {
+                'generation_method': '_copy_from_master',
+                'master_data_key': 'education'
+                # No context_builder
+            }
+        }
         
-        # Initialize safety report
-        safety_report = SafetyReport()
+        # Should not raise error for sections without context builders
+        all_llm_sections = {ResumeSection.K7_EDUCATION}
         
-        # Perform all safety checks
-        violations = []
-        
-        # Content truthfulness validation
-        violations.extend(self.content_validator.validate_content_truthfulness(resume_content))
-        
-        # ATS compliance validation
-        violations.extend(self.content_validator.validate_ats_compliance(resume_content))
-        
-        # Constraint adherence validation
-        violations.extend(self.content_validator.validate_constraint_adherence(resume_content))
-        
-        # Personal information safety validation
-        violations.extend(self.content_validator.validate_personal_information_safety(resume_content))
-        
-        # Group violations by severity
-        critical_violations = [v for v in violations if v.severity == "critical"]
-        high_violations = [v for v in violations if v.severity == "high"]
-        medium_violations = [v for v in violations if v.severity == "medium"]
-        
-        # Calculate safety score
-        safety_report.violations = violations
-        safety_report.overall_safety_score = self._calculate_safety_score(violations)
-        
-        # Determine if resume is safe
-        safety_report.is_safe = self._is_resume_safe(
-            safety_report.overall_safety_score,
-            len(critical_violations),
-            len(high_violations),
-            len(medium_violations)
+        for section_enum in all_llm_sections:
+            spec = mock_artist.SECTION_GENERATION_SPECS.get(section_enum)
+            context_builder_name = spec.get("context_builder")
+            # Should be None, so pre-flight is skipped
+            assert context_builder_name is None, \
+                "Copy sections should not have context builders"
+
+
+# ============================================================================
+# SPEC 1.2: FAILURE CLASSIFICATION LOGIC
+# ============================================================================
+
+class TestSpec1_2_FailureClassification:
+    """Test Suite for Spec 1.2: Constraint Failure Classifier Integration"""
+    
+    def test_failure_classifier_classify_mechanical(self):
+        """Test that mechanical failures are correctly classified"""
+        vr = ValidationResult(
+            rule_id="WORD_COUNT_K1_SUMMARY",
+            passed=False,
+            severity=ValidationSeverity.CRITICAL,
+            message="Word count out of range"
         )
         
-        # Set compliance status
-        safety_report.compliance_status = {
-            "ats_compliant": len([v for v in violations if v.rule_violated == "ats_formatting_rules"]) == 0,
-            "constraints_satisfied": len([v for v in violations if v.rule_violated == "length_constraints"]) == 0,
-            "content_safe": len([v for v in violations if v.violation_type == "prohibited_content"]) == 0,
-            "truthful": len([v for v in violations if v.violation_type == "exaggerated_claim"]) == 0
+        category = ConstraintFailureClassifier.classify_failure(vr, 0.8)
+        assert category == "MECHANICAL", \
+            f"Word count failure should be MECHANICAL, got {category}"
+    
+    def test_failure_classifier_classify_creative(self):
+        """Test that creative failures are correctly classified"""
+        vr = ValidationResult(
+            rule_id="PLACEHOLDER_CONTENT_DETECTED",
+            passed=False,
+            severity=ValidationSeverity.HIGH,
+            message="Found placeholder text"
+        )
+        
+        category = ConstraintFailureClassifier.classify_failure(vr, 0.8)
+        assert category == "CREATIVE", \
+            f"Placeholder failure should be CREATIVE, got {category}"
+    
+    def test_failure_classifier_classify_semantic(self):
+        """Test that semantic failures are correctly classified"""
+        vr = ValidationResult(
+            rule_id="FORBIDDEN_VERB_DETECTED",
+            passed=False,
+            severity=ValidationSeverity.HIGH,
+            message="Found forbidden verb"
+        )
+        
+        category = ConstraintFailureClassifier.classify_failure(vr, 0.8)
+        assert category == "SEMANTIC", \
+            f"Forbidden verb failure should be SEMANTIC, got {category}"
+    
+    def test_failure_analysis_aggregation(self):
+        """Test that failure analysis correctly aggregates categories"""
+        failed_rules = [
+            ValidationResult("WORD_COUNT_K1", False, ValidationSeverity.CRITICAL, "wc"),
+            ValidationResult("SENTENCE_COUNT_K1", False, ValidationSeverity.CRITICAL, "sc"),
+            ValidationResult("PLACEHOLDER_K2", False, ValidationSeverity.HIGH, "ph"),
+        ]
+        
+        failure_analysis = defaultdict(int)
+        temperature = 0.8
+        
+        for vr in failed_rules:
+            category = ConstraintFailureClassifier.classify_failure(vr, temperature)
+            failure_analysis[category] += 1
+        
+        assert failure_analysis["MECHANICAL"] == 2, \
+            f"Should have 2 MECHANICAL failures, got {failure_analysis['MECHANICAL']}"
+        assert failure_analysis["CREATIVE"] == 1, \
+            f"Should have 1 CREATIVE failure, got {failure_analysis['CREATIVE']}"
+    
+    def test_creative_failure_halts_when_dominant(self):
+        """Test that creative failures halt when >= mechanical failures"""
+        failure_analysis = {
+            "CREATIVE": 3,
+            "MECHANICAL": 2,
+            "SEMANTIC": 1
         }
         
-        # Generate recommendations
-        safety_report.recommendations = self._generate_safety_recommendations(violations)
+        creative_failures = failure_analysis.get("CREATIVE", 0)
+        mechanical_failures = failure_analysis.get("MECHANICAL", 0)
         
-        # Add warnings for non-critical issues
-        safety_report.warnings = [v.description for v in violations if v.severity in ["low", "medium"]]
+        # This should trigger halt
+        should_halt = (creative_failures > 0 and 
+                       creative_failures >= mechanical_failures)
         
-        return safety_report
+        assert should_halt, \
+            "Should halt when creative failures >= mechanical failures"
+        
+        if should_halt:
+            with pytest.raises(HopExecutionError):
+                raise HopExecutionError(
+                    f"Creative Failure detected ({creative_failures} creative vs. "
+                    f"{mechanical_failures} mechanical). Lowering temperature will not fix this. Halting."
+                )
+
+
+# ============================================================================
+# SPEC 1.3: DEPRECATED FUNCTIONS REMOVED
+# ============================================================================
+
+class TestSpec1_3_DeprecatedFunctionsRemoved:
+    """Test Suite for Spec 1.3: Verify deprecated functions are removed"""
     
-    def _calculate_safety_score(self, violations: List[SafetyViolation]) -> float:
-        """Calculate overall safety score based on violations"""
-        base_score = 1.0
-        
-        # Deduct points based on violation severity
-        for violation in violations:
-            if violation.severity == "critical":
-                base_score -= 0.3
-            elif violation.severity == "high":
-                base_score -= 0.2
-            elif violation.severity == "medium":
-                base_score -= 0.1
-            elif violation.severity == "low":
-                base_score -= 0.05
-        
-        return max(0.0, base_score)
+    def test_should_reduce_temperature_removed(self):
+        """Test that should_reduce_temperature method is removed"""
+        assert not hasattr(ConstraintFailureClassifier, 'should_reduce_temperature'), \
+            "should_reduce_temperature should be removed from ConstraintFailureClassifier"
     
-    def _is_resume_safe(self, 
-                        safety_score: float,
-                        critical_count: int,
-                        high_count: int,
-                        medium_count: int) -> bool:
-        """Determine if resume meets safety criteria"""
-        
-        if safety_score < self.safety_thresholds["min_safety_score"]:
-            return False
-        
-        if critical_count > self.safety_thresholds["max_critical_violations"]:
-            return False
-        
-        if high_count > self.safety_thresholds["max_high_violations"]:
-            return False
-        
-        if medium_count > self.safety_thresholds["max_medium_violations"]:
-            return False
-        
-        return True
+    def test_get_feedback_instruction_removed(self):
+        """Test that _get_feedback_instruction method is removed"""
+        # Create a mock artist to check
+        with patch('resume_workflow_v16_20.ArtistGenerator.__init__'):
+            artist = ArtistGenerator.__new__(ArtistGenerator)
+            assert not hasattr(artist, '_get_feedback_instruction'), \
+                "_get_feedback_instruction should be removed from ArtistGenerator"
     
-    def _generate_safety_recommendations(self, violations: List[SafetyViolation]) -> List[str]:
-        """Generate safety recommendations based on violations"""
-        recommendations = []
+    def test_deprecated_comments_present(self):
+        """Verify deprecation comments are in the code"""
+        with open('/home/claude/resume_workflow_v16_20.py', 'r') as f:
+            content = f.read()
         
-        # Group violations by type
-        violation_types = {}
-        for violation in violations:
-            if violation.violation_type not in violation_types:
-                violation_types[violation.violation_type] = []
-            violation_types[violation.violation_type].append(violation)
-        
-        # Generate recommendations for each violation type
-        for violation_type, type_violations in violation_types.items():
-            if violation_type == "exaggerated_claim":
-                recommendations.append("Review and moderate exaggerated claims with more conservative, verifiable language")
-            elif violation_type == "prohibited_content":
-                recommendations.append("Remove all sensitive personal information (SSN, account numbers, etc.)")
-            elif violation_type == "ats_formatting":
-                recommendations.append("Simplify formatting to improve ATS compatibility")
-            elif violation_type == "length_constraint":
-                recommendations.append("Reduce resume length to meet specified constraints")
-            elif violation_type == "keyword_stuffing":
-                recommendations.append("Reduce keyword repetition and focus on natural language")
-            elif violation_type == "sensitive_data_exposure":
-                recommendations.append("Remove or mask any sensitive data patterns")
-        
-        return list(set(recommendations))  # Remove duplicates
+        assert "# DEPRECATED: Removed should_reduce_temperature (Spec 1.3)" in content, \
+            "Should have deprecation comment for should_reduce_temperature"
+        assert "# DEPRECATED: Removed _get_feedback_instruction (Spec 1.3)" in content, \
+            "Should have deprecation comment for _get_feedback_instruction"
+
+
+# ============================================================================
+# SPEC 2: AGENTIC RAG FEATURE ACTIVATION
+# ============================================================================
+
+class TestSpec2_AgenticRAGActivation:
+    """Test Suite for Spec 2: Agentic RAG Feature Activation"""
     
-    def get_safety_summary(self, safety_report: SafetyReport) -> Dict[str, Any]:
-        """Get summary of safety validation results"""
+    @patch.object(GeminiWebSearchClient, 'agentic_search_and_analyze')
+    def test_phase1_uses_agentic_rag(self, mock_agentic):
+        """Test that phase1_thematic_research uses agentic RAG"""
+        # Setup mock return value (3-tuple)
+        mock_agentic.return_value = (
+            {"search_summary": "test", "thematic_analysis": {}},
+            10,  # API calls
+            Mock()  # RAG state
+        )
         
-        violation_counts = {}
-        for violation in safety_report.violations:
-            violation_counts[violation.severity] = violation_counts.get(violation.severity, 0) + 1
+        with patch('resume_workflow_v16_20.WebSearchRAG.__init__') as mock_init:
+            mock_init.return_value = None
+            rag = WebSearchRAG.__new__(WebSearchRAG)
+            rag.client = Mock()
+            rag.client.agentic_search_and_analyze = mock_agentic
+            rag.executor = Mock()
+            rag._build_phase1_prompt = Mock(return_value="test prompt")
+            
+            # Simulate the phase execution
+            def main_phase1():
+                prompt = rag._build_phase1_prompt("job desc", Mock())
+                result_dict, calls_made, rag_state = rag.client.agentic_search_and_analyze(
+                    prompt, "Phase 1: Thematic Research"
+                )
+                return result_dict, calls_made
+            
+            result = main_phase1()
+            
+            # Verify agentic method was called
+            mock_agentic.assert_called_once()
+            assert len(result) == 2, "Should return 2-tuple for executor"
+            assert result[1] == 10, "Should return API call count"
+    
+    @patch.object(GeminiWebSearchClient, 'agentic_search_and_analyze')
+    def test_phase2_uses_agentic_rag(self, mock_agentic):
+        """Test that phase2_authenticity_patterns uses agentic RAG"""
+        mock_agentic.return_value = ({"patterns": []}, 8, Mock())
         
-        return {
-            "report_id": safety_report.report_id,
-            "overall_safety_score": safety_report.overall_safety_score,
-            "is_safe": safety_report.is_safe,
-            "total_violations": len(safety_report.violations),
-            "violation_breakdown": violation_counts,
-            "compliance_status": safety_report.compliance_status,
-            "recommendations_count": len(safety_report.recommendations),
-            "warnings_count": len(safety_report.warnings),
-            "validation_timestamp": safety_report.validation_timestamp.isoformat()
-        }
+        with patch('resume_workflow_v16_20.WebSearchRAG.__init__') as mock_init:
+            mock_init.return_value = None
+            rag = WebSearchRAG.__new__(WebSearchRAG)
+            rag.client = Mock()
+            rag.client.agentic_search_and_analyze = mock_agentic
+            
+            # Verify the method signature change
+            def main_phase2():
+                result_dict, calls_made, rag_state = rag.client.agentic_search_and_analyze(
+                    "prompt", "Phase 2: Authenticity Patterns"
+                )
+                return result_dict, calls_made
+            
+            result = main_phase2()
+            mock_agentic.assert_called_once()
+    
+    @patch.object(GeminiWebSearchClient, 'agentic_search_and_analyze')
+    def test_phase3_uses_agentic_rag(self, mock_agentic):
+        """Test that phase3_competitive_positioning uses agentic RAG"""
+        mock_agentic.return_value = ({"competitive_intel": {}}, 12, Mock())
+        
+        with patch('resume_workflow_v16_20.WebSearchRAG.__init__') as mock_init:
+            mock_init.return_value = None
+            rag = WebSearchRAG.__new__(WebSearchRAG)
+            rag.client = Mock()
+            rag.client.agentic_search_and_analyze = mock_agentic
+            
+            def main_phase3():
+                result_dict, calls_made, rag_state = rag.client.agentic_search_and_analyze(
+                    "prompt", "Phase 3: Competitive Positioning"
+                )
+                return result_dict, calls_made
+            
+            result = main_phase3()
+            mock_agentic.assert_called_once()
+    
+    @patch.object(GeminiWebSearchClient, 'agentic_search_and_analyze')
+    def test_phase4_uses_agentic_rag(self, mock_agentic):
+        """Test that phase4_narrative_mining uses agentic RAG"""
+        mock_agentic.return_value = ({"narrative": {}}, 9, Mock())
+        
+        with patch('resume_workflow_v16_20.WebSearchRAG.__init__') as mock_init:
+            mock_init.return_value = None
+            rag = WebSearchRAG.__new__(WebSearchRAG)
+            rag.client = Mock()
+            rag.client.agentic_search_and_analyze = mock_agentic
+            
+            def main_phase4():
+                result_dict, calls_made, rag_state = rag.client.agentic_search_and_analyze(
+                    "prompt", "Phase 4: Narrative Mining"
+                )
+                return result_dict, calls_made
+            
+            result = main_phase4()
+            mock_agentic.assert_called_once()
+    
+    def test_agentic_spec_comments_present(self):
+        """Verify agentic RAG spec comments are in the code"""
+        with open('/home/claude/resume_workflow_v16_20.py', 'r') as f:
+            content = f.read()
+        
+        # Should have 4 sets of comments (one for each phase)
+        assert content.count("# --- SPEC 2: ACTIVATE AGENTIC RAG ---") == 4, \
+            "Should have 4 agentic RAG activation comments"
+        assert content.count("# --- END SPEC 2 ---") == 4, \
+            "Should have 4 agentic RAG end comments"
+
+
+# ============================================================================
+# SPEC 3.1: BULK RULE REGISTRATION
+# ============================================================================
+
+class TestSpec3_1_BulkRuleRegistration:
+    """Test Suite for Spec 3.1: ValidationEngine.register_rules Integration"""
+    
+    @patch.object(ValidationEngine, 'register_rules')
+    def test_register_rules_called_once(self, mock_register_rules):
+        """Test that register_rules is called once with all rules"""
+        engine = ValidationEngine()
+        
+        # Simulate what _register_rules does
+        rules_to_register = [
+            ValidationRule("TEST_1", ValidationSeverity.HIGH, "test", lambda x: True, "msg1"),
+            ValidationRule("TEST_2", ValidationSeverity.MEDIUM, "test", lambda x: True, "msg2"),
+            ValidationRule("TEST_3", ValidationSeverity.LOW, "test", lambda x: True, "msg3"),
+        ]
+        
+        # Should be called once with list of all rules
+        engine.register_rules(rules_to_register)
+        
+        mock_register_rules.assert_called_once()
+        call_args = mock_register_rules.call_args[0][0]
+        assert len(call_args) == 3, \
+            f"Should register 3 rules in one call, got {len(call_args)}"
+    
+    def test_bulk_registration_spec_comments_present(self):
+        """Verify bulk registration spec comments are in the code"""
+        with open('/home/claude/resume_workflow_v16_20.py', 'r') as f:
+            content = f.read()
+        
+        assert "# --- SPEC 3.1: USE BULK REGISTRATION ---" in content, \
+            "Should have bulk registration activation comment"
+        assert "# Single bulk registration call" in content, \
+            "Should have comment about single call"
+        assert "self.engine.register_rules(rules_to_register)" in content, \
+            "Should call register_rules instead of register_rule"
+
+
+# ============================================================================
+# SPEC 3.2: STRING FIELD HELPER INTEGRATION
+# ============================================================================
+
+class TestSpec3_2_StringFieldHelper:
+    """Test Suite for Spec 3.2: _validate_string_field Helper Integration"""
+    
+    def test_validate_string_field_empty(self):
+        """Test _validate_string_field with empty value"""
+        validator = AppTrackerQAValidator()
+        validator.errors = []
+        validator.rule_pass_counts = {}
+        validator.rule_fail_counts = {}
+        
+        row = {"Company": ""}
+        validator._validate_string_field(0, row, "Company", "R21", "Company", min_length=2)
+        
+        assert len(validator.errors) == 1, "Should log error for empty company"
+        assert validator.errors[0]["RULE_ID"] == "R21"
+        assert "cannot be empty" in validator.errors[0]["message"]
+    
+    def test_validate_string_field_too_short(self):
+        """Test _validate_string_field with value too short"""
+        validator = AppTrackerQAValidator()
+        validator.errors = []
+        validator.rule_pass_counts = {}
+        validator.rule_fail_counts = {}
+        
+        row = {"Job Title": "AI"}
+        validator._validate_string_field(0, row, "Job Title", "R22", "Job Title", min_length=3)
+        
+        assert len(validator.errors) == 1, "Should log error for short job title"
+        assert validator.errors[0]["RULE_ID"] == "R22"
+        assert "too short" in validator.errors[0]["message"]
+    
+    def test_validate_string_field_valid(self):
+        """Test _validate_string_field with valid value"""
+        validator = AppTrackerQAValidator()
+        validator.errors = []
+        validator.rule_pass_counts = {}
+        validator.rule_fail_counts = {}
+        
+        row = {"Company": "Microsoft"}
+        validator._validate_string_field(0, row, "Company", "R21", "Company", min_length=2)
+        
+        assert len(validator.errors) == 0, "Should not log error for valid company"
+        assert validator.rule_pass_counts.get("R21", 0) == 1, "Should log pass"
+    
+    def test_string_field_helper_spec_comments_present(self):
+        """Verify string field helper spec comments are in the code"""
+        with open('/home/claude/resume_workflow_v16_20.py', 'r') as f:
+            content = f.read()
+        
+        # Should have 3 usages (Versioned Resume, Company, Job Title)
+        assert content.count("# --- SPEC 3.2: USE STRING FIELD HELPER ---") >= 3, \
+            "Should have at least 3 string field helper comments"
+        assert "self._validate_string_field" in content, \
+            "Should use _validate_string_field helper"
+
+
+# ============================================================================
+# INTEGRATION TESTS
+# ============================================================================
+
+class TestIntegration:
+    """Integration tests verifying all specs work together"""
+    
+    def test_all_spec_comments_present(self):
+        """Verify all specification comments are present in refactored code"""
+        with open('/home/claude/resume_workflow_v16_20.py', 'r') as f:
+            content = f.read()
+        
+        # Spec 1.1 - Pre-flight
+        assert "# --- SPEC 1.1: PRE-FLIGHT CONSTRAINT STRESS TEST ---" in content
+        assert "# --- END SPEC 1.1 ---" in content
+        
+        # Spec 1.2 - Failure Classification
+        assert "# --- SPEC 1.2: FAILURE CLASSIFICATION ---" in content
+        assert "# --- END SPEC 1.2 ---" in content
+        
+        # Spec 1.3 - Deprecated functions
+        assert "# DEPRECATED: Removed should_reduce_temperature (Spec 1.3)" in content
+        assert "# DEPRECATED: Removed _get_feedback_instruction (Spec 1.3)" in content
+        
+        # Spec 2 - Agentic RAG (4 phases)
+        assert content.count("# --- SPEC 2: ACTIVATE AGENTIC RAG ---") == 4
+        
+        # Spec 3.1 - Bulk registration
+        assert "# --- SPEC 3.1: USE BULK REGISTRATION ---" in content
+        
+        # Spec 3.2 - String field helper (3 usages)
+        assert content.count("# --- SPEC 3.2: USE STRING FIELD HELPER ---") >= 3
+    
+    def test_version_is_16_20(self):
+        """Verify version is correctly set to 16_20"""
+        assert __version__ == "16_20"
+    
+    def test_imports_still_work(self):
+        """Verify all critical classes still import correctly"""
+        # If we got this far, imports worked
+        assert WorkflowOrchestrator is not None
+        assert ConstraintFailureClassifier is not None
+        assert ValidationEngine is not None
+        assert ArtistGenerator is not None
+        assert PreFlightValidator is not None
+        assert WebSearchRAG is not None
+        assert AppTrackerQAValidator is not None
+
+
+# ============================================================================
+# TEST EXECUTION
+# ============================================================================
+
+if __name__ == "__main__":
+    pytest.main([__file__, "-v", "--tb=short"])

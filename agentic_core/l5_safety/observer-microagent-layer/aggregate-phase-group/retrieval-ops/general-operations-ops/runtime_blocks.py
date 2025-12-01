@@ -1,105 +1,37 @@
-import os
-import shutil
+from __future__ import annotations
 
-ROOT = "runtime"
+from typing import Iterable
 
-# Exact root-level files found in your runtime folder.
-ROOT_FILES = {
-    "context_manager.py",
-    "cost_tracking.json",
-    "execution_budget_manager.py",
-    "executor.py",
-    "metrics.json",
-    "metrics.py",
-    "observability.py",
-    "policy_engine.py",
-    "runtime_utils.py",
-    "telemetry.py",
-    "tool_registry.py",
-}
+from meta.metacognition.models import Hypothesis
 
-# Canonical OpenAI agentic runtime folder structure.
-TARGET_DIRS = {
-    "inference": [
-        "executor.py",
-        "execution_budget_manager.py",
-        "context_manager.py",
-        "runtime_utils.py",
-    ],
-    "orchestration": [
-        "policy_engine.py",
-        "tool_registry.py",
-    ],
-    "routing": [],
-    "safety_runtime": [],
-    "state": [],
-    "cost": [
-        "cost_tracking.json",
-    ],
-    "telemetry": [
-        "telemetry.py",
-        "metrics.py",
-        "metrics.json",
-    ],
-    "mcp_middleware": [],
-    "utils": [
-        "observability.py",
-    ],
-}
 
-# These folders MUST NOT be deleted, ever.
-PRESERVE_DIRS = {
-    "cache", ".pytest_cache", ".ruff_cache", ".venv", "tmp",
-    "config", "core", "data", "environment", "eval", "infra",
-    "logs", "meta", "ops", "router", "schemas", "tests"
-}
+def compute_uncertainty(
+    hypotheses: Iterable[Hypothesis],
+    qa_signals: int,
+    safety_signals: int,
+) -> float:
+    """Compute a coarse uncertainty score in [0, 1].
 
-def ensure_structure():
-    print("\n=== Creating canonical runtime folders ===")
-    for folder in TARGET_DIRS:
-        path = os.path.join(ROOT, folder)
-        os.makedirs(path, exist_ok=True)
-        print(f"âœ” ensured: {path}")
+    Factors:
+    - spread of confidence values (higher spread â‡’ higher uncertainty)
+    - presence of QA / safety signals (more signals â‡’ higher uncertainty)
+    """
 
-def move_files():
-    print("\n=== Moving root-level runtime files ===")
-    for folder, files in TARGET_DIRS.items():
-        dest = os.path.join(ROOT, folder)
-        for fname in files:
-            src = os.path.join(ROOT, fname)
-            dst = os.path.join(dest, fname)
-            if os.path.exists(src):
-                print(f"â†’ {src}  â†’  {dst}")
-                shutil.move(src, dst)
+    hs = list(hypotheses)
+    if not hs:
+        base = 0.8 if (qa_signals or safety_signals) else 0.5
+        return min(1.0, base)
 
-def cleanup_empty_dirs():
-    print("\n=== Cleaning up old empty runtime folders ===")
+    confidences = [float(h.confidence) for h in hs]
+    avg = sum(confidences) / len(confidences)
+    var = sum((c - avg) ** 2 for c in confidences) / max(1, len(confidences) - 1)
 
-    for entry in os.listdir(ROOT):
-        path = os.path.join(ROOT, entry)
+    spread = min(1.0, var ** 0.5)
+    qa_factor = min(1.0, qa_signals / 5.0)
+    safety_factor = min(1.0, safety_signals / 3.0)
 
-        # Skip files
-        if os.path.isfile(path):
-            continue
+    score = 0.3 * spread + 0.4 * qa_factor + 0.3 * safety_factor
+    return max(0.0, min(1.0, score))
 
-        # Skip preserved directories
-        if entry in PRESERVE_DIRS or entry in TARGET_DIRS:
-            continue
 
-        # Delete ONLY if empty
-        try:
-            if not os.listdir(path):
-                print(f"âœ– removing empty folder: {path}")
-                os.rmdir(path)
-        except Exception:
-            pass
 
-def main():
-    print("### BEGIN RUNTIME MIGRATION ###")
-    ensure_structure()
-    move_files()
-    cleanup_empty_dirs()
-    print("\n### MIGRATION COMPLETE ###")
-
-if __name__ == "__main__":
-    main()

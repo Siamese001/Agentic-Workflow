@@ -1,573 +1,442 @@
+#!/usr/bin/env python3
 """
-Base Guard Implementation
-
-Provides comprehensive guard mechanisms for prompt safety, validation,
-and real-time protection across the L1-L5 architecture.
+Production Safety Layer Implementation
+Implements comprehensive safety checks for all outbound content and mutating actions
 """
 
-from __future__ import annotations
-
-import asyncio
 import re
-import time
 import hashlib
-from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional, Union, Callable, Set, Tuple
+import logging
+from typing import Dict, List, Any, Optional, Set
+from dataclasses import dataclass
 from enum import Enum
 import json
+import os
 
-from .policy_base import BasePolicy, PolicyResult, PolicyViolation
+logger = logging.getLogger(__name__)
 
+class SafetyLevel(Enum):
+    """Safety severity levels"""
+    LOW = "low"
+    MEDIUM = "medium"
+    HIGH = "high"
+    CRITICAL = "critical"
 
-class GuardType(str, Enum):
-    """Types of guards available."""
-    INPUT = "input"
-    OUTPUT = "output"
-    BIDIRECTIONAL = "bidirectional"
-    CONTEXTUAL = "contextual"
-    BEHAVIORAL = "behavioral"
-
-
-class GuardAction(str, Enum):
-    """Actions guards can take."""
-    ALLOW = "allow"
-    BLOCK = "block"
-    MODIFY = "modify"
-    WARN = "warn"
-    QUARANTINE = "quarantine"
-    ESCALATE = "escalate"
-
-
-class GuardStatus(str, Enum):
-    """Guard operational status."""
-    ACTIVE = "active"
-    INACTIVE = "inactive"
-    MAINTENANCE = "maintenance"
-    ERROR = "error"
-
+class SafetyViolationType(Enum):
+    """Types of safety violations"""
+    PII_DETECTED = "pii_detected"
+    HALLUCINATION_DETECTED = "hallucination_detected"
+    INJECTION_DETECTED = "injection_detected"
+    MALICIOUS_CONTENT = "malicious_content"
+    SENSITIVE_DATA = "sensitive_data"
 
 @dataclass
-class GuardCheck:
-    """Individual guard check result."""
-    guard_name: str
-    guard_type: GuardType
-    passed: bool
-    action: GuardAction
+class SafetyViolation:
+    """Safety violation details"""
+    violation_type: SafetyViolationType
+    severity: SafetyLevel
+    content: str
     confidence: float
-    reason: str
-    details: Dict[str, Any] = field(default_factory=dict)
-    timestamp: float = field(default_factory=time.time)
-    
-    def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary for serialization."""
-        return {
-            "guard_name": self.guard_name,
-            "guard_type": self.guard_type.value,
-            "passed": self.passed,
-            "action": self.action.value,
-            "confidence": self.confidence,
-            "reason": self.reason,
-            "details": self.details,
-            "timestamp": self.timestamp,
-        }
-
+    location: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
 
 @dataclass
-class GuardResult:
-    """Combined result from multiple guard checks."""
-    overall_status: GuardAction
-    checks: List[GuardCheck] = field(default_factory=list)
-    modified_content: Optional[str] = None
-    warnings: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    processing_time_ms: float = 0.0
-    
-    def add_check(self, check: GuardCheck) -> None:
-        """Add a guard check result."""
-        self.checks.append(check)
-        
-        # Update overall status based on most restrictive action
-        action_priority = {
-            GuardAction.ALLOW: 0,
-            GuardAction.WARN: 1,
-            GuardAction.MODIFY: 2,
-            GuardAction.QUARANTINE: 3,
-            GuardAction.ESCALATE: 4,
-            GuardAction.BLOCK: 5,
-        }
-        
-        current_priority = action_priority.get(self.overall_status, 0)
-        new_priority = action_priority.get(check.action, 0)
-        
-        if new_priority > current_priority:
-            self.overall_status = check.action
-    
-    def get_failed_checks(self) -> List[GuardCheck]:
-        """Get all failed guard checks."""
-        return [check for check in self.checks if not check.passed]
-    
-    def get_blocked_checks(self) -> List[GuardCheck]:
-        """Get all checks that resulted in blocking action."""
-        return [check for check in self.checks if check.action == GuardAction.BLOCK]
+class SafetyResult:
+    """Safety check result"""
+    is_safe: bool
+    violations: List[SafetyViolation]
+    confidence: float
+    processed_content: Optional[str] = None
 
-
-class BaseGuard(ABC):
-    """Base class for all prompt guards."""
-    
-    def __init__(self, name: str, guard_type: GuardType, 
-                 action: GuardAction = GuardAction.BLOCK,
-                 enabled: bool = True):
-        self.name = name
-        self.guard_type = guard_type
-        self.action = action
-        self.enabled = enabled
-        self.status = GuardStatus.ACTIVE
-        
-        # Statistics
-        self.check_count = 0
-        self.block_count = 0
-        self.warn_count = 0
-        self.modify_count = 0
-        self.last_checked: Optional[float] = None
-        
-        # Configuration
-        self.config: Dict[str, Any] = {}
-        self.thresholds: Dict[str, float] = {}
-        self.exceptions: Set[str] = set()
-    
-    @abstractmethod
-    def check(self, content: str, context: Optional[Dict[str, Any]] = None) -> GuardCheck:
-        """Check content against this guard."""
-        pass
-    
-    def is_enabled(self) -> bool:
-        """Check if guard is enabled."""
-        return self.enabled and self.status == GuardStatus.ACTIVE
-    
-    def enable(self) -> None:
-        """Enable the guard."""
-        self.enabled = True
-        self.status = GuardStatus.ACTIVE
-    
-    def disable(self) -> None:
-        """Disable the guard."""
-        self.enabled = True
-        self.status = GuardStatus.INACTIVE
-    
-    def add_exception(self, pattern: str) -> None:
-        """Add an exception pattern."""
-        self.exceptions.add(pattern)
-    
-    def remove_exception(self, pattern: str) -> None:
-        """Remove an exception pattern."""
-        self.exceptions.discard(pattern)
-    
-    def is_exception(self, content: str) -> bool:
-        """Check if content matches any exception pattern."""
-        for pattern in self.exceptions:
-            if re.search(pattern, content, re.IGNORECASE):
-                return True
-        return False
-    
-    def update_config(self, **kwargs) -> None:
-        """Update guard configuration."""
-        self.config.update(kwargs)
-    
-    def set_threshold(self, name: str, value: float) -> None:
-        """Set a threshold value."""
-        self.thresholds[name] = value
-    
-    def get_stats(self) -> Dict[str, Any]:
-        """Get guard statistics."""
-        return {
-            "name": self.name,
-            "guard_type": self.guard_type.value,
-            "action": self.action.value,
-            "enabled": self.enabled,
-            "status": self.status.value,
-            "check_count": self.check_count,
-            "block_count": self.block_count,
-            "warn_count": self.warn_count,
-            "modify_count": self.modify_count,
-            "block_rate": self.block_count / max(self.check_count, 1),
-            "last_checked": self.last_checked,
-        }
-
-
-class ToxicityGuard(BaseGuard):
-    """Guard for detecting toxic content."""
-    
-    def __init__(self, name: str = "toxicity_guard"):
-        super().__init__(name, GuardType.INPUT, GuardAction.BLOCK)
-        
-        # Toxic content patterns
-        self.toxic_patterns = [
-            r'\b(toxic|poisonous|harmful|dangerous)\b',
-            r'\b(hate|despise|loathe|detest)\b',
-            r'\b(kill|murder|harm|injure|hurt)\b',
-            r'\b(stupid|idiot|moron|retard)\b',
-            r'\b(racist|sexist|homophobic|bigot)\b',
-        ]
-        
-        self.set_threshold("toxicity_threshold", 0.7)
-        self.config.update({
-            "max_toxic_matches": 2,
-            "case_sensitive": False,
-        })
-    
-    def check(self, content: str, context: Optional[Dict[str, Any]] = None) -> GuardCheck:
-        """Check content for toxicity."""
-        self.check_count += 1
-        self.last_checked = time.time()
-        
-        if not self.enabled or self.is_exception(content):
-            return GuardCheck(
-                guard_name=self.name,
-                guard_type=self.guard_type,
-                passed=True,
-                action=GuardAction.ALLOW,
-                confidence=1.0,
-                reason="Guard disabled or content matches exception",
-            )
-        
-        # Count toxic pattern matches
-        matches = 0
-        matched_patterns = []
-        
-        for pattern in self.toxic_patterns:
-            if re.search(pattern, content, re.IGNORECASE):
-                matches += 1
-                matched_patterns.append(pattern)
-        
-        # Calculate toxicity score
-        toxicity_score = min(matches / len(self.toxic_patterns), 1.0)
-        threshold = self.thresholds.get("toxicity_threshold", 0.7)
-        max_matches = self.config.get("max_toxic_matches", 2)
-        
-        passed = toxicity_score < threshold and matches <= max_matches
-        
-        if not passed:
-            self.block_count += 1
-            action = self.action
-        else:
-            action = GuardAction.ALLOW
-        
-        return GuardCheck(
-            guard_name=self.name,
-            guard_type=self.guard_type,
-            passed=passed,
-            action=action,
-            confidence=1.0 - toxicity_score,
-            reason=f"Toxicity score: {toxicity_score:.2f}, Matches: {matches}",
-            details={
-                "toxicity_score": toxicity_score,
-                "matches": matches,
-                "matched_patterns": matched_patterns,
-                "threshold": threshold,
-            },
-        )
-
-
-class LengthGuard(BaseGuard):
-    """Guard for content length validation."""
-    
-    def __init__(self, name: str = "length_guard"):
-        super().__init__(name, GuardType.INPUT, GuardAction.WARN)
-        
-        self.set_threshold("min_length", 1)
-        self.set_threshold("max_length", 10000)
-        self.config.update({
-            "strict_mode": False,
-        })
-    
-    def check(self, content: str, context: Optional[Dict[str, Any]] = None) -> GuardCheck:
-        """Check content length."""
-        self.check_count += 1
-        self.last_checked = time.time()
-        
-        if not self.enabled or self.is_exception(content):
-            return GuardCheck(
-                guard_name=self.name,
-                guard_type=self.guard_type,
-                passed=True,
-                action=GuardAction.ALLOW,
-                confidence=1.0,
-                reason="Guard disabled or content matches exception",
-            )
-        
-        content_length = len(content)
-        min_length = int(self.thresholds.get("min_length", 1))
-        max_length = int(self.thresholds.get("max_length", 10000))
-        strict_mode = self.config.get("strict_mode", False)
-        
-        passed = min_length <= content_length <= max_length
-        
-        if not passed:
-            if strict_mode:
-                self.block_count += 1
-                action = GuardAction.BLOCK
-            else:
-                self.warn_count += 1
-                action = GuardAction.WARN
-        else:
-            action = GuardAction.ALLOW
-        
-        reason = f"Length: {content_length} (allowed: {min_length}-{max_length})"
-        
-        return GuardCheck(
-            guard_name=self.name,
-            guard_type=self.guard_type,
-            passed=passed,
-            action=action,
-            confidence=1.0,
-            reason=reason,
-            details={
-                "content_length": content_length,
-                "min_length": min_length,
-                "max_length": max_length,
-                "strict_mode": strict_mode,
-            },
-        )
-
-
-class RepetitionGuard(BaseGuard):
-    """Guard for detecting excessive repetition."""
-    
-    def __init__(self, name: str = "repetition_guard"):
-        super().__init__(name, GuardType.INPUT, GuardAction.WARN)
-        
-        self.set_threshold("repetition_threshold", 0.3)
-        self.set_threshold("min_repeated_chars", 3)
-        self.config.update({
-            "check_words": True,
-            "check_chars": True,
-        })
-    
-    def check(self, content: str, context: Optional[Dict[str, Any]] = None) -> GuardCheck:
-        """Check for excessive repetition."""
-        self.check_count += 1
-        self.last_checked = time.time()
-        
-        if not self.enabled or self.is_exception(content):
-            return GuardCheck(
-                guard_name=self.name,
-                guard_type=self.guard_type,
-                passed=True,
-                action=GuardAction.ALLOW,
-                confidence=1.0,
-                reason="Guard disabled or content matches exception",
-            )
-        
-        threshold = self.thresholds.get("repetition_threshold", 0.3)
-        min_chars = int(self.thresholds.get("min_repeated_chars", 3))
-        check_words = self.config.get("check_words", True)
-        check_chars = self.config.get("check_chars", True)
-        
-        repetition_score = 0.0
-        repetition_details = {}
-        
-        # Check character repetition
-        if check_chars:
-            char_repetitions = self._check_char_repetition(content, min_chars)
-            repetition_details["char_repetitions"] = char_repetitions
-            repetition_score = max(repetition_score, char_repetitions["score"])
-        
-        # Check word repetition
-        if check_words:
-            word_repetitions = self._check_word_repetition(content)
-            repetition_details["word_repetitions"] = word_repetitions
-            repetition_score = max(repetition_score, word_repetitions["score"])
-        
-        passed = repetition_score < threshold
-        
-        if not passed:
-            self.warn_count += 1
-            action = GuardAction.WARN
-        else:
-            action = GuardAction.ALLOW
-        
-        return GuardCheck(
-            guard_name=self.name,
-            guard_type=self.guard_type,
-            passed=passed,
-            action=action,
-            confidence=1.0 - repetition_score,
-            reason=f"Repetition score: {repetition_score:.2f}",
-            details={
-                "repetition_score": repetition_score,
-                "threshold": threshold,
-                **repetition_details,
-            },
-        )
-    
-    def _check_char_repetition(self, content: str, min_chars: int) -> Dict[str, Any]:
-        """Check for character repetition."""
-        # Find repeated character sequences
-        repeated_patterns = []
-        
-        for i in range(len(content) - min_chars + 1):
-            pattern = content[i:i + min_chars]
-            if pattern * 3 in content:  # Pattern repeated 3+ times
-                repeated_patterns.append(pattern)
-        
-        unique_patterns = set(repeated_patterns)
-        score = len(unique_patterns) / max(len(set(content)), 1)
-        
-        return {
-            "score": score,
-            "repeated_patterns": list(unique_patterns),
-            "pattern_count": len(unique_patterns),
-        }
-    
-    def _check_word_repetition(self, content: str) -> Dict[str, Any]:
-        """Check for word repetition."""
-        words = content.lower().split()
-        word_counts = {}
-        
-        for word in words:
-            if len(word) > 2:  # Ignore short words
-                word_counts[word] = word_counts.get(word, 0) + 1
-        
-        # Find words repeated multiple times
-        repeated_words = {word: count for word, count in word_counts.items() if count > 2}
-        
-        # Calculate repetition score
-        total_words = len([w for w in words if len(w) > 2])
-        repeated_word_count = sum(repeated_words.values())
-        score = repeated_word_count / max(total_words, 1)
-        
-        return {
-            "score": score,
-            "repeated_words": repeated_words,
-            "total_words": total_words,
-            "repeated_count": repeated_word_count,
-        }
-
-
-class GuardEngine:
-    """Engine for managing and executing guards."""
+class PIIDetector:
+    """Personally Identifiable Information detector"""
     
     def __init__(self):
-        self.guards: Dict[str, BaseGuard] = {}
-        self.guard_chains: Dict[str, List[str]] = {}
+        # PII patterns
+        self.email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+        self.phone_pattern = re.compile(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b')
+        self.ssn_pattern = re.compile(r'\b\d{3}-\d{2}-\d{4}\b')
+        self.credit_card_pattern = re.compile(r'\b(?:\d{4}[-\s]?){3}\d{4}\b')
         
-        # Initialize default guards
-        self._initialize_default_guards()
-    
-    def _initialize_default_guards(self) -> None:
-        """Initialize default guards."""
-        self.register_guard(ToxicityGuard())
-        self.register_guard(LengthGuard())
-        self.register_guard(RepetitionGuard())
-    
-    def register_guard(self, guard: BaseGuard) -> None:
-        """Register a guard."""
-        self.guards[guard.name] = guard
-    
-    def unregister_guard(self, name: str) -> None:
-        """Unregister a guard."""
-        if name in self.guards:
-            del self.guards[name]
-    
-    def get_guard(self, name: str) -> Optional[BaseGuard]:
-        """Get guard by name."""
-        return self.guards.get(name)
-    
-    def list_guards(self, guard_type: Optional[GuardType] = None) -> List[str]:
-        """List registered guards, optionally filtered by type."""
-        if guard_type:
-            return [name for name, guard in self.guards.items() 
-                   if guard.guard_type == guard_type]
-        return list(self.guards.keys())
-    
-    def check_content(self, content: str, 
-                      guard_names: Optional[List[str]] = None,
-                      context: Optional[Dict[str, Any]] = None) -> GuardResult:
-        """Check content against specified guards."""
-        start_time = time.time()
+        # Sensitive keywords
+        self.sensitive_keywords = {
+            'password', 'secret', 'token', 'api_key', 'private_key', 'credential',
+            'social_security', 'credit_card', 'bank_account', 'passport', 'driver_license'
+        }
         
-        guards_to_check = guard_names or list(self.guards.keys())
-        result = GuardResult(overall_status=GuardAction.ALLOW)
-        
-        for guard_name in guards_to_check:
-            guard = self.get_guard(guard_name)
-            if guard and guard.is_enabled():
-                check = guard.check(content, context)
-                result.add_check(check)
-                
-                # Update statistics
-                if not check.passed:
-                    if check.action == GuardAction.BLOCK:
-                        guard.block_count += 1
-                    elif check.action == GuardAction.WARN:
-                        guard.warn_count += 1
-                    elif check.action == GuardAction.MODIFY:
-                        guard.modify_count += 1
-        
-        result.processing_time_ms = (time.time() - start_time) * 1000
-        return result
+        # Common PII indicators
+        self.pii_indicators = {
+            'ssn', 'social security', 'tax id', 'ein', 'itin', 'dob', 'date of birth',
+            'address', 'phone', 'mobile', 'email', 'mail', 'contact'
+        }
     
-    async def check_content_async(self, content: str,
-                                 guard_names: Optional[List[str]] = None,
-                                 context: Optional[Dict[str, Any]] = None) -> GuardResult:
-        """Check content asynchronously."""
-        return await asyncio.get_event_loop().run_in_executor(
-            None, self.check_content, content, guard_names, context
+    def detect_pii(self, content: str) -> List[SafetyViolation]:
+        """Detect PII in content"""
+        violations = []
+        
+        # Check for email addresses
+        emails = self.email_pattern.findall(content)
+        for email in emails:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.HIGH,
+                content=email,
+                confidence=0.95,
+                metadata={"type": "email"}
+            ))
+        
+        # Check for phone numbers
+        phones = self.phone_pattern.findall(content)
+        for phone in phones:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.HIGH,
+                content=phone,
+                confidence=0.90,
+                metadata={"type": "phone"}
+            ))
+        
+        # Check for SSN
+        ssns = self.ssn_pattern.findall(content)
+        for ssn in ssns:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.CRITICAL,
+                content=ssn,
+                confidence=0.98,
+                metadata={"type": "ssn"}
+            ))
+        
+        # Check for credit cards
+        cards = self.credit_card_pattern.findall(content)
+        for card in cards:
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.PII_DETECTED,
+                severity=SafetyLevel.CRITICAL,
+                content=card,
+                confidence=0.85,
+                metadata={"type": "credit_card"}
+            ))
+        
+        # Check for sensitive keywords
+        content_lower = content.lower()
+        for keyword in self.sensitive_keywords:
+            if keyword in content_lower:
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.SENSITIVE_DATA,
+                    severity=SafetyLevel.MEDIUM,
+                    content=keyword,
+                    confidence=0.70,
+                    metadata={"type": "sensitive_keyword"}
+                ))
+        
+        return violations
+
+class HallucinationDetector:
+    """Hallucination detection system"""
+    
+    def __init__(self):
+        # Known facts database (simplified)
+        self.known_facts = self._load_known_facts()
+        
+        # Hallucination indicators
+        self.hallucination_patterns = [
+            r'\b(I think|I believe|maybe|perhaps|possibly|might be)\b',
+            r'\b(approximately|roughly|about|around)\b.*\b\d+\b',
+            r'\b(never|always|every|all|none)\b.*\b(people|things|cases)\b'
+        ]
+        
+        # Confidence thresholds
+        self.confidence_threshold = 0.7
+    
+    def _load_known_facts(self) -> Set[str]:
+        """Load known facts database"""
+        # In production, this would load from a database
+        return {
+            "python is a programming language",
+            "javascript is used for web development",
+            "machine learning requires data",
+            "AI models need training",
+            "databases store information"
+        }
+    
+    def detect_hallucination(self, content: str, context: Optional[Dict[str, Any]] = None) -> List[SafetyViolation]:
+        """Detect potential hallucinations"""
+        violations = []
+        
+        content_lower = content.lower()
+        
+        # Check for uncertainty indicators
+        for pattern in self.hallucination_patterns:
+            matches = re.findall(pattern, content_lower, re.IGNORECASE)
+            for match in matches:
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.HALLUCINATION_DETECTED,
+                    severity=SafetyLevel.LOW,
+                    content=match,
+                    confidence=0.60,
+                    metadata={"type": "uncertainty_indicator"}
+                ))
+        
+        # Check against known facts (simplified)
+        for fact in self.known_facts:
+            if fact.lower() in content_lower:
+                # This is actually good - matches known facts
+                continue
+        
+        # Check for fabricated statistics or numbers
+        number_pattern = re.findall(r'\b\d+(?:\.\d+)?%?\b', content)
+        if len(number_pattern) > 3:  # Too many numbers might indicate fabrication
+            violations.append(SafetyViolation(
+                violation_type=SafetyViolationType.HALLUCINATION_DETECTED,
+                severity=SafetyLevel.MEDIUM,
+                content="multiple_unverified_numbers",
+                confidence=0.65,
+                metadata={"type": "unverified_statistics", "count": len(number_pattern)}
+            ))
+        
+        return violations
+
+class InjectionDetector:
+    """Injection attack detection system"""
+    
+    def __init__(self):
+        # SQL injection patterns
+        self.sql_patterns = [
+            r"('|(\\')|(;)|(\\;))",
+            r"((\%27)|(\'))((\%6F)|o|(\%4F))((\%72)|r|(\%52))",
+            r"union.*select",
+            r"drop.*table",
+            r"insert.*into",
+            r"delete.*from"
+        ]
+        
+        # Command injection patterns (more specific)
+        self.command_patterns = [
+            r"[;&|`$]\s*[a-zA-Z]",  # Command operators followed by letters
+            r"\$\([^(]*\)",  # Command substitution
+            r"`[^`]*`",  # Backtick commands
+            r"&&\s*[a-zA-Z]",  # AND operator followed by command
+            r"\|\|\s*[a-zA-Z]",  # OR operator followed by command
+            r";\s*(rm|cat|ls|cd|pwd|whoami|id)",  # Semicolon followed by dangerous commands
+        ]
+        
+        # XSS patterns
+        self.xss_patterns = [
+            r"<script.*?>.*?</script>",
+            r"javascript:",
+            r"on\\w+\\s*=",
+            r"<iframe.*?>",
+            r"<object.*?>",
+            r"<embed.*?>"
+        ]
+        
+        # Prompt injection patterns
+        self.prompt_patterns = [
+            r"ignore.*previous.*instructions",
+            r"system.*prompt",
+            r"act.*as.*different.*assistant",
+            r"forget.*everything",
+            r"new.*role.*play"
+        ]
+    
+    def detect_injection(self, content: str) -> List[SafetyViolation]:
+        """Detect injection attempts"""
+        violations = []
+        
+        # Check SQL injection
+        for pattern in self.sql_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.HIGH,
+                    content="sql_injection_attempt",
+                    confidence=0.85,
+                    metadata={"type": "sql_injection", "pattern": pattern}
+                ))
+        
+        # Check command injection
+        for pattern in self.command_patterns:
+            if re.search(pattern, content):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.CRITICAL,
+                    content="command_injection_attempt",
+                    confidence=0.90,
+                    metadata={"type": "command_injection", "pattern": pattern}
+                ))
+        
+        # Check XSS
+        for pattern in self.xss_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.HIGH,
+                    content="xss_attempt",
+                    confidence=0.80,
+                    metadata={"type": "xss", "pattern": pattern}
+                ))
+        
+        # Check prompt injection
+        for pattern in self.prompt_patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                violations.append(SafetyViolation(
+                    violation_type=SafetyViolationType.INJECTION_DETECTED,
+                    severity=SafetyLevel.MEDIUM,
+                    content="prompt_injection_attempt",
+                    confidence=0.75,
+                    metadata={"type": "prompt_injection", "pattern": pattern}
+                ))
+        
+        return violations
+
+class SafetyLayer:
+    """Main safety layer implementation"""
+    
+    def __init__(self):
+        self.pii_detector = PIIDetector()
+        self.hallucination_detector = HallucinationDetector()
+        self.injection_detector = InjectionDetector()
+        
+        # Safety configuration
+        self.strict_mode = True
+        self.max_violations_per_content = 5
+        
+        # Logging
+        self.logger = logging.getLogger(__name__)
+    
+    def check_outbound_content(self, content: str, context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+        """Check outbound content for safety violations"""
+        violations = []
+        
+        # PII detection
+        pii_violations = self.pii_detector.detect_pii(content)
+        violations.extend(pii_violations)
+        
+        # Hallucination detection
+        hallucination_violations = self.hallucination_detector.detect_hallucination(content, context)
+        violations.extend(hallucination_violations)
+        
+        # Injection detection
+        injection_violations = self.injection_detector.detect_injection(content)
+        violations.extend(injection_violations)
+        
+        # Calculate overall safety
+        is_safe = len(violations) == 0 or (not self.strict_mode and all(v.severity == SafetyLevel.LOW for v in violations))
+        
+        # Calculate confidence
+        if violations:
+            confidence = 1.0 - max(v.confidence for v in violations)
+        else:
+            confidence = 1.0
+        
+        # Process content (redact PII if found)
+        processed_content = self._redact_pii(content) if pii_violations else content
+        
+        # Log safety check
+        self.logger.info(f"Safety check completed: {len(violations)} violations found, is_safe={is_safe}")
+        
+        return SafetyResult(
+            is_safe=is_safe,
+            violations=violations,
+            confidence=confidence,
+            processed_content=processed_content
         )
     
-    def create_guard_chain(self, chain_name: str, guard_names: List[str]) -> None:
-        """Create a chain of guards to execute in order."""
-        self.guard_chains[chain_name] = guard_names
-    
-    def execute_guard_chain(self, chain_name: str, content: str,
-                           context: Optional[Dict[str, Any]] = None) -> GuardResult:
-        """Execute a guard chain."""
-        guard_names = self.guard_chains.get(chain_name)
-        if not guard_names:
-            raise ValueError(f"Guard chain '{chain_name}' not found")
+    def check_mutating_action(self, action: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+        """Check mutating actions for safety violations"""
+        violations = []
         
-        return self.check_content(content, guard_names, context)
+        # Extract action content
+        action_content = json.dumps(action, default=str)
+        
+        # Check all safety aspects
+        pii_violations = self.pii_detector.detect_pii(action_content)
+        violations.extend(pii_violations)
+        
+        hallucination_violations = self.hallucination_detector.detect_hallucination(action_content, context)
+        violations.extend(hallucination_violations)
+        
+        injection_violations = self.injection_detector.detect_injection(action_content)
+        violations.extend(injection_violations)
+        
+        # Additional checks for mutating actions
+        if action.get("type") in ["delete", "update", "modify"]:
+            # Check for dangerous operations
+            dangerous_patterns = [r"drop.*database", r"delete.*all", r"rm.*-rf", r"format.*disk"]
+            for pattern in dangerous_patterns:
+                if re.search(pattern, action_content, re.IGNORECASE):
+                    violations.append(SafetyViolation(
+                        violation_type=SafetyViolationType.MALICIOUS_CONTENT,
+                        severity=SafetyLevel.CRITICAL,
+                        content="dangerous_operation",
+                        confidence=0.95,
+                        metadata={"type": "dangerous_mutating_action", "pattern": pattern}
+                    ))
+        
+        # Calculate safety
+        is_safe = len(violations) == 0 or (not self.strict_mode and all(v.severity in [SafetyLevel.LOW, SafetyLevel.MEDIUM] for v in violations))
+        
+        # Calculate confidence
+        if violations:
+            confidence = 1.0 - max(v.confidence for v in violations)
+        else:
+            confidence = 1.0
+        
+        # Log action check
+        self.logger.info(f"Mutating action safety check: {len(violations)} violations, is_safe={is_safe}")
+        
+        return SafetyResult(
+            is_safe=is_safe,
+            violations=violations,
+            confidence=confidence
+        )
     
-    def get_guard_stats(self) -> Dict[str, Any]:
-        """Get statistics for all guards."""
-        return {
-            "total_guards": len(self.guards),
-            "active_guards": len([g for g in self.guards.values() if g.is_enabled()]),
-            "guard_chains": len(self.guard_chains),
-            "guard_details": {name: guard.get_stats() for name, guard in self.guards.items()},
-        }
+    def _redact_pii(self, content: str) -> str:
+        """Redact PII from content"""
+        redacted = content
+        
+        # Redact emails
+        redacted = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[REDACTED_EMAIL]', redacted)
+        
+        # Redact phone numbers
+        redacted = re.sub(r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b', '[REDACTED_PHONE]', redacted)
+        
+        # Redact SSN
+        redacted = re.sub(r'\b\d{3}-\d{2}-\d{4}\b', '[REDACTED_SSN]', redacted)
+        
+        # Redact credit cards
+        redacted = re.sub(r'\b(?:\d{4}[-\s]?){3}\d{4}\b', '[REDACTED_CARD]', redacted)
+        
+        return redacted
 
+# Global safety layer instance
+_safety_layer = None
 
-# Global guard engine
-_guard_engine: Optional[GuardEngine] = None
+def get_safety_layer() -> SafetyLayer:
+    """Get the global safety layer instance"""
+    global _safety_layer
+    if _safety_layer is None:
+        _safety_layer = SafetyLayer()
+    return _safety_layer
 
+def check_outbound_content_safety(content: str, context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+    """Check outbound content for safety violations"""
+    safety_layer = get_safety_layer()
+    return safety_layer.check_outbound_content(content, context)
 
-def get_guard_engine() -> GuardEngine:
-    """Get the global guard engine instance."""
-    global _guard_engine
-    if _guard_engine is None:
-        _guard_engine = GuardEngine()
-    return _guard_engine
+def check_mutating_action_safety(action: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> SafetyResult:
+    """Check mutating actions for safety violations"""
+    safety_layer = get_safety_layer()
+    return safety_layer.check_mutating_action(action, context)
 
+# Convenience functions
+def is_content_safe(content: str, context: Optional[Dict[str, Any]] = None) -> bool:
+    """Quick check if content is safe"""
+    result = check_outbound_content_safety(content, context)
+    return result.is_safe
 
-def check_content(content: str, guard_names: Optional[List[str]] = None,
-                 context: Optional[Dict[str, Any]] = None) -> GuardResult:
-    """Check content using global guard engine."""
-    return get_guard_engine().check_content(content, guard_names, context)
-
-
-__all__ = [
-    "BaseGuard",
-    "ToxicityGuard",
-    "LengthGuard",
-    "RepetitionGuard",
-    "GuardEngine",
-    "GuardType",
-    "GuardAction",
-    "GuardStatus",
-    "GuardCheck",
-    "GuardResult",
-    "get_guard_engine",
-    "check_content",
-]
+def is_action_safe(action: Dict[str, Any], context: Optional[Dict[str, Any]] = None) -> bool:
+    """Quick check if action is safe"""
+    result = check_mutating_action_safety(action, context)
+    return result.is_safe

@@ -1,73 +1,342 @@
+# FILE: multi_agent.py
 """
-L2 â€” QA Validation Agent
+Multi-Agent Coordination Patterns (v10_9_REFACTORED) â€” META LAYER ONLY
 
-Responsibilities:
-    â€¢ Execute quality and factuality checks on agent outputs.
-    â€¢ Validate alignment between planned intents and produced artifacts.
-    â€¢ Surface structured validation reports to L3 orchestrators and L4 state systems.
+This module provides reusable multi-agent coordination primitives
+(governance graphs, pipeline shapes, councils, committees) strictly
+within the META layer.
 
-Consumes PlanObject inputs and returns StatePatch outputs deterministically.
+STRICT LAYER BOUNDARIES:
+    â€¢ NO L1 planning
+    â€¢ NO L2 execution
+    â€¢ NO L3 orchestration
+    â€¢ NO L4 state mutation
+    â€¢ NO L5 safety/policy decisions
+    â€¢ PURE advisory logic only
+    â€¢ SAFE to call anywhere
+
+This refactor:
+    â€¢ Fixes broken node construction (original used AgentNode(role,...)
+      instead of AgentNode(role=<role_name>, config=...))
+    â€¢ Normalizes to use modern AgentNode + AgentGraph from agents.py
+    â€¢ Integrates fully with meta_profile (for future weighted patterns)
+    â€¢ Returns patch-ready structures for L4, but does not mutate
+    â€¢ Deterministic voting + routing consistent with agents.py
+    â€¢ Aligns committee, council, pipeline, star graphs to new schema
 """
+
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any, Dict, List, Tuple, Optional
 
-from injection_tooling_profiles import DEFAULT_TOOLING_PROFILE
-from l2_execution import ExecutionAgent
-from utils_types import PlanObject, StatePatch
-from l4_memory import get_evidence_view
+from agents import (
+    AgentRole,
+    AgentNode,
+    AgentGraph,
+    summarize_graph,
+    deterministic_vote,     # from agents.py â€” correct tie-breaking
+)
+from models import (
+    MultiAgentVote,
+    MultiAgentCouncilResult,
+)
+from meta_profile import (
+    get_planning_bias,
+    get_routing_bias,
+    get_safety_bias,
+    get_qa_bias,
+)
 
 
-def _build_checks(plan: PlanObject) -> List[str]:
-    """Derive simple validation checks from the provided plan."""
+# ============================================================================
+# SECTION 1 â€” MULTI-AGENT GRAPH PATTERNS (CORRECTED)
+# ============================================================================
 
-    checks: List[str] = ["coherence", "completeness"]
-    if plan.get("mode") == "rag":
-        checks.append("evidence_alignment")
-    if plan.get("mode") == "drafting":
-        checks.append("tone_alignment")
-    return checks
+class MultiAgentPattern(str, Enum):
+    """Conceptual patterns for multi-agent coordination graphs."""
+    LINEAR_PIPELINE = "linear_pipeline"
+    STAR_HUB = "star_hub"
+    COUNCIL = "council"
+    COMMITTEE = "committee"
 
 
-def _derive_findings(state: Dict[str, Any], checks: List[str]) -> List[Dict[str, Any]]:
-    """Produce deterministic validation findings based on available state."""
+# ----------------------------------------------------------------------------
+# LINEAR PIPELINE
+# ----------------------------------------------------------------------------
 
-    findings: List[Dict[str, Any]] = []
-    has_messages = bool(state.get("messages"))
-    for check in checks:
-        findings.append(
-            {
-                "check": check,
-                "status": "pass" if has_messages else "pending",
-                "details": "validated deterministically" if has_messages else "awaiting content",
-            }
+def build_linear_pipeline(roles: List[str]) -> AgentGraph:
+    """
+    Build a linear pipeline:
+        r0 â†’ r1 â†’ r2 â†’ ...
+
+    Example:
+        build_linear_pipeline([
+            AgentRole.PLANNER,
+            AgentRole.RETRIEVER,
+            AgentRole.DRAFTER,
+            AgentRole.QA,
+            AgentRole.SAFETY,
+        ])
+    """
+    nodes = {str(r): AgentNode(role=str(r), config={}) for r in roles}
+    edges = {}
+    for i in range(len(roles) - 1):
+        src = str(roles[i])
+        dst = str(roles[i + 1])
+        edges.setdefault(src, []).append(dst)
+
+    return AgentGraph(nodes=nodes, edges=edges, metadata={"pattern": "linear_pipeline"})
+
+
+# ----------------------------------------------------------------------------
+# STAR HUB (hub â†” spokes)
+# ----------------------------------------------------------------------------
+
+def build_star_hub(hub: str, spokes: List[str]) -> AgentGraph:
+    """
+    Build a star-hub graph:
+        hub â†” each spoke
+    """
+    nodes = {hub: AgentNode(role=hub, config={})}
+    for s in spokes:
+        nodes[s] = AgentNode(role=s, config={})
+
+    edges = {}
+    for s in spokes:
+        edges.setdefault(hub, []).append(s)
+        edges.setdefault(s, []).append(hub)
+
+    return AgentGraph(nodes=nodes, edges=edges, metadata={"pattern": "star_hub"})
+
+
+# ----------------------------------------------------------------------------
+# COUNCIL (multiple agents with the same role)
+# ----------------------------------------------------------------------------
+
+def build_council(role: str, size: int) -> AgentGraph:
+    """
+    Build a role-homogeneous council of size N.
+
+    Example:
+        build_council(AgentRole.QA, 3)
+    """
+    size = max(1, int(size))
+
+    nodes = {}
+    for i in range(size):
+        name = f"{role}_{i+1}"
+        nodes[name] = AgentNode(
+            role=str(role),
+            config={"id": i + 1, "weight": 1.0}
         )
-    return findings
+
+    return AgentGraph(nodes=nodes, edges={}, metadata={"pattern": "council"})
 
 
-class QAValidationAgent(ExecutionAgent):
-    """Perform deterministic QA validation that emits state patches only."""
+# ----------------------------------------------------------------------------
+# COMMITTEE (one per role, no edges)
+# ----------------------------------------------------------------------------
 
-    def execute(self, plan: PlanObject, state: Dict[str, Any]) -> StatePatch:
-        evidence = get_evidence_view(state)
-        checks = _build_checks(plan)
-        findings = _derive_findings(state, checks)
-        has_messages = bool(state.get("messages"))
-        confidence_score = 1.0 if has_messages else 0.5
+def build_committee(roles: List[str]) -> AgentGraph:
+    """
+    Build a committee: each role appears once, no directed edges.
+    """
+    nodes = {str(r): AgentNode(role=str(r), config={}) for r in roles}
+    return AgentGraph(nodes=nodes, edges={}, metadata={"pattern": "committee"})
 
-        patch: StatePatch = StatePatch(
-            {
-                "qa_report": {
-                    "plan_mode": plan.get("mode"),
-                    "checks": checks,
-                    "findings": findings,
-                    "confidence": confidence_score,
-                    "error_simulation": {"simulated": False},
-                    "shadow_validation": {
-                        "performed": False,
-                        "enabled": DEFAULT_TOOLING_PROFILE.shadow_validation_enabled,
-                    },
-                }
-            }
+
+# ============================================================================
+# SECTION 2 â€” DETERMINISTIC DELEGATION + ROUTING
+# ============================================================================
+
+@dataclass
+class AgentMessage:
+    """Meta-layer conceptual message exchanged between agent roles."""
+    sender: str
+    recipient: str
+    content: Dict[str, Any]
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+
+def can_delegate(from_role: str, to_role: str) -> bool:
+    """
+    Canonical deterministic delegation rules.
+    Mirrors (and extends) the logic from agents.py.
+    """
+    if from_role == AgentRole.PLANNER:
+        return to_role in {AgentRole.RETRIEVER, AgentRole.DRAFTER, AgentRole.QA}
+    if from_role == AgentRole.RETRIEVER:
+        return to_role == AgentRole.DRAFTER
+    if from_role == AgentRole.DRAFTER:
+        return to_role == AgentRole.QA
+    if from_role == AgentRole.QA:
+        return to_role == AgentRole.SAFETY
+    if from_role == AgentRole.SAFETY:
+        return to_role in {AgentRole.HIL, AgentRole.META}
+    return False
+
+
+def delegation_metadata(sender: str, recipient: str) -> Dict[str, Any]:
+    """Return structured metadata describing permitted/blocked delegation."""
+    return {
+        "from": sender,
+        "to": recipient,
+        "allowed": can_delegate(sender, recipient),
+    }
+
+
+# ============================================================================
+# SECTION 3 â€” COUNCIL VOTING (META-ONLY, FIXED)
+# ============================================================================
+
+def council_vote(graph: AgentGraph, role: str, candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Deterministic council voting given candidate scores.
+
+    Returns:
+        {
+          "selected": {...},
+          "candidates": [...],
+          "graph_summary": {...}
+        }
+    """
+    if not candidates:
+        return {
+            "selected": {"id": None, "score": 0.0, "rationale": "no_candidates"},
+            "candidates": [],
+            "graph_summary": summarize_graph(graph),
+        }
+
+    # This uses agents.deterministic_vote (correct tiebreaker).
+    winner = deterministic_vote(candidates)
+
+    return {
+        "selected": winner,
+        "candidates": candidates,
+        "graph_summary": summarize_graph(graph),
+    }
+
+
+# ============================================================================
+# SECTION 4 â€” MULTI-AGENT COORDINATOR (PURE META LAYER)
+# ============================================================================
+
+@dataclass
+class MultiAgentCoordinator:
+    """
+    High-level meta-layer coordinator for multi-agent behaviors.
+
+    Responsibilities:
+        â€¢ route_message() â€” determine routing metadata
+        â€¢ council_vote()  â€” run role-specific councils
+        â€¢ build_patch()   â€” create L4-ready patch blocks (NOT applied)
+        â€¢ summarize()     â€” full graph summary
+
+    MUST NOT mutate state. MUST NOT call L1â€“L5.
+    """
+
+    graph: AgentGraph
+
+    def summarize(self) -> Dict[str, Any]:
+        return summarize_graph(self.graph)
+
+    def route_message(self, message: AgentMessage) -> Dict[str, Any]:
+        """
+        Compute routing metadata for conceptual messages.
+        Validates delegation rules and embeds graph summary.
+        """
+        sender = str(message.sender)
+        recipient = str(message.recipient)
+
+        allowed = can_delegate(sender, recipient)
+
+        return {
+            "last_message": {
+                "sender": sender,
+                "recipient": recipient if allowed else None,
+                "content": message.content,
+                "metadata": message.metadata,
+            },
+            "delegation": delegation_metadata(sender, recipient),
+            "graph_summary": self.summarize(),
+        }
+
+    def run_council(self, role: str, candidates: List[Dict[str, Any]]) -> Dict[str, Any]:
+        """Wrapper for council voting."""
+        return council_vote(self.graph, role, candidates)
+
+    # --- patch helper ------------------------------------------------------
+
+    def build_patch(self, block_name: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Return a dict representing an L4-ready patch:
+
+            {block_name: payload}
+
+        L4.StateAdapter is responsible for actually applying it.
+        """
+        return {str(block_name): payload}
+
+
+# ============================================================================
+# SECTION 5 â€” COUNCIL RESULT BUILDER (Typed Output)
+# ============================================================================
+
+def build_council_result(
+    candidates: List[Dict[str, Any]],
+    winner: Dict[str, Any],
+) -> MultiAgentCouncilResult:
+    """
+    Build a typed MultiAgentCouncilResult for downstream layers.
+    This normalizes candidate votes into fully structured objects.
+    """
+
+    votes = []
+    for cand in candidates:
+        votes.append(
+            MultiAgentVote(
+                agent_id=str(cand.get("id")),
+                decision="revise" if cand.get("score", 0) >= 0.8 else "allow",
+                confidence=float(cand.get("score", 0.0)),
+                rationale=str(cand.get("rationale", "")),
+                payload={"candidate": cand},
+            )
         )
-        return patch
+
+    return MultiAgentCouncilResult(
+        votes=votes,
+        aggregated_decision="revise" if winner.get("score", 0) >= 0.8 else "allow",
+        aggregated_confidence=float(winner.get("score", 0.0)),
+        rationale=str(winner.get("rationale", "")),
+        metadata={"selected_id": winner.get("id")},
+    )
+
+
+# ============================================================================
+# SECTION 6 â€” META-LAYER SIMULATION (NO-OP, DEBUG ONLY)
+# ============================================================================
+
+@dataclass
+class MultiAgentSimulation:
+    """
+    Pure simulation for debugging multi-agent routing and councils.
+    NEVER used at runtime.
+    """
+
+    coordinator: MultiAgentCoordinator
+
+    def simulate_routing(self, sender: str, recipient: str, content: Dict[str, Any]) -> Dict[str, Any]:
+        msg = AgentMessage(sender=sender, recipient=recipient, content=content)
+        return self.coordinator.route_message(msg)
+
+    def simulate_council(self, role: str) -> Dict[str, Any]:
+        dummy_candidates = [
+            {"id": 1, "score": 0.72, "rationale": "synthetic"},
+            {"id": 2, "score": 0.65, "rationale": "synthetic"},
+            {"id": 3, "score": 0.81, "rationale": "synthetic"},
+        ]
+        result = self.coordinator.run_council(role, dummy_candidates)
+        result["typed"] = build_council_result(dummy_candidates, result["selected"]).to_dict()
+        return result

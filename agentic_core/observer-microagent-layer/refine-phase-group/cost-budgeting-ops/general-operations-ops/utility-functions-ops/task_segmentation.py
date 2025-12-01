@@ -82,7 +82,7 @@ def delete_if_empty(path: Path):
     """Deletes folder if completely empty."""
     try:
         if path.exists() and path.is_dir() and len(list(path.iterdir())) == 0:
-            print(f"[DELETE] Empty folder removed â†’ {path}")
+            print(f"[DELETE] Empty folder removed Ã¢â€ â€™ {path}")
             path.rmdir()
     except Exception as e:
         print(f"[WARN] Could not delete {path}: {e}")

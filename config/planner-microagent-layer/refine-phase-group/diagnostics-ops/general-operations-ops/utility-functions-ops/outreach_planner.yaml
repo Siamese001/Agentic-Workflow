@@ -43,7 +43,7 @@ class MessageSectionPlan:
 
 @dataclass
 class FusionPlan:
-    """Full fusion blueprint from resume + signals â†’ message."""
+    """Full fusion blueprint from resume + signals Ã¢â€ â€™ message."""
     role_title: str
     company_name: str
     archetype: str                       # primary archetype for this contact
