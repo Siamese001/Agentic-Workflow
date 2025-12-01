@@ -54,9 +54,9 @@ class ExtractionPlan:
 @dataclass
 class ExtractedStatement:
     """
-    Statement extracted from résumé processing text before triplet conversion.
+    Statement extracted from rÃ©sumÃ© processing text before triplet conversion.
     
-    Represents intermediate extraction results for résumé knowledge graph construction.
+    Represents intermediate extraction results for rÃ©sumÃ© knowledge graph construction.
     """
     
     text: str
@@ -120,7 +120,7 @@ class TripletExtractionExecutor:
         self._experience_patterns = [
             r'(?:worked|employed|served)\s+(?:at|for|with)\s+([A-Za-z0-9\s\-&\.]+?)(?:\s+(?:as|for)|\.|,|$)',
             r'(?:at|@)\s+([A-Z][A-Za-z0-9\s\-&\.]+?)(?:\s+(?:as|since|from)|\.|,|$)',
-            r'([A-Z][A-Za-z0-9\s\-&\.]+?)\s+\d{4}\s*[-–]\s*(?:\d{4}|present|current)',
+            r'([A-Z][A-Za-z0-9\s\-&\.]+?)\s+\d{4}\s*[-â€“]\s*(?:\d{4}|present|current)',
         ]
         
         # Education patterns
@@ -132,8 +132,8 @@ class TripletExtractionExecutor:
         
         # Temporal patterns
         self._temporal_patterns = [
-            (r'(\d{4})\s*[-–]\s*(?:present|current|now)', 'ongoing'),
-            (r'(\d{4})\s*[-–]\s*(\d{4})', 'range'),
+            (r'(\d{4})\s*[-â€“]\s*(?:present|current|now)', 'ongoing'),
+            (r'(\d{4})\s*[-â€“]\s*(\d{4})', 'range'),
             (r'(?:since|from)\s+(\d{4})', 'since'),
             (r'(?:in|during)\s+(\d{4})', 'point'),
         ]

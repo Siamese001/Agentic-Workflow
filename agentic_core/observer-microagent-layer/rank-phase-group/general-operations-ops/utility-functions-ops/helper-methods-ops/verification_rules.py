@@ -632,7 +632,7 @@ print(json.dumps({{"winner_text": drafts[best_index], "winner_index": best_index
             try:
                 result = json.loads(output)
                 winning_draft = result.get("winner_text")
-                logging.getLogger(__name__).info(f"  ✓ Scoring competition for {section_enum.name} complete. Draft {result.get('winner_index')} won with score {result.get('winner_score')}.")
+                logging.getLogger(__name__).info(f"  âœ“ Scoring competition for {section_enum.name} complete. Draft {result.get('winner_index')} won with score {result.get('winner_score')}.")
                 return winning_draft
             except json.JSONDecodeError:
                 logging.getLogger(__name__).warning(f"Scoring competition for {section_enum.name} failed (invalid JSON output). Selecting draft 0.")
@@ -759,7 +759,7 @@ print(json.dumps({{"winner_text": drafts[best_index], "winner_index": best_index
             for vr in final_results_for_run:
                 if not vr.passed and vr.severity.value >= ValidationSeverity.HIGH.value:
                     # Extract section from rule_id
-                    # Rule IDs like "H3_K1_SENTENCE_COUNT" → K1_EXECUTIVE_SUMMARY
+                    # Rule IDs like "H3_K1_SENTENCE_COUNT" â†’ K1_EXECUTIVE_SUMMARY
                     rule_id = vr.rule_id
                     
                     # Check if this rule is mapped to a section
