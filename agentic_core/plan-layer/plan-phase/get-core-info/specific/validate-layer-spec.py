@@ -731,12 +731,36 @@ class LayerSpecValidator(LayerSpecValidatorInterface):
 
 class SafetyError(Exception):
     """Raised when specification violates safety policies"""
-    pass
+    
+    def __init__(self, message: str, policy_violation: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.policy_violation = policy_violation
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        if self.policy_violation:
+            return f"[SAFETY_VIOLATION: {self.policy_violation}] {base_msg}"
+        return f"[SAFETY_ERROR] {base_msg}"
 
 
 class SpecValidationError(Exception):
     """Raised for general specification validation errors"""
-    pass
+    
+    def __init__(self, message: str, error_code: Optional[str] = None, operation: Optional[str] = None, spec_type: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.error_code = error_code or "SPEC_VALIDATION_ERROR"
+        self.operation = operation
+        self.spec_type = spec_type
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        op_info = f" in {self.operation}" if self.operation else ""
+        type_info = f" for {self.spec_type}" if self.spec_type else ""
+        return f"[{self.error_code}]{op_info}{type_info} {base_msg}"
 
 
 # ============================================================================

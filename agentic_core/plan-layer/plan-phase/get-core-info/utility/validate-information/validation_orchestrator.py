@@ -732,12 +732,36 @@ class LayerValidationOrchestrator(LayerValidationOrchestratorInterface):
 
 class SafetyError(Exception):
     """Raised when orchestration violates safety policies"""
-    pass
+    
+    def __init__(self, message: str, policy_violation: Optional[str] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.policy_violation = policy_violation
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        if self.policy_violation:
+            return f"[SAFETY_VIOLATION: {self.policy_violation}] {base_msg}"
+        return f"[SAFETY_ERROR] {base_msg}"
 
 
 class OrchestrationError(Exception):
     """Raised for general orchestration errors"""
-    pass
+    
+    def __init__(self, message: str, error_code: Optional[str] = None, operation: Optional[str] = None, failed_validators: Optional[List[str]] = None, context: Optional[Dict[str, Any]] = None):
+        super().__init__(message)
+        self.error_code = error_code or "ORCHESTRATION_ERROR"
+        self.operation = operation
+        self.failed_validators = failed_validators or []
+        self.context = context or {}
+        self.timestamp = datetime.now()
+    
+    def __str__(self) -> str:
+        base_msg = super().__str__()
+        op_info = f" in {self.operation}" if self.operation else ""
+        validator_info = f" (failed: {', '.join(self.failed_validators)})" if self.failed_validators else ""
+        return f"[{self.error_code}]{op_info}{validator_info} {base_msg}"
 
 
 # ============================================================================
