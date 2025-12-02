@@ -1,9 +1,9 @@
 """
-L5 Implementation: serialize_execution_params
+L5 Implementation: extract_layer_parameters
 Role: L3_ORCHESTRATION
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:02:31.765138
+Generated: 2025-12-01T19:02:31.470578
 """
 
 import logging
@@ -21,8 +21,8 @@ class L3OrchestrationInterface(ABC):
         pass
 
 
-class SerializeExecutionParams:
-    """Implementation class for serialize_execution_params."""
+class ExtractLayerParameters:
+    """Implementation class for extract_layer_parameters."""
 
     def fix_file(self, input_data, filepath) -> Dict[str, Any]:
         """
@@ -76,5 +76,5 @@ class SerializeExecutionParams:
             "operation": "main",
             "role": "L3_ORCHESTRATION",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:02:31.765212"
+            "timestamp": "2025-12-01T19:02:31.470671"
         }
