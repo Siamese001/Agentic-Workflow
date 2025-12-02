@@ -8,26 +8,17 @@ agentic-directory:
               build_core_query.py: null
               parse_registry_intent.py: null
               extract_layer_parameters.py: null
-              __init__.py: null
-            __init__.py: null
           utility:
             prepare-information:
               prepare_core_payload.py: null
               format_registry_context.py: null
               build_core_filters.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
         check-core-rules:
           policy:
             check-safety:
               validate_core_constraints.py: null
               check_registry_policy.py: null
               enforce_core_boundaries.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       expand-phase:
         convert-core-content:
           embedding:
@@ -35,17 +26,11 @@ agentic-directory:
               compute_core_embeddings.py: null
               normalize_core_vectors.py: null
               calculate_core_similarity.py: null
-              __init__.py: null
-            __init__.py: null
           semantic:
             adjust-scores:
               normalize_core_scores.py: null
               apply_core_weights.py: null
               compute_core_confidence.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       refine-phase:
         pick-best-result:
           general:
@@ -53,17 +38,11 @@ agentic-directory:
               rank_core_components.py: null
               apply_core_algorithm.py: null
               sort_core_results.py: null
-              __init__.py: null
-            __init__.py: null
           refinement:
             adjust-scores:
               refine_core_ranking.py: null
               adjust_core_weights.py: null
               optimize_core_order.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       validate-phase:
         check-core-structure:
           policy:
@@ -71,17 +50,11 @@ agentic-directory:
               validate_core_schema.py: null
               check_core_compliance.py: null
               enforce_core_contracts.py: null
-              __init__.py: null
-            __init__.py: null
           semantic:
             adjust-scores:
               validate_core_quality.py: null
               assess_core_confidence.py: null
               compute_core_validation.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       act-phase:
         use-core-tools:
           general:
@@ -89,17 +62,11 @@ agentic-directory:
               execute_core_action.py: null
               invoke_core_service.py: null
               process_core_response.py: null
-              __init__.py: null
-            __init__.py: null
           routing:
             retry-task:
               implement_core_retry.py: null
               apply_core_backoff.py: null
               handle_core_failures.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       inspect-phase:
         find-core-problems:
           general:
@@ -107,10 +74,6 @@ agentic-directory:
               inspect_core_state.py: null
               capture_core_diagnostics.py: null
               log_core_inspection.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       retrieve-phase:
         get-core-info:
           general:
@@ -118,17 +81,11 @@ agentic-directory:
               retrieve_core_context.py: null
               query_core_store.py: null
               fetch_core_history.py: null
-              __init__.py: null
-            __init__.py: null
           embedding:
             compare-meaning:
               search_core_vectors.py: null
               match_core_context.py: null
               retrieve_core_similarity.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       agg-phase:
         update-core-state:
           general:
@@ -136,17 +93,11 @@ agentic-directory:
               aggregate_core_state.py: null
               merge_core_contexts.py: null
               consolidate_core_updates.py: null
-              __init__.py: null
-            __init__.py: null
           utility:
             prepare-information:
               prepare_core_snapshot.py: null
               serialize_core_state.py: null
               format_core_payload.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       safety-phase:
         check-core-rules:
           policy:
@@ -154,20 +105,12 @@ agentic-directory:
               apply_core_safety.py: null
               enforce_core_filters.py: null
               validate_core_ethics.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
         manage-core-costs:
           general:
             update-memory:
               update_core_budget.py: null
               track_core_usage.py: null
               enforce_core_limits.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
     orc-layer:
       plan-phase:
         get-core-info:
@@ -176,10 +119,6 @@ agentic-directory:
               orchestrate_core_planning.py: null
               coordinate_core_queries.py: null
               manage_core_context.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       act-phase:
         use-core-tools:
           general:
@@ -187,17 +126,11 @@ agentic-directory:
               dispatch_orchestration_tools.py: null
               invoke_orchestration_service.py: null
               call_orchestration_api.py: null
-              __init__.py: null
-            __init__.py: null
           routing:
             retry-task:
               retry_orchestration_operations.py: null
               handle_orchestration_failures.py: null
               implement_orchestration_fallback.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       safety-phase:
         check-core-rules:
           policy:
@@ -205,11 +138,6 @@ agentic-directory:
               apply_orchestration_safety.py: null
               enforce_orchestration_policy.py: null
               validate_orchestration_ethics.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
     exec-layer:
       act-phase:
         use-core-tools:
@@ -218,17 +146,11 @@ agentic-directory:
               execute_core_execution.py: null
               perform_core_operation.py: null
               invoke_core_tool.py: null
-              __init__.py: null
-            __init__.py: null
           utility:
             prepare-information:
               prepare_execution_payload.py: null
               format_execution_request.py: null
               serialize_execution_params.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       validate-phase:
         check-core-structure:
           policy:
@@ -236,10 +158,6 @@ agentic-directory:
               validate_execution_schema.py: null
               check_execution_compliance.py: null
               enforce_execution_contracts.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       safety-phase:
         check-core-rules:
           policy:
@@ -247,11 +165,6 @@ agentic-directory:
               apply_execution_safety.py: null
               enforce_execution_policy.py: null
               validate_execution_ethics.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
     mem-layer:
       retrieve-phase:
         get-core-info:
@@ -260,17 +173,11 @@ agentic-directory:
               retrieve_core_memory.py: null
               query_core_state.py: null
               fetch_core_history.py: null
-              __init__.py: null
-            __init__.py: null
           embedding:
             compare-meaning:
               search_core_vectors.py: null
               match_core_patterns.py: null
               find_core_context.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
       safety-phase:
         check-core-rules:
           policy:
@@ -278,11 +185,6 @@ agentic-directory:
               apply_memory_safety.py: null
               enforce_memory_policy.py: null
               validate_memory_ethics.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
     safe-layer:
       safety-phase:
         check-core-rules:
@@ -291,28 +193,17 @@ agentic-directory:
               apply_safety_policy.py: null
               enforce_safety_filters.py: null
               validate_safety_ethics.py: null
-              __init__.py: null
-            __init__.py: null
           semantic:
             adjust-scores:
               assess_safety_risk.py: null
               compute_safety_score.py: null
               evaluate_safety_compliance.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
         manage-core-costs:
           general:
             update-memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
-              __init__.py: null
-            __init__.py: null
-          __init__.py: null
-        __init__.py: null
-      __init__.py: null
-    __init__.py: null
   apps:
     rg:
       plan-layer:
