@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\injection_detection(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\injection_detection.py",
     "file_hash": "cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e",
     "size_bytes": 17954,
-    "last_modified": "2025-12-01T12:27:38.917944",
+    "last_modified": "2025-12-01T12:27:38.923390",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -16,8 +16,8 @@
       "docstring": "Types of injection attacks for resume workflow safety.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -81,8 +81,8 @@
       "docstring": "Detects injection attacks in resume workflow content for enhancement.",
       "imports": [],
       "dependencies": [
-        "SafetyFinding",
-        "len"
+        "len",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -94,8 +94,8 @@
       "docstring": "Detect SQL injection patterns.",
       "imports": [],
       "dependencies": [
-        "SafetyFinding",
-        "len"
+        "len",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -107,8 +107,8 @@
       "docstring": "Detect XML/HTML injection patterns.",
       "imports": [],
       "dependencies": [
-        "SafetyFinding",
-        "len"
+        "len",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -133,9 +133,9 @@
       "docstring": "Check for suspicious base64 content.",
       "imports": [],
       "dependencies": [
-        "SafetyFinding",
         "any",
-        "len"
+        "len",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -147,8 +147,8 @@
       "docstring": "Check for nested structures that might hide injections.",
       "imports": [],
       "dependencies": [
-        "SafetyFinding",
-        "len"
+        "len",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -160,8 +160,8 @@
       "docstring": "Check for command sequences that might indicate tool injection.",
       "imports": [],
       "dependencies": [
-        "SafetyFinding",
-        "len"
+        "len",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -205,8 +205,8 @@
       "docstring": "Evaluate content for injection attacks.",
       "imports": [],
       "dependencies": [
-        "any",
         "PolicyDecision",
+        "any",
         "len"
       ],
       "responsibility_level": "L5",

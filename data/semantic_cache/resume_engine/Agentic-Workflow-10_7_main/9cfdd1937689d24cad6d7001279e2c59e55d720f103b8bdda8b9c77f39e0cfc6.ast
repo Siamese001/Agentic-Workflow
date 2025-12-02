@@ -108,8 +108,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "EvidenceBriefAssemblerTool",
         "super",
+        "EvidenceBriefAssemblerTool",
         "EvidenceClarificationTool"
       ],
       "responsibility_level": "L5",
@@ -135,8 +135,8 @@
       "imports": [],
       "dependencies": [
         "CritiqueFindingRecord",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -172,12 +172,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ComplianceEditorAgent",
         "CritiqueRoutingPanel",
+        "StructureLeadAgent",
         "EvidenceLiaisonAgent",
-        "super",
         "NarrativeStylistAgent",
-        "StructureLeadAgent"
+        "super",
+        "ComplianceEditorAgent"
       ],
       "responsibility_level": "L5",
       "children": []

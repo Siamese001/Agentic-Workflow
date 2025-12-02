@@ -28,8 +28,8 @@
       "docstring": "Types of safety constraints enforced by L5.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -84,11 +84,11 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "len",
         "PolicyDecision",
-        "hasattr",
-        "str",
-        "PolicyEvaluationError"
+        "PolicyEvaluationError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -122,9 +122,9 @@
       "docstring": "Validates input for any layer using centralized L5 safety rules.\n\nEnsures consistent safety enforcement across all architectural layers.",
       "imports": [],
       "dependencies": [
-        "SafetyFinding",
         "SafetyResult",
-        "len"
+        "len",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []

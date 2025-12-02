@@ -90,15 +90,15 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "LLMCaller",
-        "StrategyExecutor",
-        "QAExecutor",
-        "DraftExecutor",
         "DraftOrchestrator",
         "QAOrchestrator",
+        "StrategyOrchestrator",
+        "DraftExecutor",
+        "LLMCaller",
+        "QAExecutor",
         "SafetyOrchestrator",
-        "SafetyExecutor",
-        "StrategyOrchestrator"
+        "StrategyExecutor",
+        "SafetyExecutor"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -110,14 +110,14 @@
       "docstring": "Orchestrates complete resume workflow for job alignment processing.",
       "imports": [],
       "dependencies": [
-        "plan_safety",
         "getattr",
-        "plan_strategy",
-        "ResultParser",
-        "ValueError",
-        "plan_drafting",
+        "plan_qa",
         "record_event",
-        "plan_qa"
+        "plan_drafting",
+        "ValueError",
+        "plan_strategy",
+        "plan_safety",
+        "ResultParser"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\run_batch_v10_7.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\run_batch_v10_7.py",
     "file_hash": "e5eb5b7f13221deb349d9137021ae799ca419635555ac21717fc9b603bc69a49",
     "size_bytes": 13742,
-    "last_modified": "2025-12-01T12:27:37.090314",
+    "last_modified": "2025-12-01T12:27:37.357389",
     "engine": "RG",
     "archive_version": "v10.7",
     "file_extension": ".py"
@@ -26,10 +26,10 @@
       "docstring": "Synchronous wrapper for async batch processing",
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
-        "run_batch_async",
         "setup_logging",
-        "print"
+        "print",
+        "run_batch_async",
+        "ConfigV10_7"
       ],
       "responsibility_level": "L5",
       "children": []

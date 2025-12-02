@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\safety_planning(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\safety_planning.py",
     "file_hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
     "size_bytes": 2180,
-    "last_modified": "2025-12-01T12:27:38.217484",
+    "last_modified": "2025-12-01T12:27:38.233330",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -39,8 +39,8 @@
       "docstring": "Plan safety validation for the given content.\n\nArgs:\n    content: Content to validate for safety\n    ctx: Execution context\n    model_tier: Model tier to use\n    \nReturns:\n    Safety plan with validation checks",
       "imports": [],
       "dependencies": [
-        "plan_safety_review",
-        "SafetyPlan"
+        "SafetyPlan",
+        "plan_safety_review"
       ],
       "responsibility_level": "L5",
       "children": []

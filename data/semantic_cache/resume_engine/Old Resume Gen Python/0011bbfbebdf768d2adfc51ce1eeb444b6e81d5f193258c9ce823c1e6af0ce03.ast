@@ -288,10 +288,10 @@
       "docstring": "Calculate coefficient of variation (CV) for section word counts.\n\nReturns: (cv_score, coherence_penalty)",
       "imports": [],
       "dependencies": [
-        "list",
+        "min",
         "sum",
-        "len",
-        "min"
+        "list",
+        "len"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -415,10 +415,10 @@
       "docstring": "GATE 4: Production Readiness Check (NOW FULLY IMPLEMENTED).\n\nv4.1 FIX: Implements all 5 sub-checks:\n1. Contact info present\n2. No placeholder text\n3. Proper hyphenation\n4. No obvious typos\n5. ATS-friendly formatting",
       "imports": [],
       "dependencies": [
-        "any",
         "bool",
+        "all",
         "len",
-        "all"
+        "any"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -450,11 +450,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "SignalPreservationScorer",
-        "SectionCoherenceScorer",
-        "PerSectionTolerance",
         "MasterResume",
         "SignalElasticityModel",
+        "SectionCoherenceScorer",
+        "PerSectionTolerance",
+        "SignalPreservationScorer",
         "SaaSRoleProfiles"
       ],
       "responsibility_level": "L5",
@@ -467,12 +467,12 @@
       "docstring": "Execute full 9-HOP pipeline with QA enforcement.\n\nReturns dict with 4 outputs + metadata (removed output 5).",
       "imports": [],
       "dependencies": [
+        "print",
         "sum",
         "round",
+        "all",
         "ValueError",
-        "print",
-        "SignalCalibrationConfigV4",
-        "all"
+        "SignalCalibrationConfigV4"
       ],
       "responsibility_level": "L5",
       "children": []

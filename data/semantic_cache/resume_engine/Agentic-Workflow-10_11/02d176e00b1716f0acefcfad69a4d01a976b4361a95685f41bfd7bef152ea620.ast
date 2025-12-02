@@ -16,8 +16,8 @@
       "docstring": "Severity levels for workflow errors.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Standard error codes for workflow operations.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

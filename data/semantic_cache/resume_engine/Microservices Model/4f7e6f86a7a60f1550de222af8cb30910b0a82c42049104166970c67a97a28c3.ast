@@ -26,14 +26,14 @@
       "docstring": "Executes the HOP-6 gate decision logic.",
       "imports": [],
       "dependencies": [
+        "print",
         "setup_workflow_logging",
         "len",
-        "RiskAwareGate",
-        "exit",
-        "HopExecutionError",
-        "print",
         "open",
-        "Path"
+        "exit",
+        "Path",
+        "HopExecutionError",
+        "RiskAwareGate"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\context.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\context.py",
     "file_hash": "191d57fdcc928e8c7bed7a8ede73cf055b41f73a5a900d70bd16618f4f326b3b",
     "size_bytes": 34914,
-    "last_modified": "2025-12-01T12:27:41.231710",
+    "last_modified": "2025-12-01T12:27:41.984443",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -42,9 +42,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "getattr",
         "_path_is_durable",
-        "any",
-        "getattr"
+        "any"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -57,8 +57,8 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "callable",
         "ping_fn",
+        "callable",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -71,8 +71,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_path_is_durable",
-        "getattr"
+        "getattr",
+        "_path_is_durable"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -129,41 +129,41 @@
       "docstring": "v10.7 REFACTOR: Centralized Composition Root.",
       "imports": [],
       "dependencies": [
-        "MetricsCollector",
-        "FeedbackLogReader",
-        "PredictiveCacheManager",
-        "_detect_meta_learning_persistence",
-        "AutonomyEngine",
-        "embedding_ctor",
-        "callable",
-        "persistent_ctor",
-        "CostTracker",
-        "PromptTemplateManager",
-        "TuningProfile",
         "_describe_redis_mode",
-        "_describe_chroma_mode",
-        "PrecomputeEngine",
-        "AdvancedMetaLearner",
-        "ProposedRulesLoader",
-        "SelfCorrectionManager",
-        "ContextBudgetManagerV10_8",
-        "WorldModelStore",
-        "getattr",
-        "PolicyAutoTuner",
-        "ContextBudgetConfigV10_8",
-        "client_ctor",
-        "LegacyContextBudgetManager",
-        "ArbitrationEngine",
-        "EpisodicMemory",
-        "WorkflowContext",
-        "SemanticValidator",
-        "_log_runtime_capabilities",
         "CollaborationEngine",
+        "TuningProfile",
+        "_detect_meta_learning_persistence",
+        "_log_runtime_capabilities",
+        "WorldModelStore",
+        "PromptTemplateManager",
+        "AdvancedMetaLearner",
+        "redis_ctor",
+        "LegacyContextBudgetManager",
+        "PrecomputeEngine",
+        "SemanticValidator",
+        "persistent_ctor",
+        "MetricsCollector",
+        "ResponseValidator",
+        "CostTracker",
+        "PredictiveCacheManager",
+        "getattr",
+        "CacheManager",
+        "callable",
+        "ProposedRulesLoader",
+        "client_ctor",
+        "PolicyAutoTuner",
+        "_describe_chroma_mode",
+        "ContextBudgetManagerV10_8",
+        "WorkflowContext",
         "MCPClientStub",
         "http_ctor",
-        "ResponseValidator",
-        "redis_ctor",
-        "CacheManager"
+        "ArbitrationEngine",
+        "SelfCorrectionManager",
+        "EpisodicMemory",
+        "ContextBudgetConfigV10_8",
+        "FeedbackLogReader",
+        "embedding_ctor",
+        "AutonomyEngine"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -185,10 +185,10 @@
       "docstring": "Centralized bias detection service shared by agents and tools.",
       "imports": [],
       "dependencies": [
-        "isinstance",
+        "sorted",
         "str",
-        "len",
-        "sorted"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -360,8 +360,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "RuntimeError",
         "bool",
+        "RuntimeError",
         "getattr"
       ],
       "responsibility_level": "L5",
@@ -374,11 +374,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ValueError",
-        "OpenAIAsyncClient",
-        "GeminiAsyncClient",
         "AnthropicAsyncClient",
-        "canonical_model_name"
+        "GeminiAsyncClient",
+        "OpenAIAsyncClient",
+        "canonical_model_name",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -390,12 +390,12 @@
       "docstring": "Pre-process MCP configuration into typed specs.",
       "imports": [],
       "dependencies": [
-        "parse_mcp_client_specs",
         "bool",
-        "isinstance",
         "str",
-        "MCPClientInitializationError",
-        "_mcp_get"
+        "parse_mcp_client_specs",
+        "isinstance",
+        "_mcp_get",
+        "MCPClientInitializationError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -417,10 +417,10 @@
       "docstring": "Initialise MCP clients if required and return the registry.",
       "imports": [],
       "dependencies": [
-        "str",
         "MCPClientStub",
-        "MCPClientInitializationError",
-        "instantiate_mcp_client"
+        "str",
+        "instantiate_mcp_client",
+        "MCPClientInitializationError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -475,8 +475,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "A2AMessage",
-        "isinstance"
+        "isinstance",
+        "A2AMessage"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -501,8 +501,8 @@
       "docstring": "v10.7: Custom serializer to handle nested Pydantic models.",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "asdict"
+        "asdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -514,23 +514,23 @@
       "docstring": "v10.7: Custom deserializer to reconstruct nested Pydantic models.",
       "imports": [],
       "dependencies": [
-        "FeedbackContext",
-        "HILContext",
-        "cls",
-        "StrategyContext",
-        "MemoryState",
+        "BulletContext",
+        "ArtifactContext",
         "EphemeralState",
         "isinstance",
-        "JobContext",
-        "BulletContext",
-        "WorkflowPhase",
-        "A2AContext",
-        "QAContext",
-        "PromptContext",
+        "StrategyContext",
+        "MemoryState",
         "DraftContext",
-        "ResumeContext",
         "SafetyContext",
-        "ArtifactContext",
+        "cls",
+        "FeedbackContext",
+        "JobContext",
+        "WorkflowPhase",
+        "QAContext",
+        "HILContext",
+        "ResumeContext",
+        "A2AContext",
+        "PromptContext",
         "MetadataContext"
       ],
       "responsibility_level": "L5",

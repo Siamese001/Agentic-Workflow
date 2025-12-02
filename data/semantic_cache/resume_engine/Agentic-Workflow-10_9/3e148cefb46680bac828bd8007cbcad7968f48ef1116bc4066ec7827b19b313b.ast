@@ -37,8 +37,8 @@
       "imports": [],
       "dependencies": [
         "CorrectionSignal",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -62,8 +62,8 @@
       "docstring": "Detect that L1 strategy recommended revision.\n\nNOTE:\n    In the refactored system, L2 StrategyExecutor emits:\n         payload.aggregated_decision\n         payload.aggregated_confidence\n         payload.aggregated_rationale\n    (Wrapped under state[\"strategy_result\"][\"payload\"])",
       "imports": [],
       "dependencies": [
-        "str",
-        "CorrectionSignal"
+        "CorrectionSignal",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -75,8 +75,8 @@
       "docstring": "Detect safety failures requiring human escalation.\n\nNew v10_9 safety format:\n    state[\"safety_result\"] = SafetyExecutionPayload.to_dict()\n    \u2192 {\"report\": {\"issues\": [SafetyIssue dicts], ...}}",
       "imports": [],
       "dependencies": [
-        "str",
         "CorrectionSignal",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -89,8 +89,8 @@
       "docstring": "Detect if the last checkpoint indicates workflow failure.",
       "imports": [],
       "dependencies": [
-        "str",
-        "CorrectionSignal"
+        "CorrectionSignal",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -36,15 +36,15 @@
       "docstring": "META-layer helper to select agent role + optional QA council.\n\nThis does **not** call any LLMs or mutate state. It is intended to be\nused by L2/L3 orchestration to decide which concrete agent / council\nto invoke, and to emit a typed RoutingDecisionEvent for observability.",
       "imports": [],
       "dependencies": [
-        "len",
-        "emit_council_arbitration_event",
-        "MultiAgentCouncilResult",
-        "_choose_agent_role",
-        "extract_council_arbitration",
         "RoutingDecisionEvent",
+        "len",
+        "_choose_agent_role",
         "record_event",
+        "emit_council_arbitration_event",
+        "extract_council_arbitration",
+        "MultiAgentCoordinator",
         "build_council",
-        "MultiAgentCoordinator"
+        "MultiAgentCouncilResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -58,9 +58,9 @@
       "dependencies": [
         "any",
         "getattr",
-        "len",
         "str",
-        "SkillClassifierResult"
+        "SkillClassifierResult",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -74,9 +74,9 @@
       "dependencies": [
         "any",
         "getattr",
-        "hasattr",
         "str",
-        "DomainClassifierResult"
+        "DomainClassifierResult",
+        "hasattr"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -88,12 +88,12 @@
       "docstring": "Heuristic classifier used by L1 to estimate ComplexityLevel.\n\nThis version incorporates:\n    \u2022 Job seniority / requirements\n    \u2022 Resume length\n    \u2022 QA / correction rates from meta_profile\n    \u2022 Deterministic skill and domain classifiers (non-LLM)\n\nAll logic is deterministic and side-effect free.",
       "imports": [],
       "dependencies": [
-        "classify_domain_profile",
         "any",
         "getattr",
-        "len",
         "str",
-        "classify_skill_profile"
+        "len",
+        "classify_skill_profile",
+        "classify_domain_profile"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -105,8 +105,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_all_events",
-        "getattr"
+        "getattr",
+        "get_all_events"
       ],
       "responsibility_level": "L5",
       "children": []

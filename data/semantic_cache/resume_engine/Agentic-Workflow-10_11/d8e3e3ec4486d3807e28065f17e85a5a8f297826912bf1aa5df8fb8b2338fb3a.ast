@@ -26,8 +26,8 @@
       "docstring": "Calculates keyword relevance score for r\u00e9sum\u00e9 evidence.\n\nPrioritizes exact matches to ensure comprehensive r\u00e9sum\u00e9 content coverage.",
       "imports": [],
       "dependencies": [
-        "str",
         "float",
+        "str",
         "len"
       ],
       "responsibility_level": "L1",
@@ -40,9 +40,9 @@
       "docstring": "Calculates semantic similarity score for r\u00e9sum\u00e9 content.\n\nFinds conceptually relevant evidence to enhance r\u00e9sum\u00e9 job alignment.",
       "imports": [],
       "dependencies": [
-        "str",
         "float",
-        "hash"
+        "hash",
+        "str"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -54,9 +54,9 @@
       "docstring": "Combines keyword and semantic scores for r\u00e9sum\u00e9 ranking.\n\nBalances exact matches with conceptual relevance for optimal r\u00e9sum\u00e9 improvement.",
       "imports": [],
       "dependencies": [
+        "_dense_score",
         "float",
-        "_bm25_score",
-        "_dense_score"
+        "_bm25_score"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -106,9 +106,9 @@
       "docstring": "Ranks r\u00e9sum\u00e9 evidence by semantic similarity.\n\nFinds conceptually relevant content to enhance r\u00e9sum\u00e9 job alignment.",
       "imports": [],
       "dependencies": [
+        "_dense_score",
         "enumerate",
-        "dict",
-        "_dense_score"
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -120,9 +120,9 @@
       "docstring": "Ranks r\u00e9sum\u00e9 evidence by combined relevance scoring.\n\nBalances exact matches with conceptual relevance for optimal r\u00e9sum\u00e9 improvement.",
       "imports": [],
       "dependencies": [
+        "_hybrid_score",
         "enumerate",
-        "dict",
-        "_hybrid_score"
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -135,8 +135,8 @@
       "imports": [],
       "dependencies": [
         "bm25",
-        "dense",
-        "hybrid"
+        "hybrid",
+        "dense"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -148,11 +148,11 @@
       "docstring": "Calculates weighted fusion scores for r\u00e9sum\u00e9 evidence.\n\nOptimizes ranking strategy to prioritize most relevant r\u00e9sum\u00e9 improvement content.",
       "imports": [],
       "dependencies": [
-        "max",
         "getattr",
-        "len",
+        "float",
         "isinstance",
-        "float"
+        "len",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -164,19 +164,19 @@
       "docstring": "Fuses multiple ranked lists for optimal r\u00e9sum\u00e9 evidence prioritization.\n\nCombines retrieval strategies to ensure most relevant r\u00e9sum\u00e9 content is ranked highest.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "dict",
-        "len",
         "getattr",
-        "enumerate",
-        "int",
-        "_rrf_weights_from_config",
         "emit_telemetry_event",
-        "RankingEvent",
-        "str",
         "set",
-        "emit_ranking_event",
+        "enumerate",
+        "sum",
+        "str",
+        "len",
+        "RankingEvent",
         "float",
+        "int",
+        "dict",
+        "_rrf_weights_from_config",
+        "emit_ranking_event",
         "_core_models"
       ],
       "responsibility_level": "L5",
@@ -213,8 +213,8 @@
       "docstring": "Normalizes r\u00e9sum\u00e9 evidence scores to consistent range.\n\nEnsures fair comparison and ranking of r\u00e9sum\u00e9 improvement content across sources.",
       "imports": [],
       "dependencies": [
-        "max",
         "float",
+        "max",
         "min"
       ],
       "responsibility_level": "L1",
@@ -265,11 +265,11 @@
       "imports": [],
       "dependencies": [
         "float",
-        "len",
         "rank_documents",
-        "Evidence",
-        "str",
         "normalize_evidence_scores",
+        "str",
+        "len",
+        "Evidence",
         "_core_models"
       ],
       "responsibility_level": "L5",
@@ -282,16 +282,16 @@
       "docstring": "Evidence-level Reciprocal Rank Fusion.\n\n    score(ev) = \u03a3_i w_i / (rrf_k + rank_i)",
       "imports": [],
       "dependencies": [
+        "getattr",
+        "float",
+        "enumerate",
         "sum",
         "len",
-        "getattr",
-        "enumerate",
         "_rrf_weights_from_config",
-        "RankingEvent",
-        "emit_ranking_event",
-        "float",
         "_canonical_evidence_key",
-        "_core_models"
+        "emit_ranking_event",
+        "_core_models",
+        "RankingEvent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -303,10 +303,10 @@
       "docstring": "Wrapper used by retrieval.py for Evidence-level weighted RRF.\n\nThis function adapts the raw `rrf_weights` list (coming from\nRetrievalConfig.rrf_weights) into a minimal RetrievalConfig instance\nand delegates to `fuse_evidence_groups_rrf`.\n\nIt exists solely to preserve the existing retrieval.py call-site:\n\n    ranking.fuse_ranked_groups_rrf(\n        groups=groups,\n        rrf_weights=retrieval_cfg.rrf_weights,\n        workflow_id=workflow_id,\n    )\n\nThe `workflow_id` is accepted for signature compatibility but is\nnot used here; telemetry is emitted inside `fuse_evidence_groups_rrf`.",
       "imports": [],
       "dependencies": [
-        "list",
-        "RetrievalConfig",
         "fuse_evidence_groups_rrf",
-        "_core_models"
+        "_core_models",
+        "RetrievalConfig",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -318,17 +318,17 @@
       "docstring": "High-level helper to fuse and rank Evidence sets and produce a RAGResult.\n\nIf cfg.use_rrf is True:\n    \u2022 Apply evidence-level RRF across groups, then truncate/trim.\nOtherwise:\n    \u2022 Concatenate groups, deduplicate, rank by score, truncate/trim.",
       "imports": [],
       "dependencies": [
-        "fuse_evidence_groups_rrf",
+        "emit_telemetry_event",
         "len",
+        "RAGResult",
         "rank_evidence",
         "list",
-        "RAGResult",
-        "deduplicate_evidence",
-        "RetrievalConfig",
-        "emit_telemetry_event",
-        "RankingEvent",
+        "fuse_evidence_groups_rrf",
         "emit_ranking_event",
-        "_core_models"
+        "RetrievalConfig",
+        "_core_models",
+        "deduplicate_evidence",
+        "RankingEvent"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -16,8 +16,8 @@
       "docstring": "Load all uploaded JSON resources.",
       "imports": [],
       "dependencies": [
-        "print",
         "open",
+        "print",
         "len"
       ],
       "responsibility_level": "L5",
@@ -174,9 +174,9 @@
       "docstring": "Calculate elasticity multiplier using non-linear curve.\nReturns value between 0.0 and 1.0 representing signal degradation.",
       "imports": [],
       "dependencies": [
+        "abs",
         "max",
-        "min",
-        "abs"
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -201,10 +201,10 @@
       "docstring": "Allocate word budget across sections based on priorities.\n\nArgs:\n    total_budget: Total available words\n    section_constraints: Per-section tolerance configs\n\nReturns:\n    Dict mapping section to allocated words",
       "imports": [],
       "dependencies": [
-        "int",
+        "sorted",
         "max",
-        "min",
-        "sorted"
+        "int",
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -216,8 +216,8 @@
       "docstring": "Score a bullet based on keyword density and quality metrics.\n\nArgs:\n    bullet_text: The bullet text\n    keywords: Set of important keywords\n\nReturns:\n    Score between 0.0 and 1.0",
       "imports": [],
       "dependencies": [
-        "sum",
         "any",
+        "sum",
         "min",
         "len"
       ],
@@ -256,8 +256,8 @@
       "docstring": "Score coherence of a section based on bullet word count consistency.\n\nArgs:\n    bullet_word_counts: List of word counts for each bullet\n\nReturns:\n    Dict with coherence metrics",
       "imports": [],
       "dependencies": [
-        "sum",
         "float",
+        "sum",
         "len"
       ],
       "responsibility_level": "L1",
@@ -374,11 +374,11 @@
       "docstring": "Run all 6 QA gates (v4.2 feature).\n\nArgs:\n    section_word_counts: Word counts per section\n    section_signals: Signal strengths per section\n    bullet_coherence: Coherence scores per section\n\nReturns:\n    Dict with all gate results",
       "imports": [],
       "dependencies": [
-        "sum",
-        "abs",
-        "len",
         "SignalElasticityModel",
-        "all"
+        "sum",
+        "len",
+        "all",
+        "abs"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -390,10 +390,10 @@
       "docstring": "Initialize pipeline with all components.",
       "imports": [],
       "dependencies": [
-        "HyphenationRules",
-        "BaselineResumeMetricsV5",
-        "print",
         "MasterResume",
+        "print",
+        "BaselineResumeMetricsV5",
+        "HyphenationRules",
         "SaaSRoleProfiles"
       ],
       "responsibility_level": "L5",
@@ -470,8 +470,8 @@
       "docstring": "Calculate signals using v4.2 elasticity models.",
       "imports": [],
       "dependencies": [
-        "sum",
         "SignalElasticityModel",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",

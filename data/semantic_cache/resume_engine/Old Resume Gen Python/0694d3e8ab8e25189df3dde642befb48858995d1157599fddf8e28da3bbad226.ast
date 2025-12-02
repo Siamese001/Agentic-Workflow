@@ -16,8 +16,8 @@
       "docstring": "Load Amit Ayer's master resume from uploaded JSON.",
       "imports": [],
       "dependencies": [
-        "print",
         "open",
+        "print",
         "_get_mock_master_resume"
       ],
       "responsibility_level": "L5",
@@ -150,8 +150,8 @@
       "docstring": "Main execution function.",
       "imports": [],
       "dependencies": [
-        "print",
         "open",
+        "print",
         "ResumeGenerator"
       ],
       "responsibility_level": "L1",
@@ -208,9 +208,9 @@
       "docstring": "Calculate elasticity multiplier using non-linear curve.",
       "imports": [],
       "dependencies": [
+        "abs",
         "max",
-        "min",
-        "abs"
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -367,8 +367,8 @@
       "docstring": "Weight keywords by frequency and table stakes likelihood.",
       "imports": [],
       "dependencies": [
-        "min",
-        "sorted"
+        "sorted",
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -566,8 +566,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "JobDescriptionAnalyzer",
         "KeywordExtractor",
+        "JobDescriptionAnalyzer",
         "PerSectionTolerance",
         "BulletSelector"
       ],

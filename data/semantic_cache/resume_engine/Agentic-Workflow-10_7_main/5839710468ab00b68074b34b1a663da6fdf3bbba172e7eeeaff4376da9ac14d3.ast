@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\resilience.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\resilience.py",
     "file_hash": "5839710468ab00b68074b34b1a663da6fdf3bbba172e7eeeaff4376da9ac14d3",
     "size_bytes": 6144,
-    "last_modified": "2025-12-01T12:27:41.224907",
+    "last_modified": "2025-12-01T12:27:41.986979",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -26,11 +26,11 @@
       "docstring": "Decorator factory that applies exponential backoff to async node functions.",
       "imports": [],
       "dependencies": [
-        "max",
-        "func",
-        "wraps",
+        "range",
         "WorkflowError",
-        "range"
+        "wraps",
+        "max",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -43,9 +43,9 @@
       "imports": [],
       "dependencies": [
         "float",
-        "WorkflowTimeoutError",
         "func",
-        "wraps"
+        "wraps",
+        "WorkflowTimeoutError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -57,8 +57,8 @@
       "docstring": "Compatibility wrapper retained for orchestration helpers.",
       "imports": [],
       "dependencies": [
-        "int",
-        "async_timeout"
+        "async_timeout",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -94,11 +94,11 @@
       "docstring": "Decorator that ensures MCP clients are initialised for node handlers.",
       "imports": [],
       "dependencies": [
-        "func",
         "wraps",
         "_extract_workflow_context",
+        "update_context",
         "wrap_mcp",
-        "update_context"
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -152,11 +152,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
-        "func",
-        "wraps",
+        "range",
         "WorkflowError",
-        "range"
+        "wraps",
+        "max",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -169,9 +169,9 @@
       "imports": [],
       "dependencies": [
         "float",
-        "WorkflowTimeoutError",
         "func",
-        "wraps"
+        "wraps",
+        "WorkflowTimeoutError"
       ],
       "responsibility_level": "L5",
       "children": []

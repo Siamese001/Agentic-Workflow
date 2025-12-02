@@ -61,8 +61,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "get_safety_bias"
+        "get_safety_bias",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -74,12 +74,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_routing_bias",
         "max",
         "RoutingCriteria",
-        "get_planning_bias",
         "min",
-        "get_safety_bias"
+        "get_safety_bias",
+        "get_planning_bias",
+        "get_routing_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -91,11 +91,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "RoutingCriteria",
         "_apply_meta_biases",
         "_derive_risk_level",
         "str",
-        "_derive_complexity"
+        "_derive_complexity",
+        "RoutingCriteria"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -107,8 +107,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -154,10 +154,10 @@
       "imports": [],
       "dependencies": [
         "_format_instructions",
-        "_format_reasoning",
         "_format_context",
-        "get_prompt_context_view",
-        "_format_output_schema"
+        "_format_reasoning",
+        "_format_output_schema",
+        "get_prompt_context_view"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -169,13 +169,13 @@
       "docstring": "End-to-end META routing pipeline:\n\n    1. Normalize plan\n    2. Build prompt envelope\n    3. Construct RoutingCriteria (meta-aware)\n    4. Ask L5.ModelRouter for model selection\n    5. Simulate model invocation\n    6. Return structured routing output\n\nDOES NOT mutate state.\nDOES NOT perform safety/policy.",
       "imports": [],
       "dependencies": [
-        "dict",
+        "invoke_model",
         "isinstance",
-        "ModelRouter",
         "_build_routing_criteria",
-        "RoutingConfig",
         "_build_prompt_bundle",
-        "invoke_model"
+        "RoutingConfig",
+        "dict",
+        "ModelRouter"
       ],
       "responsibility_level": "L5",
       "children": []

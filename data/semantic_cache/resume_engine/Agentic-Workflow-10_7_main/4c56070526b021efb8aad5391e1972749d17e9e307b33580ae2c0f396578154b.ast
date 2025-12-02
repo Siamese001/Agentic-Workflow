@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\services.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\services.py",
     "file_hash": "4c56070526b021efb8aad5391e1972749d17e9e307b33580ae2c0f396578154b",
     "size_bytes": 79363,
-    "last_modified": "2025-12-01T12:27:41.134690",
+    "last_modified": "2025-12-01T12:27:41.965442",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -96,16 +96,16 @@
       "docstring": "v10.7: Decorator for agent/tool/model run methods.\n\nUpdated to support BOTH:\n  - Agents: self.context.metrics_collector\n  - Model clients: self.metrics",
       "imports": [],
       "dependencies": [
-        "func",
-        "dict",
-        "wraps",
         "getattr",
-        "type",
-        "hasattr",
+        "str",
         "callable",
         "task_name",
-        "str",
-        "resolve_task_name"
+        "wraps",
+        "dict",
+        "type",
+        "func",
+        "resolve_task_name",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -321,8 +321,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -386,8 +386,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "getattr"
+        "getattr",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -419,8 +419,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -454,8 +454,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -487,8 +487,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -523,8 +523,8 @@
       "imports": [],
       "dependencies": [
         "int",
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -693,10 +693,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
         "str",
         "tuple",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -731,8 +731,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "getattr"
+        "getattr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -744,10 +744,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "type",
-        "callable",
         "task_name",
-        "getattr"
+        "getattr",
+        "type",
+        "callable"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -759,13 +759,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "dict",
-        "wraps",
         "getattr",
-        "hasattr",
         "str",
-        "resolve_task_name"
+        "wraps",
+        "dict",
+        "func",
+        "resolve_task_name",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -888,12 +888,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "issubclass",
-        "JSONParsingError",
-        "isinstance",
-        "type",
         "str",
-        "PydanticSchemaError"
+        "isinstance",
+        "PydanticSchemaError",
+        "issubclass",
+        "type",
+        "JSONParsingError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -958,8 +958,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ProposedRule",
-        "open"
+        "open",
+        "ProposedRule"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -981,10 +981,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "RuntimeError",
         "bool",
-        "getattr"
+        "RuntimeError",
+        "getattr",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1016,8 +1016,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "RuntimeError"
+        "RuntimeError",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1123,8 +1123,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1168,8 +1168,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1233,8 +1233,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "getattr"
+        "getattr",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1266,8 +1266,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1313,10 +1313,10 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "isinstance",
-        "hasattr",
         "callable",
-        "getter"
+        "isinstance",
+        "getter",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1340,13 +1340,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "dict",
-        "wraps",
         "getattr",
-        "hasattr",
         "str",
-        "resolve_task_name"
+        "wraps",
+        "dict",
+        "func",
+        "resolve_task_name",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -98,10 +98,10 @@
       "docstring": "Map a Python exception to a typed resilience error descriptor.",
       "imports": [],
       "dependencies": [
-        "str",
         "PermanentError",
-        "isinstance",
-        "TransientError"
+        "TransientError",
+        "str",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -180,25 +180,25 @@
       "docstring": "Unified LLM invocation for v10_10.\n\nParameters:\n    model:       model ID selected by RoutingPolicy (e.g. \"gpt-5.1-codex\").\n    prompt:      final rendered prompt text.\n    sandbox:     SandboxConfig (request_timeout_s, max_tokens_per_call).\n    temperature: sampling temperature.\n    max_tokens:  requested max tokens (will be clamped to sandbox).",
       "imports": [],
       "dependencies": [
-        "get_llm_cache",
-        "select_model",
-        "LLMInvocationError",
         "str",
-        "CostEvent",
+        "run_llm_anthropic",
+        "get_llm_cache",
         "run_llm_google",
         "_get_redis_client_for_llm_cache",
-        "run_llm_anthropic",
-        "set_llm_cache",
-        "RoutingContext",
-        "record_event",
-        "isinstance",
+        "CostEvent",
+        "LLMInvocationError",
         "len",
-        "getattr",
-        "int",
+        "record_event",
         "record_exception",
-        "append_agentic_event",
         "run_llm_openai",
-        "ToolExecutionError"
+        "getattr",
+        "set_llm_cache",
+        "select_model",
+        "RoutingContext",
+        "int",
+        "isinstance",
+        "ToolExecutionError",
+        "append_agentic_event"
       ],
       "responsibility_level": "L5",
       "children": []

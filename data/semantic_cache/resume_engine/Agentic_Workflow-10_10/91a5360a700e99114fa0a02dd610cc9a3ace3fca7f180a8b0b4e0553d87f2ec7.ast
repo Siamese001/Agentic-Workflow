@@ -16,8 +16,8 @@
       "docstring": "Simple, deterministic BM25-like score based on term frequencies.\n\nThis is intentionally non-production but deterministic for testing:\n    \u2022 Lowercase text.\n    \u2022 Count \"important\" tokens.\n    \u2022 Apply a fixed formula to derive a score.",
       "imports": [],
       "dependencies": [
-        "str",
         "float",
+        "str",
         "len"
       ],
       "responsibility_level": "L1",
@@ -30,9 +30,9 @@
       "docstring": "Simple, deterministic dense-like score based on hash of text.\n\nThis simulates a semantic scoring function in a reproducible way.",
       "imports": [],
       "dependencies": [
-        "str",
         "float",
-        "hash"
+        "hash",
+        "str"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -44,9 +44,9 @@
       "docstring": "Combine BM25 and dense scores into a single hybrid score.",
       "imports": [],
       "dependencies": [
+        "_dense_score",
         "float",
-        "_bm25_score",
-        "_dense_score"
+        "_bm25_score"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -72,9 +72,9 @@
       "docstring": "Deterministic dense-score ranking (hash-based pseudo-embedding).",
       "imports": [],
       "dependencies": [
+        "_dense_score",
         "enumerate",
-        "dict",
-        "_dense_score"
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -86,9 +86,9 @@
       "docstring": "Combined ranking (BM25 + dense), averaging the two scores.",
       "imports": [],
       "dependencies": [
+        "_hybrid_score",
         "enumerate",
-        "dict",
-        "_hybrid_score"
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -101,8 +101,8 @@
       "imports": [],
       "dependencies": [
         "bm25",
-        "dense",
-        "hybrid"
+        "hybrid",
+        "dense"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -114,11 +114,11 @@
       "docstring": "Compute weights for weighted RRF.\n\nPhase-3 requirement:\n    \"Weighted RRF (if config specifies)\"\n\nImplementation:\n    \u2022 If cfg.rrf_weights exists and is a sequence of floats, use it.\n      - If shorter than n_groups, last weight is repeated.\n      - If longer, excess weights are ignored.\n    \u2022 Otherwise, fall back to uniform weights (=1.0).",
       "imports": [],
       "dependencies": [
-        "max",
         "getattr",
-        "len",
+        "float",
         "isinstance",
-        "float"
+        "len",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -130,18 +130,18 @@
       "docstring": "Fuse multiple pre-ranked lists into a single deterministic list.\n\nIf use_rrf is True:\n    \u2022 Apply weighted Reciprocal Rank Fusion:\n          score(doc) = \u03a3_i w_i / (rrf_k + rank_i)\n      where w_i are driven by RetrievalConfig.rrf_weights if provided.\n\nIf use_rrf is False:\n    \u2022 Fall back to minimal-rank fusion:\n        1. Flatten.\n        2. Deduplicate by (query, evidence).\n        3. Sort by minimal rank across groups, then alphabetical evidence.\n        4. Re-assign ranks.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "dict",
-        "len",
-        "enumerate",
-        "int",
-        "_rrf_weights_from_config",
+        "float",
         "emit_telemetry_event",
-        "RankingEvent",
-        "str",
         "set",
+        "enumerate",
+        "sum",
+        "str",
+        "len",
+        "int",
+        "dict",
+        "_rrf_weights_from_config",
         "emit_ranking_event",
-        "float"
+        "RankingEvent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -177,8 +177,8 @@
       "docstring": "Normalize scores across Evidence items to [0, 1].",
       "imports": [],
       "dependencies": [
-        "max",
         "float",
+        "max",
         "min"
       ],
       "responsibility_level": "L1",
@@ -205,11 +205,11 @@
       "imports": [],
       "dependencies": [
         "float",
-        "len",
         "rank_documents",
-        "Evidence",
         "str",
-        "normalize_evidence_scores"
+        "normalize_evidence_scores",
+        "len",
+        "Evidence"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -221,14 +221,14 @@
       "docstring": "Evidence-level Reciprocal Rank Fusion.\n\n    score(ev) = \u03a3_i w_i / (rrf_k + rank_i)",
       "imports": [],
       "dependencies": [
+        "float",
+        "enumerate",
         "sum",
         "len",
-        "enumerate",
         "_rrf_weights_from_config",
-        "RankingEvent",
+        "_canonical_evidence_key",
         "emit_ranking_event",
-        "float",
-        "_canonical_evidence_key"
+        "RankingEvent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -240,9 +240,9 @@
       "docstring": "Wrapper used by retrieval.py for Evidence-level weighted RRF.\n\nThis function adapts the raw `rrf_weights` list (coming from\nRetrievalConfig.rrf_weights) into a minimal RetrievalConfig instance\nand delegates to `fuse_evidence_groups_rrf`.\n\nIt exists solely to preserve the existing retrieval.py call-site:\n\n    ranking.fuse_ranked_groups_rrf(\n        groups=groups,\n        rrf_weights=retrieval_cfg.rrf_weights,\n        workflow_id=workflow_id,\n    )\n\nThe `workflow_id` is accepted for signature compatibility but is\nnot used here; telemetry is emitted inside `fuse_evidence_groups_rrf`.",
       "imports": [],
       "dependencies": [
-        "list",
+        "fuse_evidence_groups_rrf",
         "RetrievalConfig",
-        "fuse_evidence_groups_rrf"
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -254,16 +254,16 @@
       "docstring": "High-level helper to fuse and rank Evidence sets and produce a RAGResult.\n\nIf cfg.use_rrf is True:\n    \u2022 Apply evidence-level RRF across groups, then truncate/trim.\nOtherwise:\n    \u2022 Concatenate groups, deduplicate, rank by score, truncate/trim.",
       "imports": [],
       "dependencies": [
-        "fuse_evidence_groups_rrf",
+        "emit_telemetry_event",
         "len",
+        "RAGResult",
         "rank_evidence",
         "list",
-        "RAGResult",
-        "deduplicate_evidence",
+        "fuse_evidence_groups_rrf",
+        "emit_ranking_event",
         "RetrievalConfig",
-        "emit_telemetry_event",
-        "RankingEvent",
-        "emit_ranking_event"
+        "deduplicate_evidence",
+        "RankingEvent"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -46,8 +46,8 @@
       "docstring": "Pure-data summary for telemetry.",
       "imports": [],
       "dependencies": [
-        "list",
-        "dict"
+        "dict",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -59,13 +59,13 @@
       "docstring": "Deterministic scoring for each meta-agent in a QA council.\nHigher score \u2192 higher scrutiny / more conservative decision\ndepending on severity and findings.",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance",
-        "round",
-        "int",
+        "float",
         "str",
-        "min",
-        "float"
+        "int",
+        "isinstance",
+        "len",
+        "round",
+        "min"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -77,9 +77,9 @@
       "docstring": "Highest score wins; ties broken by lowest agent_id.",
       "imports": [],
       "dependencies": [
-        "int",
+        "sorted",
         "float",
-        "sorted"
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -91,17 +91,17 @@
       "docstring": "Produce a fully typed MultiAgentCouncilResult for the QA council.\n\nThe council determines:\n    \u2022 aggregated_decision (allow / revise / escalate)\n    \u2022 aggregated_confidence\n    \u2022 individual votes\n    \u2022 rationale and metadata",
       "imports": [],
       "dependencies": [
-        "summarize_graph",
-        "len",
-        "isinstance",
-        "getattr",
         "MultiAgentCouncilResult",
-        "str",
-        "next",
-        "_qa_candidate_scores",
-        "MultiAgentVote",
         "float",
-        "deterministic_vote"
+        "getattr",
+        "str",
+        "isinstance",
+        "len",
+        "_qa_candidate_scores",
+        "next",
+        "deterministic_vote",
+        "summarize_graph",
+        "MultiAgentVote"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -123,8 +123,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "AgentNode",
-        "dict"
+        "dict",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -146,10 +146,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dict",
+        "vars",
         "repr",
-        "isinstance",
-        "vars"
+        "dict",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []

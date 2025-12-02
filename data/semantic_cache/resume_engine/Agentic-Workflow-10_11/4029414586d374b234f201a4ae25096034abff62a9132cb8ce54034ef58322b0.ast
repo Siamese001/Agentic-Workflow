@@ -36,8 +36,8 @@
       "docstring": "Orchestrates resume strategy workflow for job alignment processing.",
       "imports": [],
       "dependencies": [
-        "plan_strategy",
-        "record_event"
+        "record_event",
+        "plan_strategy"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -146,8 +146,10 @@ class ArtifactWriter:
                 for filename, content in artifacts.items():
                     if content is not None:
                         file_path = archive_dir / filename
-                        with self._atomic_write(file_path) as f:
-                            json.dump(content, f, indent=2, default=str)
+                        if self._write_atomic(file_path, json.dumps(content, indent=2, default=str)):
+                            continue
+                        else:
+                            raise Exception(f"Failed to write {file_path}")
             
             return True
             

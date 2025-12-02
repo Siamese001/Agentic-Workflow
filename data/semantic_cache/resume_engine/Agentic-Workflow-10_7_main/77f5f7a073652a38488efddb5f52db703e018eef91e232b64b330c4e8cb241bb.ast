@@ -16,8 +16,8 @@
       "docstring": "Return a mutable copy of the shared master configuration.",
       "imports": [],
       "dependencies": [
-        "deepcopy",
-        "get_schema"
+        "get_schema",
+        "deepcopy"
       ],
       "responsibility_level": "L5",
       "children": []

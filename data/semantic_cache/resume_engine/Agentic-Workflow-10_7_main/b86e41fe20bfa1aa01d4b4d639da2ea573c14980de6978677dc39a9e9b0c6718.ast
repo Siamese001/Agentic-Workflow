@@ -52,9 +52,9 @@
       "imports": [],
       "dependencies": [
         "any",
-        "list",
-        "normalize_key",
         "str",
+        "normalize_key",
+        "list",
         "is_whitelisted",
         "Path",
         "determine_version"
@@ -104,8 +104,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "any"
+        "any",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -129,13 +129,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "merge_sources",
-        "len",
-        "sha256_for_file",
         "assign_bucket",
         "str",
+        "sha256_for_file",
+        "sorted",
+        "len",
         "Path",
-        "sorted"
+        "merge_sources"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -160,8 +160,8 @@
       "imports": [],
       "dependencies": [
         "write_manifest",
-        "extract_files",
-        "consolidate"
+        "consolidate",
+        "extract_files"
       ],
       "responsibility_level": "L1",
       "children": []

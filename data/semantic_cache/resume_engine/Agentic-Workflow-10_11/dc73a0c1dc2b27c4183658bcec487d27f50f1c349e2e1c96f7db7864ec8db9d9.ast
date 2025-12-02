@@ -36,10 +36,10 @@
       "docstring": "Executes resume strategy generation using LLM models.\n\nProduces comprehensive improvement strategies for optimal\nresume job matching and better applications.",
       "imports": [],
       "dependencies": [
-        "len",
         "record_event",
         "invoke_model",
-        "record_exception"
+        "record_exception",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

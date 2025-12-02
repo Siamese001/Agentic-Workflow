@@ -16,10 +16,10 @@
       "docstring": "Core patch application.\n\nRequirements:\n    \u2022 Deterministic, type-safe update.\n    \u2022 No side effects.\n    \u2022 No LLM calls.\n    \u2022 No orchestration.",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "isinstance",
         "replace",
-        "getattr"
+        "getattr",
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -56,10 +56,10 @@
       "docstring": "Apply a single typed StateTransitionEvent to the WorkflowState.\n\nEmits L4-layer state-transition telemetry.",
       "imports": [],
       "dependencies": [
-        "end_span",
         "start_span",
-        "log_exception",
-        "_apply_patch"
+        "_apply_patch",
+        "end_span",
+        "log_exception"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -71,9 +71,9 @@
       "docstring": "Create a deterministic checkpoint (G34).\n\nDoes not mutate state; returns a new Checkpoint object.",
       "imports": [],
       "dependencies": [
-        "end_span",
         "start_span",
         "_make_checkpoint",
+        "end_span",
         "log_exception"
       ],
       "responsibility_level": "L5",
@@ -86,11 +86,11 @@
       "docstring": "Apply rollback based on the provided RollbackRequest (G35\u2013G36).\n\nThe returned RollbackResult includes:\n    \u2022 ok: bool\n    \u2022 reason: str\n    \u2022 state_after: WorkflowState",
       "imports": [],
       "dependencies": [
-        "_apply_rollback",
         "start_span",
         "log_exception",
+        "RollbackResult",
         "end_span",
-        "RollbackResult"
+        "_apply_rollback"
       ],
       "responsibility_level": "L5",
       "children": []

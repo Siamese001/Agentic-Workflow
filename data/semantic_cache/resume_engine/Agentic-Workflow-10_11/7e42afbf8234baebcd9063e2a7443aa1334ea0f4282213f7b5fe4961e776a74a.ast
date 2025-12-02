@@ -62,11 +62,11 @@
       "docstring": "Injects dependencies into a context object for r\u00e9sum\u00e9 processing workflows.\n\nArgs:\n    context: The context object to inject services into\n    \nReturns:\n    The context object with services injected",
       "imports": [],
       "dependencies": [
-        "PineconeConfig",
-        "hasattr",
+        "PineconeAdapter",
         "get_container",
+        "PineconeConfig",
         "SafetyEngine",
-        "PineconeAdapter"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -78,8 +78,8 @@
       "docstring": "Creates dependency injection decorator for r\u00e9sum\u00e9 processing functions.\n\nEnables automatic service resolution for modular r\u00e9sum\u00e9 improvement workflows.",
       "imports": [],
       "dependencies": [
-        "func",
-        "get_service"
+        "get_service",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -91,11 +91,11 @@
       "docstring": "Initializes default services for r\u00e9sum\u00e9 processing architecture.\n\nSets up essential dependencies for comprehensive r\u00e9sum\u00e9 improvement workflows.",
       "imports": [],
       "dependencies": [
-        "PineconeConfig",
+        "PineconeAdapter",
         "get_container",
         "register_service",
-        "SafetyEngine",
-        "PineconeAdapter"
+        "PineconeConfig",
+        "SafetyEngine"
       ],
       "responsibility_level": "L2",
       "children": []
@@ -159,8 +159,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "get_service"
+        "get_service",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -172,8 +172,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "get_service"
+        "get_service",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []

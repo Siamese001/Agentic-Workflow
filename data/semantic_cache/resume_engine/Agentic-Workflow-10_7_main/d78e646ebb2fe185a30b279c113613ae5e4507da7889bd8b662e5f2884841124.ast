@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\state_adapter_stack.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_stacks_v10_8\\state_adapter_stack.py",
     "file_hash": "d78e646ebb2fe185a30b279c113613ae5e4507da7889bd8b662e5f2884841124",
     "size_bytes": 8897,
-    "last_modified": "2025-12-01T12:27:41.169418",
+    "last_modified": "2025-12-01T12:27:42.103534",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -54,9 +54,9 @@
       "docstring": "Build a patch targeting ephemeral execution metadata.",
       "imports": [],
       "dependencies": [
-        "StatePatch",
         "EphemeralState",
-        "list"
+        "list",
+        "StatePatch"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -68,8 +68,8 @@
       "docstring": "Construct a patch that appends a new A2A message.",
       "imports": [],
       "dependencies": [
-        "StatePatch",
         "dict",
+        "StatePatch",
         "A2AMessage"
       ],
       "responsibility_level": "L5",
@@ -92,8 +92,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "set",
-        "ValueError"
+        "ValueError",
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -105,14 +105,14 @@
       "docstring": "Apply a schema-validated patch to the workflow state.",
       "imports": [],
       "dependencies": [
-        "wrapper_cls",
-        "dict",
         "getattr",
         "isinstance",
-        "type",
-        "hasattr",
         "callable",
-        "StatePatch"
+        "wrapper_cls",
+        "dict",
+        "StatePatch",
+        "type",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -124,11 +124,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "asdict",
-        "isinstance",
-        "hasattr",
         "callable",
-        "is_dataclass"
+        "isinstance",
+        "is_dataclass",
+        "asdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -140,8 +140,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dict",
         "ValueError",
+        "dict",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -154,8 +154,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "getattr"
+        "getattr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

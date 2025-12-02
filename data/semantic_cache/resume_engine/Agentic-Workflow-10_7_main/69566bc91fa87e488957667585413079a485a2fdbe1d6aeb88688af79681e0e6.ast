@@ -26,8 +26,8 @@
       "docstring": "Load job input JSON",
       "imports": [],
       "dependencies": [
-        "FileIOError",
-        "open"
+        "open",
+        "FileIOError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -39,14 +39,14 @@
       "docstring": "Main CLI entry point",
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
-        "run_simulation",
+        "print",
+        "str",
+        "run_workflow_async",
         "load_job_input",
         "dict",
-        "str",
+        "ConfigV10_7",
         "setup_logging",
-        "print",
-        "run_workflow_async"
+        "run_simulation"
       ],
       "responsibility_level": "L1",
       "children": []

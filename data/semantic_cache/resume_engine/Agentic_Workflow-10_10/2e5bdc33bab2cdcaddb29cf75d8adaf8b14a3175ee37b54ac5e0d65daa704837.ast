@@ -119,11 +119,11 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "record_exception",
-        "hasattr",
+        "invoke_model",
         "str",
         "record_event",
-        "invoke_model"
+        "record_exception",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -135,12 +135,12 @@
       "docstring": "Parse QA output into QAFinding items.\n\nIf JSON parsing fails, we fall back to a single generic finding.",
       "imports": [],
       "dependencies": [
-        "dict",
+        "str",
         "isinstance",
         "len",
-        "ValueError",
-        "str",
         "record_event",
+        "dict",
+        "ValueError",
         "QAFinding"
       ],
       "responsibility_level": "L5",
@@ -153,15 +153,15 @@
       "docstring": "Parse safety output into SafetyFinding items.\n\nIf JSON parsing fails, we fall back to conservative \"blocked\" findings.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "isinstance",
         "getattr",
-        "SafetyFinding",
         "enumerate",
-        "len",
-        "ValueError",
         "str",
-        "record_event"
+        "isinstance",
+        "len",
+        "record_event",
+        "dict",
+        "SafetyFinding",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []

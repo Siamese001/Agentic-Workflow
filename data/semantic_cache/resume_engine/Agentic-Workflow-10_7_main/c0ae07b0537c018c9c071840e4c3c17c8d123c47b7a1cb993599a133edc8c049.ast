@@ -28,8 +28,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -41,8 +41,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

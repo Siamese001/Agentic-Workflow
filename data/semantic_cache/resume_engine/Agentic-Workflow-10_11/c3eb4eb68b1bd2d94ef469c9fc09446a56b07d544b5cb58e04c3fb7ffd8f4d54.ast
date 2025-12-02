@@ -16,9 +16,9 @@
       "docstring": "Queries temporal facts for resume verification.\n\nEnsures resume timeline accuracy for improved job alignment.",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "str",
         "enumerate",
-        "str"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

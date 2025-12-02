@@ -26,8 +26,8 @@
       "docstring": "Load master resume with fallback to mock data.",
       "imports": [],
       "dependencies": [
-        "print",
         "open",
+        "print",
         "_get_mock_master_resume"
       ],
       "responsibility_level": "L5",
@@ -390,8 +390,8 @@
       "docstring": "Calculate word count for a section.\nv5.21: Counts ALL content including company/title/dates/location.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "str",
+        "isinstance",
         "len"
       ],
       "responsibility_level": "L5",
@@ -404,9 +404,9 @@
       "docstring": "Validate section length against master resume with tolerance.\nv5.21: All content counts (company/title/dates/location included).",
       "imports": [],
       "dependencies": [
+        "calculate_section_words",
         "int",
-        "ValidationResult",
-        "calculate_section_words"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -418,8 +418,8 @@
       "docstring": "Validate word distribution: (Unify + IBM) = 35-45% of total.\nv5.21: Includes overview + bullets for both roles.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
-        "calculate_section_words"
+        "calculate_section_words",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -431,8 +431,8 @@
       "docstring": "Validate Unify/IBM word ratio: 1.1 - 1.3.\nv5.21: Includes overview + bullets for both roles.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
-        "calculate_section_words"
+        "calculate_section_words",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -444,8 +444,8 @@
       "docstring": "Validate headline constraints.\nv5.21: 60-90 chars, 8-12 words, X|Y|Z components 2-4 words each.",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "ValidationResult",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",
@@ -458,8 +458,8 @@
       "docstring": "v5.21: Validate overview word count against master \u00b1tolerance%.",
       "imports": [],
       "dependencies": [
-        "int",
         "ValidationResult",
+        "int",
         "len"
       ],
       "responsibility_level": "L5",
@@ -472,10 +472,10 @@
       "docstring": "v5.21: Validate bullet word counts against master average \u00b1tolerance%.",
       "imports": [],
       "dependencies": [
+        "enumerate",
+        "int",
         "sum",
         "len",
-        "int",
-        "enumerate",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -602,8 +602,8 @@
       "docstring": "Extract required technical and business skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -615,8 +615,8 @@
       "docstring": "Extract preferred/nice-to-have skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -684,8 +684,8 @@
       "docstring": "Extract seniority signals from JD.",
       "imports": [],
       "dependencies": [
-        "int",
-        "bool"
+        "bool",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -753,9 +753,9 @@
       "docstring": "Analyze job description and return comprehensive thematic analysis.\n\nIn production, this would:\n1. Parse JD using NLP\n2. Retrieve peer JDs from database\n3. Extract competitive differentiators\n4. Calculate signal quality scores\n\nFor now, returns structured mock analysis that matches real system output.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
         "CompetitiveIntelligence",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -847,8 +847,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "VerbCanonicalizer",
-        "DuplicateDetector"
+        "DuplicateDetector",
+        "VerbCanonicalizer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -885,8 +885,8 @@
       "docstring": "Find bullets with similarity >= threshold.\nReturns: List of (index1, index2, similarity_score)",
       "imports": [],
       "dependencies": [
-        "len",
-        "range"
+        "range",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1075,8 +1075,8 @@
       "imports": [],
       "dependencies": [
         "enumerate",
-        "ValidationResult",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1184,15 +1184,15 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "validate_headline_v57",
-        "len",
         "isinstance",
-        "calculate_section_words",
+        "len",
         "int",
-        "validate_bullet_tolerance_v521",
-        "ValidationResult",
         "validate_overview_tolerance_v521",
-        "next"
+        "validate_bullet_tolerance_v521",
+        "calculate_section_words",
+        "next",
+        "validate_headline_v57",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1204,8 +1204,8 @@
       "docstring": "Validate TraderSense/EY/Early Career section lengths (\u00b110%).",
       "imports": [],
       "dependencies": [
-        "int",
         "next",
+        "int",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -1218,8 +1218,8 @@
       "docstring": "Validate word distributions.",
       "imports": [],
       "dependencies": [
-        "validate_unify_ibm_ratio_v57",
-        "validate_word_distribution_v57"
+        "validate_word_distribution_v57",
+        "validate_unify_ibm_ratio_v57"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1231,8 +1231,8 @@
       "docstring": "Validate structural requirements.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "len",
+        "isinstance",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -1280,9 +1280,9 @@
       "docstring": "21 word count validation rules (v5.6 adds total resume word count).",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
         "len",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1294,8 +1294,8 @@
       "docstring": "v5.15: Validate competencies word count constraints.\n- Each bullet: \u00b13% of master resume avg words per bullet\n- Total section: \u00b120% of master resume total section words",
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "validate_competencies_v515"
+        "validate_competencies_v515",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1308,9 +1308,9 @@
       "imports": [],
       "dependencies": [
         "set",
-        "ValidationResult",
         "len",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1334,9 +1334,9 @@
       "docstring": "15 prose quality rules.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
         "len",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1348,9 +1348,9 @@
       "docstring": "12 industry-first compliance rules.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
         "any",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1362,10 +1362,10 @@
       "docstring": "10 AI detection defense rules.",
       "imports": [],
       "dependencies": [
-        "sum",
         "ValidationResult",
-        "len",
-        "isinstance"
+        "sum",
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1456,8 +1456,8 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1489,19 +1489,19 @@
       "docstring": "Execute complete 10-hop workflow.\n\nReturns:\n    Dict with status, file_paths, validation_results, etc.",
       "imports": [],
       "dependencies": [
-        "asdict",
-        "PreFlightValidator",
-        "len",
         "DataEnricher",
-        "FileRenderer",
+        "print",
         "range",
         "str",
-        "print",
-        "ClerkExtractor",
-        "TextSanitizer",
         "ArtistGenerator",
+        "ClerkExtractor",
+        "len",
+        "ImmutableStagingBuffer",
         "GateDecisionEngine",
-        "ImmutableStagingBuffer"
+        "TextSanitizer",
+        "FileRenderer",
+        "asdict",
+        "PreFlightValidator"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1513,10 +1513,10 @@
       "docstring": "Create JD analyzer (can be mocked for testing).",
       "imports": [],
       "dependencies": [
-        "JobDescriptionAnalyzer",
         "CompetitiveIntelligence",
         "ThematicAnalysis",
-        "RetrievalSource"
+        "RetrievalSource",
+        "JobDescriptionAnalyzer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1528,8 +1528,8 @@
       "docstring": "Create hop checkpoint.",
       "imports": [],
       "dependencies": [
-        "str",
         "HopCheckpoint",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -1543,8 +1543,8 @@
       "imports": [],
       "dependencies": [
         "print",
-        "len",
-        "Exception"
+        "Exception",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1568,10 +1568,10 @@
       "docstring": "Generate comprehensive QA report (8-section format from v5.18).\nReturns: (validation_results, qa_report_text)",
       "imports": [],
       "dependencies": [
+        "enumerate",
+        "int",
         "ascii_bar",
         "len",
-        "int",
-        "enumerate",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -1585,8 +1585,8 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1622,9 +1622,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
         "CompetitiveIntelligence",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []

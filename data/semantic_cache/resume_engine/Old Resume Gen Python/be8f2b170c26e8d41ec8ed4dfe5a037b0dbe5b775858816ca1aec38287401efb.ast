@@ -16,8 +16,8 @@
       "docstring": "Load master resume with fallback to mock data.",
       "imports": [],
       "dependencies": [
-        "print",
         "open",
+        "print",
         "_get_mock_master_resume"
       ],
       "responsibility_level": "L5",
@@ -173,13 +173,13 @@
       "docstring": "v5.7: Validate section length is within \u00b1tolerance of master resume.",
       "imports": [],
       "dependencies": [
-        "abs",
-        "asdict",
         "calculate_section_words",
-        "ValidationResult",
-        "get_master_section_words",
+        "count_words_in_text",
         "SectionLengthMetrics",
-        "count_words_in_text"
+        "asdict",
+        "abs",
+        "get_master_section_words",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -191,10 +191,10 @@
       "docstring": "v5.7: Validate word distribution rules.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
+        "calculate_section_words",
         "asdict",
         "WordDistributionMetrics",
-        "calculate_section_words"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -285,10 +285,10 @@
       "docstring": "Run all v5.7 validations.",
       "imports": [],
       "dependencies": [
-        "validate_master_copy_v57",
-        "validate_headline_v57",
         "validate_word_distribution_v57",
-        "validate_section_length_v57"
+        "validate_section_length_v57",
+        "validate_headline_v57",
+        "validate_master_copy_v57"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -335,8 +335,8 @@
       "docstring": "Tailor section maintaining \u00b110% word count.",
       "imports": [],
       "dependencies": [
-        "int",
-        "calculate_section_words"
+        "calculate_section_words",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -371,12 +371,12 @@
       "docstring": "Execute complete workflow with v5.7 constraints.",
       "imports": [],
       "dependencies": [
-        "validate_headline_v57",
-        "asdict",
-        "len",
-        "Exception",
+        "print",
         "str",
-        "print"
+        "Exception",
+        "len",
+        "validate_headline_v57",
+        "asdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -388,8 +388,8 @@
       "docstring": "Analyze job description for themes.",
       "imports": [],
       "dependencies": [
-        "CompetitiveIntelligence",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "CompetitiveIntelligence"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -401,11 +401,11 @@
       "docstring": "Generate exactly 4 output files.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "asdict",
-        "len",
         "print",
-        "open"
+        "sum",
+        "len",
+        "open",
+        "asdict"
       ],
       "responsibility_level": "L5",
       "children": []

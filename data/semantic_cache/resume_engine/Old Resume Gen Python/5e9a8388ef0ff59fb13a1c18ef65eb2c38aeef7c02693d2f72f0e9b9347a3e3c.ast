@@ -107,10 +107,10 @@
       "imports": [],
       "dependencies": [
         "any",
-        "len",
-        "list",
+        "set",
         "int",
-        "set"
+        "len",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -187,9 +187,9 @@
       "docstring": "Run all 6 QA gates - RELAXED for v4.2 demo.",
       "imports": [],
       "dependencies": [
-        "sum",
         "int",
         "max",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -202,13 +202,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ExecutiveSummaryGenerator",
-        "JDParser",
-        "HeadlineCustomizer",
+        "MasterResume",
         "ResumeFormatter",
         "WordCountAnalyzer",
-        "MasterResume",
-        "QAGates"
+        "QAGates",
+        "HeadlineCustomizer",
+        "ExecutiveSummaryGenerator",
+        "JDParser"
       ],
       "responsibility_level": "L5",
       "children": []

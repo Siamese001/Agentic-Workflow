@@ -16,12 +16,12 @@
       "docstring": "Bounds memory retention for resume workflow state.\n\nLimits history retention for efficient resume job alignment.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "getattr",
+        "isinstance",
         "len",
         "replace",
-        "hasattr",
-        "is_dataclass"
+        "is_dataclass",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -33,13 +33,13 @@
       "docstring": "Records correction events for r\u00e9sum\u00e9 processing workflow state.\n\nAppends correction entries to maintain audit trail for r\u00e9sum\u00e9 enhancement operations.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "isinstance",
         "getattr",
+        "isinstance",
+        "dict",
         "list",
         "replace",
-        "hasattr",
-        "is_dataclass"
+        "is_dataclass",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -51,8 +51,8 @@
       "docstring": "Applies L2 results as state patch for r\u00e9sum\u00e9 processing workflows.\n\nCompatibility function that converts L2 execution results into state patch for r\u00e9sum\u00e9 enhancement.\n\nArgs:\n    l2_results: L2ResultBundle with r\u00e9sum\u00e9 processing execution results\n    corrections: List of corrections to apply for r\u00e9sum\u00e9 enhancement\n    ctx: Execution context for r\u00e9sum\u00e9 workflows\n    safety_passed: Whether r\u00e9sum\u00e9 enhancement safety checks passed\n    \nReturns:\n    dict: State patch with r\u00e9sum\u00e9 processing results",
       "imports": [],
       "dependencies": [
-        "list",
-        "getattr"
+        "getattr",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

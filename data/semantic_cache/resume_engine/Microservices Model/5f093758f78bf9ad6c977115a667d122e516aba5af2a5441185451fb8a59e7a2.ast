@@ -26,13 +26,13 @@
       "docstring": "Executes the HOP-4 staging and sanitization logic.",
       "imports": [],
       "dependencies": [
-        "setup_workflow_logging",
-        "exit",
-        "HopExecutionError",
         "print",
+        "setup_workflow_logging",
         "open",
+        "exit",
+        "ContentSanitizer",
         "Path",
-        "ContentSanitizer"
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -91,9 +91,9 @@
       "imports": [],
       "dependencies": [
         "type",
-        "len",
+        "ImmutableStagingBuffer",
         "isinstance",
-        "ImmutableStagingBuffer"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -38,8 +38,8 @@
       "docstring": "Converts internal results to resume workflow NodeResult format.",
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "NodeResult"
+        "NodeResult",
+        "enumerate"
       ],
       "responsibility_level": "L5",
       "children": []

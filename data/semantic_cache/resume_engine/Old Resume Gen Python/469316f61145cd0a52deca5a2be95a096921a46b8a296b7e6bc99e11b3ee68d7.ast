@@ -90,8 +90,8 @@
       "docstring": "Extract required technical and business skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -103,8 +103,8 @@
       "docstring": "Extract preferred/nice-to-have skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -178,10 +178,10 @@
       "docstring": "Execute complete workflow with proper JD ingestion.",
       "imports": [],
       "dependencies": [
-        "str",
+        "JDParser",
         "print",
-        "len",
-        "JDParser"
+        "str",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -193,8 +193,8 @@
       "docstring": "Execute retrieval using ACTUAL JD analysis.\nNO MOCK DATA.",
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "print"
+        "print",
+        "enumerate"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -233,8 +233,8 @@
       "docstring": "Identify gaps between JD requirements and retrieved content.",
       "imports": [],
       "dependencies": [
-        "set",
         "any",
+        "set",
         "list"
       ],
       "responsibility_level": "L5",
@@ -317,10 +317,10 @@
       "docstring": "Generate output files with actual content.",
       "imports": [],
       "dependencies": [
-        "sum",
         "open",
-        "len",
-        "range"
+        "range",
+        "sum",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

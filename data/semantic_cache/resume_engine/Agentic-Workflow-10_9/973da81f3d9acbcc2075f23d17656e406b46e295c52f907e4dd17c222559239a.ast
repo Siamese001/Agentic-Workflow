@@ -16,8 +16,8 @@
       "docstring": "Safety operating mode:\n\n    STRICT     \u2013 block on any serious issue (injection, policy, constitutional).\n    BALANCED   \u2013 block on injection or strong policy violations.\n    PERMISSIVE \u2013 block primarily on injection; allow more borderline cases.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Combine base SafetyMode with meta_profile biases:\n\n    \u2022 safety_bias.heightened_caution  \u2192 STRICT\n    \u2022 planning_bias.conservative      \u2192 tilt to STRICT\n    \u2022 safety_bias.human_review_important alone \u2192 BALANCED is ok",
       "imports": [],
       "dependencies": [
-        "get_planning_bias",
-        "get_safety_bias"
+        "get_safety_bias",
+        "get_planning_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -96,10 +96,10 @@
       "docstring": "Deterministic constitutional review.\n\nReturns:\n    {\n        \"passed\": bool,\n        \"violations\": [...],\n        \"confidence\": float,\n    }",
       "imports": [],
       "dependencies": [
-        "max",
         "fn",
-        "len",
-        "round"
+        "max",
+        "round",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -141,8 +141,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "getattr",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -155,13 +155,13 @@
       "docstring": "Validate a single content string and return a structured safety report.\n\nThe returned dict is intentionally compatible with SafetyReport-like\nstructures but remains plain-JSON.",
       "imports": [],
       "dependencies": [
-        "len",
+        "constitutional_review",
         "redact_pii",
-        "scan_bias",
+        "len",
         "detect_prompt_injection",
-        "toxicity_score",
         "scan_forbidden",
-        "constitutional_review"
+        "toxicity_score",
+        "scan_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -183,10 +183,10 @@
       "docstring": "Return a structured policy decision from a safety_report.\n\nShape:\n    {\n      \"decision\": \"allow|retry|replan|block\",\n      \"reason\":   \"<short string>\",\n      \"mode\":     \"<effective mode>\",\n    }",
       "imports": [],
       "dependencies": [
-        "any",
-        "_derive_mode_from_meta",
         "float",
-        "str"
+        "any",
+        "str",
+        "_derive_mode_from_meta"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -198,9 +198,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
+        "ArbitrationDecision",
         "any",
-        "ArbitrationDecision"
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

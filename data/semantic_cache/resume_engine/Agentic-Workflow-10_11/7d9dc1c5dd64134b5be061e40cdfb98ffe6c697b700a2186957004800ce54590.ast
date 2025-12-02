@@ -36,9 +36,9 @@
       "docstring": "Runs the dependency analyzer to ensure clean code architecture.\n\nMaintains resume generation system organization for improved\ncode quality and easier future enhancements.",
       "imports": [],
       "dependencies": [
-        "Path",
-        "DependencyAnalyzer",
         "print",
+        "DependencyAnalyzer",
+        "Path",
         "len"
       ],
       "responsibility_level": "L1",
@@ -121,9 +121,9 @@
       "docstring": "Analyzes a single Python file for import dependencies.\n\nEnsures resume generation modules maintain clean architecture\nfor better code organization and easier enhancements.",
       "imports": [],
       "dependencies": [
+        "open",
         "print",
-        "ImportVisitor",
-        "open"
+        "ImportVisitor"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -148,11 +148,11 @@
       "docstring": "Analyzes the entire codebase for dependency relationships.\n\nEnsures resume generation system maintains clean architecture\nfor improved code quality and easier maintenance.",
       "imports": [],
       "dependencies": [
-        "any",
-        "len",
-        "str",
         "print",
-        "set"
+        "any",
+        "set",
+        "str",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -164,11 +164,11 @@
       "docstring": "Generates a comprehensive dependency report for code analysis.\n\nProvides insights into module relationships to ensure resume\ngeneration code remains organized and maintainable.",
       "imports": [],
       "dependencies": [
+        "str",
         "sum",
         "len",
-        "list",
-        "str",
-        "sorted"
+        "sorted",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -180,8 +180,8 @@
       "docstring": "Saves the dependency report to a JSON file for analysis.\n\nPreserves architectural insights to help maintain resume\ngeneration code quality and organization over time.",
       "imports": [],
       "dependencies": [
-        "print",
-        "open"
+        "open",
+        "print"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -193,8 +193,8 @@
       "docstring": "Prints a summary of the dependency analysis results.\n\nDisplays key insights about code architecture to help maintain\nresume generation system organization and quality.",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "print",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",

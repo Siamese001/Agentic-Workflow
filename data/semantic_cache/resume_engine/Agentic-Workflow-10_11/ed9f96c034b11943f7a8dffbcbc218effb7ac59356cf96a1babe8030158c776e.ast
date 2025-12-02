@@ -26,19 +26,19 @@
       "docstring": "Constructs directed acyclic graph for workflow execution.\n\nEnsures proper sequencing of r\u00e9sum\u00e9 improvement stages for optimal results.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "QAResult",
-        "_execute_retrieval",
-        "DraftingResult",
-        "_execute_qa",
-        "RAGResult",
-        "_execute_safety",
-        "DagEdge",
-        "_execute_drafting",
         "StrategyResult",
-        "DagGraph",
+        "QAResult",
         "_execute_strategy",
-        "DagNode"
+        "RAGResult",
+        "dict",
+        "DraftingResult",
+        "DagEdge",
+        "DagNode",
+        "_execute_qa",
+        "_execute_drafting",
+        "DagGraph",
+        "_execute_safety",
+        "_execute_retrieval"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -51,9 +51,9 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "log_exception",
-        "str",
         "route_task_to_agent",
+        "str",
+        "log_exception",
         "emit_node_event"
       ],
       "responsibility_level": "L5",

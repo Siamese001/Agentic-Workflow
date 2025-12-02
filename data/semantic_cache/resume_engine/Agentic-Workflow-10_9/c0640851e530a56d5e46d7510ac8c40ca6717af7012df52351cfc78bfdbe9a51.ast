@@ -16,9 +16,9 @@
       "docstring": "Normalize incoming state for orchestration.\n\nEnsures:\n    \u2022 workflow_id present in root and metadata\n    \u2022 messages is a list\n    \u2022 metadata is a dict\n    \u2022 compat/debug flags stored in metadata",
       "imports": [],
       "dependencies": [
+        "bool",
         "str",
         "dict",
-        "bool",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -43,12 +43,12 @@
       "docstring": "Build the typed FramingProfile, ContextProfile, ToolingProfile,\nSafetyOutputProfile, AccessPolicy used by L1 planners.",
       "imports": [],
       "dependencies": [
-        "AccessPolicy",
-        "FramingProfile",
-        "ContextProfile",
         "str",
+        "ToolingProfile",
+        "FramingProfile",
         "SafetyOutputProfile",
-        "ToolingProfile"
+        "ContextProfile",
+        "AccessPolicy"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -73,10 +73,10 @@
       "docstring": "Build a PLAN for the entire workflow: strategy \u2192 rag \u2192 drafting \u2192 bullets \u2192\nqa \u2192 safety \u2192 meta_learning \u2192 prompt_engineering.\n\nThis includes constructing the DAG structure required by L3.",
       "imports": [],
       "dependencies": [
-        "_extract_job_resume_texts",
+        "l1_plan",
         "_build_profiles",
-        "PlanObject",
-        "l1_plan"
+        "_extract_job_resume_texts",
+        "PlanObject"
       ],
       "responsibility_level": "L5",
       "children": []

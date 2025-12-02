@@ -40,12 +40,12 @@
       "docstring": "Derive a lightweight CouncilVote from QA findings.\n\nThis provides a deterministic, non-LLM fallback that can be consumed\nby downstream layers (L5, retrieval weighting) even if the dedicated\nQACouncilAgent / LLM path is unavailable or fails.\n\nHeuristic:\n    \u2022 Count findings by severity.\n    \u2022 Select an overall verdict id:\n          \u2013 \"block\" if any high-severity finding exists.\n          \u2013 \"warn\" if only medium findings exist.\n          \u2013 \"pass\" otherwise.\n    \u2022 Encode simple scores in the CouncilVote.scores map.",
       "imports": [],
       "dependencies": [
-        "sum",
+        "float",
         "getattr",
+        "sum",
         "len",
         "list",
-        "CouncilVote",
-        "float"
+        "CouncilVote"
       ],
       "responsibility_level": "L5",
       "children": []

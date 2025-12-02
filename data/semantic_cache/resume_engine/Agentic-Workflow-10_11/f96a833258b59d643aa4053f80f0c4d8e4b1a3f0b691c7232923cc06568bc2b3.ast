@@ -16,10 +16,10 @@
       "docstring": "Run a Gemini generate_content call and return the response text.",
       "imports": [],
       "dependencies": [
-        "str",
+        "RuntimeError",
         "getattr",
-        "ImportError",
-        "RuntimeError"
+        "str",
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []

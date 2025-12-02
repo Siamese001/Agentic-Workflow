@@ -72,8 +72,8 @@
       "docstring": "Validate that the environment is properly configured.\n\nRaises:\n    RuntimeError: If environment is not properly configured",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "RuntimeError"
+        "RuntimeError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -85,11 +85,11 @@
       "docstring": "Execute a production-ready Gemini API call with comprehensive error handling.\n\nArgs:\n    prompt: The user prompt (required, cannot be empty)\n    section_id: Identifier for logging and tracking\n    model: Model name override\n    system_prompt: Optional system prompt\n    reasoning_config: Reasoning configuration\n    temperature: Temperature override (0.0-1.0)\n    max_tokens: Max output tokens\n    return_full_response: Return full API response object\n    validate_response: Validate response for mock/placeholder data\n    \nReturns:\n    Tuple of (generated_text, api_calls_made, full_response)\n    \nRaises:\n    HopExecutionError: If API call fails after all retries\n    ValueError: If input validation fails",
       "imports": [],
       "dependencies": [
-        "reasoning_config_to_api_params",
-        "HopExecutionError",
-        "ValueError",
         "range",
+        "reasoning_config_to_api_params",
         "str",
+        "ValueError",
+        "HopExecutionError",
         "enhance_system_prompt_with_reasoning"
       ],
       "responsibility_level": "L3",
@@ -102,10 +102,10 @@
       "docstring": "Execute multiple API calls for self-consistency with synthesis.\n\nArgs:\n    prompt: The user prompt\n    section_id: Identifier for logging\n    num_runs: Number of self-consistency runs\n    model: Model name override\n    system_prompt: Optional system prompt\n    reasoning_config: Reasoning configuration\n    temperature: Temperature for generation\n    max_tokens: Max output tokens\n    synthesis_prompt: Custom prompt for synthesis\n    \nReturns:\n    Tuple of (synthesized_result, total_api_calls, individual_responses)",
       "imports": [],
       "dependencies": [
-        "HopExecutionError",
         "ValueError",
-        "len",
-        "range"
+        "range",
+        "HopExecutionError",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -141,8 +141,8 @@
       "docstring": "Synthesize multiple responses into a single coherent response.\n\nArgs:\n    responses: List of response texts\n    section_id: Identifier for logging\n    synthesis_prompt: Custom synthesis prompt\n    model: Model to use for synthesis\n    \nReturns:\n    Synthesized response text",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "chr",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",

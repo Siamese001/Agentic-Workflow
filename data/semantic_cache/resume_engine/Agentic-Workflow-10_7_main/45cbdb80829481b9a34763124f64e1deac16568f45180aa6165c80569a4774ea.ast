@@ -40,9 +40,9 @@
       "docstring": "Return an agent class registered for the manifest.",
       "imports": [],
       "dependencies": [
+        "getattr",
         "KeyError",
-        "_load_module",
-        "getattr"
+        "_load_module"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -54,9 +54,9 @@
       "docstring": "Load and cache schemas declared in the manifest.",
       "imports": [],
       "dependencies": [
-        "FileNotFoundError",
+        "open",
         "Path",
-        "open"
+        "FileNotFoundError"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\retrievers\\bm25(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\retrievers\\bm25.py",
     "file_hash": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc",
     "size_bytes": 2668,
-    "last_modified": "2025-12-01T12:27:38.881042",
+    "last_modified": "2025-12-01T12:27:38.883049",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -60,12 +60,12 @@
       "docstring": "Run BM25 search over an in-memory corpus.\n\nParameters\n----------\nquery:\n    Query string.\ncorpus:\n    Sequence of dict items; each must contain a ``text`` field.\ncfg:\n    BM25Config with k1 / b / max_hits.\n\nReturns\n-------\nList[Dict[str, Any]]\n    Items annotated with ``score`` and sorted by descending score.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "zip",
+        "float",
         "_tokenize",
         "BM25Okapi",
         "_import_bm25",
-        "float"
+        "dict",
+        "zip"
       ],
       "responsibility_level": "L5",
       "children": []

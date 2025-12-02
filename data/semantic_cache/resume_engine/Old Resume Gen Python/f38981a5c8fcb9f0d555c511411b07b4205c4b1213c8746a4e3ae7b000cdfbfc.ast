@@ -16,8 +16,8 @@
       "docstring": "Loads JSON data from a file in the same directory as the script.",
       "imports": [],
       "dependencies": [
-        "FileNotFoundError",
-        "open"
+        "open",
+        "FileNotFoundError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -79,13 +79,13 @@
       "docstring": "[MODIFIED FOR OPTION B]\nConverts reasoning config to Gemini API parameters.\nUses _allocate_tokens_from_depth for proportional max_output_tokens.",
       "imports": [],
       "dependencies": [
-        "_allocate_tokens_from_depth",
-        "RAGConfig",
         "_build_reasoning_prompt_addendum",
-        "_calculate_reasoning_intensity",
-        "min",
+        "RAGConfig",
+        "_allocate_tokens_from_depth",
+        "_get_generation_temperature",
         "_get_normalized_reasoning_params",
-        "_get_generation_temperature"
+        "min",
+        "_calculate_reasoning_intensity"
       ],
       "responsibility_level": "L3",
       "children": []
@@ -543,13 +543,13 @@
       "docstring": "Helper to calculate signal score for a block of text based on JD keywords.",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance",
         "getattr",
-        "hasattr",
+        "set",
         "str",
+        "isinstance",
+        "len",
         "min",
-        "set"
+        "hasattr"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -845,9 +845,9 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "len",
+        "JDEnforcementResult",
         "isinstance",
-        "JDEnforcementResult"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -859,10 +859,10 @@
       "docstring": "GATE-2: Validate ThematicAnalysis uses JD.\nEnforces: E6, E7",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str",
         "any",
-        "JDEnforcementResult"
+        "str",
+        "JDEnforcementResult",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -875,10 +875,10 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "JDEnforcementResult",
-        "len",
         "isinstance",
-        "str"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -890,10 +890,10 @@
       "docstring": "GATE-4: Validate artist receives and uses JD.\nEnforces: E8, E9, E14",
       "imports": [],
       "dependencies": [
-        "len",
         "bool",
         "JDEnforcementResult",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -906,10 +906,10 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "JDEnforcementResult",
         "len",
-        "hasattr",
-        "str"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -935,8 +935,8 @@
       "docstring": "GATE-8: Validate QA report verifies JD.\nEnforces: E13, E15",
       "imports": [],
       "dependencies": [
-        "sum",
         "JDEnforcementResult",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -1011,11 +1011,11 @@
       "docstring": "Validate complete app tracker data.\nReturns PASSED or BLOCKED JSON outcome.",
       "imports": [],
       "dependencies": [
-        "len",
-        "list",
-        "enumerate",
         "set",
-        "sorted"
+        "enumerate",
+        "len",
+        "sorted",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1079,9 +1079,9 @@
       "docstring": "Execute function with circuit breaker protection.",
       "imports": [],
       "dependencies": [
-        "timedelta",
         "func",
-        "CircuitBreakerOpenError"
+        "CircuitBreakerOpenError",
+        "timedelta"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1103,10 +1103,10 @@
       "docstring": "Execute a phase with retry logic and optional simplified fallback.\n\nArgs:\n    phase_func: Main phase function to execute\n    phase_name: Name for logging\n    fallback_func: Optional simplified version to try if main fails\n\nReturns:\n    Result from phase_func or fallback_func\n\nRaises:\n    PhaseTimeoutError, Exception from phase execution",
       "imports": [],
       "dependencies": [
-        "type",
         "ValueError",
+        "range",
         "RuntimeError",
-        "range"
+        "type"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1118,9 +1118,9 @@
       "docstring": "Execute function with timeout.\nNote: Signal-based timeout only works on Unix. Falls back to direct call on Windows.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "func",
-        "PhaseTimeoutError"
+        "PhaseTimeoutError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1218,9 +1218,9 @@
       "docstring": "Initializes the client, configuring the API key globally.",
       "imports": [],
       "dependencies": [
+        "RAGConfig",
         "CircuitBreaker",
-        "ImportError",
-        "RAGConfig"
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1232,10 +1232,10 @@
       "docstring": "Send prompt to Gemini with web_search tool enabled.\nEnhanced with adaptive retry, circuit breaker, and JSON repair.\n\nReturns: Parsed JSON from Gemini's response AND the number of API calls made.\nRaises: APIError, CircuitBreakerOpenError, TimeoutError, ValueError",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "type",
+        "range",
         "RuntimeError",
-        "range"
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1247,14 +1247,14 @@
       "docstring": "Make the actual API call with timeout and robust response handling.\nv11.30 Fix: Removed 'tools', Uses integer codes for finish_reason.\nNOW increments API counter and returns call count (1).",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "getattr",
-        "HopExecutionError",
-        "ValueError",
+        "str",
+        "isinstance",
         "TimeoutError",
+        "ValueError",
+        "HopExecutionError",
         "type",
-        "hasattr",
-        "str"
+        "hasattr"
       ],
       "responsibility_level": "L3",
       "children": []
@@ -1279,9 +1279,9 @@
       "docstring": "Extract JSON from the LLM's response content.\nEnhanced with multiple parsing strategies and repair attempts.\nv11.30 Fix: Relaxed initial check to allow for markdown fences.",
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "str",
         "ValueError",
+        "str",
+        "enumerate",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -1294,8 +1294,8 @@
       "docstring": "Attempt to repair common JSON formatting errors.\nv5.59: Multiple repair strategies for robustness.",
       "imports": [],
       "dependencies": [
-        "repair_func",
-        "ord"
+        "ord",
+        "repair_func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1351,9 +1351,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "PhaseExecutor",
+        "RAGConfig",
         "CompetitiveAnalysisConfig",
-        "RAGConfig"
+        "PhaseExecutor"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1465,11 +1465,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "WebSearchRAG",
-        "RAGConfig",
         "TelemetryLogger",
-        "JDCacheManager",
-        "GeminiWebSearchClient"
+        "RAGConfig",
+        "WebSearchRAG",
+        "GeminiWebSearchClient",
+        "JDCacheManager"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1515,15 +1515,15 @@
       "docstring": "v11.60 Final Fix: Added JSON roundtrip conversion before synthesis & caching.\nNOW returns a tuple: (ThematicAnalysis, total_api_calls_this_hop)",
       "imports": [],
       "dependencies": [
-        "asdict",
+        "_json_roundtrip_convert",
+        "str",
         "isinstance",
         "HopExecutionError",
-        "type",
-        "hasattr",
-        "str",
+        "PartialRAGResult",
         "RAGTelemetry",
-        "_json_roundtrip_convert",
-        "PartialRAGResult"
+        "type",
+        "asdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1545,22 +1545,22 @@
       "docstring": "Synthesize three-phase web RAG results into ThematicAnalysis.\nv11.60 Final Fix: Manually reconstruct dicts from RAG results.",
       "imports": [],
       "dependencies": [
-        "CompetitiveIntelligence",
+        "getattr",
+        "type",
+        "str",
         "isinstance",
         "len",
-        "getattr",
-        "AttributeError",
-        "type",
-        "list",
-        "_manual_reconstruct_nested",
-        "hasattr",
-        "callable",
-        "str",
-        "_manual_reconstruct",
+        "sorted",
         "ThematicAnalysis",
-        "min",
+        "callable",
         "RetrievalSource",
-        "sorted"
+        "list",
+        "_manual_reconstruct",
+        "min",
+        "CompetitiveIntelligence",
+        "_manual_reconstruct_nested",
+        "AttributeError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1582,12 +1582,12 @@
       "docstring": "[v12.00 FIX] Convert cached dict back to ThematicAnalysis object.\nFIX: Added more robust checks for nested object reconstruction.",
       "imports": [],
       "dependencies": [
-        "CompetitiveIntelligence",
         "getattr",
-        "isinstance",
         "type",
+        "isinstance",
         "ThematicAnalysis",
-        "RetrievalSource"
+        "RetrievalSource",
+        "CompetitiveIntelligence"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1599,8 +1599,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1637,8 +1637,8 @@
       "docstring": "Generate primary theme from highest scoring domain.",
       "imports": [],
       "dependencies": [
-        "list",
-        "max"
+        "max",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1662,10 +1662,10 @@
       "docstring": "Extract competitive intelligence from keywords.",
       "imports": [],
       "dependencies": [
-        "max",
-        "float",
         "CompetitiveIntelligence",
-        "sorted"
+        "float",
+        "sorted",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1677,8 +1677,8 @@
       "docstring": "Classify role based on keywords, incorporating new themes.",
       "imports": [],
       "dependencies": [
-        "any",
-        "sorted"
+        "sorted",
+        "any"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1846,8 +1846,8 @@
       "docstring": "Find bullets with cosine similarity >= threshold.\nReturns: List of (index1, index2, similarity_score)",
       "imports": [],
       "dependencies": [
-        "len",
-        "range"
+        "range",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1884,13 +1884,13 @@
       "docstring": "Compute 78-check pairwise similarity matrix across all sections.\nReturns comprehensive matrix with all pairwise comparisons.",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "isinstance",
-        "list",
+        "range",
         "enumerate",
-        "round",
-        "range"
+        "isinstance",
+        "len",
+        "max",
+        "list",
+        "round"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1902,11 +1902,11 @@
       "docstring": "Compute cosine similarity between overview and each bullet.\nPer v1.9.2: K.5B/K.6B must have cosine <0.6 to their bullets.\nv9.87: Uses count_words_ms_word_style for length reporting.",
       "imports": [],
       "dependencies": [
-        "max",
+        "enumerate",
         "isinstance",
         "len",
+        "max",
         "round",
-        "enumerate",
         "count_words_ms_word_style"
       ],
       "responsibility_level": "L5",
@@ -1919,10 +1919,10 @@
       "docstring": "v9.11: Compute cosine similarity between Executive Summary and other sections.\n\nArgs:\n    exec_summary_text: The text of the Executive Summary (K.1).\n    sections_content: A dictionary where keys are section labels (e.g., \"Unify Overview\", \"IBM Bullets\")\n                      and values are either a single string (for overviews) or a list of strings (for bullets).\n                      \nReturns:\n    List of dictionaries, each containing 'section_label', 'max_similarity',\n    'average_similarity', and 'item_count'.",
       "imports": [],
       "dependencies": [
-        "sum",
         "max",
-        "len",
-        "isinstance"
+        "sum",
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1949,8 +1949,8 @@
       "dependencies": [
         "getattr",
         "isinstance",
-        "AttributeError",
         "HopExecutionError",
+        "AttributeError",
         "hasattr"
       ],
       "responsibility_level": "L5",
@@ -1964,13 +1964,13 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "len",
-        "reasoning_config_to_api_params",
-        "enumerate",
-        "HopExecutionError",
         "type",
-        "hasattr",
-        "enhance_system_prompt_with_reasoning"
+        "enumerate",
+        "reasoning_config_to_api_params",
+        "len",
+        "HopExecutionError",
+        "enhance_system_prompt_with_reasoning",
+        "hasattr"
       ],
       "responsibility_level": "L3",
       "children": []
@@ -1996,11 +1996,11 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "isinstance",
-        "method",
         "int",
-        "HopExecutionError",
-        "sorted"
+        "method",
+        "isinstance",
+        "sorted",
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2044,8 +2044,8 @@
       "docstring": "Safely gets the ReasoningConfig for a section, falling back to DEFAULT.",
       "imports": [],
       "dependencies": [
-        "ReasoningConfig",
-        "getattr"
+        "getattr",
+        "ReasoningConfig"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2067,8 +2067,8 @@
       "docstring": "Builds context dictionary for K.0 Headline prompt.",
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "getattr"
+        "getattr",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2080,8 +2080,8 @@
       "docstring": "Builds context dictionary for K.1 Summary prompt.",
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "getattr"
+        "getattr",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2093,13 +2093,13 @@
       "docstring": "Builds context for narrative sections (K4, K5, K6).",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "getattr",
-        "list",
-        "HopExecutionError",
+        "set",
         "str",
+        "isinstance",
+        "list",
         "next",
-        "set"
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2111,10 +2111,10 @@
       "docstring": "Builds context dictionary for K.10 Skills prompt.",
       "imports": [],
       "dependencies": [
-        "list",
-        "isinstance",
         "getattr",
-        "set"
+        "list",
+        "set",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2126,8 +2126,8 @@
       "docstring": "Builds context dictionary for K.11 Cover Letter prompt.",
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "getattr"
+        "getattr",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2180,10 +2180,10 @@
       "docstring": "Generic method to generate content using LLM based on spec.",
       "imports": [],
       "dependencies": [
-        "defaultdict",
-        "builder_method",
         "getattr",
         "HopExecutionError",
+        "defaultdict",
+        "builder_method",
         "processor_method"
       ],
       "responsibility_level": "L5",
@@ -2210,11 +2210,11 @@
       "docstring": "Helper to get the formatted expected signature block.",
       "imports": [],
       "dependencies": [
+        "str",
         "globals",
-        "HopExecutionError",
         "NameError",
-        "locals",
-        "str"
+        "HopExecutionError",
+        "locals"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2238,10 +2238,10 @@
       "docstring": "Generates tailored overviews by synthesizing bullets AND\nincorporating high-level themes from HOP-0. (Consolidated Logic)",
       "imports": [],
       "dependencies": [
-        "any",
         "getattr",
-        "isinstance",
+        "any",
         "enumerate",
+        "isinstance",
         "HopExecutionError",
         "count_words_ms_word_style",
         "_count_sentences"
@@ -2257,8 +2257,8 @@
       "imports": [],
       "dependencies": [
         "set",
-        "isinstance",
         "HopExecutionError",
+        "isinstance",
         "len"
       ],
       "responsibility_level": "L5",
@@ -2285,8 +2285,8 @@
       "docstring": "Checks word count, attempts rewrite if needed. Returns (final_list, total_rewrite_calls).",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "HopExecutionError",
+        "enumerate",
         "count_words_ms_word_style",
         "isinstance"
       ],
@@ -2300,13 +2300,13 @@
       "docstring": "Creates 'Customized' bullets for K.2, K.3, K.9.",
       "imports": [],
       "dependencies": [
+        "getattr",
+        "set",
         "isinstance",
         "len",
         "list",
-        "getattr",
         "HopExecutionError",
         "count_words_ms_word_style",
-        "set",
         "ReasoningConfig"
       ],
       "responsibility_level": "L5",
@@ -2319,13 +2319,13 @@
       "docstring": "Creates 'Synthetic' bullets for K.2, K.3, K.9.",
       "imports": [],
       "dependencies": [
+        "getattr",
+        "set",
         "isinstance",
         "len",
         "list",
-        "getattr",
         "HopExecutionError",
-        "count_words_ms_word_style",
-        "set"
+        "count_words_ms_word_style"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2338,16 +2338,16 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "len",
-        "isinstance",
+        "set",
+        "str",
         "enumerate",
+        "isinstance",
+        "len",
+        "next",
         "HopExecutionError",
         "count_words_ms_word_style",
-        "DuplicateDetector",
-        "str",
-        "next",
         "chr",
-        "set",
+        "DuplicateDetector",
         "ReasoningConfig"
       ],
       "responsibility_level": "L5",
@@ -2422,8 +2422,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "set",
         "ValueError",
+        "set",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -2461,11 +2461,11 @@
       "docstring": "Apply all sanitization rules to a single string.",
       "imports": [],
       "dependencies": [
-        "max",
+        "set",
         "isinstance",
         "len",
-        "hasattr",
-        "set"
+        "max",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2477,8 +2477,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ContentConstraintsConfig",
-        "SignalControlConfig"
+        "SignalControlConfig",
+        "ContentConstraintsConfig"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2515,10 +2515,10 @@
       "docstring": "Calculate and cache metrics on demand.",
       "imports": [],
       "dependencies": [
-        "AttributeError",
+        "getattr",
         "calculation_method_details",
         "calculation_method",
-        "getattr"
+        "AttributeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2530,8 +2530,8 @@
       "docstring": "Calculates total word count across relevant sections.",
       "imports": [],
       "dependencies": [
-        "sum",
         "str",
+        "sum",
         "count_words_ms_word_style",
         "isinstance"
       ],
@@ -2665,11 +2665,11 @@
       "docstring": "Calculates details for COVER_LETTER_STRUCTURE rule (using K.11).",
       "imports": [],
       "dependencies": [
-        "len",
         "enumerate",
-        "count_words_ms_word_style",
+        "len",
+        "ContentConstraintsConfig",
         "next",
-        "ContentConstraintsConfig"
+        "count_words_ms_word_style"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2713,11 +2713,11 @@
       "docstring": "Calculates pairwise similarity between key sections and caches details.",
       "imports": [],
       "dependencies": [
-        "max",
+        "range",
+        "str",
         "isinstance",
         "len",
-        "range",
-        "str"
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2730,9 +2730,9 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "max",
-        "len",
         "isinstance",
+        "len",
+        "max",
         "round",
         "min"
       ],
@@ -2747,8 +2747,8 @@
       "imports": [],
       "dependencies": [
         "ValidationEngine",
-        "ContentConstraintsConfig",
-        "SignalControlConfig"
+        "SignalControlConfig",
+        "ContentConstraintsConfig"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2771,20 +2771,20 @@
       "imports": [],
       "dependencies": [
         "ValidationRule",
-        "defaultdict",
-        "template",
         "any",
-        "TypeError",
-        "isinstance",
+        "set",
         "getattr",
-        "list",
-        "type",
-        "create_error_message_lambda",
-        "hasattr",
-        "callable",
         "str",
+        "isinstance",
+        "callable",
+        "TypeError",
+        "template",
+        "list",
+        "create_error_message_lambda",
         "partial",
-        "set"
+        "type",
+        "defaultdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2858,11 +2858,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance",
+        "set",
         "enumerate",
-        "count_words_ms_word_style",
-        "set"
+        "isinstance",
+        "len",
+        "count_words_ms_word_style"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2874,10 +2874,10 @@
       "docstring": "Validates headline structure AND checks for forbidden titles.",
       "imports": [],
       "dependencies": [
-        "list",
+        "set",
         "enumerate",
-        "len",
-        "set"
+        "list",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2903,12 +2903,12 @@
       "docstring": "Checks recursively for '[Placeholder...]', '[Your Name]', '[Company Name]' strings in buffer data.",
       "imports": [],
       "dependencies": [
-        "max",
+        "set",
+        "ResumeSection",
         "isinstance",
         "len",
-        "ResumeSection",
-        "check_recursive",
-        "set"
+        "max",
+        "check_recursive"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2920,11 +2920,11 @@
       "docstring": "Checks for forbidden verbs in key text sections.",
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "list",
-        "enumerate",
+        "set",
         "str",
-        "set"
+        "enumerate",
+        "isinstance",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2936,9 +2936,9 @@
       "docstring": "Checks for banned introductory phrases in key text sections.",
       "imports": [],
       "dependencies": [
+        "str",
         "set",
         "enumerate",
-        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -2951,8 +2951,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "set",
-        "calculate_signal_score"
+        "calculate_signal_score",
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2964,9 +2964,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "getattr",
         "sum",
-        "isinstance",
-        "getattr"
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2978,12 +2978,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "getattr",
+        "set",
+        "str",
         "isinstance",
         "len",
-        "getattr",
-        "list",
-        "str",
-        "set"
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2995,8 +2995,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "getattr"
+        "getattr",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3020,8 +3020,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "set",
         "defaultdict",
+        "set",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -3034,11 +3034,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "len",
         "getattr",
+        "set",
         "str",
-        "set"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3051,9 +3051,9 @@
       "imports": [],
       "dependencies": [
         "any",
+        "set",
         "isinstance",
         "len",
-        "set",
         "ValidationContext"
       ],
       "responsibility_level": "L5",
@@ -3171,9 +3171,9 @@
       "docstring": "Renders the application tracker artifact and validates it.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
         "AppTrackerQAValidator",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3205,8 +3205,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "render_method",
-        "getattr"
+        "getattr",
+        "render_method"
       ],
       "responsibility_level": "L4",
       "children": []
@@ -3242,8 +3242,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "type",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -3381,10 +3381,10 @@
       "docstring": "Initializes the orchestrator.\nHOP-7.5 similarity calculations removed.",
       "imports": [],
       "dependencies": [
+        "RAGConfig",
         "JDEnforcementValidator",
         "ContentConstraintsConfig",
-        "globals",
-        "RAGConfig"
+        "globals"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3396,9 +3396,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "HopExecutionError",
         "getattr",
+        "HopExecutionError",
+        "str",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -3411,12 +3411,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "str",
         "sum",
         "len",
+        "ClerkExtractor",
         "HopExecutionError",
-        "ValidationResult",
-        "str",
-        "ClerkExtractor"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3428,11 +3428,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
         "DataEnricher",
+        "str",
+        "len",
         "HopExecutionError",
-        "ValidationResult",
-        "str"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3444,20 +3444,20 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "sum",
         "any",
-        "len",
-        "list",
-        "enumerate",
-        "HopExecutionError",
-        "error_msg",
-        "ValidationResult",
-        "str",
-        "callable",
-        "PreFlightValidator",
         "set",
+        "enumerate",
+        "sum",
+        "callable",
         "ArtistGenerator",
-        "ImmutableStagingBuffer"
+        "len",
+        "str",
+        "ImmutableStagingBuffer",
+        "error_msg",
+        "list",
+        "HopExecutionError",
+        "ValidationResult",
+        "PreFlightValidator"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3469,12 +3469,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "HopExecutionError",
-        "ResumeSection",
-        "ValidationResult",
         "str",
+        "ResumeSection",
+        "ImmutableStagingBuffer",
         "TextSanitizer",
-        "ImmutableStagingBuffer"
+        "HopExecutionError",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3486,12 +3486,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "str",
         "sum",
         "len",
+        "PreFlightValidator",
         "HopExecutionError",
-        "ValidationResult",
-        "str",
-        "PreFlightValidator"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3519,11 +3519,11 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "list",
         "FileRenderer",
         "HopExecutionError",
-        "ValidationResult",
-        "str"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3535,11 +3535,11 @@
       "docstring": "Executes HOP-8: QA Report Generation using the QAReportGenerator.\nUses final validation results from HOP-5. Relies on HOP-5 validation results\nfor similarity data, as HOP-7.5 calculations are removed.\nReturns the generated QA report text.",
       "imports": [],
       "dependencies": [
-        "QAReportGenerator",
         "any",
+        "str",
         "len",
-        "ValidationResult",
-        "str"
+        "QAReportGenerator",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3561,9 +3561,9 @@
       "docstring": "Helper method to build the result dictionary upon workflow halt or failure.",
       "imports": [],
       "dependencies": [
-        "str",
         "type",
-        "asdict"
+        "asdict",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3575,8 +3575,8 @@
       "docstring": "Executes the entire resume generation workflow from JD analysis to file rendering.\nCalls helper methods for main steps and error handling.",
       "imports": [],
       "dependencies": [
-        "str",
-        "asdict"
+        "asdict",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3589,8 +3589,8 @@
       "imports": [],
       "dependencies": [
         "RAGConfig",
-        "globals",
-        "EnhancedJobDescriptionAnalyzer"
+        "EnhancedJobDescriptionAnalyzer",
+        "globals"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3602,18 +3602,18 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dict",
         "any",
-        "asdict",
-        "isinstance",
-        "round",
-        "int",
+        "float",
         "type",
-        "ValidationResult",
         "str",
+        "int",
+        "isinstance",
         "hasattr",
+        "dict",
+        "round",
         "HopCheckpoint",
-        "float"
+        "asdict",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3625,13 +3625,13 @@
       "docstring": "Checks checkpoint status and raises HopExecutionError if workflow should halt.",
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "any",
-        "len",
-        "HopExecutionError",
         "str",
         "callable",
-        "sorted"
+        "len",
+        "sorted",
+        "HopExecutionError",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3643,13 +3643,13 @@
       "docstring": "Builds the Chain of Custody ledger dictionary.",
       "imports": [],
       "dependencies": [
-        "sum",
         "any",
-        "asdict",
-        "isinstance",
         "getattr",
-        "round",
+        "sum",
+        "isinstance",
         "len",
+        "round",
+        "asdict",
         "hasattr"
       ],
       "responsibility_level": "L5",
@@ -3662,8 +3662,8 @@
       "docstring": "Attempts to generate QA report even after workflow halt/failure.",
       "imports": [],
       "dependencies": [
-        "QAReportGenerator",
-        "ValidationResult"
+        "ValidationResult",
+        "QAReportGenerator"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3685,13 +3685,13 @@
       "docstring": "Generates the full QA report.",
       "imports": [],
       "dependencies": [
-        "builder_method",
         "getattr",
-        "len",
         "enumerate",
+        "len",
+        "all",
         "type",
-        "ValidationResult",
-        "all"
+        "builder_method",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3703,16 +3703,16 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
+        "getattr",
+        "str",
         "sum",
         "isinstance",
-        "getattr",
-        "len",
-        "str",
         "callable",
-        "next",
+        "len",
         "calculate_signal_score",
-        "min"
+        "next",
+        "min",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3724,11 +3724,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "getattr",
+        "str",
         "sum",
         "isinstance",
-        "getattr",
         "len",
-        "str",
         "calculate_signal_score"
       ],
       "responsibility_level": "L5",
@@ -3741,10 +3741,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "isinstance",
+        "getattr",
         "str",
-        "len",
-        "getattr"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3756,12 +3756,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
-        "isinstance",
         "getattr",
         "str",
+        "isinstance",
         "callable",
-        "next"
+        "next",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3773,12 +3773,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "str",
+        "enumerate",
         "isinstance",
         "len",
-        "enumerate",
-        "type",
         "count_words_ms_word_style",
-        "str"
+        "type"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3790,11 +3790,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "any",
         "getattr",
         "str",
-        "callable"
+        "callable",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3806,13 +3806,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "getattr",
-        "len",
-        "list",
-        "isinstance",
         "str",
-        "callable"
+        "isinstance",
+        "len",
+        "callable",
+        "list",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3824,11 +3824,11 @@
       "docstring": "Builds QA Section 8: Content Similarity Summary based on HOP-5 validation.",
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "getattr",
         "str",
         "callable",
-        "next"
+        "next",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3840,11 +3840,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "any",
         "getattr",
         "str",
-        "callable"
+        "callable",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3856,11 +3856,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "any",
         "getattr",
         "str",
-        "callable"
+        "callable",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3872,8 +3872,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "getattr"
+        "getattr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3886,17 +3886,17 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "globals",
-        "len",
-        "isinstance",
-        "getattr",
-        "enumerate",
-        "list",
         "range",
-        "next",
         "set",
+        "enumerate",
+        "getattr",
+        "isinstance",
+        "len",
+        "globals",
         "sorted",
-        "all"
+        "list",
+        "all",
+        "next"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3908,12 +3908,12 @@
       "docstring": "Validates that QA report tables use pre-formatted text, not Markdown tables.",
       "imports": [],
       "dependencies": [
+        "range",
         "any",
-        "len",
         "enumerate",
         "int",
-        "ValidationResult",
-        "range"
+        "len",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3925,11 +3925,11 @@
       "docstring": "Formats data into a plain text table with optional wrapping and alignment.",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "enumerate",
         "range",
-        "str"
+        "enumerate",
+        "str",
+        "len",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3973,10 +3973,10 @@
       "docstring": "Safely formats a validation result message, handling callables.",
       "imports": [],
       "dependencies": [
+        "getattr",
         "defaultdict",
         "str",
-        "callable",
-        "getattr"
+        "callable"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3988,10 +3988,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
-        "isinstance",
-        "round",
         "int",
+        "isinstance",
+        "max",
+        "round",
         "min"
       ],
       "responsibility_level": "L5",
@@ -4096,13 +4096,13 @@
       "docstring": "Attempts to manually rebuild a dictionary from known structures.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "getattr",
+        "isinstance",
+        "callable",
         "list",
         "type",
         "_manual_reconstruct_nested",
-        "hasattr",
-        "callable"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -4115,12 +4115,12 @@
       "imports": [],
       "dependencies": [
         "getattr",
+        "str",
         "isinstance",
+        "callable",
         "type",
         "_manual_reconstruct_nested",
-        "hasattr",
-        "callable",
-        "str"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -4132,10 +4132,10 @@
       "docstring": "Recursive helper function.",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "isinstance",
         "ResumeSection",
+        "isinstance",
+        "len",
+        "max",
         "check_recursive"
       ],
       "responsibility_level": "L5",
@@ -4148,11 +4148,11 @@
       "docstring": "Forces complex objects into plain dicts via JSON roundtrip.",
       "imports": [],
       "dependencies": [
-        "asdict",
+        "str",
         "isinstance",
         "type",
-        "hasattr",
-        "str"
+        "asdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -4164,13 +4164,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "template",
         "getattr",
-        "type",
-        "hasattr",
+        "str",
         "callable",
-        "str"
+        "type",
+        "defaultdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -4182,13 +4182,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
         "template",
         "getattr",
-        "type",
-        "hasattr",
+        "str",
         "callable",
-        "str"
+        "type",
+        "defaultdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -4200,10 +4200,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
         "type",
         "asdict",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -4215,9 +4215,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "asdict",
         "str",
-        "asdict"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

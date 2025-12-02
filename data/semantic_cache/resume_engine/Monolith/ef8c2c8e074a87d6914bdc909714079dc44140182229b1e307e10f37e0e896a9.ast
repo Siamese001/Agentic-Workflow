@@ -111,8 +111,8 @@
       "docstring": "Test that pre-flight failure raises HopExecutionError",
       "imports": [],
       "dependencies": [
-        "mock_preflight",
         "HopExecutionError",
+        "mock_preflight",
         "patch"
       ],
       "responsibility_level": "L5",
@@ -210,8 +210,8 @@
       "docstring": "Test that _get_feedback_instruction method is removed",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "patch"
+        "patch",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -236,9 +236,9 @@
       "imports": [],
       "dependencies": [
         "main_phase1",
-        "len",
         "Mock",
-        "patch"
+        "patch",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -278,8 +278,8 @@
       "docstring": "Test that phase4_narrative_mining uses agentic RAG",
       "imports": [],
       "dependencies": [
-        "main_phase4",
         "Mock",
+        "main_phase4",
         "patch"
       ],
       "responsibility_level": "L5",

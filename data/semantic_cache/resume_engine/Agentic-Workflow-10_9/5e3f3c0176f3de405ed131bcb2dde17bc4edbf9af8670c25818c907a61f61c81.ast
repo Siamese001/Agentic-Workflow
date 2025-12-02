@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\observability.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\prompt.py",
     "file_hash": "5e3f3c0176f3de405ed131bcb2dde17bc4edbf9af8670c25818c907a61f61c81",
     "size_bytes": 12876,
-    "last_modified": "2025-12-01T12:27:36.920547",
+    "last_modified": "2025-12-01T12:27:36.906721",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_9",
     "file_extension": ".py"
@@ -56,8 +56,8 @@
       "docstring": "Decorator for async functions: records a named span in TELEMETRY.",
       "imports": [],
       "dependencies": [
-        "str",
-        "fn"
+        "fn",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -161,21 +161,21 @@
       "docstring": "Build a structured run summary for a workflow, combining:\n\n    \u2022 phase history\n    \u2022 timing spans (from CostTracker and TELEMETRY)\n    \u2022 domain metrics and issues\n    \u2022 meta_profile updates (from spans and run_summary)",
       "imports": [],
       "dependencies": [
-        "summarize_meta_learning",
-        "asdict",
-        "update_from_run_summary",
-        "list",
-        "summarize_draft",
-        "summarize_hil",
-        "summarize_rag",
-        "hasattr",
-        "summarize_strategy",
-        "get_meta_profile_snapshot",
-        "summarize_safety",
-        "summarize_qa",
         "float",
+        "get_meta_profile_snapshot",
+        "summarize_bullets",
+        "summarize_meta_learning",
         "update_from_spans",
-        "summarize_bullets"
+        "summarize_hil",
+        "summarize_draft",
+        "list",
+        "summarize_qa",
+        "summarize_rag",
+        "summarize_safety",
+        "update_from_run_summary",
+        "asdict",
+        "summarize_strategy",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -351,8 +351,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "fn"
+        "fn",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

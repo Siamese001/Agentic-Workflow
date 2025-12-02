@@ -36,8 +36,8 @@
       "docstring": "Orchestrates complete r\u00e9sum\u00e9 drafting workflow.\n\nIntegrates planning and execution to generate tailored r\u00e9sum\u00e9 content aligned with job requirements.",
       "imports": [],
       "dependencies": [
-        "plan_drafting",
-        "record_event"
+        "record_event",
+        "plan_drafting"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\strategy_planning(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\strategy_planning.py",
     "file_hash": "2ef3f48c4f9d5f5885751a6e2749b6e0c4c46ec21b1e147f6e9a592eebe63528",
     "size_bytes": 6498,
-    "last_modified": "2025-12-01T12:27:38.228409",
+    "last_modified": "2025-12-01T12:27:38.230937",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -46,13 +46,13 @@
       "docstring": "Creates comprehensive resume improvement strategy plan.\n\nGenerates targeted approach to enhance resume job\nalignment and application success.",
       "imports": [],
       "dependencies": [
+        "get_service",
         "StrategyPlan",
         "getattr",
-        "get_service",
-        "build_v6_strategy_prompt",
-        "V6PromptConfig",
+        "PromptInstance",
         "SafetyContext",
-        "PromptInstance"
+        "V6PromptConfig",
+        "build_v6_strategy_prompt"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -77,16 +77,16 @@
       "docstring": "Generates cognitive processing plan for resume analysis.\n\nOptimizes reasoning strategy to enhance resume\nimprovement quality and job alignment.",
       "imports": [],
       "dependencies": [
-        "max",
         "getattr",
-        "list",
+        "LatentThinkingPlan",
+        "str",
         "int",
-        "expand_chain_of_thought",
+        "max",
+        "list",
+        "run_react_loop",
         "tree_search",
         "apply_reflexion",
-        "str",
-        "LatentThinkingPlan",
-        "run_react_loop"
+        "expand_chain_of_thought"
       ],
       "responsibility_level": "L5",
       "children": []

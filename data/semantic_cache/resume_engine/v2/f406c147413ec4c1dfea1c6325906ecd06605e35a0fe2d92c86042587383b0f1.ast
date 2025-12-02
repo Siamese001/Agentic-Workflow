@@ -57,9 +57,9 @@
       "imports": [],
       "dependencies": [
         "str",
-        "ValidationResult",
+        "callable",
         "isinstance",
-        "callable"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []

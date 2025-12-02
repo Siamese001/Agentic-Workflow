@@ -16,8 +16,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -49,8 +49,8 @@
       "docstring": "Deterministic metadata-only correction recommendation generator.",
       "imports": [],
       "dependencies": [
-        "should_retry",
-        "bool"
+        "bool",
+        "should_retry"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -92,8 +92,8 @@
       "docstring": "Deterministic metadata-only correction recommendation generator.",
       "imports": [],
       "dependencies": [
-        "should_retry",
-        "bool"
+        "bool",
+        "should_retry"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -105,8 +105,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

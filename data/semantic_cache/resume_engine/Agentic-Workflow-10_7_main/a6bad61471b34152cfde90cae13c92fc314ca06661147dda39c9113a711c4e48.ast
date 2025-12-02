@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\hil_stack.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_stacks_v10_8\\hil_stack.py",
     "file_hash": "a6bad61471b34152cfde90cae13c92fc314ca06661147dda39c9113a711c4e48",
     "size_bytes": 5749,
-    "last_modified": "2025-12-01T12:27:41.213917",
+    "last_modified": "2025-12-01T12:27:42.083944",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -26,11 +26,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "HILReconciliationAgent",
-        "HILFeedbackSummarizerAgent",
-        "HILFeedbackRouterAgent",
         "VirtualReviewerCouncilAgent",
-        "HILAmbiguityDetectorAgent"
+        "HILAmbiguityDetectorAgent",
+        "HILFeedbackRouterAgent",
+        "HILFeedbackSummarizerAgent",
+        "HILReconciliationAgent"
       ],
       "responsibility_level": "L5",
       "children": []

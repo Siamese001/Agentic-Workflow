@@ -16,8 +16,8 @@
       "docstring": "Stages in the unified ingestion DAG.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Policy for handling stage failures.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -42,8 +42,8 @@
       "docstring": "Status of ingestion operations.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -147,9 +147,9 @@
       "docstring": "Build the ingestion DAG based on current state.",
       "imports": [],
       "dependencies": [
+        "DagGraph",
         "DagNode",
-        "DagEdge",
-        "DagGraph"
+        "DagEdge"
       ],
       "responsibility_level": "L5",
       "children": []

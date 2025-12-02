@@ -152,8 +152,8 @@
       "docstring": "Retrieves recent career activities for resume job alignment.",
       "imports": [],
       "dependencies": [
-        "timedelta",
-        "TemporalQuery"
+        "TemporalQuery",
+        "timedelta"
       ],
       "responsibility_level": "L5",
       "children": []

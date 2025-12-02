@@ -81,10 +81,10 @@
       "docstring": "Calculates a 'signal score' based on theme and keyword presence.\nThis was referenced by validator_RES_v2.py but was missing.",
       "imports": [],
       "dependencies": [
+        "getattr",
         "sum",
         "min",
-        "len",
-        "getattr"
+        "len"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -116,8 +116,8 @@
       "docstring": "Enhances a system prompt with reasoning directives based on the config.",
       "imports": [],
       "dependencies": [
-        "len",
-        "get_directive"
+        "get_directive",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -348,10 +348,10 @@
       "docstring": "Finds duplicates within a list of strings.\n\nArgs:\n    texts: List of text strings\n    \nReturns:\n    List of tuples (text1, text2, similarity_score) for duplicates",
       "imports": [],
       "dependencies": [
-        "set",
         "cosine_similarity",
-        "len",
-        "range"
+        "set",
+        "range",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -375,11 +375,11 @@
       "docstring": "Logs a telemetry event.",
       "imports": [],
       "dependencies": [
-        "asdict",
-        "type",
-        "hasattr",
         "str",
-        "open"
+        "open",
+        "type",
+        "asdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

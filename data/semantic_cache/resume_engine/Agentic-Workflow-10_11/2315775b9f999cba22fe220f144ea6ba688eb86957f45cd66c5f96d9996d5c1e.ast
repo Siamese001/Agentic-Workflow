@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\routing(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\routing.py",
     "file_hash": "2315775b9f999cba22fe220f144ea6ba688eb86957f45cd66c5f96d9996d5c1e",
     "size_bytes": 14117,
-    "last_modified": "2025-12-01T12:27:40.893097",
+    "last_modified": "2025-12-01T12:27:40.885199",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -39,8 +39,8 @@
       "docstring": "Return the model name for a given task using the policy.\n\nTasks: \"strategy\", \"drafting\", \"qa\", \"safety\", or fallback to default.\n\nIf a council vote is provided and has a model override, use it.",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str"
+        "str",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -52,8 +52,8 @@
       "docstring": "Record a routing decision event for observability.\n\nReturns the decision string unchanged.",
       "imports": [],
       "dependencies": [
-        "RoutingDecisionEvent",
         "record_event",
+        "RoutingDecisionEvent",
         "len"
       ],
       "responsibility_level": "L5",
@@ -68,9 +68,9 @@
       "dependencies": [
         "any",
         "getattr",
-        "len",
         "str",
-        "SkillClassifierResult"
+        "SkillClassifierResult",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -84,9 +84,9 @@
       "dependencies": [
         "any",
         "getattr",
-        "hasattr",
         "str",
-        "DomainClassifierResult"
+        "DomainClassifierResult",
+        "hasattr"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -98,12 +98,12 @@
       "docstring": "Heuristic classifier used by L1 to estimate ComplexityLevel.\n\nThis version incorporates:\n    - Job seniority / requirements\n    - Resume length\n    - QA / correction rates from meta_profile\n    - Deterministic skill and domain classifiers (non-LLM)\n\nAll logic is deterministic and side-effect free.",
       "imports": [],
       "dependencies": [
-        "classify_domain_profile",
         "any",
         "getattr",
-        "len",
         "str",
-        "classify_skill_profile"
+        "len",
+        "classify_skill_profile",
+        "classify_domain_profile"
       ],
       "responsibility_level": "L5",
       "children": []

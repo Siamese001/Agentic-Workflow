@@ -515,8 +515,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "EvidenceBriefAssemblerTool",
         "super",
+        "EvidenceBriefAssemblerTool",
         "EvidenceClarificationTool"
       ],
       "responsibility_level": "L5",
@@ -529,8 +529,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "super",
-        "StructureLeadAgent"
+        "StructureLeadAgent",
+        "super"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -542,10 +542,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ChromaDBSearchTool",
         "HyDETool",
         "super",
-        "BM25SearchTool"
+        "BM25SearchTool",
+        "ChromaDBSearchTool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -557,9 +557,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "StructureLeadAgent",
         "super",
-        "NarrativeStylistAgent",
-        "StructureLeadAgent"
+        "NarrativeStylistAgent"
       ],
       "responsibility_level": "L5",
       "children": []

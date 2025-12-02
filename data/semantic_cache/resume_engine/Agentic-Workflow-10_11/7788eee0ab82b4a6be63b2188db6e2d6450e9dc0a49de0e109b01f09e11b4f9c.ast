@@ -16,9 +16,9 @@
       "docstring": "Run an OpenAI chat completion and return the response text.\n\nThis helper performs no routing or caching; it is a thin wrapper\naround the OpenAI SDK. Errors are allowed to propagate and will be\nwrapped by the caller (runtime_utils.invoke_model).",
       "imports": [],
       "dependencies": [
+        "RuntimeError",
         "str",
-        "ImportError",
-        "RuntimeError"
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -59,10 +59,10 @@
       "docstring": "Magic method for lazy calculation of metrics.\nAccessing `context.total_words` will call `_calculate_total_words`.\nAccessing `context.k1_sentence_count_details` will call `_calculate_k1_sentence_count_details`.",
       "imports": [],
       "dependencies": [
-        "AttributeError",
+        "getattr",
         "calculation_method_details",
         "calculation_method",
-        "getattr"
+        "AttributeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -74,8 +74,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "sum",
         "str",
+        "sum",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -158,8 +158,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "enumerate",
         "next",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",
@@ -204,11 +204,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
+        "range",
+        "str",
         "isinstance",
         "len",
-        "range",
-        "str"
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -220,10 +220,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "getattr",
         "sum",
-        "hasattr",
         "isinstance",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -248,9 +248,9 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "max",
-        "len",
         "isinstance",
+        "len",
+        "max",
         "round",
         "min"
       ],

@@ -338,8 +338,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "ValueError"
+        "ValueError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -351,9 +351,9 @@
       "docstring": "Execute Tree of Thought exploration.",
       "imports": [],
       "dependencies": [
+        "ConductorDecision",
         "enumerate",
-        "len",
-        "ConductorDecision"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -387,8 +387,8 @@
       "docstring": "Select the winning branch based on scores.",
       "imports": [],
       "dependencies": [
-        "max",
-        "ValueError"
+        "ValueError",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -412,8 +412,8 @@
       "docstring": "Create initial workflow plan.",
       "imports": [],
       "dependencies": [
-        "WorkflowPlan",
-        "WorkflowStep"
+        "WorkflowStep",
+        "WorkflowPlan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -435,8 +435,8 @@
       "docstring": "Create recovery plan.",
       "imports": [],
       "dependencies": [
-        "WorkflowPlan",
-        "WorkflowStep"
+        "WorkflowStep",
+        "WorkflowPlan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -616,10 +616,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "drafter_class",
-        "Gemini_Drafter",
         "Muse_Drafter",
-        "Claude_Drafter"
+        "Gemini_Drafter",
+        "Claude_Drafter",
+        "drafter_class"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -762,11 +762,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "CostEstimatorAgent",
-        "ConductorAgent",
         "WorkflowCritiqueAgent",
-        "WorkflowRePlannerAgent",
+        "ConductorAgent",
         "WorkflowPlannerAgent",
+        "WorkflowRePlannerAgent",
+        "CostEstimatorAgent",
         "CostTrackerAgent"
       ],
       "responsibility_level": "L5",
@@ -780,9 +780,9 @@
       "imports": [],
       "dependencies": [
         "type",
-        "int",
         "str",
-        "NotImplementedError"
+        "NotImplementedError",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -794,17 +794,17 @@
       "docstring": "Execute Strategy Stack.",
       "imports": [],
       "dependencies": [
-        "asdict",
+        "JDParserAgent",
+        "StrategyCritiqueAgent",
+        "GapAnalysisAgent",
+        "ThemeIdentifierAgent",
         "SemanticFailureError",
         "ThemeRankerAgent",
-        "ValueError",
-        "StrategyValidatorAgent",
-        "JDParserAgent",
         "DifferentiatorAgent",
-        "StrategyCritiqueAgent",
+        "StrategyValidatorAgent",
         "StrategyBriefAssemblerAgent",
-        "GapAnalysisAgent",
-        "ThemeIdentifierAgent"
+        "ValueError",
+        "asdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -816,16 +816,16 @@
       "docstring": "Execute RAG Stack.",
       "imports": [],
       "dependencies": [
+        "RAG_FilterAgent",
         "RAG_ChunkingAgent",
-        "RAG_DraftingAgent",
         "RAG_CritiqueAgent",
-        "RAGMission",
         "RAG_RankingAgent",
         "RAG_QueryGeneratorAgent",
         "RAG_CrossReferenceAgent",
-        "RAG_FilterAgent",
+        "RAG_DraftingAgent",
         "RAG_Blackboard",
-        "RAG_SearchAgent"
+        "RAG_SearchAgent",
+        "RAGMission"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -879,12 +879,12 @@
       "docstring": "V5.8.1 Main orchestration with optional Conductor.",
       "imports": [],
       "dependencies": [
-        "StrategyBlackboard",
-        "WorkflowBlackboard",
-        "asdict",
-        "Exception",
         "str",
-        "WorkflowPlannerAgent"
+        "Exception",
+        "WorkflowPlannerAgent",
+        "WorkflowBlackboard",
+        "StrategyBlackboard",
+        "asdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -896,8 +896,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "CrewConfiguration",
-        "Governor"
+        "Governor",
+        "CrewConfiguration"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -909,8 +909,8 @@
       "docstring": "Process complete job application.",
       "imports": [],
       "dependencies": [
-        "str",
-        "CrewContext"
+        "CrewContext",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

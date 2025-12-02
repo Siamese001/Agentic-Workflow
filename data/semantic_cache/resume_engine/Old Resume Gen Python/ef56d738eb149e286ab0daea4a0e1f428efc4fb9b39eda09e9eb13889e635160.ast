@@ -66,8 +66,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ImportError",
-        "RAGConfig"
+        "RAGConfig",
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -207,10 +207,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "RAGConfig",
         "ClaudeWebSearchClient",
-        "JDCacheManager",
         "WebSearchRAG",
-        "RAGConfig"
+        "JDCacheManager"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -244,9 +244,9 @@
       "docstring": "Synthesize three-phase web RAG results into ThematicAnalysis.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
         "CompetitiveIntelligence",
         "ThematicAnalysis",
+        "RetrievalSource",
         "len"
       ],
       "responsibility_level": "L5",
@@ -269,9 +269,9 @@
       "docstring": "Convert cached dict back to ThematicAnalysis object.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
         "CompetitiveIntelligence",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -283,8 +283,8 @@
       "docstring": "Fallback analysis using local NLP (v5.52 implementation).\nThis remains UNCHANGED from your original file.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -321,8 +321,8 @@
       "docstring": "Generate primary theme from highest scoring domain.",
       "imports": [],
       "dependencies": [
-        "list",
-        "max"
+        "max",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -346,10 +346,10 @@
       "docstring": "Extract competitive intelligence from keywords.",
       "imports": [],
       "dependencies": [
-        "max",
-        "float",
         "CompetitiveIntelligence",
-        "sorted"
+        "float",
+        "sorted",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []

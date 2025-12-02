@@ -110,16 +110,16 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "RoutingCriteria",
-        "decide_route",
-        "int",
-        "build_client_for_route",
-        "configure_for_routing",
-        "get_routing_plan",
+        "float",
         "str",
+        "int",
+        "isinstance",
+        "build_client_for_route",
+        "decide_route",
         "build_prompt_from_plan_and_state",
-        "float"
+        "RoutingCriteria",
+        "configure_for_routing",
+        "get_routing_plan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -255,9 +255,9 @@
       "docstring": "Deterministic selection:\n- Highest score wins\n- Ties broken by smallest id",
       "imports": [],
       "dependencies": [
-        "int",
+        "sorted",
         "float",
-        "sorted"
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -269,9 +269,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "sorted",
         "set",
-        "deepcopy",
-        "sorted"
+        "deepcopy"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -283,10 +283,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "set",
-        "deepcopy",
         "NodeResult",
-        "range"
+        "range",
+        "set",
+        "deepcopy"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -335,9 +335,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "sorted",
         "deepcopy",
-        "NodeExecutionError",
-        "sorted"
+        "NodeExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -373,9 +373,9 @@
       "docstring": "Return a deterministic topological ordering of the DAG nodes.",
       "imports": [],
       "dependencies": [
-        "len",
         "sorted",
-        "DAGValidationError"
+        "DAGValidationError",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

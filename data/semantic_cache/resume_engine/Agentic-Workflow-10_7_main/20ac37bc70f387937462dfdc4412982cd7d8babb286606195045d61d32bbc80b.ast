@@ -26,8 +26,8 @@
       "docstring": "Create directories referenced by the configuration if they are missing.",
       "imports": [],
       "dependencies": [
-        "Path",
-        "getattr"
+        "getattr",
+        "Path"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -71,8 +71,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "list",
-        "MainGraphState"
+        "MainGraphState",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -97,12 +97,12 @@
       "imports": [],
       "dependencies": [
         "sha1",
-        "_synthetic_resume",
-        "_build_synthetic_state",
+        "_synthesise_events",
         "_SyntheticResult",
         "_full_resume_view",
-        "_legacy_resume_view",
-        "_synthesise_events"
+        "_synthetic_resume",
+        "_build_synthetic_state",
+        "_legacy_resume_view"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -114,10 +114,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
         "str",
-        "setup_logging",
         "run_workflow_async",
+        "ConfigV10_7",
+        "setup_logging",
         "Path",
         "_ensure_runtime_paths"
       ],
@@ -131,10 +131,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
         "str",
-        "setup_logging",
         "run_workflow_async",
+        "ConfigV10_7",
+        "setup_logging",
         "Path",
         "_ensure_runtime_paths"
       ],
@@ -148,9 +148,9 @@
       "docstring": "Entry point used by tests to execute the workflow.",
       "imports": [],
       "dependencies": [
+        "_run_synthetic",
         "runner",
         "dict",
-        "_run_synthetic",
         "isinstance"
       ],
       "responsibility_level": "L5",

@@ -56,8 +56,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "float",
-        "ValueError"
+        "ValueError",
+        "float"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -69,8 +69,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "float"
+        "float",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -131,9 +131,9 @@
       "docstring": "Read a JSONL file or stdin (\"-\") into a list of dict rows.\n\nNon-mapping rows are wrapped as {\"value\": row} to keep a stable schema.\nLines starting with \"#\" are treated as comments and ignored.",
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "ValueError",
         "open",
+        "ValueError",
+        "enumerate",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -170,14 +170,14 @@
       "docstring": "Convert a WorkflowOutput (or arbitrary Python object) into a JSON-safe\nstructure for JSONL emission.\n\nThe preference order:\n- output.to_dict() if available\n- dataclasses.asdict(output) if dataclass\n- mapping / sequence / primitive used as-is\n- fallback to repr(output)",
       "imports": [],
       "dependencies": [
-        "dict",
-        "asdict",
-        "isinstance",
         "getattr",
-        "list",
+        "isinstance",
         "callable",
-        "repr",
-        "to_dict"
+        "dict",
+        "list",
+        "to_dict",
+        "asdict",
+        "repr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -189,14 +189,14 @@
       "docstring": "Construct per-job configuration, resolving overrides from the JSONL row\non top of the global defaults (G1\u2013G3, G11\u2013G14).",
       "imports": [],
       "dependencies": [
-        "BatchJobConfig",
-        "dict",
-        "isinstance",
+        "str",
         "int",
-        "_normalize_rrf_weights",
+        "BatchJobConfig",
+        "isinstance",
+        "dict",
         "_enum_from_row",
         "_extract_user_request",
-        "str",
+        "_normalize_rrf_weights",
         "_bool_from_row"
       ],
       "responsibility_level": "L5",
@@ -209,8 +209,8 @@
       "docstring": "Execute a single job via main_v10_10.run_workflow.\n\nThe ExecutionContext is constructed inside run_workflow; we attach\nper-job metadata (batch_id, job_id, etc.) via extra_workflow_metadata.",
       "imports": [],
       "dependencies": [
-        "str",
         "run_workflow",
+        "str",
         "BatchJobResult"
       ],
       "responsibility_level": "L5",
@@ -224,10 +224,10 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "max",
         "len",
-        "BatchTelemetrySummary",
-        "min"
+        "max",
+        "min",
+        "BatchTelemetrySummary"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -239,20 +239,20 @@
       "docstring": "Run a batch of jobs through the L1\u2192L5 workflow via main_v10_10.run_workflow.\n\nParameters\n----------\njobs:\n    A sequence of JSON-like mapping rows representing jobs. Each row may\n    override Phase\u20113 knobs and profiles using the same field names used\n    by main_v10_10.run_workflow (e.g. \"execution_profile_name\", etc.).\n\nexecution_profile_name, routing_policy_name, sandbox_profile_name,\nmeta_profile_name:\n    Global defaults for configuration profiles (G1, G2).\n\nhyde_enabled, rrf_strategy, rrf_weights, council_size,\ncorrection_loop_max_iterations, telemetry_routing_mode:\n    Global defaults for Phase\u20113 knobs (G3\u2013G10, G11\u2013G14, G15\u2013G18).\n\nmax_workers:\n    Upper bound on parallel workers (ThreadPoolExecutor). Actual worker\n    count is clamped for safety via _clamp_max_workers.\n\ngolden_mode:\n    If True, concurrency is forced to 1 to maximize determinism, and a\n    \"golden_mode\" flag is propagated in workflow metadata.\n\nbase_workflow_id:\n    Optional base ID used to derive per-job workflow IDs. If omitted,\n    a UUID4 is used as the batch_id and per-job workflow IDs are derived\n    from it.",
       "imports": [],
       "dependencies": [
+        "_execute_job",
         "float",
-        "len",
-        "cast",
-        "_clamp_max_workers",
-        "_GlobalDefaults",
-        "enumerate",
-        "ThreadPoolExecutor",
-        "BatchTelemetrySummary",
         "str",
-        "as_completed",
-        "BatchJobResult",
-        "_build_batch_summary",
         "_build_job_config",
-        "_execute_job"
+        "enumerate",
+        "len",
+        "BatchJobResult",
+        "_clamp_max_workers",
+        "_build_batch_summary",
+        "_GlobalDefaults",
+        "as_completed",
+        "cast",
+        "ThreadPoolExecutor",
+        "BatchTelemetrySummary"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -274,16 +274,16 @@
       "docstring": "CLI wrapper for running batch jobs.\n\nFor programmatic usage, prefer calling run_batch() directly.",
       "imports": [],
       "dependencies": [
-        "TelemetryRoutingMode",
-        "asdict",
-        "_normalize_output",
-        "_read_jsonl",
         "_write_jsonl",
+        "_normalize_output",
+        "TelemetryRoutingMode",
         "run_batch",
         "_parse_rrf_weights",
         "RRFStrategy",
-        "_write_json",
-        "_parse_args"
+        "_read_jsonl",
+        "_parse_args",
+        "asdict",
+        "_write_json"
       ],
       "responsibility_level": "L1",
       "children": []

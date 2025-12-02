@@ -79,9 +79,9 @@
       "docstring": "Loads the manifest from disk with integrity validation.\n\nReturns:\n    The manifest dictionary\n    \nRaises:\n    FileNotFoundError: If manifest doesn't exist\n    ValueError: If manifest integrity check fails",
       "imports": [],
       "dependencies": [
-        "FileNotFoundError",
+        "open",
         "ValueError",
-        "open"
+        "FileNotFoundError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -93,8 +93,8 @@
       "docstring": "Appends a checkpoint to the manifest.\n\nNote: In V18, validation has been removed from this method.\nValidation should be performed by validator_RES_v2.py before calling this method.\n\nArgs:\n    checkpoint: The HopCheckpoint to add",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "asdict"
+        "asdict",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

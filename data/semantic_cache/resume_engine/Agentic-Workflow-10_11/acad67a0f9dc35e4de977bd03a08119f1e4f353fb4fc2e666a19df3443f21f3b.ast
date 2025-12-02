@@ -16,8 +16,8 @@
       "docstring": "Tracks validation status of career facts for resume job alignment.\n\nEnsures only verified career information is displayed for resume enhancement.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Identifies inconsistencies in career timeline for resume job alignment.\n\nDetects conflicting career information for resume enhancement processing.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -122,8 +122,8 @@
       "docstring": "Create a temporal triplet with generated ID.",
       "imports": [],
       "dependencies": [
-        "TemporalRange",
-        "TemporalTriplet"
+        "TemporalTriplet",
+        "TemporalRange"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -135,8 +135,8 @@
       "docstring": "Create a temporal entity.",
       "imports": [],
       "dependencies": [
-        "set",
-        "TemporalEntity"
+        "TemporalEntity",
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -148,8 +148,8 @@
       "docstring": "Create a conflict detection result.",
       "imports": [],
       "dependencies": [
-        "ConflictDetection",
-        "sorted"
+        "sorted",
+        "ConflictDetection"
       ],
       "responsibility_level": "L5",
       "children": []

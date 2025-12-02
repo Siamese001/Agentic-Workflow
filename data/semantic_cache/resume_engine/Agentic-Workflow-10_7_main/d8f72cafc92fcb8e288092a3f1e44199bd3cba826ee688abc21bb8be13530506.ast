@@ -19,8 +19,8 @@
         "getattr",
         "isinstance",
         "list",
-        "hasattr",
-        "dir"
+        "dir",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

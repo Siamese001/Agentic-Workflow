@@ -146,18 +146,18 @@
       "docstring": "Executes the HOP-0 RAG analysis logic with circuit breaker.",
       "imports": [],
       "dependencies": [
-        "EmbeddingClient",
-        "default_serializer",
-        "setup_workflow_logging",
-        "getattr",
-        "RAGConfig",
-        "SemanticCacheManager",
-        "exit",
-        "HopExecutionError",
         "print",
+        "SemanticCacheManager",
+        "getattr",
+        "setup_workflow_logging",
+        "RAGConfig",
         "open",
-        "EnhancedJobDescriptionAnalyzer",
-        "Path"
+        "exit",
+        "default_serializer",
+        "EmbeddingClient",
+        "Path",
+        "HopExecutionError",
+        "EnhancedJobDescriptionAnalyzer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -254,8 +254,8 @@
       "docstring": "Execute phase with retry logic",
       "imports": [],
       "dependencies": [
-        "func",
-        "range"
+        "range",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -467,8 +467,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "GeminiWebSearchClient",
         "WebSearchRAG",
+        "GeminiWebSearchClient",
         "RAGConfig"
       ],
       "responsibility_level": "L5",
@@ -504,9 +504,9 @@
       "imports": [],
       "dependencies": [
         "ThematicAnalysis",
+        "range",
         "RAGState",
-        "RAGCritique",
-        "range"
+        "RAGCritique"
       ],
       "responsibility_level": "L5",
       "children": []

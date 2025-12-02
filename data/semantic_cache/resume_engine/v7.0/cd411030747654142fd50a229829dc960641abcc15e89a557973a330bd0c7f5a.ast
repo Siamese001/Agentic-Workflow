@@ -36,11 +36,11 @@
       "docstring": "Runs the asynchronous meta-learning loop (v7.0).\nThis should be run *after* a batch is complete.",
       "imports": [],
       "dependencies": [
-        "len",
-        "PatternFinderAgent",
-        "setup_logging",
         "print",
-        "MetaPlannerAgent"
+        "len",
+        "MetaPlannerAgent",
+        "setup_logging",
+        "PatternFinderAgent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -62,8 +62,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
-        "open"
+        "open",
+        "defaultdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -85,9 +85,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "int",
-        "max",
         "open",
+        "max",
+        "int",
         "round"
       ],
       "responsibility_level": "L5",

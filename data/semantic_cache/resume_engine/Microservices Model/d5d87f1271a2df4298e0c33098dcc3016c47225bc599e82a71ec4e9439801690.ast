@@ -26,13 +26,13 @@
       "docstring": "Execute HOP-4 staging and sanitization with signal scoring",
       "imports": [],
       "dependencies": [
-        "setup_workflow_logging",
-        "exit",
-        "HopExecutionError",
         "print",
+        "setup_workflow_logging",
         "open",
+        "exit",
+        "ContentSanitizer",
         "Path",
-        "ContentSanitizer"
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -103,10 +103,10 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "len",
         "isinstance",
-        "type",
-        "ImmutableStagingBuffer"
+        "len",
+        "ImmutableStagingBuffer",
+        "type"
       ],
       "responsibility_level": "L5",
       "children": []

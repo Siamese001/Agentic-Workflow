@@ -184,12 +184,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "BulletEntityExtractionAgent",
-        "BulletConfidenceScoringAgent",
         "BulletMetricsEnrichmentAgent",
-        "super",
         "BulletNarrativeSynthesisAgent",
-        "BulletEvidenceLinkerAgent"
+        "BulletEvidenceLinkerAgent",
+        "BulletConfidenceScoringAgent",
+        "super",
+        "BulletEntityExtractionAgent"
       ],
       "responsibility_level": "L5",
       "children": []

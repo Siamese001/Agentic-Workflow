@@ -16,8 +16,8 @@
       "docstring": "Phases in the fusion pipeline.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Safety checkpoints in the fusion pipeline.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -160,8 +160,8 @@
       "docstring": "Get governance layer metrics.",
       "imports": [],
       "dependencies": [
-        "sum",
         "max",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",

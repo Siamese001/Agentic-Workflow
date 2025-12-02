@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\mcp.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\mcp.py",
     "file_hash": "6fd6d17b5186a26bfb5b8adf0bce77ba5a59221c7acfe23e8b9fb4f84f21cdb2",
     "size_bytes": 6702,
-    "last_modified": "2025-12-01T12:27:41.155649",
+    "last_modified": "2025-12-01T12:27:41.979192",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -37,10 +37,10 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "MCPClientSpec",
+        "str",
         "isinstance",
-        "ValueError",
-        "str"
+        "MCPClientSpec",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -52,10 +52,10 @@
       "docstring": "Create an MCP client instance from a validated spec.\n\nv10.7 fixes:\n  - provider\u2192default module resolution\n  - class_name resolution\n  - explicit logging\n  - clean error propagation",
       "imports": [],
       "dependencies": [
-        "client_cls",
-        "MCPClientStub",
         "MCPClientInitializationError",
-        "getattr"
+        "getattr",
+        "client_cls",
+        "MCPClientStub"
       ],
       "responsibility_level": "L5",
       "children": []

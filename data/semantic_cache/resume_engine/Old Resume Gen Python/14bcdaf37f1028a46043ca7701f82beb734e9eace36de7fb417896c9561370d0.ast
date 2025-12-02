@@ -78,11 +78,11 @@
       "docstring": "Load master resume from file.\nHARDENED v5.32: NO FALLBACK to mock data - fails fast if file not found.",
       "imports": [],
       "dependencies": [
-        "ValueError",
         "print",
         "open",
+        "RuntimeError",
         "FileNotFoundError",
-        "RuntimeError"
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -474,8 +474,8 @@
       "docstring": "Calculate word count for a section.\nv5.21: Counts ALL content including company/title/dates/location.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "str",
+        "isinstance",
         "len"
       ],
       "responsibility_level": "L5",
@@ -488,9 +488,9 @@
       "docstring": "Validate section length against master resume with tolerance.\nv5.21: All content counts (company/title/dates/location included).",
       "imports": [],
       "dependencies": [
+        "calculate_section_words",
         "int",
-        "ValidationResult",
-        "calculate_section_words"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -502,8 +502,8 @@
       "docstring": "Validate word distribution: (Unify + IBM) = 35-45% of total.\nv5.21: Includes overview + bullets for both roles.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
-        "calculate_section_words"
+        "calculate_section_words",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -515,8 +515,8 @@
       "docstring": "Validate Unify/IBM word ratio: 1.1 - 1.3.\nv5.21: Includes overview + bullets for both roles.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
-        "calculate_section_words"
+        "calculate_section_words",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -528,8 +528,8 @@
       "docstring": "Validate headline constraints.\nv5.21: 60-90 chars, 8-12 words, X|Y|Z components 2-4 words each.",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "ValidationResult",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",
@@ -542,8 +542,8 @@
       "docstring": "v5.21: Validate overview word count against master \u00b1tolerance%.",
       "imports": [],
       "dependencies": [
-        "int",
         "ValidationResult",
+        "int",
         "len"
       ],
       "responsibility_level": "L5",
@@ -556,10 +556,10 @@
       "docstring": "v5.21: Validate bullet word counts against master average \u00b1tolerance%.",
       "imports": [],
       "dependencies": [
+        "enumerate",
+        "int",
         "sum",
         "len",
-        "int",
-        "enumerate",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -686,12 +686,12 @@
       "docstring": "Enhanced main function with v5.22 monitoring and optimization.",
       "imports": [],
       "dependencies": [
-        "EnhancedSignalOptimizer",
-        "PerformanceMonitor",
         "print",
         "OutputVerificationSystem",
         "AdvancedQualityAssurance",
-        "main"
+        "main",
+        "EnhancedSignalOptimizer",
+        "PerformanceMonitor"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -737,9 +737,9 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "len",
+        "JDEnforcementResult",
         "isinstance",
-        "JDEnforcementResult"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -751,10 +751,10 @@
       "docstring": "GATE-2: Validate ThematicAnalysis uses JD.\nEnforces: E6, E7",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str",
         "any",
-        "JDEnforcementResult"
+        "str",
+        "JDEnforcementResult",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -767,10 +767,10 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "JDEnforcementResult",
-        "len",
         "isinstance",
-        "str"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -782,8 +782,8 @@
       "docstring": "GATE-4: Validate artist receives and uses JD.\nEnforces: E8, E9, E14",
       "imports": [],
       "dependencies": [
-        "str",
         "any",
+        "str",
         "JDEnforcementResult",
         "len"
       ],
@@ -797,9 +797,9 @@
       "docstring": "GATE-5: Validate pre-flight checks JD.\nEnforces: E9, E11, E14",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "len",
         "JDEnforcementResult",
-        "len"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -824,8 +824,8 @@
       "docstring": "GATE-8: Validate QA report verifies JD.\nEnforces: E13, E15",
       "imports": [],
       "dependencies": [
-        "sum",
         "JDEnforcementResult",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -906,8 +906,8 @@
       "docstring": "Extract required technical and business skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -919,8 +919,8 @@
       "docstring": "Extract preferred/nice-to-have skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -988,8 +988,8 @@
       "docstring": "Extract seniority signals from JD.",
       "imports": [],
       "dependencies": [
-        "int",
-        "bool"
+        "bool",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1077,8 +1077,8 @@
       "docstring": "Run full K.2 competitive analysis with 24 RAG calls.",
       "imports": [],
       "dependencies": [
-        "len",
-        "K2CompetitiveAnalysis"
+        "K2CompetitiveAnalysis",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1236,8 +1236,8 @@
       "docstring": "Validate complete app tracker data.\nReturns PASSED or BLOCKED JSON outcome.",
       "imports": [],
       "dependencies": [
-        "list",
-        "enumerate"
+        "enumerate",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1249,9 +1249,9 @@
       "docstring": "Validate single tracker row against R2-R22.",
       "imports": [],
       "dependencies": [
+        "range",
         "bool",
-        "len",
-        "range"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1263,8 +1263,8 @@
       "docstring": "Validate R5a-R5d channel gating requirements.",
       "imports": [],
       "dependencies": [
-        "any",
-        "range"
+        "range",
+        "any"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1370,9 +1370,9 @@
       "docstring": "Analyze job description and return comprehensive thematic analysis.\n\nIn production, this would:\n1. Parse JD using NLP\n2. Retrieve peer JDs from database\n3. Extract competitive differentiators\n4. Calculate signal quality scores\n\nFor now, returns structured mock analysis that matches real system output.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
         "CompetitiveIntelligence",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1464,8 +1464,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "VerbCanonicalizer",
-        "DuplicateDetector"
+        "DuplicateDetector",
+        "VerbCanonicalizer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1502,8 +1502,8 @@
       "docstring": "Find bullets with cosine similarity >= threshold.\nReturns: List of (index1, index2, similarity_score)",
       "imports": [],
       "dependencies": [
-        "len",
-        "range"
+        "range",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1515,10 +1515,10 @@
       "docstring": "Calculate TF-IDF cosine similarity between two texts.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "zip",
         "sorted",
-        "set"
+        "zip",
+        "set",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1543,13 +1543,13 @@
       "docstring": "Compute 78-check pairwise similarity matrix across all sections.\nReturns comprehensive matrix with all pairwise comparisons.",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "isinstance",
-        "list",
+        "range",
         "enumerate",
-        "round",
-        "range"
+        "isinstance",
+        "len",
+        "max",
+        "list",
+        "round"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1561,11 +1561,11 @@
       "docstring": "Compute cosine similarity between overview and each bullet.\nPer v1.9.2: K.5B/K.6B must have cosine <0.6 to their bullets.",
       "imports": [],
       "dependencies": [
-        "max",
+        "enumerate",
         "isinstance",
         "len",
-        "round",
-        "enumerate"
+        "max",
+        "round"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1805,8 +1805,8 @@
       "imports": [],
       "dependencies": [
         "enumerate",
-        "ValidationResult",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1913,14 +1913,14 @@
       "docstring": "Validate all word count constraints (v5.21 updated).",
       "imports": [],
       "dependencies": [
-        "validate_headline_v57",
-        "len",
         "isinstance",
+        "len",
+        "validate_overview_tolerance_v521",
         "calculate_section_words",
         "validate_bullet_tolerance_v521",
-        "ValidationResult",
-        "validate_overview_tolerance_v521",
-        "next"
+        "next",
+        "validate_headline_v57",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1932,8 +1932,8 @@
       "docstring": "Validate TraderSense/EY/Early Career section lengths (\u00b110%).",
       "imports": [],
       "dependencies": [
-        "int",
         "next",
+        "int",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -1946,8 +1946,8 @@
       "docstring": "Validate word distributions.",
       "imports": [],
       "dependencies": [
-        "validate_unify_ibm_ratio_v57",
-        "validate_word_distribution_v57"
+        "validate_word_distribution_v57",
+        "validate_unify_ibm_ratio_v57"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1959,8 +1959,8 @@
       "docstring": "Validate structural requirements.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "len",
+        "isinstance",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -2008,9 +2008,9 @@
       "docstring": "21 word count validation rules (v5.6 adds total resume word count).",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
         "len",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2022,8 +2022,8 @@
       "docstring": "v5.15: Validate competencies word count constraints.\n- Each bullet: \u00b120% of master resume avg words per bullet",
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "validate_competencies_v515"
+        "validate_competencies_v515",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2035,12 +2035,12 @@
       "docstring": "35 deduplication rules with 78-check pairwise cosine similarity matrix.",
       "imports": [],
       "dependencies": [
+        "set",
         "isinstance",
         "len",
         "ValidationResult",
         "DuplicateDetector",
-        "hasattr",
-        "set"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2064,9 +2064,9 @@
       "docstring": "15 prose quality rules.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
         "len",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2078,9 +2078,9 @@
       "docstring": "12 industry-first compliance rules.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
         "any",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2092,10 +2092,10 @@
       "docstring": "10 AI detection defense rules.",
       "imports": [],
       "dependencies": [
-        "sum",
         "ValidationResult",
-        "len",
-        "isinstance"
+        "sum",
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2186,8 +2186,8 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2219,19 +2219,19 @@
       "docstring": "Execute complete 10-hop workflow.\n\nReturns:\n    Dict with status, file_paths, validation_results, etc.",
       "imports": [],
       "dependencies": [
-        "asdict",
-        "PreFlightValidator",
-        "len",
         "DataEnricher",
-        "FileRenderer",
+        "print",
         "range",
         "str",
-        "print",
-        "ClerkExtractor",
-        "TextSanitizer",
         "ArtistGenerator",
+        "ClerkExtractor",
+        "len",
+        "ImmutableStagingBuffer",
         "GateDecisionEngine",
-        "ImmutableStagingBuffer"
+        "TextSanitizer",
+        "FileRenderer",
+        "asdict",
+        "PreFlightValidator"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2255,8 +2255,8 @@
       "docstring": "Create hop checkpoint.",
       "imports": [],
       "dependencies": [
-        "str",
         "HopCheckpoint",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -2270,8 +2270,8 @@
       "imports": [],
       "dependencies": [
         "print",
-        "len",
-        "Exception"
+        "Exception",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2295,13 +2295,13 @@
       "docstring": "Generate comprehensive QA report (8-section format from v5.18).\nReturns: (validation_results, qa_report_text)",
       "imports": [],
       "dependencies": [
-        "ascii_bar",
-        "len",
         "enumerate",
         "int",
-        "ValidationResult",
+        "ascii_bar",
+        "len",
+        "sorted",
         "hasattr",
-        "sorted"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2337,8 +2337,8 @@
       "docstring": "Calculate the balance between creativity and keyword optimization.",
       "imports": [],
       "dependencies": [
-        "set",
         "isinstance",
+        "set",
         "min",
         "len"
       ],
@@ -2404,8 +2404,8 @@
       "docstring": "Generate performance metrics report.",
       "imports": [],
       "dependencies": [
-        "sum",
         "enumerate",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -2483,8 +2483,8 @@
       "docstring": "Check formatting compliance.",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2564,8 +2564,8 @@
       "docstring": "Ensure all files have reasonable sizes.",
       "imports": [],
       "dependencies": [
-        "Path_v522",
-        "print"
+        "print",
+        "Path_v522"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2588,8 +2588,8 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

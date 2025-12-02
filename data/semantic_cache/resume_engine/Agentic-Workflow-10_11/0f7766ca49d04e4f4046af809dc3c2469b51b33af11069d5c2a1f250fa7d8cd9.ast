@@ -40,12 +40,12 @@
       "docstring": "Derives quality assessment vote from QA findings.\n\nEnsures consistent evaluation of resume job alignment quality.",
       "imports": [],
       "dependencies": [
-        "sum",
+        "float",
         "getattr",
+        "sum",
         "len",
         "list",
-        "CouncilVote",
-        "float"
+        "CouncilVote"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -57,8 +57,8 @@
       "docstring": "Records thinking trace for resume improvement analysis.\n\nMaintains observability of resume job alignment decisions.",
       "imports": [],
       "dependencies": [
-        "record_event",
-        "getattr"
+        "getattr",
+        "record_event"
       ],
       "responsibility_level": "L5",
       "children": []

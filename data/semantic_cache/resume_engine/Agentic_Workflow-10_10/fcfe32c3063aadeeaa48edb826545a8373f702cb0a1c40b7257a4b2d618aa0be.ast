@@ -16,9 +16,9 @@
       "docstring": "Merge LLM-based SafetyResult findings with structural QA-derived signals.\nDownstream: deterministic final enforcement in L5.",
       "imports": [],
       "dependencies": [
+        "getattr",
         "list",
-        "SafetyFinding",
-        "getattr"
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -30,9 +30,9 @@
       "docstring": "Determine final SafetyEnforcementVerdict according to the SafetyPolicy.\n\nPolicy logic:\n    \u2022 If allow_generation = False \u2192 always BLOCK.\n    \u2022 If any high-severity finding contradicts policy.disallowed_categories \u2192 BLOCK.\n    \u2022 If PII is detected and policy.allow_pii = False \u2192 BLOCK.\n    \u2022 If only medium-severity \u2192 WARN.\n    \u2022 Otherwise \u2192 PASS.",
       "imports": [],
       "dependencies": [
-        "set",
         "SafetyEnforcementVerdict",
-        "getattr"
+        "getattr",
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -44,12 +44,12 @@
       "docstring": "Compute the final L5 enforcement decision:\n\n    INPUTS:\n        \u2022 SafetyResult  (LLM-based detection)\n        \u2022 CouncilVote   (heuristic QA-derived)\n        \u2022 SafetyPolicy  (Phase-3 policy registry)\n        \u2022 ctx           (ExecutionContext for telemetry)\n\n    OUTPUT:\n        \u2022 PolicyDecisionEvent",
       "imports": [],
       "dependencies": [
-        "_decide_verdict",
         "start_span",
-        "log_exception",
+        "PolicyDecisionEvent",
         "_combine_findings",
+        "log_exception",
         "end_span",
-        "PolicyDecisionEvent"
+        "_decide_verdict"
       ],
       "responsibility_level": "L5",
       "children": []

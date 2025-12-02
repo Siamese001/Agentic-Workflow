@@ -40,8 +40,8 @@
       "docstring": "Aggregate resume fields into a single planning surface.",
       "imports": [],
       "dependencies": [
-        "_normalize_text",
-        "str"
+        "str",
+        "_normalize_text"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -110,10 +110,10 @@
       "docstring": "Build a RAGPlan describing which retrieval surfaces to use.\n\nPhase-3 invariants:\n    \u2022 HYDE is controlled by config/profile flags (rag_allow_hyde).\n    \u2022 Hybrid vs non-hybrid is determined by RetrievalConfig.strategy.\n    \u2022 Hints describe job / resume / hybrid focus surfaces.\n    \u2022 strategy_hint links to the configured retrieval strategy, which\n      downstream retrieval/ranking can use.",
       "imports": [],
       "dependencies": [
-        "RAGQueryHint",
-        "min",
+        "getattr",
         "RAGPlan",
-        "getattr"
+        "RAGQueryHint",
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -137,9 +137,9 @@
       "docstring": "Build a DraftingPlan describing which sections to generate.",
       "imports": [],
       "dependencies": [
+        "DraftingPlan",
         "_select_drafting_mode",
-        "DraftSectionPlan",
-        "DraftingPlan"
+        "DraftSectionPlan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -164,8 +164,8 @@
       "docstring": "Build a SafetyPlan describing which safety checks to run.",
       "imports": [],
       "dependencies": [
-        "SafetyCheck",
-        "SafetyPlan"
+        "SafetyPlan",
+        "SafetyCheck"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -177,20 +177,20 @@
       "docstring": "Top-level L1 entrypoint.\n\nProduces a WorkflowPlanBundle containing:\n\n    \u2022 strategy: StrategyPlan\n    \u2022 rag:      RAGPlan\n    \u2022 drafting: DraftingPlan\n    \u2022 qa:       QAPlan\n    \u2022 safety:   SafetyPlan\n    \u2022 routing_hint: RoutingHint carrying ExecutionProfile + MetaProfile",
       "imports": [],
       "dependencies": [
-        "_to_execution_profile",
-        "RoutingHint",
-        "get_profile",
-        "_extract_job_text",
-        "_build_safety_plan",
-        "_build_rag_plan",
-        "WorkflowPlanBundle",
-        "_choose_reasoning_mode",
-        "_map_meta_profile_to_routing_hint",
-        "_build_qa_plan",
-        "_classify_complexity",
-        "_build_drafting_plan",
         "_build_strategy_plan",
-        "_extract_resume_text"
+        "_build_safety_plan",
+        "_build_drafting_plan",
+        "RoutingHint",
+        "_choose_reasoning_mode",
+        "_build_qa_plan",
+        "get_profile",
+        "WorkflowPlanBundle",
+        "_extract_job_text",
+        "_classify_complexity",
+        "_build_rag_plan",
+        "_extract_resume_text",
+        "_to_execution_profile",
+        "_map_meta_profile_to_routing_hint"
       ],
       "responsibility_level": "L5",
       "children": []
