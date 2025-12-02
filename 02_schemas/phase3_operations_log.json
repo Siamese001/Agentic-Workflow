@@ -1,0 +1,20 @@
+{
+  "ast_analysis_complete": true,
+  "layer_assignments": 205,
+  "name": "Semantic Rewrite & Mutation (Subatomic)",
+  "operation_log": [
+    "[OP] SETUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase3",
+    "[OP] LOAD_WINDSURF_RULES_ERROR: [Errno 2] No such file or directory: 'c:\\\\Git\\\\Agentic-Workflow\\\\04_prompt_governance\\\\windsurf_rules.md'",
+    "[OP] CLEANUP_TEMP_WORKSPACE: C:/Users/amita/AppData/Local/Temp/phase3"
+  ],
+  "phase": 3,
+  "rewrite_plans_created": 5,
+  "safety_invariants_preserved": true,
+  "semantic_cache_loaded": true,
+  "semantic_equivalence_verified": true,
+  "target_root": "c:\\Git\\Agentic-Workflow\\01_agentic_core",
+  "timestamp": "2025-12-02T12:02:46.223908",
+  "transformations_applied": 6,
+  "validation_keys": 236,
+  "violations_detected": 11
+}
