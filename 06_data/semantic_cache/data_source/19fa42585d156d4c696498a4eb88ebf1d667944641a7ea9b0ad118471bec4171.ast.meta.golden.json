@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\v2\\\\artist_constraints.json\",\n  \"file_hash\": \"19fa42585d156d4c696498a4eb88ebf1d667944641a7ea9b0ad118471bec4171\",\n  \"size_bytes\": 2081,\n  \"last_modified\": \"2025-12-01T12:27:36.981682\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"v2\",\n  \"file_extension\": \".json\"\n}",
+  "full_hash": "55bf2d538f3494c034db65dae9d1aa513041b89fbf367375081b9d4c036fbd71",
+  "generated_at": 1764703905.6247883,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v2\\19fa42585d156d4c696498a4eb88ebf1d667944641a7ea9b0ad118471bec4171.ast.meta.json"
+}

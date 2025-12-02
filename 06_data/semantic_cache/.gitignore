@@ -1,0 +1,7 @@
+# Ignore all generated semantic cache artifacts
+*
+
+# But keep control/docs files tracked
+!.gitignore
+!README.md
+!semantic_cache_leaf_map.yaml

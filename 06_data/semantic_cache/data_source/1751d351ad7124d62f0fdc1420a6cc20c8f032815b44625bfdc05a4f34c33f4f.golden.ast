@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='"""Synthetic strategy simulator."""\nimport random\nfrom typing import Any\nfrom simulations.models.strategy_simulation import (\nStrategySimMetrics,\nStrategySimRequest,\nStrategySimResult,\n)\nfrom simulations.utils import model_to_payload\nclass StrategySimulator:\n"""Runs a lightweight strategy simulation."""\nasync def run(self, request: StrategySimRequest) -> StrategySimResult:\nmetrics = StrategySimMetrics(\nclarity_score=round(random.uniform(0.5, 1.0), 3),\nalignment_score=round(random.uniform(0.3, 1.0), 3),\nrisk_score=round(random.uniform(0.0, 0.7), 3),\nnotes=["synthetic simulation only"],\n)\nstrategy_name = None\nstrategy_plan: Any = request.strategy_plan or {}\nif isinstance(strategy_plan, dict):\nstrategy_name = strategy_plan.get("strategy_name")\nreturn StrategySimResult(\nsimulation_id=request.simulation_id,\nsuccess=True,\nmetrics=model_to_payload(metrics),\ndetails={"strategy_preview": strategy_name},\n)'),
+          Constant(value='class:StrategySimulator'),
+          Constant(value='object_oriented_with_methods'),
+          Constant(value='public_methods:'),
+          List(ctx=Load())]))])

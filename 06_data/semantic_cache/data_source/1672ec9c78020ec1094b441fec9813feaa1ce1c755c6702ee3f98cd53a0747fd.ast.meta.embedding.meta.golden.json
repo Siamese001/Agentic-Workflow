@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"word_count\": 24,\n  \"unique_words\": 22,\n  \"generated_at\": 1764702819.3363242,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Old Resume Gen Python\\\\1672ec9c78020ec1094b441fec9813feaa1ce1c755c6702ee3f98cd53a0747fd.ast.meta.json\"\n}",
+  "full_hash": "d07d96c02294a122604bae5d3b76d798a69e12e2d7cd4645158c31f88f1307a2",
+  "generated_at": 1764703192.2737563,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\1672ec9c78020ec1094b441fec9813feaa1ce1c755c6702ee3f98cd53a0747fd.ast.meta.embedding.meta.json"
+}

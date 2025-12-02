@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\v10.7\\\\\\\\tests\\\\\\\\baseline_outputs_v10_7.json\\\",\\n  \\\"file_hash\\\": \\\"17dbea375b57f7fcd05c69c9e1236624b832a8e32759ff1c34edfbff076e0d5a\\\",\\n  \\\"size_bytes\\\": 299,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:37.161768\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"v10.7\\\",\\n  \\\"file_extension\\\": \\\".json\\\"\\n}\",\n  \"full_hash\": \"f6566c88e707a5dd65459657a6a2830f701a7f04232daf39392bded129158f4a\",\n  \"generated_at\": 1764702841.0609262,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v10.7\\\\17dbea375b57f7fcd05c69c9e1236624b832a8e32759ff1c34edfbff076e0d5a.ast.meta.json\"\n}",
+  "full_hash": "d6aed9ec6dd27918d7e42d7d668e16e397e6df3cf0e1f6a3913187bb2b9d50b4",
+  "generated_at": 1764703194.492632,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\17dbea375b57f7fcd05c69c9e1236624b832a8e32759ff1c34edfbff076e0d5a.ast.meta.golden.json"
+}

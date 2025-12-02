@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\v7.0\\\\Testing\\\\requirements.txt\",\n  \"file_hash\": \"17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5\",\n  \"size_bytes\": 212,\n  \"last_modified\": \"2025-12-01T12:27:42.215704\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"v7.0\",\n  \"file_extension\": \".txt\"\n}",
+  "full_hash": "131a992bc047fb2bf96478f2f36128c570d526e43167d4b717e5aead87a12521",
+  "generated_at": 1764703921.863418,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v7.0\\17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5.ast.meta.json"
+}

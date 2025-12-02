@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "\\"\\"\\"Synthetic strategy simulator.\\"\\"\\"\\nimport random\\nfrom typing import Any\\nfrom simulations.models.strategy_simulation import (\\nStrategySimMetrics,\\nStrategySimRequest,\\nStrategySimResult,\\n)\\nfrom simulations.utils import model_to_payload\\nclass StrategySimulator:\\n\\"\\"\\"Runs a lightweight strategy simulation.\\"\\"\\"\\nasync def run(self, request: StrategySimRequest) -> StrategySimResult:\\nmetrics = StrategySimMetrics(\\nclarity_score=round(random.uniform(0.5, 1.0), 3),\\nalignment_score=round(random.uniform(0.3, 1.0), 3),\\nrisk_score=round(random.uniform(0.0, 0.7), 3),\\nnotes=[\\"synthetic simulation only\\"],\\n)\\nstrategy_name = None\\nstrategy_plan: Any = request.strategy_plan or {}\\nif isinstance(strategy_plan, dict):\\nstrategy_name = strategy_plan.get(\\"strategy_name\\")\\nreturn StrategySimResult(\\nsimulation_id=request.simulation_id,\\nsuccess=True,\\nmetrics=model_to_payload(metrics),\\ndetails={\\"strategy_preview\\": strategy_name},\\n)",\n  "normalized_signat'),
+          Constant(value='e4c5988b32b54f7aab6a8cb0616574260a7b739512078297a189e3b6dab9a9d3'),
+          Constant(value=1764702807.267429),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\1751d351ad7124d62f0fdc1420a6cc20c8f032815b44625bfdc05a4f34c33f4f.golden.json')]))])

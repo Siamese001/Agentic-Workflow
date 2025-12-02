@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_7_main\\\\\\\\tests\\\\\\\\v10_7\\\\\\\\test_flat__memory__test_episodic_memory_v10_7.py\\\",\\n  \\\"file_hash\\\": \\\"1b4b1a434a761e232ff5540cefeab67ba92e98c58b8540d081691f9db787e5a9\\\",\\n  \\\"size_bytes\\\": 6173,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:41.685195\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_7_main\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"94be4d8bf078eb39b03f9241924ff4f64f3aacd690ff6303f919e8a002e02bf0\",\n  \"generated_at\": 1764702807.378864,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_7_main\\\\1b4b1a434a761e232ff5540cefeab67ba92e98c58b8540d081691f9db787e5a9.ast.meta.json\"\n}",
+  "full_hash": "0e5ac10f1accde9e2e42118aa5facae642c45b059a435b859873a00be5e37296",
+  "generated_at": 1764703197.3982244,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\1b4b1a434a761e232ff5540cefeab67ba92e98c58b8540d081691f9db787e5a9.ast.meta.golden.json"
+}

@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='"""Conceptual DAG specification for the v10.7 orchestration."""\nfrom __future__ import annotations\nfrom dataclasses import dataclass\nfrom typing import Dict, Iterable, List, Set\n@dataclass(frozen=True)\nclass ConceptualNode:\n"""Represents a conceptual workflow block and its concrete LangGraph nodes."""\nname: str\nconcrete_nodes: List[str]\nCONCEPTUAL_DAG: List[ConceptualNode] = [\nConceptualNode(\nname="SafetyGuardStack",\nconcrete_nodes=["run_sanitize_pii", "run_detect_prompt_injection"],\n),\nConceptualNode(\nname="StrategyStack",\nconcrete_nodes=[\n"run_classify_complexity",\n"run_tot_strategy",\n"run_arbitration_after_strategy",\n"run_detect_ambiguity",\n],\n),\nConceptualNode(\nname="RAGStack",\nconcrete_nodes=[\n"prepare_parallel_run",\n"run_prompt_engineering",\n"run_rag_stack",\n"join_rag_and_prompt",\n"run_arbitration_after_join",\n],\n),\nConceptualNode(\nname="BulletStack",\nconcrete_nodes=[\n"run_generate_bullets",\n"run_critique_bullets",\n"run_arbitration_after_bullets",\n],\n),\nConceptualNode(\nname="DraftingStack",\nconcrete_nodes=[\n"run_drafting",\n"run_arbitration_after_drafting",\n],\n),\nConceptualNode(\nname="QAStack",\nconcrete_nodes=[\n"run_qa_validation",\n"run_arbitration_after_qa",\n"run_constitutional_review",\n],\n),\nConceptualNode(\nname="HILInteractionStack",\nconcrete_nodes=[\n"HIL_PAUSE",\n"run_feedback_router",\n"run_prepare_hil_strategy_reentry",\n"run_prepare_hil_drafting_reentry",\n"run_reconcile_specialists",\n"run_inject_hil_edit",\n],\n),\n]\nCONCEPTUAL_EDGES = [\n("SafetyGuardStack", "StrategyStack"),\n("StrategyStack", "RAGStack"),\n("RAGStack", "BulletStack"),\n("BulletStack", "DraftingStack"),\n("DraftingStack", "QAStack"),\n("QAStack", "HILInteractionStack"),\n]\ndef conceptual_node_map() -> Dict[str, ConceptualNode]:\n"""Return a lookup dictionary for conceptual nodes by name."""\nreturn {node.name: node for node in CONCEPTUAL_DAG}\ndef all_concrete_nodes() -> Set[str]:\n"""Return the flattened set of concrete node names covered by the spec."""\nreturn {\nconcrete\nfor node in CONCEPTUAL_DAG\nfor concrete in node.concrete_nodes\n}\ndef iter_concrete_nodes(node_names: Iterable[str]) -> Iterable[str]:\n"""Iterate over all concrete nodes for the given conceptual node names."""\nlookup = conceptual_node_map()\nfor name in node_names:\nconceptual = lookup.get(name)\nif not conceptual:\ncontinue\nyield from conceptual.concrete_nodes\n__all__ = [\n"ConceptualNode",\n"CONCEPTUAL_DAG",\n"CONCEPTUAL_EDGES",\n"conceptual_node_map",\n"all_concrete_nodes",\n"iter_concrete_nodes",\n]'),
+          Constant(value='func:conceptual_node_map;func:all_concrete_nodes;func:iter_concrete_nodes;class:ConceptualNode'),
+          Constant(value='object_oriented_with_methods'),
+          Constant(value='public_methods:conceptual_node_map,all_concrete_nodes,iter_concrete_nodes'),
+          List(ctx=Load())]))])

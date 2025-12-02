@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "\\"\\"\\"\\nResume Generation Engine v5.27 - RESTORED K.0 AND K.2 AGENTIC NODES\\n================================================================================\\nCRITICAL v5.27 UPDATE: Full restoration of agentic preprocessing intelligence\\n\\u2713 RESTORED: K.0 Thematic Analysis (50 RAG calls, COT=6/TOT=4/Depth=4/SC=12/Reflexion=True)\\n\\u2713 RESTORED: K.2 Competitive Analysis (24 RAG calls, COT=2/TOT=5/Depth=4/SC=12/Reflexion=True)\\n\\u2713 RESTORED: LinkedIn authenticity pattern extraction (15 calls, \\u226510 profiles)\\n\\u2713 RESTORED: Peer JD competitive analysis (24 calls, \\u22653 peer JDs)\\n\\u2713 RESTORED: Two-stage retrieval (BM25 \\u2192 Cross-encoder reranking)\\n\\u2713 RESTORED: Multi-source competitive intelligence\\n\\u2713 UPGRADED: All K-node reasoning configurations to maximum robustness\\n\\u2713 PRESERVED: All v5.26 EY/Early Career/TraderSense customization\\nREASONING CONFIG UPDATES v5.27:\\n\\u2713 K.0 Thematic Analysis: 6/4/4/12/True (RESTORED from v61)\\n'),
+          Constant(value='636e9c15a74965b61a1c3dfe1308def9757696ec24a6c562ed462d705deb1b09'),
+          Constant(value=1764702819.4114046),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\1aa952dd25993535db07ac143e0a99d35ad228306d97fb7ab2820b2bfea9130d.golden.json')]))])

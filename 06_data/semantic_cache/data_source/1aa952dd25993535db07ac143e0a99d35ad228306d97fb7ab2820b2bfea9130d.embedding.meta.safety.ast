@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='has_executable_calls'),
+          Constant(value='has_file_operations'),
+          Constant(value='has_network_calls'),
+          Constant(value='has_system_calls'),
+          Constant(value='line_count'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Name(id='false', ctx=Load()),
+          Name(id='false', ctx=Load()),
+          Name(id='false', ctx=Load()),
+          Name(id='false', ctx=Load()),
+          Constant(value=4),
+          Constant(value=1764702819.3968291),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\1aa952dd25993535db07ac143e0a99d35ad228306d97fb7ab2820b2bfea9130d.embedding.meta.json')]))])

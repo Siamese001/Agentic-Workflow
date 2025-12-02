@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"canonical_form\": \"{\\n\\\"strategy\\\": {\\n\\\"fields\\\": [\\\"steps\\\", \\\"goal\\\", \\\"context\\\"],\\n\\\"version\\\": \\\"v10.7\\\",\\n\\\"notes\\\": \\\"Extended context to include orchestration metadata\\\"\\n},\\n\\\"qa\\\": {\\n\\\"fields\\\": [\\\"confidence\\\", \\\"summary\\\", \\\"issues\\\"],\\n\\\"version\\\": \\\"v10.7\\\",\\n\\\"notes\\\": \\\"Includes structured issue reporting\\\"\\n}\\n}\",\n  \"normalized_signature\": \"\",\n  \"core_functionality\": \"configuration_or_data\",\n  \"interface_contract\": \"public_methods:\",\n  \"test_coverage\": []\n}",
+  "full_hash": "21a1c4e6762782336d0ae4339c5db7feca7b932ed02c6eaade2a95a5a3f0b854",
+  "generated_at": 1764703889.5781374,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\17dbea375b57f7fcd05c69c9e1236624b832a8e32759ff1c34edfbff076e0d5a.golden.json"
+}

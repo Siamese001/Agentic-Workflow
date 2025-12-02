@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "\\"\\"\\"Shared Pydantic data models for stack coordination.\\"\\"\\"\\nfrom typing import Any, Dict, List\\nfrom pydantic import BaseModel, Field\\nclass SpecialistDraftPacket(BaseModel):\\n\\"\\"\\"Container for specialist drafting outputs.\\"\\"\\"\\nspecialist: str = Field(..., description=\\"Name of the drafting specialist\\")\\nfocus_area: str = Field(..., description=\\"Primary responsibility of the specialist\\")\\nsections: Dict[str, Any] = Field(default_factory=dict, description=\\"Section-level draft contributions\\")\\nnotes: List[str] = Field(default_factory=list, description=\\"Observations or hand-off notes\\")\\ndependencies: List[str] = Field(default_factory=list, description=\\"Dependencies or follow-up actions\\")\\nclass EvidenceClarificationRecord(BaseModel):\\n\\"\\"\\"Represents a clarification request raised by the liaison.\\"\\"\\"\\nrequest_id: str\\nrecipient: str\\nquestions: List[str]\\npriority: str = \\"normal\\"\\ncontext_summary: str = \\"\\"\\nclass EvidenceBriefRecord(BaseMode'),
+          Constant(value='93c645d42041a1c2c8d0661a80e97944c3491d320602e973f0e4aef6ee100438'),
+          Constant(value=1764702841.1547148),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\1bae92c12da4438ef2289d3d99d65a12bb618b345721f8d0f7ecac2cbe363e20.golden.json')]))])

@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\v2\\validator_rules.json'),
+          Constant(value='17c1b88288a2fb56ddb31507bdeef16a25afd4df48666c994cffbc004d047ed5'),
+          Constant(value=938),
+          Constant(value='2025-12-01T12:27:37.032440'),
+          Constant(value='RG'),
+          Constant(value='v2'),
+          Constant(value='.json')]))])

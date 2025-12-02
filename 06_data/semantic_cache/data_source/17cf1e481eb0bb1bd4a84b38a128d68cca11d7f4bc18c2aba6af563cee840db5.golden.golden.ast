@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "google-generativeai\\nanthropic\\nopenai\\nscikit-learn\\nnumpy\\npandas\\nlanggraph\\nlangchain-redis\\nlangsmith\\nredis",\n  "normalized_signature": "",\n  "core_functionality": "configuration_or_data",\n  "interface_contract": "public_methods:",\n  "test_coverage": []\n}'),
+          Constant(value='9f078af231d4b2f329202820527c1af2ff5ed71e6c15b018479a82d2ad2a8619'),
+          Constant(value=1764702848.8762805),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v7.0\\17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5.golden.json')]))])
