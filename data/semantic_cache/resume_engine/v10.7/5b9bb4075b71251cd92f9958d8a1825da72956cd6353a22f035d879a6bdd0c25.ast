@@ -1,0 +1,46 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\redis.py",
+    "file_hash": "5b9bb4075b71251cd92f9958d8a1825da72956cd6353a22f035d879a6bdd0c25",
+    "size_bytes": 179,
+    "last_modified": "2025-12-01T12:27:37.121663",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "Redis",
+      "line_number": 1,
+      "docstring": "Minimal Redis stub so the core module can be imported in tests.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 4,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {},
+  "function_signatures": {
+    "__init__": "__init__"
+  },
+  "class_signatures": {
+    "Redis": "Redis"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

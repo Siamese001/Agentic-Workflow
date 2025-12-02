@@ -1,0 +1,401 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\renderer_RES_v2.py",
+    "file_hash": "d1d4ca8c3241b93409dc8302890ffb8f71f1b7857aaed9ad0e835ad70108bb48",
+    "size_bytes": 21176,
+    "last_modified": "2025-12-01T12:27:37.017554",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "FileRenderer",
+      "line_number": 28,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 30,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_safe_company_name",
+      "line_number": 40,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_safe_job_title",
+      "line_number": 45,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_strip_fences",
+      "line_number": 49,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "render",
+      "line_number": 57,
+      "docstring": "Render all output files (Resume, Skills, Cover Letter, QA Report, App Tracker).\nUses K0-K11 Enum scheme. Includes fence stripping for relevant artifacts.\nReturns a tuple of (file_paths, (validation_results, file_contents)).",
+      "imports": [],
+      "dependencies": [
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_resume_artifact",
+      "line_number": 160,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_skills_artifact",
+      "line_number": 170,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_cover_letter_artifact",
+      "line_number": 176,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_qa_report_artifact",
+      "line_number": 182,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_app_tracker_artifact",
+      "line_number": 186,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_initialize_render_dispatch",
+      "line_number": 215,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_handle_render_header",
+      "line_number": 227,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_handle_render_simple",
+      "line_number": 230,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "render_method",
+        "getattr"
+      ],
+      "responsibility_level": "L4",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_handle_render_experience",
+      "line_number": 237,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_handle_render_experience_narrative",
+      "line_number": 249,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_handle_render_list",
+      "line_number": 260,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "type",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_name",
+      "line_number": 279,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_headline",
+      "line_number": 280,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_contact",
+      "line_number": 281,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_paragraph",
+      "line_number": 282,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_experience_section_std",
+      "line_number": 283,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_experience_section_narrative",
+      "line_number": 296,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_experience_header",
+      "line_number": 308,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "filter"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_list_section",
+      "line_number": 317,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_skills",
+      "line_number": 341,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_resume_markdown",
+      "line_number": 355,
+      "docstring": "Renders the resume to markdown format using the K0-K11 schema.\nUses the RESUME_RENDER_CONFIG to determine the order and type of sections.",
+      "imports": [],
+      "dependencies": [
+        "render_handler"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_app_tracker",
+      "line_number": 373,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "copy": [
+      "line_5"
+    ],
+    "functools": [
+      "line_6"
+    ],
+    "json": [
+      "line_7"
+    ],
+    "logging": [
+      "line_8"
+    ],
+    "os": [
+      "line_9"
+    ],
+    "re": [
+      "line_10"
+    ],
+    "from_datetime": [
+      "line_11"
+    ],
+    "from_typing": [
+      "line_12"
+    ],
+    "from_models_RES": [
+      "line_14"
+    ],
+    "from_config_RES_v2": [
+      "line_15"
+    ],
+    "from_utils_RES_v2": [
+      "line_16"
+    ],
+    "from_validator_RES_v2": [
+      "line_18"
+    ],
+    "from_workflow_RES_v2": [
+      "line_22"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "_safe_company_name": "_safe_company_name",
+    "_safe_job_title": "_safe_job_title",
+    "_strip_fences": "_strip_fences",
+    "render": "render",
+    "_render_resume_artifact": "_render_resume_artifact",
+    "_render_skills_artifact": "_render_skills_artifact",
+    "_render_cover_letter_artifact": "_render_cover_letter_artifact",
+    "_render_qa_report_artifact": "_render_qa_report_artifact",
+    "_render_app_tracker_artifact": "_render_app_tracker_artifact",
+    "_initialize_render_dispatch": "_initialize_render_dispatch",
+    "_handle_render_header": "_handle_render_header",
+    "_handle_render_simple": "_handle_render_simple",
+    "_handle_render_experience": "_handle_render_experience",
+    "_handle_render_experience_narrative": "_handle_render_experience_narrative",
+    "_handle_render_list": "_handle_render_list",
+    "_render_name": "_render_name",
+    "_render_headline": "_render_headline",
+    "_render_contact": "_render_contact",
+    "_render_paragraph": "_render_paragraph",
+    "_render_experience_section_std": "_render_experience_section_std",
+    "_render_experience_section_narrative": "_render_experience_section_narrative",
+    "_render_experience_header": "_render_experience_header",
+    "_render_list_section": "_render_list_section",
+    "_render_skills": "_render_skills",
+    "_render_resume_markdown": "_render_resume_markdown",
+    "_render_app_tracker": "_render_app_tracker"
+  },
+  "class_signatures": {
+    "FileRenderer": "FileRenderer"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 49,
+    "cognitive_complexity": 37,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

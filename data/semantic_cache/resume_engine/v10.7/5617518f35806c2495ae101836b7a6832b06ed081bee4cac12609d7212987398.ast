@@ -1,0 +1,246 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\agents\\__init__.py",
+    "file_hash": "5617518f35806c2495ae101836b7a6832b06ed081bee4cac12609d7212987398",
+    "size_bytes": 4732,
+    "last_modified": "2025-12-01T12:27:37.137330",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DetectionResult",
+      "line_number": 16,
+      "docstring": "Outcome returned by :class:`PromptInjectionDetector`.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptInjectionDetector",
+      "line_number": 24,
+      "docstring": "Very small heuristic detector for prompt-injection attempts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PIISanitizerAgent",
+      "line_number": 47,
+      "docstring": "Simple recursive sanitizer that redacts common PII tokens.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyAgent",
+      "line_number": 80,
+      "docstring": "Produces a deterministic high-level execution plan.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGAgent",
+      "line_number": 99,
+      "docstring": "Minimal retrieval augmented generation facade.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftingAgent",
+      "line_number": 115,
+      "docstring": "Drafts a short deterministic response.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAAgent",
+      "line_number": 126,
+      "docstring": "Performs a toy evaluation returning a confidence score.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect",
+      "line_number": 35,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DetectionResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 57,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sanitize",
+      "line_number": 62,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_sanitize",
+      "line_number": 65,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "tuple",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 83,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_plan",
+      "line_number": 86,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 102,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "retrieve",
+      "line_number": 105,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 118,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "draft",
+      "line_number": 121,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate",
+      "line_number": 129,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_9"
+    ],
+    "from_dataclasses": [
+      "line_11"
+    ],
+    "from_typing": [
+      "line_12"
+    ],
+    "re": [
+      "line_58"
+    ]
+  },
+  "function_signatures": {
+    "detect": "detect",
+    "__init__": "__init__",
+    "sanitize": "sanitize",
+    "_sanitize": "_sanitize",
+    "generate_plan": "generate_plan",
+    "retrieve": "retrieve",
+    "draft": "draft",
+    "evaluate": "evaluate"
+  },
+  "class_signatures": {
+    "DetectionResult": "DetectionResult",
+    "PromptInjectionDetector": "PromptInjectionDetector",
+    "PIISanitizerAgent": "PIISanitizerAgent",
+    "StrategyAgent": "StrategyAgent",
+    "RAGAgent": "RAGAgent",
+    "DraftingAgent": "DraftingAgent",
+    "QAAgent": "QAAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 9,
+    "cognitive_complexity": 6,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

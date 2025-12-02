@@ -1,0 +1,1019 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v9.0\\agent_swarm_v9_0.py",
+    "file_hash": "bad41889d0f22794da886499f63982f6f2825ee34ae578bc6fef94fdce45a4bf",
+    "size_bytes": 60070,
+    "last_modified": "2025-12-01T12:27:42.529429",
+    "engine": "RG",
+    "archive_version": "v9.0",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "GraphDatabaseClient",
+      "line_number": 74,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowSteps",
+      "line_number": 90,
+      "docstring": "Centralizes workflow step names to match v7.0 Architecture.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThemeClassifierAgent",
+      "line_number": 102,
+      "docstring": "v7.0 Step 1: Strategy\nReplaces the entire v6.4 strategy stack.\nA simple, fast agent that classifies the input job description.\n\nCorresponds to:\nComponent: ThemeClassifierAgent\nIntelligence: 20 (Low)\nTier: Tier 3 (Speed/Cost)\nModel: Gemini 2.5 Flash-Lite",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_QueryGeneratorAgent",
+      "line_number": 169,
+      "docstring": "v7.0 Step 2: RAG - QueryGen\nGenerates RAG queries based on the strategy.\n\nCorresponds to:\nComponent: RAG_QueryGen\nIntelligence: 75 (High)\nTier: Tier 1 (Flagship)\nModel: Gemini 2.5 Pro",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_SearchAgent",
+      "line_number": 226,
+      "docstring": "v9.0 Upgrade: Full ReAct Agent\nImplements internal critique loop, dynamic tool use (Vector+Graph),\nand persistent graph writing to achieve a 95+ score.\n\nCorresponds to:\nComponent: RAG_SearchAgent (ReAct)\nIntelligence: 80 (Very High)\nTier: Tier 1 (Flagship)",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_CritiqueAgent",
+      "line_number": 420,
+      "docstring": "v7.0 Step 2: RAG - Critique\nReviews and critiques the RAG results.\n\nCorresponds to:\nComponent: RAG_CritiqueAgent\nIntelligence: 85 (Very High)\nTier: Tier 1 (Flagship)\nModel: Claude 4.1 Opus",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptStackAgent",
+      "line_number": 485,
+      "docstring": "v7.0 Step 3: Drafting - Prompt Stack\nA simple Python-based prompt formatter.\n\nCorresponds to:\nComponent: PromptFormatterAgent\nIntelligence: 5 (Minimal)\nTier: N/A (Python)",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CustomizedBulletDrafterAgent",
+      "line_number": 527,
+      "docstring": "v9.0: (LLM-based) Rewrites existing bullets to match strategy.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SyntheticBulletDrafterAgent",
+      "line_number": 545,
+      "docstring": "v9.0: (LLM-based) Generates new bullets from scratch.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ProvenanceRouterAgent",
+      "line_number": 563,
+      "docstring": "v9.0: Replaces BulletSwarmAgent. Implements 2/3/2 & 2/2/2 logic.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletCritiqueAgent",
+      "line_number": 623,
+      "docstring": "v9.0: New agent to critique the assembled bullet list.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftingConductorAgent",
+      "line_number": 656,
+      "docstring": "v9.0: Replaces AdversarialDraftingRouter. (Req #1)\nThis is a dynamic MoE router that selects the best drafting path.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowRePlannerAgent",
+      "line_number": 734,
+      "docstring": "v7.0 Step 3 (SC Paths): Workflow Re-Planner\nAnalyzes QA failures and creates a recovery plan.\n\nCorresponds to:\nComponent: WorkflowRePlanner\nIntelligence: 90 (Expert)\nTier: Tier 1 (Flagship)\nModel: Claude 4.1 Opus",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAConductorAgent",
+      "line_number": 809,
+      "docstring": "v9.0: Replaces AtomicQASwarmLLM (Req #1)\nThis is a dynamic MoE router that selects the optimal QA checks to run.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AtomicQASwarmLogic",
+      "line_number": 923,
+      "docstring": "v7.0 Step 4: Atomic QA Swarm (Logic/Python)\nPython-based QA checks.\n\nCorresponds to:\nComponent: AtomicQALogicAgent\nIntelligence: 40 (Medium)\nTier: N/A (Python)",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FeedbackLoggerAgent",
+      "line_number": 973,
+      "docstring": "Logs validation results to a file for meta-learning.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PreferenceCaptureAgent",
+      "line_number": 997,
+      "docstring": "v7.5: Preference Capture Agent\nUses LLM to compare AI draft vs. human-approved draft.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_blackboard",
+      "line_number": 1083,
+      "docstring": "Helper to create a WorkflowBlackboard from the graph state.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowBlackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_strategy",
+      "line_number": 1091,
+      "docstring": "Node: Runs Step 1: Strategy Classification",
+      "imports": [],
+      "dependencies": [
+        "ThemeClassifierAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_rag_stack",
+      "line_number": 1100,
+      "docstring": "Node: Runs Step 2: RAG (QueryGen, Search, Critique)",
+      "imports": [],
+      "dependencies": [
+        "RAG_SearchAgent",
+        "RAG_QueryGeneratorAgent",
+        "get_blackboard",
+        "RAG_CritiqueAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_bullet_stack",
+      "line_number": 1125,
+      "docstring": "v9.0 Node: Runs the new Advanced Bullet Swarm (Req #2)",
+      "imports": [],
+      "dependencies": [
+        "get_blackboard",
+        "ProvenanceRouterAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_bullet_critique",
+      "line_number": 1135,
+      "docstring": "v9.0 Node: Runs the new BulletCritiqueAgent",
+      "imports": [],
+      "dependencies": [
+        "BulletCritiqueAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_drafting_stack",
+      "line_number": 1146,
+      "docstring": "Node: Runs Step 3: Drafting (Prompt, Bullets, Adversarial)",
+      "imports": [],
+      "dependencies": [
+        "DraftingConductorAgent",
+        "get_blackboard",
+        "PromptStackAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_qa_swarm",
+      "line_number": 1169,
+      "docstring": "Node: Runs Step 4: QA (LLM and Logic)",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "QAConductorAgent",
+        "AtomicQASwarmLogic",
+        "FeedbackLoggerAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_replanner",
+      "line_number": 1204,
+      "docstring": "Node: Runs Step 3 (SC Paths): Re-Planner",
+      "imports": [],
+      "dependencies": [
+        "get_blackboard",
+        "WorkflowRePlannerAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "human_review_pause",
+      "line_number": 1247,
+      "docstring": "Node: This node saves the final draft to the state for HIL diffing.\nThe graph will be configured to *interrupt* before this node,\nallowing a human to review and provide the 'human_approved_draft'.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_preference_capture",
+      "line_number": 1257,
+      "docstring": "Node: Runs Step 5: Preference Capture",
+      "imports": [],
+      "dependencies": [
+        "PreferenceCaptureAgent",
+        "get_blackboard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_qa_results",
+      "line_number": 1281,
+      "docstring": "This is the \"conditional edge\" that replaces the Governor's while loop.\nv7.5: On success, it routes to HIL, not END.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_bullet_critique",
+      "line_number": 1300,
+      "docstring": "v9.0 Conditional Edge: Checks results from the BulletCritiqueAgent.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_graph_app",
+      "line_number": 1319,
+      "docstring": "Builds and compiles the persistent v9.0 StateGraph.",
+      "imports": [],
+      "dependencies": [
+        "StateGraph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "query",
+      "line_number": 75,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "write",
+      "line_number": 76,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 114,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 130,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 180,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 196,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 237,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super",
+        "GraphDatabaseClient"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 270,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "len",
+        "HopExecutionError",
+        "range",
+        "str",
+        "tool_callable"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_thought",
+      "line_number": 320,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_action",
+      "line_number": 333,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_critique_step",
+      "line_number": 347,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_deduplicate_and_rank",
+      "line_number": 357,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tool_master_resume_search",
+      "line_number": 371,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tool_web_search",
+      "line_number": 395,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tool_graph_search",
+      "line_number": 407,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tool_write_to_graph",
+      "line_number": 414,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 431,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 447,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 495,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 499,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 529,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 534,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 547,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 552,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 565,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CustomizedBulletDrafterAgent",
+        "SyntheticBulletDrafterAgent",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_verbatim_bullets",
+      "line_number": 571,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 584,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 625,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 630,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 661,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_init_drafter",
+      "line_number": 674,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 684,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 745,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 761,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "RAG_SearchAgent",
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 813,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_init_qa_agent",
+      "line_number": 835,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 847,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "str",
+        "HopExecutionError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 933,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 937,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 975,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log",
+      "line_number": 979,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 1002,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_model_client",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 1019,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "str",
+        "HopExecutionError",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "copy": [
+      "line_19"
+    ],
+    "difflib": [
+      "line_20"
+    ],
+    "hashlib": [
+      "line_21"
+    ],
+    "json": [
+      "line_22"
+    ],
+    "logging": [
+      "line_23"
+    ],
+    "os": [
+      "line_24"
+    ],
+    "random": [
+      "line_25"
+    ],
+    "re": [
+      "line_26"
+    ],
+    "time": [
+      "line_27"
+    ],
+    "uuid": [
+      "line_28"
+    ],
+    "from_collections": [
+      "line_29"
+    ],
+    "from_enum": [
+      "line_30"
+    ],
+    "from_dataclasses": [
+      "line_31"
+    ],
+    "from_datetime": [
+      "line_32"
+    ],
+    "from_typing": [
+      "line_33"
+    ],
+    "from_core_v9_0": [
+      "line_36",
+      "line_1324"
+    ],
+    "from_langgraph.graph": [
+      "line_79",
+      "line_1323"
+    ],
+    "from_langgraph.checkpoint.redis": [
+      "line_80"
+    ]
+  },
+  "function_signatures": {
+    "get_blackboard": "get_blackboard",
+    "run_strategy": "run_strategy",
+    "run_rag_stack": "run_rag_stack",
+    "run_bullet_stack": "run_bullet_stack",
+    "run_bullet_critique": "run_bullet_critique",
+    "run_drafting_stack": "run_drafting_stack",
+    "run_qa_swarm": "run_qa_swarm",
+    "run_replanner": "run_replanner",
+    "human_review_pause": "human_review_pause",
+    "run_preference_capture": "run_preference_capture",
+    "check_qa_results": "check_qa_results",
+    "check_bullet_critique": "check_bullet_critique",
+    "get_graph_app": "get_graph_app",
+    "query": "query",
+    "write": "write",
+    "__init__": "__init__",
+    "run": "run",
+    "_generate_thought": "_generate_thought",
+    "_select_action": "_select_action",
+    "_critique_step": "_critique_step",
+    "_deduplicate_and_rank": "_deduplicate_and_rank",
+    "_tool_master_resume_search": "_tool_master_resume_search",
+    "_tool_web_search": "_tool_web_search",
+    "_tool_graph_search": "_tool_graph_search",
+    "_tool_write_to_graph": "_tool_write_to_graph",
+    "_get_verbatim_bullets": "_get_verbatim_bullets",
+    "_init_drafter": "_init_drafter",
+    "_init_qa_agent": "_init_qa_agent",
+    "log": "log"
+  },
+  "class_signatures": {
+    "GraphDatabaseClient": "GraphDatabaseClient",
+    "WorkflowSteps": "WorkflowSteps",
+    "ThemeClassifierAgent": "ThemeClassifierAgent",
+    "RAG_QueryGeneratorAgent": "RAG_QueryGeneratorAgent",
+    "RAG_SearchAgent": "RAG_SearchAgent",
+    "RAG_CritiqueAgent": "RAG_CritiqueAgent",
+    "PromptStackAgent": "PromptStackAgent",
+    "CustomizedBulletDrafterAgent": "CustomizedBulletDrafterAgent",
+    "SyntheticBulletDrafterAgent": "SyntheticBulletDrafterAgent",
+    "ProvenanceRouterAgent": "ProvenanceRouterAgent",
+    "BulletCritiqueAgent": "BulletCritiqueAgent",
+    "DraftingConductorAgent": "DraftingConductorAgent",
+    "WorkflowRePlannerAgent": "WorkflowRePlannerAgent",
+    "QAConductorAgent": "QAConductorAgent",
+    "AtomicQASwarmLogic": "AtomicQASwarmLogic",
+    "FeedbackLoggerAgent": "FeedbackLoggerAgent",
+    "PreferenceCaptureAgent": "PreferenceCaptureAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 71,
+    "cognitive_complexity": 37,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

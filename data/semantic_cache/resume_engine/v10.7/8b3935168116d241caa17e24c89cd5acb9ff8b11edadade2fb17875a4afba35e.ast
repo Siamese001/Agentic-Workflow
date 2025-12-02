@@ -1,0 +1,71 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_architecture_compliance_v10_7.py",
+    "file_hash": "8b3935168116d241caa17e24c89cd5acb9ff8b11edadade2fb17875a4afba35e",
+    "size_bytes": 619,
+    "last_modified": "2025-12-01T12:27:37.184021",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_no_global_config_usage",
+      "line_number": 6,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_dependency_injection_exists",
+      "line_number": 12,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "signature"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_placeholder",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "subprocess": [
+      "line_1"
+    ],
+    "pytest": [
+      "line_2"
+    ],
+    "from_inspect": [
+      "line_13"
+    ],
+    "from_agents": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "test_no_global_config_usage": "test_no_global_config_usage",
+    "test_dependency_injection_exists": "test_dependency_injection_exists",
+    "test_placeholder": "test_placeholder"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

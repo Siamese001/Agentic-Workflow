@@ -1,0 +1,58 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\schema\\__init__.py",
+    "file_hash": "c48da622b4fa6cb99f3858496e4db4af1037f2cf318692d086bbc75a3e4daf1a",
+    "size_bytes": 840,
+    "last_modified": "2025-12-01T12:27:37.341469",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ResumeOutputSchema",
+      "line_number": 10,
+      "docstring": "Minimal structure validator for resume payloads in tests.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__post_init__",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "from_dataclasses": [
+      "line_5"
+    ],
+    "from_typing": [
+      "line_6"
+    ]
+  },
+  "function_signatures": {
+    "__post_init__": "__post_init__"
+  },
+  "class_signatures": {
+    "ResumeOutputSchema": "ResumeOutputSchema"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

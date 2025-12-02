@@ -1,0 +1,171 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v7.0\\main_v7_0.py",
+    "file_hash": "486fb30260773f59419d55b22da7fad05dc53a310ffe7771b39b505e54ff3b96",
+    "size_bytes": 13292,
+    "last_modified": "2025-12-01T12:27:42.197346",
+    "engine": "RG",
+    "archive_version": "v7.0",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "JsonFormatter",
+      "line_number": 44,
+      "docstring": "Formats log records as JSON objects.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_job_input",
+      "line_number": 90,
+      "docstring": "Load job input from JSON file.",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_logging",
+      "line_number": 107,
+      "docstring": "Configure structured logging based on CONFIG.\nREFACTORED: Reads all settings from CONFIG.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "JsonFormatter"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "print_summary",
+      "line_number": 162,
+      "docstring": "Print workflow execution summary from final graph state.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_tracing",
+      "line_number": 215,
+      "docstring": "Configures LangSmith tracing if enabled.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 227,
+      "docstring": "Main entry point for V7.0 LangGraph Workflow.",
+      "imports": [],
+      "dependencies": [
+        "RedisSaver",
+        "get_graph_app",
+        "load_job_input",
+        "globals",
+        "Path",
+        "str",
+        "setup_tracing",
+        "setup_logging",
+        "print",
+        "open",
+        "print_summary"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format",
+      "line_number": 46,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "argparse": [
+      "line_16"
+    ],
+    "json": [
+      "line_17"
+    ],
+    "logging": [
+      "line_18"
+    ],
+    "logging.handlers": [
+      "line_19"
+    ],
+    "os": [
+      "line_20"
+    ],
+    "sys": [
+      "line_21"
+    ],
+    "uuid": [
+      "line_22"
+    ],
+    "re": [
+      "line_23"
+    ],
+    "from_datetime": [
+      "line_24"
+    ],
+    "from_pathlib": [
+      "line_25"
+    ],
+    "from_typing": [
+      "line_26"
+    ],
+    "from_core_v7_0": [
+      "line_29"
+    ],
+    "from_agent_swarm_v7_0": [
+      "line_34"
+    ],
+    "from_langgraph.checkpoint.redis": [
+      "line_37"
+    ],
+    "from_core_v6_5": [
+      "line_114"
+    ]
+  },
+  "function_signatures": {
+    "load_job_input": "load_job_input",
+    "setup_logging": "setup_logging",
+    "print_summary": "print_summary",
+    "setup_tracing": "setup_tracing",
+    "main": "main",
+    "format": "format"
+  },
+  "class_signatures": {
+    "JsonFormatter": "JsonFormatter"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 29,
+    "cognitive_complexity": 18,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

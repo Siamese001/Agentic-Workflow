@@ -1,0 +1,476 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_54_WEB_RAG.py",
+    "file_hash": "ef56d738eb149e286ab0daea4a0e1f428efc4fb9b39eda09e9eb13889e635160",
+    "size_bytes": 35602,
+    "last_modified": "2025-12-01T12:27:35.585872",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RAGConfig",
+      "line_number": 51,
+      "docstring": "Configuration for web RAG system.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ClaudeWebSearchClient",
+      "line_number": 77,
+      "docstring": "Wrapper for Claude API with web_search tool integration.\nHandles API authentication, tool definition, response parsing, retries.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JDCacheManager",
+      "line_number": 170,
+      "docstring": "Manages caching of JD analysis results.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WebSearchRAG",
+      "line_number": 212,
+      "docstring": "Implements three-phase web search RAG strategy.\n\nPhase 1: Thematic Research (15-20 searches)\nPhase 2: Authenticity Patterns (10-15 searches)\nPhase 3: Competitive Positioning (10-15 searches)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EnhancedJobDescriptionAnalyzer",
+      "line_number": 417,
+      "docstring": "HOP-0: Enhanced Job Description Parser with Web-Search Intelligence.\n\nv5.54: WEB RAG FULLY IMPLEMENTED\n- Phase 1: Thematic Research (15-20 searches)\n- Phase 2: Authenticity Patterns (10-15 searches)\n- Phase 3: Competitive Positioning (10-15 searches)\n- Graceful fallback to v5.52 local NLP",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 83,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ImportError",
+        "RAGConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "search_and_analyze",
+      "line_number": 106,
+      "docstring": "Send prompt to Claude with web_search tool enabled.\nReturns parsed JSON from Claude's response.",
+      "imports": [],
+      "dependencies": [
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_json",
+      "line_number": 143,
+      "docstring": "Extract JSON from Claude's response content.",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 173,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_cache_key",
+      "line_number": 178,
+      "docstring": "Generate MD5 hash for JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 182,
+      "docstring": "Retrieve cached analysis if available and not expired.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 199,
+      "docstring": "Save analysis to cache.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 221,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase1_thematic_research",
+      "line_number": 224,
+      "docstring": "Phase 1: Research market expectations and extract themes.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase2_authenticity_patterns",
+      "line_number": 275,
+      "docstring": "Phase 2: Extract how real professionals present themselves.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase3_competitive_positioning",
+      "line_number": 328,
+      "docstring": "Phase 3: Analyze competitive landscape and differentiators.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_industry",
+      "line_number": 379,
+      "docstring": "Infer industry from JD keywords.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_peer_companies",
+      "line_number": 394,
+      "docstring": "Infer peer companies based on industry.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 428,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ClaudeWebSearchClient",
+        "JDCacheManager",
+        "WebSearchRAG",
+        "RAGConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "analyze",
+      "line_number": 487,
+      "docstring": "Analyze job description with web-search intelligence or local NLP fallback.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_with_web_search",
+      "line_number": 502,
+      "docstring": "v5.54: PRODUCTION IMPLEMENTATION\nEnhanced analysis using web search for market intelligence.",
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthesize_thematic_analysis",
+      "line_number": 571,
+      "docstring": "Synthesize three-phase web RAG results into ThematicAnalysis.",
+      "imports": [],
+      "dependencies": [
+        "RetrievalSource",
+        "CompetitiveIntelligence",
+        "ThematicAnalysis",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_company_name",
+      "line_number": 672,
+      "docstring": "Extract company name from JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dict_to_thematic_analysis",
+      "line_number": 682,
+      "docstring": "Convert cached dict back to ThematicAnalysis object.",
+      "imports": [],
+      "dependencies": [
+        "RetrievalSource",
+        "CompetitiveIntelligence",
+        "ThematicAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_local_nlp",
+      "line_number": 706,
+      "docstring": "Fallback analysis using local NLP (v5.52 implementation).\nThis remains UNCHANGED from your original file.",
+      "imports": [],
+      "dependencies": [
+        "RetrievalSource",
+        "ThematicAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_keywords",
+      "line_number": 744,
+      "docstring": "Extract keywords with frequency counts.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_theme_scores",
+      "line_number": 761,
+      "docstring": "Calculate relevance scores for each theme.",
+      "imports": [],
+      "dependencies": [
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_primary_theme",
+      "line_number": 787,
+      "docstring": "Generate primary theme from highest scoring domain.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_secondary_themes",
+      "line_number": 806,
+      "docstring": "Generate secondary themes.",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_competitive_intelligence",
+      "line_number": 820,
+      "docstring": "Extract competitive intelligence from keywords.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "float",
+        "CompetitiveIntelligence",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_classify_role",
+      "line_number": 834,
+      "docstring": "Classify role based on keywords.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_signal_quality",
+      "line_number": 852,
+      "docstring": "Calculate signal quality score.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_19"
+    ],
+    "json": [
+      "line_21"
+    ],
+    "re": [
+      "line_22"
+    ],
+    "hashlib": [
+      "line_23"
+    ],
+    "math": [
+      "line_24"
+    ],
+    "os": [
+      "line_25"
+    ],
+    "time": [
+      "line_26"
+    ],
+    "requests": [
+      "line_27"
+    ],
+    "from_typing": [
+      "line_28"
+    ],
+    "from_enum": [
+      "line_29"
+    ],
+    "from_datetime": [
+      "line_30"
+    ],
+    "from_dataclasses": [
+      "line_31"
+    ],
+    "from_pathlib": [
+      "line_32"
+    ],
+    "copy": [
+      "line_33"
+    ],
+    "anthropic": [
+      "line_37"
+    ],
+    "logging": [
+      "line_111",
+      "line_507",
+      "line_477",
+      "line_495"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "search_and_analyze": "search_and_analyze",
+    "_extract_json": "_extract_json",
+    "get_cache_key": "get_cache_key",
+    "get": "get",
+    "set": "set",
+    "phase1_thematic_research": "phase1_thematic_research",
+    "phase2_authenticity_patterns": "phase2_authenticity_patterns",
+    "phase3_competitive_positioning": "phase3_competitive_positioning",
+    "_infer_industry": "_infer_industry",
+    "_infer_peer_companies": "_infer_peer_companies",
+    "analyze": "analyze",
+    "_analyze_with_web_search": "_analyze_with_web_search",
+    "_synthesize_thematic_analysis": "_synthesize_thematic_analysis",
+    "_extract_company_name": "_extract_company_name",
+    "_dict_to_thematic_analysis": "_dict_to_thematic_analysis",
+    "_analyze_local_nlp": "_analyze_local_nlp",
+    "_extract_keywords": "_extract_keywords",
+    "_calculate_theme_scores": "_calculate_theme_scores",
+    "_generate_primary_theme": "_generate_primary_theme",
+    "_generate_secondary_themes": "_generate_secondary_themes",
+    "_extract_competitive_intelligence": "_extract_competitive_intelligence",
+    "_classify_role": "_classify_role",
+    "_calculate_signal_quality": "_calculate_signal_quality"
+  },
+  "class_signatures": {
+    "RAGConfig": "RAGConfig",
+    "ClaudeWebSearchClient": "ClaudeWebSearchClient",
+    "JDCacheManager": "JDCacheManager",
+    "WebSearchRAG": "WebSearchRAG",
+    "EnhancedJobDescriptionAnalyzer": "EnhancedJobDescriptionAnalyzer"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 49,
+    "cognitive_complexity": 28,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

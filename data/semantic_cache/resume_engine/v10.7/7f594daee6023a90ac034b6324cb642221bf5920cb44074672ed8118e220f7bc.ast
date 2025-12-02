@@ -1,0 +1,52 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\mocks\\test_mock_sweeper_v10_7.py",
+    "file_hash": "7f594daee6023a90ac034b6324cb642221bf5920cb44074672ed8118e220f7bc",
+    "size_bytes": 525,
+    "last_modified": "2025-12-01T12:27:37.200940",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_no_dev_markers_in_repo",
+      "line_number": 4,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_no_identity_or_placeholder_functions",
+      "line_number": 9,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "subprocess": [
+      "line_1"
+    ],
+    "pytest": [
+      "line_1"
+    ]
+  },
+  "function_signatures": {
+    "test_no_dev_markers_in_repo": "test_no_dev_markers_in_repo",
+    "test_no_identity_or_placeholder_functions": "test_no_identity_or_placeholder_functions"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

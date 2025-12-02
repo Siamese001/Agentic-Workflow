@@ -1,0 +1,52 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\tests\\system\\test_config_v10_7.py",
+    "file_hash": "e40e6ef55c338ffe0855e55148bfa7b5b9af28176a5c39db8d7db17e909cfe20",
+    "size_bytes": 475,
+    "last_modified": "2025-12-01T12:27:37.232417",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_config_provides_nested_sections",
+      "line_number": 6,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_config_missing_section_raises_attribute_error",
+      "line_number": 12,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_1"
+    ],
+    "from_core_v10_7": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {
+    "test_config_provides_nested_sections": "test_config_provides_nested_sections",
+    "test_config_missing_section_raises_attribute_error": "test_config_missing_section_raises_attribute_error"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

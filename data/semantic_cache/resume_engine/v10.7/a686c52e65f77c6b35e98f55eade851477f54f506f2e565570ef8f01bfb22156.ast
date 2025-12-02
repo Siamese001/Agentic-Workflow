@@ -1,0 +1,121 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\core_v10_7\\mcp.py",
+    "file_hash": "a686c52e65f77c6b35e98f55eade851477f54f506f2e565570ef8f01bfb22156",
+    "size_bytes": 3291,
+    "last_modified": "2025-12-01T12:27:37.419184",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "MCPClientSpec",
+      "line_number": 15,
+      "docstring": "Typed representation of a configured MCP client.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MCPClientStub",
+      "line_number": 26,
+      "docstring": "Fallback stub MCP client used when no implementation exists.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "parse_mcp_client_specs",
+      "line_number": 38,
+      "docstring": "Validate and normalise MCP client specifications.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "MCPClientSpec",
+        "isinstance",
+        "ValueError",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "instantiate_mcp_client",
+      "line_number": 69,
+      "docstring": "Create an MCP client instance from a validated spec.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "AttributeError",
+        "MCPClientStub",
+        "MCPClientInitializationError",
+        "client_cls"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 29,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__repr__",
+      "line_number": 33,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_2"
+    ],
+    "importlib": [
+      "line_4"
+    ],
+    "logging": [
+      "line_5"
+    ],
+    "from_dataclasses": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_exceptions": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {
+    "parse_mcp_client_specs": "parse_mcp_client_specs",
+    "instantiate_mcp_client": "instantiate_mcp_client",
+    "__init__": "__init__",
+    "__repr__": "__repr__"
+  },
+  "class_signatures": {
+    "MCPClientSpec": "MCPClientSpec",
+    "MCPClientStub": "MCPClientStub"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 10,
+    "cognitive_complexity": 6,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
