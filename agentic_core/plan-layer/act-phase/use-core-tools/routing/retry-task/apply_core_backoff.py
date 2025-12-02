@@ -3,7 +3,7 @@ L5 Implementation: apply_core_backoff
 Role: L3_ORCHESTRATION
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:02:31.592185
+Generated: 2025-12-01T19:08:59.603752
 """
 
 import logging
@@ -76,5 +76,5 @@ class ApplyCoreBackoff:
             "operation": "main",
             "role": "L3_ORCHESTRATION",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:02:31.592264"
+            "timestamp": "2025-12-01T19:08:59.603822"
         }
