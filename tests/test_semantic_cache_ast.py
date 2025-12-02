@@ -417,7 +417,7 @@ class TestFileSignatureValidation:
         
         ast_signature = ASTSignature(
             signature=file_signature,
-            root_nodes=[],
+            root_nodes=["class_def", "function_def"],  # Valid AST with nodes
             import_graph={},
             function_signatures={},
             class_signatures={},

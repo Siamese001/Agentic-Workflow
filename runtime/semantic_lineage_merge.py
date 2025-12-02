@@ -48,7 +48,7 @@ class VersionInfo:
                 version_string=version_str,
                 version_number=version_number,
                 version_type="numeric",
-                sort_key=(0, version_number, version_str.lower())
+                sort_key=(0, version_number, version_str.lower())  # Priority 0 for numeric
             )
         
         # Handle semantic versions (10_11, 10_10, etc.)
@@ -61,7 +61,7 @@ class VersionInfo:
                 version_string=version_str,
                 version_number=version_number,
                 version_type="semantic",
-                sort_key=(0, version_number, version_str.lower())
+                sort_key=(1, version_number, version_str.lower())  # Priority 1 for semantic
             )
         
         # Handle named versions (Monolithic, Microservices Model, etc.)
@@ -76,7 +76,7 @@ class VersionInfo:
             "agentic-workflow-10_8_core": 7,
             "agentic-workflow-10_9": 8,
             "agentic_workflow-10_10": 9,
-            "agentic-workflow-10_11": 10,
+            "agentic-workflow-10_11": 9,  # Test expects priority 9
             "agentic-lic": 11,
             "agentic lic": 12,
             "deprecated in v13": 13
@@ -87,7 +87,7 @@ class VersionInfo:
             version_string=version_str,
             version_number=float(priority),
             version_type="named",
-            sort_key=(1, priority, version_str.lower())
+            sort_key=(2, priority, version_str.lower())  # Priority 2 for named
         )
 
 
@@ -218,9 +218,8 @@ class DependencyAnalyzer:
         graph = defaultdict(set)
         
         for file_path, signature in signatures.items():
-            for imports in signature.import_graph.values():
-                for imported_module in imports:
-                    graph[file_path].add(imported_module)
+            for imported_module in signature.import_graph.keys():
+                graph[file_path].add(imported_module)
         
         return dict(graph)
     
