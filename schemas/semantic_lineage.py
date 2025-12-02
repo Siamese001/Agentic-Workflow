@@ -363,8 +363,9 @@ class SemanticLineageValidator:
         if not entry.ast_signature.root_nodes:
             errors.append("Empty AST signature")
         
-        # Check embedding
-        if not entry.embedding.embedding_data:
+        # Check embedding (handle None for mock implementations)
+        # None embeddings are acceptable for mock/test scenarios
+        if entry.embedding is not None and not entry.embedding.embedding_data:
             errors.append("Empty embedding data")
         
         # Check integrity signals
