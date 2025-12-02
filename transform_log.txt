@@ -1,0 +1,336 @@
+Starting YAML transformation...
+Transforming domain: agentic_core
+  Processing agentic_core: 205 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    agentic_core transformed: 205 -> 130 files
+Transforming domain: apps
+  Processing apps: 330 files
+    apps has subdomains
+    Transforming subdomain: rg
+  Processing rg: 111 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    rg transformed: 111 -> 75 files
+    Transforming subdomain: lic
+  Processing lic: 111 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    lic transformed: 111 -> 75 files
+    Transforming subdomain: shared
+  Processing shared: 108 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    shared transformed: 108 -> 72 files
+    apps transformed: 330 -> 222 files
+Transforming domain: config
+  Processing config: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    config transformed: 96 -> 63 files
+Transforming domain: data
+  Processing data: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    data transformed: 96 -> 63 files
+Transforming domain: observability
+  Processing observability: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    observability transformed: 96 -> 63 files
+Transforming domain: prompt_governance
+  Processing prompt_governance: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    prompt_governance transformed: 96 -> 63 files
+Transforming domain: runtime
+  Processing runtime: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    runtime transformed: 96 -> 63 files
+Transforming domain: schemas
+  Processing schemas: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    schemas transformed: 96 -> 63 files
+Transforming domain: scripts
+  Processing scripts: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    scripts transformed: 96 -> 63 files
+Transforming domain: tests
+  Processing tests: 96 files
+    Mapping layer: plan-layer -> L1_cognition
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: expand-phase -> P2_inspect
+      Mapping phase: refine-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: inspect-phase -> P2_inspect
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: agg-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: orc-layer -> L3_orchestration
+      Mapping phase: plan-phase -> P1_retrieve
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: exec-layer -> L2_execution
+      Mapping phase: act-phase -> P3_aggregate
+      Mapping phase: validate-phase -> P2_inspect
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: mem-layer -> L4_memory
+      Mapping phase: retrieve-phase -> P1_retrieve
+      Mapping phase: safety-phase -> P4_safety
+    Mapping layer: safe-layer -> L5_safety
+      Mapping phase: safety-phase -> P4_safety
+    tests transformed: 96 -> 63 files
+
+Transformation completed!
+Original file count: 1303
+Transformed file count: 856
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\transform_yaml_fixed.py", line 274, in <module>
+    success = transform_yaml_structure()
+  File "C:\Git\Agentic-Workflow\transform_yaml_fixed.py", line 270, in transform_yaml_structure
+    print(f"\u274c Zero-loss verification FAILED - lost {original_count - transformed_count} files")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u274c' in position 0: character maps to <undefined>
