@@ -37,7 +37,7 @@ class SimilarityResult:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "file_hash": self.file_hash,
-            "file_path": str(self.file_path),
+            "file_path": self.file_path.as_posix(),
             "engine": self.engine.value,
             "archive_version": self.archive_version,
             "similarity_score": self.similarity_score,
@@ -484,17 +484,30 @@ class SemanticReconstructor:
     def _generate_query_embedding(self, query_text: str) -> List[float]:
         """Generate embedding for query text (mock implementation)"""
         # In practice, this would use the same embedding service as the scanner
-        # For now, generate a deterministic mock embedding
+        # For now, generate a deterministic mock embedding with 64 dimensions
         import hashlib
         
         hash_obj = hashlib.md5(query_text.encode())
         hash_hex = hash_obj.hexdigest()
         
-        # Convert hash to float values
+        # Convert hash to float values with padding to reach 64 dimensions
         embedding = []
-        for i in range(0, min(64, len(hash_hex)), 2):
+        # Use pairs from hash to get initial values
+        for i in range(0, min(32, len(hash_hex)), 2):
             byte_val = int(hash_hex[i:i+2], 16)
             embedding.append(byte_val / 255.0)
+        
+        # Pad with deterministic values to reach 64 dimensions
+        while len(embedding) < 64:
+            # Use hash of current length + text for deterministic padding
+            padding_hash = hashlib.md5(f"{query_text}_{len(embedding)}".encode()).hexdigest()
+            for i in range(0, min(8, len(padding_hash)), 2):
+                if len(embedding) >= 64:
+                    break
+                byte_val = int(padding_hash[i:i+2], 16)
+                embedding.append(byte_val / 255.0)
+        
+        return embedding[:64]  # Ensure exactly 64 dimensions
         
         return embedding
     
