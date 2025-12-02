@@ -3,7 +3,7 @@ L5 Implementation: apply_core_weights
 Role: L3_ORCHESTRATION
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:08:59.537439
+Generated: 2025-12-01T19:12:10.176948
 """
 
 import logging
@@ -76,5 +76,5 @@ class ApplyCoreWeights:
             "operation": "main",
             "role": "L3_ORCHESTRATION",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:08:59.537507"
+            "timestamp": "2025-12-01T19:12:10.177016"
         }
