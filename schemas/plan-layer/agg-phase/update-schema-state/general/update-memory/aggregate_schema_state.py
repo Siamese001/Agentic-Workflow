@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Dict, Any, List
 from enum import Enum
 
 
@@ -26,12 +26,12 @@ class AggregationScope(Enum):
 
 @dataclass
 class StateAggregationConfig:
-    """Schema for state aggregation configuration."""
     strategy: AggregationStrategy
     scope: AggregationScope
+    aggregation_timestamp: str
     conflict_resolution: str = "latest_wins"
     preserve_history: bool = True
-    aggregation_timestamp: str
+    """Schema for state aggregation configuration."""
 
 
 @dataclass

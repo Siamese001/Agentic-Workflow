@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List
 from enum import Enum
 
 
@@ -46,10 +46,10 @@ class RetryAttempt:
 
 @dataclass
 class RetryResult:
-    """Schema for retry operation results."""
     retry_id: str
     original_request_id: str
     total_attempts: int
-    successful_attempt: Optional[int] = None
     attempts: List[RetryAttempt]
     final_status: str
+    successful_attempt: Optional[int] = None
+    """Schema for retry operation results."""

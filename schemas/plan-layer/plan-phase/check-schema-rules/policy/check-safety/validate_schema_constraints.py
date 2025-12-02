@@ -39,13 +39,13 @@ class SchemaConstraint:
 
 @dataclass
 class ConstraintViolation:
-    """Schema for constraint violation details."""
     constraint_id: str
     field_path: str
     actual_value: Union[str, int, float, bool, List[Any]]
-    expected_value: Optional[Union[str, int, float, bool, List[Any]]] = None
     message: str
     severity: ConstraintSeverity
+    expected_value: Optional[Union[str, int, float, bool, List[Any]]] = None
+    """Schema for constraint violation details."""
 
 
 @dataclass

@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Dict, Any, List
 from enum import Enum
 
 
@@ -38,11 +38,11 @@ class OrchestrationBoundary:
 
 @dataclass
 class BoundaryEnforcementConfig:
-    """Schema for boundary enforcement configuration."""
+    notification_channels: List[str]
     strict_mode: bool = True
     audit_violations: bool = True
     automatic_recovery: bool = False
-    notification_channels: List[str]
+    """Schema for boundary enforcement configuration."""
 
 
 @dataclass

@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List
 from enum import Enum
 
 
@@ -40,7 +40,7 @@ class MergeConflict:
     field_path: str
     source_values: Dict[str, Any]
     resolution_method: ConflictResolution
-    resolved_value: Any
+    resolved_value: Optional[Dict[str, Any]]
 
 
 @dataclass

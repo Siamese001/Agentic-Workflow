@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List
 from enum import Enum
 
 
@@ -47,9 +47,9 @@ class QueryResult:
 
 @dataclass
 class StoreQuery:
-    """Schema for complete store query."""
     query_id: str
     store_name: str
     parameters: QueryParameters
-    result: Optional[QueryResult] = None
     execution_metadata: Dict[str, Any]
+    result: Optional[QueryResult] = None
+    """Schema for complete store query."""

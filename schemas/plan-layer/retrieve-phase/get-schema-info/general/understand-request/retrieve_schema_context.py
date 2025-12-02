@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any
 from enum import Enum
 
 
@@ -36,12 +36,12 @@ class ContextQuery:
 
 @dataclass
 class ContextData:
-    """Schema for retrieved context data."""
     context_id: str
     context_type: ContextType
     content: Dict[str, Any]
-    metadata: Optional[Dict[str, str]] = None
     retrieval_timestamp: str
+    metadata: Optional[Dict[str, str]] = None
+    """Schema for retrieved context data."""
 
 
 @dataclass

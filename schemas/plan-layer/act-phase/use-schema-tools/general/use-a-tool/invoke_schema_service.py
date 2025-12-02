@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any
 from enum import Enum
 
 
@@ -46,10 +46,10 @@ class ServiceRequest:
 
 @dataclass
 class ServiceResponse:
-    """Schema for service response data."""
     response_id: str
     request_id: str
     status_code: int
+    response_time_ms: int
     response_data: Optional[Dict[str, Any]] = None
     error_message: Optional[str] = None
-    response_time_ms: int
+    """Schema for service response data."""
