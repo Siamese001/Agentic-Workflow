@@ -3,7 +3,7 @@ L5 Implementation: build_core_query
 Role: L3_ORCHESTRATION
 Responsibility: resume-only, generation
 Reconstructed from semantic cache
-Generated: 2025-12-01T19:08:59.483236
+Generated: 2025-12-01T19:12:10.117738
 """
 
 import logging
@@ -76,5 +76,5 @@ class BuildCoreQuery:
             "operation": "main",
             "role": "L3_ORCHESTRATION",
             "message": "Enhanced implementation from semantic cache",
-            "timestamp": "2025-12-01T19:08:59.483627"
+            "timestamp": "2025-12-01T19:12:10.118039"
         }
