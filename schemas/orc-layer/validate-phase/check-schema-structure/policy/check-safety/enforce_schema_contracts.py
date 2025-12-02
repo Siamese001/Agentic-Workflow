@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Dict, Any, List
 from enum import Enum
 
 
@@ -36,11 +36,11 @@ class OrchestrationContract:
 
 @dataclass
 class ContractEnforcementConfig:
-    """Schema for contract enforcement configuration."""
     enforcement_level: EnforcementLevel
+    notification_channels: List[str]
     automatic_violation_detection: bool = True
     escalation_enabled: bool = False
-    notification_channels: List[str]
+    """Schema for contract enforcement configuration."""
 
 
 @dataclass
