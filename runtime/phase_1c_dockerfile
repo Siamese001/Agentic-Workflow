@@ -1,0 +1,29 @@
+FROM python:3.11-slim
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    coreutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements and install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy Phase 1C validation script and schemas
+COPY runtime/phase_1c_validation.py .
+COPY schemas/ ./schemas/
+COPY unified_structure_subatomic.yaml .
+
+# Create non-root user
+RUN useradd -m -u 1000 validator && chown -R validator:validator /app
+USER validator
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import sys; print('Phase 1C validator ready')" || exit 1
+
+# Set default command with timeout
+CMD timeout 300s python phase_1c_validation.py

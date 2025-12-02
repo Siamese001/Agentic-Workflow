@@ -1,0 +1,133 @@
+INFO: Starting Phase 1B validation...
+INFO: Migration plan written to schemas/agentic_core_migration_plan.json
+================================================================================
+PHASE 1B ù SSOT RECONCILIATION & MIGRATION PLANNING VALIDATION
+================================================================================
+K1: PASS - Phase 0.5 semantic cache completed: True
+K10: PASS - Phase 1B reads only paths under 'agentic_core/' prefix for FS view
+K100: PASS - Phase 1B does not call LLM or semantic models
+K101: PASS - Phase 1B does not call network or external services
+K102: PASS - Phase 1B is fully local IO YAML and JSON processing only
+K103: PASS - Repeated Phase 1B run without intervening changes produces bit-identical plan
+K11: PASS - YAML file exists: True
+K12: PASS - YAML parsed successfully
+K13: PASS - Has 'agentic-directory' key: True
+K14: PASS - Has 'agentic_core' child key: True
+K15: PASS - Root label is 'agentic_core'
+K16: PASS - YAML directory set for agentic_core is deterministic
+K17: PASS - YAML file set for agentic_core is deterministic
+K18: PASS - YAML paths normalized to relative forward slashes: True
+K19: PASS - No absolute paths appear in YAML view: True
+K2: PASS - Phase 1A all keys true at entry: True
+    phase1a_passed: 65
+    phase1a_failed: 0
+K20: PASS - YAML subtree depth 6 <= 7: True
+    max_depth: 6
+K21: PASS - Filesystem scan under agentic_core completes without error
+K22: PASS - Filesystem directory set for agentic_core is deterministic
+K23: PASS - Filesystem file set for agentic_core is deterministic
+K24: PASS - Filesystem paths normalized to relative forward slashes: True
+K25: PASS - No FS paths collected from ignored directories: True
+K26: PASS - Directory scan does not follow symlinks outside agentic_core
+K27: PASS - Max directory depth under agentic_core is at most 7: True
+    max_depth: 7
+K28: PASS - Each FS path classified as directory or file but not both: True
+    overlap_count: 0
+K29: PASS - Filesystem view is read-only
+K3: PASS - YAML-authoritative mode enabled for agentic_core
+K30: PASS - Phase 1B performs no code execution of discovered Python files
+K31: PASS - Directory set diff computed as (YAML_ONLY_DIRS, FS_ONLY_DIRS, COMMON_DIRS)
+K32: PASS - File set diff computed as (YAML_ONLY_FILES, FS_ONLY_FILES, COMMON_FILES)
+K33: PASS - Set diffs computed deterministically with sorted output
+K34: PASS - YAML-only files treated as required but missing
+K35: PASS - FS-only files treated as extra non-SSOT
+K36: PASS - Common files mapped one-to-one between YAML and FS
+K37: PASS - No directory path appears in file sets or vice versa
+K38: PASS - Set diff results are stored in memory or plan only
+K39: PASS - No diff results written directly to agentic_core files
+K4: PASS - Filesystem is not treated as authoritative
+K40: PASS - No attempt to fix diffs in Phase 1B
+K41: PASS - Each YAML-only file labeled as MISSING_ON_FS: True
+K42: PASS - Each FS-only file labeled as EXTRA_ON_FS: True
+K43: PASS - Common files with different expected locations labeled as MISPLACED
+K44: PASS - Path depth violations labeled as DEPTH_VIOLATION: False
+K45: PASS - Engine role mismatches labeled as ENGINE_MISMATCH
+K46: PASS - L1-L5 layer mismatches labeled as LAYER_MISMATCH
+K47: PASS - Discrepancy labels drawn from fixed enum set: True
+K48: PASS - Discrepancy labeling is pure function of views and config
+K49: PASS - Discrepancy labeling is deterministic across runs
+K5: PASS - Hybrid or FS-dominant modes are disabled for Phase 1B
+K50: PASS - Discrepancy labeling performs no filesystem writes
+K51: PASS - Engine role assignments from Phase 1A are reused
+K52: PASS - YAML engine intent for agentic_core paths computed if available
+K53: PASS - Where YAML engine intent exists, it is treated as authoritative
+K54: PASS - Engine role mismatches between YAML intent and FS role are recorded
+K55: PASS - L1-L5 layer tags from YAML or schema used where defined
+K56: PASS - L1-L5 layer mismatches between YAML and observed role recorded
+K57: PASS - RG and LIC engine roles are never merged for a single file
+K58: PASS - Shared files are explicitly marked and not duplicated per engine
+K59: PASS - No changes made to engine roles on disk during Phase 1B
+K6: PASS - Repo root contains agentic_core and schemas folders: True
+    agentic_core: True
+    schemas: True
+K60: PASS - No changes made to L1-L5 layer tags on disk during Phase 1B
+K61: PASS - Migration plan path equals 'schemas/agentic_core_migration_plan.json'
+K62: PASS - No additional migration plan files for agentic_core exist
+K63: PASS - Migration plan directory 'schemas/' already exists at entry: True
+K64: PASS - Phase 1B creates no new directories for migration plan
+K65: PASS - Migration plan file is valid JSON
+K66: PASS - Migration plan root is object
+K67: PASS - Migration plan has field 'schema_version': True
+K68: PASS - Migration plan schema version equals 'v1': True
+K69: PASS - Migration plan has field 'target_root': True
+K7: PASS - Phase 1B target path prefix is exactly 'agentic_core/'
+K70: PASS - Migration plan target root equals 'agentic_core/': True
+K71: PASS - Migration plan has field 'mode': True
+K72: PASS - Migration plan mode equals 'yaml_authoritative': True
+K73: PASS - Migration plan has field 'operations': True
+K74: PASS - Migration plan operations field is array: True
+K75: PASS - Migration plan has field 'summary': True
+K76: PASS - Migration plan summary field is object: True
+K77: PASS - Each operation has type in valid set: True
+K78: PASS - Each operation has source and target paths where applicable: True
+K79: PASS - All operation paths relative to repo root and use forward slashes: True
+K8: PASS - Phase 1B executes with repo root as reference frame
+K80: PASS - No operation uses absolute OS paths: True
+K81: PASS - No operation contains timestamp or random identifier: True
+K82: PASS - Migration operations are sorted deterministically
+K83: PASS - Operations referencing agentic_core only touch prefix 'agentic_core/': True
+K84: PASS - No operation targets 'data/semantic_cache/' or Phase 0.5 outputs: True
+K85: PASS - No operation is marked as executed in Phase 1B
+K86: PASS - Migration plan clearly separates plan from execution status
+K87: PASS - Migration plan summary counts by discrepancy type present: True
+K88: PASS - Summary includes counts for required discrepancy types: True
+K89: PASS - Summary counts are consistent with operation list: True
+    operations_count: 109
+    summary_total: 109
+K9: PASS - Path normalization rules match Phase 1A
+K90: PASS - Summary contains no file content or secrets: True
+K91: PASS - Phase 1B creates no new directories outside 'schemas/'
+K92: PASS - Phase 1B creates no new files outside 'schemas/agentic_core_migration_plan.json'
+K93: PASS - Phase 1B deletes no directories or files anywhere
+K94: PASS - Phase 1B performs no renames or moves anywhere
+K95: PASS - Phase 1B does not modify contents of any existing file
+K96: PASS - Phase 1B does not modify file permissions or timestamps
+K97: PASS - Phase 1B does not touch Phase 0.5 artifacts or other root folders
+K98: PASS - Phase 1B results do not depend on randomness or current time
+K99: PASS - Phase 1B results do not depend on machine specific absolute paths
+================================================================================
+SUMMARY: 103/103 keys passed
+Traceback (most recent call last):
+  File "C:\Git\Agentic-Workflow\runtime\phase_1b_validation.py", line 1166, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "C:\Git\Agentic-Workflow\runtime\phase_1b_validation.py", line 1159, in main
+    validator.print_results()
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Git\Agentic-Workflow\runtime\phase_1b_validation.py", line 1127, in print_results
+    print("\U0001f389 PHASE 1B COMPLETE - ALL 103 KEYS PASS")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\amita\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\U0001f389' in position 0: character maps to <undefined>
