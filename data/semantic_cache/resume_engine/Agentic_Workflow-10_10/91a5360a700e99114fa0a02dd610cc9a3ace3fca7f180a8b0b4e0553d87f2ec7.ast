@@ -1,0 +1,310 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\ranking.py",
+    "file_hash": "91a5360a700e99114fa0a02dd610cc9a3ace3fca7f180a8b0b4e0553d87f2ec7",
+    "size_bytes": 17897,
+    "last_modified": "2025-12-01T15:36:20.802562",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_bm25_score",
+      "line_number": 36,
+      "docstring": "Simple, deterministic BM25-like score based on term frequencies.\n\nThis is intentionally non-production but deterministic for testing:\n    \u2022 Lowercase text.\n    \u2022 Count \"important\" tokens.\n    \u2022 Apply a fixed formula to derive a score.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dense_score",
+      "line_number": 64,
+      "docstring": "Simple, deterministic dense-like score based on hash of text.\n\nThis simulates a semantic scoring function in a reproducible way.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "float",
+        "hash"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_hybrid_score",
+      "line_number": 78,
+      "docstring": "Combine BM25 and dense scores into a single hybrid score.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "_bm25_score",
+        "_dense_score"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "bm25",
+      "line_number": 92,
+      "docstring": "Deterministic BM25-style ranking.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "dict",
+        "_bm25_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dense",
+      "line_number": 106,
+      "docstring": "Deterministic dense-score ranking (hash-based pseudo-embedding).",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "dict",
+        "_dense_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hybrid",
+      "line_number": 120,
+      "docstring": "Combined ranking (BM25 + dense), averaging the two scores.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "dict",
+        "_hybrid_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "rank_documents",
+      "line_number": 134,
+      "docstring": "Rank arbitrary documents using the requested strategy.",
+      "imports": [],
+      "dependencies": [
+        "bm25",
+        "dense",
+        "hybrid"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_rrf_weights_from_config",
+      "line_number": 155,
+      "docstring": "Compute weights for weighted RRF.\n\nPhase-3 requirement:\n    \"Weighted RRF (if config specifies)\"\n\nImplementation:\n    \u2022 If cfg.rrf_weights exists and is a sequence of floats, use it.\n      - If shorter than n_groups, last weight is repeated.\n      - If longer, excess weights are ignored.\n    \u2022 Otherwise, fall back to uniform weights (=1.0).",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "getattr",
+        "len",
+        "isinstance",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_ranked_groups",
+      "line_number": 196,
+      "docstring": "Fuse multiple pre-ranked lists into a single deterministic list.\n\nIf use_rrf is True:\n    \u2022 Apply weighted Reciprocal Rank Fusion:\n          score(doc) = \u03a3_i w_i / (rrf_k + rank_i)\n      where w_i are driven by RetrievalConfig.rrf_weights if provided.\n\nIf use_rrf is False:\n    \u2022 Fall back to minimal-rank fusion:\n        1. Flatten.\n        2. Deduplicate by (query, evidence).\n        3. Sort by minimal rank across groups, then alphabetical evidence.\n        4. Re-assign ranks.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "dict",
+        "len",
+        "enumerate",
+        "int",
+        "_rrf_weights_from_config",
+        "emit_telemetry_event",
+        "RankingEvent",
+        "str",
+        "set",
+        "emit_ranking_event",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_ranked_groups_for_strategy",
+      "line_number": 313,
+      "docstring": "Convenience wrapper that applies the right ranking method to each group\nand then fuses them.\n\nEach group is expected to already contain a \"rank\" field. This function\nis retained mainly for backward compatibility and non-RAG call sites.",
+      "imports": [],
+      "dependencies": [
+        "fuse_ranked_groups"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_canonical_evidence_key",
+      "line_number": 335,
+      "docstring": "Canonical key for evidence deduplication.\n\nWe attempt to use a (source, doc_id) pair if present in metadata; if not,\nwe fall back to (source, text).",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "normalize_evidence_scores",
+      "line_number": 349,
+      "docstring": "Normalize scores across Evidence items to [0, 1].",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "float",
+        "min"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "deduplicate_evidence",
+      "line_number": 369,
+      "docstring": "Deduplicate Evidence items by canonical key, preserving first.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "_canonical_evidence_key"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "rank_evidence",
+      "line_number": 382,
+      "docstring": "Rank Evidence items using the dict-based ranking functions underneath.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "len",
+        "rank_documents",
+        "Evidence",
+        "str",
+        "normalize_evidence_scores"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_evidence_groups_rrf",
+      "line_number": 441,
+      "docstring": "Evidence-level Reciprocal Rank Fusion.\n\n    score(ev) = \u03a3_i w_i / (rrf_k + rank_i)",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "enumerate",
+        "_rrf_weights_from_config",
+        "RankingEvent",
+        "emit_ranking_event",
+        "float",
+        "_canonical_evidence_key"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_ranked_groups_rrf",
+      "line_number": 492,
+      "docstring": "Wrapper used by retrieval.py for Evidence-level weighted RRF.\n\nThis function adapts the raw `rrf_weights` list (coming from\nRetrievalConfig.rrf_weights) into a minimal RetrievalConfig instance\nand delegates to `fuse_evidence_groups_rrf`.\n\nIt exists solely to preserve the existing retrieval.py call-site:\n\n    ranking.fuse_ranked_groups_rrf(\n        groups=groups,\n        rrf_weights=retrieval_cfg.rrf_weights,\n        workflow_id=workflow_id,\n    )\n\nThe `workflow_id` is accepted for signature compatibility but is\nnot used here; telemetry is emitted inside `fuse_evidence_groups_rrf`.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "RetrievalConfig",
+        "fuse_evidence_groups_rrf"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_rag_result",
+      "line_number": 524,
+      "docstring": "High-level helper to fuse and rank Evidence sets and produce a RAGResult.\n\nIf cfg.use_rrf is True:\n    \u2022 Apply evidence-level RRF across groups, then truncate/trim.\nOtherwise:\n    \u2022 Concatenate groups, deduplicate, rank by score, truncate/trim.",
+      "imports": [],
+      "dependencies": [
+        "fuse_evidence_groups_rrf",
+        "len",
+        "rank_evidence",
+        "list",
+        "RAGResult",
+        "deduplicate_evidence",
+        "RetrievalConfig",
+        "emit_telemetry_event",
+        "RankingEvent",
+        "emit_ranking_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_25",
+      "line_218"
+    ],
+    "from_models": [
+      "line_27"
+    ],
+    "from_observability": [
+      "line_28"
+    ]
+  },
+  "function_signatures": {
+    "_bm25_score": "_bm25_score",
+    "_dense_score": "_dense_score",
+    "_hybrid_score": "_hybrid_score",
+    "bm25": "bm25",
+    "dense": "dense",
+    "hybrid": "hybrid",
+    "rank_documents": "rank_documents",
+    "_rrf_weights_from_config": "_rrf_weights_from_config",
+    "fuse_ranked_groups": "fuse_ranked_groups",
+    "fuse_ranked_groups_for_strategy": "fuse_ranked_groups_for_strategy",
+    "_canonical_evidence_key": "_canonical_evidence_key",
+    "normalize_evidence_scores": "normalize_evidence_scores",
+    "deduplicate_evidence": "deduplicate_evidence",
+    "rank_evidence": "rank_evidence",
+    "fuse_evidence_groups_rrf": "fuse_evidence_groups_rrf",
+    "fuse_ranked_groups_rrf": "fuse_ranked_groups_rrf",
+    "build_rag_result": "build_rag_result"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 53,
+    "cognitive_complexity": 27,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

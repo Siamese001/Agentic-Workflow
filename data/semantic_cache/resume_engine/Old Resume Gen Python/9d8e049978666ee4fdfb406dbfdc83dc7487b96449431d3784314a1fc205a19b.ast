@@ -1,0 +1,4540 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v11.50.py",
+    "file_hash": "9d8e049978666ee4fdfb406dbfdc83dc7487b96449431d3784314a1fc205a19b",
+    "size_bytes": 521322,
+    "last_modified": "2025-12-01T12:27:34.992650",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ReasoningConfig",
+      "line_number": 37,
+      "docstring": "Centralized reasoning configuration",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ContentConstraintsConfig",
+      "line_number": 64,
+      "docstring": "Centralized configuration for content constraints like word counts and thresholds.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalControlConfig",
+      "line_number": 116,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThematicAnalysis",
+      "line_number": 136,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "reasoning_config_to_api_params",
+      "line_number": 185,
+      "docstring": "Converts reasoning config to Gemini API parameters.\nv11.30 Fix: Always use RAGConfig.max_tokens to avoid truncation.",
+      "imports": [],
+      "dependencies": [
+        "RAGConfig",
+        "_build_reasoning_prompt_addendum",
+        "_calculate_reasoning_intensity",
+        "_get_normalized_reasoning_params",
+        "_get_generation_temperature"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_normalized_reasoning_params",
+      "line_number": 227,
+      "docstring": "Handles defaults and clamps reasoning config values.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_reasoning_intensity",
+      "line_number": 252,
+      "docstring": "Calculates a numeric intensity score and a qualitative level from reasoning parameters.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_generation_temperature",
+      "line_number": 264,
+      "docstring": "[OPTIMIZED FOR CREATIVITY]\nThis version maximizes temperature to promote creative and unique output,\nwhile the workflow's Reasoning Intensity (CoT, ToT) maintains signal/relevance.\nThe 'intensity' parameter was previously unused, so it has been removed.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_allocate_tokens_from_depth",
+      "line_number": 276,
+      "docstring": "Allocates max_tokens based on reasoning depth and complexity.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_reasoning_prompt_addendum",
+      "line_number": 285,
+      "docstring": "Constructs the system prompt addendum based on reasoning parameters.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "enhance_system_prompt_with_reasoning",
+      "line_number": 311,
+      "docstring": "Enhance a system prompt with reasoning configuration directives.\n\nArgs:\n    base_system_prompt: Original system prompt (e.g., \"You are an expert...\")\n    reasoning_config: ReasoningConfig instance\n    section_id: For logging (e.g., \"K.1\", \"K.4\")\n    \nReturns:\n    Enhanced system prompt with reasoning directives appended",
+      "imports": [],
+      "dependencies": [
+        "reasoning_config_to_api_params"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationSeverity",
+      "line_number": 339,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationResult",
+      "line_number": 348,
+      "docstring": "Result of a validation rule execution.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationRule",
+      "line_number": 357,
+      "docstring": "Single validation rule with callable validator",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationEngine",
+      "line_number": 392,
+      "docstring": "Unified validation engine with rule registry pattern.\nReplaces multiple specialized validator classes with single extensible engine.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JDEnforcementRule",
+      "line_number": 477,
+      "docstring": "Enforcement rules ensuring JD is always used.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JDEnforcementResult",
+      "line_number": 496,
+      "docstring": "Result of a JD enforcement check.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JDEnforcementValidator",
+      "line_number": 504,
+      "docstring": "Validator ensuring JD is always used and never mocked.\nEvery hop has corresponding validation gates.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerQAValidator",
+      "line_number": 941,
+      "docstring": "App Tracker Consolidated & Hardened QA Spec v5 Validator.\nEnforces R1-R23 rules. Produces PASSED summary or BLOCKED error table.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletProvenance",
+      "line_number": 1484,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGConfig",
+      "line_number": 1489,
+      "docstring": "Enhanced configuration for resilient web RAG system.\nv5.59: Added multi-layer resilience parameters.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CompetitiveAnalysisConfig",
+      "line_number": 1543,
+      "docstring": "Configuration for the competitive analysis phase of RAG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGMission",
+      "line_number": 1555,
+      "docstring": "Defines the mission for the RAG process based on pre-analysis.\n(Implements Approach 1: Pre-RAG Differential Analysis)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CompetitiveIntelligence",
+      "line_number": 1568,
+      "docstring": "Stores competitive intelligence insights.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RetrievalSource",
+      "line_number": 1580,
+      "docstring": "Metadata about a data retrieval source.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitState",
+      "line_number": 1589,
+      "docstring": "Circuit breaker states.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitBreaker",
+      "line_number": 1595,
+      "docstring": "Circuit breaker to prevent cascading failures.\nv5.59: Protects API from sustained retry storms.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitBreakerOpenError",
+      "line_number": 1635,
+      "docstring": "Raised when circuit breaker is open.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeSection",
+      "line_number": 1639,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PhaseTimeoutError",
+      "line_number": 1670,
+      "docstring": "Raised when a phase exceeds its timeout.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PhaseExecutor",
+      "line_number": 1674,
+      "docstring": "Manages phase-level retries, timeouts, and fallbacks.\nv5.59: Provides 3 retries per phase with simplified fallback.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PartialRAGResult",
+      "line_number": 1837,
+      "docstring": "Tracks which phases succeeded/failed for partial success handling.\nv5.59: Enables hybrid synthesis instead of full fallback.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGTelemetry",
+      "line_number": 1875,
+      "docstring": "Track RAG performance metrics for monitoring.\nv5.59: Comprehensive telemetry for production debugging.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TelemetryLogger",
+      "line_number": 1959,
+      "docstring": "Log RAG telemetry to file for monitoring.\nv5.59: Writes JSONL logs for analysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GeminiWebSearchClient",
+      "line_number": 1983,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JDCacheManager",
+      "line_number": 2334,
+      "docstring": "Manages caching of JD analysis results.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WebSearchRAG",
+      "line_number": 2373,
+      "docstring": "Implements three-phase web search RAG strategy with resilience.\nv5.59: Phase-level retries, simplified fallbacks, timeout management.\nv11.30: Correctly passes mission object to prompt builders.\n\nEnhanced Features:\n- Phase-level retries (3 attempts per phase)\n- Simplified fallback prompts (8-10 searches vs 15-20)\n- Phase result validation\n- Timeout management per phase",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EnhancedJobDescriptionAnalyzer",
+      "line_number": 2829,
+      "docstring": "HOP-0: Enhanced Job Description Parser with Resilient Web-Search Intelligence.\n\nv5.59: HARDENED RAG WITH MULTI-LAYER RESILIENCE\n- API Layer: 7 retries with adaptive backoff + jitter\n- Phase Layer: 3 retries per phase with simplified fallbacks\n- Orchestration Layer: Partial success preservation\n- Fallback Layer: 4-tier degradation hierarchy\n- Monitoring Layer: Comprehensive telemetry\n\nv5.54: WEB RAG FULLY IMPLEMENTED\n- Phase 1: Thematic Research (15-20 searches)\n- Phase 2: Authenticity Patterns (10-15 searches)\n- Phase 3: Competitive Positioning (10-15 searches)\n- Graceful fallback to v5.52 local NLP",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ClerkExtractor",
+      "line_number": 3708,
+      "docstring": "HOP-1: Extract structured data from master resume.\nIncludes hallucination detection.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HallucinationDetector",
+      "line_number": 3816,
+      "docstring": "Detect potential hallucinations in resume content.\nFlags implausible metrics, temporal inconsistencies, etc.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DataEnricher",
+      "line_number": 3893,
+      "docstring": "HOP-2: Enrich bullet pool with canonical verbs, deduplication, etc.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "VerbCanonicalizer",
+      "line_number": 3971,
+      "docstring": "Canonicalize action verbs to approved list.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DuplicateDetector",
+      "line_number": 4013,
+      "docstring": "Detect duplicate or near-duplicate bullets using TF-IDF cosine similarity.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ArtistGenerator",
+      "line_number": 4232,
+      "docstring": "HOP-3: Generate resume content using Gemini API.\nv11.0 REDESIGN: This class is now architected to consume the *full*\nThematicAnalysis object from HOP-0, including Secondary Themes\nand Authenticity Patterns, in all relevant generation prompts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ImmutableStagingBuffer",
+      "line_number": 5693,
+      "docstring": "HOP-4: Immutable staging buffer.\nOnce locked at HOP-4.5, cannot be modified.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TextSanitizer",
+      "line_number": 5734,
+      "docstring": "v6.1: Comprehensive text sanitization engine.\nApplies rules for hyphenation, unicode, punctuation, and style.\nNow includes blocklists for dash-like and invisible characters.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_words_ms_word_style",
+      "line_number": 5919,
+      "docstring": "Counts words attempting to replicate MS Word behavior:\n- Keeps hyphenated words (e.g., \"post-sales\") as single words.\n- Ignores empty strings resulting from splitting.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_words_in_list_ms_word_style",
+      "line_number": 5933,
+      "docstring": "Helper to count words in a list using the MS Word style counter.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "str",
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_count_sentences",
+      "line_number": 5937,
+      "docstring": "Helper to count sentences using a regex that handles common abbreviations.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal_score",
+      "line_number": 5945,
+      "docstring": "Helper to calculate signal score for a block of text based on JD keywords.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "count_words_ms_word_style",
+        "hasattr",
+        "str",
+        "min",
+        "next",
+        "set"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PreFlightValidator",
+      "line_number": 6032,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_k1_word_count",
+      "line_number": 6982,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "bool",
+        "any",
+        "getattr",
+        "len",
+        "isinstance",
+        "round",
+        "enumerate",
+        "list",
+        "type",
+        "count_words_ms_word_style",
+        "hasattr",
+        "_count_sentences",
+        "next",
+        "calculate_signal_score",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GateDecisionEngine",
+      "line_number": 7535,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FileRenderer",
+      "line_number": 7578,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowOrchestrator",
+      "line_number": 8020,
+      "docstring": "Manages the execution of the multi-hop resume generation workflow.\nCoordinates data flow, validation, and output generation.\nv11.0: Incorporates redesigned HOP-3 signal consumption and updated QA reporting.\nv10.14->v11.0 Refactor: Replaced QA Section 2 with Section 10 (Signal Flow Map).\nv11.0.1 Refactor: Renumbered QA sections 1-9, 10-15 per user request. New Signal Map is Section 2.\nv11.0.2 Refactor: Merged QA Sections 4 & 5 into new Section 4, removed bullet tolerance row, renumbered 5-15.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopStatus",
+      "line_number": 10104,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopCheckpoint",
+      "line_number": 10110,
+      "docstring": "Record of a workflow hop execution.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GateDecision",
+      "line_number": 10122,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopExecutionError",
+      "line_number": 10127,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StagingBufferError",
+      "line_number": 10128,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 360,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 368,
+      "docstring": "Execute validation rule and return result",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "callable",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 398,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "register_rule",
+      "line_number": 402,
+      "docstring": "Register a validation rule",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "register_rules",
+      "line_number": 409,
+      "docstring": "Register multiple validation rules",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 414,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_failed_validations",
+      "line_number": 432,
+      "docstring": "Filter to only failed validations",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_critical_failures",
+      "line_number": 436,
+      "docstring": "Filter to only critical failures",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "has_critical_failures",
+      "line_number": 440,
+      "docstring": "Check if any critical failures exist",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "has_high_or_critical_failures",
+      "line_number": 444,
+      "docstring": "Check if any high or critical failures exist",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format_validation_report",
+      "line_number": 451,
+      "docstring": "Format validation results as readable report",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 510,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_jd_input",
+      "line_number": 515,
+      "docstring": "GATE-0: Validate JD input.\nEnforces: E1, E2, E3",
+      "imports": [],
+      "dependencies": [
+        "JDEnforcementResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_jd_parsing",
+      "line_number": 568,
+      "docstring": "GATE-1: Validate JD parsing.\nEnforces: E3, E4, E5",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len",
+        "isinstance",
+        "JDEnforcementResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_thematic_analysis",
+      "line_number": 631,
+      "docstring": "GATE-2: Validate ThematicAnalysis uses JD.\nEnforces: E6, E7",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "str",
+        "any",
+        "JDEnforcementResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_enrichment",
+      "line_number": 679,
+      "docstring": "GATE-3: Validate enrichment uses JD.\nEnforces: E10, E14",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "JDEnforcementResult",
+        "len",
+        "isinstance",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_artist_inputs",
+      "line_number": 731,
+      "docstring": "GATE-4: Validate artist receives and uses JD.\nEnforces: E8, E9, E14",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "bool",
+        "JDEnforcementResult",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_preflight",
+      "line_number": 765,
+      "docstring": "GATE-5: Validate pre-flight checks JD.\nEnforces: E9, E11, E14 (Consolidated)",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "JDEnforcementResult",
+        "len",
+        "hasattr",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_file_output",
+      "line_number": 826,
+      "docstring": "GATE-7: Validate files contain JD content.\nEnforces: E12, E14",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "JDEnforcementResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_qa_report",
+      "line_number": 867,
+      "docstring": "GATE-8: Validate QA report verifies JD.\nEnforces: E13, E15",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "JDEnforcementResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 975,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_sha",
+      "line_number": 983,
+      "docstring": "Generate unique run SHA.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_log_pass",
+      "line_number": 987,
+      "docstring": "Log successful rule validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_log_fail",
+      "line_number": 991,
+      "docstring": "Log failed rule validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_parse_date",
+      "line_number": 1002,
+      "docstring": "Parse MM/DD/YYYY date format.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_is_valid_url",
+      "line_number": 1011,
+      "docstring": "Basic URL validation.",
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_is_linkedin_profile",
+      "line_number": 1018,
+      "docstring": "Validate LinkedIn canonical profile format.",
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_tracker_data",
+      "line_number": 1025,
+      "docstring": "Validate complete app tracker data.\nReturns PASSED or BLOCKED JSON outcome.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "enumerate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_row",
+      "line_number": 1049,
+      "docstring": "Validate single tracker row against R2-R22.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_channel_gating",
+      "line_number": 1202,
+      "docstring": "Validate R5a-R5d channel gating requirements.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_passed_outcome",
+      "line_number": 1255,
+      "docstring": "Generate PASSED JSON outcome.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_blocked_outcome",
+      "line_number": 1277,
+      "docstring": "Generate BLOCKED JSON outcome with error table.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_top_differentiators",
+      "line_number": 1575,
+      "docstring": "Returns the top N differentiator keywords.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 1601,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "call",
+      "line_number": 1608,
+      "docstring": "Execute function with circuit breaker protection.",
+      "imports": [],
+      "dependencies": [
+        "timedelta",
+        "func",
+        "CircuitBreakerOpenError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 1680,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_with_retry",
+      "line_number": 1683,
+      "docstring": "Execute a phase with retry logic and optional simplified fallback.\n\nArgs:\n    phase_func: Main phase function to execute\n    phase_name: Name for logging\n    fallback_func: Optional simplified version to try if main fails\n\nReturns:\n    Result from phase_func or fallback_func\n\nRaises:\n    PhaseTimeoutError, Exception from phase execution",
+      "imports": [],
+      "dependencies": [
+        "type",
+        "ValueError",
+        "RuntimeError",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_with_timeout",
+      "line_number": 1772,
+      "docstring": "Execute function with timeout.\nNote: Signal-based timeout only works on Unix. Falls back to direct call on Windows.",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "func",
+        "PhaseTimeoutError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_phase_result",
+      "line_number": 1807,
+      "docstring": "Validate that phase result has required structure.\n\nReturns:\n    True if valid, False otherwise",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__post_init__",
+      "line_number": 1854,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "any_success",
+      "line_number": 1859,
+      "docstring": "Return True if any phase succeeded.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "full_success",
+      "line_number": 1864,
+      "docstring": "Return True if all phases succeeded.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "success_rate",
+      "line_number": 1869,
+      "docstring": "Return success rate as percentage.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 1918,
+      "docstring": "Convert to dictionary for logging.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 1965,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log",
+      "line_number": 1969,
+      "docstring": "Append telemetry to daily log file.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 1986,
+      "docstring": "Initializes the client, configuring the API key globally.",
+      "imports": [],
+      "dependencies": [
+        "CircuitBreaker",
+        "ImportError",
+        "RAGConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "search_and_analyze",
+      "line_number": 2027,
+      "docstring": "Send prompt to Gemini with web_search tool enabled.\nEnhanced with adaptive retry, circuit breaker, and JSON repair.\n\nReturns: Parsed JSON from Gemini's response.\nRaises: APIError, CircuitBreakerOpenError, TimeoutError, ValueError",
+      "imports": [],
+      "dependencies": [
+        "type",
+        "RuntimeError",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_make_api_call",
+      "line_number": 2102,
+      "docstring": "Make the actual API call with timeout and robust response handling.\nv11.30 Fix: Removed 'tools', Uses integer codes for finish_reason.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "getattr",
+        "HopExecutionError",
+        "ValueError",
+        "TimeoutError",
+        "type",
+        "hasattr",
+        "str"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_backoff",
+      "line_number": 2197,
+      "docstring": "Calculate exponential backoff with jitter.\n\nFormula: min(initial * (multiplier ^ attempt), max) \u00b1 jitter\nExample: [2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 64.0] seconds with \u00b110% jitter",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_json",
+      "line_number": 2219,
+      "docstring": "Extract JSON from the LLM's response content.\nEnhanced with multiple parsing strategies and repair attempts.\nv11.30 Fix: Relaxed initial check to allow for markdown fences.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "str",
+        "ValueError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_attempt_json_repair",
+      "line_number": 2311,
+      "docstring": "Attempt to repair common JSON formatting errors.\nv5.59: Multiple repair strategies for robustness.",
+      "imports": [],
+      "dependencies": [
+        "repair_func",
+        "ord"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 2337,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_cache_key",
+      "line_number": 2342,
+      "docstring": "Generate MD5 hash for JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 2346,
+      "docstring": "Retrieve cached analysis if available and not expired.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 2363,
+      "docstring": "Save analysis to cache.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 2386,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "PhaseExecutor",
+        "CompetitiveAnalysisConfig",
+        "RAGConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase1_thematic_research",
+      "line_number": 2392,
+      "docstring": "Phase 1: Research market expectations and extract themes.\nv5.59: Enhanced with retry logic and simplified fallback.\nv8.10: Enhanced with RAGMission and Authoritative Sources (Approach 1 & 2).\nv11.30 Fix: Pass mission to prompt builders correctly.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_phase1_prompt",
+      "line_number": 2419,
+      "docstring": "Build Phase 1 prompt with optional simplification.\nv5.59: Simplified version reduces search count for fallback.\nv8.10: Enhanced with RAGMission and Authoritative Sources (Approach 1 & 2).\nv11.30 Fix: Safely access mission.key_technologies.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase2_authenticity_patterns",
+      "line_number": 2506,
+      "docstring": "Phase 2: Extract how real professionals present themselves.\nv5.59: Enhanced with retry logic and simplified fallback.\nv8.10: Enhanced with RAGMission and Authoritative Sources (Approach 1 & 2).\nv11.30 Fix: Pass mission to prompt builders correctly.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_phase2_prompt",
+      "line_number": 2536,
+      "docstring": "Build Phase 2 prompt with optional simplification.\nv11.30 Fix: Uses mission object passed in.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase3_competitive_positioning",
+      "line_number": 2612,
+      "docstring": "Phase 3: Analyze competitive landscape and differentiators.\nv5.59: Enhanced with retry logic and simplified fallback.\nv8.10: Enhanced with RAGMission and Authoritative Sources (Approach 1 & 2).\nv11.30 Fix: Ensures mission is passed correctly.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_phase3_prompt",
+      "line_number": 2645,
+      "docstring": "Build Phase 3 prompt with optional simplification.\nv7.60: Depth is now configurable via RAGConfig and uses CompetitiveAnalysisConfig.\nv8.10: Enhanced with RAGMission and Authoritative Sources (Approach 1 & 2).\nv9.84->v11.30: Fixed undefined variables, uses mission object, simplified fallback.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_industry",
+      "line_number": 2728,
+      "docstring": "Infer industry from JD keywords.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_peer_companies",
+      "line_number": 2743,
+      "docstring": "Infer peer companies based on industry.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase4_narrative_mining",
+      "line_number": 2758,
+      "docstring": "Phase 4: Mine for problem-solution narratives.\n(Implements Approach 3)\nv11.30 Fix: Pass mission to prompt builders correctly.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_phase4_prompt",
+      "line_number": 2780,
+      "docstring": "Build Phase 4 prompt for narrative mining.\n(Implements Approach 3)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 2847,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "WebSearchRAG",
+        "RAGConfig",
+        "TelemetryLogger",
+        "JDCacheManager",
+        "GeminiWebSearchClient"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "analyze",
+      "line_number": 2922,
+      "docstring": "Analyze job description with resilient web-search intelligence.\nv5.59: Enhanced with 4-tier fallback hierarchy and telemetry.\n\nFallback Hierarchy:\n1. Full web RAG (all 3 phases)\n2. Partial web RAG (any successful phases)\n3. Hybrid (web RAG phases + local NLP fill-in)\n4. Local NLP only",
+      "imports": [],
+      "dependencies": [
+        "RAGMission"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_pre_rag_analysis_prompt",
+      "line_number": 2960,
+      "docstring": "Builds the prompt for the HOP -0.5 LLM call to extract entities and find gaps.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_pre_rag_analysis",
+      "line_number": 3013,
+      "docstring": "HOP -0.5: Perform entity extraction and differential analysis.\nv8.10: Uses a single, optimized LLM call for entity extraction.",
+      "imports": [],
+      "dependencies": [
+        "RAGMission"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_with_resilient_web_search",
+      "line_number": 3037,
+      "docstring": "v11.40 Final Fix: Added recursive conversion before caching & fixed indentation.",
+      "imports": [],
+      "dependencies": [
+        "asdict",
+        "isinstance",
+        "getattr",
+        "HopExecutionError",
+        "type",
+        "hasattr",
+        "callable",
+        "str",
+        "RAGTelemetry",
+        "PartialRAGResult",
+        "is_dataclass",
+        "_force_plain_types_for_cache"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_role_from_jd",
+      "line_number": 3258,
+      "docstring": "Extract role title from JD for fallback scenarios.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthesize_thematic_analysis",
+      "line_number": 3267,
+      "docstring": "Synthesize three-phase web RAG results into ThematicAnalysis.\nv11.40 Final Fix: Manually reconstruct dicts from RAG results.",
+      "imports": [],
+      "dependencies": [
+        "CompetitiveIntelligence",
+        "isinstance",
+        "len",
+        "getattr",
+        "AttributeError",
+        "type",
+        "list",
+        "_manual_reconstruct_nested",
+        "hasattr",
+        "callable",
+        "str",
+        "_manual_reconstruct",
+        "ThematicAnalysis",
+        "min",
+        "RetrievalSource",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_company_name",
+      "line_number": 3508,
+      "docstring": "Extract company name from JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dict_to_thematic_analysis",
+      "line_number": 3518,
+      "docstring": "Convert cached dict back to ThematicAnalysis object.",
+      "imports": [],
+      "dependencies": [
+        "RetrievalSource",
+        "CompetitiveIntelligence",
+        "ThematicAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_local_nlp",
+      "line_number": 3539,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RetrievalSource",
+        "ThematicAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_keywords",
+      "line_number": 3586,
+      "docstring": "Extract keywords with frequency counts.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_theme_scores",
+      "line_number": 3603,
+      "docstring": "Calculate relevance scores for each theme.",
+      "imports": [],
+      "dependencies": [
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_primary_theme",
+      "line_number": 3629,
+      "docstring": "Generate primary theme from highest scoring domain.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_secondary_themes",
+      "line_number": 3648,
+      "docstring": "Generate secondary themes.",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_competitive_intelligence",
+      "line_number": 3662,
+      "docstring": "Extract competitive intelligence from keywords.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "float",
+        "CompetitiveIntelligence",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_classify_role",
+      "line_number": 3676,
+      "docstring": "Classify role based on keywords.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_signal_quality",
+      "line_number": 3694,
+      "docstring": "Calculate signal quality score.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 3714,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HallucinationDetector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract",
+      "line_number": 3719,
+      "docstring": "Extract and validate structured data from master resume.\nv5.36: Now creates experience_sections structure instead of flat bullet_pool.\nReturns: (extracted_data, validation_results)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_master_resume_structure",
+      "line_number": 3749,
+      "docstring": "Hardening: Validates that the master resume has the essential top-level keys.\nRaises ValueError if the structure is invalid.",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "print"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_experience_sections",
+      "line_number": 3763,
+      "docstring": "v5.36: Build structured experience_sections from master resume.\nEach section contains: company, title, location, dates, overview, bullets.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_metrics",
+      "line_number": 3798,
+      "docstring": "Extract quantified metrics from bullet text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect",
+      "line_number": 3822,
+      "docstring": "Run hallucination detection on bullet pool.\nReturns: List of validation results",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "len",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_has_implausible_growth",
+      "line_number": 3863,
+      "docstring": "Check for implausibly high growth rates (>10x in short time).",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L4",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_has_excessive_superlatives",
+      "line_number": 3879,
+      "docstring": "Check for excessive use of superlatives.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 3898,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "VerbCanonicalizer",
+        "DuplicateDetector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "enrich",
+      "line_number": 3902,
+      "docstring": "Enrich extracted data with additional metadata.\nv5.65: Now stores DuplicateDetector on orchestrator for QA sections 4 & 5.\nReturns: (enriched_data, validation_results)",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "canonicalize",
+      "line_number": 3992,
+      "docstring": "Extract and canonicalize verbs from text.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_for_forbidden_verbs",
+      "line_number": 4003,
+      "docstring": "Check for forbidden verbs in the text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 4016,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "TfidfVectorizer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "find_duplicates",
+      "line_number": 4020,
+      "docstring": "Find bullets with cosine similarity >= threshold.\nReturns: List of (index1, index2, similarity_score)",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_cosine_similarity_sklearn",
+      "line_number": 4043,
+      "docstring": "Calculate cosine similarity using scikit-learn's TfidfVectorizer.",
+      "imports": [],
+      "dependencies": [
+        "cosine_similarity"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_cosine_similarity",
+      "line_number": 4057,
+      "docstring": "Calculate TF-IDF cosine similarity between two texts.\nUses scikit-learn if available, otherwise falls back to a basic implementation.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compute_similarity_matrix",
+      "line_number": 4088,
+      "docstring": "Compute 78-check pairwise similarity matrix across all sections.\nReturns comprehensive matrix with all pairwise comparisons.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "len",
+        "isinstance",
+        "list",
+        "enumerate",
+        "round",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compute_overview_bullet_similarity",
+      "line_number": 4141,
+      "docstring": "Compute cosine similarity between overview and each bullet.\nPer v1.9.2: K.5B/K.6B must have cosine <0.6 to their bullets.\nv9.87: Uses count_words_ms_word_style for length reporting.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "isinstance",
+        "len",
+        "round",
+        "enumerate",
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compute_executive_summary_similarity",
+      "line_number": 4186,
+      "docstring": "v9.11: Compute cosine similarity between Executive Summary and other sections.\n\nArgs:\n    exec_summary_text: The text of the Executive Summary (K.1).\n    sections_content: A dictionary where keys are section labels (e.g., \"Unify Overview\", \"IBM Bullets\")\n                      and values are either a single string (for overviews) or a list of strings (for bullets).\n                      \nReturns:\n    List of dictionaries, each containing 'section_label', 'max_similarity',\n    'average_similarity', and 'item_count'.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 4240,
+      "docstring": "Initializes the ArtistGenerator with the master resume.",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "ContentConstraintsConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate",
+      "line_number": 4287,
+      "docstring": "Generate all resume content using LLM.\n\nArgs:\n    feedback_results: Validation failures from previous attempt (if any)\n    attempt: Current generation attempt (1-5)\n    k1_temp_override: Specific temperature for K.1 from orchestrator\n\nReturns:\n    (artist_output, validation_results)",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_artist_output",
+      "line_number": 4332,
+      "docstring": "Generate complete artist output with all K.X sections.",
+      "imports": [],
+      "dependencies": [
+        "method",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_copy_k0_name",
+      "line_number": 4358,
+      "docstring": "Copies K.0 Name verbatim from master resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_copy_k0_contact",
+      "line_number": 4362,
+      "docstring": "Copies and formats K.0 Contact verbatim from master resume.\nReturns a single pipe-separated string.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_call_gemini_api",
+      "line_number": 4381,
+      "docstring": "Refactored Helper: Centralizes Gemini API calls, including reasoning config and error handling.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "reasoning_config_to_api_params",
+        "enumerate",
+        "HopExecutionError",
+        "ValueError",
+        "enhance_system_prompt_with_reasoning"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k1_executive_summary",
+      "line_number": 4481,
+      "docstring": "[v11.0 REDESIGN]\nGenerate K.1 Executive Summary using *all* HOP-0 signals.\nConsumes: Primary Theme, Secondary Themes, Differentiators, Role Archetype,\n          and Authenticity Patterns.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k2_skills",
+      "line_number": 4575,
+      "docstring": "Generates 12 high-signal, 1-3 word skills.\nThis remains the primary consumer of the secondary_themes *list* for\na dedicated skills section, even as other sections now also use the themes.",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "print",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k0_headline",
+      "line_number": 4637,
+      "docstring": "[v11.0 REDESIGN]\nGenerate K.0 Headline using Primary Theme, Differentiators, Role,\nand Authenticity Patterns for tone.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_tailored_bullets_for_experience",
+      "line_number": 4700,
+      "docstring": "[v11.0 REDESIGN]\nGeneric method to generate bullets.\nNow passes Secondary Themes and Authenticity Patterns to all sub-prompts.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "isinstance",
+        "len",
+        "enumerate",
+        "HopExecutionError",
+        "DuplicateDetector",
+        "hasattr",
+        "calculate_master_avg_bullet_length",
+        "next",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k5_unify_bullets",
+      "line_number": 4928,
+      "docstring": "Generate K.5 Unify bullets by calling the generic bullet generation method.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_llm_bullet_selection",
+      "line_number": 4940,
+      "docstring": "Hardening: Validates LLM bullet selection, ensuring count and origin.",
+      "imports": [],
+      "dependencies": [
+        "next",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_tailored_overview_for_experience",
+      "line_number": 4963,
+      "docstring": "[v11.0 REDESIGN]\nGeneric method to rewrite an overview using all HOP-0 signals.",
+      "imports": [],
+      "dependencies": [
+        "next",
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k5_unify_overview",
+      "line_number": 5022,
+      "docstring": "Generate K.5 Unify overview by calling the generic overview generation method.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k6_ibm_bullets",
+      "line_number": 5031,
+      "docstring": "Generate K.6 IBM bullets by calling the generic bullet generation method.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k6_ibm_overview",
+      "line_number": 5041,
+      "docstring": "Generate K.6 IBM overview by calling the generic overview generation method.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_and_potentially_rewrite_bullets",
+      "line_number": 5050,
+      "docstring": "Checks word count for selected bullets and triggers rewrite if necessary.\nUpdates provenance if rewritten.",
+      "imports": [],
+      "dependencies": [
+        "count_words_ms_word_style",
+        "round"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_rewrite_bullet_for_word_count",
+      "line_number": 5096,
+      "docstring": "[v11.0 NEW HELPER]\nUses LLM to rewrite a single bullet to fit a word count,\nwhile preserving core facts and authentic tone.",
+      "imports": [],
+      "dependencies": [
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_lightly_customized_bullets",
+      "line_number": 5143,
+      "docstring": "[v11.0 REDESIGN]\nLightly rewrite bullets using themes AND authenticity patterns.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "count_words_ms_word_style",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_synthetic_bullets",
+      "line_number": 5209,
+      "docstring": "[v11.0 REDESIGN]\nGenerates new, plausible bullet points based on *all* HOP-0 signals.",
+      "imports": [],
+      "dependencies": [
+        "count_words_ms_word_style",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k8_ey_bullets",
+      "line_number": 5272,
+      "docstring": "Generate K.8A EY bullets, lightly tailored by LLM (now passes full analysis).",
+      "imports": [],
+      "dependencies": [
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k8_ey_overview",
+      "line_number": 5286,
+      "docstring": "Generate K.8 EY overview by calling the generic overview generation method.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_copy_k7_tradersense_bullets",
+      "line_number": 5296,
+      "docstring": "v5.26: Copy TraderSense highlights VERBATIM from master resume.",
+      "imports": [],
+      "dependencies": [
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_copy_k7_tradersense_overview",
+      "line_number": 5313,
+      "docstring": "v5.26: Copy TraderSense overview VERBATIM from master resume.",
+      "imports": [],
+      "dependencies": [
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k9_early_career_bullets",
+      "line_number": 5327,
+      "docstring": "Generate K.9A Early Career bullets, lightly tailored by LLM (now passes full analysis).",
+      "imports": [],
+      "dependencies": [
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k9_early_career_overview",
+      "line_number": 5341,
+      "docstring": "Generate K.9 Early Career overview, lightly tailored by LLM.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k10_competencies",
+      "line_number": 5352,
+      "docstring": "[v11.0 REDESIGN]\nGenerate K.10 Competencies (6 competencies) using the full V/C/S split.\nSelects Verbatim, Customizes, and Synthesizes based on all HOP-0 signals.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "enumerate",
+        "count_words_ms_word_style",
+        "hasattr",
+        "calculate_master_avg_bullet_length"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_k13_cover_letter",
+      "line_number": 5501,
+      "docstring": "[v11.0 REDESIGN & v11.30 FIX]\nGenerate K.13 cover letter using all HOP-0 signals.\nConsumes: Themes, Differentiators, Narratives, and Authenticity Patterns.\nFIX: Now uses _call_gemini_api for consistency and to potentially resolve 404 error.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_fallback_cover_letter",
+      "line_number": 5645,
+      "docstring": "Generate fallback cover letter if LLM unavailable.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_copy_k11_education",
+      "line_number": 5669,
+      "docstring": "Copies K.11 Education verbatim from master resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_copy_k12_certifications",
+      "line_number": 5674,
+      "docstring": "Generate Certifications string from master resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_dummy_header",
+      "line_number": 5683,
+      "docstring": "Generates a placeholder for header sections.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 5699,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 5704,
+      "docstring": "Set value in buffer (only if not locked).",
+      "imports": [],
+      "dependencies": [
+        "StagingBufferError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 5710,
+      "docstring": "Get value from buffer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "lock",
+      "line_number": 5714,
+      "docstring": "Lock the buffer (irreversible).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_locked",
+      "line_number": 5720,
+      "docstring": "Check if buffer is locked.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "data",
+      "line_number": 5725,
+      "docstring": "Read-only access to data.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 5758,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "ValueError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sanitize_buffer",
+      "line_number": 5780,
+      "docstring": "Apply comprehensive text sanitization to a staging buffer's data.\nReturns a tuple of (validation_results, sanitized_data).",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_sanitize_dict_recursive",
+      "line_number": 5805,
+      "docstring": "Recursively sanitize strings within dictionaries and lists.",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_sanitize_text",
+      "line_number": 5818,
+      "docstring": "Apply all sanitization rules to a single string.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "max",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_master_avg_bullet_length",
+      "line_number": 5982,
+      "docstring": "Helper to calculate average bullet length for sections in master resume using MS Word style counting.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "count_words_ms_word_style",
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 6034,
+      "docstring": "Initializes the validator and registers all rules with the ValidationEngine.",
+      "imports": [],
+      "dependencies": [
+        "ValidationEngine",
+        "ContentConstraintsConfig",
+        "SignalControlConfig",
+        "DuplicateDetector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_register_rules",
+      "line_number": 6232,
+      "docstring": "Creates and registers all pre-flight validation rules.",
+      "imports": [],
+      "dependencies": [
+        "ValidationRule",
+        "TypeError",
+        "isinstance",
+        "getattr",
+        "AttributeError",
+        "type",
+        "create_error_message_lambda",
+        "str",
+        "hasattr",
+        "callable"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 6306,
+      "docstring": "Validates the staging buffer against all registered rules.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "count_words_ms_word_style",
+        "isinstance",
+        "count_words_in_list_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_prepare_validation_data",
+      "line_number": 6350,
+      "docstring": "Prepares a dictionary of data needed by the validation rules.",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_total_word_count",
+      "line_number": 6418,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_k1_word_count",
+      "line_number": 6426,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_k1_sentence_count",
+      "line_number": 6449,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_count_sentences"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_unify_ibm_distribution",
+      "line_number": 6463,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_unify_ibm_ratio",
+      "line_number": 6470,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_buffer_locked",
+      "line_number": 6480,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_signature",
+      "line_number": 6483,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_no_placeholders",
+      "line_number": 6489,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_per_section_signal",
+      "line_number": 6506,
+      "docstring": "VG_PER_SECTION_SIGNAL_SCORE: Checks if all generated sections meet min signal score.",
+      "imports": [],
+      "dependencies": [
+        "calculate_signal_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_k1_differentiator_range",
+      "line_number": 6535,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_jd_keyword_range",
+      "line_number": 6561,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_narrative_mining_presence",
+      "line_number": 6574,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "len",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_relevance_range",
+      "line_number": 6587,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_narrative",
+      "line_number": 6600,
+      "docstring": "Checks for 'Hook, Proof, Vision' structure keywords.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "any",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_fallback",
+      "line_number": 6631,
+      "docstring": "Checks if the fallback cover letter was used by looking for a specific phrase.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_structure",
+      "line_number": 6637,
+      "docstring": "Validates word counts of the three main paragraphs.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "count_words_ms_word_style",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_full_structure",
+      "line_number": 6671,
+      "docstring": "VG_COVER_LETTER_FULL_STRUCTURE: Checks for key components.",
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_signature_multiline",
+      "line_number": 6690,
+      "docstring": "VG_COVER_LETTER_SIGNATURE_MULTILINE: Checks if signature renders on multiple lines.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_headline_word_count",
+      "line_number": 6703,
+      "docstring": "VG_HEADLINE_WORD_COUNT: Validate K.0 Headline word count.",
+      "imports": [],
+      "dependencies": [
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_headline_format_no_titles",
+      "line_number": 6715,
+      "docstring": "VG_HEADLINE_NO_TITLES: Ensure headline does not contain common job titles.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_headline_format_no_commas",
+      "line_number": 6723,
+      "docstring": "VG_HEADLINE_NO_COMMAS: Ensure headline does not contain commas.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_resume_header_h2",
+      "line_number": 6730,
+      "docstring": "VG_RESUME_HEADER_H2: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_edu_certs_format",
+      "line_number": 6735,
+      "docstring": "VG_EDU_CERTS_FORMAT: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_experience_bullet_style",
+      "line_number": 6740,
+      "docstring": "VG_EXPERIENCE_BULLET_STYLE: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_competencies_formatting",
+      "line_number": 6745,
+      "docstring": "VG_COMPETENCIES_FORMATTING: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_experience_render_format",
+      "line_number": 6750,
+      "docstring": "VG_EXPERIENCE_RENDER_FORMAT: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_master_avg_bullet_length",
+      "line_number": 6756,
+      "docstring": "Helper to calculate average bullet length for sections in master resume using MS Word style counting.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "count_words_ms_word_style",
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_bullet_word_count_tolerance",
+      "line_number": 6803,
+      "docstring": "VG_BULLET_WORD_COUNT_TOLERANCE: Checks individual bullet word counts against master averages +/- tolerance.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "round",
+        "enumerate",
+        "type",
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_provenance_split",
+      "line_number": 6860,
+      "docstring": "VG_PROVENANCE_SPLIT_CHECK: Checks if bullet provenance matches target splits.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "enumerate",
+        "type",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_authenticity_signal",
+      "line_number": 6913,
+      "docstring": "[v11.0 NEW RULE]\nChecks if authenticity patterns (verbs) from HOP-0 are present\nin the generated resume content.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "hasattr",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_k1_sentence_count",
+      "line_number": 7007,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_count_sentences"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_unify_ibm_distribution",
+      "line_number": 7017,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_unify_ibm_ratio",
+      "line_number": 7022,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_buffer_locked",
+      "line_number": 7031,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_signature",
+      "line_number": 7034,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_no_placeholders",
+      "line_number": 7040,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_per_section_signal",
+      "line_number": 7057,
+      "docstring": "VG_PER_SECTION_SIGNAL_SCORE: Checks if all generated sections meet min signal score.",
+      "imports": [],
+      "dependencies": [
+        "calculate_signal_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_k1_differentiator_range",
+      "line_number": 7086,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_jd_keyword_range",
+      "line_number": 7112,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_narrative_mining_presence",
+      "line_number": 7125,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "len",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_relevance_range",
+      "line_number": 7138,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_narrative",
+      "line_number": 7151,
+      "docstring": "Checks for 'Hook, Proof, Vision' structure keywords.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "any",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_fallback",
+      "line_number": 7183,
+      "docstring": "Checks if the fallback cover letter was used by looking for a specific phrase.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_structure",
+      "line_number": 7189,
+      "docstring": "Validates word counts of the three main paragraphs.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "count_words_ms_word_style",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_full_structure",
+      "line_number": 7223,
+      "docstring": "VG_COVER_LETTER_FULL_STRUCTURE: Checks for key components.",
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_cover_letter_signature_multiline",
+      "line_number": 7242,
+      "docstring": "VG_COVER_LETTER_SIGNATURE_MULTILINE: Checks if signature renders on multiple lines.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_headline_word_count",
+      "line_number": 7255,
+      "docstring": "VG_HEADLINE_WORD_COUNT: Validate K.0 Headline word count.",
+      "imports": [],
+      "dependencies": [
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_headline_format_no_titles",
+      "line_number": 7267,
+      "docstring": "VG_HEADLINE_NO_TITLES: Ensure headline does not contain common job titles.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_headline_format_no_commas",
+      "line_number": 7275,
+      "docstring": "VG_HEADLINE_NO_COMMAS: Ensure headline does not contain commas.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_resume_header_h2",
+      "line_number": 7282,
+      "docstring": "VG_RESUME_HEADER_H2: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_edu_certs_format",
+      "line_number": 7287,
+      "docstring": "VG_EDU_CERTS_FORMAT: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_experience_bullet_style",
+      "line_number": 7292,
+      "docstring": "VG_EXPERIENCE_BULLET_STYLE: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_competencies_formatting",
+      "line_number": 7297,
+      "docstring": "VG_COMPETENCIES_FORMATTING: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_experience_render_format",
+      "line_number": 7302,
+      "docstring": "VG_EXPERIENCE_RENDER_FORMAT: Placeholder validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_master_avg_bullet_length",
+      "line_number": 7308,
+      "docstring": "Helper to calculate average bullet length for sections in master resume using MS Word style counting.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "count_words_ms_word_style",
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_bullet_word_count_tolerance",
+      "line_number": 7355,
+      "docstring": "VG_BULLET_WORD_COUNT_TOLERANCE: Checks individual bullet word counts against master averages +/- tolerance.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "round",
+        "enumerate",
+        "type",
+        "count_words_ms_word_style"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_provenance_split",
+      "line_number": 7412,
+      "docstring": "VG_PROVENANCE_SPLIT_CHECK: Checks if bullet provenance matches target splits.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "enumerate",
+        "type",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_authenticity_signal",
+      "line_number": 7465,
+      "docstring": "[v11.0 NEW RULE]\nChecks if authenticity patterns (verbs) from HOP-0 are present\nin the generated resume content.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "hasattr",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decide",
+      "line_number": 7537,
+      "docstring": "Make gate decision based on validation results.\n\nReturns:\n    (decision, reason)",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 7580,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "render",
+      "line_number": 7584,
+      "docstring": "Render all output files (Resume, Skills, Cover Letter, QA Report, App Tracker).\nReturns a tuple of (file_paths, (validation_results, file_contents)).\nv10.0: Swapped QA Report (Output 4) and App Tracker (Output 5).",
+      "imports": [],
+      "dependencies": [
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_resume_artifact",
+      "line_number": 7660,
+      "docstring": "Renders the resume markdown artifact.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_skills_artifact",
+      "line_number": 7669,
+      "docstring": "Renders the skills artifact.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_cover_letter_artifact",
+      "line_number": 7677,
+      "docstring": "Renders the cover letter artifact.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_qa_report_artifact",
+      "line_number": 7685,
+      "docstring": "Renders the QA report artifact placeholder. Content is generated in the orchestrator.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_app_tracker_artifact",
+      "line_number": 7693,
+      "docstring": "Renders the application tracker artifact and validates it.",
+      "imports": [],
+      "dependencies": [
+        "AppTrackerQAValidator",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_resume_markdown",
+      "line_number": 7761,
+      "docstring": "Render resume as Markdown, driven by the RESUME_RENDER_CONFIG.\nv9.90: Uses specific render methods for each type to enforce format.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "render_method",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_name",
+      "line_number": 7811,
+      "docstring": "Enforces H2 (##) for Name (K.0).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_headline",
+      "line_number": 7815,
+      "docstring": "Enforces plain text for Headline (K.0).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_contact",
+      "line_number": 7819,
+      "docstring": "Enforces plain text for Contact (K.0).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_paragraph",
+      "line_number": 7823,
+      "docstring": "Enforces plain text for paragraphs (K.1).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_experience_section",
+      "line_number": 7827,
+      "docstring": "Enforces hardened format for experience sections (K.5-K.9).\n- Line 1: **Company | Location**\n- (Blank Line)\n- Line 2: **Title | Start \u2013 End**\n- (Blank Line)\n- Overview text\n- (Blank Line)\n- * Bullet 1\n- * Bullet 2\n- (Blank Line)",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_education_section",
+      "line_number": 7887,
+      "docstring": "Enforces hardened format for Education (K.11).\n- No bullets.\n- Single line per entry.\n- Two newlines at end.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_certifications_section",
+      "line_number": 7911,
+      "docstring": "Enforces hardened format for Certifications (K.12).\n- No bullets.\n- Single line per entry.\n- Two newlines at end.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_competencies_section",
+      "line_number": 7925,
+      "docstring": "Enforces hardened format for Competencies (K.10).\n- Uses '* ' bullet.\n- Single line per entry.\n- Two newlines at end.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_skills",
+      "line_number": 7953,
+      "docstring": "Render skills with double-check validation.\nThis method retrieves K.2_Skills from the buffer (LLM-generated)\nand validates each skill is 1-3 words before formatting.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_app_tracker",
+      "line_number": 7989,
+      "docstring": "Render application tracker (v4 - 54 fields) - QA SPEC V5 VALIDATED.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 8029,
+      "docstring": "Initializes the orchestrator.\n\nArgs:\n    master_resume (Dict): The candidate's master resume data.\n    test_mode (bool): If True, skips API key checks for testing purposes.",
+      "imports": [],
+      "dependencies": [
+        "JDEnforcementValidator",
+        "ContentConstraintsConfig",
+        "RAGConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_0_jd_analysis",
+      "line_number": 8081,
+      "docstring": "Executes HOP-0: Job Description Analysis & RAG.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "HopExecutionError",
+        "getattr",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_1_clerk_extraction",
+      "line_number": 8108,
+      "docstring": "Executes HOP-1: Master Resume Extraction & Hallucination Check.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "HopExecutionError",
+        "ValidationResult",
+        "str",
+        "ClerkExtractor"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_2_enrichment",
+      "line_number": 8135,
+      "docstring": "Executes HOP-2: Data Enrichment (Verbs, Duplicates).",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "DataEnricher",
+        "HopExecutionError",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_3_artist_generation",
+      "line_number": 8161,
+      "docstring": "Executes HOP-3: Content Generation with retry logic.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "HopExecutionError",
+        "ValidationResult",
+        "range",
+        "locals",
+        "ArtistGenerator",
+        "PreFlightValidator",
+        "ImmutableStagingBuffer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_4_staging_and_sanitization",
+      "line_number": 8259,
+      "docstring": "Executes HOP-4 (Staging) and HOP-4.5 (Sanitization & Locking).",
+      "imports": [],
+      "dependencies": [
+        "HopExecutionError",
+        "ValidationResult",
+        "str",
+        "TextSanitizer",
+        "ImmutableStagingBuffer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_5_validation",
+      "line_number": 8325,
+      "docstring": "Executes HOP-5: Pre-flight Validation.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "HopExecutionError",
+        "ValidationResult",
+        "str",
+        "PreFlightValidator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_6_gate_decision",
+      "line_number": 8356,
+      "docstring": "Executes HOP-6: Gate Decision.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "HopExecutionError",
+        "GateDecisionEngine",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_7_rendering",
+      "line_number": 8390,
+      "docstring": "Executes HOP-7: File Rendering. Returns dict of file paths and dict of file contents.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "FileRenderer",
+        "HopExecutionError",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_7_5_deduplication",
+      "line_number": 8426,
+      "docstring": "Executes HOP-7.5: Deduplication Analysis (for QA report).",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "str",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hop_8_qa_report",
+      "line_number": 8463,
+      "docstring": "Executes HOP-8: QA Report Generation.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "HopExecutionError",
+        "len",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_workflow",
+      "line_number": 8500,
+      "docstring": "Execute complete multi-hop workflow.\n\nArgs:\n    job_description (str): The job description text.\n    company_name (str): The target company name.\n    job_title (str): The target job title.\n\nReturns:\n    Dict containing workflow status, output file paths, QA report, CoC ledger, etc.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "type",
+        "asdict",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_create_jd_analyzer",
+      "line_number": 8732,
+      "docstring": "Creates the HOP-0 JD Analyzer instance.",
+      "imports": [],
+      "dependencies": [
+        "globals",
+        "RAGConfig",
+        "EnhancedJobDescriptionAnalyzer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_create_checkpoint",
+      "line_number": 8739,
+      "docstring": "Creates a HopCheckpoint object, calculates duration and hash.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "TypeError",
+        "asdict",
+        "isinstance",
+        "round",
+        "type",
+        "hasattr",
+        "str",
+        "HopCheckpoint",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_hop_status",
+      "line_number": 8827,
+      "docstring": "Checks hop status. Halts workflow on FAIL unless overridden. Logs PASS/WARNING.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "len",
+        "HopExecutionError",
+        "callable",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_coc_ledger",
+      "line_number": 8893,
+      "docstring": "Builds the Chain of Custody (CoC) ledger dictionary.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "any",
+        "asdict",
+        "len",
+        "getattr",
+        "round",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_1_signal_quality",
+      "line_number": 8956,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len",
+        "reasoning_config_to_api_params",
+        "reversed",
+        "next",
+        "calculate_signal_score",
+        "min",
+        "SignalControlConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_2_signal_flow_map",
+      "line_number": 8998,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "getattr",
+        "len",
+        "hasattr",
+        "str",
+        "calculate_signal_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_3_hop_summary",
+      "line_number": 9088,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_4_word_count_distribution",
+      "line_number": 9112,
+      "docstring": "[v11.0.2 NEW] Builds combined Section 4 for Word Count & Distribution Compliance.\nMerges old sections 4 and 5, removes bullet tolerance row.",
+      "imports": [],
+      "dependencies": [
+        "callable",
+        "msg",
+        "next",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_5_provenance",
+      "line_number": 9231,
+      "docstring": "Builds QA Section 5: Bullet Provenance & Word Count.\nValidates bullet word counts against master averages +/- tolerance.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "round",
+        "len",
+        "enumerate",
+        "type",
+        "count_words_ms_word_style",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_word_count",
+      "line_number": 9316,
+      "docstring": "Helper to check word count against range and return status/string.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_6_authenticity",
+      "line_number": 9324,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "callable",
+        "next",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_7_overview_similarity",
+      "line_number": 9352,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_8_pairwise_similarity",
+      "line_number": 9374,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_9_pipeline_health",
+      "line_number": 9416,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_10_structural",
+      "line_number": 9439,
+      "docstring": "Builds QA Section 10: Structural Validation (Content Presence).\nFocuses only on rules checking for the presence of required sections.",
+      "imports": [],
+      "dependencies": [
+        "callable",
+        "any",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_11_prod_readiness",
+      "line_number": 9479,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "callable",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_12_cover_letter",
+      "line_number": 9514,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "callable",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_13_jd_enforcement",
+      "line_number": 9540,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_section_14_final_format",
+      "line_number": 9556,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len",
+        "isinstance",
+        "list",
+        "next",
+        "set",
+        "sorted",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_qa_report",
+      "line_number": 9701,
+      "docstring": "Generate full QA report by iterating through a configuration of section builders.\nIncludes internal check for QA table pre-formatting.\nv11.0.2 Refactor: Uses renumbered QA_REPORT_SECTIONS config and merged Section 4.",
+      "imports": [],
+      "dependencies": [
+        "builder_method",
+        "any",
+        "getattr",
+        "len",
+        "KeyError",
+        "ValidationResult",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_ascii_bar_chart",
+      "line_number": 9813,
+      "docstring": "Formats a single line for the ASCII bar chart in QA Section 1.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "len",
+        "round",
+        "int",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_plain_text_table",
+      "line_number": 9839,
+      "docstring": "Formats data into a fixed-width plain text table.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "len",
+        "enumerate",
+        "range",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_wrap_cell_text",
+      "line_number": 9926,
+      "docstring": "Wraps text within a cell width, handling newlines.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_word_count",
+      "line_number": 9945,
+      "docstring": "Helper to check word count against range and return status/string.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_invoke_deduplication_analysis",
+      "line_number": 9954,
+      "docstring": "Gathers data and calls DuplicateDetector methods for QA report sections.\nStores results in self.similarity_matrix_data and self.overview_similarity_data.",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_master_avg_bullet_length",
+      "line_number": 10062,
+      "docstring": "Helper to calculate average bullet length for sections in master resume using MS Word style counting.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "count_words_ms_word_style",
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "timeout_handler",
+      "line_number": 1790,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "PhaseTimeoutError"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main_phase1",
+      "line_number": 2399,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fallback_phase1",
+      "line_number": 2404,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main_phase2",
+      "line_number": 2517,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fallback_phase2",
+      "line_number": 2522,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main_phase3",
+      "line_number": 2623,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fallback_phase3",
+      "line_number": 2631,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main_phase4",
+      "line_number": 2764,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fallback_phase4",
+      "line_number": 2769,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_force_plain_types_for_cache",
+      "line_number": 3207,
+      "docstring": "Recursively converts mappings/sequences/objects into plain dicts/lists for caching.",
+      "imports": [],
+      "dependencies": [
+        "asdict",
+        "isinstance",
+        "getattr",
+        "hasattr",
+        "callable",
+        "is_dataclass",
+        "_force_plain_types_for_cache"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_manual_reconstruct",
+      "line_number": 3284,
+      "docstring": "Attempts to manually rebuild a dictionary from known structures.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "getattr",
+        "list",
+        "type",
+        "_manual_reconstruct_nested",
+        "hasattr",
+        "callable"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_manual_reconstruct_nested",
+      "line_number": 3312,
+      "docstring": "Recursive helper for manual reconstruction.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "isinstance",
+        "type",
+        "_manual_reconstruct_nested",
+        "hasattr",
+        "callable",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_error_message_lambda",
+      "line_number": 6250,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "default_serializer",
+      "line_number": 8775,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "asdict",
+        "TypeError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_dotenv": [
+      "line_3"
+    ],
+    "json": [
+      "line_6"
+    ],
+    "re": [
+      "line_7"
+    ],
+    "hashlib": [
+      "line_8"
+    ],
+    "math": [
+      "line_9"
+    ],
+    "logging": [
+      "line_10",
+      "line_190",
+      "line_1703",
+      "line_1782",
+      "line_2039",
+      "line_3018",
+      "line_3044",
+      "line_3279",
+      "line_1980",
+      "line_2937",
+      "line_2955",
+      "line_2912"
+    ],
+    "os": [
+      "line_11"
+    ],
+    "time": [
+      "line_12"
+    ],
+    "random": [
+      "line_31",
+      "line_2040",
+      "line_2204"
+    ],
+    "from_dataclasses": [
+      "line_33",
+      "line_334",
+      "line_10136",
+      "line_3206"
+    ],
+    "from_typing": [
+      "line_34",
+      "line_335",
+      "line_1665"
+    ],
+    "from_enum": [
+      "line_332"
+    ],
+    "from_datetime": [
+      "line_333",
+      "line_5508"
+    ],
+    "signal": [
+      "line_1666"
+    ],
+    "google.generativeai": [
+      "line_17"
+    ],
+    "from_sklearn.feature_extraction.text": [
+      "line_24"
+    ],
+    "from_sklearn.metrics.pairwise": [
+      "line_25"
+    ],
+    "copy": [
+      "line_10135"
+    ],
+    "from_collections.abc": [
+      "line_3205"
+    ]
+  },
+  "function_signatures": {
+    "reasoning_config_to_api_params": "reasoning_config_to_api_params",
+    "_get_normalized_reasoning_params": "_get_normalized_reasoning_params",
+    "_calculate_reasoning_intensity": "_calculate_reasoning_intensity",
+    "_get_generation_temperature": "_get_generation_temperature",
+    "_allocate_tokens_from_depth": "_allocate_tokens_from_depth",
+    "_build_reasoning_prompt_addendum": "_build_reasoning_prompt_addendum",
+    "enhance_system_prompt_with_reasoning": "enhance_system_prompt_with_reasoning",
+    "count_words_ms_word_style": "count_words_ms_word_style",
+    "count_words_in_list_ms_word_style": "count_words_in_list_ms_word_style",
+    "_count_sentences": "_count_sentences",
+    "calculate_signal_score": "calculate_signal_score",
+    "_validate_k1_word_count": "_validate_k1_word_count",
+    "__init__": "__init__",
+    "execute": "execute",
+    "register_rule": "register_rule",
+    "register_rules": "register_rules",
+    "validate": "validate",
+    "get_failed_validations": "get_failed_validations",
+    "get_critical_failures": "get_critical_failures",
+    "has_critical_failures": "has_critical_failures",
+    "has_high_or_critical_failures": "has_high_or_critical_failures",
+    "format_validation_report": "format_validation_report",
+    "validate_jd_input": "validate_jd_input",
+    "validate_jd_parsing": "validate_jd_parsing",
+    "validate_thematic_analysis": "validate_thematic_analysis",
+    "validate_enrichment": "validate_enrichment",
+    "validate_artist_inputs": "validate_artist_inputs",
+    "validate_preflight": "validate_preflight",
+    "validate_file_output": "validate_file_output",
+    "validate_qa_report": "validate_qa_report",
+    "_generate_sha": "_generate_sha",
+    "_log_pass": "_log_pass",
+    "_log_fail": "_log_fail",
+    "_parse_date": "_parse_date",
+    "_is_valid_url": "_is_valid_url",
+    "_is_linkedin_profile": "_is_linkedin_profile",
+    "validate_tracker_data": "validate_tracker_data",
+    "_validate_row": "_validate_row",
+    "_validate_channel_gating": "_validate_channel_gating",
+    "_generate_passed_outcome": "_generate_passed_outcome",
+    "_generate_blocked_outcome": "_generate_blocked_outcome",
+    "get_top_differentiators": "get_top_differentiators",
+    "call": "call",
+    "execute_with_retry": "execute_with_retry",
+    "_execute_with_timeout": "_execute_with_timeout",
+    "_validate_phase_result": "_validate_phase_result",
+    "__post_init__": "__post_init__",
+    "any_success": "any_success",
+    "full_success": "full_success",
+    "success_rate": "success_rate",
+    "to_dict": "to_dict",
+    "log": "log",
+    "search_and_analyze": "search_and_analyze",
+    "_make_api_call": "_make_api_call",
+    "_calculate_backoff": "_calculate_backoff",
+    "_extract_json": "_extract_json",
+    "_attempt_json_repair": "_attempt_json_repair",
+    "get_cache_key": "get_cache_key",
+    "get": "get",
+    "set": "set",
+    "phase1_thematic_research": "phase1_thematic_research",
+    "_build_phase1_prompt": "_build_phase1_prompt",
+    "phase2_authenticity_patterns": "phase2_authenticity_patterns",
+    "_build_phase2_prompt": "_build_phase2_prompt",
+    "phase3_competitive_positioning": "phase3_competitive_positioning",
+    "_build_phase3_prompt": "_build_phase3_prompt",
+    "_infer_industry": "_infer_industry",
+    "_infer_peer_companies": "_infer_peer_companies",
+    "phase4_narrative_mining": "phase4_narrative_mining",
+    "_build_phase4_prompt": "_build_phase4_prompt",
+    "analyze": "analyze",
+    "_build_pre_rag_analysis_prompt": "_build_pre_rag_analysis_prompt",
+    "_execute_pre_rag_analysis": "_execute_pre_rag_analysis",
+    "_analyze_with_resilient_web_search": "_analyze_with_resilient_web_search",
+    "_extract_role_from_jd": "_extract_role_from_jd",
+    "_synthesize_thematic_analysis": "_synthesize_thematic_analysis",
+    "_extract_company_name": "_extract_company_name",
+    "_dict_to_thematic_analysis": "_dict_to_thematic_analysis",
+    "_analyze_local_nlp": "_analyze_local_nlp",
+    "_extract_keywords": "_extract_keywords",
+    "_calculate_theme_scores": "_calculate_theme_scores",
+    "_generate_primary_theme": "_generate_primary_theme",
+    "_generate_secondary_themes": "_generate_secondary_themes",
+    "_extract_competitive_intelligence": "_extract_competitive_intelligence",
+    "_classify_role": "_classify_role",
+    "_calculate_signal_quality": "_calculate_signal_quality",
+    "extract": "extract",
+    "_validate_master_resume_structure": "_validate_master_resume_structure",
+    "_build_experience_sections": "_build_experience_sections",
+    "_extract_metrics": "_extract_metrics",
+    "detect": "detect",
+    "_has_implausible_growth": "_has_implausible_growth",
+    "_has_excessive_superlatives": "_has_excessive_superlatives",
+    "enrich": "enrich",
+    "canonicalize": "canonicalize",
+    "check_for_forbidden_verbs": "check_for_forbidden_verbs",
+    "find_duplicates": "find_duplicates",
+    "_calculate_cosine_similarity_sklearn": "_calculate_cosine_similarity_sklearn",
+    "_calculate_cosine_similarity": "_calculate_cosine_similarity",
+    "compute_similarity_matrix": "compute_similarity_matrix",
+    "compute_overview_bullet_similarity": "compute_overview_bullet_similarity",
+    "compute_executive_summary_similarity": "compute_executive_summary_similarity",
+    "generate": "generate",
+    "_generate_artist_output": "_generate_artist_output",
+    "_copy_k0_name": "_copy_k0_name",
+    "_copy_k0_contact": "_copy_k0_contact",
+    "_call_gemini_api": "_call_gemini_api",
+    "_generate_k1_executive_summary": "_generate_k1_executive_summary",
+    "_generate_k2_skills": "_generate_k2_skills",
+    "_generate_k0_headline": "_generate_k0_headline",
+    "_generate_tailored_bullets_for_experience": "_generate_tailored_bullets_for_experience",
+    "_generate_k5_unify_bullets": "_generate_k5_unify_bullets",
+    "_validate_llm_bullet_selection": "_validate_llm_bullet_selection",
+    "_generate_tailored_overview_for_experience": "_generate_tailored_overview_for_experience",
+    "_generate_k5_unify_overview": "_generate_k5_unify_overview",
+    "_generate_k6_ibm_bullets": "_generate_k6_ibm_bullets",
+    "_generate_k6_ibm_overview": "_generate_k6_ibm_overview",
+    "_validate_and_potentially_rewrite_bullets": "_validate_and_potentially_rewrite_bullets",
+    "_rewrite_bullet_for_word_count": "_rewrite_bullet_for_word_count",
+    "_generate_lightly_customized_bullets": "_generate_lightly_customized_bullets",
+    "_generate_synthetic_bullets": "_generate_synthetic_bullets",
+    "_generate_k8_ey_bullets": "_generate_k8_ey_bullets",
+    "_generate_k8_ey_overview": "_generate_k8_ey_overview",
+    "_copy_k7_tradersense_bullets": "_copy_k7_tradersense_bullets",
+    "_copy_k7_tradersense_overview": "_copy_k7_tradersense_overview",
+    "_generate_k9_early_career_bullets": "_generate_k9_early_career_bullets",
+    "_generate_k9_early_career_overview": "_generate_k9_early_career_overview",
+    "_generate_k10_competencies": "_generate_k10_competencies",
+    "_generate_k13_cover_letter": "_generate_k13_cover_letter",
+    "_generate_fallback_cover_letter": "_generate_fallback_cover_letter",
+    "_copy_k11_education": "_copy_k11_education",
+    "_copy_k12_certifications": "_copy_k12_certifications",
+    "_generate_dummy_header": "_generate_dummy_header",
+    "lock": "lock",
+    "is_locked": "is_locked",
+    "data": "data",
+    "sanitize_buffer": "sanitize_buffer",
+    "_sanitize_dict_recursive": "_sanitize_dict_recursive",
+    "_sanitize_text": "_sanitize_text",
+    "_calculate_master_avg_bullet_length": "_calculate_master_avg_bullet_length",
+    "_register_rules": "_register_rules",
+    "_prepare_validation_data": "_prepare_validation_data",
+    "_validate_total_word_count": "_validate_total_word_count",
+    "_validate_k1_sentence_count": "_validate_k1_sentence_count",
+    "_validate_unify_ibm_distribution": "_validate_unify_ibm_distribution",
+    "_validate_unify_ibm_ratio": "_validate_unify_ibm_ratio",
+    "_validate_buffer_locked": "_validate_buffer_locked",
+    "_validate_cover_letter_signature": "_validate_cover_letter_signature",
+    "_validate_no_placeholders": "_validate_no_placeholders",
+    "_validate_per_section_signal": "_validate_per_section_signal",
+    "_validate_k1_differentiator_range": "_validate_k1_differentiator_range",
+    "_validate_jd_keyword_range": "_validate_jd_keyword_range",
+    "_validate_narrative_mining_presence": "_validate_narrative_mining_presence",
+    "_validate_cover_letter_relevance_range": "_validate_cover_letter_relevance_range",
+    "_validate_cover_letter_narrative": "_validate_cover_letter_narrative",
+    "_validate_cover_letter_fallback": "_validate_cover_letter_fallback",
+    "_validate_cover_letter_structure": "_validate_cover_letter_structure",
+    "_validate_cover_letter_full_structure": "_validate_cover_letter_full_structure",
+    "_validate_cover_letter_signature_multiline": "_validate_cover_letter_signature_multiline",
+    "_validate_headline_word_count": "_validate_headline_word_count",
+    "_validate_headline_format_no_titles": "_validate_headline_format_no_titles",
+    "_validate_headline_format_no_commas": "_validate_headline_format_no_commas",
+    "_validate_resume_header_h2": "_validate_resume_header_h2",
+    "_validate_edu_certs_format": "_validate_edu_certs_format",
+    "_validate_experience_bullet_style": "_validate_experience_bullet_style",
+    "_validate_competencies_formatting": "_validate_competencies_formatting",
+    "_validate_experience_render_format": "_validate_experience_render_format",
+    "_validate_bullet_word_count_tolerance": "_validate_bullet_word_count_tolerance",
+    "_validate_provenance_split": "_validate_provenance_split",
+    "_validate_authenticity_signal": "_validate_authenticity_signal",
+    "decide": "decide",
+    "render": "render",
+    "_render_resume_artifact": "_render_resume_artifact",
+    "_render_skills_artifact": "_render_skills_artifact",
+    "_render_cover_letter_artifact": "_render_cover_letter_artifact",
+    "_render_qa_report_artifact": "_render_qa_report_artifact",
+    "_render_app_tracker_artifact": "_render_app_tracker_artifact",
+    "_render_resume_markdown": "_render_resume_markdown",
+    "_render_name": "_render_name",
+    "_render_headline": "_render_headline",
+    "_render_contact": "_render_contact",
+    "_render_paragraph": "_render_paragraph",
+    "_render_experience_section": "_render_experience_section",
+    "_render_education_section": "_render_education_section",
+    "_render_certifications_section": "_render_certifications_section",
+    "_render_competencies_section": "_render_competencies_section",
+    "_render_skills": "_render_skills",
+    "_render_app_tracker": "_render_app_tracker",
+    "_execute_hop_0_jd_analysis": "_execute_hop_0_jd_analysis",
+    "_execute_hop_1_clerk_extraction": "_execute_hop_1_clerk_extraction",
+    "_execute_hop_2_enrichment": "_execute_hop_2_enrichment",
+    "_execute_hop_3_artist_generation": "_execute_hop_3_artist_generation",
+    "_execute_hop_4_staging_and_sanitization": "_execute_hop_4_staging_and_sanitization",
+    "_execute_hop_5_validation": "_execute_hop_5_validation",
+    "_execute_hop_6_gate_decision": "_execute_hop_6_gate_decision",
+    "_execute_hop_7_rendering": "_execute_hop_7_rendering",
+    "_execute_hop_7_5_deduplication": "_execute_hop_7_5_deduplication",
+    "_execute_hop_8_qa_report": "_execute_hop_8_qa_report",
+    "execute_workflow": "execute_workflow",
+    "_create_jd_analyzer": "_create_jd_analyzer",
+    "_create_checkpoint": "_create_checkpoint",
+    "_check_hop_status": "_check_hop_status",
+    "_build_coc_ledger": "_build_coc_ledger",
+    "_build_qa_section_1_signal_quality": "_build_qa_section_1_signal_quality",
+    "_build_qa_section_2_signal_flow_map": "_build_qa_section_2_signal_flow_map",
+    "_build_qa_section_3_hop_summary": "_build_qa_section_3_hop_summary",
+    "_build_qa_section_4_word_count_distribution": "_build_qa_section_4_word_count_distribution",
+    "_build_qa_section_5_provenance": "_build_qa_section_5_provenance",
+    "_check_word_count": "_check_word_count",
+    "_build_qa_section_6_authenticity": "_build_qa_section_6_authenticity",
+    "_build_qa_section_7_overview_similarity": "_build_qa_section_7_overview_similarity",
+    "_build_qa_section_8_pairwise_similarity": "_build_qa_section_8_pairwise_similarity",
+    "_build_qa_section_9_pipeline_health": "_build_qa_section_9_pipeline_health",
+    "_build_qa_section_10_structural": "_build_qa_section_10_structural",
+    "_build_qa_section_11_prod_readiness": "_build_qa_section_11_prod_readiness",
+    "_build_qa_section_12_cover_letter": "_build_qa_section_12_cover_letter",
+    "_build_qa_section_13_jd_enforcement": "_build_qa_section_13_jd_enforcement",
+    "_build_qa_section_14_final_format": "_build_qa_section_14_final_format",
+    "_generate_qa_report": "_generate_qa_report",
+    "_format_ascii_bar_chart": "_format_ascii_bar_chart",
+    "_format_plain_text_table": "_format_plain_text_table",
+    "_wrap_cell_text": "_wrap_cell_text",
+    "_invoke_deduplication_analysis": "_invoke_deduplication_analysis",
+    "timeout_handler": "timeout_handler",
+    "main_phase1": "main_phase1",
+    "fallback_phase1": "fallback_phase1",
+    "main_phase2": "main_phase2",
+    "fallback_phase2": "fallback_phase2",
+    "main_phase3": "main_phase3",
+    "fallback_phase3": "fallback_phase3",
+    "main_phase4": "main_phase4",
+    "fallback_phase4": "fallback_phase4",
+    "_force_plain_types_for_cache": "_force_plain_types_for_cache",
+    "_manual_reconstruct": "_manual_reconstruct",
+    "_manual_reconstruct_nested": "_manual_reconstruct_nested",
+    "create_error_message_lambda": "create_error_message_lambda",
+    "default_serializer": "default_serializer"
+  },
+  "class_signatures": {
+    "ReasoningConfig": "ReasoningConfig",
+    "ContentConstraintsConfig": "ContentConstraintsConfig",
+    "SignalControlConfig": "SignalControlConfig",
+    "ThematicAnalysis": "ThematicAnalysis",
+    "ValidationSeverity": "ValidationSeverity",
+    "ValidationResult": "ValidationResult",
+    "ValidationRule": "ValidationRule",
+    "ValidationEngine": "ValidationEngine",
+    "JDEnforcementRule": "JDEnforcementRule",
+    "JDEnforcementResult": "JDEnforcementResult",
+    "JDEnforcementValidator": "JDEnforcementValidator",
+    "AppTrackerQAValidator": "AppTrackerQAValidator",
+    "BulletProvenance": "BulletProvenance",
+    "RAGConfig": "RAGConfig",
+    "CompetitiveAnalysisConfig": "CompetitiveAnalysisConfig",
+    "RAGMission": "RAGMission",
+    "CompetitiveIntelligence": "CompetitiveIntelligence",
+    "RetrievalSource": "RetrievalSource",
+    "CircuitState": "CircuitState",
+    "CircuitBreaker": "CircuitBreaker",
+    "CircuitBreakerOpenError": "CircuitBreakerOpenError",
+    "ResumeSection": "ResumeSection",
+    "PhaseTimeoutError": "PhaseTimeoutError",
+    "PhaseExecutor": "PhaseExecutor",
+    "PartialRAGResult": "PartialRAGResult",
+    "RAGTelemetry": "RAGTelemetry",
+    "TelemetryLogger": "TelemetryLogger",
+    "GeminiWebSearchClient": "GeminiWebSearchClient",
+    "JDCacheManager": "JDCacheManager",
+    "WebSearchRAG": "WebSearchRAG",
+    "EnhancedJobDescriptionAnalyzer": "EnhancedJobDescriptionAnalyzer",
+    "ClerkExtractor": "ClerkExtractor",
+    "HallucinationDetector": "HallucinationDetector",
+    "DataEnricher": "DataEnricher",
+    "VerbCanonicalizer": "VerbCanonicalizer",
+    "DuplicateDetector": "DuplicateDetector",
+    "ArtistGenerator": "ArtistGenerator",
+    "ImmutableStagingBuffer": "ImmutableStagingBuffer",
+    "TextSanitizer": "TextSanitizer",
+    "PreFlightValidator": "PreFlightValidator",
+    "GateDecisionEngine": "GateDecisionEngine",
+    "FileRenderer": "FileRenderer",
+    "WorkflowOrchestrator": "WorkflowOrchestrator",
+    "HopStatus": "HopStatus",
+    "HopCheckpoint": "HopCheckpoint",
+    "GateDecision": "GateDecision",
+    "HopExecutionError": "HopExecutionError",
+    "StagingBufferError": "StagingBufferError"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 840,
+    "cognitive_complexity": 616,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

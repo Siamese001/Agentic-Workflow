@@ -1,0 +1,44 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_vm_manager.py",
+    "file_hash": "cd51538d0ec9a905ffd290d42b2421660045f4248b94a9533ae0d3303a70caff",
+    "size_bytes": 421,
+    "last_modified": "2025-12-01T12:27:40.794088",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_run_in_ephemeral_vm_basic",
+      "line_number": 5,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ToolCallRequest",
+        "run_in_ephemeral_vm"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_infra.sandbox.models": [
+      "line_1"
+    ],
+    "from_infra.sandbox.vm_manager": [
+      "line_2"
+    ]
+  },
+  "function_signatures": {
+    "test_run_in_ephemeral_vm_basic": "test_run_in_ephemeral_vm_basic"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

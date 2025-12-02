@@ -1,0 +1,121 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag.py",
+    "file_hash": "254c1b5f638a754369979896f48e6d44fc27a555b9c0aeecee93087617865412",
+    "size_bytes": 4934,
+    "last_modified": "2025-12-01T12:27:41.231710",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_build_execution_stack",
+      "line_number": 9,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RAGExecutionStackV10_8"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAG_SearchAgent",
+      "line_number": 15,
+      "docstring": "Compatibility wrapper preserving the v10.7 stack interface.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 18,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super",
+        "_build_execution_stack"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_record_world_model_rag_run",
+      "line_number": 43,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_derive_query",
+      "line_number": 64,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_ensure_context_dependencies",
+      "line_number": 72,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "setattr",
+        "hasattr",
+        "getattr",
+        "SimpleNamespace"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_5"
+    ],
+    "from_types": [
+      "line_6"
+    ],
+    "from_core_v10_7.agents": [
+      "line_8"
+    ],
+    "from_agent_stacks_v10_8": [
+      "line_10"
+    ]
+  },
+  "function_signatures": {
+    "_build_execution_stack": "_build_execution_stack",
+    "__init__": "__init__",
+    "_record_world_model_rag_run": "_record_world_model_rag_run",
+    "_derive_query": "_derive_query",
+    "_ensure_context_dependencies": "_ensure_context_dependencies"
+  },
+  "class_signatures": {
+    "RAG_SearchAgent": "RAG_SearchAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 17,
+    "cognitive_complexity": 16,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

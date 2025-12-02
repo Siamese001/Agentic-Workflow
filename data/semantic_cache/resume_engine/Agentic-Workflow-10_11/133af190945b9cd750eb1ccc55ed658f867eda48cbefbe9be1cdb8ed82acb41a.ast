@@ -1,0 +1,53 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\pinned.py",
+    "file_hash": "133af190945b9cd750eb1ccc55ed658f867eda48cbefbe9be1cdb8ed82acb41a",
+    "size_bytes": 853,
+    "last_modified": "2025-12-01T12:27:38.654159",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PinnedItem",
+      "line_number": 12,
+      "docstring": "Represents pinned context item for r\u00e9sum\u00e9 processing.\n\nEnsures critical information is always included in r\u00e9sum\u00e9 improvement workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "filter_pinned",
+      "line_number": 23,
+      "docstring": "Filters pinned context items for r\u00e9sum\u00e9 processing workflows.\n\nEnsures optimal selection of essential information for r\u00e9sum\u00e9 improvement operations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_dataclasses": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "filter_pinned": "filter_pinned"
+  },
+  "class_signatures": {
+    "PinnedItem": "PinnedItem"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

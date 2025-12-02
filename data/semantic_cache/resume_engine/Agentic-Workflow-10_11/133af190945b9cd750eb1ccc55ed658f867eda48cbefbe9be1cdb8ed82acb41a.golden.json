@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nPinned context management for r\u00e9sum\u00e9 processing workflows.\nManages essential context items that ensure consistent r\u00e9sum\u00e9 improvement prompt generation.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import Any, Dict, List\n@dataclass\nclass PinnedItem:\n\"\"\"\nRepresents pinned context item for r\u00e9sum\u00e9 processing.\nEnsures critical information is always included in r\u00e9sum\u00e9 improvement workflows.\n\"\"\"\nid: str\ntext: str\nmetadata: Dict[str, Any]\ndef filter_pinned(items: List[PinnedItem], max_items: int) -> List[PinnedItem]:\n\"\"\"\nFilters pinned context items for r\u00e9sum\u00e9 processing workflows.\nEnsures optimal selection of essential information for r\u00e9sum\u00e9 improvement operations.\n\"\"\"\nif max_items <= 0:\nreturn []\nreturn items[:max_items]",
+  "normalized_signature": "func:filter_pinned;class:PinnedItem",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:filter_pinned",
+  "test_coverage": []
+}

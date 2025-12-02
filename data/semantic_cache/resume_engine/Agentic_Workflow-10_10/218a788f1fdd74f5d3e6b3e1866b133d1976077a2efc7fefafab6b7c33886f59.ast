@@ -1,0 +1,163 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\self_correction.py",
+    "file_hash": "218a788f1fdd74f5d3e6b3e1866b133d1976077a2efc7fefafab6b7c33886f59",
+    "size_bytes": 13020,
+    "last_modified": "2025-12-01T15:36:20.829645",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "CorrectionSignal",
+      "line_number": 56,
+      "docstring": "Correction signal emitted by a surface evaluator.\n\nFields:\n    surface           \u2013 logical domain (\"strategy\", \"rag\", \"drafting\", \"qa\", \"safety\").\n    severity          \u2013 0..3 (0 = none; 1 = mild; 2 = moderate; 3 = severe).\n    reason            \u2013 short human-readable explanation.\n    recommended_action \u2013 coarse-grained hint for L3 or meta-layer:\n                         \"retry_strategy\", \"retry_rag\", \"retry_drafting\",\n                         \"retry_qa\", \"retry_safety\", \"none\".",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_evaluate_strategy_surface",
+      "line_number": 85,
+      "docstring": "Inspect StrategyResult and decide whether the strategy surface needs correction.\n\nHeuristics (deterministic, non-LLM):\n\n    \u2022 If there are zero branches \u2192 severe issue \u2192 retry strategy.\n    \u2022 If chosen_branch_id is None or invalid:\n         \u2013 severity = 3 (severe)\n         \u2013 recommended_action = \"retry_strategy\"\n    \u2022 If chosen branch text is suspiciously short (e.g., < 40 chars):\n         \u2013 severity = 2 (moderate)\n         \u2013 recommended_action = \"retry_strategy\"\n    \u2022 Otherwise:\n         \u2013 severity = 0 (no correction)",
+      "imports": [],
+      "dependencies": [
+        "CorrectionSignal",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_evaluate_rag_surface",
+      "line_number": 142,
+      "docstring": "Inspect RAGResult evidence for retrieval/coverage issues.\n\nHeuristics:\n\n    \u2022 If no evidence at all:\n         \u2013 severity = 3\n         \u2013 recommended_action = \"retry_rag\"\n    \u2022 If evidence exists but is very small (< 3 items) AND none are marked\n      as \"hybrid\" or \"resume_experience\":\n         \u2013 severity = 2\n         \u2013 recommended_action = \"retry_rag\"\n    \u2022 Otherwise:\n         \u2013 severity = 0",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "CorrectionSignal",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_evaluate_drafting_surface",
+      "line_number": 192,
+      "docstring": "Inspect DraftingResult section structure.\n\nHeuristics:\n\n    \u2022 If zero sections, or total characters across sections < 400:\n         \u2013 severity = 3\n         \u2013 recommended_action = \"retry_drafting\"\n    \u2022 If < 3 sections:\n         \u2013 severity = 2\n         \u2013 recommended_action = \"retry_drafting\"\n    \u2022 Otherwise:\n         \u2013 severity = 0",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "CorrectionSignal",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_evaluate_qa_surface",
+      "line_number": 246,
+      "docstring": "Inspect QAResult for severity of findings.\n\nHeuristics:\n\n    \u2022 If there are \u2265 3 high-severity findings:\n         \u2013 severity = 3\n         \u2013 recommended_action = \"retry_qa\"\n    \u2022 If there are \u2265 5 total findings (any severity):\n         \u2013 severity = 2\n         \u2013 recommended_action = \"retry_qa\"\n    \u2022 Otherwise:\n         \u2013 severity = 0",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "CorrectionSignal",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_evaluate_safety_surface",
+      "line_number": 302,
+      "docstring": "Inspect SafetyResult for policy violations.\n\nHeuristics:\n\n    \u2022 Any \"high\" severity finding:\n         \u2013 severity = 3\n         \u2013 recommended_action = \"retry_safety\"\n    \u2022 \u2265 3 total findings of any severity:\n         \u2013 severity = 2\n         \u2013 recommended_action = \"retry_safety\"\n    \u2022 Otherwise:\n         \u2013 severity = 0",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "CorrectionSignal",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_all_surfaces",
+      "line_number": 356,
+      "docstring": "Evaluate all L2 surfaces and return a list of CorrectionSignal.\n\nThe list will contain one signal per surface:\n    [\"strategy\", \"rag\", \"drafting\", \"qa\", \"safety\"]\n\nEach signal may have severity 0..3 and a recommended_action.",
+      "imports": [],
+      "dependencies": [
+        "_evaluate_drafting_surface",
+        "_evaluate_rag_surface",
+        "_evaluate_safety_surface",
+        "_evaluate_strategy_surface",
+        "_evaluate_qa_surface"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "aggregate_correction_signals",
+      "line_number": 383,
+      "docstring": "Aggregate a list of CorrectionSignal into a single best signal.\n\nRules:\n\n    \u2022 Ignore all signals where needs_correction is False.\n    \u2022 If none need correction, return None.\n    \u2022 Otherwise, pick the signal with highest severity.\n    \u2022 If multiple share the highest severity, pick the first\n      in canonical order (strategy \u2192 rag \u2192 drafting \u2192 qa \u2192 safety).",
+      "imports": [],
+      "dependencies": [
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "needs_correction",
+      "line_number": 75,
+      "docstring": "Return True if this signal indicates that some correction is needed.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_36"
+    ],
+    "from_dataclasses": [
+      "line_38"
+    ],
+    "from_typing": [
+      "line_39"
+    ],
+    "from_models": [
+      "line_41"
+    ]
+  },
+  "function_signatures": {
+    "_evaluate_strategy_surface": "_evaluate_strategy_surface",
+    "_evaluate_rag_surface": "_evaluate_rag_surface",
+    "_evaluate_drafting_surface": "_evaluate_drafting_surface",
+    "_evaluate_qa_surface": "_evaluate_qa_surface",
+    "_evaluate_safety_surface": "_evaluate_safety_surface",
+    "evaluate_all_surfaces": "evaluate_all_surfaces",
+    "aggregate_correction_signals": "aggregate_correction_signals",
+    "needs_correction": "needs_correction"
+  },
+  "class_signatures": {
+    "CorrectionSignal": "CorrectionSignal"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 18,
+    "cognitive_complexity": 17,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

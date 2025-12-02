@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict, List\nfrom core.models.models import TelemetryEvent\n_telemetry_buffer: List[TelemetryEvent] = []\n_span_stack: List[Dict[str, Any]] = []\ndef append_event(evt: TelemetryEvent) -> None:\n\"\"\"Append a telemetry event to the in-memory buffer.\"\"\"\n_telemetry_buffer.append(evt)\ndef get_events() -> List[TelemetryEvent]:\n\"\"\"Return a shallow copy of the telemetry buffer.\"\"\"\nreturn list(_telemetry_buffer)\ndef clear_events() -> None:\n\"\"\"Clear all telemetry events and open spans (primarily for tests).\"\"\"\n_telemetry_buffer.clear()\n_span_stack.clear()\ndef push_span(record: Dict[str, Any]) -> None:\n\"\"\"Push a span record onto the span stack.\"\"\"\n_span_stack.append(record)\ndef pop_span(record: Dict[str, Any]) -> None:\n\"\"\"Remove a span record from the span stack if present.\"\"\"\nif record in _span_stack:\n_span_stack.remove(record)\ndef span_stack() -> List[Dict[str, Any]]:\n\"\"\"Return the internal span stack (for inspection-only).\"\"\"\nreturn _span_stack",
+  "normalized_signature": "func:append_event;func:get_events;func:clear_events;func:push_span;func:pop_span;func:span_stack",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:append_event,get_events,clear_events,push_span,pop_span,span_stack",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

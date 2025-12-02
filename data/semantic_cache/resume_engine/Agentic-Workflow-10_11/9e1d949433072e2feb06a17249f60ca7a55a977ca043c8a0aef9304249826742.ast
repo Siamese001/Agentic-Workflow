@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\root_docs\\testing\\setup_validation_report.md",
+    "file_hash": "9e1d949433072e2feb06a17249f60ca7a55a977ca043c8a0aef9304249826742",
+    "size_bytes": 3316,
+    "last_modified": "2025-12-01T12:27:38.984515",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".md"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

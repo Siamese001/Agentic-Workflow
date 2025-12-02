@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"RAG simulation models.\"\"\"\nfrom typing import List\nfrom pydantic import BaseModel\nfrom .simulation_base import SimulationInput, SimulationResult\nclass RAGSimRequest(SimulationInput):\n\"\"\"Input payload for RAG simulation.\"\"\"\nquery: str\ndocuments: List[str]\nclass RAGSimMetrics(BaseModel):\n\"\"\"Metrics produced by the RAG simulation.\"\"\"\nrecall: float\nprecision: float\nredundancy: float\nclass RAGSimResult(SimulationResult):\n\"\"\"Result model for RAG simulations.\"\"\"\npass",
+  "normalized_signature": "class:RAGSimRequest;class:RAGSimMetrics;class:RAGSimResult",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

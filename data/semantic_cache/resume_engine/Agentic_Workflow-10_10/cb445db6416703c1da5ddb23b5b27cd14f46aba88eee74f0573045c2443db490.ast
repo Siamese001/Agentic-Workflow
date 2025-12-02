@@ -1,0 +1,92 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\l2.py",
+    "file_hash": "cb445db6416703c1da5ddb23b5b27cd14f46aba88eee74f0573045c2443db490",
+    "size_bytes": 18053,
+    "last_modified": "2025-12-01T15:36:20.755092",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_safe_getattr",
+      "line_number": 66,
+      "docstring": "Small helper to avoid AttributeError noise in business logic.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_base_query",
+      "line_number": 74,
+      "docstring": "Build a retrieval query string from the in-memory job + resume.\n\nThis is intentionally deterministic and side-effect free; all actual\nretrieval / ranking is handled inside retrieval.run_rag_retrieval.",
+      "imports": [],
+      "dependencies": [
+        "_safe_getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_compute_council_vote_from_qa",
+      "line_number": 107,
+      "docstring": "Derive a lightweight CouncilVote from QA findings.\n\nThis provides a deterministic, non-LLM fallback that can be consumed\nby downstream layers (L5, retrieval weighting) even if the dedicated\nQACouncilAgent / LLM path is unavailable or fails.\n\nHeuristic:\n    \u2022 Count findings by severity.\n    \u2022 Select an overall verdict id:\n          \u2013 \"block\" if any high-severity finding exists.\n          \u2013 \"warn\" if only medium findings exist.\n          \u2013 \"pass\" otherwise.\n    \u2022 Encode simple scores in the CouncilVote.scores map.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "getattr",
+        "len",
+        "list",
+        "CouncilVote",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_26"
+    ],
+    "asyncio": [
+      "line_28"
+    ],
+    "from_typing": [
+      "line_29"
+    ],
+    "from_models": [
+      "line_31"
+    ],
+    "from_observability": [
+      "line_48"
+    ],
+    "from_retrieval": [
+      "line_49"
+    ],
+    "from_prompt_builder": [
+      "line_50"
+    ],
+    "from_cognitive_agents": [
+      "line_51"
+    ]
+  },
+  "function_signatures": {
+    "_safe_getattr": "_safe_getattr",
+    "_build_base_query": "_build_base_query",
+    "_compute_council_vote_from_qa": "_compute_council_vote_from_qa"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 22,
+    "cognitive_complexity": 12,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

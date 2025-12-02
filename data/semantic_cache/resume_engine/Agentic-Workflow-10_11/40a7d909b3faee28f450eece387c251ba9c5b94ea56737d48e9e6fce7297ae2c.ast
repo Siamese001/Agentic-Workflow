@@ -1,0 +1,59 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\update_imports_reorganization.py",
+    "file_hash": "40a7d909b3faee28f450eece387c251ba9c5b94ea56737d48e9e6fce7297ae2c",
+    "size_bytes": 7743,
+    "last_modified": "2025-12-01T12:27:37.829143",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "fix_file",
+      "line_number": 123,
+      "docstring": "Fix imports in a single file. Returns True if changes were made.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 145,
+      "docstring": "Fix all Python files in the repository.",
+      "imports": [],
+      "dependencies": [
+        "fix_file",
+        "any",
+        "len",
+        "str",
+        "print",
+        "sorted"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_pathlib": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {
+    "fix_file": "fix_file",
+    "main": "main"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 13,
+    "cognitive_complexity": 6,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

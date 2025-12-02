@@ -1,0 +1,270 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\emitters.py",
+    "file_hash": "3db4696d1efdd5323c70bf696f6a89c4f7a1457d775535efd7ef8cb46568f453",
+    "size_bytes": 6060,
+    "last_modified": "2025-12-01T12:27:37.769134",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "emit_node_event",
+      "line_number": 17,
+      "docstring": "Node-level events for L3 orchestration visibility.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "TelemetryEvent",
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_telemetry_event",
+      "line_number": 33,
+      "docstring": "General-purpose event emission for arbitrary telemetry use cases.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "TelemetryEvent",
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_exception",
+      "line_number": 45,
+      "docstring": "Emit an error-level telemetry event for exceptions.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "str",
+        "TelemetryEvent",
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_event",
+      "line_number": 60,
+      "docstring": "Convenience wrapper so infra code can emit generic events.",
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_exception",
+      "line_number": 66,
+      "docstring": "Convenience wrapper mirroring log_exception for infra code.",
+      "imports": [],
+      "dependencies": [
+        "log_exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_retrieval_attempt",
+      "line_number": 72,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_retrieval_success",
+      "line_number": 76,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_retrieval_failure",
+      "line_number": 80,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_ranking_event",
+      "line_number": 84,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_cost_snapshot",
+      "line_number": 88,
+      "docstring": "Emit a cost snapshot event used by L2 after completion.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "TelemetryEvent",
+        "append_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_resilience_event",
+      "line_number": 103,
+      "docstring": "Generic entrypoint for resilience-related telemetry events.",
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_golden_eval_event",
+      "line_number": 109,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_scenario_simulation_event",
+      "line_number": 141,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_scenario_start_event",
+      "line_number": 162,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_scenario_end_event",
+      "line_number": 179,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_council_arbitration_event",
+      "line_number": 198,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_resilience_trace_event",
+      "line_number": 215,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "emit_resilience_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_core.models.models": [
+      "line_5"
+    ],
+    "from_runtime.observability.collectors": [
+      "line_13"
+    ],
+    "from_runtime.observability.spans": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "emit_node_event": "emit_node_event",
+    "emit_telemetry_event": "emit_telemetry_event",
+    "log_exception": "log_exception",
+    "record_event": "record_event",
+    "record_exception": "record_exception",
+    "emit_retrieval_attempt": "emit_retrieval_attempt",
+    "emit_retrieval_success": "emit_retrieval_success",
+    "emit_retrieval_failure": "emit_retrieval_failure",
+    "emit_ranking_event": "emit_ranking_event",
+    "emit_cost_snapshot": "emit_cost_snapshot",
+    "emit_resilience_event": "emit_resilience_event",
+    "emit_golden_eval_event": "emit_golden_eval_event",
+    "emit_scenario_simulation_event": "emit_scenario_simulation_event",
+    "emit_scenario_start_event": "emit_scenario_start_event",
+    "emit_scenario_end_event": "emit_scenario_end_event",
+    "emit_council_arbitration_event": "emit_council_arbitration_event",
+    "emit_resilience_trace_event": "emit_resilience_trace_event"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 5,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

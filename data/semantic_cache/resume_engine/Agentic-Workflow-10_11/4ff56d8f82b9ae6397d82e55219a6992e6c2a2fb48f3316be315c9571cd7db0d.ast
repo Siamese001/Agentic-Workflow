@@ -1,0 +1,58 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\health\\health_metrics.py",
+    "file_hash": "4ff56d8f82b9ae6397d82e55219a6992e6c2a2fb48f3316be315c9571cd7db0d",
+    "size_bytes": 990,
+    "last_modified": "2025-12-01T12:27:38.002087",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "compute_error_rate",
+      "line_number": 12,
+      "docstring": "Return fraction of events marked as errors.\n\nEvents are dicts with an optional \"event_type\" == \"error\" flag.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_failures_by_code",
+      "line_number": 25,
+      "docstring": "Aggregate error events by their error_code field.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {
+    "compute_error_rate": "compute_error_rate",
+    "count_failures_by_code": "count_failures_by_code"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

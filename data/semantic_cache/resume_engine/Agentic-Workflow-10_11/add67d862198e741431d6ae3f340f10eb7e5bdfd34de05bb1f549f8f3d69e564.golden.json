@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nDAG node model for r\u00e9sum\u00e9 processing workflow orchestration.\nProvides agent-aware node definitions for comprehensive r\u00e9sum\u00e9 improvement operations.\n\"\"\"\nfrom typing import Any, Dict, List, Optional\nfrom pydantic import BaseModel, Field\nclass DAGNode(BaseModel):\n\"\"\"\nRepresents agent-aware DAG node for r\u00e9sum\u00e9 processing workflows.\nDefines declarative node structure for optimal r\u00e9sum\u00e9 enhancement orchestration.\n\"\"\"\nid: str\ntype: str\ninputs: List[str] = Field(default_factory=list)\noutputs: List[str] = Field(default_factory=list)\nconfig: Dict[str, Any] = Field(default_factory=dict)\nagent_type: Optional[str] = None\nrequired_capabilities: List[str] = Field(default_factory=list)\npreferred_agent_ids: List[str] = Field(default_factory=list)",
+  "normalized_signature": "class:DAGNode",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

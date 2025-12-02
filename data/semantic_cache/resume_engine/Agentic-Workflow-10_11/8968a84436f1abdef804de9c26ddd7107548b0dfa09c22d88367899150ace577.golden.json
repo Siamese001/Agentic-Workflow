@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\n\"\"\"Facade for the safety control-plane orchestration layer.\nThis package re-exports the existing infra.control_plane primitives so\ncallers can depend on a stable ``orchestration.control_plane``\nnamespace without changing the underlying implementation.\n\"\"\"\nfrom infra.control_plane.models import SafetyContext, PolicyRule, PolicyDecision # noqa: F401\nfrom infra.control_plane.decisions import RulesEngineResult, RuleMatch # noqa: F401\nfrom infra.control_plane.rules_engine import evaluate_rules # noqa: F401\nfrom infra.control_plane.judge_engine import evaluate_with_guard_model # noqa: F401\nfrom infra.control_plane.control_plane import run_safety_pipeline # noqa: F401\n__all__ = [\n\"SafetyContext\",\n\"PolicyRule\",\n\"PolicyDecision\",\n\"RulesEngineResult\",\n\"RuleMatch\",\n\"evaluate_rules\",\n\"evaluate_with_guard_model\",\n\"run_safety_pipeline\",\n]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

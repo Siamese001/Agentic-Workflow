@@ -1,0 +1,49 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\core\\agent_router_policy.py",
+    "file_hash": "163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051",
+    "size_bytes": 1094,
+    "last_modified": "2025-12-01T12:27:37.897149",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "choose_agents_for_task",
+      "line_number": 11,
+      "docstring": "Chooses agents for a given task type so planning, retrieval, drafting, QA, and safety work are handled by specialists, leading to clearer, more relevant, and safer resumes.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_config.agent_profile": [
+      "line_5"
+    ],
+    "from_orchestration.agent_registry": [
+      "line_6"
+    ]
+  },
+  "function_signatures": {
+    "choose_agents_for_task": "choose_agents_for_task"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

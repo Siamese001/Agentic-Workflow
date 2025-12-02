@@ -1,0 +1,139 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\workflow_context(1).py",
+    "file_hash": "32dd99624ed360db5dc1d2fc0456c46b58350c1f4e2c1efda69bf3547c2524e2",
+    "size_bytes": 10599,
+    "last_modified": "2025-12-01T12:27:40.890010",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RetryConfig",
+      "line_number": 28,
+      "docstring": "Configuration for retrying failed operations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NodeExecutionConfig",
+      "line_number": 42,
+      "docstring": "Configuration for executing a single node.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowContext",
+      "line_number": 50,
+      "docstring": "Execution-scoped context integrating L3, L4, and L5.\n\nResponsibilities:\n- Coordinate node execution with retries and timeouts.\n- Capture L4 snapshots before/after each node.\n- Invoke L5 safety for node outputs.\n- Produce a `DAGResult` view over the run.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_delay",
+      "line_number": 36,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 60,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_error_handler",
+      "line_number": 79,
+      "docstring": "Register an async handler for a given exception type.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_dag_result",
+      "line_number": 270,
+      "docstring": "Materialize a `DAGResult` snapshot for this workflow.",
+      "imports": [],
+      "dependencies": [
+        "DAGResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_2"
+    ],
+    "asyncio": [
+      "line_4"
+    ],
+    "from_dataclasses": [
+      "line_5"
+    ],
+    "from_datetime": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_l4.manager": [
+      "line_9"
+    ],
+    "from_l4.types": [
+      "line_10"
+    ],
+    "from_l5": [
+      "line_11"
+    ],
+    "from_l5.types": [
+      "line_12"
+    ],
+    "from_errors": [
+      "line_14"
+    ],
+    "from_models.dag_models": [
+      "line_21"
+    ]
+  },
+  "function_signatures": {
+    "get_delay": "get_delay",
+    "__init__": "__init__",
+    "add_error_handler": "add_error_handler",
+    "create_dag_result": "create_dag_result"
+  },
+  "class_signatures": {
+    "RetryConfig": "RetryConfig",
+    "NodeExecutionConfig": "NodeExecutionConfig",
+    "WorkflowContext": "WorkflowContext"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 16,
+    "cognitive_complexity": 8,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

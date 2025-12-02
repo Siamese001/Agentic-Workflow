@@ -3,7 +3,7 @@ L5 Agentic Core - Plan Layer - prepare_runtime_orchestration
 Implements L1 Cognitive Planning Layer for prepare runtime orchestration operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

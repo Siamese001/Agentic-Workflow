@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from core.models.models import ExecutionProfile, RetrievalConfig\nfrom eval.golden_state.runner import run_all_golden_tests\ndef test_run_all_golden_tests_returns_results():\nprofile = ExecutionProfile(\nname=\"TEST\",\ndescription=\"test profile\",\nretrieval=RetrievalConfig(),\nmetadata={},\n)\nresults = run_all_golden_tests(profile)\nassert results\nids = {r.test_id for r in results}\nassert \"gs_basic_1\" in ids\nassert \"gs_safety_1\" in ids",
+  "normalized_signature": "func:test_run_all_golden_tests_returns_results",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_run_all_golden_tests_returns_results",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

@@ -1,0 +1,72 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\control_plane\\models.py",
+    "file_hash": "695ac0ba75ebf4526b33e7cbf538f1b8e150908e9ed8f2c049a881d2b7ad34d0",
+    "size_bytes": 2632,
+    "last_modified": "2025-12-01T12:27:38.701363",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SafetyContext",
+      "line_number": 14,
+      "docstring": "Provides safety context for r\u00e9sum\u00e9 processing control plane operations.\n\nEnsures secure and compliant execution of comprehensive r\u00e9sum\u00e9 enhancement workflows.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PolicyRule",
+      "line_number": 38,
+      "docstring": "Defines policy rule for r\u00e9sum\u00e9 processing safety enforcement.\n\nEnables systematic safety validation for comprehensive r\u00e9sum\u00e9 improvement operations.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PolicyDecision",
+      "line_number": 66,
+      "docstring": "Represents final safety decision for r\u00e9sum\u00e9 processing workflows.\n\nProvides structured control-plane outcomes for comprehensive r\u00e9sum\u00e9 enhancement operations.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_7"
+    ],
+    "from_pydantic": [
+      "line_9"
+    ],
+    "from_core.models.models": [
+      "line_11"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "SafetyContext": "SafetyContext",
+    "PolicyRule": "PolicyRule",
+    "PolicyDecision": "PolicyDecision"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,705 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\00_hop_rag_v1_3.py",
+    "file_hash": "500b952f115318c64a1e9a2aec5108ce93e25089ca53bfdea1ce2236c3c3cf36",
+    "size_bytes": 35022,
+    "last_modified": "2025-12-01T12:27:36.417845",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ThematicAnalysis",
+      "line_number": 39,
+      "docstring": "Represents the final output of the RAG analysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGCritique",
+      "line_number": 61,
+      "docstring": "Output of the LLM-powered critique step.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGState",
+      "line_number": 70,
+      "docstring": "Manages the state of the agentic RAG loop.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGConfig",
+      "line_number": 89,
+      "docstring": "Configuration for RAG operations with circuit breaker settings",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGMission",
+      "line_number": 113,
+      "docstring": "Mission context extracted from pre-RAG analysis",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitBreaker",
+      "line_number": 124,
+      "docstring": "v1.3: Full circuit breaker implementation for resilient RAG operations.\nTracks failures and transitions between CLOSED, OPEN, and HALF_OPEN states.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PhaseExecutor",
+      "line_number": 192,
+      "docstring": "v1.3: Phase execution with retry logic",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GeminiWebSearchClient",
+      "line_number": 212,
+      "docstring": "Mock Gemini client with circuit breaker (v1.3 enhanced)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WebSearchRAG",
+      "line_number": 256,
+      "docstring": "v1.1: This class is now a \"dumb\" executor. It just runs the LLM calls.\nThe orchestration logic is in EnhancedJobDescriptionAnalyzer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EmbeddingClient",
+      "line_number": 316,
+      "docstring": "Mock EmbeddingClient for semantic analysis",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SemanticCacheManager",
+      "line_number": 330,
+      "docstring": "Mock semantic cache manager",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TelemetryLogger",
+      "line_number": 348,
+      "docstring": "Placeholder for telemetry logging",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EnhancedJobDescriptionAnalyzer",
+      "line_number": 356,
+      "docstring": "v1.1/v1.3: Agentic Orchestrator with Circuit Breaker Integration.\nManages the RAGState and executes the Execute-Critique-Replan loop.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_hop_0",
+      "line_number": 654,
+      "docstring": "Executes the HOP-0 RAG analysis logic with circuit breaker.",
+      "imports": [],
+      "dependencies": [
+        "EmbeddingClient",
+        "default_serializer",
+        "setup_workflow_logging",
+        "getattr",
+        "RAGConfig",
+        "SemanticCacheManager",
+        "exit",
+        "HopExecutionError",
+        "print",
+        "open",
+        "EnhancedJobDescriptionAnalyzer",
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "from_dict",
+      "line_number": 50,
+      "docstring": "Mock static method for reconstruction",
+      "imports": [],
+      "dependencies": [
+        "ThematicAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_latest_evidence",
+      "line_number": 77,
+      "docstring": "Helper to format evidence for the next prompt.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 129,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "call",
+      "line_number": 137,
+      "docstring": "Execute function with circuit breaker protection",
+      "imports": [],
+      "dependencies": [
+        "func",
+        "HopExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_on_success",
+      "line_number": 157,
+      "docstring": "Handle successful operation",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_on_failure",
+      "line_number": 167,
+      "docstring": "Handle failed operation",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_should_attempt_reset",
+      "line_number": 183,
+      "docstring": "Check if enough time has passed to attempt recovery",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 194,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_with_retry",
+      "line_number": 198,
+      "docstring": "Execute phase with retry logic",
+      "imports": [],
+      "dependencies": [
+        "func",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 214,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CircuitBreaker"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "search_and_analyze",
+      "line_number": 220,
+      "docstring": "Execute search with circuit breaker protection",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 261,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_client",
+      "line_number": 266,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase1_thematic_research",
+      "line_number": 270,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase2_authenticity_patterns",
+      "line_number": 275,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase3_competitive_positioning",
+      "line_number": 279,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "phase4_narrative_mining",
+      "line_number": 284,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "adversarial_verification_step",
+      "line_number": 289,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "critique_step_output",
+      "line_number": 294,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_refinement_step",
+      "line_number": 312,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 318,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "embed",
+      "line_number": 322,
+      "docstring": "Generate mock embedding",
+      "imports": [],
+      "dependencies": [
+        "hash"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 332,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 336,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 340,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_verify_cache",
+      "line_number": 344,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 350,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log",
+      "line_number": 353,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 361,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "GeminiWebSearchClient",
+        "WebSearchRAG",
+        "RAGConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "analyze",
+      "line_number": 380,
+      "docstring": "v1.1/v1.3: Main orchestration entry point with circuit breaker protection.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_pre_rag_analysis",
+      "line_number": 415,
+      "docstring": "Simplified mock pre-rag (from v1.0).",
+      "imports": [],
+      "dependencies": [
+        "RAGMission"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_with_agentic_orchestration",
+      "line_number": 432,
+      "docstring": "v1.1: Implements the Execute -> Store -> Critique -> Re-plan loop.",
+      "imports": [],
+      "dependencies": [
+        "ThematicAnalysis",
+        "RAGState",
+        "RAGCritique",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_store_evidence",
+      "line_number": 530,
+      "docstring": "Helper to store phase results in the evidence log and update analysis.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_phase_with_consensus",
+      "line_number": 557,
+      "docstring": "v1.1/v1.3: Runs a phase function across multiple models and finds consensus.\n'model_args' is the list of args *before* model_name.",
+      "imports": [],
+      "dependencies": [
+        "phase_func",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_find_consensus",
+      "line_number": 580,
+      "docstring": "Placeholder logic to merge results from multiple models.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_synthesize_final_analysis",
+      "line_number": 597,
+      "docstring": "v1.1: Consolidates all post-processing and synthesis steps.",
+      "imports": [],
+      "dependencies": [
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_and_analyze_graph",
+      "line_number": 624,
+      "docstring": "Placeholder for Graph-RAG synthesis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_constitutional_constraints",
+      "line_number": 639,
+      "docstring": "Placeholder for applying hard-coded safety filters.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dict_to_thematic_analysis",
+      "line_number": 648,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute",
+      "line_number": 222,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "argparse": [
+      "line_10"
+    ],
+    "json": [
+      "line_11"
+    ],
+    "logging": [
+      "line_12"
+    ],
+    "os": [
+      "line_13"
+    ],
+    "sys": [
+      "line_14"
+    ],
+    "time": [
+      "line_15"
+    ],
+    "from_dataclasses": [
+      "line_16"
+    ],
+    "from_datetime": [
+      "line_17"
+    ],
+    "from_pathlib": [
+      "line_18"
+    ],
+    "from_typing": [
+      "line_19"
+    ],
+    "networkx": [
+      "line_22"
+    ],
+    "numpy": [
+      "line_23"
+    ],
+    "from_helpers": [
+      "line_30"
+    ]
+  },
+  "function_signatures": {
+    "run_hop_0": "run_hop_0",
+    "from_dict": "from_dict",
+    "get_latest_evidence": "get_latest_evidence",
+    "__init__": "__init__",
+    "call": "call",
+    "_on_success": "_on_success",
+    "_on_failure": "_on_failure",
+    "_should_attempt_reset": "_should_attempt_reset",
+    "execute_with_retry": "execute_with_retry",
+    "search_and_analyze": "search_and_analyze",
+    "_get_client": "_get_client",
+    "phase1_thematic_research": "phase1_thematic_research",
+    "phase2_authenticity_patterns": "phase2_authenticity_patterns",
+    "phase3_competitive_positioning": "phase3_competitive_positioning",
+    "phase4_narrative_mining": "phase4_narrative_mining",
+    "adversarial_verification_step": "adversarial_verification_step",
+    "critique_step_output": "critique_step_output",
+    "run_refinement_step": "run_refinement_step",
+    "embed": "embed",
+    "get": "get",
+    "set": "set",
+    "_verify_cache": "_verify_cache",
+    "log": "log",
+    "analyze": "analyze",
+    "_execute_pre_rag_analysis": "_execute_pre_rag_analysis",
+    "_analyze_with_agentic_orchestration": "_analyze_with_agentic_orchestration",
+    "_store_evidence": "_store_evidence",
+    "_execute_phase_with_consensus": "_execute_phase_with_consensus",
+    "_find_consensus": "_find_consensus",
+    "_synthesize_final_analysis": "_synthesize_final_analysis",
+    "_build_and_analyze_graph": "_build_and_analyze_graph",
+    "_apply_constitutional_constraints": "_apply_constitutional_constraints",
+    "_dict_to_thematic_analysis": "_dict_to_thematic_analysis",
+    "_execute": "_execute"
+  },
+  "class_signatures": {
+    "ThematicAnalysis": "ThematicAnalysis",
+    "RAGCritique": "RAGCritique",
+    "RAGState": "RAGState",
+    "RAGConfig": "RAGConfig",
+    "RAGMission": "RAGMission",
+    "CircuitBreaker": "CircuitBreaker",
+    "PhaseExecutor": "PhaseExecutor",
+    "GeminiWebSearchClient": "GeminiWebSearchClient",
+    "WebSearchRAG": "WebSearchRAG",
+    "EmbeddingClient": "EmbeddingClient",
+    "SemanticCacheManager": "SemanticCacheManager",
+    "TelemetryLogger": "TelemetryLogger",
+    "EnhancedJobDescriptionAnalyzer": "EnhancedJobDescriptionAnalyzer"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 54,
+    "cognitive_complexity": 37,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

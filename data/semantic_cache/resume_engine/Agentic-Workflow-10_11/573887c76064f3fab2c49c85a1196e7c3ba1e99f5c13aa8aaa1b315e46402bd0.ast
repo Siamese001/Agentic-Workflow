@@ -1,0 +1,145 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\storage\\vector_store_chroma.py",
+    "file_hash": "573887c76064f3fab2c49c85a1196e7c3ba1e99f5c13aa8aaa1b315e46402bd0",
+    "size_bytes": 4729,
+    "last_modified": "2025-12-01T12:27:38.506427",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ChromaNotConfiguredError",
+      "line_number": 25,
+      "docstring": "Raised when Chroma usage is requested but not configured/enabled.",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ChromaClientError",
+      "line_number": 29,
+      "docstring": "Raised when the underlying Chroma client cannot be created or used.",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ChromaConfig",
+      "line_number": 34,
+      "docstring": "Configuration for connecting to a ChromaDB instance.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_import_chromadb",
+      "line_number": 42,
+      "docstring": "Import the chromadb package using provider isolation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "init_chroma_client",
+      "line_number": 48,
+      "docstring": "Initialise a Chroma client and return (client, collection).",
+      "imports": [],
+      "dependencies": [
+        "ChromaClientError",
+        "_import_chromadb",
+        "bool",
+        "ChromaNotConfiguredError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "chroma_hybrid_search",
+      "line_number": 81,
+      "docstring": "Run a hybrid (dense + lexical) search over a Chroma collection.\n\nThis is a thin wrapper around ``collection.query``. It returns the\nraw Chroma response so that higher layers can adapt it into Evidence\nobjects or other structures.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "ChromaClientError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "chroma_semantic_cache_lookup",
+      "line_number": 107,
+      "docstring": "Look up cached results from a Chroma collection.\n\nThis is a thin wrapper around ``collection.query`` for semantic cache lookups.\nReturns the raw Chroma response.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "ChromaClientError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "chroma_semantic_cache_upsert",
+      "line_number": 130,
+      "docstring": "Upsert documents into a Chroma collection for semantic caching.\n\nThe caller is responsible for providing stable IDs and any metadata\nrequired to later filter or interpret cached entries.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "ChromaClientError",
+        "ValueError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_19"
+    ],
+    "from_dataclasses": [
+      "line_21"
+    ],
+    "from_typing": [
+      "line_22"
+    ],
+    "from_providers.chromadb_client": [
+      "line_44"
+    ]
+  },
+  "function_signatures": {
+    "_import_chromadb": "_import_chromadb",
+    "init_chroma_client": "init_chroma_client",
+    "chroma_hybrid_search": "chroma_hybrid_search",
+    "chroma_semantic_cache_lookup": "chroma_semantic_cache_lookup",
+    "chroma_semantic_cache_upsert": "chroma_semantic_cache_upsert"
+  },
+  "class_signatures": {
+    "ChromaNotConfiguredError": "ChromaNotConfiguredError",
+    "ChromaClientError": "ChromaClientError",
+    "ChromaConfig": "ChromaConfig"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 10,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

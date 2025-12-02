@@ -1,0 +1,323 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\workflow_planning.py",
+    "file_hash": "aeb28faf53b82c4555a77ba6bf380c887609d68121a8cd948f4a1f60dfb26c14",
+    "size_bytes": 26475,
+    "last_modified": "2025-12-01T12:27:38.271424",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_normalize_text",
+      "line_number": 52,
+      "docstring": "Normalizes text input for consistent resume processing.\n\nEnsures clean text data for accurate resume analysis\nand improved quality planning.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_job_text",
+      "line_number": 64,
+      "docstring": "Aggregates job description fields for resume analysis.\n\nEnsures comprehensive job data for accurate resume\nmatching and improved job alignment.",
+      "imports": [],
+      "dependencies": [
+        "_normalize_text"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_resume_text",
+      "line_number": 86,
+      "docstring": "Aggregates resume content for job matching analysis.\n\nConsolidates all resume sections to ensure comprehensive\ncoverage of skills and experience for optimal alignment.",
+      "imports": [],
+      "dependencies": [
+        "_normalize_text",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_map_meta_profile_to_routing_hint",
+      "line_number": 122,
+      "docstring": "Converts meta-profile into routing configuration.\n\nEnsures optimal model selection based on user preferences\nand resume requirements for better applications.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_prompt_meta",
+      "line_number": 151,
+      "docstring": "Builds prompt metadata from execution profiles.\n\nCreates structured prompt planning data for consistent\nresume improvement workflows and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "PromptMeta"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_seniority",
+      "line_number": 210,
+      "docstring": "Infers career seniority from job and resume content.\n\nDetermines experience level to tailor resume improvements\nappropriately for optimal job alignment.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_domains",
+      "line_number": 235,
+      "docstring": "Identifies professional domains from job and resume content.\n\nEnsures resume improvements target specific industry requirements\nfor better alignment and job matching.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "any",
+        "sorted"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_skill_clusters",
+      "line_number": 262,
+      "docstring": "Groups related skills from job and resume analysis.\n\nCreates skill clusters to guide comprehensive resume enhancement\nstrategies for better job alignment.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "any",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_profile_inference",
+      "line_number": 287,
+      "docstring": "Analyzes career profile from job and resume content.\n\nGenerates comprehensive profile insights for targeted\nresume optimization and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "ProfileInferenceResult",
+        "SeniorityClassifierResult",
+        "_infer_domains",
+        "SkillClusterResult",
+        "_infer_skill_clusters",
+        "_infer_seniority",
+        "DomainClassifierResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_classify_complexity",
+      "line_number": 335,
+      "docstring": "Determines processing complexity from content analysis.\n\nEnsures appropriate resource allocation for optimal resume\nimprovement quality and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_choose_reasoning_mode",
+      "line_number": 373,
+      "docstring": "Selects optimal reasoning approach for resume analysis.\n\nAdapts processing strategy based on user preferences\nand content complexity for better job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_to_execution_profile",
+      "line_number": 397,
+      "docstring": "Converts configuration spec into execution profile.\n\nCreates structured workflow settings for consistent resume\nimprovement processing and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionProfile"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_strategy_plan",
+      "line_number": 431,
+      "docstring": "Creates comprehensive resume improvement strategy plan.\n\nOutlines systematic approach to enhance resume alignment\nwith job requirements for better applications.",
+      "imports": [],
+      "dependencies": [
+        "StrategyPlan",
+        "StrategyStep"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_rag_plan",
+      "line_number": 507,
+      "docstring": "Builds retrieval plan for evidence gathering.\n\nEnsures comprehensive search strategy to support resume\nimprovement with relevant data for job alignment.",
+      "imports": [],
+      "dependencies": [
+        "RAGQueryHint",
+        "min",
+        "RAGPlan",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_drafting_mode",
+      "line_number": 572,
+      "docstring": "Chooses drafting mode for resume content creation.\n\nEnsures resume format matches expectations for target\nseniority level and job requirements.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_drafting_plan",
+      "line_number": 593,
+      "docstring": "Builds section-by-section resume drafting plan.\n\nOrganizes resume structure to ensure comprehensive coverage\nof all key areas for optimal job alignment.",
+      "imports": [],
+      "dependencies": [
+        "_select_drafting_mode",
+        "DraftSectionPlan",
+        "DraftingPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_plan",
+      "line_number": 664,
+      "docstring": "Builds quality assurance plan for resume validation.\n\nDefines comprehensive checks to ensure resume accuracy,\nrelevance, and credibility for better applications.",
+      "imports": [],
+      "dependencies": [
+        "QAPlan",
+        "int",
+        "getattr",
+        "QACheck"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_safety_plan",
+      "line_number": 744,
+      "docstring": "Builds safety validation plan for resume compliance.\n\nEnsures resume content meets privacy and policy standards\nto protect user data and credibility for better applications.",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "getattr",
+        "SafetyCheck",
+        "SafetyPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_workflow_plan_bundle",
+      "line_number": 807,
+      "docstring": "Creates comprehensive workflow plan for resume optimization.\n\nCoordinates strategy, retrieval, drafting, QA, and safety planning\nfor systematic improvement and better job alignment.",
+      "imports": [],
+      "dependencies": [
+        "_to_execution_profile",
+        "RoutingHint",
+        "get_profile",
+        "_extract_job_text",
+        "_build_safety_plan",
+        "_build_rag_plan",
+        "WorkflowPlanBundle",
+        "_choose_reasoning_mode",
+        "_map_meta_profile_to_routing_hint",
+        "_build_prompt_meta",
+        "_build_qa_plan",
+        "_run_profile_inference",
+        "_classify_complexity",
+        "_build_drafting_plan",
+        "_build_strategy_plan",
+        "_extract_resume_text"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_12"
+    ],
+    "from_core.models.models": [
+      "line_14"
+    ],
+    "from_config.config_profiles_v10_10": [
+      "line_40"
+    ],
+    "from_config.meta_profile": [
+      "line_41"
+    ]
+  },
+  "function_signatures": {
+    "_normalize_text": "_normalize_text",
+    "_extract_job_text": "_extract_job_text",
+    "_extract_resume_text": "_extract_resume_text",
+    "_map_meta_profile_to_routing_hint": "_map_meta_profile_to_routing_hint",
+    "_build_prompt_meta": "_build_prompt_meta",
+    "_infer_seniority": "_infer_seniority",
+    "_infer_domains": "_infer_domains",
+    "_infer_skill_clusters": "_infer_skill_clusters",
+    "_run_profile_inference": "_run_profile_inference",
+    "_classify_complexity": "_classify_complexity",
+    "_choose_reasoning_mode": "_choose_reasoning_mode",
+    "_to_execution_profile": "_to_execution_profile",
+    "_build_strategy_plan": "_build_strategy_plan",
+    "_build_rag_plan": "_build_rag_plan",
+    "_select_drafting_mode": "_select_drafting_mode",
+    "_build_drafting_plan": "_build_drafting_plan",
+    "_build_qa_plan": "_build_qa_plan",
+    "_build_safety_plan": "_build_safety_plan",
+    "build_workflow_plan_bundle": "build_workflow_plan_bundle"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 51,
+    "cognitive_complexity": 43,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

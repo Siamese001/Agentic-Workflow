@@ -1,0 +1,114 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\ranking.py",
+    "file_hash": "79ac04ef6cc1be7b9f59d617bff9d9f94bf006a717c5e11e5e5cee4675e7d486",
+    "size_bytes": 4680,
+    "last_modified": "2025-12-01T12:27:36.872761",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "bm25",
+      "line_number": 38,
+      "docstring": "Deterministic BM25-like ranking.\n\nDelegates scoring to runtime_utils.Ranking.bm25_rank.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dense",
+      "line_number": 47,
+      "docstring": "Deterministic dense-score ranking (SHA-based pseudo-embedding).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hybrid",
+      "line_number": 54,
+      "docstring": "Combined ranking (BM25 + dense).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_strategy",
+      "line_number": 65,
+      "docstring": "Apply a ranking strategy:\n\n    \"bm25\"\n    \"dense\"\n    \"hybrid\"\n    anything else \u2192 hybrid\n\nAfter ranking, all candidates receive a deterministic \"rank\" field.\n\nThis function never mutates the caller\u2019s list.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "enumerate",
+        "hybrid",
+        "bm25",
+        "dense"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_ranked_groups",
+      "line_number": 104,
+      "docstring": "Fuse multiple pre-ranked lists into a single deterministic list.\n\nAlgorithm:\n    1. Flatten\n    2. Deduplicate by (query, evidence)\n    3. Sort by minimal rank across groups\n    4. Secondary sort by alphabetical evidence\n    5. Re-assign ranks\n\nAll behavior purely deterministic.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "enumerate",
+        "int",
+        "str",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "rank_documents",
+      "line_number": 145,
+      "docstring": "Top-level ranking helper used by RAGExecutor:\n\n    items:\n        list[{ query, evidence, ... }]\n\n    strategy:\n        \"bm25\" | \"dense\" | \"hybrid\"\n\nReturns ranked+sorted list with final deterministic ordering.",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "apply_strategy"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_27"
+    ],
+    "from_typing": [
+      "line_29"
+    ],
+    "from_runtime_utils": [
+      "line_31"
+    ]
+  },
+  "function_signatures": {
+    "bm25": "bm25",
+    "dense": "dense",
+    "hybrid": "hybrid",
+    "apply_strategy": "apply_strategy",
+    "fuse_ranked_groups": "fuse_ranked_groups",
+    "rank_documents": "rank_documents"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 9,
+    "cognitive_complexity": 4,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

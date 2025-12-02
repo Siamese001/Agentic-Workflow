@@ -1,0 +1,583 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.3.py",
+    "file_hash": "a46409e48c5ae08618e181e1ef1759f2c16f8f1aa757e43cb60c4f4c1af6a831",
+    "size_bytes": 47559,
+    "last_modified": "2025-12-01T12:27:35.895987",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "load_master_resume",
+      "line_number": 29,
+      "docstring": "Load Amit Ayer's master resume from uploaded JSON.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PerSectionTolerance",
+      "line_number": 47,
+      "docstring": "Per-section tolerance configuration with elasticity curves.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalElasticityModel",
+      "line_number": 65,
+      "docstring": "Non-linear elasticity model for signal calculation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionCoherenceScorer",
+      "line_number": 91,
+      "docstring": "Coherence validation using coefficient of variation (CV).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalPreservationScorer",
+      "line_number": 149,
+      "docstring": "Smart bullet selection based on signal preservation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 188,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetricsV5",
+      "line_number": 199,
+      "docstring": "Enhanced validation class with v4.2 optimizations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 476,
+      "docstring": "Master resume loaded from JSON.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NineHopPipelineV5",
+      "line_number": 585,
+      "docstring": "9-HOP pipeline with Amit Ayer master resume from JSON.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_word_range",
+      "line_number": 55,
+      "docstring": "Get allowed word count range.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_signal_range",
+      "line_number": 60,
+      "docstring": "Get signal floor and ceiling.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 68,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_elasticity_multiplier",
+      "line_number": 75,
+      "docstring": "Calculate elasticity multiplier using non-linear curve.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "abs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal",
+      "line_number": 84,
+      "docstring": "Calculate final signal for a section based on word count.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_cv",
+      "line_number": 95,
+      "docstring": "Calculate coefficient of variation.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "score_section_coherence",
+      "line_number": 109,
+      "docstring": "Score coherence of a section based on bullet word count consistency.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "score_bullet",
+      "line_number": 153,
+      "docstring": "Score a bullet based on keyword density and quality metrics.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "any",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "select_best_bullets",
+      "line_number": 172,
+      "docstring": "Select best bullets based on signal preservation.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_with_elasticity",
+      "line_number": 338,
+      "docstring": "Validate section with elasticity model.",
+      "imports": [],
+      "dependencies": [
+        "SignalElasticityModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_basic_validate",
+      "line_number": 365,
+      "docstring": "Basic validation for sections without elasticity config.",
+      "imports": [],
+      "dependencies": [
+        "abs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_all_gates",
+      "line_number": 377,
+      "docstring": "Run all 6 QA gates.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "abs",
+        "len",
+        "SignalElasticityModel",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 479,
+      "docstring": "Initialize from loaded JSON.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_parse_json",
+      "line_number": 484,
+      "docstring": "Parse JSON structure into class attributes.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_executive_summary",
+      "line_number": 572,
+      "docstring": "Generate 150-word executive summary from JSON data.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 588,
+      "docstring": "Initialize pipeline.",
+      "imports": [],
+      "dependencies": [
+        "BaselineResumeMetricsV5",
+        "print",
+        "MasterResume"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop0_validate_inputs",
+      "line_number": 595,
+      "docstring": "Validate inputs.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop1_parse_jd",
+      "line_number": 605,
+      "docstring": "Parse JD and extract keywords.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop2_map_to_master",
+      "line_number": 616,
+      "docstring": "Map JD keywords to master resume.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop3_recontextualize_bullets",
+      "line_number": 628,
+      "docstring": "Select bullets from JSON bullet pools using signal preservation.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop4_generate_k1",
+      "line_number": 672,
+      "docstring": "Generate K.1 executive summary.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop5_calculate_signals",
+      "line_number": 687,
+      "docstring": "Calculate signals with elasticity models.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "SignalElasticityModel",
+        "SectionCoherenceScorer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop6_validation_gates",
+      "line_number": 755,
+      "docstring": "Run all 6 QA gates.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_ratio_penalty",
+      "line_number": 788,
+      "docstring": "Calculate penalty for Unify/IBM ratio.",
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_final_signals",
+      "line_number": 810,
+      "docstring": "Calculate final signals with bonuses/penalties.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "SignalElasticityModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_role_aware_headline",
+      "line_number": 850,
+      "docstring": "Generate role-aware headline.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_app_tracker",
+      "line_number": 855,
+      "docstring": "Generate App Tracker JSON.",
+      "imports": [],
+      "dependencies": [
+        "timedelta"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop789_format_outputs",
+      "line_number": 930,
+      "docstring": "Format 5 outputs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_resume",
+      "line_number": 951,
+      "docstring": "Format complete resume using ALL master resume data from JSON.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_word_count_table",
+      "line_number": 1018,
+      "docstring": "Format word count table.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_signal_report",
+      "line_number": 1033,
+      "docstring": "Format signal report.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_validation_report",
+      "line_number": 1061,
+      "docstring": "Format validation report.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 1078,
+      "docstring": "Execute complete pipeline.",
+      "imports": [],
+      "dependencies": [
+        "print"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_15"
+    ],
+    "re": [
+      "line_16"
+    ],
+    "from_typing": [
+      "line_17"
+    ],
+    "from_enum": [
+      "line_18"
+    ],
+    "from_datetime": [
+      "line_19",
+      "line_857"
+    ],
+    "from_dataclasses": [
+      "line_20"
+    ],
+    "math": [
+      "line_21"
+    ]
+  },
+  "function_signatures": {
+    "load_master_resume": "load_master_resume",
+    "get_word_range": "get_word_range",
+    "get_signal_range": "get_signal_range",
+    "__init__": "__init__",
+    "calculate_elasticity_multiplier": "calculate_elasticity_multiplier",
+    "calculate_signal": "calculate_signal",
+    "calculate_cv": "calculate_cv",
+    "score_section_coherence": "score_section_coherence",
+    "score_bullet": "score_bullet",
+    "select_best_bullets": "select_best_bullets",
+    "validate_with_elasticity": "validate_with_elasticity",
+    "_basic_validate": "_basic_validate",
+    "run_all_gates": "run_all_gates",
+    "_parse_json": "_parse_json",
+    "_generate_executive_summary": "_generate_executive_summary",
+    "hop0_validate_inputs": "hop0_validate_inputs",
+    "hop1_parse_jd": "hop1_parse_jd",
+    "hop2_map_to_master": "hop2_map_to_master",
+    "hop3_recontextualize_bullets": "hop3_recontextualize_bullets",
+    "hop4_generate_k1": "hop4_generate_k1",
+    "hop5_calculate_signals": "hop5_calculate_signals",
+    "hop6_validation_gates": "hop6_validation_gates",
+    "_calculate_ratio_penalty": "_calculate_ratio_penalty",
+    "_calculate_final_signals": "_calculate_final_signals",
+    "_generate_role_aware_headline": "_generate_role_aware_headline",
+    "_generate_app_tracker": "_generate_app_tracker",
+    "hop789_format_outputs": "hop789_format_outputs",
+    "_format_resume": "_format_resume",
+    "_format_word_count_table": "_format_word_count_table",
+    "_format_signal_report": "_format_signal_report",
+    "_format_validation_report": "_format_validation_report",
+    "execute_pipeline": "execute_pipeline"
+  },
+  "class_signatures": {
+    "PerSectionTolerance": "PerSectionTolerance",
+    "SignalElasticityModel": "SignalElasticityModel",
+    "SectionCoherenceScorer": "SectionCoherenceScorer",
+    "SignalPreservationScorer": "SignalPreservationScorer",
+    "TemperatureMode": "TemperatureMode",
+    "BaselineResumeMetricsV5": "BaselineResumeMetricsV5",
+    "MasterResume": "MasterResume",
+    "NineHopPipelineV5": "NineHopPipelineV5"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 51,
+    "cognitive_complexity": 30,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

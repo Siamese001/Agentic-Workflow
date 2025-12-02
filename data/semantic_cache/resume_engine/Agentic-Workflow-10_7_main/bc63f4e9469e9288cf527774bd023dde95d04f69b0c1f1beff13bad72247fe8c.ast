@@ -1,0 +1,72 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag_simulation.py",
+    "file_hash": "bc63f4e9469e9288cf527774bd023dde95d04f69b0c1f1beff13bad72247fe8c",
+    "size_bytes": 515,
+    "last_modified": "2025-12-01T12:27:41.173865",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RAGSimRequest",
+      "line_number": 10,
+      "docstring": "Input payload for RAG simulation.",
+      "imports": [],
+      "dependencies": [
+        "SimulationInput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGSimMetrics",
+      "line_number": 17,
+      "docstring": "Metrics produced by the RAG simulation.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGSimResult",
+      "line_number": 25,
+      "docstring": "Result model for RAG simulations.",
+      "imports": [],
+      "dependencies": [
+        "SimulationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_3"
+    ],
+    "from_pydantic": [
+      "line_5"
+    ],
+    "from_simulation_base": [
+      "line_7"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "RAGSimRequest": "RAGSimRequest",
+    "RAGSimMetrics": "RAGSimMetrics",
+    "RAGSimResult": "RAGSimResult"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

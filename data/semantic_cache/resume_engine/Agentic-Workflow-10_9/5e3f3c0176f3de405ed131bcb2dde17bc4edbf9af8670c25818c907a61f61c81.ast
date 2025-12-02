@@ -1,0 +1,426 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\observability.py",
+    "file_hash": "5e3f3c0176f3de405ed131bcb2dde17bc4edbf9af8670c25818c907a61f61c81",
+    "size_bytes": 12876,
+    "last_modified": "2025-12-01T12:27:36.920547",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TraceSpan",
+      "line_number": 61,
+      "docstring": "Represents a single performance span.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Metric",
+      "line_number": 73,
+      "docstring": "Represents a single numeric metric.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RunSummary",
+      "line_number": 81,
+      "docstring": "Aggregated summary for a single workflow run.\n\nFields:\n    \u2022 workflow_id\n    \u2022 phases        \u2013 ordered list of phases\n    \u2022 timings       \u2013 span durations\n    \u2022 counts        \u2013 metric counters\n    \u2022 issues        \u2013 domain-specific issue lists",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TelemetryBuffer",
+      "line_number": 103,
+      "docstring": "Central store for run-level telemetry (in-memory only).\n\nThis is pure infra: it holds metrics, spans, and summaries for each\nworkflow_id. It never mutates application state.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "trace_span_async",
+      "line_number": 182,
+      "docstring": "Decorator for async functions: records a named span in TELEMETRY.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "fn"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_strategy",
+      "line_number": 208,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_rag",
+      "line_number": 223,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_bullets",
+      "line_number": 230,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_draft",
+      "line_number": 236,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_qa",
+      "line_number": 243,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_safety",
+      "line_number": 251,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_hil",
+      "line_number": 259,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_meta_learning",
+      "line_number": 267,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_run",
+      "line_number": 278,
+      "docstring": "Build a structured run summary for a workflow, combining:\n\n    \u2022 phase history\n    \u2022 timing spans (from CostTracker and TELEMETRY)\n    \u2022 domain metrics and issues\n    \u2022 meta_profile updates (from spans and run_summary)",
+      "imports": [],
+      "dependencies": [
+        "summarize_meta_learning",
+        "asdict",
+        "update_from_run_summary",
+        "list",
+        "summarize_draft",
+        "summarize_hil",
+        "summarize_rag",
+        "hasattr",
+        "summarize_strategy",
+        "get_meta_profile_snapshot",
+        "summarize_safety",
+        "summarize_qa",
+        "float",
+        "update_from_spans",
+        "summarize_bullets"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "duration_ms",
+      "line_number": 68,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 111,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_metric",
+      "line_number": 118,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "float",
+        "record_event",
+        "Metric"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_metrics",
+      "line_number": 123,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "start_span",
+      "line_number": 128,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "TraceSpan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "end_span",
+      "line_number": 134,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "record_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_spans",
+      "line_number": 140,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_or_create_summary",
+      "line_number": 145,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RunSummary"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_phase_transition",
+      "line_number": 150,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_timing",
+      "line_number": 154,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "increment_count",
+      "line_number": 158,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_issue",
+      "line_number": 162,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_summary",
+      "line_number": 167,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "all_summaries",
+      "line_number": 170,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decorator",
+      "line_number": 187,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "fn"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_40"
+    ],
+    "time": [
+      "line_42"
+    ],
+    "functools": [
+      "line_43"
+    ],
+    "asyncio": [
+      "line_44"
+    ],
+    "from_dataclasses": [
+      "line_45"
+    ],
+    "from_typing": [
+      "line_46"
+    ],
+    "from_runtime_utils": [
+      "line_48"
+    ],
+    "from_meta_profile": [
+      "line_49"
+    ]
+  },
+  "function_signatures": {
+    "trace_span_async": "trace_span_async",
+    "summarize_strategy": "summarize_strategy",
+    "summarize_rag": "summarize_rag",
+    "summarize_bullets": "summarize_bullets",
+    "summarize_draft": "summarize_draft",
+    "summarize_qa": "summarize_qa",
+    "summarize_safety": "summarize_safety",
+    "summarize_hil": "summarize_hil",
+    "summarize_meta_learning": "summarize_meta_learning",
+    "summarize_run": "summarize_run",
+    "duration_ms": "duration_ms",
+    "__init__": "__init__",
+    "record_metric": "record_metric",
+    "get_metrics": "get_metrics",
+    "start_span": "start_span",
+    "end_span": "end_span",
+    "get_spans": "get_spans",
+    "get_or_create_summary": "get_or_create_summary",
+    "record_phase_transition": "record_phase_transition",
+    "record_timing": "record_timing",
+    "increment_count": "increment_count",
+    "record_issue": "record_issue",
+    "get_summary": "get_summary",
+    "all_summaries": "all_summaries",
+    "decorator": "decorator"
+  },
+  "class_signatures": {
+    "TraceSpan": "TraceSpan",
+    "Metric": "Metric",
+    "RunSummary": "RunSummary",
+    "TelemetryBuffer": "TelemetryBuffer"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 14,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

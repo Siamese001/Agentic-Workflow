@@ -1,0 +1,258 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l5.py",
+    "file_hash": "973da81f3d9acbcc2075f23d17656e406b46e295c52f907e4dd17c222559239a",
+    "size_bytes": 18381,
+    "last_modified": "2025-12-01T12:27:36.902950",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SafetyMode",
+      "line_number": 51,
+      "docstring": "Safety operating mode:\n\n    STRICT     \u2013 block on any serious issue (injection, policy, constitutional).\n    BALANCED   \u2013 block on injection or strong policy violations.\n    PERMISSIVE \u2013 block primarily on injection; allow more borderline cases.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_derive_mode_from_meta",
+      "line_number": 65,
+      "docstring": "Combine base SafetyMode with meta_profile biases:\n\n    \u2022 safety_bias.heightened_caution  \u2192 STRICT\n    \u2022 planning_bias.conservative      \u2192 tilt to STRICT\n    \u2022 safety_bias.human_review_important alone \u2192 BALANCED is ok",
+      "imports": [],
+      "dependencies": [
+        "get_planning_bias",
+        "get_safety_bias"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "redact_pii",
+      "line_number": 95,
+      "docstring": "Remove common PII markers deterministically.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "scan_forbidden",
+      "line_number": 105,
+      "docstring": "Return list of forbidden terms found in content.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "toxicity_score",
+      "line_number": 115,
+      "docstring": "Heuristic toxicity metric:\n    - Looks for coarse toxic markers.\n    - Normalized to [0.0, 1.0].",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "scan_bias",
+      "line_number": 130,
+      "docstring": "Deterministic bias scan for:\n    \u2022 age-related terms\n    \u2022 gendered terms\n    \u2022 stereotype patterns",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect_prompt_injection",
+      "line_number": 166,
+      "docstring": "Deterministic prompt injection detector using simple regex patterns.\n\nReturns:\n    {\n        \"detected\": bool,\n        \"reason\": str,\n        \"confidence\": float,\n        \"matched_patterns\": [<strings>],\n    }",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "constitutional_review",
+      "line_number": 207,
+      "docstring": "Deterministic constitutional review.\n\nReturns:\n    {\n        \"passed\": bool,\n        \"violations\": [...],\n        \"confidence\": float,\n    }",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "fn",
+        "len",
+        "round"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyEngine",
+      "line_number": 242,
+      "docstring": "Full safety engine that aggregates:\n\n    \u2022 PII redaction\n    \u2022 forbidden content scan\n    \u2022 toxicity analysis\n    \u2022 prompt injection detection\n    \u2022 bias scan\n    \u2022 constitutional review\n\nPrimary API used by main_v10_9:\n\n    evaluate_content(state: dict, plan: PlanObject) -> safety_report: dict\n\nThis class is deterministic and does not call external LLMs/tools.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PolicyEngine",
+      "line_number": 349,
+      "docstring": "High-level policy enforcement engine.\n\nMaps a safety_report to a policy decision:\n    \u2022 allow       \u2192 proceed\n    \u2022 retry       \u2192 re-run L2 stage\n    \u2022 replan      \u2192 re-run L1 \u2192 L2\n    \u2022 block       \u2192 halt workflow (or escalate)\n\nPolicyEngine is aware of:\n    \u2022 SafetyMode    (STRICT/BALANCED/PERMISSIVE)\n    \u2022 Meta biases   (SafetyBias, PlanningBias)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ArbitrationEngine",
+      "line_number": 444,
+      "docstring": "Normalize PolicyEngine decisions into ArbitrationDecision objects.\n\nActions (normalized):\n\n    \u2022 proceed   \u2014 workflow may continue\n    \u2022 retry_l2  \u2014 re-run L2 stage (same plan)\n    \u2022 rerun_l1  \u2014 re-plan at L1 then re-run L2\n    \u2022 halt      \u2014 stop the workflow\n    \u2022 escalate  \u2014 escalate to external HIL/safety review",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_content_and_audience",
+      "line_number": 264,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "getattr",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 296,
+      "docstring": "Validate a single content string and return a structured safety report.\n\nThe returned dict is intentionally compatible with SafetyReport-like\nstructures but remains plain-JSON.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "redact_pii",
+        "scan_bias",
+        "detect_prompt_injection",
+        "toxicity_score",
+        "scan_forbidden",
+        "constitutional_review"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_content",
+      "line_number": 332,
+      "docstring": "Main entrypoint used by main_v10_9.\n\nExtracts the relevant content from the orchestration state and\nevaluates it under the safety engine.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "review",
+      "line_number": 366,
+      "docstring": "Return a structured policy decision from a safety_report.\n\nShape:\n    {\n      \"decision\": \"allow|retry|replan|block\",\n      \"reason\":   \"<short string>\",\n      \"mode\":     \"<effective mode>\",\n    }",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "_derive_mode_from_meta",
+        "float",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "arbitrate",
+      "line_number": 457,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "any",
+        "ArbitrationDecision"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_35"
+    ],
+    "re": [
+      "line_37"
+    ],
+    "from_dataclasses": [
+      "line_38"
+    ],
+    "from_enum": [
+      "line_39"
+    ],
+    "from_typing": [
+      "line_40"
+    ],
+    "from_models": [
+      "line_42"
+    ],
+    "from_meta_profile": [
+      "line_43"
+    ]
+  },
+  "function_signatures": {
+    "_derive_mode_from_meta": "_derive_mode_from_meta",
+    "redact_pii": "redact_pii",
+    "scan_forbidden": "scan_forbidden",
+    "toxicity_score": "toxicity_score",
+    "scan_bias": "scan_bias",
+    "detect_prompt_injection": "detect_prompt_injection",
+    "constitutional_review": "constitutional_review",
+    "_extract_content_and_audience": "_extract_content_and_audience",
+    "validate": "validate",
+    "evaluate_content": "evaluate_content",
+    "review": "review",
+    "arbitrate": "arbitrate"
+  },
+  "class_signatures": {
+    "SafetyMode": "SafetyMode",
+    "SafetyEngine": "SafetyEngine",
+    "PolicyEngine": "PolicyEngine",
+    "ArbitrationEngine": "ArbitrationEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 48,
+    "cognitive_complexity": 42,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

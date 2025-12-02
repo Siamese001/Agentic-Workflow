@@ -1,0 +1,99 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\__init__.py",
+    "file_hash": "4d637289bbe7beb158ef5a0f159ac34126f3860572ef8bf43364aa8fdbd05dcb",
+    "size_bytes": 5318,
+    "last_modified": "2025-12-01T12:27:41.013723",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_prune_memory",
+      "line_number": 49,
+      "docstring": "Bounds memory retention for resume workflow state.\n\nLimits history retention for efficient resume job alignment.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "getattr",
+        "len",
+        "replace",
+        "hasattr",
+        "is_dataclass"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_correction_event",
+      "line_number": 85,
+      "docstring": "Records correction events for r\u00e9sum\u00e9 processing workflow state.\n\nAppends correction entries to maintain audit trail for r\u00e9sum\u00e9 enhancement operations.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "isinstance",
+        "getattr",
+        "list",
+        "replace",
+        "hasattr",
+        "is_dataclass"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_state_patch",
+      "line_number": 129,
+      "docstring": "Applies L2 results as state patch for r\u00e9sum\u00e9 processing workflows.\n\nCompatibility function that converts L2 execution results into state patch for r\u00e9sum\u00e9 enhancement.\n\nArgs:\n    l2_results: L2ResultBundle with r\u00e9sum\u00e9 processing execution results\n    corrections: List of corrections to apply for r\u00e9sum\u00e9 enhancement\n    ctx: Execution context for r\u00e9sum\u00e9 workflows\n    safety_passed: Whether r\u00e9sum\u00e9 enhancement safety checks passed\n    \nReturns:\n    dict: State patch with r\u00e9sum\u00e9 processing results",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_dataclasses": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_types": [
+      "line_12"
+    ],
+    "from_manager": [
+      "line_22"
+    ],
+    "from_pinecone_adapter": [
+      "line_23"
+    ],
+    "from_triplet_store": [
+      "line_29"
+    ],
+    "from_entity_resolution": [
+      "line_38"
+    ]
+  },
+  "function_signatures": {
+    "_prune_memory": "_prune_memory",
+    "record_correction_event": "record_correction_event",
+    "apply_state_patch": "apply_state_patch"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 11,
+    "cognitive_complexity": 10,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

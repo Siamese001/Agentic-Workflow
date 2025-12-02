@@ -1,0 +1,279 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\self_correction_injection(1).py",
+    "file_hash": "b596e3728ece697407284bcbe37befcc1fbca1be87dfe1991548f24905e4a835",
+    "size_bytes": 14849,
+    "last_modified": "2025-12-01T12:27:38.273418",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "CorrectionType",
+      "line_number": 19,
+      "docstring": "Types of self-correction mechanisms for resume improvement.\n\nDefines correction approaches for enhanced resume quality.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CorrectionRule",
+      "line_number": 34,
+      "docstring": "Rule for triggering self-correction in resume generation.\n\nEnsures automated quality improvement for resume content.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CorrectionAttempt",
+      "line_number": 50,
+      "docstring": "Record of a correction attempt for resume improvement.\n\nTracks quality enhancement progress for resume content optimization.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SelfCorrectionEngine",
+      "line_number": 67,
+      "docstring": "Engine for applying self-correction mechanisms.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SelfCorrectionInjectionProvider",
+      "line_number": 269,
+      "docstring": "Provides self-correction injection for V6 prompts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_self_correction_provider",
+      "line_number": 374,
+      "docstring": "Create a self-correction injection provider.",
+      "imports": [],
+      "dependencies": [
+        "SelfCorrectionInjectionProvider"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 102,
+      "docstring": "Initialize the self-correction engine.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "should_correct",
+      "line_number": 108,
+      "docstring": "Determine if correction should be applied based on rules.\n\nArgs:\n    output: Current output to evaluate\n    context: Execution context\n    quality_score: Quality score of the output\n    \nReturns:\n    List of applicable correction rules",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_correction",
+      "line_number": 134,
+      "docstring": "Apply a correction rule to improve output.\n\nArgs:\n    rule: Correction rule to apply\n    output: Current output\n    context: Execution context\n    \nReturns:\n    Tuple of (improved_output, new_quality_score)",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "CorrectionAttempt",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_evaluate_trigger",
+      "line_number": 184,
+      "docstring": "Evaluate if a trigger condition is met.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_refine_prompt_output",
+      "line_number": 204,
+      "docstring": "Refine output for better prompt clarity.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_and_fix_output",
+      "line_number": 211,
+      "docstring": "Validate and fix output format.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_adjust_strategy_output",
+      "line_number": 232,
+      "docstring": "Adjust strategy based on evidence and context.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_recover_from_error",
+      "line_number": 239,
+      "docstring": "Recover from execution errors.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_quality_score",
+      "line_number": 247,
+      "docstring": "Calculate quality score for output.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 272,
+      "docstring": "Initialize the self-correction injection provider.",
+      "imports": [],
+      "dependencies": [
+        "SelfCorrectionEngine"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_self_correction_extension",
+      "line_number": 276,
+      "docstring": "Add self-correction instructions as a V6 extension.\n\nArgs:\n    prompt_extensions: Existing prompt extensions\n    agent_type: Type of agent (strategy, rag, drafting, etc.)\n    context: Execution context\n    \nReturns:\n    Updated extensions with self-correction instructions",
+      "imports": [],
+      "dependencies": [
+        "ExtensionContent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_correction_instructions",
+      "line_number": 304,
+      "docstring": "Build self-correction instructions for the agent type.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_corrections_if_needed",
+      "line_number": 342,
+      "docstring": "Apply self-corrections if needed based on output quality.\n\nArgs:\n    output: Current output\n    agent_type: Type of agent\n    context: Execution context\n    \nReturns:\n    Tuple of (improved_output, correction_attempts)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "json": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_dataclasses": [
+      "line_12"
+    ],
+    "from_enum": [
+      "line_13"
+    ],
+    "logging": [
+      "line_14"
+    ],
+    "from_l1.instructional_injection_v6": [
+      "line_16"
+    ],
+    "from_datetime": [
+      "line_380"
+    ]
+  },
+  "function_signatures": {
+    "create_self_correction_provider": "create_self_correction_provider",
+    "__init__": "__init__",
+    "should_correct": "should_correct",
+    "apply_correction": "apply_correction",
+    "_evaluate_trigger": "_evaluate_trigger",
+    "_refine_prompt_output": "_refine_prompt_output",
+    "_validate_and_fix_output": "_validate_and_fix_output",
+    "_adjust_strategy_output": "_adjust_strategy_output",
+    "_recover_from_error": "_recover_from_error",
+    "_calculate_quality_score": "_calculate_quality_score",
+    "add_self_correction_extension": "add_self_correction_extension",
+    "_build_correction_instructions": "_build_correction_instructions",
+    "apply_corrections_if_needed": "apply_corrections_if_needed"
+  },
+  "class_signatures": {
+    "CorrectionType": "CorrectionType",
+    "CorrectionRule": "CorrectionRule",
+    "CorrectionAttempt": "CorrectionAttempt",
+    "SelfCorrectionEngine": "SelfCorrectionEngine",
+    "SelfCorrectionInjectionProvider": "SelfCorrectionInjectionProvider"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 29,
+    "cognitive_complexity": 20,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

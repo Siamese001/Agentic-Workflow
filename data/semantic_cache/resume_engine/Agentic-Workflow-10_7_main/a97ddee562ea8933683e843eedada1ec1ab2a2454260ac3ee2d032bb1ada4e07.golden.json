@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\nimport sys\nimport types\nfrom pathlib import Path\n_REPO_ROOT = Path(__file__).resolve().parents[1]\n_TESTS_ROOT = _REPO_ROOT / \"tests\"\n_TESTS_FLAT_ROOT = _REPO_ROOT / \"tests_flat\"\nfor _candidate in (_REPO_ROOT, _TESTS_FLAT_ROOT):\n_candidate_str = str(_candidate)\nif _candidate_str not in sys.path:\nsys.path.insert(0, _candidate_str)\n_tests_pkg = sys.modules.setdefault(\"tests\", types.ModuleType(\"tests\"))\n_tests_pkg.__path__ = list({*(getattr(_tests_pkg, \"__path__\", []) or []), str(_TESTS_ROOT), str(_TESTS_FLAT_ROOT)})\n__all__ = []",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

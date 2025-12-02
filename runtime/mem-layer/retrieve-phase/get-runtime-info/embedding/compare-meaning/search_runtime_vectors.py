@@ -3,7 +3,7 @@ L5 Agentic Core - Plan Layer - search_runtime_vectors
 Implements L1 Cognitive Planning Layer for search runtime vectors operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

@@ -1,0 +1,217 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag_execution.py",
+    "file_hash": "3c9bf8e25f814d82cb4a0874c25318fe74b6fb3f3a7b3bde818340af5a38975c",
+    "size_bytes": 15488,
+    "last_modified": "2025-12-01T12:27:41.144818",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RAGExecutionStack",
+      "line_number": 14,
+      "docstring": "Runs deterministic hybrid retrieval using a pre-computed RAGPlan.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 17,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ChromaDBSearchTool",
+        "StateAdapterStack",
+        "BM25SearchTool",
+        "getattr",
+        "HyDETool",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_append_agent_note",
+      "line_number": 99,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_collect_vector_ids",
+      "line_number": 109,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "str",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_from_state",
+      "line_number": 138,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_experience",
+      "line_number": 146,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_bm25_corpus",
+      "line_number": 203,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_annotate_candidates",
+      "line_number": 259,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_merge_candidates",
+      "line_number": 274,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_metadata",
+      "line_number": 331,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fallback_plan",
+      "line_number": 350,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RAGPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_derive_query",
+      "line_number": 361,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tools_ready",
+      "line_number": 369,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "asyncio": [
+      "line_5"
+    ],
+    "json": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_agent_tools_v10_7": [
+      "line_9"
+    ],
+    "from_core_v10_7": [
+      "line_10"
+    ],
+    "from_agent_stacks_v10_8.state_adapter_stack": [
+      "line_11"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "_append_agent_note": "_append_agent_note",
+    "_collect_vector_ids": "_collect_vector_ids",
+    "_plan_from_state": "_plan_from_state",
+    "_extract_experience": "_extract_experience",
+    "_build_bm25_corpus": "_build_bm25_corpus",
+    "_annotate_candidates": "_annotate_candidates",
+    "_merge_candidates": "_merge_candidates",
+    "_build_metadata": "_build_metadata",
+    "_fallback_plan": "_fallback_plan",
+    "_derive_query": "_derive_query",
+    "_tools_ready": "_tools_ready"
+  },
+  "class_signatures": {
+    "RAGExecutionStack": "RAGExecutionStack"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 36,
+    "cognitive_complexity": 19,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

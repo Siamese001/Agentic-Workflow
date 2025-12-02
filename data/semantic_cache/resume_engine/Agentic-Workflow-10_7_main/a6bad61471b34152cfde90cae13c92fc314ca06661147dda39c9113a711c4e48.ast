@@ -1,0 +1,65 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\hil_stack.py",
+    "file_hash": "a6bad61471b34152cfde90cae13c92fc314ca06661147dda39c9113a711c4e48",
+    "size_bytes": 5749,
+    "last_modified": "2025-12-01T12:27:41.213917",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "HILStackV10_8",
+      "line_number": 17,
+      "docstring": "Wrapper that exposes the HIL-only capabilities.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "HILReconciliationAgent",
+        "HILFeedbackSummarizerAgent",
+        "HILFeedbackRouterAgent",
+        "VirtualReviewerCouncilAgent",
+        "HILAmbiguityDetectorAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_5"
+    ],
+    "from_core_v10_7": [
+      "line_7"
+    ],
+    "from_agent_stacks_v10_8.components.hil": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__"
+  },
+  "class_signatures": {
+    "HILStackV10_8": "HILStackV10_8"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 8,
+    "cognitive_complexity": 6,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

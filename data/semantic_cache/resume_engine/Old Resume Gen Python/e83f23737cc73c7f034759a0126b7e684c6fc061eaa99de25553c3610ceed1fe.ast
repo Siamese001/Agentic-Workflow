@@ -1,0 +1,417 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_8_0_VALIDATION.py",
+    "file_hash": "e83f23737cc73c7f034759a0126b7e684c6fc061eaa99de25553c3610ceed1fe",
+    "size_bytes": 63313,
+    "last_modified": "2025-12-01T12:27:35.919204",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 30,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetrics",
+      "line_number": 40,
+      "docstring": "Structured validation class for resume word counts.\nCombines v2.1 validation methods with v4.5.2 word count targets.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 432,
+      "docstring": "Amit Ayer's complete master resume embedded in code.\nNO NEED TO UPLOAD RESUME - Just provide JD!",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SkillsPool",
+      "line_number": 561,
+      "docstring": "K.11 Technical Skills Pool for JD-aligned selection.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NineHopPipeline",
+      "line_number": 614,
+      "docstring": "Complete 9-HOP Resume Generation Pipeline with BaselineResumeMetrics validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_wordcount",
+      "line_number": 130,
+      "docstring": "Validate word count for a specific section.\n\nArgs:\n    section: Section name\n    actual_words: Actual word count\n    temperature: Temperature mode for flexibility\n    \nReturns:\n    Dict with validation results",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_total",
+      "line_number": 202,
+      "docstring": "Validate total resume word count.\n\nArgs:\n    section_word_counts: Dict of section names to word counts\n    temperature: Temperature mode\n    \nReturns:\n    Dict with total validation results",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_deltas",
+      "line_number": 249,
+      "docstring": "Calculate deltas for all sections.\n\nArgs:\n    section_word_counts: Dict of section names to word counts\n    \nReturns:\n    Dict with delta analysis for each section",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_qa_gates",
+      "line_number": 278,
+      "docstring": "Run all QA validation gates.\n\nArgs:\n    section_word_counts: Dict of section names to word counts\n    \nReturns:\n    Dict with QA gate results",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_report",
+      "line_number": 372,
+      "docstring": "Generate comprehensive validation report.\n\nArgs:\n    section_word_counts: Dict of section names to word counts\n    temperature: Temperature mode\n    \nReturns:\n    Formatted report string",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "select_skills_for_jd",
+      "line_number": 589,
+      "docstring": "Select top 12 skills based on JD keyword matching.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "len",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 619,
+      "docstring": "Initialize pipeline with all components.",
+      "imports": [],
+      "dependencies": [
+        "SkillsPool",
+        "MasterResume",
+        "BaselineResumeMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop0_validate_inputs",
+      "line_number": 630,
+      "docstring": "HOP-0: Validate all inputs before processing.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop1_parse_jd",
+      "line_number": 664,
+      "docstring": "HOP-1: Parse JD and extract keywords, requirements, and signals.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "max",
+        "len",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop2_map_to_master",
+      "line_number": 705,
+      "docstring": "HOP-2: Map JD requirements to master resume content.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop3_recontextualize_bullets",
+      "line_number": 761,
+      "docstring": "HOP-3: Recontextualize bullets with BaselineResumeMetrics validation.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "int",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop4_generate_k1",
+      "line_number": 824,
+      "docstring": "HOP-4: Generate K.1 with BaselineResumeMetrics validation.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop5_calculate_signals",
+      "line_number": 880,
+      "docstring": "HOP-5: Calculate signal percentages for each section.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop6_validation_gates",
+      "line_number": 925,
+      "docstring": "HOP-6: Run comprehensive validation using BaselineResumeMetrics.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "len",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop789_format_outputs",
+      "line_number": 989,
+      "docstring": "HOP-7/8/9: Format final outputs with validation report.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_customize_headline",
+      "line_number": 1025,
+      "docstring": "Generate customized headline.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_education",
+      "line_number": 1034,
+      "docstring": "Format education section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_certifications",
+      "line_number": 1041,
+      "docstring": "Format certifications.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_competencies",
+      "line_number": 1045,
+      "docstring": "Select and format competencies.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_skills",
+      "line_number": 1052,
+      "docstring": "Generate K.11 skills list.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_resume_output",
+      "line_number": 1059,
+      "docstring": "Format complete resume output.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_wordcount_output",
+      "line_number": 1118,
+      "docstring": "Format word count table with deltas.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_signal_output",
+      "line_number": 1152,
+      "docstring": "Format signal calibration output.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 1176,
+      "docstring": "Execute complete 9-HOP pipeline with validation.",
+      "imports": [],
+      "dependencies": [
+        "print"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_15"
+    ],
+    "re": [
+      "line_16"
+    ],
+    "from_typing": [
+      "line_17"
+    ],
+    "from_enum": [
+      "line_18"
+    ],
+    "random": [
+      "line_19"
+    ],
+    "from_datetime": [
+      "line_20"
+    ],
+    "from_dataclasses": [
+      "line_21"
+    ],
+    "hashlib": [
+      "line_22"
+    ]
+  },
+  "function_signatures": {
+    "validate_wordcount": "validate_wordcount",
+    "validate_total": "validate_total",
+    "calculate_deltas": "calculate_deltas",
+    "run_qa_gates": "run_qa_gates",
+    "generate_report": "generate_report",
+    "select_skills_for_jd": "select_skills_for_jd",
+    "__init__": "__init__",
+    "hop0_validate_inputs": "hop0_validate_inputs",
+    "hop1_parse_jd": "hop1_parse_jd",
+    "hop2_map_to_master": "hop2_map_to_master",
+    "hop3_recontextualize_bullets": "hop3_recontextualize_bullets",
+    "hop4_generate_k1": "hop4_generate_k1",
+    "hop5_calculate_signals": "hop5_calculate_signals",
+    "hop6_validation_gates": "hop6_validation_gates",
+    "hop789_format_outputs": "hop789_format_outputs",
+    "_customize_headline": "_customize_headline",
+    "_format_education": "_format_education",
+    "_format_certifications": "_format_certifications",
+    "_format_competencies": "_format_competencies",
+    "_generate_skills": "_generate_skills",
+    "_format_resume_output": "_format_resume_output",
+    "_format_wordcount_output": "_format_wordcount_output",
+    "_format_signal_output": "_format_signal_output",
+    "execute_pipeline": "execute_pipeline"
+  },
+  "class_signatures": {
+    "TemperatureMode": "TemperatureMode",
+    "BaselineResumeMetrics": "BaselineResumeMetrics",
+    "MasterResume": "MasterResume",
+    "SkillsPool": "SkillsPool",
+    "NineHopPipeline": "NineHopPipeline"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 61,
+    "cognitive_complexity": 39,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

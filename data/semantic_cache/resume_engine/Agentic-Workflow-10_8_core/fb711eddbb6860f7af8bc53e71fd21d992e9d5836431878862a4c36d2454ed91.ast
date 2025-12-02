@@ -1,0 +1,499 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_orchestration_support.py",
+    "file_hash": "fb711eddbb6860f7af8bc53e71fd21d992e9d5836431878862a4c36d2454ed91",
+    "size_bytes": 18019,
+    "last_modified": "2025-12-01T12:27:36.222310",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_8_core",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DAGExecutor",
+      "line_number": 29,
+      "docstring": "Deterministic executor for DAG nodes with retry logic.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DAGNode",
+      "line_number": 134,
+      "docstring": "Structural node definition for DAG orchestration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DAG",
+      "line_number": 151,
+      "docstring": "A directed acyclic graph of orchestration steps.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RoutingCriteria",
+      "line_number": 208,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RoutingDecision",
+      "line_number": 218,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decide_route",
+      "line_number": 224,
+      "docstring": "Deterministic routing strategy based on criteria.\nNo external calls, no randomness.",
+      "imports": [],
+      "dependencies": [
+        "RoutingDecision"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ModelClient",
+      "line_number": 272,
+      "docstring": "Abstract client for model execution. Deterministic stub only.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_client_for_route",
+      "line_number": 285,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ModelClient"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "configure_for_routing",
+      "line_number": 290,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_model_for_plan",
+      "line_number": 302,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "RoutingCriteria",
+        "decide_route",
+        "int",
+        "build_client_for_route",
+        "configure_for_routing",
+        "get_routing_plan",
+        "str",
+        "build_prompt_from_plan_and_state",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_plan",
+      "line_number": 348,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_model_name",
+      "line_number": 352,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_metadata",
+      "line_number": 357,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RoutingCriteria",
+      "line_number": 365,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RoutingDecision",
+      "line_number": 375,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "decide_route",
+      "line_number": 381,
+      "docstring": "Deterministic routing strategy based on criteria.\nNo external calls, no randomness.",
+      "imports": [],
+      "dependencies": [
+        "RoutingDecision"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_plan",
+      "line_number": 429,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_model_name",
+      "line_number": 433,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_metadata",
+      "line_number": 438,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ArbitrationEngine",
+      "line_number": 445,
+      "docstring": "Deterministic stub arbitration engine.\n\nevaluate(state, qa_report, safety_patch) -> Dict[str,str]\nreturns one of: accept, retry, replan, escalate",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "can_delegate",
+      "line_number": 493,
+      "docstring": "Deterministic fixed delegation policy.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "delegation_metadata",
+      "line_number": 508,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "can_delegate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "deterministic_vote",
+      "line_number": 519,
+      "docstring": "Deterministic selection:\n- Highest score wins\n- Ties broken by smallest id",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "float",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 32,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "deepcopy",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_with_retries",
+      "line_number": 62,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "deepcopy",
+        "NodeResult",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_determine_edges",
+      "line_number": 76,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_parents_map",
+      "line_number": 86,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_enqueue_targets",
+      "line_number": 97,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "NodeExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_parallel_nodes",
+      "line_number": 114,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "deepcopy",
+        "NodeExecutionError",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__post_init__",
+      "line_number": 145,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DAGValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 157,
+      "docstring": "Validate the DAG is well-formed and acyclic.",
+      "imports": [],
+      "dependencies": [
+        "DAGValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "topological_sort",
+      "line_number": 178,
+      "docstring": "Return a deterministic topological ordering of the DAG nodes.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "sorted",
+        "DAGValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 275,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "complete",
+      "line_number": 278,
+      "docstring": "Invoke the deterministic stub with a fully rendered prompt.",
+      "imports": [],
+      "dependencies": [
+        "invoke_model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate",
+      "line_number": 453,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_copy": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_9",
+      "line_10"
+    ],
+    "from_errors_controlflow": [
+      "line_11",
+      "line_12"
+    ],
+    "from_l3_orchestration": [
+      "line_13"
+    ],
+    "from_meta_profile": [
+      "line_14"
+    ],
+    "from_multi_agent": [
+      "line_15"
+    ],
+    "from_node_result": [
+      "line_16",
+      "line_17"
+    ],
+    "from_typing": [
+      "line_18",
+      "line_19",
+      "line_20",
+      "line_21",
+      "line_22",
+      "line_267",
+      "line_345"
+    ],
+    "from_model_invocation": [
+      "line_269"
+    ],
+    "from_prompt_utils": [
+      "line_303"
+    ]
+  },
+  "function_signatures": {
+    "decide_route": "decide_route",
+    "build_client_for_route": "build_client_for_route",
+    "configure_for_routing": "configure_for_routing",
+    "run_model_for_plan": "run_model_for_plan",
+    "get_routing_plan": "get_routing_plan",
+    "get_routing_model_name": "get_routing_model_name",
+    "get_routing_metadata": "get_routing_metadata",
+    "can_delegate": "can_delegate",
+    "delegation_metadata": "delegation_metadata",
+    "deterministic_vote": "deterministic_vote",
+    "run": "run",
+    "_execute_with_retries": "_execute_with_retries",
+    "_determine_edges": "_determine_edges",
+    "_build_parents_map": "_build_parents_map",
+    "_enqueue_targets": "_enqueue_targets",
+    "_execute_parallel_nodes": "_execute_parallel_nodes",
+    "__post_init__": "__post_init__",
+    "validate": "validate",
+    "topological_sort": "topological_sort",
+    "__init__": "__init__",
+    "complete": "complete",
+    "evaluate": "evaluate"
+  },
+  "class_signatures": {
+    "DAGExecutor": "DAGExecutor",
+    "DAGNode": "DAGNode",
+    "DAG": "DAG",
+    "RoutingCriteria": "RoutingCriteria",
+    "RoutingDecision": "RoutingDecision",
+    "ModelClient": "ModelClient",
+    "ArbitrationEngine": "ArbitrationEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 52,
+    "cognitive_complexity": 32,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

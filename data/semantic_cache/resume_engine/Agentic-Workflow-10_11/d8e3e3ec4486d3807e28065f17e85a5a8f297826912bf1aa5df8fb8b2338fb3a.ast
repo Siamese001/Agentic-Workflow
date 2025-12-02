@@ -1,0 +1,380 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\ranking.py",
+    "file_hash": "d8e3e3ec4486d3807e28065f17e85a5a8f297826912bf1aa5df8fb8b2338fb3a",
+    "size_bytes": 18604,
+    "last_modified": "2025-12-01T12:27:39.173819",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_core_models",
+      "line_number": 14,
+      "docstring": "Lazy imports core models to avoid circular dependencies.\n\nEnsures clean module structure for reliable r\u00e9sum\u00e9 processing.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_bm25_score",
+      "line_number": 32,
+      "docstring": "Calculates keyword relevance score for r\u00e9sum\u00e9 evidence.\n\nPrioritizes exact matches to ensure comprehensive r\u00e9sum\u00e9 content coverage.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dense_score",
+      "line_number": 57,
+      "docstring": "Calculates semantic similarity score for r\u00e9sum\u00e9 content.\n\nFinds conceptually relevant evidence to enhance r\u00e9sum\u00e9 job alignment.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "float",
+        "hash"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_hybrid_score",
+      "line_number": 71,
+      "docstring": "Combines keyword and semantic scores for r\u00e9sum\u00e9 ranking.\n\nBalances exact matches with conceptual relevance for optimal r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "_bm25_score",
+        "_dense_score"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "bm25_score",
+      "line_number": 89,
+      "docstring": "Provides backward-compatible BM25 scoring for r\u00e9sum\u00e9 evidence.\n\nMaintains legacy interface while delivering keyword relevance scoring for r\u00e9sum\u00e9 content.",
+      "imports": [],
+      "dependencies": [
+        "_bm25_score"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dense_score",
+      "line_number": 98,
+      "docstring": "Provides backward-compatible semantic scoring for r\u00e9sum\u00e9 evidence.\n\nMaintains legacy interface while delivering conceptual relevance scoring for r\u00e9sum\u00e9 content.",
+      "imports": [],
+      "dependencies": [
+        "_dense_score"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "bm25",
+      "line_number": 107,
+      "docstring": "Ranks r\u00e9sum\u00e9 evidence by keyword relevance.\n\nPrioritizes exact matches to ensure comprehensive r\u00e9sum\u00e9 content coverage.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "dict",
+        "_bm25_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dense",
+      "line_number": 125,
+      "docstring": "Ranks r\u00e9sum\u00e9 evidence by semantic similarity.\n\nFinds conceptually relevant content to enhance r\u00e9sum\u00e9 job alignment.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "dict",
+        "_dense_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hybrid",
+      "line_number": 143,
+      "docstring": "Ranks r\u00e9sum\u00e9 evidence by combined relevance scoring.\n\nBalances exact matches with conceptual relevance for optimal r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "dict",
+        "_hybrid_score"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "rank_documents",
+      "line_number": 161,
+      "docstring": "Ranks r\u00e9sum\u00e9 documents using optimal scoring strategy.\n\nEnsures relevant content is prioritized for comprehensive r\u00e9sum\u00e9 enhancement.",
+      "imports": [],
+      "dependencies": [
+        "bm25",
+        "dense",
+        "hybrid"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_rrf_weights_from_config",
+      "line_number": 186,
+      "docstring": "Calculates weighted fusion scores for r\u00e9sum\u00e9 evidence.\n\nOptimizes ranking strategy to prioritize most relevant r\u00e9sum\u00e9 improvement content.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "getattr",
+        "len",
+        "isinstance",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_ranked_groups",
+      "line_number": 220,
+      "docstring": "Fuses multiple ranked lists for optimal r\u00e9sum\u00e9 evidence prioritization.\n\nCombines retrieval strategies to ensure most relevant r\u00e9sum\u00e9 content is ranked highest.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "dict",
+        "len",
+        "getattr",
+        "enumerate",
+        "int",
+        "_rrf_weights_from_config",
+        "emit_telemetry_event",
+        "RankingEvent",
+        "str",
+        "set",
+        "emit_ranking_event",
+        "float",
+        "_core_models"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_ranked_groups_for_strategy",
+      "line_number": 331,
+      "docstring": "Applies optimal ranking fusion for r\u00e9sum\u00e9 evidence groups.\n\nMaintains backward compatibility while delivering comprehensive r\u00e9sum\u00e9 content ranking.",
+      "imports": [],
+      "dependencies": [
+        "fuse_ranked_groups"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_canonical_evidence_key",
+      "line_number": 353,
+      "docstring": "Creates canonical key for r\u00e9sum\u00e9 evidence deduplication.\n\nEnsures unique identification to prevent duplicate r\u00e9sum\u00e9 content in rankings.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "normalize_evidence_scores",
+      "line_number": 366,
+      "docstring": "Normalizes r\u00e9sum\u00e9 evidence scores to consistent range.\n\nEnsures fair comparison and ranking of r\u00e9sum\u00e9 improvement content across sources.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "float",
+        "min"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "deduplicate_evidence",
+      "line_number": 390,
+      "docstring": "Removes duplicate r\u00e9sum\u00e9 evidence by canonical key.\n\nEnsures unique content to improve r\u00e9sum\u00e9 ranking accuracy and avoid redundancy.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "_canonical_evidence_key"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "normalize_scores",
+      "line_number": 407,
+      "docstring": "Provides backward-compatible score normalization for r\u00e9sum\u00e9 evidence.\n\nMaintains legacy interface while delivering consistent scoring for r\u00e9sum\u00e9 content ranking.",
+      "imports": [],
+      "dependencies": [
+        "normalize_evidence_scores"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "merge_scores",
+      "line_number": 417,
+      "docstring": "Provides backward-compatible evidence merging for r\u00e9sum\u00e9 rankings.\n\nMaintains legacy interface while delivering deduplication for r\u00e9sum\u00e9 content optimization.",
+      "imports": [],
+      "dependencies": [
+        "deduplicate_evidence"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "rank_evidence",
+      "line_number": 427,
+      "docstring": "Rank Evidence items using the dict-based ranking functions underneath.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "len",
+        "rank_documents",
+        "Evidence",
+        "str",
+        "normalize_evidence_scores",
+        "_core_models"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_evidence_groups_rrf",
+      "line_number": 488,
+      "docstring": "Evidence-level Reciprocal Rank Fusion.\n\n    score(ev) = \u03a3_i w_i / (rrf_k + rank_i)",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "getattr",
+        "enumerate",
+        "_rrf_weights_from_config",
+        "RankingEvent",
+        "emit_ranking_event",
+        "float",
+        "_canonical_evidence_key",
+        "_core_models"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_ranked_groups_rrf",
+      "line_number": 541,
+      "docstring": "Wrapper used by retrieval.py for Evidence-level weighted RRF.\n\nThis function adapts the raw `rrf_weights` list (coming from\nRetrievalConfig.rrf_weights) into a minimal RetrievalConfig instance\nand delegates to `fuse_evidence_groups_rrf`.\n\nIt exists solely to preserve the existing retrieval.py call-site:\n\n    ranking.fuse_ranked_groups_rrf(\n        groups=groups,\n        rrf_weights=retrieval_cfg.rrf_weights,\n        workflow_id=workflow_id,\n    )\n\nThe `workflow_id` is accepted for signature compatibility but is\nnot used here; telemetry is emitted inside `fuse_evidence_groups_rrf`.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "RetrievalConfig",
+        "fuse_evidence_groups_rrf",
+        "_core_models"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_rag_result",
+      "line_number": 575,
+      "docstring": "High-level helper to fuse and rank Evidence sets and produce a RAGResult.\n\nIf cfg.use_rrf is True:\n    \u2022 Apply evidence-level RRF across groups, then truncate/trim.\nOtherwise:\n    \u2022 Concatenate groups, deduplicate, rank by score, truncate/trim.",
+      "imports": [],
+      "dependencies": [
+        "fuse_evidence_groups_rrf",
+        "len",
+        "rank_evidence",
+        "list",
+        "RAGResult",
+        "deduplicate_evidence",
+        "RetrievalConfig",
+        "emit_telemetry_event",
+        "RankingEvent",
+        "emit_ranking_event",
+        "_core_models"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_9",
+      "line_232"
+    ],
+    "from_runtime.observability": [
+      "line_11"
+    ],
+    "from_core.models": [
+      "line_21"
+    ]
+  },
+  "function_signatures": {
+    "_core_models": "_core_models",
+    "_bm25_score": "_bm25_score",
+    "_dense_score": "_dense_score",
+    "_hybrid_score": "_hybrid_score",
+    "bm25_score": "bm25_score",
+    "dense_score": "dense_score",
+    "bm25": "bm25",
+    "dense": "dense",
+    "hybrid": "hybrid",
+    "rank_documents": "rank_documents",
+    "_rrf_weights_from_config": "_rrf_weights_from_config",
+    "fuse_ranked_groups": "fuse_ranked_groups",
+    "fuse_ranked_groups_for_strategy": "fuse_ranked_groups_for_strategy",
+    "_canonical_evidence_key": "_canonical_evidence_key",
+    "normalize_evidence_scores": "normalize_evidence_scores",
+    "deduplicate_evidence": "deduplicate_evidence",
+    "normalize_scores": "normalize_scores",
+    "merge_scores": "merge_scores",
+    "rank_evidence": "rank_evidence",
+    "fuse_evidence_groups_rrf": "fuse_evidence_groups_rrf",
+    "fuse_ranked_groups_rrf": "fuse_ranked_groups_rrf",
+    "build_rag_result": "build_rag_result"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 53,
+    "cognitive_complexity": 27,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

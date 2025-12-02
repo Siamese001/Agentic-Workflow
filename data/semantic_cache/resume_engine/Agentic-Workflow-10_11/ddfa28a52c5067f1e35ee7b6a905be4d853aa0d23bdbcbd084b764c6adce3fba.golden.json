@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict\nfrom infra.sandbox.microvm import MicroVM, create_vm, teardown_vm, exec_in_vm\nfrom infra.sandbox.models import ToolCallRequest, ToolCallResult\ndef run_in_ephemeral_vm(request: ToolCallRequest, resource_limits: Dict[str, Any] | None = None) -> ToolCallResult:\n\"\"\"Convenience helper to run a single tool call in an ephemeral VM.\nThis creates a VM, executes the request, and tears the VM down,\nensuring cleanup even on errors.\n\"\"\"\nvm = create_vm(resource_limits or {})\ntry:\nreturn exec_in_vm(vm, request)\nfinally:\nteardown_vm(vm)",
+  "normalized_signature": "func:run_in_ephemeral_vm",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:run_in_ephemeral_vm",
+  "test_coverage": []
+}

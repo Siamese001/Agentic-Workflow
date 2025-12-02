@@ -1,0 +1,211 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\triplet_extraction_executor.py",
+    "file_hash": "84f0b20dba4693fa2ace9f6ad27a5e709bcce5d1c7caf69e70075987d686c429",
+    "size_bytes": 16849,
+    "last_modified": "2025-12-01T12:27:38.749358",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ExtractionPlan",
+      "line_number": 26,
+      "docstring": "Plan for triplet extraction in resume processing workflows.\n\nDefines extraction strategy for converting resume text to\nknowledge graph data for job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExtractedStatement",
+      "line_number": 55,
+      "docstring": "Statement extracted from r\u00e9sum\u00e9 processing text before triplet conversion.\n\nRepresents intermediate extraction results for r\u00e9sum\u00e9 knowledge graph construction.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExtractionResult",
+      "line_number": 70,
+      "docstring": "Result of triplet extraction for resume processing workflows.\n\nProvides structured knowledge graph data extracted from resume\nenhancement text for job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TripletExtractionExecutor",
+      "line_number": 92,
+      "docstring": "Executor for triplet extraction from resume processing text.\n\nUses pattern matching for resume enhancement workflows and\njob alignment knowledge graph construction.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_extraction_plan",
+      "line_number": 432,
+      "docstring": "Creates extraction plan for resume processing workflows.\n\nConfigures triplet extraction for resume enhancement and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "ExtractionPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 100,
+      "docstring": "Initializes resume triplet extraction executor.\n\nArgs:\n    entity_registry: L4 EntityRegistry for resume entity resolution",
+      "imports": [],
+      "dependencies": [
+        "EntityRegistry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 141,
+      "docstring": "Executes triplet extraction for resume processing workflows.\n\nExtracts structured knowledge graph data for resume job alignment.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "int",
+        "create_mention",
+        "str",
+        "ExtractionResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_skills",
+      "line_number": 216,
+      "docstring": "Extracts skill-related triplets for resume enhancement.\n\nIdentifies resume skills for job alignment knowledge graphs.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "create_triplet",
+        "len",
+        "ExtractedStatement"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_experience",
+      "line_number": 270,
+      "docstring": "Extracts experience-related triplets for resume enhancement.\n\nIdentifies resume work experience for job alignment knowledge graphs.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "create_triplet",
+        "len",
+        "ExtractedStatement"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_education",
+      "line_number": 327,
+      "docstring": "Extracts education-related triplets for resume enhancement.\n\nIdentifies resume education for job alignment knowledge graphs.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "create_triplet",
+        "len",
+        "ExtractedStatement"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_temporal_info",
+      "line_number": 376,
+      "docstring": "Extracts temporal information for resume timeline analysis.\n\nIdentifies date ranges for resume job alignment accuracy.",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "max",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_entity_type",
+      "line_number": 411,
+      "docstring": "Infers entity type from predicate for resume processing.\n\nMaps resume relationships to appropriate entity types.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_datetime": [
+      "line_12"
+    ],
+    "json": [
+      "line_13"
+    ],
+    "re": [
+      "line_14"
+    ],
+    "from_l4.triplet_store": [
+      "line_16"
+    ],
+    "from_l4.entity_resolution": [
+      "line_17"
+    ]
+  },
+  "function_signatures": {
+    "create_extraction_plan": "create_extraction_plan",
+    "__init__": "__init__",
+    "execute": "execute",
+    "_extract_skills": "_extract_skills",
+    "_extract_experience": "_extract_experience",
+    "_extract_education": "_extract_education",
+    "_extract_temporal_info": "_extract_temporal_info",
+    "_infer_entity_type": "_infer_entity_type"
+  },
+  "class_signatures": {
+    "ExtractionPlan": "ExtractionPlan",
+    "ExtractedStatement": "ExtractedStatement",
+    "ExtractionResult": "ExtractionResult",
+    "TripletExtractionExecutor": "TripletExtractionExecutor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 27,
+    "cognitive_complexity": 16,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

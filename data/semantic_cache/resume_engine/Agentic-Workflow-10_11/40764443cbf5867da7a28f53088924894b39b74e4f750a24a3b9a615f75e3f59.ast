@@ -1,0 +1,243 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\kg_retrieval_orchestration.py",
+    "file_hash": "40764443cbf5867da7a28f53088924894b39b74e4f750a24a3b9a615f75e3f59",
+    "size_bytes": 20312,
+    "last_modified": "2025-12-01T12:27:40.903793",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RetrievalStage",
+      "line_number": 30,
+      "docstring": "Stages in the retrieval pipeline.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RetrievalNode",
+      "line_number": 40,
+      "docstring": "A node in the retrieval DAG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RetrievalDAG",
+      "line_number": 60,
+      "docstring": "Directed Acyclic Graph for retrieval orchestration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HybridRetrievalContext",
+      "line_number": 96,
+      "docstring": "Context for hybrid retrieval.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HybridRetrievalResult",
+      "line_number": 122,
+      "docstring": "Result of hybrid KG + Vector retrieval.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "KGFirstRetrievalOrchestrator",
+      "line_number": 145,
+      "docstring": "Orchestrator for KG-first hybrid retrieval.\n\nThis orchestrator builds and executes retrieval DAGs that:\n1. First query the Knowledge Graph for structured facts\n2. Use KG entities to enhance vector search\n3. Fuse results with weighted combination\n4. Optionally rerank for relevance",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_hybrid_context",
+      "line_number": 590,
+      "docstring": "Create a hybrid retrieval context.\n\nArgs:\n    query: Search query\n    user_id: Optional user ID for KG\n    job_id: Optional job ID for KG\n    kg_entities: Optional starting KG entities\n    kg_weight: Weight for KG results\n    vector_weight: Weight for vector results\n    \nReturns:\n    HybridRetrievalContext",
+      "imports": [],
+      "dependencies": [
+        "HybridRetrievalContext"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_node",
+      "line_number": 70,
+      "docstring": "Add a node to the DAG.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_execution_order",
+      "line_number": 74,
+      "docstring": "Get topologically sorted execution order.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "visit"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 155,
+      "docstring": "Initialize orchestrator.\n\nArgs:\n    kg_planner: L1 KG retrieval planner\n    kg_executor: L2 KG retrieval executor\n    vector_executor: L2 vector search executor",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_dag",
+      "line_number": 172,
+      "docstring": "Build a retrieval DAG for the given context.\n\nArgs:\n    context: Retrieval context\n    \nReturns:\n    RetrievalDAG ready for execution",
+      "imports": [],
+      "dependencies": [
+        "RetrievalNode",
+        "RetrievalDAG"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_entities_from_kg",
+      "line_number": 422,
+      "docstring": "Extract entity names from KG results.\n\nArgs:\n    kg_results: KG query results\n    \nReturns:\n    List of entity names",
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_fusion",
+      "line_number": 443,
+      "docstring": "Execute fusion stage - combine KG and vector results.\n\nArgs:\n    dag: Current DAG with node results\n    config: Fusion configuration\n    \nReturns:\n    Fused results",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "max",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_filtering",
+      "line_number": 531,
+      "docstring": "Execute filtering stage.\n\nArgs:\n    dag: Current DAG with node results\n    config: Filtering configuration\n    \nReturns:\n    Filtered results",
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "orchestrate",
+      "line_number": 570,
+      "docstring": "Synchronous orchestration entry point.\n\nArgs:\n    context: Retrieval context\n    \nReturns:\n    HybridRetrievalResult",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "visit",
+      "line_number": 79,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "visit"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_21"
+    ],
+    "from_dataclasses": [
+      "line_23"
+    ],
+    "from_typing": [
+      "line_24"
+    ],
+    "from_datetime": [
+      "line_25"
+    ],
+    "from_enum": [
+      "line_26"
+    ],
+    "asyncio": [
+      "line_27"
+    ],
+    "from_l1.kg_retrieval_planning": [
+      "line_351"
+    ]
+  },
+  "function_signatures": {
+    "create_hybrid_context": "create_hybrid_context",
+    "add_node": "add_node",
+    "get_execution_order": "get_execution_order",
+    "__init__": "__init__",
+    "build_dag": "build_dag",
+    "_extract_entities_from_kg": "_extract_entities_from_kg",
+    "_execute_fusion": "_execute_fusion",
+    "_execute_filtering": "_execute_filtering",
+    "orchestrate": "orchestrate",
+    "visit": "visit"
+  },
+  "class_signatures": {
+    "RetrievalStage": "RetrievalStage",
+    "RetrievalNode": "RetrievalNode",
+    "RetrievalDAG": "RetrievalDAG",
+    "HybridRetrievalContext": "HybridRetrievalContext",
+    "HybridRetrievalResult": "HybridRetrievalResult",
+    "KGFirstRetrievalOrchestrator": "KGFirstRetrievalOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 33,
+    "cognitive_complexity": 24,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

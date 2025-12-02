@@ -3,7 +3,7 @@ L5 Agentic Core - Safety Layer - enforce_runtime_limits
 Implements L5 Safety/Policy Layer for enforce runtime limits operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
@@ -64,7 +64,7 @@ class EnforceRuntimeLimitsSafetyImpl(EnforceRuntimeLimitsSafetySafety):
     
     def apply_safety(self, data: Dict[str, Any]) -> EnforceRuntimeLimitsSafetyResult:
         """Apply safety checks following L5 architecture principles"""
-        self.logger.info(f"Applying safety checks to data")
+        self.logger.info("Applying safety checks to data")
         
         # L5 Input validation
         self._validate_input(data)

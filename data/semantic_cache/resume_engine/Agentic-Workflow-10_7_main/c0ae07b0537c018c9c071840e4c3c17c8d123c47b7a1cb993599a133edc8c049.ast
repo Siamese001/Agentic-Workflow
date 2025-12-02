@@ -1,0 +1,662 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\models.py",
+    "file_hash": "c0ae07b0537c018c9c071840e4c3c17c8d123c47b7a1cb993599a133edc8c049",
+    "size_bytes": 15096,
+    "last_modified": "2025-12-01T12:27:41.969188",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "V10Model",
+      "line_number": 27,
+      "docstring": "All v10.7 Pydantic models extend this.\n\nEnsures:\n  - unknown fields do not crash the validator\n  - consistent .model_dump() / .model_validate() behavior",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NodeStatus",
+      "line_number": 68,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowPhase",
+      "line_number": 75,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NodeResult",
+      "line_number": 87,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaseToolOutput",
+      "line_number": 104,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftStrategyOutput",
+      "line_number": 108,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RedTeamOutput",
+      "line_number": 112,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RefineSectionOutput",
+      "line_number": 116,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AddMetricsOutput",
+      "line_number": 120,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAClaimOutput",
+      "line_number": 128,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAToneOutput",
+      "line_number": 133,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAThematicAlignmentOutput",
+      "line_number": 138,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QASemanticEntailmentOutput",
+      "line_number": 143,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QANarrativeThreadOutput",
+      "line_number": 147,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAJDSkillsOutput",
+      "line_number": 151,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QASignalScoreOutput",
+      "line_number": 156,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QATenureOutput",
+      "line_number": 160,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAMissedOpportunitiesOutput",
+      "line_number": 165,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAAdversarialOutput",
+      "line_number": 169,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseToolOutput"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QABiasOutput",
+      "line_number": 173,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PlannerAssessment",
+      "line_number": 184,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ScenarioSimulationResult",
+      "line_number": 192,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyPlan",
+      "line_number": 200,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGPlan",
+      "line_number": 214,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletPlan",
+      "line_number": 234,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftPlan",
+      "line_number": 257,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GeneratedPrompts",
+      "line_number": 281,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptEnvelope",
+      "line_number": 288,
+      "docstring": "Structured prompt envelope used by the renderer stack.",
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SelfCorrectionReport",
+      "line_number": 307,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletList",
+      "line_number": 321,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CritiqueResult",
+      "line_number": 325,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILAmbiguityReport",
+      "line_number": 334,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PersonaReviewDecision",
+      "line_number": 341,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PersonaConsensus",
+      "line_number": 350,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILFeedbackIntent",
+      "line_number": 357,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILReconciliationResult",
+      "line_number": 366,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HILFeedbackRoute",
+      "line_number": 372,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ConstitutionalReviewResult",
+      "line_number": 385,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ArbitrationReport",
+      "line_number": 391,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "V10Model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EpisodicMemory",
+      "line_number": 406,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SemanticMemoryRef",
+      "line_number": 411,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MemoryState",
+      "line_number": 416,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EphemeralState",
+      "line_number": 421,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dict",
+      "line_number": 37,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_serialize",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_dump",
+      "line_number": 56,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_dump_json",
+      "line_number": 59,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__str__",
+      "line_number": 299,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_serialize",
+      "line_number": 38,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_serialize",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_14"
+    ],
+    "json": [
+      "line_16"
+    ],
+    "from_enum": [
+      "line_17"
+    ],
+    "from_typing": [
+      "line_18"
+    ],
+    "from_pydantic": [
+      "line_20"
+    ]
+  },
+  "function_signatures": {
+    "dict": "dict",
+    "model_dump": "model_dump",
+    "model_dump_json": "model_dump_json",
+    "__str__": "__str__",
+    "_serialize": "_serialize"
+  },
+  "class_signatures": {
+    "V10Model": "V10Model",
+    "NodeStatus": "NodeStatus",
+    "WorkflowPhase": "WorkflowPhase",
+    "NodeResult": "NodeResult",
+    "BaseToolOutput": "BaseToolOutput",
+    "DraftStrategyOutput": "DraftStrategyOutput",
+    "RedTeamOutput": "RedTeamOutput",
+    "RefineSectionOutput": "RefineSectionOutput",
+    "AddMetricsOutput": "AddMetricsOutput",
+    "QAClaimOutput": "QAClaimOutput",
+    "QAToneOutput": "QAToneOutput",
+    "QAThematicAlignmentOutput": "QAThematicAlignmentOutput",
+    "QASemanticEntailmentOutput": "QASemanticEntailmentOutput",
+    "QANarrativeThreadOutput": "QANarrativeThreadOutput",
+    "QAJDSkillsOutput": "QAJDSkillsOutput",
+    "QASignalScoreOutput": "QASignalScoreOutput",
+    "QATenureOutput": "QATenureOutput",
+    "QAMissedOpportunitiesOutput": "QAMissedOpportunitiesOutput",
+    "QAAdversarialOutput": "QAAdversarialOutput",
+    "QABiasOutput": "QABiasOutput",
+    "PlannerAssessment": "PlannerAssessment",
+    "ScenarioSimulationResult": "ScenarioSimulationResult",
+    "StrategyPlan": "StrategyPlan",
+    "RAGPlan": "RAGPlan",
+    "BulletPlan": "BulletPlan",
+    "DraftPlan": "DraftPlan",
+    "GeneratedPrompts": "GeneratedPrompts",
+    "PromptEnvelope": "PromptEnvelope",
+    "SelfCorrectionReport": "SelfCorrectionReport",
+    "BulletList": "BulletList",
+    "CritiqueResult": "CritiqueResult",
+    "HILAmbiguityReport": "HILAmbiguityReport",
+    "PersonaReviewDecision": "PersonaReviewDecision",
+    "PersonaConsensus": "PersonaConsensus",
+    "HILFeedbackIntent": "HILFeedbackIntent",
+    "HILReconciliationResult": "HILReconciliationResult",
+    "HILFeedbackRoute": "HILFeedbackRoute",
+    "ConstitutionalReviewResult": "ConstitutionalReviewResult",
+    "ArbitrationReport": "ArbitrationReport",
+    "EpisodicMemory": "EpisodicMemory",
+    "SemanticMemoryRef": "SemanticMemoryRef",
+    "MemoryState": "MemoryState",
+    "EphemeralState": "EphemeralState"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 7,
+    "cognitive_complexity": 5,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

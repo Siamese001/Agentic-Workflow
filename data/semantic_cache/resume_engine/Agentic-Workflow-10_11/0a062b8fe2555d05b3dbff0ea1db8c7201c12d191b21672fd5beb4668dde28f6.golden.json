@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Iterable\nfrom meta.metacognition.models import Hypothesis\ndef compute_uncertainty(\nhypotheses: Iterable[Hypothesis],\nqa_signals: int,\nsafety_signals: int,\n) -> float:\n\"\"\"Compute a coarse uncertainty score in [0, 1].\nFactors:\n- spread of confidence values (higher spread \u21d2 higher uncertainty)\n- presence of QA / safety signals (more signals \u21d2 higher uncertainty)\n\"\"\"\nhs = list(hypotheses)\nif not hs:\nbase = 0.8 if (qa_signals or safety_signals) else 0.5\nreturn min(1.0, base)\nconfidences = [float(h.confidence) for h in hs]\navg = sum(confidences) / len(confidences)\nvar = sum((c - avg) ** 2 for c in confidences) / max(1, len(confidences) - 1)\nspread = min(1.0, var ** 0.5)\nqa_factor = min(1.0, qa_signals / 5.0)\nsafety_factor = min(1.0, safety_signals / 3.0)\nscore = 0.3 * spread + 0.4 * qa_factor + 0.3 * safety_factor\nreturn max(0.0, min(1.0, score))",
+  "normalized_signature": "func:compute_uncertainty",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:compute_uncertainty",
+  "test_coverage": []
+}

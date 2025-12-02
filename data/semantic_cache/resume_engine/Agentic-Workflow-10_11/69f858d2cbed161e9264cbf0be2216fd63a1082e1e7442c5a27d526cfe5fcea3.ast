@@ -1,0 +1,43 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\control_plane\\test_judge_engine.py",
+    "file_hash": "69f858d2cbed161e9264cbf0be2216fd63a1082e1e7442c5a27d526cfe5fcea3",
+    "size_bytes": 650,
+    "last_modified": "2025-12-01T12:27:39.801184",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_judge_engine_unsafe_on_high_severity",
+      "line_number": 10,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RuleMatch",
+        "SafetyContext",
+        "evaluate_with_guard_model",
+        "RulesEngineResult"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_orchestration.control_plane": [
+      "line_1"
+    ]
+  },
+  "function_signatures": {
+    "test_judge_engine_unsafe_on_high_severity": "test_judge_engine_unsafe_on_high_severity"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

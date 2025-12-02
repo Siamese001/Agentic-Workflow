@@ -1,0 +1,139 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\redis_client.py",
+    "file_hash": "035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4",
+    "size_bytes": 2365,
+    "last_modified": "2025-12-01T12:27:38.107161",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RedisClient",
+      "line_number": 18,
+      "docstring": "Provider client for Redis operations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "init_redis_client",
+      "line_number": 55,
+      "docstring": "Initialize a Redis client from URL or default parameters.",
+      "imports": [],
+      "dependencies": [
+        "RedisClient",
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 21,
+      "docstring": "Initialize Redis client with connection parameters.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 30,
+      "docstring": "Get value from Redis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 34,
+      "docstring": "Set value in Redis with optional expiration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "delete",
+      "line_number": 38,
+      "docstring": "Delete key from Redis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "exists",
+      "line_number": 42,
+      "docstring": "Check if key exists in Redis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "ping",
+      "line_number": 46,
+      "docstring": "Ping Redis server to check connectivity.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "close",
+      "line_number": 50,
+      "docstring": "Close Redis connection.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "redis": [
+      "line_13"
+    ],
+    "urllib.parse": [
+      "line_59"
+    ]
+  },
+  "function_signatures": {
+    "init_redis_client": "init_redis_client",
+    "__init__": "__init__",
+    "get": "get",
+    "set": "set",
+    "delete": "delete",
+    "exists": "exists",
+    "ping": "ping",
+    "close": "close"
+  },
+  "class_signatures": {
+    "RedisClient": "RedisClient"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

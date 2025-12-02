@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm\nfrom infra.sandbox.models import ToolCallRequest\nfrom observability import get_all_events, clear_events\ndef test_microvm_create_exec_teardown_emits_events():\nclear_events()\nvm = create_vm({\"cpu_ms\": 1000})\nreq = ToolCallRequest(tool_name=\"echo\", args=[\"hello\"], timeout_s=1.0)\nresult = exec_in_vm(vm, req)\nteardown_vm(vm)\nassert result.success is True\nassert \"TOOL echo\" in result.stdout\nevents = get_all_events()\nnames = [e.name for e in events]\nassert \"sandbox_start\" in names\nassert \"sandbox_stop\" in names\nassert \"sandbox_tool_complete\" in names",
+  "normalized_signature": "func:test_microvm_create_exec_teardown_emits_events",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_microvm_create_exec_teardown_emits_events",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\kg_writer.py",
+    "file_hash": "00c12ad8f0b89c1364a4c1c99d9d6c53ca231de7177cc33722e100239bfa8c81",
+    "size_bytes": 4729,
+    "last_modified": "2025-12-01T12:27:38.778983",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_datetime": [
+      "line_11"
+    ],
+    "from_l4.temporal_schemas": [
+      "line_21"
+    ],
+    "from_graph_store_neo4j": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 18,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,434 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\10_7_consolidated\\v10_7_planning.py",
+    "file_hash": "d29a0bb6b9c1e3e19dde6755b3383e4bc5216e0ec8f76d2dc117f3b4367a6067",
+    "size_bytes": 19075,
+    "last_modified": "2025-12-01T12:27:42.159073",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "BaseAgent",
+      "line_number": 18,
+      "docstring": "Minimal BaseAgent to satisfy L1 Planner dependencies.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaseTool",
+      "line_number": 31,
+      "docstring": "Minimal BaseTool to satisfy dependencies.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_job_profile",
+      "line_number": 45,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "_first",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_resume_profile",
+      "line_number": 70,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "describe_experience",
+      "line_number": 80,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect_metrics",
+      "line_number": 90,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "any",
+        "describe_experience",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "collect_sections",
+      "line_number": 105,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "missing_requirements",
+      "line_number": 111,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QueryComplexityClassifier",
+      "line_number": 123,
+      "docstring": "Classifies query complexity for dynamic routing.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ToTStrategistAgent",
+      "line_number": 154,
+      "docstring": "Tree-of-Thought strategist with self-consistency voting.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyCoordinatorAgent",
+      "line_number": 224,
+      "docstring": "Simulates the ensemble coordinator (Domain, Risk, Feasibility).",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyStackV10_8",
+      "line_number": 232,
+      "docstring": "Facade for the strategy execution.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptEngineerAgent",
+      "line_number": 249,
+      "docstring": "LLM-driven prompt engineering that adapts to task complexity.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PromptBuilderStack",
+      "line_number": 269,
+      "docstring": "Facade for prompt engineering.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RAGPlanningStack",
+      "line_number": 279,
+      "docstring": "Produces a lightweight retrieval plan without calling any tools.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftPlanningStack",
+      "line_number": 324,
+      "docstring": "Creates a low-latency drafting plan using only state inspection.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletPlanningStack",
+      "line_number": 367,
+      "docstring": "Outlines which bullets to generate before invoking execution stacks.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 33,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_first",
+      "line_number": 47,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ComplexityOutput",
+      "line_number": 125,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 234,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "QueryComplexityClassifier",
+        "ToTStrategistAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 271,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "PromptEngineerAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 281,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_plan",
+      "line_number": 287,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "describe_experience",
+        "extract_resume_profile",
+        "extract_job_profile",
+        "RAGPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 326,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_plan",
+      "line_number": 332,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DraftPlan",
+        "getattr",
+        "describe_experience",
+        "extract_resume_profile",
+        "missing_requirements",
+        "collect_sections",
+        "extract_job_profile"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 369,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_plan",
+      "line_number": 375,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "detect_metrics",
+        "describe_experience",
+        "BulletPlan",
+        "extract_resume_profile",
+        "collect_sections",
+        "extract_job_profile"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "VoteOutput",
+      "line_number": 212,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_5"
+    ],
+    "asyncio": [
+      "line_6"
+    ],
+    "json": [
+      "line_7"
+    ],
+    "logging": [
+      "line_8"
+    ],
+    "os": [
+      "line_9"
+    ],
+    "re": [
+      "line_10"
+    ],
+    "uuid": [
+      "line_11"
+    ],
+    "from_typing": [
+      "line_12"
+    ],
+    "from_functools": [
+      "line_13"
+    ],
+    "from_v10_7_foundations": [
+      "line_38",
+      "line_39"
+    ]
+  },
+  "function_signatures": {
+    "extract_job_profile": "extract_job_profile",
+    "extract_resume_profile": "extract_resume_profile",
+    "describe_experience": "describe_experience",
+    "detect_metrics": "detect_metrics",
+    "collect_sections": "collect_sections",
+    "missing_requirements": "missing_requirements",
+    "__init__": "__init__",
+    "_first": "_first",
+    "_build_plan": "_build_plan"
+  },
+  "class_signatures": {
+    "BaseAgent": "BaseAgent",
+    "BaseTool": "BaseTool",
+    "QueryComplexityClassifier": "QueryComplexityClassifier",
+    "ToTStrategistAgent": "ToTStrategistAgent",
+    "StrategyCoordinatorAgent": "StrategyCoordinatorAgent",
+    "StrategyStackV10_8": "StrategyStackV10_8",
+    "PromptEngineerAgent": "PromptEngineerAgent",
+    "PromptBuilderStack": "PromptBuilderStack",
+    "RAGPlanningStack": "RAGPlanningStack",
+    "DraftPlanningStack": "DraftPlanningStack",
+    "BulletPlanningStack": "BulletPlanningStack",
+    "ComplexityOutput": "ComplexityOutput",
+    "VoteOutput": "VoteOutput"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 30,
+    "cognitive_complexity": 24,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
