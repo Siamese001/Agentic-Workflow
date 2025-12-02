@@ -278,11 +278,11 @@ apps:
   rg:
     L1_cognition:
       P1_retrieve:
-        get_info:
+        get_resume_info:
           utility:
             prepare_information:
               prepare_resume_context.py: null
-              format_metadata.py: null
+              format_job_metadata.py: null
               build_search_filters.py: null
           understand_request:
             parse_job_description.py: null
@@ -348,7 +348,7 @@ apps:
               validate_resume_schema.py: null
               check_resume_compliance.py: null
               enforce_resume_contracts.py: null
-        use_tools:
+        use_resume_tools:
           routing:
             retry_task:
               retry_generation_failures.py: null
@@ -358,12 +358,12 @@ apps:
             execute_resume_generation.py: null
             generate_summary_section.py: null
             create_experience_bullets.py: null
-        update_state:
+        update_resume_state:
           utility:
             prepare_information:
               snapshot_resume_state.py: null
               serialize_generation_context.py: null
-              format_data.py: null
+              format_state_data.py: null
           update_memory:
             aggregate_resume_state.py: null
             merge_generation_history.py: null
@@ -387,13 +387,13 @@ apps:
             enforce_budget_limits.py: null
     L3_orchestration:
       P1_retrieve:
-        get_info:
+        get_resume_info:
           understand_request:
             orchestrate_resume_planning.py: null
             coordinate_section_generation.py: null
             manage_content_workflow.py: null
       P3_aggregate:
-        use_tools:
+        use_resume_tools:
           routing:
             retry_task:
               retry_generation_failures.py: null
@@ -418,18 +418,18 @@ apps:
               validate_orchestration_ethics.py: null
     L2_execution:
       P1_retrieve:
-        get_info:
+        get_resume_info:
           understand_request:
             orchestrate_execution_planning.py: null
             coordinate_execution_queries.py: null
             manage_execution_context.py: null
       P3_aggregate:
-        use_tools:
+        use_resume_tools:
           utility:
             prepare_information:
               prepare_generation_payload.py: null
               format_llm_prompt.py: null
-              serialize_data.py: null
+              serialize_resume_data.py: null
           use_a_tool:
             execute_resume_generation.py: null
             generate_summary_section.py: null
@@ -455,7 +455,7 @@ apps:
               validate_execution_ethics.py: null
     L4_memory:
       P1_retrieve:
-        get_info:
+        get_resume_info:
           embedding:
             compare_meaning:
               search_similar_resumes.py: null
@@ -493,11 +493,11 @@ apps:
   lic:
     L1_cognition:
       P1_retrieve:
-        get_info:
+        get_recipient_info:
           utility:
             prepare_information:
               prepare_outreach_context.py: null
-              format_metadata.py: null
+              format_recipient_metadata.py: null
               build_message_filters.py: null
           understand_request:
             parse_outreach_target.py: null
@@ -563,7 +563,7 @@ apps:
               validate_message_schema.py: null
               check_message_compliance.py: null
               enforce_message_contracts.py: null
-        use_tools:
+        use_message_tools:
           routing:
             retry_task:
               retry_generation_failures.py: null
@@ -578,7 +578,7 @@ apps:
             prepare_information:
               snapshot_campaign_state.py: null
               serialize_outreach_context.py: null
-              format_data.py: null
+              format_interaction_data.py: null
           update_memory:
             aggregate_campaign_state.py: null
             merge_outreach_history.py: null
@@ -602,13 +602,13 @@ apps:
             enforce_budget_limits.py: null
     L3_orchestration:
       P1_retrieve:
-        get_info:
+        get_recipient_info:
           understand_request:
             orchestrate_outreach_planning.py: null
             coordinate_message_generation.py: null
             manage_campaign_workflow.py: null
       P3_aggregate:
-        use_tools:
+        use_message_tools:
           routing:
             retry_task:
               retry_generation_failures.py: null
@@ -633,18 +633,18 @@ apps:
               validate_orchestration_ethics.py: null
     L2_execution:
       P1_retrieve:
-        get_info:
+        get_recipient_info:
           understand_request:
             orchestrate_execution_planning.py: null
             coordinate_execution_queries.py: null
             manage_execution_context.py: null
       P3_aggregate:
-        use_tools:
+        use_message_tools:
           utility:
             prepare_information:
               prepare_message_payload.py: null
               format_personalization_prompt.py: null
-              serialize_data.py: null
+              serialize_outreach_data.py: null
           use_a_tool:
             execute_message_generation.py: null
             generate_subject_line.py: null
@@ -670,7 +670,7 @@ apps:
               validate_execution_ethics.py: null
     L4_memory:
       P1_retrieve:
-        get_info:
+        get_recipient_info:
           embedding:
             compare_meaning:
               search_similar_messages.py: null
@@ -712,7 +712,7 @@ apps:
           utility:
             prepare_information:
               prepare_context.py: null
-              format_metadata.py: null
+              format_common_metadata.py: null
               build_generic_filters.py: null
           understand_request:
             parse_generic_query.py: null
@@ -749,7 +749,7 @@ apps:
             rank_generic_components.py: null
             prioritize_shared_elements.py: null
             order_universal_results.py: null
-        check_format:
+        check_data_format:
           policy:
             check_safety:
               validate_schema.py: null
@@ -772,7 +772,7 @@ apps:
               refine_generic_ranking.py: null
               adjust_universal_weights.py: null
               optimize_results.py: null
-        check_format:
+        check_data_format:
           policy:
             check_safety:
               validate_schema.py: null
@@ -793,7 +793,7 @@ apps:
             prepare_information:
               snapshot_state.py: null
               serialize_common_context.py: null
-              format_data.py: null
+              format_universal_data.py: null
           update_memory:
             aggregate_shared_state.py: null
             merge_common_contexts.py: null
@@ -859,7 +859,7 @@ apps:
             perform_generic_operation.py: null
             invoke_universal_tool.py: null
       P2_inspect:
-        check_format:
+        check_data_format:
           policy:
             check_safety:
               validate_schema.py: null
@@ -924,12 +924,12 @@ config:
             format_registry_context.py: null
             build_filters.py: null
         understand_request:
-          load_planning.py: null
+          load_config_planning.py: null
           parse_registry_settings.py: null
           extract_layer_parameters.py: null
-          retrieve_context.py: null
-          query_store.py: null
-          fetch_history.py: null
+          retrieve_config_context.py: null
+          query_config_store.py: null
+          fetch_config_history.py: null
         embedding:
           compare_meaning:
             search_vectors.py: null
@@ -966,9 +966,9 @@ config:
             compute_validation.py: null
       find_problems:
         update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
+          inspect_config_state.py: null
+          capture_config_diagnostics.py: null
+          log_config_inspection.py: null
     P3_aggregate:
       pick_best_result:
         refinement:
@@ -977,9 +977,9 @@ config:
             adjust_weights.py: null
             optimize_order.py: null
         understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+          rank_config_components.py: null
+          apply_config_algorithm.py: null
+          sort_config_results.py: null
       use_tools:
         routing:
           retry_task:
@@ -987,9 +987,9 @@ config:
             apply_backoff.py: null
             handle_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_config_action.py: null
+          invoke_config_service.py: null
+          process_config_response.py: null
       update_state:
         utility:
           prepare_information:
@@ -997,9 +997,9 @@ config:
             serialize_state.py: null
             format_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_config_state.py: null
+          merge_config_contexts.py: null
+          consolidate_config_updates.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1028,7 +1028,7 @@ config:
             implement_fallback.py: null
         use_a_tool:
           dispatch_config_tools.py: null
-          invoke_service.py: null
+          invoke_config_service.py: null
           call_config_api.py: null
     P4_safety:
       check_rules:
@@ -1074,7 +1074,7 @@ config:
         understand_request:
           retrieve_config_memory.py: null
           query_config_state.py: null
-          fetch_history.py: null
+          fetch_config_history.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1096,7 +1096,8 @@ config:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_config_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
@@ -1110,12 +1111,12 @@ data:
             format_context.py: null
             build_filters.py: null
         understand_request:
-          load_planning.py: null
-          parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
-          query_store.py: null
-          fetch_history.py: null
+          load_data_planning.py: null
+          parse_data_settings.py: null
+          extract_data_parameters.py: null
+          retrieve_data_context.py: null
+          query_data_store.py: null
+          fetch_data_history.py: null
         embedding:
           compare_meaning:
             search_vectors.py: null
@@ -1152,9 +1153,9 @@ data:
             compute_validation.py: null
       find_problems:
         update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
+          inspect_data_state.py: null
+          capture_data_diagnostics.py: null
+          log_data_inspection.py: null
     P3_aggregate:
       pick_best_result:
         refinement:
@@ -1163,9 +1164,9 @@ data:
             adjust_weights.py: null
             optimize_order.py: null
         understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+          rank_data_components.py: null
+          apply_data_algorithm.py: null
+          sort_data_results.py: null
       use_tools:
         routing:
           retry_task:
@@ -1173,9 +1174,9 @@ data:
             apply_backoff.py: null
             handle_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_data_action.py: null
+          invoke_data_service.py: null
+          process_data_response.py: null
       update_state:
         utility:
           prepare_information:
@@ -1183,9 +1184,9 @@ data:
             serialize_state.py: null
             format_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_data_state.py: null
+          merge_data_contexts.py: null
+          consolidate_data_updates.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1214,7 +1215,7 @@ data:
             implement_fallback.py: null
         use_a_tool:
           dispatch_data_tools.py: null
-          invoke_service.py: null
+          invoke_data_service.py: null
           call_data_api.py: null
     P4_safety:
       check_rules:
@@ -1260,7 +1261,7 @@ data:
         understand_request:
           retrieve_data_memory.py: null
           query_data_state.py: null
-          fetch_history.py: null
+          fetch_data_history.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1282,7 +1283,8 @@ data:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_data_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
@@ -1296,12 +1298,12 @@ observability:
             format_context.py: null
             build_filters.py: null
         understand_request:
-          load_planning.py: null
-          parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
-          query_store.py: null
-          fetch_history.py: null
+          load_observability_planning.py: null
+          parse_observability_settings.py: null
+          extract_observability_parameters.py: null
+          retrieve_observability_context.py: null
+          query_observability_store.py: null
+          fetch_observability_history.py: null
         embedding:
           compare_meaning:
             search_vectors.py: null
@@ -1338,9 +1340,9 @@ observability:
             compute_validation.py: null
       find_problems:
         update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
+          inspect_observability_state.py: null
+          capture_observability_diagnostics.py: null
+          log_observability_inspection.py: null
     P3_aggregate:
       pick_best_result:
         refinement:
@@ -1349,9 +1351,9 @@ observability:
             adjust_weights.py: null
             optimize_order.py: null
         understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+          rank_observability_components.py: null
+          apply_observability_algorithm.py: null
+          sort_observability_results.py: null
       use_tools:
         routing:
           retry_task:
@@ -1359,9 +1361,9 @@ observability:
             apply_backoff.py: null
             handle_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_observability_action.py: null
+          invoke_observability_service.py: null
+          process_observability_response.py: null
       update_state:
         utility:
           prepare_information:
@@ -1369,9 +1371,9 @@ observability:
             serialize_state.py: null
             format_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_observability_state.py: null
+          merge_observability_contexts.py: null
+          consolidate_observability_updates.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1400,7 +1402,7 @@ observability:
             implement_fallback.py: null
         use_a_tool:
           dispatch_observability_tools.py: null
-          invoke_service.py: null
+          invoke_observability_service.py: null
           call_observability_api.py: null
     P4_safety:
       check_rules:
@@ -1446,7 +1448,7 @@ observability:
         understand_request:
           retrieve_observability_memory.py: null
           query_observability_state.py: null
-          fetch_history.py: null
+          fetch_observability_history.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1468,7 +1470,8 @@ observability:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_observability_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
@@ -1478,7 +1481,7 @@ prompt_governance:
       get_prompt_info:
         utility:
           prepare_information:
-            prepare_payload.py: null
+            prepare_prompt_payload.py: null
             format_prompt_context.py: null
             build_prompt_filters.py: null
         understand_request:
@@ -1514,9 +1517,9 @@ prompt_governance:
       check_prompt_structure:
         policy:
           check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
+            validate_prompt_schema.py: null
+            check_prompt_compliance.py: null
+            enforce_prompt_contracts.py: null
         semantic:
           adjust_scores:
             validate_prompt_quality.py: null
@@ -1545,26 +1548,26 @@ prompt_governance:
             apply_prompt_backoff.py: null
             handle_prompt_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_prompt_action.py: null
+          invoke_prompt_service.py: null
+          process_prompt_response.py: null
       update_prompt_state:
         utility:
           prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
+            prepare_prompt_snapshot.py: null
+            serialize_prompt_state.py: null
+            format_prompt_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_prompt_state.py: null
+          merge_prompt_contexts.py: null
+          consolidate_prompt_updates.py: null
     P4_safety:
       check_prompt_rules:
         policy:
           check_safety:
-            apply_safety.py: null
+            apply_prompt_safety.py: null
             enforce_prompt_filters.py: null
-            validate_ethics.py: null
+            validate_prompt_ethics.py: null
       manage_prompt_costs:
         update_memory:
           update_prompt_budget.py: null
@@ -1586,7 +1589,7 @@ prompt_governance:
             implement_prompt_fallback.py: null
         use_a_tool:
           dispatch_prompt_tools.py: null
-          invoke_service.py: null
+          invoke_prompt_service.py: null
           call_prompt_api.py: null
     P4_safety:
       check_prompt_rules:
@@ -1654,7 +1657,8 @@ prompt_governance:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_prompt_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
@@ -1668,12 +1672,12 @@ runtime:
             format_context.py: null
             build_filters.py: null
         understand_request:
-          load_planning.py: null
-          parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
-          query_store.py: null
-          fetch_history.py: null
+          load_runtime_planning.py: null
+          parse_runtime_settings.py: null
+          extract_runtime_parameters.py: null
+          retrieve_runtime_context.py: null
+          query_runtime_store.py: null
+          fetch_runtime_history.py: null
         embedding:
           compare_meaning:
             search_vectors.py: null
@@ -1710,9 +1714,9 @@ runtime:
             compute_validation.py: null
       find_problems:
         update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
+          inspect_runtime_state.py: null
+          capture_runtime_diagnostics.py: null
+          log_runtime_inspection.py: null
     P3_aggregate:
       pick_best_result:
         refinement:
@@ -1721,9 +1725,9 @@ runtime:
             adjust_weights.py: null
             optimize_order.py: null
         understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+          rank_runtime_components.py: null
+          apply_runtime_algorithm.py: null
+          sort_runtime_results.py: null
       use_tools:
         routing:
           retry_task:
@@ -1731,9 +1735,9 @@ runtime:
             apply_backoff.py: null
             handle_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_runtime_action.py: null
+          invoke_runtime_service.py: null
+          process_runtime_response.py: null
       update_state:
         utility:
           prepare_information:
@@ -1741,9 +1745,9 @@ runtime:
             serialize_state.py: null
             format_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_runtime_state.py: null
+          merge_runtime_contexts.py: null
+          consolidate_runtime_updates.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1772,7 +1776,7 @@ runtime:
             implement_fallback.py: null
         use_a_tool:
           dispatch_runtime_tools.py: null
-          invoke_service.py: null
+          invoke_runtime_service.py: null
           call_runtime_api.py: null
     P4_safety:
       check_rules:
@@ -1818,7 +1822,7 @@ runtime:
         understand_request:
           retrieve_runtime_memory.py: null
           query_runtime_state.py: null
-          fetch_history.py: null
+          fetch_runtime_history.py: null
     P4_safety:
       check_rules:
         policy:
@@ -1840,7 +1844,8 @@ runtime:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_runtime_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
@@ -1850,7 +1855,7 @@ schemas:
       get_schema_info:
         utility:
           prepare_information:
-            prepare_payload.py: null
+            prepare_schema_payload.py: null
             format_schema_context.py: null
             build_schema_filters.py: null
         understand_request:
@@ -1886,9 +1891,9 @@ schemas:
       check_schema_structure:
         policy:
           check_safety:
-            validate_schema.py: null
-            check_compliance.py: null
-            enforce_contracts.py: null
+            validate_schema_schema.py: null
+            check_schema_compliance.py: null
+            enforce_schema_contracts.py: null
         semantic:
           adjust_scores:
             validate_schema_quality.py: null
@@ -1917,26 +1922,26 @@ schemas:
             apply_schema_backoff.py: null
             handle_schema_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_schema_action.py: null
+          invoke_schema_service.py: null
+          process_schema_response.py: null
       update_schema_state:
         utility:
           prepare_information:
-            prepare_snapshot.py: null
-            serialize_state.py: null
-            format_payload.py: null
+            prepare_schema_snapshot.py: null
+            serialize_schema_state.py: null
+            format_schema_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_schema_state.py: null
+          merge_schema_contexts.py: null
+          consolidate_schema_updates.py: null
     P4_safety:
       check_schema_rules:
         policy:
           check_safety:
-            apply_safety.py: null
+            apply_schema_safety.py: null
             enforce_schema_filters.py: null
-            validate_ethics.py: null
+            validate_schema_ethics.py: null
       manage_schema_costs:
         update_memory:
           update_schema_budget.py: null
@@ -1958,7 +1963,7 @@ schemas:
             implement_schema_fallback.py: null
         use_a_tool:
           dispatch_schema_tools.py: null
-          invoke_service.py: null
+          invoke_schema_service.py: null
           call_schema_api.py: null
     P4_safety:
       check_schema_rules:
@@ -2026,7 +2031,8 @@ schemas:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_schema_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
@@ -2040,12 +2046,12 @@ scripts:
             format_context.py: null
             build_filters.py: null
         understand_request:
-          load_planning.py: null
-          parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
-          query_store.py: null
-          fetch_history.py: null
+          load_scripts_planning.py: null
+          parse_scripts_settings.py: null
+          extract_scripts_parameters.py: null
+          retrieve_scripts_context.py: null
+          query_scripts_store.py: null
+          fetch_scripts_history.py: null
         embedding:
           compare_meaning:
             search_vectors.py: null
@@ -2082,9 +2088,9 @@ scripts:
             compute_validation.py: null
       find_problems:
         update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
+          inspect_scripts_state.py: null
+          capture_scripts_diagnostics.py: null
+          log_scripts_inspection.py: null
     P3_aggregate:
       pick_best_result:
         refinement:
@@ -2093,9 +2099,9 @@ scripts:
             adjust_weights.py: null
             optimize_order.py: null
         understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+          rank_scripts_components.py: null
+          apply_scripts_algorithm.py: null
+          sort_scripts_results.py: null
       use_tools:
         routing:
           retry_task:
@@ -2103,9 +2109,9 @@ scripts:
             apply_backoff.py: null
             handle_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_scripts_action.py: null
+          invoke_scripts_service.py: null
+          process_scripts_response.py: null
       update_state:
         utility:
           prepare_information:
@@ -2113,9 +2119,9 @@ scripts:
             serialize_state.py: null
             format_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_scripts_state.py: null
+          merge_scripts_contexts.py: null
+          consolidate_scripts_updates.py: null
     P4_safety:
       check_rules:
         policy:
@@ -2144,7 +2150,7 @@ scripts:
             implement_fallback.py: null
         use_a_tool:
           dispatch_scripts_tools.py: null
-          invoke_service.py: null
+          invoke_scripts_service.py: null
           call_scripts_api.py: null
     P4_safety:
       check_rules:
@@ -2190,7 +2196,7 @@ scripts:
         understand_request:
           retrieve_scripts_memory.py: null
           query_scripts_state.py: null
-          fetch_history.py: null
+          fetch_scripts_history.py: null
     P4_safety:
       check_rules:
         policy:
@@ -2212,7 +2218,8 @@ scripts:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_scripts_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
@@ -2226,12 +2233,12 @@ tests:
             format_context.py: null
             build_filters.py: null
         understand_request:
-          load_planning.py: null
-          parse_settings.py: null
-          extract_parameters.py: null
-          retrieve_context.py: null
-          query_store.py: null
-          fetch_history.py: null
+          load_tests_planning.py: null
+          parse_tests_settings.py: null
+          extract_tests_parameters.py: null
+          retrieve_tests_context.py: null
+          query_tests_store.py: null
+          fetch_tests_history.py: null
         embedding:
           compare_meaning:
             search_vectors.py: null
@@ -2268,9 +2275,9 @@ tests:
             compute_validation.py: null
       find_problems:
         update_memory:
-          inspect_state.py: null
-          capture_diagnostics.py: null
-          log_inspection.py: null
+          inspect_tests_state.py: null
+          capture_tests_diagnostics.py: null
+          log_tests_inspection.py: null
     P3_aggregate:
       pick_best_result:
         refinement:
@@ -2279,9 +2286,9 @@ tests:
             adjust_weights.py: null
             optimize_order.py: null
         understand_request:
-          rank_components.py: null
-          apply_algorithm.py: null
-          sort_results.py: null
+          rank_tests_components.py: null
+          apply_tests_algorithm.py: null
+          sort_tests_results.py: null
       use_tools:
         routing:
           retry_task:
@@ -2289,9 +2296,9 @@ tests:
             apply_backoff.py: null
             handle_failures.py: null
         use_a_tool:
-          execute_action.py: null
-          invoke_service.py: null
-          process_response.py: null
+          execute_tests_action.py: null
+          invoke_tests_service.py: null
+          process_tests_response.py: null
       update_state:
         utility:
           prepare_information:
@@ -2299,9 +2306,9 @@ tests:
             serialize_state.py: null
             format_payload.py: null
         update_memory:
-          aggregate_state.py: null
-          merge_contexts.py: null
-          consolidate_updates.py: null
+          aggregate_tests_state.py: null
+          merge_tests_contexts.py: null
+          consolidate_tests_updates.py: null
     P4_safety:
       check_rules:
         policy:
@@ -2330,7 +2337,7 @@ tests:
             implement_fallback.py: null
         use_a_tool:
           dispatch_tests_tools.py: null
-          invoke_service.py: null
+          invoke_tests_service.py: null
           call_tests_api.py: null
     P4_safety:
       check_rules:
@@ -2376,7 +2383,7 @@ tests:
         understand_request:
           retrieve_tests_memory.py: null
           query_tests_state.py: null
-          fetch_history.py: null
+          fetch_tests_history.py: null
     P4_safety:
       check_rules:
         policy:
@@ -2398,7 +2405,8 @@ tests:
             compute_safety_score.py: null
             evaluate_safety_compliance.py: null
         manage_tests_costs:
-          update_memory:
+          general:
+            update_memory:
               track_safety_cost.py: null
               update_safety_usage.py: null
               enforce_safety_budget.py: null
