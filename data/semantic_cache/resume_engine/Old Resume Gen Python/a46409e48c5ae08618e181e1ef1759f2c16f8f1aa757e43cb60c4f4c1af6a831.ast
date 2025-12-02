@@ -16,8 +16,8 @@
       "docstring": "Load Amit Ayer's master resume from uploaded JSON.",
       "imports": [],
       "dependencies": [
-        "print",
-        "open"
+        "open",
+        "print"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -143,9 +143,9 @@
       "docstring": "Calculate elasticity multiplier using non-linear curve.",
       "imports": [],
       "dependencies": [
+        "abs",
         "max",
-        "min",
-        "abs"
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -183,8 +183,8 @@
       "docstring": "Score coherence of a section based on bullet word count consistency.",
       "imports": [],
       "dependencies": [
-        "sum",
         "float",
+        "sum",
         "len"
       ],
       "responsibility_level": "L1",
@@ -197,8 +197,8 @@
       "docstring": "Score a bullet based on keyword density and quality metrics.",
       "imports": [],
       "dependencies": [
-        "sum",
         "any",
+        "sum",
         "min",
         "len"
       ],
@@ -248,11 +248,11 @@
       "docstring": "Run all 6 QA gates.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "abs",
-        "len",
         "SignalElasticityModel",
-        "all"
+        "sum",
+        "len",
+        "all",
+        "abs"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -296,9 +296,9 @@
       "docstring": "Initialize pipeline.",
       "imports": [],
       "dependencies": [
-        "BaselineResumeMetricsV5",
+        "MasterResume",
         "print",
-        "MasterResume"
+        "BaselineResumeMetricsV5"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -374,9 +374,9 @@
       "docstring": "Calculate signals with elasticity models.",
       "imports": [],
       "dependencies": [
-        "sum",
         "len",
         "SignalElasticityModel",
+        "sum",
         "SectionCoherenceScorer"
       ],
       "responsibility_level": "L5",
@@ -414,9 +414,9 @@
       "docstring": "Calculate final signals with bonuses/penalties.",
       "imports": [],
       "dependencies": [
+        "SignalElasticityModel",
         "max",
-        "min",
-        "SignalElasticityModel"
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []

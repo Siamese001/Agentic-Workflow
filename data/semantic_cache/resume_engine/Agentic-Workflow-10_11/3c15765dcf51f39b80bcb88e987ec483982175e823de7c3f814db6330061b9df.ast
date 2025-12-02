@@ -16,8 +16,8 @@
       "docstring": "Security validation levels for resume workflow state data.\n\nEnsures appropriate protection for resume job alignment processing.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -116,10 +116,10 @@
       "imports": [],
       "dependencies": [
         "any",
-        "StateValidationError",
+        "enumerate",
         "isinstance",
         "len",
-        "enumerate",
+        "StateValidationError",
         "type"
       ],
       "responsibility_level": "L5",
@@ -159,8 +159,8 @@
       "docstring": "Sanitizes input value for resume workflow security processing.",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

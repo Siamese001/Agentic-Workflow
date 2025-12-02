@@ -68,9 +68,9 @@
       "docstring": "Select top 12 skills based on JD keyword matching.",
       "imports": [],
       "dependencies": [
+        "sorted",
         "enumerate",
-        "len",
-        "sorted"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -82,9 +82,9 @@
       "docstring": "Initialize pipeline with all components.",
       "imports": [],
       "dependencies": [
+        "MasterResume",
         "BaselineWordCounts",
-        "SkillsPool",
-        "MasterResume"
+        "SkillsPool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -111,8 +111,8 @@
       "dependencies": [
         "set",
         "max",
-        "len",
-        "list"
+        "list",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -124,8 +124,8 @@
       "docstring": "HOP-2: Map JD requirements to master resume content.\n\nReturns:\n    Dict with mapped content and relevance scores",
       "imports": [],
       "dependencies": [
-        "sum",
         "max",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -165,8 +165,8 @@
       "docstring": "HOP-5: Calculate signal percentages for each section.\n\nSignal = keywords matched / total keywords",
       "imports": [],
       "dependencies": [
-        "sum",
         "max",
+        "sum",
         "min",
         "len"
       ],
@@ -180,9 +180,9 @@
       "docstring": "HOP-6: Run validation gates on all generated content.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "max",
         "abs",
+        "max",
+        "sum",
         "all"
       ],
       "responsibility_level": "L5",

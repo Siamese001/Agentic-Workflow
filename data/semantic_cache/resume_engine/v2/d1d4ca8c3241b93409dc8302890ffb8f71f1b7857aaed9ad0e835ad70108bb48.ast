@@ -150,8 +150,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "render_method",
-        "getattr"
+        "getattr",
+        "render_method"
       ],
       "responsibility_level": "L4",
       "children": []
@@ -187,8 +187,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "type",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",

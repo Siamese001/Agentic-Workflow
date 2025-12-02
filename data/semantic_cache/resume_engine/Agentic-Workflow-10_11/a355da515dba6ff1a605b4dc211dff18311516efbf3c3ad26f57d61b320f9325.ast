@@ -28,8 +28,8 @@
       "docstring": "Severity levels for resume workflow safety findings.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -41,8 +41,8 @@
       "docstring": "Final verdict for resume workflow safety checks.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -54,8 +54,8 @@
       "docstring": "Types of safety findings for resume workflow operations.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

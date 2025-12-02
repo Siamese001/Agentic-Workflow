@@ -16,8 +16,8 @@
       "docstring": "Fix imports in a single file. Returns True if changes were made.",
       "imports": [],
       "dependencies": [
-        "print",
-        "open"
+        "open",
+        "print"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,12 +29,12 @@
       "docstring": "Fix all Python files in the repository.",
       "imports": [],
       "dependencies": [
-        "fix_file",
         "any",
-        "len",
-        "str",
         "print",
-        "sorted"
+        "str",
+        "len",
+        "sorted",
+        "fix_file"
       ],
       "responsibility_level": "L1",
       "children": []

@@ -16,8 +16,8 @@
       "docstring": "Entity types for resume job alignment knowledge graph.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

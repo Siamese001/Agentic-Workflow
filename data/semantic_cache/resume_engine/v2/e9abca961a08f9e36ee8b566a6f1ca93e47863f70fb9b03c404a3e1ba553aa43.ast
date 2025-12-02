@@ -139,9 +139,9 @@
       "docstring": "Executes a function call with circuit breaker protection.",
       "imports": [],
       "dependencies": [
-        "timedelta",
         "func",
-        "CircuitBreakerOpenError"
+        "CircuitBreakerOpenError",
+        "timedelta"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -163,12 +163,12 @@
       "docstring": "Executes a phase function with retry logic.",
       "imports": [],
       "dependencies": [
+        "range",
         "isinstance",
         "len",
-        "type",
+        "RuntimeError",
         "ValueError",
-        "range",
-        "RuntimeError"
+        "type"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -180,9 +180,9 @@
       "docstring": "Calculates exponential backoff with jitter.",
       "imports": [],
       "dependencies": [
+        "getattr",
         "max",
-        "min",
-        "getattr"
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -194,9 +194,9 @@
       "docstring": "Executes a function with a POSIX signal-based timeout.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "func",
-        "PhaseTimeoutError"
+        "PhaseTimeoutError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -244,12 +244,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "CircuitBreaker",
-        "PhaseExecutor",
-        "TelemetryLogger",
         "str",
-        "WebSearchTool",
-        "LibrarianAgent"
+        "TelemetryLogger",
+        "CircuitBreaker",
+        "LibrarianAgent",
+        "PhaseExecutor",
+        "WebSearchTool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -300,8 +300,8 @@
       "docstring": "Extract ThematicAnalysis from a cached Librarian document.\n\nThe document format is created by _format_mission_document.\nWe need to parse it back into a ThematicAnalysis object.",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "ThematicAnalysis",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",
@@ -352,9 +352,9 @@
       "docstring": "Synthesizes PartialRAGResult into final ThematicAnalysis.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
-        "CompetitiveIntelligence",
         "ThematicAnalysis",
+        "CompetitiveIntelligence",
+        "RetrievalSource",
         "getattr"
       ],
       "responsibility_level": "L5",
@@ -389,11 +389,11 @@
       "docstring": "Converts a dictionary to ThematicAnalysis dataclass.\nUsed by StateSerializer for deserialization.",
       "imports": [],
       "dependencies": [
-        "setattr",
-        "CompetitiveIntelligence",
         "isinstance",
         "ThematicAnalysis",
-        "RetrievalSource"
+        "RetrievalSource",
+        "CompetitiveIntelligence",
+        "setattr"
       ],
       "responsibility_level": "L5",
       "children": []

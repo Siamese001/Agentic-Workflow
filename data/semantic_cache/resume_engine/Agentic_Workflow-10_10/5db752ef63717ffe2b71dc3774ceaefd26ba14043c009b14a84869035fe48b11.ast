@@ -422,13 +422,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "cls",
+        "StrategyResult",
         "QAResult",
-        "DraftingResult",
-        "SafetyFinding",
         "RAGResult",
-        "SafetyResult",
-        "StrategyResult"
+        "DraftingResult",
+        "cls",
+        "SafetyFinding",
+        "SafetyResult"
       ],
       "responsibility_level": "L5",
       "children": []

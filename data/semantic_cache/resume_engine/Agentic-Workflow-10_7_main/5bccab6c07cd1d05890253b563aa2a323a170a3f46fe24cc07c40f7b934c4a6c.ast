@@ -83,9 +83,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_write_file",
+        "_render_file",
         "_flat_filename",
-        "_render_file"
+        "_write_file"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -107,14 +107,14 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "_generate_files",
-        "_clean_existing",
-        "str",
         "print",
-        "Path",
+        "str",
+        "_clean_existing",
+        "len",
         "_discover_sources",
-        "_ensure_init_file"
+        "_ensure_init_file",
+        "Path",
+        "_generate_files"
       ],
       "responsibility_level": "L1",
       "children": []

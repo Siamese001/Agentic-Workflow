@@ -74,10 +74,10 @@
       "docstring": "Initialize default services for the container.",
       "imports": [],
       "dependencies": [
-        "SafetyEngine",
         "PineconeAdapter",
-        "get_container",
-        "PineconeConfig"
+        "PineconeConfig",
+        "SafetyEngine",
+        "get_container"
       ],
       "responsibility_level": "L2",
       "children": []

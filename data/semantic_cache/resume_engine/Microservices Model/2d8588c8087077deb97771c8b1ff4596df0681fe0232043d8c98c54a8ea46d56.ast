@@ -36,15 +36,15 @@
       "docstring": "Executes the HOP-7 rendering logic.",
       "imports": [],
       "dependencies": [
-        "DynamicMarkdownRenderer",
+        "print",
         "setup_workflow_logging",
         "len",
-        "exit",
-        "HopExecutionError",
-        "HighSignalAppTracker",
-        "print",
         "open",
-        "Path"
+        "exit",
+        "Path",
+        "HopExecutionError",
+        "DynamicMarkdownRenderer",
+        "HighSignalAppTracker"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -87,8 +87,8 @@
       "imports": [],
       "dependencies": [
         "str",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

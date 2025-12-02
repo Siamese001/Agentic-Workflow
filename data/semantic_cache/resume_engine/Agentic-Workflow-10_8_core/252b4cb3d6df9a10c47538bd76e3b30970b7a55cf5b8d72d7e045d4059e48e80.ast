@@ -36,8 +36,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -104,9 +104,9 @@
       "docstring": "Deterministic selection:\n- Highest score wins\n- Ties broken by smallest id",
       "imports": [],
       "dependencies": [
-        "int",
+        "sorted",
         "float",
-        "sorted"
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -148,8 +148,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -236,11 +236,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "summarize_graph",
-        "delegation_metadata",
-        "StatePatch",
         "route_to_specialist",
-        "deterministic_vote"
+        "StatePatch",
+        "deterministic_vote",
+        "delegation_metadata",
+        "summarize_graph"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -274,11 +274,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "summarize_graph",
-        "delegation_metadata",
-        "StatePatch",
         "route_to_specialist",
-        "deterministic_vote"
+        "StatePatch",
+        "deterministic_vote",
+        "delegation_metadata",
+        "summarize_graph"
       ],
       "responsibility_level": "L5",
       "children": []

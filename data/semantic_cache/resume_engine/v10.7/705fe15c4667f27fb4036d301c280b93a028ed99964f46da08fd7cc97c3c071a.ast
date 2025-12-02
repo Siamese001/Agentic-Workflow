@@ -68,11 +68,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "DummyEmbeddingFunction",
+        "FakeCollection",
         "FakeChromaClient",
         "CacheManager",
-        "InMemoryRedis",
-        "FakeCollection"
+        "DummyEmbeddingFunction",
+        "InMemoryRedis"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -84,20 +84,20 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "DummyEmbeddingFunction",
-        "ProposedRulesLoader",
-        "MetricsCollector",
-        "SemanticValidator",
-        "FakeChromaClient",
-        "FeedbackLogReader",
-        "ContextBudgetManager",
-        "PromptTemplateManager",
-        "ResponseValidator",
-        "CostTracker",
-        "CacheManager",
-        "InMemoryRedis",
         "WorkflowContext",
-        "FakeCollection"
+        "FakeCollection",
+        "FakeChromaClient",
+        "CacheManager",
+        "ProposedRulesLoader",
+        "SemanticValidator",
+        "ContextBudgetManager",
+        "MetricsCollector",
+        "ResponseValidator",
+        "DummyEmbeddingFunction",
+        "CostTracker",
+        "FeedbackLogReader",
+        "InMemoryRedis",
+        "PromptTemplateManager"
       ],
       "responsibility_level": "L5",
       "children": []

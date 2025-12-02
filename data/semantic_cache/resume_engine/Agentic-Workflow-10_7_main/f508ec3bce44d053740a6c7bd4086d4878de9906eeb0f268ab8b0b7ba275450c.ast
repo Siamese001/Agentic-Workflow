@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\qa_validation_stack.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_stacks_v10_8\\qa_validation_stack.py",
     "file_hash": "f508ec3bce44d053740a6c7bd4086d4878de9906eeb0f268ab8b0b7ba275450c",
     "size_bytes": 10378,
-    "last_modified": "2025-12-01T12:27:41.077041",
+    "last_modified": "2025-12-01T12:27:42.083944",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -39,8 +39,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "tool_cls",
-        "tuple"
+        "tuple",
+        "tool_cls"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -64,8 +64,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

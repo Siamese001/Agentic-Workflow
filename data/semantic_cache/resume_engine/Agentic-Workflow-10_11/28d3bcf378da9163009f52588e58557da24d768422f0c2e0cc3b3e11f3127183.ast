@@ -16,8 +16,8 @@
       "docstring": "Defines events that trigger automatic r\u00e9sum\u00e9 data consistency checks and repairs.\n\nImproves r\u00e9sum\u00e9 reliability by ensuring career data is continuously monitored and corrected.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Tracks progress of r\u00e9sum\u00e9 data consistency repair and validation operations.\n\nImproves r\u00e9sum\u00e9 quality monitoring by providing clear status updates for data fixing processes.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -94,9 +94,9 @@
       "docstring": "Creates directed acyclic graph for systematic r\u00e9sum\u00e9 data repair and validation workflow.\n\nImproves r\u00e9sum\u00e9 processing by organizing conflict detection and resolution into efficient execution steps.",
       "imports": [],
       "dependencies": [
+        "DagGraph",
         "DagNode",
-        "DagEdge",
-        "DagGraph"
+        "DagEdge"
       ],
       "responsibility_level": "L5",
       "children": []

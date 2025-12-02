@@ -46,14 +46,14 @@
       "docstring": "Execute HOP-3 Artist generation with configuration integration",
       "imports": [],
       "dependencies": [
+        "print",
         "setup_workflow_logging",
+        "ArtistGenerator",
+        "open",
         "len",
         "exit",
-        "HopExecutionError",
-        "print",
-        "open",
         "Path",
-        "ArtistGenerator"
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -117,9 +117,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "set",
         "MockGeminiClient",
-        "EmbeddingClient",
-        "set"
+        "EmbeddingClient"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -151,9 +151,9 @@
       "docstring": "Generate target embeddings from HOP-0 thematic analysis",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "len",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -179,8 +179,8 @@
       "imports": [],
       "dependencies": [
         "enhance_system_prompt_with_reasoning",
-        "len",
-        "range"
+        "range",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -204,8 +204,8 @@
       "docstring": "Main generation orchestrator",
       "imports": [],
       "dependencies": [
-        "list",
         "str",
+        "list",
         "len"
       ],
       "responsibility_level": "L5",

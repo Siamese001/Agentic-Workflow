@@ -16,8 +16,8 @@
       "docstring": "Build a SUCCESS NodeResult for the given node and payload.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "NodeResult"
+        "NodeResult",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Build an error NodeResult for the given node.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "NodeResult"
+        "NodeResult",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -67,10 +67,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "NodeStatus",
         "WorkflowError",
         "dict",
-        "isinstance"
+        "isinstance",
+        "NodeStatus"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -118,9 +118,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "setattr",
         "RobustnessStack",
-        "getattr"
+        "getattr",
+        "setattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -133,8 +133,8 @@
       "imports": [],
       "dependencies": [
         "_get_robustness_stack",
-        "func",
         "wraps",
+        "func",
         "len"
       ],
       "responsibility_level": "L5",
@@ -147,14 +147,14 @@
       "docstring": "Apply all orchestration policies in a single, deterministic location.",
       "imports": [],
       "dependencies": [
-        "apply_robustness",
-        "getattr",
         "_extract_node_payload",
-        "fn",
-        "wrap_mcp",
-        "_ensure_node_result",
+        "getattr",
+        "apply_robustness",
         "wrapped",
-        "get_timeout_decorator"
+        "fn",
+        "get_timeout_decorator",
+        "wrap_mcp",
+        "_ensure_node_result"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -166,13 +166,13 @@
       "docstring": "v10.7 (Fix #6): Creates a decorator bound to an explicit timeout.",
       "imports": [],
       "dependencies": [
-        "func",
-        "wraps",
+        "float",
         "getattr",
-        "hasattr",
-        "repr",
         "WorkflowTimeoutError",
-        "float"
+        "wraps",
+        "func",
+        "repr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -184,13 +184,13 @@
       "docstring": "v10.7 (Fix #7): Scans the generated_tools_path and dynamically\nloads any valid BaseTool subclasses.",
       "imports": [],
       "dependencies": [
-        "issubclass",
         "getattr",
+        "MCPClientStub",
         "isinstance",
-        "obj",
         "WorkflowError",
-        "ImportError",
-        "MCPClientStub"
+        "issubclass",
+        "obj",
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -251,8 +251,8 @@
       "imports": [],
       "dependencies": [
         "human_in_the_loop",
-        "_is_hil_runtime_enabled",
-        "node_success"
+        "node_success",
+        "_is_hil_runtime_enabled"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -288,11 +288,11 @@
       "docstring": "Node 7 conditional driven primarily by arbitration decisions.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "max",
-        "len",
         "_extract_node_payload",
         "_get_robustness_stack",
+        "sum",
+        "len",
+        "max",
         "_read_arbitration_route"
       ],
       "responsibility_level": "L5",
@@ -305,9 +305,9 @@
       "docstring": "Node 9 conditional prioritizing arbitration + centralized resilience.",
       "imports": [],
       "dependencies": [
+        "_extract_node_payload",
         "_get_robustness_stack",
-        "_read_arbitration_route",
-        "_extract_node_payload"
+        "_read_arbitration_route"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -343,10 +343,10 @@
       "docstring": "Conditional guard to stop the graph when HIL loop bounds are exceeded.",
       "imports": [],
       "dependencies": [
-        "_get_hil_max_reentry_loops",
-        "_is_hil_runtime_enabled",
+        "_extract_node_payload",
         "_get_current_hil_retries",
-        "_extract_node_payload"
+        "_get_hil_max_reentry_loops",
+        "_is_hil_runtime_enabled"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -368,9 +368,9 @@
       "docstring": "Read the configured HIL loop budget, defaulting to a conservative value.",
       "imports": [],
       "dependencies": [
-        "int",
+        "getattr",
         "max",
-        "getattr"
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -394,8 +394,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "bool",
-        "getattr"
+        "getattr",
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -407,9 +407,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "getattr",
         "_hil_stack_configured",
-        "bool",
-        "getattr"
+        "bool"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -421,9 +421,9 @@
       "docstring": "Increment the HIL retry counter and signal whether another loop is permitted.",
       "imports": [],
       "dependencies": [
-        "int",
+        "getattr",
         "max",
-        "getattr"
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -437,11 +437,11 @@
       "dependencies": [
         "bool",
         "getattr",
-        "StateGraph",
         "register_node",
+        "_hil_stack_configured",
         "add_node_with_policies",
-        "partial",
-        "_hil_stack_configured"
+        "StateGraph",
+        "partial"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -454,8 +454,8 @@
       "imports": [],
       "dependencies": [
         "_get_robustness_stack",
-        "func",
         "wraps",
+        "func",
         "len"
       ],
       "responsibility_level": "L5",
@@ -468,12 +468,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "wraps",
         "getattr",
-        "hasattr",
+        "WorkflowTimeoutError",
+        "wraps",
+        "func",
         "repr",
-        "WorkflowTimeoutError"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -485,24 +485,24 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "QANarrativeThreadTool",
+        "QASemanticEntailmentTool",
+        "QAJDSkillsValidatorTool",
+        "QABiasDetectorTool",
+        "QAMissedOpportunityTool",
         "QAWordCountValidatorTool",
         "CircuitBreaker",
-        "QAJDSkillsValidatorTool",
-        "QAThematicAlignmentTool",
-        "QASignalScoreValidatorTool",
-        "QATenureValidatorTool",
-        "QASemanticEntailmentTool",
-        "QANarrativeThreadTool",
-        "UIFireEventTool",
-        "QAAdversarialReviewerTool",
-        "QABiasDetectorTool",
         "WorkflowError",
-        "super",
-        "load_dynamic_tools",
-        "QAToneValidatorTool",
         "UIUpdateElementTool",
-        "QAMissedOpportunityTool",
-        "QAClaimValidatorTool"
+        "QATenureValidatorTool",
+        "QAThematicAlignmentTool",
+        "QAAdversarialReviewerTool",
+        "QAToneValidatorTool",
+        "super",
+        "QASignalScoreValidatorTool",
+        "load_dynamic_tools",
+        "QAClaimValidatorTool",
+        "UIFireEventTool"
       ],
       "responsibility_level": "L5",
       "children": []

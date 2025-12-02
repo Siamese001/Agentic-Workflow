@@ -68,13 +68,13 @@
       "docstring": "Return a new RetrievalConfig adjusted by meta_profile biases.\n\nMeta influences:\n\n    \u2022 routing_bias.prefer_fast:\n        - reduce max_items (e.g., by half)\n    \u2022 routing_bias.prefer_robust_retrieval:\n        - enforce hybrid ranking, slightly more items\n    \u2022 planning_bias.conservative:\n        - increase max_items (more coverage)\n    \u2022 qa_bias.recent_failures:\n        - increase max_items (more evidence)\n    \u2022 safety_bias.heightened_caution:\n        - add flag in metadata for optional downstream filtering\n\nAll behavior is deterministic and side-effect-free; original cfg is\nnot mutated.",
       "imports": [],
       "dependencies": [
-        "get_routing_bias",
         "max",
         "dict",
+        "get_routing_bias",
         "RetrievalConfig",
+        "get_safety_bias",
         "get_planning_bias",
-        "get_qa_bias",
-        "get_safety_bias"
+        "get_qa_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -86,8 +86,8 @@
       "docstring": "Apply very light deterministic filtering for obviously risky items.\n\nFor now, this is deliberately simple and hard-coded. It is meant to\nsupport heightened_caution flows by removing items that contain\nhighly suspicious markers in 'evidence'.",
       "imports": [],
       "dependencies": [
-        "str",
-        "any"
+        "any",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -99,17 +99,17 @@
       "docstring": "Normalize raw retrieval results into a canonical RetrievalResult.\n\nSteps:\n    0. Apply meta_profile biases to RetrievalConfig.\n    1. Normalize raw dicts into {query, evidence, rank}.\n    2. Deduplicate identical (query, evidence) pairs.\n    3. Apply ranking strategy (bm25/dense/hybrid).\n    4. Rerank & fuse results (single-source).\n    5. Limit items to config.max_items.\n    6. Optionally filter for basic safety when heightened_caution.\n    7. Normalize to RAG-style items with metadata.\n    8. Return RetrievalResult with RetrievalItem objects.\n\nThis function does NOT call any external services; it operates on\nalready-fetched raw results (e.g., from a DB, vector store, or LLM).",
       "imports": [],
       "dependencies": [
-        "dict",
-        "_apply_ranking_strategy",
-        "_apply_meta_biases_to_config",
-        "int",
-        "RetrievalConfig",
         "str",
+        "int",
+        "_filter_for_safety",
+        "_limit_items",
+        "dict",
+        "_apply_meta_biases_to_config",
+        "RetrievalConfig",
         "RetrievalResult",
         "RetrievalItem",
-        "_limit_items",
         "get_safety_bias",
-        "_filter_for_safety"
+        "_apply_ranking_strategy"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -121,10 +121,10 @@
       "docstring": "Fuse retrieval results from multiple sources into a single ranked list.\n\nInputs:\n    \u2022 sources:\n        A list of lists, where each inner list is a set of raw retrieval\n        dicts from a given source (e.g., vector DB, keyword DB, LLM-HYDE).\n\n    \u2022 config:\n        Optional RetrievalConfig controlling ranking and max_items.\n\nBehavior:\n    0. Apply meta_profile biases to RetrievalConfig.\n    1. Flatten all sources into one list.\n    2. Normalize and dedupe results.\n    3. Apply ranking strategy (bm25/dense/hybrid).\n    4. Limit items to config.max_items.\n    5. Optional meta-aware safety filtering.\n    6. Normalize to canonical RetrievalResult.",
       "imports": [],
       "dependencies": [
+        "_apply_meta_biases_to_config",
         "RetrievalConfig",
-        "dict",
         "normalize_raw_results",
-        "_apply_meta_biases_to_config"
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []

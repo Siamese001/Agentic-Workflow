@@ -88,11 +88,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "DomainPlannerAgent",
-        "FeasibilityAnalystAgent",
-        "super",
+        "RiskAssessorAgent",
         "StrategyScenarioSimulatorAgent",
-        "RiskAssessorAgent"
+        "DomainPlannerAgent",
+        "super",
+        "FeasibilityAnalystAgent"
       ],
       "responsibility_level": "L5",
       "children": []

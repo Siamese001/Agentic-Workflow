@@ -46,8 +46,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "any",
+        "str",
         "JDEnforcementResult"
       ],
       "responsibility_level": "L5",
@@ -61,9 +61,9 @@
       "imports": [],
       "dependencies": [
         "str",
-        "len",
         "JDEnforcementResult",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -89,9 +89,9 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "len",
+        "JDEnforcementResult",
         "isinstance",
-        "JDEnforcementResult"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -103,10 +103,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str",
         "any",
-        "JDEnforcementResult"
+        "str",
+        "JDEnforcementResult",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -119,10 +119,10 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "JDEnforcementResult",
-        "len",
         "isinstance",
-        "str"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -134,10 +134,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
         "bool",
         "JDEnforcementResult",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -150,10 +150,10 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "JDEnforcementResult",
         "len",
-        "hasattr",
-        "str"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -179,8 +179,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "sum",
         "JDEnforcementResult",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -269,11 +269,11 @@
       "docstring": "Validates a list of app tracker rows.",
       "imports": [],
       "dependencies": [
-        "len",
-        "list",
-        "enumerate",
         "set",
-        "sorted"
+        "enumerate",
+        "len",
+        "sorted",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

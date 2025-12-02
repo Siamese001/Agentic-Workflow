@@ -84,10 +84,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dense_rank",
+        "bm25_rank",
         "hybrid_rank",
-        "rerank_results",
-        "bm25_rank"
+        "dense_rank",
+        "rerank_results"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -99,8 +99,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dict",
-        "sorted"
+        "sorted",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -151,8 +151,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "_stable_dense_score",
+        "str",
         "_order_and_rank"
       ],
       "responsibility_level": "L5",
@@ -165,8 +165,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "_stable_dense_score",
+        "str",
         "len",
         "_order_and_rank"
       ],
@@ -219,8 +219,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "_stable_dense_score",
+        "str",
         "_order_and_rank"
       ],
       "responsibility_level": "L5",
@@ -233,8 +233,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "_stable_dense_score",
+        "str",
         "len",
         "_order_and_rank"
       ],
@@ -306,10 +306,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dense_rank",
+        "bm25_rank",
         "hybrid_rank",
-        "rerank_results",
-        "bm25_rank"
+        "dense_rank",
+        "rerank_results"
       ],
       "responsibility_level": "L5",
       "children": []

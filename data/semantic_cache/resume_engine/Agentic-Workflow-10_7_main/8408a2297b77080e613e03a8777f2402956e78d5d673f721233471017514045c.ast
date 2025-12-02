@@ -38,8 +38,8 @@
       "docstring": "Compute a chunk size (lines per part) to stay within max_parts.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "max"
+        "max",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -64,8 +64,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "print"
+        "print",
+        "enumerate"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -77,12 +77,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "write_parts",
-        "group_files",
         "SystemExit",
-        "iter_repo_files",
+        "sorted",
+        "group_files",
         "compute_chunk_size",
-        "sorted"
+        "write_parts",
+        "iter_repo_files"
       ],
       "responsibility_level": "L5",
       "children": []

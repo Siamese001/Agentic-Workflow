@@ -508,9 +508,9 @@
       "docstring": "Collect sender profile information interactively",
       "imports": [],
       "dependencies": [
-        "input",
         "print",
-        "len"
+        "len",
+        "input"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -522,9 +522,9 @@
       "docstring": "Collect recipient profile information interactively",
       "imports": [],
       "dependencies": [
-        "input",
+        "print",
         "int",
-        "print"
+        "input"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -536,8 +536,8 @@
       "docstring": "Collect job description information interactively",
       "imports": [],
       "dependencies": [
-        "input",
-        "print"
+        "print",
+        "input"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -569,9 +569,9 @@
       "docstring": "Execute function with circuit breaker protection",
       "imports": [],
       "dependencies": [
-        "timedelta",
         "func",
-        "CircuitBreakerOpenError"
+        "CircuitBreakerOpenError",
+        "timedelta"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -583,9 +583,9 @@
       "docstring": "Truncate context sections by priority if exceeding token limit",
       "imports": [],
       "dependencies": [
+        "sorted",
         "sum",
-        "len",
-        "sorted"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -684,11 +684,11 @@
       "docstring": "Score individual claim based on RAG evidence\n(Simplified version - full implementation would use embeddings)",
       "imports": [],
       "dependencies": [
+        "set",
         "sum",
         "len",
-        "MessageClaim",
         "min",
-        "set"
+        "MessageClaim"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -726,8 +726,8 @@
       "imports": [],
       "dependencies": [
         "set",
-        "len",
-        "RAGCritique"
+        "RAGCritique",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -892,8 +892,8 @@
       "imports": [],
       "dependencies": [
         "cosine_similarity",
-        "int",
         "float",
+        "int",
         "len"
       ],
       "responsibility_level": "L5",
@@ -926,8 +926,8 @@
       "docstring": "Validate text is ASCII-only",
       "imports": [],
       "dependencies": [
-        "set",
-        "ord"
+        "ord",
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1014,11 +1014,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "SignalQualityScorer",
-        "InternalAgent",
         "OrganizationAgent",
-        "RAGReflexionSystem",
-        "RecipientAgent"
+        "InternalAgent",
+        "SignalQualityScorer",
+        "RecipientAgent",
+        "RAGReflexionSystem"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1030,10 +1030,10 @@
       "docstring": "NEW v11.9: Extract sender grounding whitelists from RAG (SPEC 1)\n(Moved to S2_SupervisorAgent in v11.10)",
       "imports": [],
       "dependencies": [
-        "list",
         "SenderGroundingWhitelists",
-        "any",
-        "set"
+        "set",
+        "list",
+        "any"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1168,9 +1168,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "SelfConsistencySynthesizer",
         "AdaptiveTemperatureController",
-        "ConstraintFeasibilityChecker",
-        "SelfConsistencySynthesizer"
+        "ConstraintFeasibilityChecker"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1192,12 +1192,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "MessageDiversityValidator",
+        "ASCIIEnforcer",
+        "ClaimConfidenceScorer",
         "ContentCleanlinessValidator",
         "PlaceholderDetector",
-        "SignalQualityScorer",
-        "ASCIIEnforcer",
-        "MessageDiversityValidator",
-        "ClaimConfidenceScorer"
+        "SignalQualityScorer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1209,11 +1209,11 @@
       "docstring": "NEW v11.6: Run all validation rules\nReturns list of validation results (empty if all passed)",
       "imports": [],
       "dependencies": [
-        "bool",
         "any",
-        "ValidationResult",
+        "bool",
+        "set",
         "str",
-        "set"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1225,8 +1225,8 @@
       "docstring": "Extract 10 words around a metric for context validation",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "max",
+        "enumerate",
         "min",
         "len"
       ],
@@ -1240,10 +1240,10 @@
       "docstring": "Calculate Levenshtein distance between two strings",
       "imports": [],
       "dependencies": [
+        "range",
         "enumerate",
         "min",
-        "len",
-        "range"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1265,8 +1265,8 @@
       "docstring": "NEW v11.6: Generate comprehensive QA report grouped by severity (GAP 1.11)",
       "imports": [],
       "dependencies": [
-        "sum",
-        "QAReport"
+        "QAReport",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1278,14 +1278,14 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "CircuitBreaker",
         "S2_SupervisorAgent",
-        "QAAgent",
-        "GenerationOrchestrator",
-        "RoutingAgent",
-        "ScaffoldAgent",
+        "CircuitBreaker",
+        "ValidationAgent",
         "ProfileAnalysisAgent",
-        "ValidationAgent"
+        "GenerationOrchestrator",
+        "ScaffoldAgent",
+        "RoutingAgent",
+        "QAAgent"
       ],
       "responsibility_level": "L5",
       "children": []

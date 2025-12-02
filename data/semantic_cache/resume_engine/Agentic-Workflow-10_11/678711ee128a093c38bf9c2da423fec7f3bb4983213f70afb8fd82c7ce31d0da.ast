@@ -36,8 +36,8 @@
       "docstring": "Returns lightweight summary of r\u00e9sum\u00e9 processing agent graph.\n\nProvides deterministic summary for r\u00e9sum\u00e9 enhancement workflow coordination.",
       "imports": [],
       "dependencies": [
-        "list",
-        "dict"
+        "dict",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -49,8 +49,8 @@
       "docstring": "Conceptual patterns for r\u00e9sum\u00e9 processing multi-agent coordination graphs.\n\nDefines standard interaction patterns for comprehensive r\u00e9sum\u00e9 enhancement workflows.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -62,11 +62,11 @@
       "docstring": "Builds linear pipeline for r\u00e9sum\u00e9 processing agent coordination.\n\nCreates sequential agent flow: r0 \u2192 r1 \u2192 r2 \u2192 ... for r\u00e9sum\u00e9 enhancement workflows.",
       "imports": [],
       "dependencies": [
-        "AgentNode",
-        "len",
-        "AgentGraph",
         "range",
-        "str"
+        "str",
+        "AgentGraph",
+        "len",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -78,8 +78,8 @@
       "docstring": "Build a star-hub graph: hub \u2194 each spoke.",
       "imports": [],
       "dependencies": [
-        "AgentNode",
-        "AgentGraph"
+        "AgentGraph",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -91,12 +91,12 @@
       "docstring": "Build a role-homogeneous council of size N.",
       "imports": [],
       "dependencies": [
-        "max",
-        "AgentNode",
+        "range",
         "AgentGraph",
         "int",
-        "range",
-        "str"
+        "str",
+        "max",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -109,8 +109,8 @@
       "imports": [],
       "dependencies": [
         "str",
-        "AgentNode",
-        "AgentGraph"
+        "AgentGraph",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -122,8 +122,8 @@
       "docstring": "Canonical multi-agent roles.\n\nThese mirror the conceptual roles from v10_9 but are defined\nlocally to keep this module self-contained.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -157,8 +157,8 @@
       "docstring": "Simple deterministic vote: highest score, tie-broken by id.",
       "imports": [],
       "dependencies": [
-        "str",
-        "float"
+        "float",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -170,8 +170,8 @@
       "docstring": "Deterministic council voting given candidate scores.",
       "imports": [],
       "dependencies": [
-        "summarize_graph",
-        "deterministic_vote"
+        "deterministic_vote",
+        "summarize_graph"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -183,9 +183,9 @@
       "docstring": "Build a typed MultiAgentCouncilResult for downstream layers.",
       "imports": [],
       "dependencies": [
-        "MultiAgentVote",
-        "str",
         "float",
+        "str",
+        "MultiAgentVote",
         "MultiAgentCouncilResult"
       ],
       "responsibility_level": "L5",
@@ -243,10 +243,10 @@
       "docstring": "Compute routing metadata for conceptual messages.",
       "imports": [],
       "dependencies": [
-        "str",
-        "dict",
         "can_delegate",
-        "delegation_metadata"
+        "delegation_metadata",
+        "str",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []

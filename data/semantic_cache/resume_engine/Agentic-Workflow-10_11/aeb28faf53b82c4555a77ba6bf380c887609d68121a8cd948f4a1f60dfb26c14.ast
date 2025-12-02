@@ -40,8 +40,8 @@
       "docstring": "Aggregates resume content for job matching analysis.\n\nConsolidates all resume sections to ensure comprehensive\ncoverage of skills and experience for optimal alignment.",
       "imports": [],
       "dependencies": [
-        "_normalize_text",
-        "str"
+        "str",
+        "_normalize_text"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -65,8 +65,8 @@
       "docstring": "Builds prompt metadata from execution profiles.\n\nCreates structured prompt planning data for consistent\nresume improvement workflows and job alignment.",
       "imports": [],
       "dependencies": [
-        "getattr",
-        "PromptMeta"
+        "PromptMeta",
+        "getattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -90,9 +90,9 @@
       "docstring": "Identifies professional domains from job and resume content.\n\nEnsures resume improvements target specific industry requirements\nfor better alignment and job matching.",
       "imports": [],
       "dependencies": [
-        "set",
+        "sorted",
         "any",
-        "sorted"
+        "set"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -104,9 +104,9 @@
       "docstring": "Groups related skills from job and resume analysis.\n\nCreates skill clusters to guide comprehensive resume enhancement\nstrategies for better job alignment.",
       "imports": [],
       "dependencies": [
-        "set",
+        "sorted",
         "any",
-        "sorted"
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -118,13 +118,13 @@
       "docstring": "Analyzes career profile from job and resume content.\n\nGenerates comprehensive profile insights for targeted\nresume optimization and job alignment.",
       "imports": [],
       "dependencies": [
-        "ProfileInferenceResult",
         "SeniorityClassifierResult",
         "_infer_domains",
-        "SkillClusterResult",
-        "_infer_skill_clusters",
         "_infer_seniority",
-        "DomainClassifierResult"
+        "SkillClusterResult",
+        "DomainClassifierResult",
+        "_infer_skill_clusters",
+        "ProfileInferenceResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -183,10 +183,10 @@
       "docstring": "Builds retrieval plan for evidence gathering.\n\nEnsures comprehensive search strategy to support resume\nimprovement with relevant data for job alignment.",
       "imports": [],
       "dependencies": [
-        "RAGQueryHint",
-        "min",
+        "getattr",
         "RAGPlan",
-        "getattr"
+        "RAGQueryHint",
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -210,9 +210,9 @@
       "docstring": "Builds section-by-section resume drafting plan.\n\nOrganizes resume structure to ensure comprehensive coverage\nof all key areas for optimal job alignment.",
       "imports": [],
       "dependencies": [
+        "DraftingPlan",
         "_select_drafting_mode",
-        "DraftSectionPlan",
-        "DraftingPlan"
+        "DraftSectionPlan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -225,9 +225,9 @@
       "imports": [],
       "dependencies": [
         "QAPlan",
-        "int",
+        "QACheck",
         "getattr",
-        "QACheck"
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -239,10 +239,10 @@
       "docstring": "Builds safety validation plan for resume compliance.\n\nEnsures resume content meets privacy and policy standards\nto protect user data and credibility for better applications.",
       "imports": [],
       "dependencies": [
-        "int",
         "getattr",
+        "SafetyPlan",
         "SafetyCheck",
-        "SafetyPlan"
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -254,22 +254,22 @@
       "docstring": "Creates comprehensive workflow plan for resume optimization.\n\nCoordinates strategy, retrieval, drafting, QA, and safety planning\nfor systematic improvement and better job alignment.",
       "imports": [],
       "dependencies": [
-        "_to_execution_profile",
-        "RoutingHint",
-        "get_profile",
-        "_extract_job_text",
-        "_build_safety_plan",
-        "_build_rag_plan",
-        "WorkflowPlanBundle",
-        "_choose_reasoning_mode",
-        "_map_meta_profile_to_routing_hint",
-        "_build_prompt_meta",
-        "_build_qa_plan",
         "_run_profile_inference",
-        "_classify_complexity",
-        "_build_drafting_plan",
         "_build_strategy_plan",
-        "_extract_resume_text"
+        "_build_safety_plan",
+        "_build_drafting_plan",
+        "RoutingHint",
+        "_choose_reasoning_mode",
+        "_build_qa_plan",
+        "get_profile",
+        "_build_prompt_meta",
+        "WorkflowPlanBundle",
+        "_extract_job_text",
+        "_classify_complexity",
+        "_build_rag_plan",
+        "_extract_resume_text",
+        "_to_execution_profile",
+        "_map_meta_profile_to_routing_hint"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -46,8 +46,8 @@
       "docstring": "Execute a simple entity query.\n\nArgs:\n    store: TripletStore instance\n    entity_id: Entity to query\n    predicates: Optional predicate filter\n    \nReturns:\n    KGRetrievalResult",
       "imports": [],
       "dependencies": [
-        "plan_entity_retrieval",
-        "KGRetrievalExecutor"
+        "KGRetrievalExecutor",
+        "plan_entity_retrieval"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -59,8 +59,8 @@
       "docstring": "Execute a multi-hop neighborhood query.\n\nArgs:\n    store: TripletStore instance\n    start_entity: Starting entity\n    max_hops: Maximum hops\n    predicates: Optional predicate filter\n    \nReturns:\n    KGRetrievalResult",
       "imports": [],
       "dependencies": [
-        "KGRetrievalExecutor",
-        "KGRetrievalPlanner"
+        "KGRetrievalPlanner",
+        "KGRetrievalExecutor"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -96,8 +96,8 @@
       "dependencies": [
         "set",
         "int",
-        "len",
-        "KGRetrievalResult"
+        "KGRetrievalResult",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

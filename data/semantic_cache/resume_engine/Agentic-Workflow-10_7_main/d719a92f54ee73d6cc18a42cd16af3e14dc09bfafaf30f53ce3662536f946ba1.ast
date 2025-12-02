@@ -26,8 +26,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "sum",
-        "open"
+        "open",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -39,8 +39,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_read_log_tail",
-        "getattr"
+        "getattr",
+        "_read_log_tail"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -106,8 +106,8 @@
       "docstring": "Main CLI entry point",
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
         "setup_logging",
+        "ConfigV10_7",
         "run_workflow_async"
       ],
       "responsibility_level": "L1",

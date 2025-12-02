@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\self_correction_injection(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\self_correction_injection.py",
     "file_hash": "b596e3728ece697407284bcbe37befcc1fbca1be87dfe1991548f24905e4a835",
     "size_bytes": 14849,
-    "last_modified": "2025-12-01T12:27:38.273418",
+    "last_modified": "2025-12-01T12:27:38.289849",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -16,8 +16,8 @@
       "docstring": "Types of self-correction mechanisms for resume improvement.\n\nDefines correction approaches for enhanced resume quality.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -115,8 +115,8 @@
       "docstring": "Evaluate if a trigger condition is met.",
       "imports": [],
       "dependencies": [
-        "len",
-        "all"
+        "all",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

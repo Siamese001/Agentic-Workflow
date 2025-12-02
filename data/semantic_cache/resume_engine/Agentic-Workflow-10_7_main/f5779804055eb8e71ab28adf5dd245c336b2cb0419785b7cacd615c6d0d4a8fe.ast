@@ -552,10 +552,10 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "MCPClientSpec",
+        "str",
         "isinstance",
-        "ValueError",
-        "str"
+        "MCPClientSpec",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -567,10 +567,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "client_cls",
-        "MCPClientStub",
         "MCPClientInitializationError",
-        "getattr"
+        "getattr",
+        "client_cls",
+        "MCPClientStub"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -675,11 +675,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
-        "func",
-        "wraps",
+        "range",
         "WorkflowError",
-        "range"
+        "wraps",
+        "max",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -692,9 +692,9 @@
       "imports": [],
       "dependencies": [
         "float",
-        "WorkflowTimeoutError",
         "func",
-        "wraps"
+        "wraps",
+        "WorkflowTimeoutError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -706,8 +706,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "int",
-        "async_timeout"
+        "async_timeout",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -732,9 +732,9 @@
       "imports": [],
       "dependencies": [
         "func",
-        "wrap_mcp",
         "wraps",
-        "update_context"
+        "update_context",
+        "wrap_mcp"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1155,19 +1155,19 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "MetricsCollector",
-        "TuningProfile",
-        "SemanticValidator",
-        "FeedbackLogReader",
-        "PolicyAutoTuner",
-        "PredictiveCacheManager",
-        "PrecomputeEngine",
-        "CostTracker",
-        "ProposedRulesLoader",
-        "ArbitrationEngine",
         "WorkflowContext",
-        "PromptTemplateManager",
-        "CacheManager"
+        "SemanticValidator",
+        "CacheManager",
+        "PrecomputeEngine",
+        "ProposedRulesLoader",
+        "MetricsCollector",
+        "ArbitrationEngine",
+        "TuningProfile",
+        "PolicyAutoTuner",
+        "CostTracker",
+        "FeedbackLogReader",
+        "PredictiveCacheManager",
+        "PromptTemplateManager"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1348,11 +1348,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
-        "func",
-        "wraps",
+        "range",
         "WorkflowError",
-        "range"
+        "wraps",
+        "max",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1365,9 +1365,9 @@
       "imports": [],
       "dependencies": [
         "float",
-        "WorkflowTimeoutError",
         "func",
-        "wraps"
+        "wraps",
+        "WorkflowTimeoutError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1415,8 +1415,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1428,8 +1428,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1441,8 +1441,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1454,8 +1454,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1467,8 +1467,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1480,9 +1480,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "AttributeError",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1518,8 +1518,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "A2AMessage",
-        "isinstance"
+        "isinstance",
+        "A2AMessage"
       ],
       "responsibility_level": "L5",
       "children": []

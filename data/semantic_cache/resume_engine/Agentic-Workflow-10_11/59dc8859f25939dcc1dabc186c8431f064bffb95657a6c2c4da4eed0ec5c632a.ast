@@ -108,8 +108,8 @@
       "docstring": "Generates embeddings for resume workflow text processing.",
       "imports": [],
       "dependencies": [
-        "int",
         "float",
+        "int",
         "range"
       ],
       "responsibility_level": "L5",
@@ -132,8 +132,8 @@
       "docstring": "Queries resume workflow vectors by similarity for job alignment.\n\nArgs:\n    namespace: Namespace to query in\n    top_k: Number of results to return\n    metadata_filter: Optional metadata filters\n    score_threshold: Optional minimum score threshold\n    \nReturns:\n    List of query results with scores and metadata",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "VectorQueryResult"
+        "VectorQueryResult",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -177,9 +177,9 @@
       "docstring": "Upserts resume workflow text records with auto-embedding.",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "ValueError",
         "VectorRecord",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",

@@ -65,8 +65,8 @@
       "imports": [],
       "dependencies": [
         "track_metrics",
-        "sanitize_node",
-        "isinstance"
+        "isinstance",
+        "sanitize_node"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -89,8 +89,8 @@
       "imports": [],
       "dependencies": [
         "track_metrics",
-        "len",
-        "detect_bias"
+        "detect_bias",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -16,8 +16,8 @@
       "docstring": "Logical actors that may interact with the prompt registry.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -41,8 +41,8 @@
       "docstring": "Enforce PromptACL for the given role and use_case.\n\nuse_case:\n    - \"read\"  \u2192 viewing the definition\n    - \"edit\"  \u2192 modifying / registering the definition\n    - \"use\"   \u2192 using in ENGINE (runtime)",
       "imports": [],
       "dependencies": [
-        "ValueError",
-        "PermissionError"
+        "PermissionError",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -66,8 +66,8 @@
       "docstring": "Retrieve a PromptDefinition by id with ACL enforcement.",
       "imports": [],
       "dependencies": [
-        "KeyError",
-        "_check_acl"
+        "_check_acl",
+        "KeyError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -149,12 +149,12 @@
       "docstring": "Seed minimal core prompts for the v10_10 stack.\n\nAll templates follow the simple pattern:\n\n    \"## CONTEXT\\n\\n## INSTRUCTIONS\\n\\n## OUTPUT_FORMAT\\n\"\n\nThe richer envelope sections (Framing, Reasoning, Safety) are added\nby prompt_builder at runtime.",
       "imports": [],
       "dependencies": [
-        "PromptDefinition",
-        "_pd",
+        "PromptVersion",
         "_acl_meta",
+        "_pd",
         "register_prompt",
-        "validate_prompt_definition",
-        "PromptVersion"
+        "PromptDefinition",
+        "validate_prompt_definition"
       ],
       "responsibility_level": "L1",
       "children": []

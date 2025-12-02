@@ -26,10 +26,10 @@
       "docstring": "Synchronous wrapper for async batch processing",
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
-        "run_batch_async",
         "setup_logging",
-        "print"
+        "print",
+        "run_batch_async",
+        "ConfigV10_7"
       ],
       "responsibility_level": "L5",
       "children": []

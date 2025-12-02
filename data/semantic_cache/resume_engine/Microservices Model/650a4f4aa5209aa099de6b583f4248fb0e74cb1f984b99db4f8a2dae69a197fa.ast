@@ -26,8 +26,8 @@
       "docstring": "Main entry point for running the orchestrator from the CLI.",
       "imports": [],
       "dependencies": [
-        "Path",
         "print",
+        "Path",
         "WorkflowOrchestrator"
       ],
       "responsibility_level": "L1",
@@ -53,13 +53,13 @@
       "docstring": "Loads and validates the workflow spec JSON.",
       "imports": [],
       "dependencies": [
-        "WorkflowSpecError",
+        "open",
+        "RetryPolicy",
+        "WorkflowSpec",
         "HopSpec",
         "HopInput",
-        "HopOutput",
-        "RetryPolicy",
-        "open",
-        "WorkflowSpec"
+        "WorkflowSpecError",
+        "HopOutput"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -71,8 +71,8 @@
       "docstring": "Builds a networkx DiGraph from the workflow spec.",
       "imports": [],
       "dependencies": [
-        "list",
-        "WorkflowSpecError"
+        "WorkflowSpecError",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -96,10 +96,10 @@
       "docstring": "Initializes the artifact state dictionary with all known artifacts,\nmarking static inputs as \"ready\".",
       "imports": [],
       "dependencies": [
+        "len",
         "FileNotFoundError",
-        "Artifact",
         "hash_file",
-        "len"
+        "Artifact"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -111,12 +111,12 @@
       "docstring": "Executes a single hop with retry logic and cryptographic verification.\nThis is the core execution worker.",
       "imports": [],
       "dependencies": [
-        "int",
-        "HopExecutionError",
         "range",
         "str",
-        "HopCheckpoint",
+        "int",
         "FileNotFoundError",
+        "HopExecutionError",
+        "HopCheckpoint",
         "hash_file"
       ],
       "responsibility_level": "L5",
@@ -130,10 +130,10 @@
       "imports": [],
       "dependencies": [
         "any",
-        "default_serializer",
-        "isinstance",
         "type",
         "str",
+        "isinstance",
+        "default_serializer",
         "HopCheckpoint"
       ],
       "responsibility_level": "L5",
@@ -146,8 +146,8 @@
       "docstring": "Builds the final Chain of Custody ledger.",
       "imports": [],
       "dependencies": [
-        "Artifact",
-        "any"
+        "any",
+        "Artifact"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -159,8 +159,8 @@
       "docstring": "Writes/copies static inputs to the run_dir and returns their paths.",
       "imports": [],
       "dependencies": [
-        "FileNotFoundError",
-        "str"
+        "str",
+        "FileNotFoundError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -172,12 +172,12 @@
       "docstring": "Executes the entire resume generation workflow based on the loaded spec.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "WorkflowSpecError",
-        "default_serializer",
-        "list",
         "str",
-        "Path"
+        "sum",
+        "list",
+        "default_serializer",
+        "Path",
+        "WorkflowSpecError"
       ],
       "responsibility_level": "L5",
       "children": []

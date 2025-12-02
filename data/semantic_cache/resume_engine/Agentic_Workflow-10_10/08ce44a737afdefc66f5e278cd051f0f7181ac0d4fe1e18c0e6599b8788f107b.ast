@@ -62,9 +62,9 @@
       "imports": [],
       "dependencies": [
         "PermissionError",
-        "_get_prompt_definition",
+        "_extract_acl_metadata",
         "isinstance",
-        "_extract_acl_metadata"
+        "_get_prompt_definition"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -86,9 +86,9 @@
       "docstring": "Extract context-budget hints from a plan object if it carries them.\n\nThis is intentionally shallow and structure-agnostic.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "getattr",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -100,12 +100,12 @@
       "docstring": "Core helper to build a PromptInstance with ACL enforcement.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "_render_envelope_with_template",
-        "_check_prompt_acl",
+        "isinstance",
+        "PromptInstance",
         "_get_prompt_definition",
         "_build_context_budget_hints_from_plan",
-        "PromptInstance"
+        "_check_prompt_acl"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -141,9 +141,9 @@
       "docstring": "Build a strategy planning prompt.",
       "imports": [],
       "dependencies": [
+        "_summarize_job_and_resume",
         "PromptEnvelope",
-        "_make_prompt_instance",
-        "_summarize_job_and_resume"
+        "_make_prompt_instance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -155,11 +155,11 @@
       "docstring": "Build a retrieval / evidence fusion prompt.\n\nUsed by the Phase-3 RAG reasoning stage between retrieval and drafting.",
       "imports": [],
       "dependencies": [
-        "PromptEnvelope",
-        "_format_evidence",
         "list",
+        "PromptEnvelope",
+        "_summarize_job_and_resume",
         "_make_prompt_instance",
-        "_summarize_job_and_resume"
+        "_format_evidence"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -171,9 +171,9 @@
       "docstring": "Build a HYDE prompt: generate an ideal answer for use as a retrieval proxy.\n\nThe output is a synthetic, idealized answer to the user's (implicit) query\nfor the job/resume pair, which retrieval.py will treat as a dense query.",
       "imports": [],
       "dependencies": [
+        "_summarize_job_and_resume",
         "PromptEnvelope",
-        "_make_prompt_instance",
-        "_summarize_job_and_resume"
+        "_make_prompt_instance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -185,9 +185,9 @@
       "docstring": "Build a drafting prompt for resume sections.",
       "imports": [],
       "dependencies": [
+        "_summarize_job_and_resume",
         "PromptEnvelope",
-        "_make_prompt_instance",
-        "_summarize_job_and_resume"
+        "_make_prompt_instance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -199,9 +199,9 @@
       "docstring": "Build a QA prompt for validating drafted content.",
       "imports": [],
       "dependencies": [
+        "_summarize_job_and_resume",
         "PromptEnvelope",
-        "_make_prompt_instance",
-        "_summarize_job_and_resume"
+        "_make_prompt_instance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -213,9 +213,9 @@
       "docstring": "Build a safety prompt for final policy / safety review.",
       "imports": [],
       "dependencies": [
+        "_summarize_job_and_resume",
         "PromptEnvelope",
-        "_make_prompt_instance",
-        "_summarize_job_and_resume"
+        "_make_prompt_instance"
       ],
       "responsibility_level": "L5",
       "children": []

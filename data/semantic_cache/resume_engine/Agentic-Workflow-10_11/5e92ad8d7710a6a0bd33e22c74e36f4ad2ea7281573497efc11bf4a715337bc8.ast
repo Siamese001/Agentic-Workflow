@@ -16,9 +16,9 @@
       "docstring": "Best-effort conversion of arbitrary objects into a mapping view.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "dict",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -54,8 +54,8 @@
       "docstring": "Build a trimmed, stable snapshot from a workflow result for CI output.",
       "imports": [],
       "dependencies": [
-        "_extract_state_patch",
-        "_extract_l2_results"
+        "_extract_l2_results",
+        "_extract_state_patch"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -67,10 +67,10 @@
       "docstring": "Approximate telemetry summary: presence + simple counts.",
       "imports": [],
       "dependencies": [
-        "dict",
         "bool",
-        "len",
-        "isinstance"
+        "dict",
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -82,10 +82,10 @@
       "docstring": "Collate outcome-level statistics used by tests and CI dashboards.",
       "imports": [],
       "dependencies": [
-        "sum",
         "bool",
-        "isinstance",
         "int",
+        "sum",
+        "isinstance",
         "_as_mapping"
       ],
       "responsibility_level": "L5",
@@ -165,10 +165,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "cls",
         "bool",
-        "TelemetryRoutingMode",
         "int",
+        "TelemetryRoutingMode",
+        "cls",
         "RRFStrategy"
       ],
       "responsibility_level": "L5",

@@ -16,8 +16,8 @@
       "docstring": "State operations for resume job alignment workflows.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "State events for resume job alignment workflows.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -108,8 +108,8 @@
       "docstring": "Creates new resume workflow state path with component.",
       "imports": [],
       "dependencies": [
-        "str",
-        "StatePath"
+        "StatePath",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

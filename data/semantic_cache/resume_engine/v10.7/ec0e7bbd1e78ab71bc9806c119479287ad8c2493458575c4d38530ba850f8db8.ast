@@ -106,8 +106,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_run_loop",
-        "getattr"
+        "getattr",
+        "_run_loop"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -129,8 +129,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "MagicMock",
-        "AsyncMock"
+        "AsyncMock",
+        "MagicMock"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -175,23 +175,23 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
-        "FakeRedisClient",
-        "ProposedRulesLoader",
-        "MetricsCollector",
-        "MagicMock",
+        "WorkflowContext",
         "SemanticValidator",
-        "FeedbackLogReader",
-        "WorkflowHarness",
+        "CacheManager",
         "ContextBudgetManager",
+        "DeterministicEmbeddingFunction",
+        "ProposedRulesLoader",
+        "MagicMock",
         "str",
-        "hasattr",
+        "FakeRedisClient",
+        "MetricsCollector",
+        "ConfigV10_7",
+        "WorkflowHarness",
         "ResponseValidator",
         "CostTracker",
-        "DeterministicEmbeddingFunction",
-        "WorkflowContext",
+        "FeedbackLogReader",
         "PromptTemplateManager",
-        "CacheManager"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -273,8 +273,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "MagicMock",
-        "AsyncMock"
+        "AsyncMock",
+        "MagicMock"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -286,8 +286,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
-        "str"
+        "str",
+        "ConfigV10_7"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -640,12 +640,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "CompiledGraph",
-        "isinstance",
-        "list",
-        "Graph",
         "WorkflowTimeoutError",
-        "NodeExecutionError"
+        "Graph",
+        "isinstance",
+        "NodeExecutionError",
+        "CompiledGraph",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -677,8 +677,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "list",
-        "Graph"
+        "Graph",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

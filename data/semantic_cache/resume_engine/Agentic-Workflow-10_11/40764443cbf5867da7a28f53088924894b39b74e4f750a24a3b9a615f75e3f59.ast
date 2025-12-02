@@ -16,8 +16,8 @@
       "docstring": "Stages in the retrieval pipeline.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -101,8 +101,8 @@
       "docstring": "Get topologically sorted execution order.",
       "imports": [],
       "dependencies": [
-        "set",
-        "visit"
+        "visit",
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -149,9 +149,9 @@
       "docstring": "Execute fusion stage - combine KG and vector results.\n\nArgs:\n    dag: Current DAG with node results\n    config: Fusion configuration\n    \nReturns:\n    Fused results",
       "imports": [],
       "dependencies": [
-        "enumerate",
+        "sorted",
         "max",
-        "sorted"
+        "enumerate"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -56,8 +56,8 @@
       "docstring": "Parses RRF weight parameters for batch r\u00e9sum\u00e9 processing.\n\nConfigures retrieval strategy weights for optimal batch r\u00e9sum\u00e9 improvement results.",
       "imports": [],
       "dependencies": [
-        "float",
-        "ValueError"
+        "ValueError",
+        "float"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -69,8 +69,8 @@
       "docstring": "Normalizes RRF weights for consistent batch r\u00e9sum\u00e9 processing.\n\nEnsures proper weight formatting across multiple r\u00e9sum\u00e9 improvement jobs.",
       "imports": [],
       "dependencies": [
-        "str",
-        "float"
+        "float",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -131,9 +131,9 @@
       "docstring": "Reads batch job data from JSONL files for r\u00e9sum\u00e9 processing.\n\nLoads and validates input data for comprehensive r\u00e9sum\u00e9 improvement workflows.",
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "ValueError",
         "open",
+        "ValueError",
+        "enumerate",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -170,14 +170,14 @@
       "docstring": "Converts r\u00e9sum\u00e9 processing output to JSON-safe format.\n\nEnsures consistent data serialization for batch r\u00e9sum\u00e9 improvement results.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "asdict",
-        "isinstance",
         "getattr",
-        "list",
+        "isinstance",
         "callable",
-        "repr",
-        "to_dict"
+        "dict",
+        "list",
+        "to_dict",
+        "asdict",
+        "repr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -189,14 +189,14 @@
       "docstring": "Builds job configuration for individual r\u00e9sum\u00e9 processing tasks.\n\nResolves parameters from global defaults and job-specific overrides for optimal r\u00e9sum\u00e9 improvement.",
       "imports": [],
       "dependencies": [
-        "BatchJobConfig",
-        "dict",
-        "isinstance",
+        "str",
         "int",
-        "_normalize_rrf_weights",
+        "BatchJobConfig",
+        "isinstance",
+        "dict",
         "_enum_from_row",
         "_extract_user_request",
-        "str",
+        "_normalize_rrf_weights",
         "_bool_from_row"
       ],
       "responsibility_level": "L5",
@@ -209,8 +209,8 @@
       "docstring": "Executes individual r\u00e9sum\u00e9 processing job with comprehensive tracking.\n\nRuns the full workflow for each r\u00e9sum\u00e9 improvement task with proper error handling and timing.",
       "imports": [],
       "dependencies": [
-        "str",
         "run_workflow",
+        "str",
         "BatchJobResult"
       ],
       "responsibility_level": "L5",
@@ -224,10 +224,10 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "max",
         "len",
-        "BatchTelemetrySummary",
-        "min"
+        "max",
+        "min",
+        "BatchTelemetrySummary"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -239,20 +239,20 @@
       "docstring": "Executes comprehensive batch r\u00e9sum\u00e9 processing workflows.\n\nOrchestrates multiple r\u00e9sum\u00e9 improvement jobs with configurable parameters and performance tracking.",
       "imports": [],
       "dependencies": [
+        "_execute_job",
         "float",
-        "len",
-        "cast",
-        "_clamp_max_workers",
-        "_GlobalDefaults",
-        "enumerate",
-        "ThreadPoolExecutor",
-        "BatchTelemetrySummary",
         "str",
-        "as_completed",
-        "BatchJobResult",
-        "_build_batch_summary",
         "_build_job_config",
-        "_execute_job"
+        "enumerate",
+        "len",
+        "BatchJobResult",
+        "_clamp_max_workers",
+        "_build_batch_summary",
+        "_GlobalDefaults",
+        "as_completed",
+        "cast",
+        "ThreadPoolExecutor",
+        "BatchTelemetrySummary"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -274,16 +274,16 @@
       "docstring": "CLI wrapper for running batch jobs.\n\nFor programmatic usage, prefer calling run_batch() directly.",
       "imports": [],
       "dependencies": [
-        "TelemetryRoutingMode",
-        "asdict",
-        "_normalize_output",
-        "_read_jsonl",
         "_write_jsonl",
+        "_normalize_output",
+        "TelemetryRoutingMode",
         "run_batch",
         "_parse_rrf_weights",
         "RRFStrategy",
-        "_write_json",
-        "_parse_args"
+        "_read_jsonl",
+        "_parse_args",
+        "asdict",
+        "_write_json"
       ],
       "responsibility_level": "L1",
       "children": []

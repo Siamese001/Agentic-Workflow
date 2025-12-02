@@ -16,8 +16,8 @@
       "docstring": "Status of resume workflow node for job alignment processing.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -80,18 +80,18 @@
       "imports": [],
       "dependencies": [
         "getattr",
+        "evaluate_all_surfaces",
+        "str",
         "isinstance",
         "len",
-        "AttributeError",
-        "type",
-        "evaluate_all_surfaces",
-        "orchestrate_execution",
-        "hasattr",
-        "str",
-        "collect_error_events",
         "aggregate_correction_signals",
+        "collect_error_events",
+        "orchestrate_execution",
+        "DAGResult",
         "inject_dependencies",
-        "DAGResult"
+        "type",
+        "AttributeError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -186,9 +186,9 @@
       "imports": [],
       "dependencies": [
         "type",
-        "hasattr",
+        "getattr",
         "AttributeError",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

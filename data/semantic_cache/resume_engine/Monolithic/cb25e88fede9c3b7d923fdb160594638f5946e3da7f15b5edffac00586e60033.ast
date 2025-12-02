@@ -78,8 +78,8 @@
       "docstring": "Standard generated message",
       "imports": [],
       "dependencies": [
-        "set",
-        "GeneratedMessage"
+        "GeneratedMessage",
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -173,10 +173,10 @@
       "docstring": "Test all specialist agents are created",
       "imports": [],
       "dependencies": [
-        "S2_SupervisorAgent",
-        "hasattr",
         "print",
-        "isinstance"
+        "S2_SupervisorAgent",
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -188,10 +188,10 @@
       "docstring": "Test ResearchContext has adversarial_findings field",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "print",
         "ResearchContext",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -203,8 +203,8 @@
       "docstring": "Test FailureClassifier enum is defined",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "print"
+        "print",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -216,8 +216,8 @@
       "docstring": "Test FactualGapError exception is defined",
       "imports": [],
       "dependencies": [
-        "FactualGapError",
         "print",
+        "FactualGapError",
         "len",
         "ValidationResult"
       ],
@@ -231,9 +231,9 @@
       "docstring": "Test sender grounding whitelist extraction",
       "imports": [],
       "dependencies": [
-        "S2_SupervisorAgent",
         "RAGResult",
-        "print"
+        "print",
+        "S2_SupervisorAgent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -245,8 +245,8 @@
       "docstring": "Test context-aware CTA generation",
       "imports": [],
       "dependencies": [
-        "ScaffoldAgent",
-        "print"
+        "print",
+        "ScaffoldAgent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -258,13 +258,13 @@
       "docstring": "Test metric context validation (LIC-E010)",
       "imports": [],
       "dependencies": [
-        "ResearchContext",
-        "len",
-        "RAGResult",
         "print",
         "set",
+        "len",
         "GeneratedMessage",
-        "ValidationAgent"
+        "RAGResult",
+        "ValidationAgent",
+        "ResearchContext"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -288,10 +288,10 @@
       "docstring": "Test circuit breaker functionality",
       "imports": [],
       "dependencies": [
-        "Exception",
+        "range",
         "CircuitBreaker",
         "print",
-        "range"
+        "Exception"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -303,11 +303,11 @@
       "docstring": "Test RAG results don't duplicate excessively",
       "imports": [],
       "dependencies": [
-        "ResearchContext",
+        "print",
+        "range",
         "len",
         "RAGResult",
-        "range",
-        "print"
+        "ResearchContext"
       ],
       "responsibility_level": "L5",
       "children": []

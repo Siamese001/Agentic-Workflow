@@ -16,8 +16,8 @@
       "docstring": "Defines safety validation levels for r\u00e9sum\u00e9 processing.\n\nEnsures appropriate security measures for professional r\u00e9sum\u00e9 improvement standards.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Specifies model performance tiers for r\u00e9sum\u00e9 analysis.\n\nBalances cost and quality for optimal r\u00e9sum\u00e9 enhancement processing.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -42,8 +42,8 @@
       "docstring": "Controls r\u00e9sum\u00e9 processing workflow execution strategy.\n\nOptimizes speed and resource usage for comprehensive r\u00e9sum\u00e9 improvement.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -79,14 +79,14 @@
       "docstring": "Builds comprehensive r\u00e9sum\u00e9 processing profile from specifications.\n\nCreates optimized configuration for different r\u00e9sum\u00e9 improvement scenarios and requirements.",
       "imports": [],
       "dependencies": [
-        "BudgetProfile",
-        "ContextProfile",
-        "hasattr",
-        "LLMProfile",
-        "str",
-        "SafetyProfile",
         "ExecutionProfileV2",
-        "RetrievalProfile"
+        "str",
+        "LLMProfile",
+        "ContextProfile",
+        "SafetyProfile",
+        "BudgetProfile",
+        "RetrievalProfile",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -98,11 +98,11 @@
       "docstring": "Creates balanced retrieval configuration for r\u00e9sum\u00e9 evidence gathering.\n\nOptimizes search strategy to find relevant data for comprehensive r\u00e9sum\u00e9 improvement.",
       "imports": [],
       "dependencies": [
-        "GoogleGenAIConfig",
         "BM25BackendConfig",
+        "GoogleGenAIConfig",
+        "ChromaVectorConfig",
         "RetrievalConfig",
-        "RedisCacheConfig",
-        "ChromaVectorConfig"
+        "RedisCacheConfig"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -114,8 +114,8 @@
       "docstring": "Creates cost-effective retrieval configuration for r\u00e9sum\u00e9 processing.\n\nProvides efficient keyword-based search for budget-conscious r\u00e9sum\u00e9 improvement.",
       "imports": [],
       "dependencies": [
-        "RetrievalConfig",
         "BM25BackendConfig",
+        "RetrievalConfig",
         "RedisCacheConfig"
       ],
       "responsibility_level": "L5",
@@ -128,11 +128,11 @@
       "docstring": "Creates high-quality semantic retrieval for r\u00e9sum\u00e9 enhancement.\n\nOptimizes conceptual search to find relevant evidence for comprehensive r\u00e9sum\u00e9 improvement.",
       "imports": [],
       "dependencies": [
-        "GoogleGenAIConfig",
         "BM25BackendConfig",
+        "GoogleGenAIConfig",
+        "ChromaVectorConfig",
         "RetrievalConfig",
-        "RedisCacheConfig",
-        "ChromaVectorConfig"
+        "RedisCacheConfig"
       ],
       "responsibility_level": "L5",
       "children": []

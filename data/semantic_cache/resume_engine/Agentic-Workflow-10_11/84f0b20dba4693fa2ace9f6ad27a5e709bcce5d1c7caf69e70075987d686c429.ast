@@ -80,10 +80,10 @@
       "docstring": "Executes triplet extraction for resume processing workflows.\n\nExtracts structured knowledge graph data for resume job alignment.",
       "imports": [],
       "dependencies": [
-        "len",
-        "int",
         "create_mention",
         "str",
+        "int",
+        "len",
         "ExtractionResult"
       ],
       "responsibility_level": "L5",
@@ -96,10 +96,10 @@
       "docstring": "Extracts skill-related triplets for resume enhancement.\n\nIdentifies resume skills for job alignment knowledge graphs.",
       "imports": [],
       "dependencies": [
-        "set",
+        "ExtractedStatement",
         "create_triplet",
-        "len",
-        "ExtractedStatement"
+        "set",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -111,10 +111,10 @@
       "docstring": "Extracts experience-related triplets for resume enhancement.\n\nIdentifies resume work experience for job alignment knowledge graphs.",
       "imports": [],
       "dependencies": [
-        "set",
+        "ExtractedStatement",
         "create_triplet",
-        "len",
-        "ExtractedStatement"
+        "set",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -126,10 +126,10 @@
       "docstring": "Extracts education-related triplets for resume enhancement.\n\nIdentifies resume education for job alignment knowledge graphs.",
       "imports": [],
       "dependencies": [
-        "set",
+        "ExtractedStatement",
         "create_triplet",
-        "len",
-        "ExtractedStatement"
+        "set",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -141,8 +141,8 @@
       "docstring": "Extracts temporal information for resume timeline analysis.\n\nIdentifies date ranges for resume job alignment accuracy.",
       "imports": [],
       "dependencies": [
-        "int",
         "max",
+        "int",
         "min",
         "len"
       ],

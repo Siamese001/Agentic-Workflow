@@ -78,10 +78,10 @@
       "docstring": "Run all 6 QA gates and return results.",
       "imports": [],
       "dependencies": [
-        "sum",
         "abs",
-        "len",
-        "isinstance"
+        "sum",
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -93,10 +93,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "QAValidationGates",
+        "MasterResume",
         "BaselineResumeMetricsV4",
-        "SaaSRoleProfiles",
-        "MasterResume"
+        "QAValidationGates",
+        "SaaSRoleProfiles"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -130,8 +130,8 @@
       "docstring": "Generate customized resume sections based on JD and profile.",
       "imports": [],
       "dependencies": [
-        "sum",
         "enumerate",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",

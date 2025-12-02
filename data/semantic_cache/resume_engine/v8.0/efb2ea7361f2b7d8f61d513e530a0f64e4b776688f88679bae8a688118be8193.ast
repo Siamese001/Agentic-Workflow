@@ -26,8 +26,8 @@
       "docstring": "Load job input from JSON file.",
       "imports": [],
       "dependencies": [
-        "ValueError",
-        "open"
+        "open",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -75,18 +75,18 @@
       "docstring": "Main entry point for V7.5 HIL Workflow.",
       "imports": [],
       "dependencies": [
-        "RedisSaver",
-        "get_graph_app",
-        "load_job_input",
-        "globals",
-        "input",
-        "Path",
-        "str",
-        "setup_tracing",
-        "setup_logging",
         "print",
+        "str",
+        "globals",
+        "load_job_input",
         "open",
-        "print_summary"
+        "print_summary",
+        "get_graph_app",
+        "setup_logging",
+        "RedisSaver",
+        "Path",
+        "input",
+        "setup_tracing"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -98,8 +98,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "getattr"
+        "getattr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

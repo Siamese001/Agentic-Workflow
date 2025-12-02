@@ -206,8 +206,8 @@
       "docstring": "Calculate coefficient of variation for all sections.",
       "imports": [],
       "dependencies": [
-        "list",
         "sum",
+        "list",
         "len"
       ],
       "responsibility_level": "L5",
@@ -254,9 +254,9 @@
       "docstring": "Trim bullets to target word count, dropping lowest signal_density bullets first.",
       "imports": [],
       "dependencies": [
+        "range",
         "set",
-        "len",
-        "range"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -268,8 +268,8 @@
       "docstring": "Adjust priorities based on signal deficit.\n\nIf K5_unify=0.70 (below 0.80 max): prioritize Unify expansion (40% \u2192 50%)\nIf K6_ibm=0.72 (mid-range): normal priority (35%)\nIf K7_ey=0.65 (well below 0.75 max): increase EY from 15% \u2192 25% if signal improves >0.68",
       "imports": [],
       "dependencies": [
-        "sum",
         "max",
+        "sum",
         "min"
       ],
       "responsibility_level": "L5",
@@ -362,9 +362,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "BaselineResumeMetricsV4",
+        "MasterResume",
         "SaaSRoleProfiles",
-        "MasterResume"
+        "BaselineResumeMetricsV4"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -410,8 +410,8 @@
       "docstring": "Apply signal preservation scoring (OPT 8) to rank bullets.",
       "imports": [],
       "dependencies": [
-        "len",
-        "range"
+        "range",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

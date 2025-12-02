@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_retrieval_planning(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_retrieval_planning.py",
     "file_hash": "f71a730de4e6957aa94800b9eab0fc813ec2e8580b7bb06f068055716423f67a",
     "size_bytes": 16459,
-    "last_modified": "2025-12-01T12:27:38.302195",
+    "last_modified": "2025-12-01T12:27:38.287840",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -16,8 +16,8 @@
       "docstring": "Direction of traversal in resume processing knowledge graph.\n\nEnsures proper navigation through resume-related career data.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Type of resume processing KG query.\n\nDefines query patterns for optimal resume data retrieval.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -164,8 +164,8 @@
       "docstring": "Plan query to get all facts about entities.",
       "imports": [],
       "dependencies": [
-        "KGQueryPlan",
-        "HopSpec"
+        "HopSpec",
+        "KGQueryPlan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -177,9 +177,9 @@
       "docstring": "Plan path finding query between entities.",
       "imports": [],
       "dependencies": [
-        "KGQueryPlan",
+        "range",
         "HopSpec",
-        "range"
+        "KGQueryPlan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -191,9 +191,9 @@
       "docstring": "Plan N-hop neighborhood exploration.",
       "imports": [],
       "dependencies": [
-        "KGQueryPlan",
+        "range",
         "HopSpec",
-        "range"
+        "KGQueryPlan"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -205,8 +205,8 @@
       "docstring": "Plan query for facts valid at a specific time.",
       "imports": [],
       "dependencies": [
-        "KGQueryPlan",
-        "HopSpec"
+        "HopSpec",
+        "KGQueryPlan"
       ],
       "responsibility_level": "L5",
       "children": []

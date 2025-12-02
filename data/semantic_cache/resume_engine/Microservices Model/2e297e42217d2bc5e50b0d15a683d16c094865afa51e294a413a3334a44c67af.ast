@@ -46,15 +46,15 @@
       "docstring": "Executes the HOP-1 Clerk pre-processing logic.",
       "imports": [],
       "dependencies": [
-        "default_serializer",
+        "print",
         "setup_workflow_logging",
         "len",
-        "exit",
-        "HopExecutionError",
-        "print",
-        "open",
         "ClerkExtractor",
-        "Path"
+        "open",
+        "exit",
+        "default_serializer",
+        "Path",
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []

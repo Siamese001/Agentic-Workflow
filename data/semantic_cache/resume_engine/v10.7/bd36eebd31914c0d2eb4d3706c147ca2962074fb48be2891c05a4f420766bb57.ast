@@ -59,9 +59,9 @@
       "imports": [],
       "dependencies": [
         "_synthetic_resume",
+        "_SyntheticResult",
         "sha1",
-        "_synthesise_events",
-        "_SyntheticResult"
+        "_synthesise_events"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -73,14 +73,14 @@
       "docstring": "Entry point used by tests to execute the workflow.",
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
-        "_run_synthetic",
-        "isinstance",
         "str",
-        "setup_logging",
+        "isinstance",
         "run_workflow_async",
+        "ConfigV10_7",
+        "setup_logging",
         "Path",
-        "_ensure_runtime_paths"
+        "_ensure_runtime_paths",
+        "_run_synthetic"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -29,11 +29,11 @@
       "docstring": "Wraps the execution of a single job for the parallel executor.\nReturns a dictionary for the summary CSV.",
       "imports": [],
       "dependencies": [
-        "load_job_input",
-        "len",
-        "Exception",
+        "str",
         "get_compiled_graph",
-        "str"
+        "Exception",
+        "len",
+        "load_job_input"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -45,9 +45,9 @@
       "docstring": "Main batch processing loop.\nProcesses all .json files in batch_queue/ directory in parallel.",
       "imports": [],
       "dependencies": [
-        "list",
-        "run_meta_learning",
         "open",
+        "run_meta_learning",
+        "list",
         "len"
       ],
       "responsibility_level": "L5",

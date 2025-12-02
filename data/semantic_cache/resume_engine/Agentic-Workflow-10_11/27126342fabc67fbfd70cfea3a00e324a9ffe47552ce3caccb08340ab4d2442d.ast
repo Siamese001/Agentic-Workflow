@@ -36,8 +36,8 @@
       "docstring": "Orchestrates resume safety workflow for job alignment processing.",
       "imports": [],
       "dependencies": [
-        "plan_safety",
-        "record_event"
+        "record_event",
+        "plan_safety"
       ],
       "responsibility_level": "L5",
       "children": []

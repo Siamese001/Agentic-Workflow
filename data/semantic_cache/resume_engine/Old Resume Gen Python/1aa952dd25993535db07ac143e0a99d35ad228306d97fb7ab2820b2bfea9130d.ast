@@ -130,12 +130,12 @@
       "docstring": "Main execution flow for v5.27 with K.0 and K.2 restored.",
       "imports": [],
       "dependencies": [
-        "JDParser",
-        "len",
         "print",
-        "K2CompetitiveAnalyzer",
+        "ArtistGenerator",
+        "len",
+        "JDParser",
         "K0ThematicAnalyzer",
-        "ArtistGenerator"
+        "K2CompetitiveAnalyzer"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -247,8 +247,8 @@
       "docstring": "Extract required skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -310,8 +310,8 @@
       "docstring": "Extract seniority signals.",
       "imports": [],
       "dependencies": [
-        "int",
-        "bool"
+        "bool",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -399,8 +399,8 @@
       "docstring": "Run full K.2 competitive analysis with 24 RAG calls.\n\nArgs:\n    job_description: Raw JD text\n    k0_output: Output from K.0 analysis\n\nReturns:\n    K2CompetitiveAnalysis with peer comparison data",
       "imports": [],
       "dependencies": [
-        "len",
-        "K2CompetitiveAnalysis"
+        "K2CompetitiveAnalysis",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

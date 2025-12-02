@@ -89,8 +89,8 @@
       "docstring": "Update META_PROFILE from a self_correction block, typically derived\nfrom self_correction.CorrectionRecommendation.to_dict().\n\nExample block:\n\n    {\n      \"needed\": True,\n      \"surface\": \"qa_recheck\",\n      \"rationale\": \"...\",\n      \"metadata\": {...}\n    }\n\nHeuristics (restored v10_8 semantics, but typed):\n\n    \u2022 surface == \"qa_recheck\":\n        planning_bias.conservative = True\n        qa_bias.recent_failures = True\n\n    \u2022 surface == \"strategy_replan\":\n        planning_bias.exploratory = True\n\n    \u2022 surface == \"hil_escalation\":\n        safety_bias.human_review_important = True\n\n    \u2022 surface == \"rag_retry\":\n        routing_bias.prefer_robust_retrieval = True\n\n    \u2022 surface == \"checkpoint_recovery\":\n        planning_bias.deterministic_recovery = True",
       "imports": [],
       "dependencies": [
-        "str",
-        "bool"
+        "bool",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -184,8 +184,8 @@
       "docstring": "Internal helper to append a MetaUpdate to history.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "MetaUpdate"
+        "MetaUpdate",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []

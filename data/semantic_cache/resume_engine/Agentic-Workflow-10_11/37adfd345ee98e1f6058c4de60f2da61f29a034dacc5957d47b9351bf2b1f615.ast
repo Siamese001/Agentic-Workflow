@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_rag_fusion_planning(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\kg_rag_fusion_planning.py",
     "file_hash": "37adfd345ee98e1f6058c4de60f2da61f29a034dacc5957d47b9351bf2b1f615",
     "size_bytes": 32896,
-    "last_modified": "2025-12-01T12:27:38.278405",
+    "last_modified": "2025-12-01T12:27:38.249040",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -16,8 +16,8 @@
       "docstring": "Defines types of information retrieval steps for resume processing.\n\nImproves resume completeness by ensuring all relevant experiences\nand skills are captured systematically.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Determines how complex a resume query is to process.\n\nImproves resume processing efficiency by matching analysis\ndepth to job requirement complexity.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -165,11 +165,11 @@
       "docstring": "Creates r\u00e9sum\u00e9 analysis plans using job-specific templates for different career levels.\n\nImproves r\u00e9sum\u00e9 targeting by applying proven analysis patterns for specific job categories and roles.",
       "imports": [],
       "dependencies": [
-        "RAGRetrievalStep",
+        "range",
+        "enumerate",
         "KGRAGFusionPlan",
         "FusionPlanStep",
-        "enumerate",
-        "range"
+        "RAGRetrievalStep"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -181,8 +181,8 @@
       "docstring": "Creates basic r\u00e9sum\u00e9 analysis plans for straightforward job matching questions.\n\nImproves r\u00e9sum\u00e9 clarity by highlighting key experiences and skills that directly match job requirements.",
       "imports": [],
       "dependencies": [
-        "RAGRetrievalStep",
         "HopSpec",
+        "RAGRetrievalStep",
         "KGRAGFusionPlan",
         "FusionPlanStep"
       ],
@@ -210,12 +210,12 @@
       "docstring": "Creates advanced r\u00e9sum\u00e9 analysis plans for complex career trajectory and skill transfer questions.\n\nImproves r\u00e9sum\u00e9 impact by demonstrating sophisticated career progression and transferable expertise.",
       "imports": [],
       "dependencies": [
-        "RAGRetrievalStep",
+        "range",
+        "enumerate",
         "KGRAGFusionPlan",
         "FusionPlanStep",
         "list",
-        "enumerate",
-        "range"
+        "RAGRetrievalStep"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -227,13 +227,13 @@
       "docstring": "Creates sophisticated r\u00e9sum\u00e9 analysis plans with deep recursive reasoning for complex career narratives.\n\nImproves r\u00e9sum\u00e9 persuasiveness by building compelling career stories that demonstrate growth and expertise.",
       "imports": [],
       "dependencies": [
-        "RAGRetrievalStep",
+        "range",
+        "enumerate",
         "KGRAGFusionPlan",
         "FusionPlanStep",
         "list",
-        "enumerate",
-        "range",
-        "min"
+        "min",
+        "RAGRetrievalStep"
       ],
       "responsibility_level": "L5",
       "children": []

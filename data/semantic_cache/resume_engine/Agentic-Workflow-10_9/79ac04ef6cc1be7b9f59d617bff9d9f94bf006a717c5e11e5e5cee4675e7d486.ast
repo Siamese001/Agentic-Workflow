@@ -46,11 +46,11 @@
       "docstring": "Apply a ranking strategy:\n\n    \"bm25\"\n    \"dense\"\n    \"hybrid\"\n    anything else \u2192 hybrid\n\nAfter ranking, all candidates receive a deterministic \"rank\" field.\n\nThis function never mutates the caller\u2019s list.",
       "imports": [],
       "dependencies": [
-        "dict",
         "enumerate",
-        "hybrid",
         "bm25",
-        "dense"
+        "dense",
+        "dict",
+        "hybrid"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -62,11 +62,11 @@
       "docstring": "Fuse multiple pre-ranked lists into a single deterministic list.\n\nAlgorithm:\n    1. Flatten\n    2. Deduplicate by (query, evidence)\n    3. Sort by minimal rank across groups\n    4. Secondary sort by alphabetical evidence\n    5. Re-assign ranks\n\nAll behavior purely deterministic.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "enumerate",
-        "int",
+        "set",
         "str",
-        "set"
+        "int",
+        "enumerate",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []

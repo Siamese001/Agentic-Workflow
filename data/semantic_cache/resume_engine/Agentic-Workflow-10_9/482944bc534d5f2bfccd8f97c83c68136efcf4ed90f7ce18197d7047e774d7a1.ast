@@ -16,8 +16,8 @@
       "docstring": "Conceptual patterns for multi-agent coordination graphs.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,11 +29,11 @@
       "docstring": "Build a linear pipeline:\n    r0 \u2192 r1 \u2192 r2 \u2192 ...\n\nExample:\n    build_linear_pipeline([\n        AgentRole.PLANNER,\n        AgentRole.RETRIEVER,\n        AgentRole.DRAFTER,\n        AgentRole.QA,\n        AgentRole.SAFETY,\n    ])",
       "imports": [],
       "dependencies": [
-        "AgentNode",
-        "len",
-        "AgentGraph",
         "range",
-        "str"
+        "str",
+        "AgentGraph",
+        "len",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -45,8 +45,8 @@
       "docstring": "Build a star-hub graph:\n    hub \u2194 each spoke",
       "imports": [],
       "dependencies": [
-        "AgentNode",
-        "AgentGraph"
+        "AgentGraph",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -58,12 +58,12 @@
       "docstring": "Build a role-homogeneous council of size N.\n\nExample:\n    build_council(AgentRole.QA, 3)",
       "imports": [],
       "dependencies": [
-        "max",
-        "AgentNode",
+        "range",
         "AgentGraph",
         "int",
-        "range",
-        "str"
+        "str",
+        "max",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -76,8 +76,8 @@
       "imports": [],
       "dependencies": [
         "str",
-        "AgentNode",
-        "AgentGraph"
+        "AgentGraph",
+        "AgentNode"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -121,8 +121,8 @@
       "docstring": "Deterministic council voting given candidate scores.\n\nReturns:\n    {\n      \"selected\": {...},\n      \"candidates\": [...],\n      \"graph_summary\": {...}\n    }",
       "imports": [],
       "dependencies": [
-        "summarize_graph",
-        "deterministic_vote"
+        "deterministic_vote",
+        "summarize_graph"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -144,9 +144,9 @@
       "docstring": "Build a typed MultiAgentCouncilResult for downstream layers.\nThis normalizes candidate votes into fully structured objects.",
       "imports": [],
       "dependencies": [
-        "MultiAgentVote",
-        "str",
         "float",
+        "str",
+        "MultiAgentVote",
         "MultiAgentCouncilResult"
       ],
       "responsibility_level": "L5",
@@ -181,9 +181,9 @@
       "docstring": "Compute routing metadata for conceptual messages.\nValidates delegation rules and embeds graph summary.",
       "imports": [],
       "dependencies": [
-        "str",
         "can_delegate",
-        "delegation_metadata"
+        "delegation_metadata",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

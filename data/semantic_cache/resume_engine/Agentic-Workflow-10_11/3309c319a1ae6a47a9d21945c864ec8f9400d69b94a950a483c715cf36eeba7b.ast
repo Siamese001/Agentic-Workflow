@@ -16,9 +16,9 @@
       "docstring": "Check if a safety result allows the operation to proceed.\n\nThis is a simple adapter that checks if there are any blocking findings\nin the safety result. Used by tests and runtime to make go/no-go decisions.\n\nArgs:\n    result: A SafetyResult-like object with a 'findings' attribute\n    \nReturns:\n    bool: True if the operation is safe to proceed, False if blocked",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "str",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -30,10 +30,10 @@
       "docstring": "Arbitrate between safety findings and council votes to produce a decision.\n\nThis adapter maps safety findings to legacy decision format expected by tests.\n\nDecision mapping:\n- high/critical severity -> \"block\"\n- medium severity -> \"replan\"\n- low/no findings -> \"allow\"\n\nArgs:\n    safety_result: SafetyResult with findings\n    council_vote: CouncilVote (currently unused in decision logic)\n    policy: SafetyPolicy (currently unused in decision logic)\n    ctx: Optional execution context\n    \nReturns:\n    dict: {\"decision\": str, \"reason\": str, \"findings\": list}",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str",
         "getattr",
-        "run_l5"
+        "str",
+        "run_l5",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -45,10 +45,10 @@
       "docstring": "Run L5 policy evaluation and return a verdict event.\n\nThis is a thin adapter that converts safety results into a policy decision\nevent with verdict and reason fields.\n\nArgs:\n    safety_result: SafetyResult with findings\n    council_vote: CouncilVote (for future use)\n    policy: SafetyPolicy to apply\n    ctx: Optional execution context\n    \nReturns:\n    An event object with 'verdict' and 'reason' attributes",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "str",
         "L5Event",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

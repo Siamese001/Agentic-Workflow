@@ -313,9 +313,9 @@
       "imports": [],
       "dependencies": [
         "_allocate_tokens_from_depth",
+        "_get_normalized_reasoning_params",
         "_build_reasoning_prompt_addendum",
-        "min",
-        "_get_normalized_reasoning_params"
+        "min"
       ],
       "responsibility_level": "L3",
       "children": []
@@ -339,13 +339,13 @@
       "docstring": "Calculate signal score based on keyword matches between content and thematic analysis.\nPRESERVED FROM v15.55 lines 4593-4631.\n\nArgs:\n    text_content: Text to score (str, list, or dict)\n    thematic_analysis: ThematicAnalysis with competitive intelligence\n\nReturns:\n    Float score between 0.0 and 1.0",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance",
         "getattr",
-        "hasattr",
+        "set",
         "str",
+        "isinstance",
+        "len",
         "min",
-        "set"
+        "hasattr"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -439,9 +439,9 @@
       "docstring": "Reconstructs ThematicAnalysis from a dictionary.",
       "imports": [],
       "dependencies": [
+        "cls",
         "setattr",
-        "hasattr",
-        "cls"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
