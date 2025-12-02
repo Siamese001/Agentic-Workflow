@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 7,
+  "generated_at": 1764703802.596813,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\01_hop_clerk.diff.json"
+}

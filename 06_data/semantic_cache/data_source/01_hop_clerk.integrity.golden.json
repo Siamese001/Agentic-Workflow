@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"2e297e42217d2bc5e50b0d15a683d16c094865afa51e294a413a3334a44c67af\",\n  \"file_size\": 12525,\n  \"generated_at\": 1764702990.816129,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\01_hop_clerk.py\",\n  \"verified\": true\n}",
+  "full_hash": "9713fce94dcc7c6327300560a648317081eacf9df1a417bdb62e14bcb56fb936",
+  "generated_at": 1764703802.6671925,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\01_hop_clerk.integrity.json"
+}

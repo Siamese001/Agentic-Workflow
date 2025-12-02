@@ -1,0 +1,44 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_info'),
+          Constant(value='artifact_counts'),
+          Constant(value='generated_at')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='abs_path'),
+              Constant(value='rel_path'),
+              Constant(value='root_name'),
+              Constant(value='file_hash'),
+              Constant(value='file_size'),
+              Constant(value='is_eligible'),
+              Constant(value='file_type'),
+              Constant(value='depth')],
+            values=[
+              Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\05_hop_validation_v1_1.py'),
+              Constant(value='05_hop_validation_v1_1.py'),
+              Constant(value='resume_engine/Microservices Model'),
+              Constant(value='dac638d43f00cfa55d702924f510b9438be71a643710112067ec5a1ad4a9819b'),
+              Constant(value=25596),
+              Name(id='true', ctx=Load()),
+              Constant(value='.py'),
+              Constant(value=0)]),
+          Dict(
+            keys=[
+              Constant(value='ast'),
+              Constant(value='embedding'),
+              Constant(value='diff'),
+              Constant(value='golden'),
+              Constant(value='safety'),
+              Constant(value='integrity')],
+            values=[
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1)]),
+          Constant(value=1764702990.901324)]))])

@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='baseline_hash'),
+          Constant(value='current_hash'),
+          Constant(value='diff_type'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=''),
+          Constant(value='99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4'),
+          Constant(value='initial'),
+          Constant(value=1764702986.39642),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\08_prompt_rag_governance.md')]))])

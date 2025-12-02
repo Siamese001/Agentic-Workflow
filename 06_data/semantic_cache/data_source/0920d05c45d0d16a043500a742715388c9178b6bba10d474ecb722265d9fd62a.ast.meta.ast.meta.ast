@@ -1,0 +1,12 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='node_count'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=17),
+          Constant(value=1764702840.8837988),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a.ast.meta.json')]))])

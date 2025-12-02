@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='# hops/hop_6_gate.py\n"""\nHop 6: Gate Decision - HIGH-SIGNAL OVERWRITE\n\nThis is a risk-aware, dynamic decision engine.\n1. It differentiates between deterministic (e.g., placeholder) and\n   quality-based (e.g., thematic alignment) failures.\n2. It reads the HOP-0 RAG signal quality (via HOP-5 results) to\n   dynamically adjust its risk tolerance.\n3. It outputs a "PROCEED_WITH_REVIEW" state for low-confidence runs.\n"""\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import List, Dict, Any\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components\nfrom helpers import (\n    setup_workflow_logging, HopExecutionError, default_serializer,\n    ValidationResult, ValidationSeverity, GateDecision\n)\n\n# --- High-Signal Configuration ---\n\n# Rules that, if failed, represent a non-negotiable HALT,\n# regardless'),
+          Constant(value='4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3'),
+          Constant(value=1764702990.9166775),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\06_hop_gate.py')]))])

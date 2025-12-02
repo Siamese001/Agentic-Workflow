@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='76bfeb0e5f5415779e5423b1304b8d06181df19ac8c81f6c37413ea86c98993c'),
+          Constant(value=481),
+          Constant(value=1764702790.90117),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4.embedding'),
+          Name(id='true', ctx=Load())]))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"97b8ec84dc8dcf58b3136ae54423a85bd7aea01922b9d6fc93a15d28e97c1c75\",\n  \"file_size\": 6503,\n  \"generated_at\": 1764703108.9245343,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\03_runtime\\\\router-microagent-layer\\\\rank-phase-group\\\\schema-validation-ops\\\\general-operations-ops\\\\utility-functions-ops\\\\cache\\\\.cacheslash\",\n  \"verified\": true\n}",
+  "full_hash": "282998f5460527d5280aec77382ed00b49037e644c2f2841df39e83125f8a503",
+  "generated_at": 1764703929.785282,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\runtime\\.cacheslash.integrity.json"
+}

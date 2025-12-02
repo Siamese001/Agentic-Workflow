@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='500b952f115318c64a1e9a2aec5108ce93e25089ca53bfdea1ce2236c3c3cf36'),
+          Constant(value=35022),
+          Constant(value=1764702990.797639),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\00_hop_rag_v1_3.py'),
+          Name(id='true', ctx=Load())]))])

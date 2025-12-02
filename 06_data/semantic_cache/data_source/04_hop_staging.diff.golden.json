@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"baseline_hash\": \"\",\n  \"current_hash\": \"5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2\",\n  \"diff_type\": \"initial\",\n  \"generated_at\": 1764702990.9613903,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\Archive\\\\04_hop_staging.py\"\n}",
+  "full_hash": "9b722d696e4bb6f98dd66ec8f9cda4c6509117a62f345a2c1f700c36f0c80b0c",
+  "generated_at": 1764703803.2690327,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\04_hop_staging.diff.json"
+}

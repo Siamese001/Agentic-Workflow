@@ -1,0 +1,44 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_info'),
+          Constant(value='artifact_counts'),
+          Constant(value='generated_at')],
+        values=[
+          Dict(
+            keys=[
+              Constant(value='abs_path'),
+              Constant(value='rel_path'),
+              Constant(value='root_name'),
+              Constant(value='file_hash'),
+              Constant(value='file_size'),
+              Constant(value='is_eligible'),
+              Constant(value='file_type'),
+              Constant(value='depth')],
+            values=[
+              Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\06_safety_policy_cost.md'),
+              Constant(value='06_safety_policy_cost.md'),
+              Constant(value='resume_engine/Agentic-Workflow-10_11'),
+              Constant(value='84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d'),
+              Constant(value=809),
+              Name(id='true', ctx=Load()),
+              Constant(value='.md'),
+              Constant(value=1)]),
+          Dict(
+            keys=[
+              Constant(value='ast'),
+              Constant(value='embedding'),
+              Constant(value='diff'),
+              Constant(value='golden'),
+              Constant(value='safety'),
+              Constant(value='integrity')],
+            values=[
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1),
+              Constant(value=1)]),
+          Constant(value=1764702986.3834445)]))])

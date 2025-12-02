@@ -1,0 +1,12 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='node_count'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=21),
+          Constant(value=1764702818.492226),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\0694d3e8ab8e25189df3dde642befb48858995d1157599fddf8e28da3bbad226.safety.json')]))])

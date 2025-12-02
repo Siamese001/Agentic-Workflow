@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\08_hop_qa_report.safety.json",
+    "rel_path": "08_hop_qa_report.safety.json",
+    "root_name": "data_source",
+    "file_hash": "ce44550855c7fa5a75e8ff07a3b64361a7437e2c02301921bee9ebf763a5639b",
+    "file_size": 285,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703804.464072
+}

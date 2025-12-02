@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='198be52aae4fcb148790b5af95ffdf6a41959e29916bd80d0bedfde3d3f20567'),
+          Constant(value=17224),
+          Constant(value=1764703109.1501112),
+          Constant(value='C:\\Git\\Agentic-Workflow\\03_runtime\\safety-guard-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\utility-functions-ops\\mypy_cache\\.mypy_cacheslash'),
+          Name(id='true', ctx=Load())]))])

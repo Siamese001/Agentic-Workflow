@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='cac6899632d569cef8d15be5652882663b7aa076d490de7d7682f7fff97505d9'),
+          Constant(value=20064),
+          Constant(value=1764702990.8477876),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\03_hop_artist.py'),
+          Name(id='true', ctx=Load())]))])

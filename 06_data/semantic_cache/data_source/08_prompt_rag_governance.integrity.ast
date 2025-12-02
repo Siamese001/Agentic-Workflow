@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4'),
+          Constant(value=758),
+          Constant(value=1764702986.3985493),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\08_prompt_rag_governance.md'),
+          Name(id='true', ctx=Load())]))])

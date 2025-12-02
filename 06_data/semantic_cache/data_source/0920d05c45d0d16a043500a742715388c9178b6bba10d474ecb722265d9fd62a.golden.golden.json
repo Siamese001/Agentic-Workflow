@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"canonical_form\": \"class embedding_functions: # pragma: no cover - stub namespace\\nclass EmbeddingFunction:\\ndef __call__(self, *args, **kwargs): # pragma: no cover - interface stub\\nraise NotImplementedError\",\n  \"normalized_signature\": \"func:__call__;class:embedding_functions;class:EmbeddingFunction\",\n  \"core_functionality\": \"object_oriented_with_methods\",\n  \"interface_contract\": \"public_methods:\",\n  \"test_coverage\": []\n}",
+  "full_hash": "b8907259a262b64407ee6c702e681316c6e71ef8ef5c529704f6b18d152557c6",
+  "generated_at": 1764703889.4429758,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a.golden.json"
+}

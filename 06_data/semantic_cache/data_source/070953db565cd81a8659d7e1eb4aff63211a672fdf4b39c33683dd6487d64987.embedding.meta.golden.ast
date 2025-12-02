@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "model": "text-embedding-ada-002",\n  "dimensions": 16\n}'),
+          Constant(value='c364dfbe775b2e09f86fa772bbf465d7e67cf9d51954e770115bacdcd672fbc6'),
+          Constant(value=1764702849.5738606),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v8.0\\070953db565cd81a8659d7e1eb4aff63211a672fdf4b39c33683dd6487d64987.embedding.meta.json')]))])

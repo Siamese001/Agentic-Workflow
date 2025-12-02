@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"has_executable_calls\": false,\n  \"has_file_operations\": false,\n  \"has_network_calls\": false,\n  \"has_system_calls\": false,\n  \"line_count\": 21,\n  \"generated_at\": 1764702986.382266,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\06_safety_policy_cost.md\"\n}",
+  "full_hash": "1edc7ab7cf85748854dd32b9390dddb349261d80b9fb6d59493e0a9ed45a9712",
+  "generated_at": 1764703654.286001,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\06_safety_policy_cost.safety.json"
+}

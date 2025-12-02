@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\tests\\\\_deprecated\\\\test_agent_cards.py\",\n  \"file_hash\": \"0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8\",\n  \"size_bytes\": 2025,\n  \"last_modified\": \"2025-12-01T12:27:40.095050\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_11\",\n  \"file_extension\": \".py\"\n}",
+  "full_hash": "c2e237df5d5325d8f34e4b8e0dd95f19337f36e6e6ad787badd0a5632dbe3a08",
+  "generated_at": 1764703654.847394,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8.ast.meta.json"
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\07_hop_rendering.meta.json",
+    "rel_path": "07_hop_rendering.meta.json",
+    "root_name": "data_source",
+    "file_hash": "18d51a763ddee4550d3ba655fcbbb760285127dd893e5c08fee98b7558ac77f4",
+    "file_size": 569,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703804.2829788
+}

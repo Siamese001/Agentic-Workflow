@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\06_hop_gate.golden.json",
+    "rel_path": "06_hop_gate.golden.json",
+    "root_name": "data_source",
+    "file_hash": "57a8c6643182777328063a40b25a99417dc1272a915da7404b951c30568418df",
+    "file_size": 1281,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703804.0247438
+}

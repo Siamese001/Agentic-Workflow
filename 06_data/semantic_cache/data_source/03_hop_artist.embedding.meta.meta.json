@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\03_hop_artist.embedding.meta.json",
+    "rel_path": "03_hop_artist.embedding.meta.json",
+    "root_name": "data_source",
+    "file_hash": "ed6923fbd08bd90138c3d3b190e8d6510d16226a1136c507631fc22d70cb132f",
+    "file_size": 180,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703802.9497066
+}

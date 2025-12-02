@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\v10.7\\tests\\regression\\test_design_validation_v10_7.py'),
+          Constant(value='09dbd8aa3436723d92cf5dc7bcdcb5ba3d3b8192ed7a2488b8b0acf5f747fffb'),
+          Constant(value=754),
+          Constant(value='2025-12-01T12:27:37.185149'),
+          Constant(value='RG'),
+          Constant(value='v10.7'),
+          Constant(value='.py')]))])

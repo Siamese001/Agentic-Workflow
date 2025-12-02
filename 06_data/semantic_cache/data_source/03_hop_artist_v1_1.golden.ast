@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='# hops/03_hop_artist.py\n"""\nHop 3: Content Generation (Artist) with Configuration Integration\n\nThis Artist implements:\n1. ReasoningConfig integration for section-specific generation parameters\n2. ContentConstraintsConfig integration for word count boundaries\n3. Enhanced system prompts with reasoning directives\n4. Semantic bullet selection and synthesis\n"""\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport sys\nimport time\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, Tuple, List, Set\n\nimport numpy as np\nfrom sklearn.metrics.pairwise import cosine_similarity\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components from helpers\nfrom helpers import (\n    setup_workflow_logging, HopExecutionError, default_serializer,\n    ValidationResult, ValidationSeverity, ThematicAnalysis, ResumeSection,\n    ReasoningConfig, ContentConstrain'),
+          Constant(value='5cdfcbaa62612382c16c85923eb765914164521e8e1397cdf956e50983660247'),
+          Constant(value=1764702990.8705013),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\03_hop_artist_v1_1.py')]))])

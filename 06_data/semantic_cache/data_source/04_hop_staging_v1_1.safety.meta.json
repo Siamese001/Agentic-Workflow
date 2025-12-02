@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\04_hop_staging_v1_1.safety.json",
+    "rel_path": "04_hop_staging_v1_1.safety.json",
+    "root_name": "data_source",
+    "file_hash": "e474867e16acabe9838cf276dd3a392dc3bdaa81d1c7e568c23b20708fd67497",
+    "file_size": 288,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703803.545084
+}

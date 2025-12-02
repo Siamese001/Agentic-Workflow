@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"99c47193ef992ab40f2d5331feb7d8b6bea7524c558c33c308e1ba8466cc8bf4\",\n  \"file_size\": 758,\n  \"generated_at\": 1764702986.3985493,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\08_prompt_rag_governance.md\",\n  \"verified\": true\n}",
+  "full_hash": "785c9911edbc416e0f80611189d8ea1d74b95f7decadbf8c97501d5889aa5c95",
+  "generated_at": 1764703654.6511946,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\08_prompt_rag_governance.integrity.json"
+}

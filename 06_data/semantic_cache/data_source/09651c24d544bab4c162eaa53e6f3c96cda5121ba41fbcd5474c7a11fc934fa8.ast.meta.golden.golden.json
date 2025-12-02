@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_7_main\\\\\\\\telemetry_v10_7.py\\\",\\n  \\\"file_hash\\\": \\\"09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8\\\",\\n  \\\"size_bytes\\\": 3621,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:41.148834\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_7_main\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"1970dde68f0e16f804060d9b679e62953a73ce14bd4a817a91109d0ead1beeb9\",\n  \"generated_at\": 1764702806.7011929,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_7_main\\\\09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8.ast.meta.json\"\n}",
+  "full_hash": "0221aa64132a0a6a30978e75b7f54189b598291653db0879d25e0a560a08159c",
+  "generated_at": 1764703174.0838025,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\09651c24d544bab4c162eaa53e6f3c96cda5121ba41fbcd5474c7a11fc934fa8.ast.meta.golden.json"
+}

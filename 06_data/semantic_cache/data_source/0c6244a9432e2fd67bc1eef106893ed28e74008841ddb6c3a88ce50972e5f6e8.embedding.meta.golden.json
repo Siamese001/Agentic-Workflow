@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"model\": \"text-embedding-ada-002\",\n  \"dimensions\": 16\n}",
+  "full_hash": "c364dfbe775b2e09f86fa772bbf465d7e67cf9d51954e770115bacdcd672fbc6",
+  "generated_at": 1764703654.857506,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\0c6244a9432e2fd67bc1eef106893ed28e74008841ddb6c3a88ce50972e5f6e8.embedding.meta.json"
+}

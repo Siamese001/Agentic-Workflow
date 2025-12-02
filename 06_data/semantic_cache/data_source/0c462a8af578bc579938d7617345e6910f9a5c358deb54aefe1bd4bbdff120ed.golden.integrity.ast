@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='c1e4919afe88d9c2b413b00ab09a90d1c722fec3a1c9b33208d086df6d451fd2'),
+          Constant(value=6324),
+          Constant(value=1764703176.63509),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0c462a8af578bc579938d7617345e6910f9a5c358deb54aefe1bd4bbdff120ed.golden.embedding'),
+          Name(id='true', ctx=Load())]))])

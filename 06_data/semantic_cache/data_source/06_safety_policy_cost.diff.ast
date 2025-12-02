@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='baseline_hash'),
+          Constant(value='current_hash'),
+          Constant(value='diff_type'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=''),
+          Constant(value='84c2100d552065963e6a5e16507064f53bcd267f87148b341cae8161f550004d'),
+          Constant(value='initial'),
+          Constant(value=1764702986.3807337),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\windsurf_rules\\06_safety_policy_cost.md')]))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"# hops/hop_1_clerk.py\\n\\\"\\\"\\\"\\nHop 1: Master Resume Pre-processing (Clerk).\\nReads the master resume JSON, extracts all sections, and pre-processes\\nexperience bullets by extracting action verbs, metrics, and generating\\nembeddings for future semantic analysis.\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\n\\nimport argparse\\nimport json\\nimport logging\\nimport re\\nimport sys\\nfrom datetime import datetime\\nfrom pathlib import Path\\nfrom typing import Dict, Any, Tuple, List\\n\\nimport numpy as np # Import numpy for embedding math\\n\\n# Add project root to path\\nproject_root = Path(__file__).resolve().parent.parent\\nsys.path.append(str(project_root))\\n\\n# Import necessary components\\nfrom helpers import (\\n    setup_workflow_logging, HopExecutionError, default_serializer,\\n    ValidationResult, ValidationSeverity, BulletProvenance\\n)\\n\\n# --- Placeholder Clients (to match stack in HOP-0) ---\\n# These are essential for a high-signal Clerk.\\nclass EmbeddingClient:\\n    ",
+  "full_hash": "d116e32dea63811349711300fc0a9925a1dd5f4aca1cfd56a5201024c8ef73ac",
+  "generated_at": 1764703802.6472619,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\01_hop_clerk.golden.json"
+}

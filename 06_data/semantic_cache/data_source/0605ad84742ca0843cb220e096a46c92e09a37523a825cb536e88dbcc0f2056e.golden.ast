@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='from __future__ import annotations\nfrom typing import Dict, List\ndef default_network_policy() -> Dict[str, object]:\n"""Return the default network policy for sandboxed execution.\nBy default all outbound network access is disabled.\n"""\nreturn {\n"allow_network": False,\n"allowlist": [],\n}\ndef is_destination_allowed(policy: Dict[str, object], host: str) -> bool:\nif not policy.get("allow_network"):\nreturn False\nallowlist: List[str] = list(policy.get("allowlist", []) or [])\nreturn host in allowlist'),
+          Constant(value='func:default_network_policy;func:is_destination_allowed'),
+          Constant(value='procedural_functions'),
+          Constant(value='public_methods:default_network_policy,is_destination_allowed'),
+          List(ctx=Load())]))])

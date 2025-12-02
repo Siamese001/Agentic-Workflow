@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='from __future__ import annotations\nfrom pydantic import BaseModel, Field\nfrom core.models.models import ContextBudget\nclass ContextProfile(BaseModel):\n"""Profile capturing context budget hints used by planning and routing."""\ncontext_budget: ContextBudget = Field(default_factory=ContextBudget)'),
+          Constant(value='class:ContextProfile'),
+          Constant(value='module_imports'),
+          Constant(value='public_methods:'),
+          List(ctx=Load())]))])

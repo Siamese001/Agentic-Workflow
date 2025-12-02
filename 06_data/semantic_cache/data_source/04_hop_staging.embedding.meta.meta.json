@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\04_hop_staging.embedding.meta.json",
+    "rel_path": "04_hop_staging.embedding.meta.json",
+    "root_name": "data_source",
+    "file_hash": "12b650445c4bbead8595b8a461baafd858b817352649f0aeccca31a0705e8a4a",
+    "file_size": 190,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703803.3032913
+}

@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "\\"\\"\\"\\nResume Generation Engine v5.41 - MULTI-LLM SUPPORT (Claude + Gemini)\\nv5.41 CHANGES - MULTI-LLM INTEGRATION:\\n\\u2713 NEW: Support for both Claude and Gemini APIs\\n\\u2713 NEW: LLM_PROVIDER configuration variable\\n\\u2713 NEW: _call_gemini_api() method\\n\\u2713 NEW: _call_llm_api() unified wrapper\\n\\u2713 MODIFIED: All API calls route through unified wrapper\\n\\u2713 Environment variables: ANTHROPIC_API_KEY and GEMINI_API_KEY\\n\\u2713 Easy switching between providers with single variable change\\nAll v5.40 functionality maintained:\\n\\u2713 Single source of truth architecture\\n\\u2713 Real API integration (not mock)\\n\\u2713 Comprehensive error handling\\n\\u2713 All 74 RAG pipeline calls\\n\\u2713 JD Enforcement System\\n\\u2713 Complete validation suite\\n\\"\\"\\"\\nimport json\\nimport re\\nimport hashlib\\nimport math\\nimport os\\nimport time\\nimport requests\\nfrom typing import Dict, List, Tuple, Optional, Any, Set\\nfrom enum import Enum\\nfrom datetime import datetime\\nfrom'),
+          Constant(value='527d3adea4aea0535daf5de3b4228d27c1a8d394511994d274c2a33608eab48b'),
+          Constant(value=1764702818.5950599),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\08f5dd179c0cde041567776e3f3875ee3cea64514e1cb5e456d93566813ad4ad.golden.json')]))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"# hops/05_hop_validation.py\\n\\\"\\\"\\\"\\nHop 5: Comprehensive Validation with 12+ Rules\\n\\nThis validator includes:\\n1. Global word count validation\\n2. Keyword coverage checks  \\n3. Section-specific constraint validation\\n4. Thematic alignment scoring\\n5. Input signal quality tracking\\n6. Placeholder detection\\n7. Narrative proportion validation\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\n\\nimport argparse\\nimport json\\nimport logging\\nimport re\\nimport sys\\nfrom datetime import datetime\\nfrom pathlib import Path\\nfrom typing import List, Dict, Any, Set, Tuple\\n\\nimport numpy as np\\nfrom sklearn.metrics.pairwise import cosine_similarity\\n\\n# Add project root to path\\nproject_root = Path(__file__).resolve().parent.parent\\nsys.path.append(str(project_root))\\n\\n# Import necessary components from helpers\\nfrom helpers import (\\n    setup_workflow_logging, HopExecutionError, default_serializer,\\n    ValidationResult, ValidationSeverity, ThematicAnalysis, \\n    Immutable",
+  "full_hash": "aad42495190bb34f6b10dac7493072e2bc2ae992e4370186a62216fd02797c2c",
+  "generated_at": 1764703803.837011,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\05_hop_validation_v1_1.golden.json"
+}

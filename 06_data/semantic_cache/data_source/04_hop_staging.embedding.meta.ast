@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='word_count'),
+          Constant(value='unique_words'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=1015),
+          Constant(value=512),
+          Constant(value=1764702990.9588668),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\Archive\\04_hop_staging.py')]))])

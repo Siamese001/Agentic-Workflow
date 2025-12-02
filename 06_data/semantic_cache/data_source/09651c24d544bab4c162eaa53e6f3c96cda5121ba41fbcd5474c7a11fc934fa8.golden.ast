@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='"""\nTelemetry helpers for v10.7.\nThis module provides a unified event envelope for:\n- LLM metrics\n- tool execution metrics\n- cache events (exact + semantic)\n- agent routing decisions\n- pruning outcomes\n- MCP-integrated telemetry streams\nAll telemetry events are emitted via MCP (if present) and mirrored to local logs.\nExisting calls to log_event(...) continue to work unchanged.\n"""\nfrom __future__ import annotations\nimport logging\nfrom datetime import datetime\nfrom typing import Any, Dict, Optional\nfrom mcp import emit_event\nlogger = logging.getLogger("telemetry_v10_7")\ndef check_langgraph() -> Dict[str, Any]:\n"""Capability-based LangGraph health check used by diagnostics."""\ntry:\nfrom langgraph.graph import StateGraph # noqa: F401\nreturn {"ok": True, "info": "StateGraph import succeeded"}\nexcept Exception as exc: # pragma: no cover - best-effort diagnostic\nreturn {"ok": False, "error": str(exc)}\ndef _build_envelope(\nagent: str,\nevent: str,\npayload: Dict[str, Any],\n*,\nworkflow_id: Optional[str] = None,\nnode: Optional[str] = None,\ncategory: Optional[str] = None,\n) -> Dict[str, Any]:\n"""\nBuild a standardized telemetry envelope for v10.7.\nThis allows all components (LLM, Tools, Agents, Cache, Meta Learning)\nto produce consistent MCP-compatible events.\n"""\nenvelope = {\n"timestamp": datetime.utcnow().isoformat(),\n"agent": agent,\n"event": event,\n"category": category or "runtime",\n"workflow_id": workflow_id,\n"node": node,\n"payload": payload or {},\n}\nreturn {k: v for k, v in envelope.items() if v is not None}\ndef log_event(\nagent: str,\nevent: str,\ndata: Optional[Dict[str, Any]] = None,\n*,\nworkflow_id: Optional[str] = None,\nnode: Optional[str] = None,\ncategory: Optional[str] = None,\n) -> None:\n"""\nEmit a telemetry event via MCP and local logging.\nFully backwards compatible with earlier versions, but now supports:\nlog_event(\nagent="StrategyStack",\nevent="branch_selected",\ndata={"branch_id": 3},\nworkflow_id=context.workflow_id,\nnode="STRATEGY_TOT_VOTE",\ncategory="decision"\n)\nParameters:\nagent - Logical agent/tool name\nevent - Event type (e.g. "cache_hit", "latency_fallback")\ndata - Free-form metadata\nworkflow_id - Optional workflow identifier\nnode - Optional graph node emitting the event\ncategory - Optional event category for grouping\n"""\ndata = data or {}\nenv = _build_envelope(\nagent=agent,\nevent=event,\npayload=data,\nworkflow_id=workflow_id,\nnode=node,\ncategory=category,\n)\ntry:\nemit_event(env)\nlogger.debug("Telemetry emitted: %s", env)\nexcept Exception as exc:\nlogger.warning(f"Failed to emit MCP telemetry: {exc}")\nlogger.debug("Failed payload was: %s", env)\n__all__ = ["log_event", "check_langgraph"]'),
+          Constant(value='func:check_langgraph;func:_build_envelope;func:log_event'),
+          Constant(value='procedural_functions'),
+          Constant(value='public_methods:check_langgraph,log_event'),
+          List(ctx=Load())]))])

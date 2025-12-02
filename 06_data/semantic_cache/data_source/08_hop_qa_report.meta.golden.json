@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\08_hop_qa_report.py\",\n    \"rel_path\": \"08_hop_qa_report.py\",\n    \"root_name\": \"resume_engine/Microservices Model\",\n    \"file_hash\": \"af4d61748805b1a7ed5ffd429769e9b1fdaed37ae53fdd1b39b5036dfa0b34ec\",\n    \"file_size\": 14785,\n    \"is_eligible\": true,\n    \"file_type\": \".py\",\n    \"depth\": 0\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702990.9489784\n}",
+  "full_hash": "fe936021fcb8acb894fa568c0ff07b054780dc33286a8c6810053e685d5675bc",
+  "generated_at": 1764703804.4405568,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\08_hop_qa_report.meta.json"
+}

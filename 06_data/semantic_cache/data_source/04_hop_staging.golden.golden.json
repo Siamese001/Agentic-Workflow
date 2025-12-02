@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"# hops/hop_4_staging.py\\n\\\"\\\"\\\"\\nHop 4: Staging and Sanitization - HIGH-SIGNAL OVERWRITE\\n\\nThis hop is a deterministic \\\"data integrity\\\" layer. It cleans, validates,\\nand finalizes the creative output from HOP-3 before it can be validated\\nor rendered.\\n\\nIts responsibilities are:\\n1.  Remove all AI/LLM generation artifacts (e.g., \\\"Certainly!\\\", markdown).\\n2.  Perform structural unification (e.g., split string-based lists into List[str]).\\n3.  Sanitize any remaining placeholders (e.g., \\\"[Insert Metric]\\\").\\n4.  Inject per-section metadata (word counts, bullet counts) for granular\\n    validation in HOP-5.\\n5.  Create and lock the final ImmutableStagingBuffer.\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\n\\nimport argparse\\nimport json\\nimport logging\\nimport re\\nimport sys\\nfrom datetime import datetime\\nfrom pathlib import Path\\nfrom typing import Dict, Any, List, Union\\n\\n# Add project root to path\\nproject_root = Path(__file__).resolve().parent.parent\\nsys",
+  "full_hash": "c3584140a356b93d629f56d40b1f6e19376d81e061f3a2a60aa6fd6913765e68",
+  "generated_at": 1764703803.320812,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\04_hop_staging.golden.json"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"error\": \"unterminated string literal (detected at line 128) (<unknown>, line 128)\"\n}",
+  "full_hash": "98c54b88b910dc90c97f668e82852c3c88ff7a422bc02cedca0722fea0539d9e",
+  "generated_at": 1764703803.7508543,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\05_hop_validation_v1_1.ast.meta.json"
+}

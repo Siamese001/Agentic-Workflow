@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\08_prompt_rag_governance.ast.meta.json",
+    "rel_path": "08_prompt_rag_governance.ast.meta.json",
+    "root_name": "data_source",
+    "file_hash": "e64e33e3bb9aa6f950b871e83005fe57fc07a96693729b9b83669961909d8ebd",
+    "file_size": 75,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703654.5590699
+}

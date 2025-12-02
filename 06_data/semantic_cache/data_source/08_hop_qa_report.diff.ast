@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='baseline_hash'),
+          Constant(value='current_hash'),
+          Constant(value='diff_type'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=''),
+          Constant(value='af4d61748805b1a7ed5ffd429769e9b1fdaed37ae53fdd1b39b5036dfa0b34ec'),
+          Constant(value='initial'),
+          Constant(value=1764702990.944767),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\08_hop_qa_report.py')]))])

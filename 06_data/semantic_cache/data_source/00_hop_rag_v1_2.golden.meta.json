@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\00_hop_rag_v1_2.golden.json",
+    "rel_path": "00_hop_rag_v1_2.golden.json",
+    "root_name": "data_source",
+    "file_hash": "4ec471fa519a3540c36ae87ab3d7225e40ebb047ec0d2ff206b2f7e68ba678f4",
+    "file_size": 1283,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703802.31275
+}

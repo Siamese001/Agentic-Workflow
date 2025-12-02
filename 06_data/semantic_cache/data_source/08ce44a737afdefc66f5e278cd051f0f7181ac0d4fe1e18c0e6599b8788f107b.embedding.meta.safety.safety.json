@@ -1,0 +1,9 @@
+{
+  "has_executable_calls": false,
+  "has_file_operations": false,
+  "has_network_calls": false,
+  "has_system_calls": false,
+  "line_count": 9,
+  "generated_at": 1764703171.9525445,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\08ce44a737afdefc66f5e278cd051f0f7181ac0d4fe1e18c0e6599b8788f107b.embedding.meta.safety.json"
+}

@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3'),
+          Constant(value=10924),
+          Constant(value=1764702990.9183416),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\06_hop_gate.py'),
+          Name(id='true', ctx=Load())]))])

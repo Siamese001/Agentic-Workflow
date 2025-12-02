@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_11\\\\\\\\config\\\\\\\\context_profile.py\\\",\\n  \\\"file_hash\\\": \\\"0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4\\\",\\n  \\\"size_bytes\\\": 325,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:39.091347\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_11\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"ddb1a3a683152929ec213c840e4020da8d60a339362e8d982e55c5174ca2636f\",\n  \"generated_at\": 1764702790.8960207,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4.ast.meta.json\"\n}",
+  "full_hash": "99f513e839cfbaa2aad0373cba1ea9ee0cb7db3f0ecfc3df7709e3ff68717b39",
+  "generated_at": 1764703176.016001,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4.ast.meta.golden.json"
+}

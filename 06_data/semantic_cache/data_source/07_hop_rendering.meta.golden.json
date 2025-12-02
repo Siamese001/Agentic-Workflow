@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\07_hop_rendering.py\",\n    \"rel_path\": \"07_hop_rendering.py\",\n    \"root_name\": \"resume_engine/Microservices Model\",\n    \"file_hash\": \"2d8588c8087077deb97771c8b1ff4596df0681fe0232043d8c98c54a8ea46d56\",\n    \"file_size\": 14288,\n    \"is_eligible\": true,\n    \"file_type\": \".py\",\n    \"depth\": 0\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702990.9375198\n}",
+  "full_hash": "ff07d0dab5191047037500a31263e27f902dd89a4017413923dfcd2b5a823adb",
+  "generated_at": 1764703804.2785172,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\07_hop_rendering.meta.json"
+}

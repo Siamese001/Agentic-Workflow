@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\0694d3e8ab8e25189df3dde642befb48858995d1157599fddf8e28da3bbad226.safety.json",
+    "rel_path": "0694d3e8ab8e25189df3dde642befb48858995d1157599fddf8e28da3bbad226.safety.json",
+    "root_name": "data_source",
+    "file_hash": "cfd5c36b88eda6c12233ffd3ea8bb43ceed70b59103404c03805da12f352d628",
+    "file_size": 201,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703808.0216293
+}

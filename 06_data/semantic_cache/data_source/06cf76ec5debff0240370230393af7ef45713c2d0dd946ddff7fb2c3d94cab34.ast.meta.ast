@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\v2\\QUICK_REFERENCE.md'),
+          Constant(value='06cf76ec5debff0240370230393af7ef45713c2d0dd946ddff7fb2c3d94cab34'),
+          Constant(value=1519),
+          Constant(value='2025-12-01T12:27:37.072476'),
+          Constant(value='RG'),
+          Constant(value='v2'),
+          Constant(value='.md')]))])

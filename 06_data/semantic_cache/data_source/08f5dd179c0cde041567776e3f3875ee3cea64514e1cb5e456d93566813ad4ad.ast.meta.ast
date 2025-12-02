@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_41_MULTI_LLM.py'),
+          Constant(value='08f5dd179c0cde041567776e3f3875ee3cea64514e1cb5e456d93566813ad4ad'),
+          Constant(value=16384),
+          Constant(value='2025-12-01T12:27:35.711017'),
+          Constant(value='RG'),
+          Constant(value='Old Resume Gen Python'),
+          Constant(value='.py')]))])

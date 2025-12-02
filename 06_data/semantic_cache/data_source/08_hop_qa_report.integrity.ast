@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='af4d61748805b1a7ed5ffd429769e9b1fdaed37ae53fdd1b39b5036dfa0b34ec'),
+          Constant(value=14785),
+          Constant(value=1764702990.9481637),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\08_hop_qa_report.py'),
+          Name(id='true', ctx=Load())]))])

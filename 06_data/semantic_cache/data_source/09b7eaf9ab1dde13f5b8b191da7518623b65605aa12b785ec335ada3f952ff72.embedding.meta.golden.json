@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"model\": \"text-embedding-ada-002\",\n  \"dimensions\": 16\n}",
+  "full_hash": "c364dfbe775b2e09f86fa772bbf465d7e67cf9d51954e770115bacdcd672fbc6",
+  "generated_at": 1764703808.133486,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\09b7eaf9ab1dde13f5b8b191da7518623b65605aa12b785ec335ada3f952ff72.embedding.meta.json"
+}

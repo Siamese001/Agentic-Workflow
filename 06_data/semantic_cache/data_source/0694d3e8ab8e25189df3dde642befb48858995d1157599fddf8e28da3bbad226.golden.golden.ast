@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='{\n  "canonical_form": "\\"\\"\\"\\nResume Generation Engine v5.4 - FULL RAG INTEGRATION\\n=====================================================\\nDeep merge with Job_Workflow_v1.9.2 RAG architecture:\\n\\u2713 K.0: Thematic analysis with peer JD retrieval and competitive intelligence\\n\\u2713 HOP-2 Data Enrichment: Peer JD tier-matching, signal quality scoring\\n\\u2713 Retrieval schema: retrieval_source, peer_jds_analyzed, retrieval_confidence\\n\\u2713 Multi-source fallback (FULL_MASTER | FALLBACK | DEGRADED)\\n\\u2713 Competitive intelligence extraction with differentiator keywords\\n\\u2713 Signal quality threshold (min 0.45 to proceed)\\n\\u2713 All v5.3 elasticity features maintained\\n\\u2713 4 outputs only (Resume, Cover Letter, QA Report, CoC Ledger)\\nVersion: 5.4\\nDate: October 2025\\n\\"\\"\\"\\nimport json\\nimport re\\nfrom typing import Dict, List, Tuple, Optional, Any, Set\\nfrom enum import Enum\\nfrom datetime import datetime\\nfrom dataclasses import dataclass, field\\nimport math\\nimport hashlib\\n_'),
+          Constant(value='6ed4408c39fe103ca9c2ba25f54d24550613a886e22bfdc90573aa610579b31d'),
+          Constant(value=1764702818.4865756),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\0694d3e8ab8e25189df3dde642befb48858995d1157599fddf8e28da3bbad226.golden.json')]))])

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\v2\\\\\\\\QUICK_REFERENCE.md\\\",\\n  \\\"file_hash\\\": \\\"06cf76ec5debff0240370230393af7ef45713c2d0dd946ddff7fb2c3d94cab34\\\",\\n  \\\"size_bytes\\\": 1519,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:37.072476\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"v2\\\",\\n  \\\"file_extension\\\": \\\".md\\\"\\n}\",\n  \"full_hash\": \"9e30ac1978da55ddac8bcbdd46b8a98457ff0c6acbbb6a70d386471159a3d0f8\",\n  \"generated_at\": 1764702846.1771219,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v2\\\\06cf76ec5debff0240370230393af7ef45713c2d0dd946ddff7fb2c3d94cab34.ast.meta.json\"\n}",
+  "full_hash": "c180495c9a0ce185b216094d311e4c86b1bca4ebfdcb5bff3adc0ba34e253bc8",
+  "generated_at": 1764703169.131165,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\06cf76ec5debff0240370230393af7ef45713c2d0dd946ddff7fb2c3d94cab34.ast.meta.golden.json"
+}

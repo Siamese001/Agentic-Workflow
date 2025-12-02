@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"error\": \"unterminated string literal (detected at line 438) (<unknown>, line 438)\"\n}",
+  "full_hash": "227e44fa7ca922f69de4cee724a1d51ef34968322dcf966227aa8b6779de80fc",
+  "generated_at": 1764703802.8983219,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\03_hop_artist.ast.meta.json"
+}

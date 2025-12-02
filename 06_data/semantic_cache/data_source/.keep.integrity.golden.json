@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"367e6e183b85823227fde9a9a063bb4844c34b401a42cef99228e02f7b0ec5b5\",\n  \"file_size\": 14777,\n  \"generated_at\": 1764703108.175116,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\03_runtime\\\\observer-microagent-layer\\\\retry-phase-group\\\\vectorization-ops\\\\general-operations-ops\\\\utility-functions-ops\\\\.keep\",\n  \"verified\": true\n}",
+  "full_hash": "0e2f3048496917a98ead10e1e675ecb88b50cc31c1fbcff932a725638b1cdb40",
+  "generated_at": 1764703929.8316705,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\runtime\\.keep.integrity.json"
+}

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\01_hop_clerk.integrity.json",
+    "rel_path": "01_hop_clerk.integrity.json",
+    "root_name": "data_source",
+    "file_hash": "da8e83a07e72dfab705bb76ed8750f519b68aed17fa68d603ccd813bc34f4b71",
+    "file_size": 260,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703802.6699927
+}

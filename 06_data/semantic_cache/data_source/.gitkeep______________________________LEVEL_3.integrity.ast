@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='7cfb00c6aac2e204286759accf4a48889bb233e2915e56ecaced1112059b4aab'),
+          Constant(value=7083),
+          Constant(value=1764702854.2709684),
+          Constant(value='C:\\Git\\Agentic-Workflow\\08_scripts\\planner-microagent-layer\\expand-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\.gitkeep______________________________LEVEL_3'),
+          Name(id='true', ctx=Load())]))])

@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\02_hop_enrichment.diff.json",
+    "rel_path": "02_hop_enrichment.diff.json",
+    "root_name": "data_source",
+    "file_hash": "a7582750a44f0416962209bd9437b010891fadd28ba16bd52e73cf6c3e67ab3c",
+    "file_size": 275,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703802.7720125
+}

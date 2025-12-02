@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\05_hop_validation.golden.json",
+    "rel_path": "05_hop_validation.golden.json",
+    "root_name": "data_source",
+    "file_hash": "ce7d4c0fd31456fe67a899a2058c5ab97c21bed8d96cb1816773d2e0e8ab6d10",
+    "file_size": 1299,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703803.6643655
+}

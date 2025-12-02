@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"198be52aae4fcb148790b5af95ffdf6a41959e29916bd80d0bedfde3d3f20567\",\n  \"file_size\": 17224,\n  \"generated_at\": 1764703109.1501112,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\03_runtime\\\\safety-guard-layer\\\\refine-phase-group\\\\cost-budgeting-ops\\\\general-operations-ops\\\\utility-functions-ops\\\\mypy_cache\\\\.mypy_cacheslash\",\n  \"verified\": true\n}",
+  "full_hash": "f8bdfec903c23c91b9ef08358521eb9251721b85fb53af3e3884d4643ad1415c",
+  "generated_at": 1764703929.8540285,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\runtime\\.mypy_cacheslash.integrity.json"
+}

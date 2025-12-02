@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='canonical_form'),
+          Constant(value='normalized_signature'),
+          Constant(value='core_functionality'),
+          Constant(value='interface_contract'),
+          Constant(value='test_coverage')],
+        values=[
+          Constant(value='from __future__ import annotations\nfrom typing import Any, Dict, List\nfrom tools.simulation import Engine # existing Phase-3 simulation harness\nfrom .models import SimScenario, SimOutcome\ndef run_scenario(scenario: SimScenario) -> SimOutcome:\n"""Run a high-level simulation scenario using the existing Engine.\nFor now this is a thin wrapper around ``simulation.Engine.run_sync``.\nIt executes the named scenario ``run_count`` times (if available) and\naggregates the "golden_eval_score" metric from each run\'s outcome.\nUnknown scenario ids are treated as empty, yielding zeroed scores.\n"""\nscores: List[float] = []\nsafety_incidents = 0\nconflict_count = 0\nfor _ in range(max(scenario.run_count, 1)):\ntry:\nresult: Dict[str, Any] = Engine.run_sync(scenario.id, overrides=scenario.initial_context)\nexcept Exception: # pragma: no cover - defensive\ncontinue\noutcome = result.get("outcome") or {}\nscore = float(outcome.get("golden_eval_score") or 0.0)\nscores.append(score)\nif not bool(outcome.get("safety_passed", True)):\nsafety_incidents += 1\nif int(outcome.get("correction_iterations", 0) or 0) > 0:\nconflict_count += 1\nif scores:\navg_score = sum(scores) / float(len(scores))\nelse:\navg_score = 0.0\nreturn SimOutcome(\nscenario_id=scenario.id,\naverage_scores={"golden_eval_score": avg_score},\nsafety_incidents=safety_incidents,\nagent_conflict_count=conflict_count,\n)'),
+          Constant(value='func:run_scenario'),
+          Constant(value='procedural_functions'),
+          Constant(value='public_methods:run_scenario'),
+          List(ctx=Load())]))])

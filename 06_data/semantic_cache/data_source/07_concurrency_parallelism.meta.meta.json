@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\07_concurrency_parallelism.meta.json",
+    "rel_path": "07_concurrency_parallelism.meta.json",
+    "root_name": "data_source",
+    "file_hash": "d86e143c198e91676f476a710f6c0538a7f7d90a6b618e9abd5073390f2d652b",
+    "file_size": 610,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703654.469543
+}

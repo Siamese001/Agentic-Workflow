@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='baseline_hash'),
+          Constant(value='current_hash'),
+          Constant(value='diff_type'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=''),
+          Constant(value='72cfad3e44ff299232c7be84b5c2b546b85b842dc71f73262eb5ba70204ed83e'),
+          Constant(value='initial'),
+          Constant(value=1764702849.5899951),
+          Constant(value='C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v8.0\\070953db565cd81a8659d7e1eb4aff63211a672fdf4b39c33683dd6487d64987.golden.json')]))])

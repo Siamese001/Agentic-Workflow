@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__orchestration__test_orchestration_state_isolation.py'),
+          Constant(value='068c93f70b2427effd0511172926fdb994dc158f227bd354f5d7338686164828'),
+          Constant(value=2831),
+          Constant(value='2025-12-01T12:27:41.562587'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_7_main'),
+          Constant(value='.py')]))])

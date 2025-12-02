@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\04_hop_staging_v1_1.py\",\n    \"rel_path\": \"04_hop_staging_v1_1.py\",\n    \"root_name\": \"resume_engine/Microservices Model\",\n    \"file_hash\": \"d5d87f1271a2df4298e0c33098dcc3016c47225bc599e82a71ec4e9439801690\",\n    \"file_size\": 11692,\n    \"is_eligible\": true,\n    \"file_type\": \".py\",\n    \"depth\": 0\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702990.8888884\n}",
+  "full_hash": "fc350d584d7a5d23e985c18c5b7789733136e75428d9f072e96ad45a600315df",
+  "generated_at": 1764703803.523334,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\04_hop_staging_v1_1.meta.json"
+}

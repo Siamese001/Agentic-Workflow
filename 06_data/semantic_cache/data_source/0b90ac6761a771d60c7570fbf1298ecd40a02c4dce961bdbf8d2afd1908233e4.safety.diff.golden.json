@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"baseline_hash\": \"\",\n  \"current_hash\": \"cbff3fb8d25f13882c3e09812a63105441ea7a8eedd6ecf5fd9082510f22e72f\",\n  \"diff_type\": \"initial\",\n  \"generated_at\": 1764702790.9294171,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4.safety.json\"\n}",
+  "full_hash": "2023a9f3c7cfb9170a3ba432144dcf731fdfac8745652857cead768d7129026c",
+  "generated_at": 1764703176.3204892,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4.safety.diff.json"
+}

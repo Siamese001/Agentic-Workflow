@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"canonical_form\\\": \\\"from __future__ import annotations\\\\nfrom pydantic import BaseModel, Field\\\\nfrom core.models.models import ContextBudget\\\\nclass ContextProfile(BaseModel):\\\\n\\\\\\\"\\\\\\\"\\\\\\\"Profile capturing context budget hints used by planning and routing.\\\\\\\"\\\\\\\"\\\\\\\"\\\\ncontext_budget: ContextBudget = Field(default_factory=ContextBudget)\\\",\\n  \\\"normalized_signature\\\": \\\"class:ContextProfile\\\",\\n  \\\"core_functionality\\\": \\\"module_imports\\\",\\n  \\\"interface_contract\\\": \\\"public_methods:\\\",\\n  \\\"test_coverage\\\": []\\n}\",\n  \"full_hash\": \"2e0238070fffa68c076b08baa1475272d445b3a03882dea4072fc8ff7b00e26a\",\n  \"generated_at\": 1764702790.9209929,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4.golden.json\"\n}",
+  "full_hash": "1a88201c2a847a3cc2de78fc18d13f2bc886ea1b1b49f0aa66edfed943ffb087",
+  "generated_at": 1764703176.2325835,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4.golden.golden.json"
+}

@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\03_hop_artist.py\",\n    \"rel_path\": \"03_hop_artist.py\",\n    \"root_name\": \"resume_engine/Microservices Model\",\n    \"file_hash\": \"cac6899632d569cef8d15be5652882663b7aa076d490de7d7682f7fff97505d9\",\n    \"file_size\": 20064,\n    \"is_eligible\": true,\n    \"file_type\": \".py\",\n    \"depth\": 0\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702990.848448\n}",
+  "full_hash": "d833b30a1b810d1c7e160e79b06709b2c338480c9f7bfe51809e3e3ad6e5fe0f",
+  "generated_at": 1764703803.0081692,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\03_hop_artist.meta.json"
+}

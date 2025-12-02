@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\v2\\governor.py'),
+          Constant(value='07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e'),
+          Constant(value=33854),
+          Constant(value='2025-12-01T12:27:37.021569'),
+          Constant(value='RG'),
+          Constant(value='v2'),
+          Constant(value='.py')]))])

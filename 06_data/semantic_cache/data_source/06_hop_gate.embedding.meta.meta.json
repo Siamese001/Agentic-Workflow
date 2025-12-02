@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\06_hop_gate.embedding.meta.json",
+    "rel_path": "06_hop_gate.embedding.meta.json",
+    "root_name": "data_source",
+    "file_hash": "4d657f30ca5aac0f073e979081536c56b251c4ec3047953fd330d58cd4f9a857",
+    "file_size": 176,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703804.003616
+}

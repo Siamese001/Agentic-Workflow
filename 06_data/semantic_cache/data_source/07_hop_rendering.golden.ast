@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='# hops/hop_7_rendering.py\n"""\nHop 7: Document Rendering - HIGH-SIGNAL OVERWRITE\n\nThis is a spec-driven, context-aware renderer.\n1. It loads a "render_spec" (mocked inline) to define document\n   structure, order, and content sourcing.\n2. It dynamically sources content from the HOP-4 staging buffer\n   (for LLM content) AND the HOP-0 thematic analysis (for\n   guaranteed-alignment data like keywords).\n3. It generates a "High-Signal App Tracker" entry, which serves\n   as a performance snapshot of the run, including RAG signal\n   quality and final alignment scores from HOP-5.\n"""\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, List\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components\nfrom helpers import (\n    setup_workflow_logging, HopExecutionError, default_seri'),
+          Constant(value='2d8588c8087077deb97771c8b1ff4596df0681fe0232043d8c98c54a8ea46d56'),
+          Constant(value=1764702990.9348683),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\07_hop_rendering.py')]))])

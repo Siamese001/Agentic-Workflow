@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"has_executable_calls\": false,\n  \"has_file_operations\": true,\n  \"has_network_calls\": false,\n  \"has_system_calls\": false,\n  \"line_count\": 465,\n  \"generated_at\": 1764702990.8714597,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\03_hop_artist_v1_1.py\"\n}",
+  "full_hash": "fab1aab178f9b9b7c70e3ed368fba68dae59f28a6be8cc9d56ef0a9496fc3fed",
+  "generated_at": 1764703803.206627,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\03_hop_artist_v1_1.safety.json"
+}

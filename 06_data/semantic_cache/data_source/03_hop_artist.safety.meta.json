@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\03_hop_artist.safety.json",
+    "rel_path": "03_hop_artist.safety.json",
+    "root_name": "data_source",
+    "file_hash": "48ba6a8b2e5b4723ded018994e3679826c3fec138708feabb0b66734c5cecc9a",
+    "file_size": 282,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703803.0291343
+}

@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\metacognition\\uncertainty.py'),
+          Constant(value='0a062b8fe2555d05b3dbff0ea1db8c7201c12d191b21672fd5beb4668dde28f6'),
+          Constant(value=1048),
+          Constant(value='2025-12-01T12:27:39.249586'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_11'),
+          Constant(value='.py')]))])

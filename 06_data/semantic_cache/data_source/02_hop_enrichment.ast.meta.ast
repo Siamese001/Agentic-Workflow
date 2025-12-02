@@ -1,0 +1,12 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='node_count'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value=951),
+          Constant(value=1764702990.8230996),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\02_hop_enrichment.py')]))])

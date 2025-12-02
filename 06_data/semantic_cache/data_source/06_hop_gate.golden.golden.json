@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"golden_content\": \"# hops/hop_6_gate.py\\n\\\"\\\"\\\"\\nHop 6: Gate Decision - HIGH-SIGNAL OVERWRITE\\n\\nThis is a risk-aware, dynamic decision engine.\\n1. It differentiates between deterministic (e.g., placeholder) and\\n   quality-based (e.g., thematic alignment) failures.\\n2. It reads the HOP-0 RAG signal quality (via HOP-5 results) to\\n   dynamically adjust its risk tolerance.\\n3. It outputs a \\\"PROCEED_WITH_REVIEW\\\" state for low-confidence runs.\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\n\\nimport argparse\\nimport json\\nimport logging\\nimport sys\\nfrom datetime import datetime\\nfrom pathlib import Path\\nfrom typing import List, Dict, Any\\n\\n# Add project root to path\\nproject_root = Path(__file__).resolve().parent.parent\\nsys.path.append(str(project_root))\\n\\n# Import necessary components\\nfrom helpers import (\\n    setup_workflow_logging, HopExecutionError, default_serializer,\\n    ValidationResult, ValidationSeverity, GateDecision\\n)\\n\\n# --- High-Signal Configuration ---\\n\\n# Rule",
+  "full_hash": "b0600d117a76b785736b07735b20e195803e58802c02f7b0bd5e3d6d59e3073d",
+  "generated_at": 1764703804.0221884,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\06_hop_gate.golden.json"
+}

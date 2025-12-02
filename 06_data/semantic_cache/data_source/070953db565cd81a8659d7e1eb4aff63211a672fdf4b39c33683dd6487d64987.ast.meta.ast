@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\v8.0\\agent_swarm_v8_0.py'),
+          Constant(value='070953db565cd81a8659d7e1eb4aff63211a672fdf4b39c33683dd6487d64987'),
+          Constant(value=55761),
+          Constant(value='2025-12-01T12:27:42.231414'),
+          Constant(value='RG'),
+          Constant(value='v8.0'),
+          Constant(value='.py')]))])

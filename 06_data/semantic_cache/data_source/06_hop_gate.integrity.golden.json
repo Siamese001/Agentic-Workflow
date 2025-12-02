@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_hash\": \"4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3\",\n  \"file_size\": 10924,\n  \"generated_at\": 1764702990.9183416,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\06_hop_gate.py\",\n  \"verified\": true\n}",
+  "full_hash": "62997c74a03660d097cb6ab973c2fa7c3927172475861c899026d9fbcee563fe",
+  "generated_at": 1764703804.0413444,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\06_hop_gate.integrity.json"
+}

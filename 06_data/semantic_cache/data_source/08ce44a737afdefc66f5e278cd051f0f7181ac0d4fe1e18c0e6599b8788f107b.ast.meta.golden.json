@@ -1,0 +1,6 @@
+{
+  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic_Workflow-10_10\\\\prompt_builder.py\",\n  \"file_hash\": \"08ce44a737afdefc66f5e278cd051f0f7181ac0d4fe1e18c0e6599b8788f107b\",\n  \"size_bytes\": 21370,\n  \"last_modified\": \"2025-12-01T15:36:20.793660\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic_Workflow-10_10\",\n  \"file_extension\": \".py\"\n}",
+  "full_hash": "fd7dae0c4d7a727b28b01a6a22ebe878ff2b35c1cc17a985af4c9b5ddcef1d73",
+  "generated_at": 1764703797.3101912,
+  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic_Workflow-10_10\\08ce44a737afdefc66f5e278cd051f0f7181ac0d4fe1e18c0e6599b8788f107b.ast.meta.json"
+}

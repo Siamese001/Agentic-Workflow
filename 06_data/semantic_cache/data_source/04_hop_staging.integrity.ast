@@ -1,0 +1,16 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_hash'),
+          Constant(value='file_size'),
+          Constant(value='generated_at'),
+          Constant(value='source_file'),
+          Constant(value='verified')],
+        values=[
+          Constant(value='5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2'),
+          Constant(value=11138),
+          Constant(value=1764702990.9661596),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\Archive\\04_hop_staging.py'),
+          Name(id='true', ctx=Load())]))])

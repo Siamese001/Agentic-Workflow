@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\00_hop_rag_v1_2.safety.json",
+    "rel_path": "00_hop_rag_v1_2.safety.json",
+    "root_name": "data_source",
+    "file_hash": "543eb87a9efae96a176d0273630d9e928899d6600180fbe2583e6f47d7d831ba",
+    "file_size": 284,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703802.3715596
+}

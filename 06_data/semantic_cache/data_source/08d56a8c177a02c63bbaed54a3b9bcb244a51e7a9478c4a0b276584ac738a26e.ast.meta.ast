@@ -1,0 +1,20 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='file_path'),
+          Constant(value='file_hash'),
+          Constant(value='size_bytes'),
+          Constant(value='last_modified'),
+          Constant(value='engine'),
+          Constant(value='archive_version'),
+          Constant(value='file_extension')],
+        values=[
+          Constant(value='C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\simulation\\simulator.py'),
+          Constant(value='08d56a8c177a02c63bbaed54a3b9bcb244a51e7a9478c4a0b276584ac738a26e'),
+          Constant(value=1711),
+          Constant(value='2025-12-01T12:27:37.950804'),
+          Constant(value='RG'),
+          Constant(value='Agentic-Workflow-10_11'),
+          Constant(value='.py')]))])

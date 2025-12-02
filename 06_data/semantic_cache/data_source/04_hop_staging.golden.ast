@@ -1,0 +1,14 @@
+Module(
+  body=[
+    Expr(
+      value=Dict(
+        keys=[
+          Constant(value='golden_content'),
+          Constant(value='full_hash'),
+          Constant(value='generated_at'),
+          Constant(value='source_file')],
+        values=[
+          Constant(value='# hops/hop_4_staging.py\n"""\nHop 4: Staging and Sanitization - HIGH-SIGNAL OVERWRITE\n\nThis hop is a deterministic "data integrity" layer. It cleans, validates,\nand finalizes the creative output from HOP-3 before it can be validated\nor rendered.\n\nIts responsibilities are:\n1.  Remove all AI/LLM generation artifacts (e.g., "Certainly!", markdown).\n2.  Perform structural unification (e.g., split string-based lists into List[str]).\n3.  Sanitize any remaining placeholders (e.g., "[Insert Metric]").\n4.  Inject per-section metadata (word counts, bullet counts) for granular\n    validation in HOP-5.\n5.  Create and lock the final ImmutableStagingBuffer.\n"""\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport sys\nfrom datetime import datetime\nfrom pathlib import Path\nfrom typing import Dict, Any, List, Union\n\n# Add project root to path\nproject_root = Path(__file__).resolve().parent.parent\nsys.path.append(str(project_root))\n\n# Import necessary components\nf'),
+          Constant(value='5f093758f78bf9ad6c977115a667d122e516aba5af2a5441185451fb8a59e7a2'),
+          Constant(value=1764702990.9628277),
+          Constant(value='C:\\Git\\Resume Engine Archive\\Microservices Model\\Archive\\04_hop_staging.py')]))])

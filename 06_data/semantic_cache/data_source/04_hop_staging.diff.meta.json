@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\04_hop_staging.diff.json",
+    "rel_path": "04_hop_staging.diff.json",
+    "root_name": "data_source",
+    "file_hash": "c5fa86a565a97bd87b78ba1809204e63c89b084a830bd3de78103a9b7838d530",
+    "file_size": 280,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703803.271549
+}

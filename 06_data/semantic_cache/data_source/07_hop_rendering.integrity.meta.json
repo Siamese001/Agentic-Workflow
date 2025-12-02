@@ -1,0 +1,21 @@
+{
+  "file_info": {
+    "abs_path": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\07_hop_rendering.integrity.json",
+    "rel_path": "07_hop_rendering.integrity.json",
+    "root_name": "data_source",
+    "file_hash": "fb041b43c28563bcc4f187383183070e3b190a8bd20de06e17740c622dfacaf7",
+    "file_size": 264,
+    "is_eligible": true,
+    "file_type": ".json",
+    "depth": 3
+  },
+  "artifact_counts": {
+    "ast": 1,
+    "embedding": 1,
+    "diff": 1,
+    "golden": 1,
+    "safety": 1,
+    "integrity": 1
+  },
+  "generated_at": 1764703804.2607288
+}
