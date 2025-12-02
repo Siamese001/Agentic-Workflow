@@ -1,0 +1,248 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\01_hop_clerk.py",
+    "file_hash": "2e297e42217d2bc5e50b0d15a683d16c094865afa51e294a413a3334a44c67af",
+    "size_bytes": 12525,
+    "last_modified": "2025-12-01T12:27:36.419254",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "EmbeddingClient",
+      "line_number": 33,
+      "docstring": "Mock EmbeddingClient. In production, this uses a real model.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HallucinationDetector",
+      "line_number": 48,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ClerkExtractor",
+      "line_number": 72,
+      "docstring": "HOP-1: Pre-processes the master resume.\n- Extracts all sections (header, experience, education, etc.)\n- Extracts and structures competency map.\n- Enriches every experience bullet with:\n    1. An Action Verb\n    2. Extracted Metrics (%, $, etc.)\n    3. Inferred Skills (cross-referenced with competencies)\n    4. A Vector Embedding (for HOP-2 semantic scoring)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_hop_1",
+      "line_number": 211,
+      "docstring": "Executes the HOP-1 Clerk pre-processing logic.",
+      "imports": [],
+      "dependencies": [
+        "default_serializer",
+        "setup_workflow_logging",
+        "len",
+        "exit",
+        "HopExecutionError",
+        "print",
+        "open",
+        "ClerkExtractor",
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 35,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "embed",
+      "line_number": 39,
+      "docstring": "Generates a mock, deterministic embedding.",
+      "imports": [],
+      "dependencies": [
+        "hash"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect",
+      "line_number": 49,
+      "docstring": "MOCK Hallucination Detector.\nIn a real system, this would validate bullets against\nthe user's 'ground truth' or look for factual inconsistencies.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 83,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "EmbeddingClient",
+        "HallucinationDetector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_master_resume_structure",
+      "line_number": 95,
+      "docstring": "Ensures the master resume has the expected top-level keys.",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_and_preprocess",
+      "line_number": 107,
+      "docstring": "Main execution method.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_competency_map",
+      "line_number": 132,
+      "docstring": "Parses the competencies into a structured map.",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_experience_sections",
+      "line_number": 142,
+      "docstring": "Builds structured experience, enriching each bullet with\nverbs, metrics, inferred skills, and an embedding.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "enumerate",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_action_verb",
+      "line_number": 190,
+      "docstring": "Extracts the first word if it's a common action verb.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_metrics",
+      "line_number": 195,
+      "docstring": "Finds all instances of metrics (%, $, x) in the text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_skills_from_bullet",
+      "line_number": 199,
+      "docstring": "Cross-references bullet text with the master skill list.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "argparse": [
+      "line_10"
+    ],
+    "json": [
+      "line_11"
+    ],
+    "logging": [
+      "line_12"
+    ],
+    "re": [
+      "line_13"
+    ],
+    "sys": [
+      "line_14"
+    ],
+    "from_datetime": [
+      "line_15"
+    ],
+    "from_pathlib": [
+      "line_16"
+    ],
+    "from_typing": [
+      "line_17"
+    ],
+    "numpy": [
+      "line_19"
+    ],
+    "from_helpers": [
+      "line_26"
+    ]
+  },
+  "function_signatures": {
+    "run_hop_1": "run_hop_1",
+    "__init__": "__init__",
+    "embed": "embed",
+    "detect": "detect",
+    "_validate_master_resume_structure": "_validate_master_resume_structure",
+    "extract_and_preprocess": "extract_and_preprocess",
+    "_build_competency_map": "_build_competency_map",
+    "_build_experience_sections": "_build_experience_sections",
+    "_extract_action_verb": "_extract_action_verb",
+    "_extract_metrics": "_extract_metrics",
+    "_infer_skills_from_bullet": "_infer_skills_from_bullet"
+  },
+  "class_signatures": {
+    "EmbeddingClient": "EmbeddingClient",
+    "HallucinationDetector": "HallucinationDetector",
+    "ClerkExtractor": "ClerkExtractor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 18,
+    "cognitive_complexity": 8,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

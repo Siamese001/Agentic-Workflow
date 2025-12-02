@@ -1,0 +1,265 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\kg_retrieval_executor.py",
+    "file_hash": "e02508416fa9fd2684b7bb61add38013ef647114a71479e1f36c84997b57baea",
+    "size_bytes": 16560,
+    "last_modified": "2025-12-01T12:27:38.749358",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TraversalPath",
+      "line_number": 25,
+      "docstring": "Represents a path through the resume processing knowledge graph.\n\nEnables systematic traversal of resume enhancement data relationships.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "KGRetrievalResult",
+      "line_number": 57,
+      "docstring": "Result of knowledge graph retrieval for resume processing workflows.\n\nProvides structured data extraction for resume enhancement and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "KGRetrievalExecutor",
+      "line_number": 85,
+      "docstring": "Executor for multi-hop knowledge graph retrieval in resume processing.\n\nTraverses knowledge graph according to L1 plans for resume enhancement\nand job alignment workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_entity_query",
+      "line_number": 422,
+      "docstring": "Execute a simple entity query.\n\nArgs:\n    store: TripletStore instance\n    entity_id: Entity to query\n    predicates: Optional predicate filter\n    \nReturns:\n    KGRetrievalResult",
+      "imports": [],
+      "dependencies": [
+        "plan_entity_retrieval",
+        "KGRetrievalExecutor"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_multi_hop_query",
+      "line_number": 444,
+      "docstring": "Execute a multi-hop neighborhood query.\n\nArgs:\n    store: TripletStore instance\n    start_entity: Starting entity\n    max_hops: Maximum hops\n    predicates: Optional predicate filter\n    \nReturns:\n    KGRetrievalResult",
+      "imports": [],
+      "dependencies": [
+        "KGRetrievalExecutor",
+        "KGRetrievalPlanner"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_hop",
+      "line_number": 36,
+      "docstring": "Adds a hop to the resume processing knowledge graph path.\n\nExtends the path for resume data exploration and job alignment.\n\nArgs:\n    triplet: Triplet traversed in resume data graph\n    next_entity: Next entity in resume processing path\n    \nReturns:\n    New TraversalPath with added hop for resume enhancement",
+      "imports": [],
+      "dependencies": [
+        "TraversalPath"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 93,
+      "docstring": "Initializes knowledge graph retrieval executor for resume processing.\n\nArgs:\n    triplet_store: L4 TripletStore for resume workflow coordination",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 102,
+      "docstring": "Executes KG query plan for resume processing workflows.\n\nArgs:\n    plan: Query plan from L1 for resume enhancement",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "int",
+        "len",
+        "KGRetrievalResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_entity_facts",
+      "line_number": 171,
+      "docstring": "Executes entity facts query for resume processing.\n\nRetrieves triplets about entities for resume enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_path_finding",
+      "line_number": 195,
+      "docstring": "Executes path finding for resume entity relationships.\n\nUses BFS to find paths for resume enhancement and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "TraversalPath"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_neighborhood",
+      "line_number": 247,
+      "docstring": "Executes N-hop neighborhood exploration for resume entities.\n\nExplores entity relationships for resume enhancement workflows.",
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_temporal_slice",
+      "line_number": 282,
+      "docstring": "Executes temporal slice query for resume timeline analysis.\n\nRetrieves triplets valid at specified time for job alignment.",
+      "imports": [],
+      "dependencies": [
+        "TripletQuery"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_neighbors",
+      "line_number": 309,
+      "docstring": "Gets neighboring entities for resume relationship analysis.\n\nRetrieves connected entities for resume enhancement workflows.",
+      "imports": [],
+      "dependencies": [
+        "TripletQuery"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_filter_by_temporal",
+      "line_number": 353,
+      "docstring": "Filters triplets by temporal constraint for resume timeline analysis.\n\nEnsures temporal accuracy for resume job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_deduplicate_triplets",
+      "line_number": 371,
+      "docstring": "Removes duplicate triplets for resume data consistency.\n\nEnsures clean resume enhancement data for job alignment.",
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_aggregate_by_entity",
+      "line_number": 386,
+      "docstring": "Aggregates triplets by entity for resume data organization.\n\nGroups resume enhancement data by entity for job alignment.",
+      "imports": [],
+      "dependencies": [
+        "defaultdict",
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_aggregate_by_predicate",
+      "line_number": 402,
+      "docstring": "Aggregates triplets by predicate for resume data organization.\n\nGroups resume enhancement data by relationship type for job alignment.",
+      "imports": [],
+      "dependencies": [
+        "defaultdict",
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_datetime": [
+      "line_12"
+    ],
+    "from_collections": [
+      "line_13"
+    ],
+    "from_l1.kg_retrieval_planning": [
+      "line_15",
+      "line_437",
+      "line_461"
+    ],
+    "from_l4.triplet_store": [
+      "line_21"
+    ]
+  },
+  "function_signatures": {
+    "execute_entity_query": "execute_entity_query",
+    "execute_multi_hop_query": "execute_multi_hop_query",
+    "add_hop": "add_hop",
+    "__init__": "__init__",
+    "execute": "execute",
+    "_execute_entity_facts": "_execute_entity_facts",
+    "_execute_path_finding": "_execute_path_finding",
+    "_execute_neighborhood": "_execute_neighborhood",
+    "_execute_temporal_slice": "_execute_temporal_slice",
+    "_get_neighbors": "_get_neighbors",
+    "_filter_by_temporal": "_filter_by_temporal",
+    "_deduplicate_triplets": "_deduplicate_triplets",
+    "_aggregate_by_entity": "_aggregate_by_entity",
+    "_aggregate_by_predicate": "_aggregate_by_predicate"
+  },
+  "class_signatures": {
+    "TraversalPath": "TraversalPath",
+    "KGRetrievalResult": "KGRetrievalResult",
+    "KGRetrievalExecutor": "KGRetrievalExecutor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 38,
+    "cognitive_complexity": 21,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

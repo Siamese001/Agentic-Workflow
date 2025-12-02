@@ -1,0 +1,684 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.1.py",
+    "file_hash": "42470f4a8613b5d317647a544661492ee801307db0ad995dca6dfadfe1d1fe59",
+    "size_bytes": 64478,
+    "last_modified": "2025-12-01T12:27:35.910576",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "load_json_resources",
+      "line_number": 39,
+      "docstring": "Load all uploaded JSON resources.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "open",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PerSectionTolerance",
+      "line_number": 89,
+      "docstring": "Per-section tolerance configuration with elasticity curves.\nFrom v4.2 - provides granular control over each section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalElasticityModel",
+      "line_number": 110,
+      "docstring": "Non-linear elasticity model for signal calculation.\nFrom v4.2 - provides sophisticated signal curves based on word count deviation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionPriorityAllocator",
+      "line_number": 161,
+      "docstring": "Dynamic priority allocation matrix for word count distribution.\nFrom v4.2 - intelligently distributes word budgets across sections.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalPreservationScorer",
+      "line_number": 225,
+      "docstring": "Smart bullet selection based on signal preservation.\nFrom v4.2 - ranks bullets by signal strength and selects optimally.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionCoherenceScorer",
+      "line_number": 291,
+      "docstring": "Coherence validation using coefficient of variation (CV).\nFrom v4.2 - ensures sections maintain consistent structure.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SaaSRoleProfiles",
+      "line_number": 374,
+      "docstring": "SaaS role profiles from uploaded JSON.\nUsed for role-specific resume customization.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HyphenationRules",
+      "line_number": 426,
+      "docstring": "Hyphenation and style enforcement from uploaded JSON.\nApplies professional formatting standards.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 471,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetricsV5",
+      "line_number": 482,
+      "docstring": "Enhanced validation class combining v4.9.0 structure with v4.2 optimizations.\nIncludes per-section tolerance, elasticity models, and coherence scoring.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 819,
+      "docstring": "Embedded master resume content.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NineHopPipelineV5",
+      "line_number": 931,
+      "docstring": "Complete 9-HOP pipeline with v5.0 enhancements:\n- v4.9.0 JSON integration\n- v4.2 advanced optimizations\n- 4 outputs only",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_word_range",
+      "line_number": 100,
+      "docstring": "Get allowed word count range.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_signal_range",
+      "line_number": 105,
+      "docstring": "Get signal floor and ceiling.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 116,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_elasticity_multiplier",
+      "line_number": 123,
+      "docstring": "Calculate elasticity multiplier using non-linear curve.\nReturns value between 0.0 and 1.0 representing signal degradation.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "abs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal",
+      "line_number": 140,
+      "docstring": "Calculate final signal for a section based on word count.\n\nArgs:\n    word_count: Actual word count\n    base_signal: Base signal strength (default 0.75)\n\nReturns:\n    Adjusted signal value",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "allocate_word_budget",
+      "line_number": 178,
+      "docstring": "Allocate word budget across sections based on priorities.\n\nArgs:\n    total_budget: Total available words\n    section_constraints: Per-section tolerance configs\n\nReturns:\n    Dict mapping section to allocated words",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "max",
+        "min",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "score_bullet",
+      "line_number": 232,
+      "docstring": "Score a bullet based on keyword density and quality metrics.\n\nArgs:\n    bullet_text: The bullet text\n    keywords: Set of important keywords\n\nReturns:\n    Score between 0.0 and 1.0",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "any",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "select_best_bullets",
+      "line_number": 264,
+      "docstring": "Select best bullets based on signal preservation.\n\nArgs:\n    bullets: List of all bullets\n    keywords: Important keywords\n    target_count: Number of bullets to select\n\nReturns:\n    List of selected bullets",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_cv",
+      "line_number": 298,
+      "docstring": "Calculate coefficient of variation.\nCV = (std_dev / mean) * 100",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "score_section_coherence",
+      "line_number": 316,
+      "docstring": "Score coherence of a section based on bullet word count consistency.\n\nArgs:\n    bullet_word_counts: List of word counts for each bullet\n\nReturns:\n    Dict with coherence metrics",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 380,
+      "docstring": "Initialize with loaded SaaS roles.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_organize_by_level",
+      "line_number": 386,
+      "docstring": "Organize roles by level under CEO (1-4).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_organize_by_org",
+      "line_number": 395,
+      "docstring": "Organize roles by organization.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "find_role",
+      "line_number": 405,
+      "docstring": "Find a specific role by name (case-insensitive).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_roles_by_org",
+      "line_number": 413,
+      "docstring": "Get all roles for a specific organization.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_roles_by_level",
+      "line_number": 417,
+      "docstring": "Get all roles at a specific level under CEO.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 432,
+      "docstring": "Initialize with loaded hyphenation rules.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_rules",
+      "line_number": 436,
+      "docstring": "Apply all hyphenation and sanitization rules to text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_with_elasticity",
+      "line_number": 649,
+      "docstring": "Validate section with elasticity model (v4.2 feature).\n\nArgs:\n    section: Section name\n    actual_words: Actual word count\n\nReturns:\n    Dict with validation and elasticity metrics",
+      "imports": [],
+      "dependencies": [
+        "SignalElasticityModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_basic_validate",
+      "line_number": 688,
+      "docstring": "Basic validation for sections without elasticity config.",
+      "imports": [],
+      "dependencies": [
+        "abs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_all_gates",
+      "line_number": 700,
+      "docstring": "Run all 6 QA gates (v4.2 feature).\n\nArgs:\n    section_word_counts: Word counts per section\n    section_signals: Signal strengths per section\n    bullet_coherence: Coherence scores per section\n\nReturns:\n    Dict with all gate results",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "abs",
+        "len",
+        "SignalElasticityModel",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 939,
+      "docstring": "Initialize pipeline with all components.",
+      "imports": [],
+      "dependencies": [
+        "HyphenationRules",
+        "BaselineResumeMetricsV5",
+        "print",
+        "MasterResume",
+        "SaaSRoleProfiles"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop0_validate_inputs",
+      "line_number": 956,
+      "docstring": "Validate inputs before processing.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop1_parse_jd",
+      "line_number": 970,
+      "docstring": "Parse JD and match to SaaS role profile.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop2_map_to_master",
+      "line_number": 990,
+      "docstring": "Map JD keywords to master resume content.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop3_recontextualize_bullets",
+      "line_number": 1008,
+      "docstring": "Recontextualize bullets using v4.2 SignalPreservationScorer.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop4_generate_k1",
+      "line_number": 1060,
+      "docstring": "Generate K.1 executive summary.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop5_calculate_signals",
+      "line_number": 1086,
+      "docstring": "Calculate signals using v4.2 elasticity models with bonuses/penalties.\nNOW INCLUDES: Temperature bonus, ratio penalty, coherence penalty (v4.2 fixes).",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "SignalElasticityModel",
+        "SectionCoherenceScorer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop6_validation_gates",
+      "line_number": 1168,
+      "docstring": "Run all 6 QA gates from v4.2.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_ratio_penalty",
+      "line_number": 1210,
+      "docstring": "Calculate penalty for Unify/IBM ratio outside soft band (v4.2 OPT 4).\n\nIdeal: 1.36 (265/195 for v4.9.0)\nAcceptable: 1.20\u20131.50 (\u22120.005 per 0.05 deviation)\nFail: <1.10 or >1.60",
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_final_signals",
+      "line_number": 1240,
+      "docstring": "Calculate final signals with all bonuses/penalties applied (v4.2 fix).\n\nv4.2 FIX: Apply temperature bonus, ratio penalty, coherence penalty.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "SignalElasticityModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_role_aware_headline",
+      "line_number": 1289,
+      "docstring": "Generate role-aware headline in XYZ format (v4.2 feature).\nFixed: 60\u201390 characters, NO elasticity.\nFormat: [Role/Positioning] | [Domain] | [Related Competency & Related Competency]",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "hop789_format_outputs",
+      "line_number": 1315,
+      "docstring": "Format exactly 4 outputs (not 5 like v4.2).\nNOW WITH: Role-aware headline generation (v4.2 feature).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_resume",
+      "line_number": 1344,
+      "docstring": "Format complete resume with role-aware headline (v4.2 feature).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_word_count_table",
+      "line_number": 1367,
+      "docstring": "Format word count table with tolerance bands.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_signal_report",
+      "line_number": 1385,
+      "docstring": "Format signal report with elasticity curves and v4.2 bonuses/penalties.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_validation_report",
+      "line_number": 1424,
+      "docstring": "Format validation report with all 6 gates.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 1469,
+      "docstring": "Execute complete 9-HOP pipeline with v5.0 enhancements.",
+      "imports": [],
+      "dependencies": [
+        "print"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_22"
+    ],
+    "re": [
+      "line_23"
+    ],
+    "from_typing": [
+      "line_24"
+    ],
+    "from_enum": [
+      "line_25"
+    ],
+    "random": [
+      "line_26"
+    ],
+    "from_datetime": [
+      "line_27"
+    ],
+    "from_dataclasses": [
+      "line_28"
+    ],
+    "hashlib": [
+      "line_29"
+    ],
+    "os": [
+      "line_30"
+    ],
+    "math": [
+      "line_31"
+    ]
+  },
+  "function_signatures": {
+    "load_json_resources": "load_json_resources",
+    "get_word_range": "get_word_range",
+    "get_signal_range": "get_signal_range",
+    "__init__": "__init__",
+    "calculate_elasticity_multiplier": "calculate_elasticity_multiplier",
+    "calculate_signal": "calculate_signal",
+    "allocate_word_budget": "allocate_word_budget",
+    "score_bullet": "score_bullet",
+    "select_best_bullets": "select_best_bullets",
+    "calculate_cv": "calculate_cv",
+    "score_section_coherence": "score_section_coherence",
+    "_organize_by_level": "_organize_by_level",
+    "_organize_by_org": "_organize_by_org",
+    "find_role": "find_role",
+    "get_roles_by_org": "get_roles_by_org",
+    "get_roles_by_level": "get_roles_by_level",
+    "apply_rules": "apply_rules",
+    "validate_with_elasticity": "validate_with_elasticity",
+    "_basic_validate": "_basic_validate",
+    "run_all_gates": "run_all_gates",
+    "hop0_validate_inputs": "hop0_validate_inputs",
+    "hop1_parse_jd": "hop1_parse_jd",
+    "hop2_map_to_master": "hop2_map_to_master",
+    "hop3_recontextualize_bullets": "hop3_recontextualize_bullets",
+    "hop4_generate_k1": "hop4_generate_k1",
+    "hop5_calculate_signals": "hop5_calculate_signals",
+    "hop6_validation_gates": "hop6_validation_gates",
+    "_calculate_ratio_penalty": "_calculate_ratio_penalty",
+    "_calculate_final_signals": "_calculate_final_signals",
+    "_generate_role_aware_headline": "_generate_role_aware_headline",
+    "hop789_format_outputs": "hop789_format_outputs",
+    "_format_resume": "_format_resume",
+    "_format_word_count_table": "_format_word_count_table",
+    "_format_signal_report": "_format_signal_report",
+    "_format_validation_report": "_format_validation_report",
+    "execute_pipeline": "execute_pipeline"
+  },
+  "class_signatures": {
+    "PerSectionTolerance": "PerSectionTolerance",
+    "SignalElasticityModel": "SignalElasticityModel",
+    "SectionPriorityAllocator": "SectionPriorityAllocator",
+    "SignalPreservationScorer": "SignalPreservationScorer",
+    "SectionCoherenceScorer": "SectionCoherenceScorer",
+    "SaaSRoleProfiles": "SaaSRoleProfiles",
+    "HyphenationRules": "HyphenationRules",
+    "TemperatureMode": "TemperatureMode",
+    "BaselineResumeMetricsV5": "BaselineResumeMetricsV5",
+    "MasterResume": "MasterResume",
+    "NineHopPipelineV5": "NineHopPipelineV5"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 81,
+    "cognitive_complexity": 45,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

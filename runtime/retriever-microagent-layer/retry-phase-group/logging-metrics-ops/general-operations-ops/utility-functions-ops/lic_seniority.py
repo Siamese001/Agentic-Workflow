@@ -4,11 +4,11 @@ Outreach Engine Seniority - Lift & Shift + Enhanced from LIC
 Recipient classification and seniority mapping
 """
 
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Any, Tuple
 import re
 
 from ..models import (
-    Archetype, SeniorityClassification, ValidationResult, ValidationSeverity
+    SeniorityClassification, ValidationResult, ValidationSeverity
 )
 
 

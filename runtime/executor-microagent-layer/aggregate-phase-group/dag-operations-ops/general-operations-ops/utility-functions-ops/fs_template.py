@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict
 
 
 def build_ephemeral_rootfs() -> Dict[str, object]:

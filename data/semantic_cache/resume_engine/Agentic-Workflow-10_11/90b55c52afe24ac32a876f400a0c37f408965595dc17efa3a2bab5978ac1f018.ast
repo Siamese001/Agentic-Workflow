@@ -1,0 +1,42 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\control_plane\\test_rules_engine.py",
+    "file_hash": "90b55c52afe24ac32a876f400a0c37f408965595dc17efa3a2bab5978ac1f018",
+    "size_bytes": 619,
+    "last_modified": "2025-12-01T12:27:39.799177",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_rules_engine_detects_pii_email",
+      "line_number": 4,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "PolicyRule",
+        "SafetyContext",
+        "evaluate_rules"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_orchestration.control_plane": [
+      "line_1"
+    ]
+  },
+  "function_signatures": {
+    "test_rules_engine_detects_pii_email": "test_rules_engine_detects_pii_email"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

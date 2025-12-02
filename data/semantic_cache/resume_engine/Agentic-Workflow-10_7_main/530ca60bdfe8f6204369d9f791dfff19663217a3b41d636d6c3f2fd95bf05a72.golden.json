@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Base models for simulations.\"\"\"\nfrom typing import Any, Dict, List\nfrom pydantic import BaseModel, Field\nclass SimulationInput(BaseModel):\n\"\"\"Base class for simulation input payloads.\"\"\"\nsimulation_id: str = Field(...)\npayload: Dict[str, Any] = Field(default_factory=dict)\nclass SimulationResult(BaseModel):\n\"\"\"Base class for simulation results.\"\"\"\nsimulation_id: str\nsuccess: bool\nmetrics: Dict[str, Any] = Field(default_factory=dict)\ndetails: Dict[str, Any] = Field(default_factory=dict)\nclass SimulationBatchResult(BaseModel):\n\"\"\"Aggregated simulation result container.\"\"\"\nresults: List[SimulationResult] = Field(default_factory=list)",
+  "normalized_signature": "class:SimulationInput;class:SimulationResult;class:SimulationBatchResult",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

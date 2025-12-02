@@ -1,0 +1,230 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\routing.py",
+    "file_hash": "e5da647b0c0a5f82c8227cc7d64e8f1aa4dfea97199d2fc0d5cd50df01a3db79",
+    "size_bytes": 10697,
+    "last_modified": "2025-12-01T12:27:36.920547",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "get_prompt_context_view",
+      "line_number": 42,
+      "docstring": "META-layer is allowed to read state (NOT mutate it).\nThis helper extracts only the fields needed for prompt construction.\n\nThis avoids importing from L4 and avoids layer violations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "invoke_model",
+      "line_number": 60,
+      "docstring": "Deterministic stub \u2014 simulates model invocation.\nNever calls real LLM providers.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RoutingConfig",
+      "line_number": 86,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_derive_complexity",
+      "line_number": 97,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_derive_risk_level",
+      "line_number": 108,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "get_safety_bias"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_meta_biases",
+      "line_number": 120,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_routing_bias",
+        "max",
+        "RoutingCriteria",
+        "get_planning_bias",
+        "min",
+        "get_safety_bias"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_routing_criteria",
+      "line_number": 159,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RoutingCriteria",
+        "_apply_meta_biases",
+        "_derive_risk_level",
+        "str",
+        "_derive_complexity"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_context",
+      "line_number": 180,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_reasoning",
+      "line_number": 197,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_instructions",
+      "line_number": 213,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_output_schema",
+      "line_number": 226,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_prompt_bundle",
+      "line_number": 235,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_format_instructions",
+        "_format_reasoning",
+        "_format_context",
+        "get_prompt_context_view",
+        "_format_output_schema"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_model_for_plan",
+      "line_number": 267,
+      "docstring": "End-to-end META routing pipeline:\n\n    1. Normalize plan\n    2. Build prompt envelope\n    3. Construct RoutingCriteria (meta-aware)\n    4. Ask L5.ModelRouter for model selection\n    5. Simulate model invocation\n    6. Return structured routing output\n\nDOES NOT mutate state.\nDOES NOT perform safety/policy.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "isinstance",
+        "ModelRouter",
+        "_build_routing_criteria",
+        "RoutingConfig",
+        "_build_prompt_bundle",
+        "invoke_model"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_24"
+    ],
+    "from_dataclasses": [
+      "line_25"
+    ],
+    "from_typing": [
+      "line_26"
+    ],
+    "from_models": [
+      "line_28"
+    ],
+    "from_prompt": [
+      "line_29"
+    ],
+    "from_l5": [
+      "line_30"
+    ],
+    "from_meta_profile": [
+      "line_31"
+    ]
+  },
+  "function_signatures": {
+    "get_prompt_context_view": "get_prompt_context_view",
+    "invoke_model": "invoke_model",
+    "_derive_complexity": "_derive_complexity",
+    "_derive_risk_level": "_derive_risk_level",
+    "_apply_meta_biases": "_apply_meta_biases",
+    "_build_routing_criteria": "_build_routing_criteria",
+    "_format_context": "_format_context",
+    "_format_reasoning": "_format_reasoning",
+    "_format_instructions": "_format_instructions",
+    "_format_output_schema": "_format_output_schema",
+    "_build_prompt_bundle": "_build_prompt_bundle",
+    "run_model_for_plan": "run_model_for_plan"
+  },
+  "class_signatures": {
+    "RoutingConfig": "RoutingConfig"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 26,
+    "cognitive_complexity": 22,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

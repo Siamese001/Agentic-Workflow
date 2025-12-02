@@ -1,0 +1,62 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_retrieval_modularity.py",
+    "file_hash": "a5a74707c4e76284164c1a0daa36fb48b7857f7e325dcb80c82f3bfbd131ebb6",
+    "size_bytes": 2481,
+    "last_modified": "2025-12-01T12:27:39.482419",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_retrieval_directory_structure_exists",
+      "line_number": 7,
+      "docstring": "Ensure META retrieval directory tree exists.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_retriever_placeholders_present",
+      "line_number": 18,
+      "docstring": "Ensure placeholder retriever modules exist for future implementation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_meta_ranking_and_hybrid_ranker_present",
+      "line_number": 28,
+      "docstring": "Ensure META ranking + hybrid ranker modules exist and are wired.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_pathlib": [
+      "line_1"
+    ]
+  },
+  "function_signatures": {
+    "test_retrieval_directory_structure_exists": "test_retrieval_directory_structure_exists",
+    "test_retriever_placeholders_present": "test_retriever_placeholders_present",
+    "test_meta_ranking_and_hybrid_ranker_present": "test_meta_ranking_and_hybrid_ranker_present"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

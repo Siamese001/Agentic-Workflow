@@ -1,0 +1,652 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_4.py",
+    "file_hash": "0011bbfbebdf768d2adfc51ce1eeb444b6e81d5f193258c9ce823c1e6af0ce03",
+    "size_bytes": 59751,
+    "last_modified": "2025-12-01T12:27:35.948148",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 48,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 59,
+      "docstring": "Amit Ayer's complete master resume - merged from v1.0, v1.2, v2.0, v2.1\nSource: Master_Resume_V2.14.json\n\nNO NEED TO UPLOAD RESUME - Already embedded!",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SaaSRoleProfiles",
+      "line_number": 303,
+      "docstring": "SaaS role signal weighting profiles with pre-sales differentiation.\n\nv4.1 addition: vp_sales_engineering profile for technical sales leadership.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerSchema",
+      "line_number": 374,
+      "docstring": "Application tracking metadata for ATS compliance and submission history.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerQA",
+      "line_number": 398,
+      "docstring": "Quality assurance checks for application submissions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HyphenationRules",
+      "line_number": 432,
+      "docstring": "ATS-safe hyphenation and formatting rules.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalCalibrationConfigV4",
+      "line_number": 465,
+      "docstring": "v4.1 Signal Calibration Configuration with temperature modes and per-section targets.\n\nNEW IN v4.1:\n- Temperature mode support (conservative/balanced/creative)\n- Per-section signal floors and ceilings\n- Elasticity curve parameters per section",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PerSectionTolerance",
+      "line_number": 525,
+      "docstring": "OPT 1: Per-section tolerance bands replace global \u00b150 word budget.\n\nEach section gets custom min/max word counts based on role importance.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalElasticityModel",
+      "line_number": 571,
+      "docstring": "OPT 2: Signal-to-Word-Count Elasticity Curve.\n\nSignal increases logarithmically with word count up to a saturation point.\nBeyond saturation, additional words yield diminishing returns (plateau effect).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionCoherenceScorer",
+      "line_number": 627,
+      "docstring": "OPT 5: Section-Length Coherence Score (CV <0.18 target).\n\nMeasures variance in section lengths to ensure balanced resume structure.\nHigh variance = choppy, unbalanced resume \u2192 apply penalty.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalPreservationScorer",
+      "line_number": 670,
+      "docstring": "OPT 8: Signal Preservation Scoring for bullet trimming.\n\nWhen trimming bullets, drop lowest signal_density bullets first.\nSignal density = signal_score / word_count.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "K1ExecutiveSummaryGenerator",
+      "line_number": 703,
+      "docstring": "Generate role-specific executive summaries with proper signal calibration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletWordCountValidator",
+      "line_number": 735,
+      "docstring": "Validate bullet point word counts and formatting.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetricsV4",
+      "line_number": 778,
+      "docstring": "Baseline metrics for v4.1 resume generation engine.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAValidationGates",
+      "line_number": 825,
+      "docstring": "6-Gate QA validation system with ENFORCEMENT.\n\nv4.1 FIXES:\n- Gate 1: Now validates and rejects\n- Gate 4: Implements all 5 sub-checks\n- Gate 6: Applies coherence penalty to signal",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerationEngineV4",
+      "line_number": 953,
+      "docstring": "v4.1 Resume Generation Engine with FULL QA ENFORCEMENT.\n\n9-HOP PIPELINE:\n1. Parse JD and extract requirements\n2. Select role profile and load master resume\n3. Generate K.1 executive summary\n4. Calculate per-section word count targets (OPT 1, 2, 3)\n5. Generate section content with signal optimization (OPT 7, 8)\n6. Apply temperature mode adjustments (OPT 6)\n7. Validate Unify/IBM ratio and apply penalty if needed (OPT 4)\n8. Calculate coherence score and apply penalty (OPT 5)\n9. Run 6-gate QA validation (ENFORCED) and generate outputs",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_filename",
+      "line_number": 387,
+      "docstring": "Generate submission-ready filename.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_submission",
+      "line_number": 402,
+      "docstring": "Run pre-submission validation checks.",
+      "imports": [],
+      "dependencies": [
+        "bool",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format_qa_report",
+      "line_number": 415,
+      "docstring": "Format QA validation report.",
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_safe_hyphenation",
+      "line_number": 452,
+      "docstring": "Apply ATS-safe hyphenation to resume text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_temperature_bonus",
+      "line_number": 515,
+      "docstring": "Get signal bonus for current temperature mode.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_band",
+      "line_number": 555,
+      "docstring": "Calculate min/max word count for section.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_section",
+      "line_number": 561,
+      "docstring": "Check if section word count is within tolerance.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 579,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_elasticity",
+      "line_number": 603,
+      "docstring": "Calculate signal adjustment based on word count.\n\nReturns elasticity multiplier (1.0 = no change, >1.0 = signal boost).",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 635,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_coherence_score",
+      "line_number": 638,
+      "docstring": "Calculate coefficient of variation (CV) for section word counts.\n\nReturns: (cv_score, coherence_penalty)",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "sum",
+        "len",
+        "min"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal_density",
+      "line_number": 679,
+      "docstring": "Calculate signal per word.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "rank_bullets_for_trimming",
+      "line_number": 685,
+      "docstring": "Rank bullets by signal density (ascending).\n\nLowest density bullets should be trimmed first.",
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate",
+      "line_number": 707,
+      "docstring": "Generate executive summary for given role profile.\n\nReturns dict with headline, summary bullets, and metadata.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_bullet",
+      "line_number": 743,
+      "docstring": "Validate bullet word count.\n\nReturns (is_valid, message).",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "batch_validate",
+      "line_number": 759,
+      "docstring": "Validate multiple bullets and return summary.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_unify_ibm_ratio",
+      "line_number": 804,
+      "docstring": "Calculate Unify/IBM word count ratio.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_ratio",
+      "line_number": 809,
+      "docstring": "Validate Unify/IBM ratio against constraints.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "gate1_signal_health_check",
+      "line_number": 836,
+      "docstring": "GATE 1: Signal Health Check (NOW ENFORCED).\n\nv4.1 FIX: Added validation logic with rejection threshold.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "gate2_word_count_budget",
+      "line_number": 852,
+      "docstring": "GATE 2: Word Count Budget Check.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "gate3_unify_ibm_ratio",
+      "line_number": 865,
+      "docstring": "GATE 3: Unify/IBM Ratio Check.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "gate4_production_readiness",
+      "line_number": 871,
+      "docstring": "GATE 4: Production Readiness Check (NOW FULLY IMPLEMENTED).\n\nv4.1 FIX: Implements all 5 sub-checks:\n1. Contact info present\n2. No placeholder text\n3. Proper hyphenation\n4. No obvious typos\n5. ATS-friendly formatting",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "bool",
+        "len",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "gate5_section_tolerance_bands",
+      "line_number": 917,
+      "docstring": "GATE 5: Per-Section Tolerance Band Check.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "gate6_coherence_enforcement",
+      "line_number": 934,
+      "docstring": "GATE 6: Section Coherence Check (NOW APPLIES PENALTY).\n\nv4.1 FIX: Returns coherence penalty to be applied to final signal.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 969,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "SignalPreservationScorer",
+        "SectionCoherenceScorer",
+        "PerSectionTolerance",
+        "MasterResume",
+        "SignalElasticityModel",
+        "SaaSRoleProfiles"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 977,
+      "docstring": "Execute full 9-HOP pipeline with QA enforcement.\n\nReturns dict with 4 outputs + metadata (removed output 5).",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "round",
+        "ValueError",
+        "print",
+        "SignalCalibrationConfigV4",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_section_targets",
+      "line_number": 1053,
+      "docstring": "Calculate target word counts for each section with temperature adjustments.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_sections",
+      "line_number": 1071,
+      "docstring": "Generate resume sections with word count targets.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_composite_signal",
+      "line_number": 1136,
+      "docstring": "Calculate weighted composite signal across all sections.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_qa_gates",
+      "line_number": 1153,
+      "docstring": "Run all 6 QA validation gates.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output1_resume",
+      "line_number": 1184,
+      "docstring": "Generate OUTPUT 1: Complete formatted resume - PRINT ONLY.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output2_word_count",
+      "line_number": 1250,
+      "docstring": "Generate OUTPUT 2: Word count table.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output3_signal_calibration",
+      "line_number": 1290,
+      "docstring": "Generate OUTPUT 3: Signal calibration analysis.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_output4_qa_tables",
+      "line_number": 1335,
+      "docstring": "Generate OUTPUT 4: QA validation tables.",
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "re": [
+      "line_16"
+    ],
+    "from_typing": [
+      "line_17"
+    ],
+    "from_dataclasses": [
+      "line_18"
+    ],
+    "from_datetime": [
+      "line_19"
+    ],
+    "from_enum": [
+      "line_20"
+    ],
+    "math": [
+      "line_21"
+    ]
+  },
+  "function_signatures": {
+    "generate_filename": "generate_filename",
+    "validate_submission": "validate_submission",
+    "format_qa_report": "format_qa_report",
+    "apply_safe_hyphenation": "apply_safe_hyphenation",
+    "get_temperature_bonus": "get_temperature_bonus",
+    "get_band": "get_band",
+    "validate_section": "validate_section",
+    "__init__": "__init__",
+    "calculate_elasticity": "calculate_elasticity",
+    "calculate_coherence_score": "calculate_coherence_score",
+    "calculate_signal_density": "calculate_signal_density",
+    "rank_bullets_for_trimming": "rank_bullets_for_trimming",
+    "generate": "generate",
+    "validate_bullet": "validate_bullet",
+    "batch_validate": "batch_validate",
+    "calculate_unify_ibm_ratio": "calculate_unify_ibm_ratio",
+    "validate_ratio": "validate_ratio",
+    "gate1_signal_health_check": "gate1_signal_health_check",
+    "gate2_word_count_budget": "gate2_word_count_budget",
+    "gate3_unify_ibm_ratio": "gate3_unify_ibm_ratio",
+    "gate4_production_readiness": "gate4_production_readiness",
+    "gate5_section_tolerance_bands": "gate5_section_tolerance_bands",
+    "gate6_coherence_enforcement": "gate6_coherence_enforcement",
+    "execute_pipeline": "execute_pipeline",
+    "_calculate_section_targets": "_calculate_section_targets",
+    "_generate_sections": "_generate_sections",
+    "_calculate_composite_signal": "_calculate_composite_signal",
+    "_run_qa_gates": "_run_qa_gates",
+    "_generate_output1_resume": "_generate_output1_resume",
+    "_generate_output2_word_count": "_generate_output2_word_count",
+    "_generate_output3_signal_calibration": "_generate_output3_signal_calibration",
+    "_generate_output4_qa_tables": "_generate_output4_qa_tables"
+  },
+  "class_signatures": {
+    "TemperatureMode": "TemperatureMode",
+    "MasterResume": "MasterResume",
+    "SaaSRoleProfiles": "SaaSRoleProfiles",
+    "AppTrackerSchema": "AppTrackerSchema",
+    "AppTrackerQA": "AppTrackerQA",
+    "HyphenationRules": "HyphenationRules",
+    "SignalCalibrationConfigV4": "SignalCalibrationConfigV4",
+    "PerSectionTolerance": "PerSectionTolerance",
+    "SignalElasticityModel": "SignalElasticityModel",
+    "SectionCoherenceScorer": "SectionCoherenceScorer",
+    "SignalPreservationScorer": "SignalPreservationScorer",
+    "K1ExecutiveSummaryGenerator": "K1ExecutiveSummaryGenerator",
+    "BulletWordCountValidator": "BulletWordCountValidator",
+    "BaselineResumeMetricsV4": "BaselineResumeMetricsV4",
+    "QAValidationGates": "QAValidationGates",
+    "ResumeGenerationEngineV4": "ResumeGenerationEngineV4"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 42,
+    "cognitive_complexity": 25,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

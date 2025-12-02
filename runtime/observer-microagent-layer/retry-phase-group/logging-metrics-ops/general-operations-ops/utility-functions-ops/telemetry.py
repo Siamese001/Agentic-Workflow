@@ -6,9 +6,9 @@ Merged from 3 source files
 # Consolidated imports
 from __future__ import annotations
 from dataclasses import dataclass
-from dataclasses import dataclass, field
+from dataclasses import field
 from typing import Any, Dict
-from typing import Any, Dict, List
+from typing import List
 import time
 
 
@@ -37,7 +37,6 @@ class CostTracker:
             snapshot_spans.append({"name": span_name, "duration_ms": duration_ms})
         return {"spans": snapshot_spans}
 from dataclasses import dataclass
-from typing import Any, Dict
 
 
 @dataclass
@@ -68,7 +67,6 @@ def record_event(name: str, payload: dict):
 
 def get_events():
     return list(TELEMETRY_EVENTS)
-from typing import Any, Dict
 
 
 def compute_optimization_hint(spans: list) -> Dict[str, Any]:

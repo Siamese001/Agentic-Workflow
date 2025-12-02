@@ -1,0 +1,300 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\agents.py",
+    "file_hash": "eacc391f3053fe4d28e64712f691973ba4fa52959a264090c32f12699c9c7a55",
+    "size_bytes": 7352,
+    "last_modified": "2025-12-01T12:27:38.789608",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "record_event",
+      "line_number": 18,
+      "docstring": "Placeholder function for resume processing event recording.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StrategyLLMAgent",
+      "line_number": 32,
+      "docstring": "Legacy strategy agent wrapper for resume processing workflows.\n\nDelegates to atomic L1-L5 layers for comprehensive resume\nenhancement strategy execution and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DraftingGuild",
+      "line_number": 49,
+      "docstring": "Legacy drafting agent wrapper for resume processing workflows.\n\nDelegates to atomic L1-L5 layers for comprehensive resume\ncontent generation and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SemanticQAAgent",
+      "line_number": 66,
+      "docstring": "Legacy QA agent wrapper for resume processing workflows.\n\nDelegates to atomic L1-L5 layers for comprehensive resume\nquality assurance and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ConstitutionalSafetyAgent",
+      "line_number": 83,
+      "docstring": "Legacy safety agent wrapper for resume processing workflows.\n\nDelegates to atomic L1-L5 layers for comprehensive resume\nsafety validation and job alignment compliance.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HYDEQueryAgent",
+      "line_number": 100,
+      "docstring": "Legacy HYDE query agent for resume processing retrieval enhancement.\n\nDelegates to atomic L1-L5 layers for optimized resume\nsearch query generation and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QACouncilAgent",
+      "line_number": 142,
+      "docstring": "Legacy QA council agent wrapper for resume processing workflows.\n\nDelegates to atomic L1-L5 layers for comprehensive resume\nquality assurance with council oversight and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "LLMBaseAgent",
+      "line_number": 160,
+      "docstring": "Legacy base agent class for resume processing workflow compatibility.\n\nDelegates to atomic architecture for comprehensive resume\nenhancement operations and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 40,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicStrategyAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 45,
+      "docstring": "Delegates method calls to atomic resume processing agent.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 57,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicDraftingAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 62,
+      "docstring": "Delegates method calls to atomic resume processing agent.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 74,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicQAAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 79,
+      "docstring": "Delegates method calls to atomic resume processing agent.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 91,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicSafetyAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 96,
+      "docstring": "Delegates method calls to atomic resume processing agent.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 108,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 150,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AtomicQAAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 155,
+      "docstring": "Delegates method calls to atomic resume processing agent.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 168,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AgentCard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_call_llm",
+      "line_number": 180,
+      "docstring": "Legacy LLM call for resume processing - delegates to atomic L2.",
+      "imports": [],
+      "dependencies": [
+        "LLMCaller"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_8"
+    ],
+    "from_core.models.models": [
+      "line_9"
+    ],
+    "from_core.routing": [
+      "line_13"
+    ],
+    "from_runtime.runtime_utils": [
+      "line_14"
+    ],
+    "from_config.meta_profile": [
+      "line_15"
+    ],
+    "from_atomic_integration_bridge": [
+      "line_24",
+      "line_42",
+      "line_59",
+      "line_76",
+      "line_93",
+      "line_152"
+    ],
+    "from_l2.llm_caller": [
+      "line_121",
+      "line_182"
+    ],
+    "from_l1.prompt_builder": [
+      "line_130"
+    ]
+  },
+  "function_signatures": {
+    "record_event": "record_event",
+    "__init__": "__init__",
+    "__getattr__": "__getattr__",
+    "_call_llm": "_call_llm"
+  },
+  "class_signatures": {
+    "StrategyLLMAgent": "StrategyLLMAgent",
+    "DraftingGuild": "DraftingGuild",
+    "SemanticQAAgent": "SemanticQAAgent",
+    "ConstitutionalSafetyAgent": "ConstitutionalSafetyAgent",
+    "HYDEQueryAgent": "HYDEQueryAgent",
+    "QACouncilAgent": "QACouncilAgent",
+    "LLMBaseAgent": "LLMBaseAgent"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

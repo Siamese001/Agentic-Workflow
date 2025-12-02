@@ -1,0 +1,78 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\orchestrator.py",
+    "file_hash": "2b6f30396b1f89d596563e3eb080b8cb6225bdb3d52857f0e3b3089c4052ddaa",
+    "size_bytes": 3076,
+    "last_modified": "2025-12-01T12:27:40.901383",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "OrchestratorConfig",
+      "line_number": 21,
+      "docstring": "Configures r\u00e9sum\u00e9 analysis workflow execution settings for reliability and performance optimization.\n\nImproves r\u00e9sum\u00e9 processing by defining retry policies, timeouts, and failure handling for multi-agent workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowOrchestrator",
+      "line_number": 34,
+      "docstring": "Manages complex r\u00e9sum\u00e9 analysis workflows with multiple agents and safety validation.\n\nImproves r\u00e9sum\u00e9 processing by coordinating strategy, drafting, QA, and safety agents for comprehensive job matching analysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 46,
+      "docstring": "Sets up r\u00e9sum\u00e9 workflow coordination system with retry policies and safety validation.\n\nImproves r\u00e9sum\u00e9 processing reliability by configuring error handling and safety checks for multi-agent analysis.",
+      "imports": [],
+      "dependencies": [
+        "OrchestratorConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_6"
+    ],
+    "from_dataclasses": [
+      "line_8"
+    ],
+    "from_typing": [
+      "line_9"
+    ],
+    "from_l5": [
+      "line_11"
+    ],
+    "from_integration": [
+      "line_13"
+    ],
+    "from_models.dag_models": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__"
+  },
+  "class_signatures": {
+    "OrchestratorConfig": "OrchestratorConfig",
+    "WorkflowOrchestrator": "WorkflowOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

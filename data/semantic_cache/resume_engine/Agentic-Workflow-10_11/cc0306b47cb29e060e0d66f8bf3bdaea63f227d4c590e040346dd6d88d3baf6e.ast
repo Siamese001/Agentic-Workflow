@@ -1,0 +1,268 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\injection_detection(1).py",
+    "file_hash": "cc0306b47cb29e060e0d66f8bf3bdaea63f227d4c590e040346dd6d88d3baf6e",
+    "size_bytes": 17954,
+    "last_modified": "2025-12-01T12:27:38.917944",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "InjectionType",
+      "line_number": 21,
+      "docstring": "Types of injection attacks for resume workflow safety.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "InjectionPattern",
+      "line_number": 32,
+      "docstring": "Pattern for detecting resume workflow injection attacks.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "InjectionDetector",
+      "line_number": 42,
+      "docstring": "Detects injection attacks in resume workflow prompts and data.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "InjectionSafetyPolicy",
+      "line_number": 383,
+      "docstring": "Safety policy that detects injection attacks.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_injection_safety_policy",
+      "line_number": 422,
+      "docstring": "Create an injection detection safety policy.",
+      "imports": [],
+      "dependencies": [
+        "InjectionSafetyPolicy"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 149,
+      "docstring": "Initializes resume workflow injection detector for enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect_injections",
+      "line_number": 159,
+      "docstring": "Detects injection attacks in resume workflow content for enhancement.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_sql_injection",
+      "line_number": 188,
+      "docstring": "Detect SQL injection patterns.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_markup_injection",
+      "line_number": 220,
+      "docstring": "Detect XML/HTML injection patterns.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_multistage_attacks",
+      "line_number": 257,
+      "docstring": "Detect multi-stage attack patterns combining multiple injection types.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_base64_content",
+      "line_number": 295,
+      "docstring": "Check for suspicious base64 content.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "any",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_nested_structures",
+      "line_number": 327,
+      "docstring": "Check for nested structures that might hide injections.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_command_sequences",
+      "line_number": 352,
+      "docstring": "Check for command sequences that might indicate tool injection.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 386,
+      "docstring": "Initialize injection safety policy.",
+      "imports": [],
+      "dependencies": [
+        "InjectionDetector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "policy_id",
+      "line_number": 393,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "description",
+      "line_number": 397,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate",
+      "line_number": 400,
+      "docstring": "Evaluate content for injection attacks.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "PolicyDecision",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "re": [
+      "line_9"
+    ],
+    "base64": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_dataclasses": [
+      "line_12"
+    ],
+    "from_enum": [
+      "line_13"
+    ],
+    "logging": [
+      "line_14"
+    ],
+    "from_types": [
+      "line_16"
+    ]
+  },
+  "function_signatures": {
+    "create_injection_safety_policy": "create_injection_safety_policy",
+    "__init__": "__init__",
+    "detect_injections": "detect_injections",
+    "_detect_sql_injection": "_detect_sql_injection",
+    "_detect_markup_injection": "_detect_markup_injection",
+    "_detect_multistage_attacks": "_detect_multistage_attacks",
+    "_check_base64_content": "_check_base64_content",
+    "_check_nested_structures": "_check_nested_structures",
+    "_check_command_sequences": "_check_command_sequences",
+    "policy_id": "policy_id",
+    "description": "description",
+    "evaluate": "evaluate"
+  },
+  "class_signatures": {
+    "InjectionType": "InjectionType",
+    "InjectionPattern": "InjectionPattern",
+    "InjectionDetector": "InjectionDetector",
+    "InjectionSafetyPolicy": "InjectionSafetyPolicy"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 20,
+    "cognitive_complexity": 7,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

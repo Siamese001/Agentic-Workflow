@@ -1,0 +1,388 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\vendor\\pydantic_stub\\main.py",
+    "file_hash": "e428e72361693987863cdc6cafe7925a685482693fa531064f3e0a8a54d59c10",
+    "size_bytes": 13179,
+    "last_modified": "2025-12-01T12:27:41.341060",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ValidationError",
+      "line_number": 13,
+      "docstring": "Pydantic-style validation error container.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_error",
+      "line_number": 32,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FieldInfo",
+      "line_number": 36,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "Field",
+      "line_number": 54,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "FieldInfo"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "ConfigDict",
+      "line_number": 58,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaseModelMeta",
+      "line_number": 62,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "type"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaseModel",
+      "line_number": 114,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_is_optional",
+      "line_number": 196,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "type",
+        "get_args",
+        "get_origin"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_type",
+      "line_number": 203,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "issubclass",
+        "_coerce_primitive",
+        "_validate_type",
+        "ValidationError",
+        "get_origin",
+        "isinstance",
+        "list",
+        "enumerate",
+        "type",
+        "_error",
+        "_is_optional",
+        "get_args",
+        "tuple"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_coerce_primitive",
+      "line_number": 280,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValidationError",
+        "isinstance",
+        "int",
+        "str",
+        "float",
+        "_error"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_serialize_value",
+      "line_number": 328,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_serialize_value",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 16,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "errors",
+      "line_number": 28,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "TypeError",
+        "ValueError",
+        "callable"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_required",
+      "line_number": 50,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__new__",
+      "line_number": 63,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_config",
+      "line_number": 70,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_collect_fields",
+      "line_number": 89,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "setattr",
+        "delattr",
+        "isinstance",
+        "getattr",
+        "reversed",
+        "FieldInfo",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 122,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "_validate_type",
+        "ValidationError",
+        "_error",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "parse_obj",
+      "line_number": 157,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "cls",
+        "dict",
+        "ValidationError",
+        "isinstance",
+        "_error"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_validate",
+      "line_number": 172,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dict",
+      "line_number": 175,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_serialize_value",
+        "hasattr",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_dump",
+      "line_number": 186,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "json",
+      "line_number": 189,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_dump_json",
+      "line_number": 192,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_2"
+    ],
+    "json": [
+      "line_4"
+    ],
+    "inspect": [
+      "line_5"
+    ],
+    "from_collections.abc": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ]
+  },
+  "function_signatures": {
+    "_error": "_error",
+    "Field": "Field",
+    "ConfigDict": "ConfigDict",
+    "_is_optional": "_is_optional",
+    "_validate_type": "_validate_type",
+    "_coerce_primitive": "_coerce_primitive",
+    "_serialize_value": "_serialize_value",
+    "__init__": "__init__",
+    "errors": "errors",
+    "is_required": "is_required",
+    "__new__": "__new__",
+    "_build_config": "_build_config",
+    "_collect_fields": "_collect_fields",
+    "parse_obj": "parse_obj",
+    "model_validate": "model_validate",
+    "dict": "dict",
+    "model_dump": "model_dump",
+    "json": "json",
+    "model_dump_json": "model_dump_json"
+  },
+  "class_signatures": {
+    "ValidationError": "ValidationError",
+    "FieldInfo": "FieldInfo",
+    "BaseModelMeta": "BaseModelMeta",
+    "BaseModel": "BaseModel"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 87,
+    "cognitive_complexity": 64,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

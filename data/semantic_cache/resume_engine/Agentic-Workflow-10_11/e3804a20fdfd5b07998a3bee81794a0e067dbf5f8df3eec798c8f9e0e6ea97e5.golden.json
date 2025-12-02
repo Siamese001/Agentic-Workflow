@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"\nRetrieval system for r\u00e9sum\u00e9 evidence gathering.\nProvides access to RAG retrieval functions to support comprehensive r\u00e9sum\u00e9 improvement with relevant data.\n\"\"\"\nfrom __future__ import annotations\nfrom meta.retrieval.retrieval import run_rag_retrieval # noqa: F401\n__all__ = [\"run_rag_retrieval\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

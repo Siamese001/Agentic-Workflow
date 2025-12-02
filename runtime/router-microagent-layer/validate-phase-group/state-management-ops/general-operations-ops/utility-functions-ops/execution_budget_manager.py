@@ -1,5 +1,5 @@
 # execution_budget_manager - Runtime execution budget management
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, Optional
 from dataclasses import dataclass
 
 @dataclass

@@ -4,7 +4,7 @@ Unified Router - Resume Generation + LinkedIn Outreach
 Provides single API for both independent engines
 """
 
-from typing import Dict, Any, Optional
+from typing import Optional
 from enum import Enum
 
 class TaskType(str, Enum):

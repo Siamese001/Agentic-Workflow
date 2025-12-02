@@ -1,0 +1,195 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\interfaces(1).py",
+    "file_hash": "36f686b044fbfb64d7f695eba2ace5af9af8006781bd1e30a48571ed9cb9b785",
+    "size_bytes": 6765,
+    "last_modified": "2025-12-01T12:27:38.238431",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "L1PlanRequest",
+      "line_number": 24,
+      "docstring": "Input request for L1 resume planning operations.\n\nEnsures standardized planning requests for consistent\nresume generation across all components.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L1PlanResult",
+      "line_number": 37,
+      "docstring": "Output result from L1 resume planning operations.\n\nProvides structured planning results for consistent\nresume generation across all system components.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L1PlannerInterface",
+      "line_number": 49,
+      "docstring": "Abstract interface for L1 resume planning operations.\n\nEnsures consistent planning behavior across all resume\ngeneration components for improved system reliability.",
+      "imports": [],
+      "dependencies": [
+        "ABC"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L1StrategyPlannerInterface",
+      "line_number": 93,
+      "docstring": "Interface for resume strategy planning operations.\n\nEnsures consistent strategy planning for optimal\njob alignment and resume effectiveness.",
+      "imports": [],
+      "dependencies": [
+        "L1PlannerInterface"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L1DraftingPlannerInterface",
+      "line_number": 110,
+      "docstring": "Interface for resume content drafting planning.\n\nEnsures consistent drafting planning for high-quality\n    resume content generation.",
+      "imports": [],
+      "dependencies": [
+        "L1PlannerInterface"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L1QAPlannerInterface",
+      "line_number": 127,
+      "docstring": "Interface for resume quality assurance planning.\n\nEnsures consistent QA planning for resume\naccuracy and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "L1PlannerInterface"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L1SafetyPlannerInterface",
+      "line_number": 144,
+      "docstring": "Interface for resume safety planning operations.\n\nEnsures consistent safety planning for professional\nand ethical resume generation.",
+      "imports": [],
+      "dependencies": [
+        "L1PlannerInterface"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BiasIndicator",
+      "line_number": 166,
+      "docstring": "Indicator of potential bias in resume planning.\n\nHelps ensure resume generation remains fair and unbiased\nfor professional job applications.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BiasPreCheckResult",
+      "line_number": 181,
+      "docstring": "Result of bias pre-check for resume planning.\n\nEnsures resume generation maintains fairness and\nprofessional standards throughout the process.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L1BiasPreCheckInterface",
+      "line_number": 194,
+      "docstring": "Interface for detecting bias in resume planning operations.\n\nEnsures resume generation remains fair and unbiased\nfor professional job applications.",
+      "imports": [],
+      "dependencies": [
+        "ABC"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_input_bias",
+      "line_number": 203,
+      "docstring": "Checks resume planning requests for bias indicators.\n\nEnsures fair and unbiased resume generation\nbefore planning operations begin.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check_output_bias",
+      "line_number": 213,
+      "docstring": "Checks resume planning results for bias indicators.\n\nValidates that generated plans remain fair\nand unbiased for professional use.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_bias_patterns",
+      "line_number": 223,
+      "docstring": "Gets bias patterns checked in resume planning.\n\nProvides transparency for bias detection\nin resume generation processes.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_abc": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_dataclasses": [
+      "line_12"
+    ],
+    "from_core.models.models": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "check_input_bias": "check_input_bias",
+    "check_output_bias": "check_output_bias",
+    "get_bias_patterns": "get_bias_patterns"
+  },
+  "class_signatures": {
+    "L1PlanRequest": "L1PlanRequest",
+    "L1PlanResult": "L1PlanResult",
+    "L1PlannerInterface": "L1PlannerInterface",
+    "L1StrategyPlannerInterface": "L1StrategyPlannerInterface",
+    "L1DraftingPlannerInterface": "L1DraftingPlannerInterface",
+    "L1QAPlannerInterface": "L1QAPlannerInterface",
+    "L1SafetyPlannerInterface": "L1SafetyPlannerInterface",
+    "BiasIndicator": "BiasIndicator",
+    "BiasPreCheckResult": "BiasPreCheckResult",
+    "L1BiasPreCheckInterface": "L1BiasPreCheckInterface"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

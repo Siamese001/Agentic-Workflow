@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from meta.metacognition.models import Hypothesis\nfrom meta.metacognition.uncertainty import compute_uncertainty\ndef test_uncertainty_increases_with_signals():\nhs = [\nHypothesis(id=\"h1\", agent_id=\"a1\", content=\"c1\", confidence=0.8),\nHypothesis(id=\"h2\", agent_id=\"a1\", content=\"c2\", confidence=0.6),\n]\nlow = compute_uncertainty(hs, qa_signals=0, safety_signals=0)\nhigh = compute_uncertainty(hs, qa_signals=3, safety_signals=2)\nassert 0.0 <= low <= 1.0\nassert 0.0 <= high <= 1.0\nassert high > low",
+  "normalized_signature": "func:test_uncertainty_increases_with_signals",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_uncertainty_increases_with_signals",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

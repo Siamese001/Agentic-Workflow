@@ -1,0 +1,9 @@
+{
+  "canonical_form": "- ValidationRule fix: **5/5 passed** \u2705\n- End-to-end comparison: **12/12 passed** \u2705\n- Comprehensive suite: **20/20 passed** \u2705\n---\n**Issue Found:** ValidationRule.execute() expected ValidationContext, not Dict\n**Fix Applied:** Updated to accept both (like v16_20)\n**Status:** \u2705 Fixed and verified\n---\nAll files in `/mnt/user-data/outputs/`:\n1. \u2705 config.py\n2. \u2705 models.py\n3. \u2705 prompts.py\n4. \u2705 rag.py\n5. \u2705 utils.py\n6. \u2705 validation.py (FIXED)\n7. \u2705 workflow.py\n8. \u2705 run_workflow.py\n---\n1. **Archive (don't delete) v16_20:**\n```bash\nmkdir archive/\nmv resume_workflow_v16_20.py archive/\n```\n2. **Use modular components going forward**\n3. **Benefits:**\n- Easier maintenance\n- Better testability\n- Clearer structure\n- Same functionality\n---\n- \u2705 All core functionality tested\n- \u2705 All edge cases tested\n- \u2705 All stress tests passed\n- \u2705 Full integration verified\n- \u2705 Real workflow tested",
+  "normalized_signature": "",
+  "core_functionality": "configuration_or_data",
+  "interface_contract": "public_methods:",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

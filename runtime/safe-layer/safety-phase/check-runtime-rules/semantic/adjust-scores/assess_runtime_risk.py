@@ -3,7 +3,7 @@ L5 Agentic Core - Safety Layer - assess_runtime_risk
 Implements L5 Safety/Policy Layer for assess runtime risk operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging
@@ -64,7 +64,7 @@ class AssessRuntimeRiskSafetyImpl(AssessRuntimeRiskSafetySafety):
     
     def apply_safety(self, data: Dict[str, Any]) -> AssessRuntimeRiskSafetyResult:
         """Apply safety checks following L5 architecture principles"""
-        self.logger.info(f"Applying safety checks to data")
+        self.logger.info("Applying safety checks to data")
         
         # L5 Input validation
         self._validate_input(data)

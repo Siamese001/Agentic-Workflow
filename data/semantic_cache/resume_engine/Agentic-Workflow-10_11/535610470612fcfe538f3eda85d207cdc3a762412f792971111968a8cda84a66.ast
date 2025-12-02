@@ -1,0 +1,139 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\modularity\\test_layer_imports.py",
+    "file_hash": "535610470612fcfe538f3eda85d207cdc3a762412f792971111968a8cda84a66",
+    "size_bytes": 4487,
+    "last_modified": "2025-12-01T12:27:39.482419",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_iter_project_py_files",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_imported_modules",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set",
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_top_level_dir_for",
+      "line_number": 40,
+      "docstring": "Return the top-level directory name for a given file, if any.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_no_direct_imports_of_top_level_l_layers",
+      "line_number": 53,
+      "docstring": "Non-test modules must not import bare l1/l2/cognitive_agents.\n\nThey should import via core.l1, core.l2, core.cognitive_agents\ninstead. Tests are allowed to use the historical imports.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "_iter_project_py_files",
+        "_get_imported_modules",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_non_providers_do_not_import_providers",
+      "line_number": 72,
+      "docstring": "Core/meta/prompts/profiles must not import the top-level providers package.",
+      "imports": [],
+      "dependencies": [
+        "_iter_project_py_files",
+        "str",
+        "_get_imported_modules",
+        "_top_level_dir_for",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_meta_does_not_import_core_or_legacy_l_layers",
+      "line_number": 91,
+      "docstring": "meta/ modules must not import core or legacy l1/l2/cognitive_agents.",
+      "imports": [],
+      "dependencies": [
+        "_iter_project_py_files",
+        "str",
+        "_get_imported_modules",
+        "_top_level_dir_for",
+        "sorted"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_prompt_files_do_not_import_providers_or_core",
+      "line_number": 111,
+      "docstring": "prompt_* files must not import providers or core/l1/l2/cognitive_agents.",
+      "imports": [],
+      "dependencies": [
+        "_iter_project_py_files",
+        "str",
+        "_get_imported_modules",
+        "set",
+        "sorted"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "ast": [
+      "line_3"
+    ],
+    "pathlib": [
+      "line_4"
+    ]
+  },
+  "function_signatures": {
+    "_iter_project_py_files": "_iter_project_py_files",
+    "_get_imported_modules": "_get_imported_modules",
+    "_top_level_dir_for": "_top_level_dir_for",
+    "test_no_direct_imports_of_top_level_l_layers": "test_no_direct_imports_of_top_level_l_layers",
+    "test_non_providers_do_not_import_providers": "test_non_providers_do_not_import_providers",
+    "test_meta_does_not_import_core_or_legacy_l_layers": "test_meta_does_not_import_core_or_legacy_l_layers",
+    "test_prompt_files_do_not_import_providers_or_core": "test_prompt_files_do_not_import_providers_or_core"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 31,
+    "cognitive_complexity": 20,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

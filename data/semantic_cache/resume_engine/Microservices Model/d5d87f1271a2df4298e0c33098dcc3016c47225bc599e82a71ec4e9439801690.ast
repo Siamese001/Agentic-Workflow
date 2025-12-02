@@ -1,0 +1,165 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\04_hop_staging_v1_1.py",
+    "file_hash": "d5d87f1271a2df4298e0c33098dcc3016c47225bc599e82a71ec4e9439801690",
+    "size_bytes": 11692,
+    "last_modified": "2025-12-01T12:27:36.388209",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ContentSanitizer",
+      "line_number": 34,
+      "docstring": "Robust sanitizer that cleans LLM output and calculates signal quality scores",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_hop_4",
+      "line_number": 198,
+      "docstring": "Execute HOP-4 staging and sanitization with signal scoring",
+      "imports": [],
+      "dependencies": [
+        "setup_workflow_logging",
+        "exit",
+        "HopExecutionError",
+        "print",
+        "open",
+        "Path",
+        "ContentSanitizer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_clean_text_artifacts",
+      "line_number": 53,
+      "docstring": "Remove conversational intros and markdown",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_find_placeholders",
+      "line_number": 61,
+      "docstring": "Find remaining placeholders",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_unify_structure",
+      "line_number": 67,
+      "docstring": "Ensure content structure matches spec",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_section_signal_score",
+      "line_number": 98,
+      "docstring": "Calculate signal quality score for section content using ThematicAnalysis",
+      "imports": [],
+      "dependencies": [
+        "calculate_signal_score"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sanitize_and_stage",
+      "line_number": 111,
+      "docstring": "Sanitize content, calculate signal scores, and create staging buffer\n\nReturns:\n    - ImmutableStagingBuffer with cleaned content\n    - Metadata dict with section stats and signal scores",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "type",
+        "ImmutableStagingBuffer"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_11"
+    ],
+    "argparse": [
+      "line_13"
+    ],
+    "json": [
+      "line_14"
+    ],
+    "logging": [
+      "line_15"
+    ],
+    "re": [
+      "line_16"
+    ],
+    "sys": [
+      "line_17"
+    ],
+    "from_datetime": [
+      "line_18"
+    ],
+    "from_pathlib": [
+      "line_19"
+    ],
+    "from_typing": [
+      "line_20"
+    ],
+    "from_helpers": [
+      "line_27"
+    ]
+  },
+  "function_signatures": {
+    "run_hop_4": "run_hop_4",
+    "__init__": "__init__",
+    "_clean_text_artifacts": "_clean_text_artifacts",
+    "_find_placeholders": "_find_placeholders",
+    "_unify_structure": "_unify_structure",
+    "_calculate_section_signal_score": "_calculate_section_signal_score",
+    "sanitize_and_stage": "sanitize_and_stage"
+  },
+  "class_signatures": {
+    "ContentSanitizer": "ContentSanitizer"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 28,
+    "cognitive_complexity": 16,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

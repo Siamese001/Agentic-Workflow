@@ -1,0 +1,25 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\models\\dag_models.py",
+    "file_hash": "4f915d3d996b1f7be4aa934b1eb642baf6555cdac136efa4ca595555bb45da97",
+    "size_bytes": 308,
+    "last_modified": "2025-12-01T12:27:40.903793",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {
+    "from_core.models.dag_models": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

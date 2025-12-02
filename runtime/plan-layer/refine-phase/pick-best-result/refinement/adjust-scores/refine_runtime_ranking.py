@@ -3,7 +3,7 @@ L5 Agentic Core - Plan Layer - refine_runtime_ranking
 Implements L1 Cognitive Planning Layer for refine runtime ranking operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

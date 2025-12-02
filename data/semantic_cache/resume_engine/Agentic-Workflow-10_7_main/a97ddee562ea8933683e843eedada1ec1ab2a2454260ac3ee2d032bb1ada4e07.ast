@@ -1,0 +1,34 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\__init__.py",
+    "file_hash": "a97ddee562ea8933683e843eedada1ec1ab2a2454260ac3ee2d032bb1ada4e07",
+    "size_bytes": 588,
+    "last_modified": "2025-12-01T12:27:41.710569",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "sys": [
+      "line_3"
+    ],
+    "types": [
+      "line_4"
+    ],
+    "from_pathlib": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

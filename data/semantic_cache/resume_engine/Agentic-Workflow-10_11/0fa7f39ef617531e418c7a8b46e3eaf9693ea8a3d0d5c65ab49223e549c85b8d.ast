@@ -1,0 +1,52 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\context_engine\\assembly.py",
+    "file_hash": "0fa7f39ef617531e418c7a8b46e3eaf9693ea8a3d0d5c65ab49223e549c85b8d",
+    "size_bytes": 1403,
+    "last_modified": "2025-12-01T12:27:38.640528",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "assemble_context",
+      "line_number": 14,
+      "docstring": "Assembles context strings for r\u00e9sum\u00e9 improvement prompt generation.\n\nPrioritizes relevant information to ensure comprehensive r\u00e9sum\u00e9 enhancement processing.",
+      "imports": [],
+      "dependencies": [
+        "assign_to_slot",
+        "score_relevance",
+        "sum",
+        "filter_pinned"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_7"
+    ],
+    "from_pinned": [
+      "line_9"
+    ],
+    "from_relevance": [
+      "line_10"
+    ],
+    "from_slots": [
+      "line_11"
+    ]
+  },
+  "function_signatures": {
+    "assemble_context": "assemble_context"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

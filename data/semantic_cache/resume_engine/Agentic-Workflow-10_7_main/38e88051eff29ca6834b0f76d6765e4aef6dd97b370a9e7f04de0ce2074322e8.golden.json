@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Strategy simulation models.\"\"\"\nfrom typing import Any, Dict, List\nfrom pydantic import BaseModel, Field\nfrom .simulation_base import SimulationInput, SimulationResult\nclass StrategySimRequest(SimulationInput):\n\"\"\"Input payload for strategy simulation.\"\"\"\njob_title: str\ncompany: str\nstrategy_plan: Dict[str, Any]\nclass StrategySimMetrics(BaseModel):\n\"\"\"Metrics produced by a strategy simulation.\"\"\"\nclarity_score: float\nalignment_score: float\nrisk_score: float\nnotes: List[str] = Field(default_factory=list)\nclass StrategySimResult(SimulationResult):\n\"\"\"Result model for strategy simulations.\"\"\"\nmetrics: Dict[str, Any]\ndetails: Dict[str, Any]",
+  "normalized_signature": "class:StrategySimRequest;class:StrategySimMetrics;class:StrategySimResult",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Provides a stable entry point to the routing rules that decide which agents and checks each resume goes through, directly influencing how deep and rigorous the improvements are.\"\"\"\nfrom meta.routing import * # noqa: F401,F403",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

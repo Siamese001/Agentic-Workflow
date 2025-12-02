@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Centralised configuration helpers for Agentic Workflow v10.7.\"\"\"\nfrom __future__ import annotations\nfrom copy import deepcopy\nfrom typing import Any, Dict\nfrom mcp import get_schema\ndef load_master_config() -> Dict[str, Any]:\n\"\"\"Return a mutable copy of the shared master configuration.\"\"\"\nschema = get_schema(\"master_config_v10_7.json\")\nreturn deepcopy(schema)\nCONFIG: Dict[str, Any] = load_master_config()\n__all__ = [\"CONFIG\", \"load_master_config\"]",
+  "normalized_signature": "func:load_master_config",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:load_master_config",
+  "test_coverage": []
+}

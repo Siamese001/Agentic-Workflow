@@ -1,0 +1,257 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\observability.py",
+    "file_hash": "eafd9dd11fec0319ef48a45047f6b8493015781eb09e62a49150518ffdd7248d",
+    "size_bytes": 7846,
+    "last_modified": "2025-12-01T15:36:20.790362",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_now_ms",
+      "line_number": 53,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_log",
+      "line_number": 57,
+      "docstring": "Store event in in-memory buffer; downstream layers\ncan choose to flush, export, persist, or ignore.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "start_span",
+      "line_number": 70,
+      "docstring": "Create a uniquely identified span and record the start time.\n\nReturns a span record dict that must be passed to end_span().",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "TelemetryEvent",
+        "_now_ms",
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "end_span",
+      "line_number": 101,
+      "docstring": "Close a previously-started span.\n\nIf the span is not in the stack (already closed or unknown), this\nis a no-op.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "TelemetryEvent",
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_node_event",
+      "line_number": 135,
+      "docstring": "Node-level events for L3 orchestration visibility.\n\nExample:\n    emit_node_event(\"strategy\", \"start\")\n    emit_node_event(\"strategy\", \"success\")",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "TelemetryEvent",
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_telemetry_event",
+      "line_number": 161,
+      "docstring": "General-purpose event emission for arbitrary telemetry use cases.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "TelemetryEvent",
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log_exception",
+      "line_number": 174,
+      "docstring": "Emit an error-level telemetry event for exceptions.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "str",
+        "TelemetryEvent",
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_event",
+      "line_number": 191,
+      "docstring": "Convenience wrapper so infrastructure code can call record_event(...)\nwithout depending on TelemetryEvent directly.",
+      "imports": [],
+      "dependencies": [
+        "emit_telemetry_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_exception",
+      "line_number": 199,
+      "docstring": "Convenience wrapper so infrastructure code can call record_exception(...)\nand still use the same telemetry pipeline as log_exception.",
+      "imports": [],
+      "dependencies": [
+        "log_exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_retrieval_attempt",
+      "line_number": 212,
+      "docstring": "Emit a typed retrieval attempt event.",
+      "imports": [],
+      "dependencies": [
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_retrieval_success",
+      "line_number": 219,
+      "docstring": "Emit a typed retrieval success event.",
+      "imports": [],
+      "dependencies": [
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_retrieval_failure",
+      "line_number": 226,
+      "docstring": "Emit a typed retrieval failure event.",
+      "imports": [],
+      "dependencies": [
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_ranking_event",
+      "line_number": 238,
+      "docstring": "Emit a typed ranking event (e.g. for RRF fusion).",
+      "imports": [],
+      "dependencies": [
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "emit_cost_snapshot",
+      "line_number": 250,
+      "docstring": "Used by L2 after Strategy/Drafting/QA/Safety completes.\n\nThe CostSnapshot is converted into telemetry attributes.",
+      "imports": [],
+      "dependencies": [
+        "_now_ms",
+        "TelemetryEvent",
+        "_log"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_all_events",
+      "line_number": 273,
+      "docstring": "Return a shallow copy of the telemetry buffer.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "clear_events",
+      "line_number": 280,
+      "docstring": "Clear all telemetry events and open spans.\n\nIntended primarily for unit tests.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_24"
+    ],
+    "time": [
+      "line_26"
+    ],
+    "uuid": [
+      "line_27"
+    ],
+    "from_typing": [
+      "line_28"
+    ],
+    "from_models": [
+      "line_30"
+    ]
+  },
+  "function_signatures": {
+    "_now_ms": "_now_ms",
+    "_log": "_log",
+    "start_span": "start_span",
+    "end_span": "end_span",
+    "emit_node_event": "emit_node_event",
+    "emit_telemetry_event": "emit_telemetry_event",
+    "log_exception": "log_exception",
+    "record_event": "record_event",
+    "record_exception": "record_exception",
+    "emit_retrieval_attempt": "emit_retrieval_attempt",
+    "emit_retrieval_success": "emit_retrieval_success",
+    "emit_retrieval_failure": "emit_retrieval_failure",
+    "emit_ranking_event": "emit_ranking_event",
+    "emit_cost_snapshot": "emit_cost_snapshot",
+    "get_all_events": "get_all_events",
+    "clear_events": "clear_events"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

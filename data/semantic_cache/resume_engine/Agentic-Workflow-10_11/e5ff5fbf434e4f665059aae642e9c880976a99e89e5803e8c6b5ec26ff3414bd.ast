@@ -1,0 +1,83 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\v6_prompt_adapter(1).py",
+    "file_hash": "e5ff5fbf434e4f665059aae642e9c880976a99e89e5803e8c6b5ec26ff3414bd",
+    "size_bytes": 1820,
+    "last_modified": "2025-12-01T12:27:38.267213",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "V6PromptConfig",
+      "line_number": 12,
+      "docstring": "Configuration for V6 prompt building.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExecutionContext",
+      "line_number": 19,
+      "docstring": "Mock execution context for compatibility.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_v6_strategy_prompt",
+      "line_number": 24,
+      "docstring": "Build V6 strategy prompt from input data.",
+      "imports": [],
+      "dependencies": [
+        "V6PromptConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_safety_context_section",
+      "line_number": 49,
+      "docstring": "Build context section for safety planning.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_5"
+    ],
+    "from_dataclasses": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "build_v6_strategy_prompt": "build_v6_strategy_prompt",
+    "_build_safety_context_section": "_build_safety_context_section"
+  },
+  "class_signatures": {
+    "V6PromptConfig": "V6PromptConfig",
+    "ExecutionContext": "ExecutionContext"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 3,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

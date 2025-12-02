@@ -1,0 +1,68 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\dag\\test_dag_executor_basic.py",
+    "file_hash": "557f852f4cfa140d2d78176684fc0c9b2a6317f024bd06d0e6d6069216f13ae5",
+    "size_bytes": 751,
+    "last_modified": "2025-12-01T12:27:39.368792",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_make_cyclic_graph",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Edge",
+        "Node",
+        "Graph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_dag_executor_cycle_detection",
+      "line_number": 24,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_make_cyclic_graph",
+        "DAGExecutor"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "asyncio": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_4"
+    ],
+    "pytest": [
+      "line_6"
+    ],
+    "from_orchestration.dag_engine": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "_make_cyclic_graph": "_make_cyclic_graph",
+    "test_dag_executor_cycle_detection": "test_dag_executor_cycle_detection"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

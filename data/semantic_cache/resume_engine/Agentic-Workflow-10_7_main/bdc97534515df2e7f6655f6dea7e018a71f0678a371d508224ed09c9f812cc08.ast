@@ -1,0 +1,126 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\planning_utils.py",
+    "file_hash": "bdc97534515df2e7f6655f6dea7e018a71f0678a371d508224ed09c9f812cc08",
+    "size_bytes": 3719,
+    "last_modified": "2025-12-01T12:27:41.247759",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "extract_job_profile",
+      "line_number": 8,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "_first",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_resume_profile",
+      "line_number": 43,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "describe_experience",
+      "line_number": 58,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect_metrics",
+      "line_number": 73,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "any",
+        "describe_experience",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "collect_sections",
+      "line_number": 92,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "missing_requirements",
+      "line_number": 100,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_first",
+      "line_number": 11,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "extract_job_profile": "extract_job_profile",
+    "extract_resume_profile": "extract_resume_profile",
+    "describe_experience": "describe_experience",
+    "detect_metrics": "detect_metrics",
+    "collect_sections": "collect_sections",
+    "missing_requirements": "missing_requirements",
+    "_first": "_first"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 15,
+    "cognitive_complexity": 11,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

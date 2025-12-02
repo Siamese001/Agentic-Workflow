@@ -1,0 +1,52 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\providers\\google_genai_client.py",
+    "file_hash": "f96a833258b59d643aa4053f80f0c4d8e4b1a3f0b691c7232923cc06568bc2b3",
+    "size_bytes": 1272,
+    "last_modified": "2025-12-01T12:27:38.107161",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "run_llm_google",
+      "line_number": 13,
+      "docstring": "Run a Gemini generate_content call and return the response text.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "getattr",
+        "ImportError",
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "os": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "google.generativeai": [
+      "line_24"
+    ]
+  },
+  "function_signatures": {
+    "run_llm_google": "run_llm_google"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

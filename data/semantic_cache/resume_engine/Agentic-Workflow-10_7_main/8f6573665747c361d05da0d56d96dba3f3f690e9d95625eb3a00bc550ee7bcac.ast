@@ -1,0 +1,25 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\bullet_execution_stack.py",
+    "file_hash": "8f6573665747c361d05da0d56d96dba3f3f690e9d95625eb3a00bc550ee7bcac",
+    "size_bytes": 175,
+    "last_modified": "2025-12-01T12:27:41.148834",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {
+    "from_stacks_v10_8.bullet_execution": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
