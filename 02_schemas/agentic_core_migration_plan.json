@@ -1,0 +1,15 @@
+{
+  "schema_version": "v1",
+  "target_root": "agentic_core/",
+  "operations": [],
+  "summary": {
+    "total_operations": 0,
+    "create_dir": 0,
+    "create_file": 0,
+    "delete_file": 0,
+    "delete_dir": 0,
+    "move": 0,
+    "rename": 0
+  },
+  "mode": "yaml_authoritative"
+}
