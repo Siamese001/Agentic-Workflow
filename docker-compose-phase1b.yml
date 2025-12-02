@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  phase1b-validation:
+    build:
+      context: .
+      dockerfile: runtime/phase_1b_dockerfile
+    container_name: agentic-workflow-phase1b
+    # Resource limits to prevent laptop crashes
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    # Mount repository - schemas/ needs write access for migration plan
+    volumes:
+      - type: bind
+        source: .
+        target: /workspace
+        read_only: false  # Phase 1B needs write access to schemas/
+    # Environment variables
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=UTC
+    # Restart policy - one-shot validation should not restart
+    restart: "no"
+    # Health check
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    # Security settings
+    security_opt:
+      - no-new-privileges:true
+    # Network isolation
+    networks:
+      - validation-network
+    # Working directory override
+    working_dir: /workspace
+
+networks:
+  validation-network:
+    driver: bridge
+    internal: true  # No external network access

@@ -1,0 +1,28 @@
+# Phase 1B Validation Container
+# YAML-authoritative reconciliation with migration planning
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /workspace
+
+# Install system dependencies including timeout
+RUN apt-get update && apt-get install -y \
+    coreutils \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy validation scripts
+COPY runtime/phase_1a_validation.py ./runtime/
+COPY runtime/phase_1b_validation.py ./runtime/
+COPY schemas/ ./schemas/
+
+# Create non-root user for security
+RUN useradd -m -u 1000 validator
+RUN chown -R validator:validator /workspace
+USER validator
+
+# Default command with timeout to prevent runaway processes
+CMD ["timeout", "300s", "python", "runtime/phase_1b_validation.py"]
