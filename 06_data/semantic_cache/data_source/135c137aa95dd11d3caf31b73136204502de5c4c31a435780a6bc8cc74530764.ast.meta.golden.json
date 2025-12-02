@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\tests\\\\model_routing\\\\test_budget_enforcement.py\",\n  \"file_hash\": \"135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764\",\n  \"size_bytes\": 738,\n  \"last_modified\": \"2025-12-01T12:27:39.403877\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_11\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "3d08c97ba6980b75e9fbfab40d071319acf4638834fe250cdec1c02b60f546f6",
-  "generated_at": 1764703655.218972,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\135c137aa95dd11d3caf31b73136204502de5c4c31a435780a6bc8cc74530764.ast.meta.json"
-}

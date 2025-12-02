@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\02_hop_enrichment.py\",\n    \"rel_path\": \"02_hop_enrichment.py\",\n    \"root_name\": \"resume_engine/Microservices Model\",\n    \"file_hash\": \"bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f\",\n    \"file_size\": 7369,\n    \"is_eligible\": true,\n    \"file_type\": \".py\",\n    \"depth\": 0\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702990.8300567\n}",
-  "full_hash": "3f60890028fe9f14a27bf20dbfb7b9fb626b5473c4c96fa3f313c28dbd40f216",
-  "generated_at": 1764703802.8575177,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\02_hop_enrichment.meta.json"
-}

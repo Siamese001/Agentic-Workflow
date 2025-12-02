@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 9,
-  "generated_at": 1764703655.0267913,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\10ca7257f0569bb34e3e6f0a437316ce24a74e58ecf82e3a03461e6b35b97856.ast.meta.json"
-}

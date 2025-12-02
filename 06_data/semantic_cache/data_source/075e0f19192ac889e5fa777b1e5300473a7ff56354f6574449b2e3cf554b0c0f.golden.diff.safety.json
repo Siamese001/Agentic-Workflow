@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 7,
-  "generated_at": 1764703170.2074046,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\075e0f19192ac889e5fa777b1e5300473a7ff56354f6574449b2e3cf554b0c0f.golden.diff.json"
-}

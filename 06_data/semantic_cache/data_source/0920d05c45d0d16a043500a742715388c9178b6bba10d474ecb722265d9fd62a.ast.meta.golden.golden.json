@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\v10.7\\\\\\\\chromadb\\\\\\\\utils\\\\\\\\__init__.py\\\",\\n  \\\"file_hash\\\": \\\"0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a\\\",\\n  \\\"size_bytes\\\": 213,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:37.264590\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"v10.7\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"440dadd3eb5d967cac9d72e6aee8ba93abe6a29dbf6458524eab7ff32f6a3c36\",\n  \"generated_at\": 1764702840.8892326,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v10.7\\\\0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a.ast.meta.json\"\n}",
-  "full_hash": "839c043944ed609664b0d5257f4b52d2370b20136d7ec6cd77c9e5321aa965e2",
-  "generated_at": 1764703173.6423461,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a.ast.meta.golden.json"
-}

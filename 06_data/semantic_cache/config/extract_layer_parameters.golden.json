@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - extract_layer_parameters\nImplements L1 Cognitive Planning Layer for extract layer parameters operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ExtractLayerParametersPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass ExtractLayerParametersPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ExtractLayerParametersPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"",
-  "full_hash": "20b5ea590b15f74ae5170e2c3bcc08d7586d54e4d3eeeb616ebc5224c8034499",
-  "generated_at": 1764703110.3531835,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\plan-phase\\get-config-info\\general\\understand-request\\extract_layer_parameters.py"
-}

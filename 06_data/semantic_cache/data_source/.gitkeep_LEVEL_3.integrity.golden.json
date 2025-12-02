@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_hash\": \"9ff22825b41e610bcd7759e0a12caaab06ddcadc3a3008154ecd569c7e5f1ba0\",\n  \"file_size\": 22112,\n  \"generated_at\": 1764702854.2690992,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\08_scripts\\\\planner-microagent-layer\\\\expand-phase-group\\\\backoff-policy-ops\\\\general-operations-ops\\\\utility-functions-ops\\\\.gitkeep_LEVEL_3\",\n  \"verified\": true\n}",
-  "full_hash": "be6f38308b06697fb194c7b85686aa118079c75bac3ba9d7e2d6c8973cd84fef",
-  "generated_at": 1764703967.6599307,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\scripts\\.gitkeep_LEVEL_3.integrity.json"
-}

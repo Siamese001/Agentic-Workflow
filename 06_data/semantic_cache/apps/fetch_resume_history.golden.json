@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - fetch_resume_history\nImplements L1 Cognitive Planning Layer for fetch resume history operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass FetchResumeHistoryMemoryType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass FetchResumeHistoryMemoryConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass FetchResumeHistoryMemoryResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: ",
-  "full_hash": "84f5a4046ca0f89d4e0c0010bb6f8bf97fc606b8ff8c14f78f30ffbbcfd40991",
-  "generated_at": 1764703989.1622176,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\mem-layer\\retrieve-phase\\get-resume-info\\general\\understand-request\\fetch_resume_history.py"
-}

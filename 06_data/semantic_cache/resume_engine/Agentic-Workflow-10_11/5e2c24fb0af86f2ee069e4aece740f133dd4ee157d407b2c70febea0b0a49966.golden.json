@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nCommand line interface for comprehensive r\u00e9sum\u00e9 processing workflows.\nProvides user-friendly CLI tools for r\u00e9sum\u00e9 enhancement, job matching, and career optimization operations.\n\"\"\"",
-  "normalized_signature": "",
-  "core_functionality": "configuration_or_data",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

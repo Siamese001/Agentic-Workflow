@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\v10.7\\\\\\\\tests\\\\\\\\regression\\\\\\\\test_design_validation_v10_7.py\\\",\\n  \\\"file_hash\\\": \\\"09dbd8aa3436723d92cf5dc7bcdcb5ba3d3b8192ed7a2488b8b0acf5f747fffb\\\",\\n  \\\"size_bytes\\\": 754,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:37.185149\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"v10.7\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"403ca8688a25dc85e6799d036103b7e5f00edf196cc64f62169468b08f5bec25\",\n  \"generated_at\": 1764702840.9447038,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v10.7\\\\09dbd8aa3436723d92cf5dc7bcdcb5ba3d3b8192ed7a2488b8b0acf5f747fffb.ast.meta.json\"\n}",
-  "full_hash": "31323276d9880f81b969858d08d5269cd85fa92e5b5c607c417fedf7e6050efb",
-  "generated_at": 1764703175.0384524,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\09dbd8aa3436723d92cf5dc7bcdcb5ba3d3b8192ed7a2488b8b0acf5f747fffb.ast.meta.golden.json"
-}

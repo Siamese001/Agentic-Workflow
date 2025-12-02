@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_hash\": \"5cdfcbaa62612382c16c85923eb765914164521e8e1397cdf956e50983660247\",\n  \"file_size\": 20721,\n  \"generated_at\": 1764702990.8721845,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\03_hop_artist_v1_1.py\",\n  \"verified\": true\n}",
-  "full_hash": "55747a5b5c76d55a3da92ad45508f080ecbc1fa628e20673e19313e07947a4d0",
-  "generated_at": 1764703803.1696508,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\03_hop_artist_v1_1.integrity.json"
-}

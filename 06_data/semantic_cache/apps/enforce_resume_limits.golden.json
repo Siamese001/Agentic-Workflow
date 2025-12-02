@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - enforce_resume_limits\nImplements L5 Safety/Policy Layer for enforce resume limits operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EnforceResumeLimitsSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass EnforceResumeLimitsSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EnforceResumeLimitsSafetyResult:\n    \"\"\"L5 Safety result wit",
-  "full_hash": "d8833e8617875aa75504bb452b116809ea566bbddbb0848bdaefc5cd0c5a4b7b",
-  "generated_at": 1764703989.5705516,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\safety-phase\\manage-resume-costs\\general\\update-memory\\enforce_resume_limits.py"
-}

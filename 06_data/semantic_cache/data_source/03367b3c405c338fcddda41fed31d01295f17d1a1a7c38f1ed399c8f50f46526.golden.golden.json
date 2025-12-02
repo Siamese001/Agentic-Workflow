@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_form\": \"- **20/20 tests passing** in `tests/unit/l4_state/test_triplet_store.py`\\n- Complete coverage: TripletStore operations, EntityResolution, validation\\n- Extracted from working legacy tests in `_deprecated/`\\n- **5/5 tests passing** in `tests/unit/l1_planning/test_kg_retrieval_planning.py`\\n- KG retrieval planning: entity_retrieval, neighborhood_query, templates\\n- Based on actual implementation interfaces (not assumptions)\\n- **Total Working Tests: 25/25 passing**\\n- **Previously: 0 working tests in empty directories**\\nThe user specifically complained about missing tests for core L1 modules:\\n- `workflow_planning.py` - Main workflow planning logic\\n- `strategy_planning.py` - Strategy selection and optimization\\n- `prompt_system_v10_10.py` - Prompt engineering and templates\\n- `safety_planning.py` - Safety constraint integration\\n**Current Status**: These core modules still have NO tests\\n- Extract remaining working tests from `_deprecated/` (L2 execution, L3 orch",
-  "full_hash": "1f7e8dd8e69f2826326d72e92c178c215dc05c4b86a3710c29de5e261c141955",
-  "generated_at": 1764703653.4542978,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\03367b3c405c338fcddda41fed31d01295f17d1a1a7c38f1ed399c8f50f46526.golden.json"
-}

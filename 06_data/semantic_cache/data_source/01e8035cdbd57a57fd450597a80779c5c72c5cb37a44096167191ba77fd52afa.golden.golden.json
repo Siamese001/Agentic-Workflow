@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_form\": \"from __future__ import annotations\\nfrom typing import List, Optional\\nfrom pydantic import BaseModel, Field\\nclass Hypothesis(BaseModel):\\n\\\"\\\"\\\"Lightweight hypothesis used by the metacognition layer.\\\"\\\"\\\"\\nid: str\\nagent_id: str\\ncontent: str\\nconfidence: float = 0.0\\nevidence_ids: List[str] = Field(default_factory=list)\\nrationale: Optional[str] = None\\nclass MetacognitionReport(BaseModel):\\n\\\"\\\"\\\"Aggregate view over a set of hypotheses and signals.\\\"\\\"\\\"\\nhypotheses: List[Hypothesis] = Field(default_factory=list)\\nglobal_confidence: float = 0.0\\nuncertainty_score: float = 0.0\\nissues_detected: List[str] = Field(default_factory=list)\",\n  \"normalized_signature\": \"class:Hypothesis;class:MetacognitionReport\",\n  \"core_functionality\": \"module_imports\",\n  \"interface_contract\": \"public_methods:\",\n  \"test_coverage\": []\n}",
-  "full_hash": "9d27bfa7821c5652f060c14260222605dd2b577e872023c1529f64fbf7cec431",
-  "generated_at": 1764703653.0164022,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\01e8035cdbd57a57fd450597a80779c5c72c5cb37a44096167191ba77fd52afa.golden.json"
-}

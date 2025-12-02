@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\v2\\\\\\\\prompts_RES_v2.py\\\",\\n  \\\"file_hash\\\": \\\"0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9\\\",\\n  \\\"size_bytes\\\": 42814,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:37.032440\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"v2\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"7dfee0c43b7ef1140dcd13106896edfb1cea7dec62df517c9902fedcabd1e078\",\n  \"generated_at\": 1764702846.3126078,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v2\\\\0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9.ast.meta.json\"\n}",
-  "full_hash": "705010f5fd811b74072f8b6da07d5ece7b605b77e9f0686b4397a241b8bd43f4",
-  "generated_at": 1764703177.3171225,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0c9679488dc55d109f4492f1373dd337c5d380229e249d5afd8db33d2ae1a3e9.ast.meta.golden.json"
-}

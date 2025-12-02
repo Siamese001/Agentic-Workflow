@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_form\": \"\\\"\\\"\\\"\\nResume Generation Engine v5.59 - RAG RESILIENCE: HARDENED WEB SEARCH\\nv5.59 CHANGES - MULTI-LAYER RAG RESILIENCE:\\n\\u2705 HARDENED: RAG with 5-layer resilience architecture\\n- Layer 1 (API): 7 retries (was 3) with adaptive exponential backoff + jitter\\n- Layer 2 (Phase): 3 retries per phase (was 0) with simplified fallback prompts\\n- Layer 3 (Orchestration): Partial success preservation (was full fallback)\\n- Layer 4 (Fallback): 4-tier degradation (Full\\u2192Partial\\u2192Hybrid\\u2192Local)\\n- Layer 5 (Monitoring): Comprehensive telemetry tracking\\n\\u2705 ENHANCED: ClaudeWebSearchClient\\n- Adaptive exponential backoff: 2s, 4s, 8s, 16s, 32s, 64s, 64s with \\u00b110% jitter\\n- Circuit breaker pattern (opens after 5 consecutive failures, 60s timeout)\\n- JSON repair strategies (trailing commas, single quotes, control chars)\\n- Per-request timeout (30s, configurable)\\n- Comprehensive error handling (APIError, TimeoutError, ConnectionError)\\n\\u2705 NEW: PhaseExec",
-  "full_hash": "518e2fc1f1c871552dbdc9e30de6973ad20d26f336e771dff7740146e88749c4",
-  "generated_at": 1764703807.8438132,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\0195cd9d92fe2f7cefec0f95439f29f123e0cf4e716a467e4f6f7f79d065e6a2.golden.json"
-}

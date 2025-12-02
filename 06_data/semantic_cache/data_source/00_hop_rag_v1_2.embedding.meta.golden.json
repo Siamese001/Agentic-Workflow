@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"word_count\": 2708,\n  \"unique_words\": 1189,\n  \"generated_at\": 1764702990.7559776,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\00_hop_rag_v1_2.py\"\n}",
-  "full_hash": "ff939174a79c2026e8d29d63f13afc1801f2f11c0f762f623a33db27f6a387cc",
-  "generated_at": 1764703802.2861855,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\00_hop_rag_v1_2.embedding.meta.json"
-}

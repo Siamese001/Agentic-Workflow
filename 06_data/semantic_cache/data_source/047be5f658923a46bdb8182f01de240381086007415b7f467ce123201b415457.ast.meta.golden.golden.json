@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\v2\\\\\\\\hyphenation_rules.json\\\",\\n  \\\"file_hash\\\": \\\"047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457\\\",\\n  \\\"size_bytes\\\": 1342,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:36.981682\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"v2\\\",\\n  \\\"file_extension\\\": \\\".json\\\"\\n}\",\n  \"full_hash\": \"91350cb44c068bb67b950e4d3e4ca2b48b3d67ab5ced2d655b01851c2abd8fa6\",\n  \"generated_at\": 1764702846.1183524,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v2\\\\047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457.ast.meta.json\"\n}",
-  "full_hash": "26437b3eead24cf6220d084ce785f86e7c14729441c38b5ab45bd115c1e6125f",
-  "generated_at": 1764703164.444503,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\047be5f658923a46bdb8182f01de240381086007415b7f467ce123201b415457.ast.meta.golden.json"
-}

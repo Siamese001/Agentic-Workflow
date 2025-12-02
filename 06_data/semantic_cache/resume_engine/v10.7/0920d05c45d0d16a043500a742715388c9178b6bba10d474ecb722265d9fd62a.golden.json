@@ -1,7 +1,0 @@
-{
-  "canonical_form": "class embedding_functions: # pragma: no cover - stub namespace\nclass EmbeddingFunction:\ndef __call__(self, *args, **kwargs): # pragma: no cover - interface stub\nraise NotImplementedError",
-  "normalized_signature": "func:__call__;class:embedding_functions;class:EmbeddingFunction",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

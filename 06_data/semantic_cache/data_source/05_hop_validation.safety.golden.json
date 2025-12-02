@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"has_executable_calls\": false,\n  \"has_file_operations\": true,\n  \"has_network_calls\": false,\n  \"has_system_calls\": false,\n  \"line_count\": 371,\n  \"generated_at\": 1764702990.9899163,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\Archive\\\\05_hop_validation.py\"\n}",
-  "full_hash": "7d046aae2665e68198f33345a63ed730457cee4c6f8dec5d30cc89540c7684e1",
-  "generated_at": 1764703803.7267663,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\05_hop_validation.safety.json"
-}

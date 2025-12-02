@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 235,
-  "generated_at": 1764703109.9557762,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\observer-microagent-layer\\expand-phase-group\\backoff-policy-ops\\general-operations-ops\\utility-functions-ops\\routing_overrides.yaml"
-}

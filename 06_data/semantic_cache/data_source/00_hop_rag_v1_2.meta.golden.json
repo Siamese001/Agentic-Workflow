@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\00_hop_rag_v1_2.py\",\n    \"rel_path\": \"00_hop_rag_v1_2.py\",\n    \"root_name\": \"resume_engine/Microservices Model\",\n    \"file_hash\": \"ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3\",\n    \"file_size\": 31987,\n    \"is_eligible\": true,\n    \"file_type\": \".py\",\n    \"depth\": 0\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702990.7625961\n}",
-  "full_hash": "97315e73b13f9f446cae1a821b4984eb574d48acea740afd1969f7cb9185ad15",
-  "generated_at": 1764703802.3500626,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\00_hop_rag_v1_2.meta.json"
-}

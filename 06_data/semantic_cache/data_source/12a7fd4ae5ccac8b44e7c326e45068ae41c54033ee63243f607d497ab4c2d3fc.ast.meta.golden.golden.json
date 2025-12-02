@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_11\\\\\\\\tests\\\\\\\\_deprecated\\\\\\\\test_agent_router_policy.py\\\",\\n  \\\"file_hash\\\": \\\"12a7fd4ae5ccac8b44e7c326e45068ae41c54033ee63243f607d497ab4c2d3fc\\\",\\n  \\\"size_bytes\\\": 706,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:40.124521\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_11\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"1be34c1f26cef09d934326d918d44485b3ebfae067d5087f8d12f97c495aebd8\",\n  \"generated_at\": 1764702791.2197692,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\12a7fd4ae5ccac8b44e7c326e45068ae41c54033ee63243f607d497ab4c2d3fc.ast.meta.json\"\n}",
-  "full_hash": "197fe32b0f9dd650d52f2b2e89f50ecff4c883cb4dff8d5b6c4c557a38dada8d",
-  "generated_at": 1764703182.9712174,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\12a7fd4ae5ccac8b44e7c326e45068ae41c54033ee63243f607d497ab4c2d3fc.ast.meta.golden.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"safety_checks\": [\n    \"input_validation\"\n  ],\n  \"policy_compliance\": [],\n  \"security_patterns\": [],\n  \"data_handling\": [],\n  \"access_controls\": []\n}",
-  "full_hash": "c1fa2b32c59d2444e5275b36a0921872e43bd82f7a4a7cfce7505320fa145f81",
-  "generated_at": 1764703655.1688445,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91.safety.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"error\": \"invalid syntax (<unknown>, line 5)\"\n}",
-  "full_hash": "a470e38ef674dc604ac9d2404fbecaaeadca78f3d2e914b96bcfed4cfbb2026a",
-  "generated_at": 1764703654.1494248,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\06_safety_policy_cost.ast.meta.json"
-}

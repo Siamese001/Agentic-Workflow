@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 7,
-  "generated_at": 1764703196.7738779,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\1aa952dd25993535db07ac143e0a99d35ad228306d97fb7ab2820b2bfea9130d.golden.integrity.json"
-}

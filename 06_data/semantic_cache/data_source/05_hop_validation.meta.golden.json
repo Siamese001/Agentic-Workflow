@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\Archive\\\\05_hop_validation.py\",\n    \"rel_path\": \"05_hop_validation.py\",\n    \"root_name\": \"resume_engine/Microservices Model\",\n    \"file_hash\": \"fe941e8d0b24464828614d20fd12ac5cea7c4fe91c339429f49d6cfca5fc9a3f\",\n    \"file_size\": 16601,\n    \"is_eligible\": true,\n    \"file_type\": \".py\",\n    \"depth\": 1\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702990.991408\n}",
-  "full_hash": "21e00897d4189daf747ca056c2be9f2d8b198eb8c918a040ea08e57a70bd4bc5",
-  "generated_at": 1764703803.7032638,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\05_hop_validation.meta.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Old Resume Gen Python\\\\\\\\Resume_Generation_v4_4.py\\\",\\n  \\\"file_hash\\\": \\\"0011bbfbebdf768d2adfc51ce1eeb444b6e81d5f193258c9ce823c1e6af0ce03\\\",\\n  \\\"size_bytes\\\": 59751,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:35.948148\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Old Resume Gen Python\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"f57850e1be5e12d0406d6afec1f768a7a6711eac88422347cd7cd40d1a453c47\",\n  \"generated_at\": 1764702818.1440346,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Old Resume Gen Python\\\\0011bbfbebdf768d2adfc51ce1eeb444b6e81d5f193258c9ce823c1e6af0ce03.ast.meta.json\"\n}",
-  "full_hash": "5dcd2ec1dc5849416ae93473df9653e4744fe76a590521ff3d86b9e03a5345b0",
-  "generated_at": 1764703157.2576349,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0011bbfbebdf768d2adfc51ce1eeb444b6e81d5f193258c9ce823c1e6af0ce03.ast.meta.golden.json"
-}

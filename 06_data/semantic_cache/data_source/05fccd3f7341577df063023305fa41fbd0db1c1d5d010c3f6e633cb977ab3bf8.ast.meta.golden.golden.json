@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_7_main\\\\\\\\tests\\\\\\\\v10_7\\\\\\\\test_flat__stacks__test_rag_execution_v10_7.py\\\",\\n  \\\"file_hash\\\": \\\"05fccd3f7341577df063023305fa41fbd0db1c1d5d010c3f6e633cb977ab3bf8\\\",\\n  \\\"size_bytes\\\": 2571,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:41.597218\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_7_main\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"293588e530aa476a61ca4c9d14846783835495e70ca3cc16b79ae24780a5921d\",\n  \"generated_at\": 1764702806.6012318,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_7_main\\\\05fccd3f7341577df063023305fa41fbd0db1c1d5d010c3f6e633cb977ab3bf8.ast.meta.json\"\n}",
-  "full_hash": "d8a2ae08b98e5a0a5c823a941faf1499109cc71293eaecae94c4518f16c4c73e",
-  "generated_at": 1764703167.2613943,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\05fccd3f7341577df063023305fa41fbd0db1c1d5d010c3f6e633cb977ab3bf8.ast.meta.golden.json"
-}

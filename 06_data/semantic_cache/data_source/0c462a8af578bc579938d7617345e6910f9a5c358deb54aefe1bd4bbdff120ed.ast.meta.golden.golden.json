@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_7_main\\\\\\\\tests\\\\\\\\v10_7\\\\\\\\test_flat__autonomy__test_autonomy_engine_v10_7.py\\\",\\n  \\\"file_hash\\\": \\\"0c462a8af578bc579938d7617345e6910f9a5c358deb54aefe1bd4bbdff120ed\\\",\\n  \\\"size_bytes\\\": 5653,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:41.685195\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_7_main\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"a30584744f67183c8d4c58efa5a776032b0d23fc2c968d9b93a28be5dfba683a\",\n  \"generated_at\": 1764702806.7497785,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_7_main\\\\0c462a8af578bc579938d7617345e6910f9a5c358deb54aefe1bd4bbdff120ed.ast.meta.json\"\n}",
-  "full_hash": "003e3491d2a836b5ea8e60017670c2cb4a1e83f9fcc312464e4737450d90c9e2",
-  "generated_at": 1764703176.4484527,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0c462a8af578bc579938d7617345e6910f9a5c358deb54aefe1bd4bbdff120ed.ast.meta.golden.json"
-}

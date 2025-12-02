@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - query_past_generations\nImplements L1 Cognitive Planning Layer for query past generations operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass QueryPastGenerationsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass QueryPastGenerationsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass QueryPastGenerationsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    succe",
-  "full_hash": "9aad0c086bc4264dc1c59b8267aa5f728b96e62ae68350bd277ef39299fba6d6",
-  "generated_at": 1764703990.412413,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\retrieve-phase\\get-resume-info\\general\\understand-request\\query_past_generations.py"
-}

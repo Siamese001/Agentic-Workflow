@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"safety_checks\\\": [\\n    \\\"input_validation\\\",\\n    \\\"sanitization\\\"\\n  ],\\n  \\\"policy_compliance\\\": [\\n    \\\"regulatory_compliance\\\"\\n  ],\\n  \\\"security_patterns\\\": [\\n    \\\"cryptography\\\"\\n  ],\\n  \\\"data_handling\\\": [],\\n  \\\"access_controls\\\": [\\n    \\\"rbac\\\"\\n  ]\\n}\",\n  \"full_hash\": \"13cdbc124682d424143d488f6fa1e12bd24bcaf44473b4f2862022eb07472600\",\n  \"generated_at\": 1764702819.12771,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Old Resume Gen Python\\\\14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56.safety.json\"\n}",
-  "full_hash": "c4e1ce1b9fb0e9aedf3a823e6966a47073250c69fb8babfb13d9941b921b5ad9",
-  "generated_at": 1764703189.444274,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\14e26bc4e2800e313d5a9f33d33452a288382609fe8ae50e6567d0cbea169d56.safety.golden.json"
-}

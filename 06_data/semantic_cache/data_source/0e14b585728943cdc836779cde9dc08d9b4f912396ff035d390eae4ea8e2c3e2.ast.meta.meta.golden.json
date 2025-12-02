@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_7_main\\\\0e14b585728943cdc836779cde9dc08d9b4f912396ff035d390eae4ea8e2c3e2.ast.meta.json\",\n    \"rel_path\": \"0e14b585728943cdc836779cde9dc08d9b4f912396ff035d390eae4ea8e2c3e2.ast.meta.json\",\n    \"root_name\": \"data_source\",\n    \"file_hash\": \"457977f589b0412a2a600869d66916d47b85d37dcb36e5ae097282097bf297cb\",\n    \"file_size\": 403,\n    \"is_eligible\": true,\n    \"file_type\": \".json\",\n    \"depth\": 3\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702806.8495927\n}",
-  "full_hash": "d2eeb61b8e68abd1161410d45083fb2590fb5288303ada1be81ba51813d96000",
-  "generated_at": 1764703179.1745217,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\0e14b585728943cdc836779cde9dc08d9b4f912396ff035d390eae4ea8e2c3e2.ast.meta.meta.json"
-}

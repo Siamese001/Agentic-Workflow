@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_info\": {\n    \"abs_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\07_concurrency_parallelism.md\",\n    \"rel_path\": \"07_concurrency_parallelism.md\",\n    \"root_name\": \"resume_engine/Agentic-Workflow-10_11\",\n    \"file_hash\": \"afeea42fbf949f3287f5818cf5ab32707baf2873ee320147f305bfccb478eb69\",\n    \"file_size\": 743,\n    \"is_eligible\": true,\n    \"file_type\": \".md\",\n    \"depth\": 1\n  },\n  \"artifact_counts\": {\n    \"ast\": 1,\n    \"embedding\": 1,\n    \"diff\": 1,\n    \"golden\": 1,\n    \"safety\": 1,\n    \"integrity\": 1\n  },\n  \"generated_at\": 1764702986.3918388\n}",
-  "full_hash": "c176b604f31d2ce6082dec30814e6fd8571a50e15d21832cde447d3f1aa20ae7",
-  "generated_at": 1764703654.465606,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\07_concurrency_parallelism.meta.json"
-}

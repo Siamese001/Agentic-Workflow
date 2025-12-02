@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Old Resume Gen Python\\\\Resume_Generation_v5_46.py\",\n  \"file_hash\": \"05a952782907178460c225892c239abd7dae1a27775e2a7ae4de118c61e4f454\",\n  \"size_bytes\": 296243,\n  \"last_modified\": \"2025-12-01T12:27:35.656234\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Old Resume Gen Python\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "7aa4a1b2ecafe25e1e3f4854f2a704e0962816c8433358315ff706a4472256fe",
-  "generated_at": 1764703807.8981793,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\05a952782907178460c225892c239abd7dae1a27775e2a7ae4de118c61e4f454.ast.meta.json"
-}

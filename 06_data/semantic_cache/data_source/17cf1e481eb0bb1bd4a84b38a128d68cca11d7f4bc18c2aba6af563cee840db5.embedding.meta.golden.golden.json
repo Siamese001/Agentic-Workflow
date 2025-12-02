@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"model\\\": \\\"text-embedding-ada-002\\\",\\n  \\\"dimensions\\\": 16\\n}\",\n  \"full_hash\": \"c364dfbe775b2e09f86fa772bbf465d7e67cf9d51954e770115bacdcd672fbc6\",\n  \"generated_at\": 1764702848.8606384,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v7.0\\\\17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5.embedding.meta.json\"\n}",
-  "full_hash": "2cc6bc36d4d22fb3d5c40055073b7a6931bf347bf2e6d7135cbc321777390005",
-  "generated_at": 1764703194.1689763,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5.embedding.meta.golden.json"
-}

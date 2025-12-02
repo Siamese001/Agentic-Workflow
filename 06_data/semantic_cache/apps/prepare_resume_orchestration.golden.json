@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - prepare_resume_orchestration\nImplements L1 Cognitive Planning Layer for prepare resume orchestration operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass PrepareResumeOrchestrationOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass PrepareResumeOrchestrationOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass PrepareResumeOrchestrationOrchestratorResult:\n    \"\"\"",
-  "full_hash": "8c156c6db0f705f70c037f009523f5cbb7e8ff50b41daa3a5dc10b79d286e7bd",
-  "generated_at": 1764703989.4605415,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\plan-phase\\get-resume-info\\utility\\prepare-information\\prepare_resume_orchestration.py"
-}

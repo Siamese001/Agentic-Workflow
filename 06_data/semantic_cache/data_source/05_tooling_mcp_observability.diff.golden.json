@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"baseline_hash\": \"\",\n  \"current_hash\": \"daab2126d3c3ea4a1f6bd6e8f37c307878859048ccfd59a447fdbc55ab1f5ca0\",\n  \"diff_type\": \"initial\",\n  \"generated_at\": 1764702986.3722134,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\05_tooling_mcp_observability.md\"\n}",
-  "full_hash": "5039d2f9f4588152e03bce627e19f46d1b3df42f9123dc6f55f79fdeec48a916",
-  "generated_at": 1764703653.9625938,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\05_tooling_mcp_observability.diff.json"
-}

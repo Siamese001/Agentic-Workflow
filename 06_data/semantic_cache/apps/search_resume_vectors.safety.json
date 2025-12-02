@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764703989.1424115,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\mem-layer\\retrieve-phase\\get-resume-info\\embedding\\compare-meaning\\search_resume_vectors.py"
-}

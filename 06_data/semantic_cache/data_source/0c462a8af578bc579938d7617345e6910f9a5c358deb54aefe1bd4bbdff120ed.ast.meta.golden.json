@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_7_main\\\\tests\\\\v10_7\\\\test_flat__autonomy__test_autonomy_engine_v10_7.py\",\n  \"file_hash\": \"0c462a8af578bc579938d7617345e6910f9a5c358deb54aefe1bd4bbdff120ed\",\n  \"size_bytes\": 5653,\n  \"last_modified\": \"2025-12-01T12:27:41.685195\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_7_main\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "a30584744f67183c8d4c58efa5a776032b0d23fc2c968d9b93a28be5dfba683a",
-  "generated_at": 1764703737.7168782,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\0c462a8af578bc579938d7617345e6910f9a5c358deb54aefe1bd4bbdff120ed.ast.meta.json"
-}

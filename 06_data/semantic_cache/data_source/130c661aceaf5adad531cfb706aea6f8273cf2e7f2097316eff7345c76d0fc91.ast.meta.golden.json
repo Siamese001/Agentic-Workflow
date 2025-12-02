@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\providers\\\\chromadb_client.py\",\n  \"file_hash\": \"130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91\",\n  \"size_bytes\": 2581,\n  \"last_modified\": \"2025-12-01T12:27:38.130562\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_11\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "8f638f693ed47ad242217bee5b2e129e6ea17b28ec9a1a308a20a8dfdb4a26c2",
-  "generated_at": 1764703655.1416779,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\130c661aceaf5adad531cfb706aea6f8273cf2e7f2097316eff7345c76d0fc91.ast.meta.json"
-}

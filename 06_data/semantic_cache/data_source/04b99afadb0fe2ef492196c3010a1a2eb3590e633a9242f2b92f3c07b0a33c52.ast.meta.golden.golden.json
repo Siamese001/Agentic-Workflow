@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Monolith\\\\\\\\DEPRECATION_APPROVAL.md\\\",\\n  \\\"file_hash\\\": \\\"04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52\\\",\\n  \\\"size_bytes\\\": 5359,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:36.090619\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Monolith\\\",\\n  \\\"file_extension\\\": \\\".md\\\"\\n}\",\n  \"full_hash\": \"0fa87b4032037336f45e067e9c2aaaedbf7baa0037983ad8451103145096c811\",\n  \"generated_at\": 1764702817.7827747,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Monolith\\\\04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.ast.meta.json\"\n}",
-  "full_hash": "1693b6d4b76c92b11df1b12fb350d1b560d8543ee660e5ed751072fb37fc2739",
-  "generated_at": 1764703164.9127262,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\04b99afadb0fe2ef492196c3010a1a2eb3590e633a9242f2b92f3c07b0a33c52.ast.meta.golden.json"
-}

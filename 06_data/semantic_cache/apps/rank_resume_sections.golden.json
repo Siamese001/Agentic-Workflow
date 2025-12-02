@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - rank_resume_sections\nImplements L1 Cognitive Planning Layer for rank resume sections operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RankResumeSectionsPlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RankResumeSectionsPlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RankResumeSectionsPlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    success: bool\n ",
-  "full_hash": "eddb7928c7cd60bcea5a847fba1c81d05ca3dd2a2cbeef3c912c75fb11020c4b",
-  "generated_at": 1764703989.8262815,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\expand-phase\\score-job-fit\\general\\understand-request\\rank_resume_sections.py"
-}

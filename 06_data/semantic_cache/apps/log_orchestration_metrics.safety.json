@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764703990.0262868,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\inspect-phase\\find-resume-problems\\general\\update-memory\\log_orchestration_metrics.py"
-}

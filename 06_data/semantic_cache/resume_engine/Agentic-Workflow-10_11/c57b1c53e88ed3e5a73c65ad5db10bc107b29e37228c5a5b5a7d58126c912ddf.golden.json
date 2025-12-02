@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom pydantic import BaseModel, Field\nclass SafetyProfile(BaseModel):\n\"\"\"Safety configuration profile used by execution profiles.\nThis is intentionally string/primitive based to avoid cycles and\nmirrors the SafetyTier + policy toggles used in ExecutionProfileSpec.\n\"\"\"\nsafety_tier: str = Field(default=\"standard\", description=\"Safety tier: standard | strict | relaxed | debug\")\npii_detection_enabled: bool = True\npolicy_engine_enabled: bool = True",
-  "normalized_signature": "class:SafetyProfile",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\tests\\\\_deprecated\\\\test_agent_router_policy.py\",\n  \"file_hash\": \"12a7fd4ae5ccac8b44e7c326e45068ae41c54033ee63243f607d497ab4c2d3fc\",\n  \"size_bytes\": 706,\n  \"last_modified\": \"2025-12-01T12:27:40.124521\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_11\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "1be34c1f26cef09d934326d918d44485b3ebfae067d5087f8d12f97c495aebd8",
-  "generated_at": 1764703655.1034553,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\12a7fd4ae5ccac8b44e7c326e45068ae41c54033ee63243f607d497ab4c2d3fc.ast.meta.json"
-}

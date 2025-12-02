@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"safety_checks\\\": [\\n    \\\"sanitization\\\"\\n  ],\\n  \\\"policy_compliance\\\": [],\\n  \\\"security_patterns\\\": [],\\n  \\\"data_handling\\\": [\\n    \\\"sensitive_data\\\"\\n  ],\\n  \\\"access_controls\\\": []\\n}\",\n  \"full_hash\": \"fa9acdf3fe6a0f8c78c3f233ad442c83b38134faf523ae1782e0e02b6f48f982\",\n  \"generated_at\": 1764702840.9832182,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v10.7\\\\09dbd8aa3436723d92cf5dc7bcdcb5ba3d3b8192ed7a2488b8b0acf5f747fffb.safety.json\"\n}",
-  "full_hash": "675bc4285a0151cc440d4c603a3eb587cdffbcf6c58c073f303c9d287835ca89",
-  "generated_at": 1764703175.3740997,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\09dbd8aa3436723d92cf5dc7bcdcb5ba3d3b8192ed7a2488b8b0acf5f747fffb.safety.golden.json"
-}

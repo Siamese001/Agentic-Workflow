@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import Dict, Iterable\nfrom eval.golden_state.models import JudgeVerdict\ndef aggregate_scores(verdicts: Iterable[JudgeVerdict]) -> Dict[str, float]:\n\"\"\"Aggregate judge verdicts into simple metrics.\nReturns a dict with:\n- avg_score\n- pass_count\n- fail_count\n- total\n\"\"\"\nvs = list(verdicts)\ntotal = len(vs)\nif not total:\nreturn {\"avg_score\": 0.0, \"pass_count\": 0.0, \"fail_count\": 0.0, \"total\": 0.0}\ntotal_score = sum(v.score for v in vs)\npass_count = sum(1 for v in vs if v.rating == \"pass\")\nfail_count = sum(1 for v in vs if v.rating == \"fail\")\nreturn {\n\"avg_score\": total_score / total,\n\"pass_count\": float(pass_count),\n\"fail_count\": float(fail_count),\n\"total\": float(total),\n}",
-  "normalized_signature": "func:aggregate_scores",
-  "core_functionality": "procedural_functions",
-  "interface_contract": "public_methods:aggregate_scores",
-  "test_coverage": []
-}

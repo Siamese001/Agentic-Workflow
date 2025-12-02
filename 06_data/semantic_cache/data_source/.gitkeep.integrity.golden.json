@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_hash\": \"fc39a1fe88042fe82d37556cfc4aed1c6b124c34a812c100aeb2e4491bb7d8eb\",\n  \"file_size\": 23,\n  \"generated_at\": 1764702853.797789,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\08_scripts\\\\pipeline_logs\\\\.gitkeep\",\n  \"verified\": true\n}",
-  "full_hash": "8fa3f349d83dc551a86efd12078907c21c19570fba7e60f65a75d043ad1eecc5",
-  "generated_at": 1764703967.6485534,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\scripts\\.gitkeep.integrity.json"
-}

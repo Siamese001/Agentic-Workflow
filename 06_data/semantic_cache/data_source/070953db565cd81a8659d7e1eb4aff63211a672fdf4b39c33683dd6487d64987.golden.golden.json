@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_form\": \"import copy\\nimport difflib\\nimport hashlib\\nimport json\\nimport logging\\nimport os\\nimport random\\nimport re\\nimport time\\nimport uuid\\nfrom collections import defaultdict\\nfrom enum import Enum\\nfrom dataclasses import asdict, dataclass, field\\nfrom datetime import datetime\\nfrom typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union\\nfrom core_v8_0 import (\\nBaseAgent, get_model_client, CONFIG,\\nHopExecutionError, MechanicalFailureError, SemanticFailureError, FactualFailureException,\\nValidationSeverity, ValidationResult, ReasoningConfig, ReasoningStrategy,\\nThematicAnalysis, RAG_Blackboard, RAGMission, RAGPhase, StrategyBrief,\\nReflectionIteration, ReflectionResult, ReflectionStatus,\\nToolCall, ToolType, ReActTrace,\\nMoEExpertResult, MoEDecision, ConductorBranch, ConductorDecision,\\nWorkflowBlackboard, WorkflowPlan, WorkflowStep, GraphState,\\nDEFAULT_GENERATION_TEMPERATURE,\\ntext_utils, fence_data,\\nSTRATEGY_THEME_CLASSIFICATION_SYSTEM_PROMPT, S",
-  "full_hash": "72cfad3e44ff299232c7be84b5c2b546b85b842dc71f73262eb5ba70204ed83e",
-  "generated_at": 1764703924.8113568,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v8.0\\070953db565cd81a8659d7e1eb4aff63211a672fdf4b39c33683dd6487d64987.golden.json"
-}

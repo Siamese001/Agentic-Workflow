@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"word_count\": 617,\n  \"unique_words\": 353,\n  \"generated_at\": 1764702990.824938,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\02_hop_enrichment.py\"\n}",
-  "full_hash": "467c3675b1df948d743c9760721c80c633d1c63add9e6ebf55b857ab23b8db31",
-  "generated_at": 1764703802.7989204,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\02_hop_enrichment.embedding.meta.json"
-}

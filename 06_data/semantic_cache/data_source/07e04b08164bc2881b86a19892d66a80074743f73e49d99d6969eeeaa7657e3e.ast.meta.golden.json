@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\v2\\\\governor.py\",\n  \"file_hash\": \"07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e\",\n  \"size_bytes\": 33854,\n  \"last_modified\": \"2025-12-01T12:27:37.021569\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"v2\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "c1e76dc534a8bf76d05ccb51c7ff95169ee985a0ceb7be1f30e63ec2db0b1302",
-  "generated_at": 1764703905.4432359,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v2\\07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e.ast.meta.json"
-}

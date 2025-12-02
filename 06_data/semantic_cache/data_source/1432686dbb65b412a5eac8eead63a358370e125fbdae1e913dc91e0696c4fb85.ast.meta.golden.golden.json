@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_7_main\\\\\\\\tests\\\\\\\\shared\\\\\\\\fixtures.py\\\",\\n  \\\"file_hash\\\": \\\"1432686dbb65b412a5eac8eead63a358370e125fbdae1e913dc91e0696c4fb85\\\",\\n  \\\"size_bytes\\\": 14524,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:41.931373\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_7_main\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"253b9bebb244fc43f24d12f5f0e88b557d57d2ac0393e1c46c9642f22ee4c32a\",\n  \"generated_at\": 1764702806.9942172,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_7_main\\\\1432686dbb65b412a5eac8eead63a358370e125fbdae1e913dc91e0696c4fb85.ast.meta.json\"\n}",
-  "full_hash": "7f3fd1e7b3958f40d5e5b577809a07f5c8308e3eb095eb5c5460e36e5c9418f8",
-  "generated_at": 1764703186.7589834,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\1432686dbb65b412a5eac8eead63a358370e125fbdae1e913dc91e0696c4fb85.ast.meta.golden.json"
-}

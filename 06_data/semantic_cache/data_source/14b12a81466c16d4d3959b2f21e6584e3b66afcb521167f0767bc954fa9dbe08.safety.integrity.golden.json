@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_hash\": \"d0e36d3e59d258f51c56fc1cf9f5ff57480b49fd0491eb98702bbdf9d8ee8298\",\n  \"file_size\": 291,\n  \"generated_at\": 1764703187.88461,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\data_source\\\\14b12a81466c16d4d3959b2f21e6584e3b66afcb521167f0767bc954fa9dbe08.safety.embedding\",\n  \"verified\": true\n}",
-  "full_hash": "0d0651b5307cbfc51cbda585cad860df47a36e43dca92f1b26871ccd9cfd4d7f",
-  "generated_at": 1764703187.9238896,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\14b12a81466c16d4d3959b2f21e6584e3b66afcb521167f0767bc954fa9dbe08.safety.integrity.json"
-}

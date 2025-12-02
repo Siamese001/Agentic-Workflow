@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 0,
-  "generated_at": 1764705213.5121226,
-  "source_file": "C:\\Git\\Agentic-Workflow\\01_agentic_core\\plan-layer\\expand-phase\\convert-core-content\\embedding\\compare-meaning\\calculate_core_similarity.py"
-}

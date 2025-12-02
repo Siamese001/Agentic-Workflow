@@ -1,7 +1,0 @@
-{
-  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict, Optional\nfrom pydantic import BaseModel, Field\nclass SafetyEvent(BaseModel):\n\"\"\"Observability event capturing safety-related activity.\nThis is intentionally lightweight and does not depend on higher-level\norchestration types; callers pass identifiers and structured payloads.\n\"\"\"\nname: str = \"safety_event\"\nts_ms: int\nworkflow_id: Optional[str] = None\nagent_id: Optional[str] = None\nstage: Optional[str] = None\npayload: Dict[str, Any] = Field(default_factory=dict)\nclass DecisionEvent(BaseModel):\n\"\"\"Event describing an applied safety / routing decision.\"\"\"\nname: str = \"decision_event\"\nts_ms: int\nworkflow_id: Optional[str] = None\nagent_id: Optional[str] = None\ndecision_type: str\naction: str\nreason: str\nmetadata: Dict[str, Any] = Field(default_factory=dict)\nclass CostEvent(BaseModel):\n\"\"\"Event capturing per-call cost/latency for observability.\"\"\"\nname: str = \"cost_event\"\nts_ms: int\nworkflow_id: Optional[str] = None\nagent_id: Optional[str] = None\nprovider: str\nmodel_name: str\nestimated_cost: float\nlatency_ms: int\nmetadata: Dict[str, Any] = Field(default_factory=dict)",
-  "normalized_signature": "class:SafetyEvent;class:DecisionEvent;class:CostEvent",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

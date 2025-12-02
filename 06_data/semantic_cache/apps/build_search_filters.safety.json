@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": true,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 182,
-  "generated_at": 1764703990.1796618,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\plan-layer\\plan-phase\\get-resume-info\\utility\\prepare-information\\build_search_filters.py"
-}

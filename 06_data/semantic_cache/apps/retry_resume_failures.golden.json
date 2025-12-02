@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - retry_resume_failures\nImplements L1 Cognitive Planning Layer for retry resume failures operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass RetryResumeFailuresOrchestratorType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass RetryResumeFailuresOrchestratorConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass RetryResumeFailuresOrchestratorResult:\n    \"\"\"L5 Result structure with full type ",
-  "full_hash": "40228a5c9baf8aed6032591cdf3f480cb7c420ed863220bc169c491945480614",
-  "generated_at": 1764703989.3291433,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\orc-layer\\act-phase\\use-resume-tools\\routing\\retry-task\\retry_resume_failures.py"
-}

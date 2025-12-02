@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_form\": \"\\\"\\\"\\\"\\nResume Generation Engine v5.32 - HARDENED JD ENFORCEMENT & COMPLETE QA SYSTEM\\n================================================================================\\nCRITICAL v5.32 UPDATE: ZERO MOCK DATA + COMPLETE JD ENFORCEMENT + QA GATE MAPPING\\n\\u2713 DESTRUCTIVE OVERWRITE: All mock data removed, JD enforcement hardened\\n\\u2713 ZERO MOCK DATA: No fallbacks, no defaults, no sample data ever used\\n\\u2713 JD ENFORCEMENT: Job description required and validated at every step\\n\\u2713 QA GATE MAPPING: Every enforcement has corresponding validation gate\\n\\u2713 TRACEABILITY: Full audit trail proving JD data flow through all hops\\n\\u2713 FAIL-FAST: System halts immediately if JD not properly used\\n\\u2713 PRESERVED: All v5.31 QA V5 validation + v5.30 functionality\\nv5.32 CHANGES FROM v5.31:\\n\\u2713 REMOVED: _get_mock_master_resume() function - COMPLETELY DELETED (140 lines)\\n\\u2713 REMOVED: load_master_resume() fallback to mock data - HARD FAIL instead (12 lines)\\n\\",
-  "full_hash": "c4b90792b9421f540b7aca3a84c5c7986ab590ae7b5298b40ccc979282d628ff",
-  "generated_at": 1764703808.4897869,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Old Resume Gen Python\\14bcdaf37f1028a46043ca7701f82beb734e9eace36de7fb417896c9561370d0.golden.json"
-}

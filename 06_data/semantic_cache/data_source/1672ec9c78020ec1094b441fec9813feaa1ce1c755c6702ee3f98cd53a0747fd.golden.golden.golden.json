@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"canonical_form\\\": \\\"\\\\\\\"\\\\\\\"\\\\\\\"\\\\nResume Generation Engine v5.63 - QA DISCONNECTION FIX\\\\nv5.63 CRITICAL PATCH: Reconnect QA Sections 4 & 5 (Similarity Analysis)\\\\nISSUES FIXED:\\\\n\\\\u2705 Section 4: AI Detection Defense - K.5B vs K.6B Overview-to-Bullet Similarity\\\\n\\\\u2705 Section 5: Deduplication Matrix - 78-Check Pairwise Similarity Analysis\\\\nROOT CAUSE:\\\\n- DuplicateDetector instance created in HOP-2 but never retained\\\\n- Similarity computation methods never invoked during pipeline\\\\n- Results never stored on WorkflowOrchestrator instance\\\\n- QA report generation fails to find data attributes\\\\nSOLUTION:\\\\n1. Store DuplicateDetector on orchestrator instance (self.dup_detector)\\\\n2. Invoke _invoke_deduplication_analysis() post-HOP-7, pre-HOP-8\\\\n3. Store results: self.similarity_matrix_data, self.overview_similarity_data\\\\n4. QA report generation now successfully accesses stored attributes\\\\nBACKWARD COMPATIBILITY: \\\\u2713 FULL - No breaking changes ",
-  "full_hash": "6b2a1839d62c9eeab41717460117af1a680d5f87fe3abe52fc21348c70566dd6",
-  "generated_at": 1764703192.4617002,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\1672ec9c78020ec1094b441fec9813feaa1ce1c755c6702ee3f98cd53a0747fd.golden.golden.json"
-}

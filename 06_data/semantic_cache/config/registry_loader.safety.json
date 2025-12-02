@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": true,
-  "has_system_calls": false,
-  "line_count": 167,
-  "generated_at": 1764703109.8572476,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\loaders\\Config_loaders_for_runtime\\budget-manager-layer\\refine-phase-group\\cost-budgeting-ops\\general-operations-ops\\registry_loader.py"
-}

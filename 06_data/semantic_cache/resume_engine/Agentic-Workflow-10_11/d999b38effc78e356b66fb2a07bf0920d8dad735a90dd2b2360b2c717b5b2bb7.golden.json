@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"\nTree-of-thought reasoning framework for r\u00e9sum\u00e9 processing workflows.\nProvides deterministic thought exploration for comprehensive r\u00e9sum\u00e9 enhancement problem solving.\n\"\"\"\nfrom dataclasses import dataclass\nfrom typing import List, Tuple\n@dataclass\nclass ThoughtNode:\n\"\"\"\nRepresents thought node in r\u00e9sum\u00e9 processing reasoning tree.\nEnables structured exploration of solution paths for r\u00e9sum\u00e9 improvement tasks.\n\"\"\"\ncontent: str\nscore: float\ndef tree_search(seed: str, max_depth: int = 2, branching: int = 2) -> Tuple[List[ThoughtNode], List[ThoughtNode]]:\n\"\"\"\nExecutes tree-of-thought search for r\u00e9sum\u00e9 processing tasks.\nExplores multiple reasoning paths to find optimal r\u00e9sum\u00e9 enhancement solutions.\n\"\"\"\nseed = (seed or \"\").strip()\nif not seed:\nreturn [], []\nparts = [p.strip() for p in seed.replace(\";\", \".\").split(\".\") if p.strip()]\nexplored: List[ThoughtNode] = [ThoughtNode(content=p, score=float(len(p))) for p in parts]\nif not explored:\nreturn [], []\nbest = max(explored, key=lambda n: n.score)\nreturn [best], explored",
-  "normalized_signature": "func:tree_search;class:ThoughtNode",
-  "core_functionality": "object_oriented_with_methods",
-  "interface_contract": "public_methods:tree_search",
-  "test_coverage": []
-}

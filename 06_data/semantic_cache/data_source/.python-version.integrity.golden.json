@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_hash\": \"c4121eeb8b374478d2adecdcd1a0c74f4dd33c9b0ff93b66840a7c82ad7f4319\",\n  \"file_size\": 8,\n  \"generated_at\": 1764702981.3398418,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\.python-version\",\n  \"verified\": true\n}",
-  "full_hash": "609c1786bdd40cc728cf5f3b39a8f5aaf8a757ba1967451872df63cf340e9692",
-  "generated_at": 1764703652.7619772,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\.python-version.integrity.json"
-}

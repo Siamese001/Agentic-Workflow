@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - evaluate_config_compliance\nImplements L5 Safety/Policy Layer for evaluate config compliance operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EvaluateConfigComplianceSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass EvaluateConfigComplianceSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EvaluateConfigComplianceSafetyResult:\n  ",
-  "full_hash": "7a8e7cce1844324804960826a4cfd066e81e895a39520bad9449753d73aaf52c",
-  "generated_at": 1764703110.8775463,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\check-config-rules\\semantic\\adjust-scores\\evaluate_config_compliance.py"
-}

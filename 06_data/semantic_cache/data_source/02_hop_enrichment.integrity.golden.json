@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_hash\": \"bfcdcbe1b8fc0279b733da8b138ebf025d6a4e0501ed8dc6cdcb7f93dc501e0f\",\n  \"file_size\": 7369,\n  \"generated_at\": 1764702990.8294523,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\02_hop_enrichment.py\",\n  \"verified\": true\n}",
-  "full_hash": "69828d4722df9f87cbc251961787359b150f941b07823c09468a119ffb60be32",
-  "generated_at": 1764703802.8390882,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\02_hop_enrichment.integrity.json"
-}

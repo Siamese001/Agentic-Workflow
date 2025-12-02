@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - enforce_resume_filters\nImplements L5 Safety/Policy Layer for enforce resume filters operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EnforceResumeFiltersSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass EnforceResumeFiltersSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EnforceResumeFiltersSafetyResult:\n    \"\"\"L5 Safety resul",
-  "full_hash": "06e0c9421e01d4d220eda5744bbc8c125e69f65557bf0de730600d823ef1c470",
-  "generated_at": 1764703990.6077397,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\safe-layer\\safety-phase\\check-resume-rules\\policy\\check-safety\\enforce_resume_filters.py"
-}

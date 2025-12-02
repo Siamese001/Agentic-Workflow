@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_form\": \"\\\"\\\"\\\"Retrieval META package for v10_10.\\nCanonical entrypoints:\\n- meta.retrieval.retrieval\\n- meta.retrieval.hybrid_ranker\\nThe package-level surface also exposes ``run_rag_retrieval`` so callers can\\nimport it directly from ``meta.retrieval``.\\n\\\"\\\"\\\"\\nfrom .retrieval import orchestrate_retrieval, run_rag_retrieval # noqa: F401\\nfrom .hybrid_ranker import fuse_and_rank # noqa: F401\\n__all__ = [\\\"orchestrate_retrieval\\\", \\\"run_rag_retrieval\\\", \\\"fuse_and_rank\\\"]\",\n  \"normalized_signature\": \"\",\n  \"core_functionality\": \"module_imports\",\n  \"interface_contract\": \"public_methods:\",\n  \"test_coverage\": []\n}",
-  "full_hash": "725d91a3153008e7e76084b071950305adfe248e57a8a29c9c03714d4078b67d",
-  "generated_at": 1764703654.3192465,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\075e0f19192ac889e5fa777b1e5300473a7ff56354f6574449b2e3cf554b0c0f.golden.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Agentic-Workflow-10_11\\\\\\\\providers\\\\\\\\redis_client.py\\\",\\n  \\\"file_hash\\\": \\\"035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4\\\",\\n  \\\"size_bytes\\\": 2365,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:38.107161\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Agentic-Workflow-10_11\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"d11aadbeb33caf5db2408876d9a43903ed82c367a70eecf1036f996e16d011cf\",\n  \"generated_at\": 1764702790.491391,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Agentic-Workflow-10_11\\\\035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4.ast.meta.json\"\n}",
-  "full_hash": "04aa5fb54960b6443e029448775a58021c384da778c500ad8ce15d9047fc9b26",
-  "generated_at": 1764703163.0852077,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\035f0f0358a51e73b3649b5128258ecad68adaca09712787ff27a3bf18a9a5d4.ast.meta.golden.json"
-}

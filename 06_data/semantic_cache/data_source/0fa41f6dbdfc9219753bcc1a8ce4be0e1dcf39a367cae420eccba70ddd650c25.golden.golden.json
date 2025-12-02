@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"canonical_form\": \"\\\"\\\"\\\"Async model clients for the v10.7 runtime.\\\"\\\"\\\"\\nfrom __future__ import annotations\\nimport asyncio\\nimport logging\\nimport os\\nimport random\\nfrom typing import Any, Dict, List, Optional\\nfrom mcp import get_tool\\nfrom .config import ConfigV10_7\\nfrom .exceptions import ModelAPIError\\nfrom .services import CacheManager, ContextBudgetManager, CostTracker, MetricsCollector, track_metrics\\ntry: # pragma: no cover - optional provider SDKs\\n<<<<<<< HEAD\\nimport anthropic\\nexcept ImportError: # pragma: no cover - provider optional\\nanthropic = None\\n=======\\nfrom anthropic import AsyncAnthropic as _AsyncAnthropic\\nexcept ImportError: # pragma: no cover - provider optional\\ntry: # pragma: no cover - provider optional\\nimport anthropic as _anthropic_module\\nexcept ImportError: # pragma: no cover - provider optional\\n_anthropic_module = None\\n_AsyncAnthropic = getattr(_anthropic_module, \\\"AsyncAnthropic\\\", None)\\nexcept AttributeError: # pragma: no cover - provide",
-  "full_hash": "97a545552e1a2c5c50e7164d9e99baac7e81037a679538255b2a90f678c542e8",
-  "generated_at": 1764703889.5356102,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v10.7\\0fa41f6dbdfc9219753bcc1a8ce4be0e1dcf39a367cae420eccba70ddd650c25.golden.json"
-}

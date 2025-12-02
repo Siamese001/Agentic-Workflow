@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"canonical_form\\\": \\\"google-generativeai\\\\nanthropic\\\\nopenai\\\\nscikit-learn\\\\nnumpy\\\\npandas\\\\nlanggraph\\\\nlangchain-redis\\\\nlangsmith\\\\nredis\\\",\\n  \\\"normalized_signature\\\": \\\"\\\",\\n  \\\"core_functionality\\\": \\\"configuration_or_data\\\",\\n  \\\"interface_contract\\\": \\\"public_methods:\\\",\\n  \\\"test_coverage\\\": []\\n}\",\n  \"full_hash\": \"9f078af231d4b2f329202820527c1af2ff5ed71e6c15b018479a82d2ad2a8619\",\n  \"generated_at\": 1764702848.8762805,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v7.0\\\\17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5.golden.json\"\n}",
-  "full_hash": "015d6ab72460267ae45692d9199cdedc79b66e6dbff1b5919bc47f3000b95349",
-  "generated_at": 1764703194.2698455,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\17cf1e481eb0bb1bd4a84b38a128d68cca11d7f4bc18c2aba6af563cee840db5.golden.golden.json"
-}

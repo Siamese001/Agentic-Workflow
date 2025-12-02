@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\l2\\\\safety_executor.py\",\n  \"file_hash\": \"10ca7257f0569bb34e3e6f0a437316ce24a74e58ecf82e3a03461e6b35b97856\",\n  \"size_bytes\": 1989,\n  \"last_modified\": \"2025-12-01T12:27:38.785593\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"Agentic-Workflow-10_11\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "7e02b6fae264fee9e6e6c65bd7b2b3c7f8bf0a569d11c7555eaa317a0f158d7e",
-  "generated_at": 1764703655.0260997,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\10ca7257f0569bb34e3e6f0a437316ce24a74e58ecf82e3a03461e6b35b97856.ast.meta.json"
-}

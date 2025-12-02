@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - enforce_resume_budget\nImplements L5 Safety/Policy Layer for enforce resume budget operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass EnforceResumeBudgetSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass EnforceResumeBudgetSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass EnforceResumeBudgetSafetyResult:\n    \"\"\"L5 Safety result wit",
-  "full_hash": "ae015168c4d107f54087b6118b64bc756a00d1da30385fda5fe057c20f1dc412",
-  "generated_at": 1764703990.7484095,
-  "source_file": "C:\\Git\\Agentic-Workflow\\09_apps\\rg\\safe-layer\\safety-phase\\manage-resume-costs\\general\\update-memory\\enforce_resume_budget.py"
-}

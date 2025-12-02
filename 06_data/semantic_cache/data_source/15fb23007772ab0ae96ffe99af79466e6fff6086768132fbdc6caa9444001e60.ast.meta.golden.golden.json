@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\Old Resume Gen Python\\\\\\\\Resume_Generation_v5_21_LLM_INTEGRATED_UPDATED.py\\\",\\n  \\\"file_hash\\\": \\\"15fb23007772ab0ae96ffe99af79466e6fff6086768132fbdc6caa9444001e60\\\",\\n  \\\"size_bytes\\\": 140467,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:35.820405\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"Old Resume Gen Python\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"be006cc357f3a279b0a62e60d4f2df00a343862e54731722c300c5f5906953ca\",\n  \"generated_at\": 1764702819.2179825,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\Old Resume Gen Python\\\\15fb23007772ab0ae96ffe99af79466e6fff6086768132fbdc6caa9444001e60.ast.meta.json\"\n}",
-  "full_hash": "26eb7ad63161f7bdee3ab4c534036848361f27c358a1123d0f0ef1b27dc964a8",
-  "generated_at": 1764703190.7634852,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\15fb23007772ab0ae96ffe99af79466e6fff6086768132fbdc6caa9444001e60.ast.meta.golden.json"
-}

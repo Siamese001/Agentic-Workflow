@@ -1,7 +1,0 @@
-{
-  "canonical_form": "- L5 enforces PII detection, uncertainty thresholds, and risk routing.\n- Allowed outcomes: allow, deny, reroute, escalate.\n- L5 produces decisions, not content.\n- No agent other than L5 may enforce safety gates.\n- All high-risk flows must be routed through L5.\n- Enforce compute budgets per agent and per DAG.\n- Prefer lower-cost, lower-latency models when viable.\n- Prevent cost regressions via CI enforcement.\n- Semantic caching allowed only when bounded and safe.\n- All potentially dangerous operations must be sandbox-isolated.\n- L5 governs safety-critical execution flows.",
-  "normalized_signature": "",
-  "core_functionality": "configuration_or_data",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}

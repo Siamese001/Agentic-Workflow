@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"word_count\": 901,\n  \"unique_words\": 474,\n  \"generated_at\": 1764702990.9142225,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\06_hop_gate.py\"\n}",
-  "full_hash": "a2d201be1f787563eb0607eda3a3cf43cfb673f4259ea235c9fd49622fb95888",
-  "generated_at": 1764703803.9999893,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\06_hop_gate.embedding.meta.json"
-}

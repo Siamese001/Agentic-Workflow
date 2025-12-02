@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Safety Layer - compute_config_score\nImplements L5 Safety/Policy Layer for compute config score operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nimport re\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass ComputeConfigScoreSafetyType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic safety operations\"\"\"\n    APPLY = \"apply\"\n    ENFORCE = \"enforce\"\n    VALIDATE = \"validate\"\n\n@dataclass\nclass ComputeConfigScoreSafetyConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_risk_score: float = 0.5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"apply\", \"enforce\", \"validate\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass ComputeConfigScoreSafetyResult:\n    \"\"\"L5 Safety result with ful",
-  "full_hash": "2740a516671a8081f70273f8b0c3118c07fe780323c43b1f4cabe9cea735bdd2",
-  "generated_at": 1764703110.865169,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\safe-layer\\safety-phase\\check-config-rules\\semantic\\adjust-scores\\compute_config_score.py"
-}

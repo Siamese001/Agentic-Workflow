@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 57,
-  "generated_at": 1764703109.5769153,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\budget-manager-layer\\aggregate-phase-group\\dag-operations-ops\\general-operations-ops\\utility-functions-ops\\cadence_defaults.yaml"
-}

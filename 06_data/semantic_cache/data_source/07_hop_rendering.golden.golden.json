@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"# hops/hop_7_rendering.py\\n\\\"\\\"\\\"\\nHop 7: Document Rendering - HIGH-SIGNAL OVERWRITE\\n\\nThis is a spec-driven, context-aware renderer.\\n1. It loads a \\\"render_spec\\\" (mocked inline) to define document\\n   structure, order, and content sourcing.\\n2. It dynamically sources content from the HOP-4 staging buffer\\n   (for LLM content) AND the HOP-0 thematic analysis (for\\n   guaranteed-alignment data like keywords).\\n3. It generates a \\\"High-Signal App Tracker\\\" entry, which serves\\n   as a performance snapshot of the run, including RAG signal\\n   quality and final alignment scores from HOP-5.\\n\\\"\\\"\\\"\\nfrom __future__ import annotations\\n\\nimport argparse\\nimport json\\nimport logging\\nimport re\\nimport sys\\nfrom datetime import datetime\\nfrom pathlib import Path\\nfrom typing import Dict, Any, List\\n\\n# Add project root to path\\nproject_root = Path(__file__).resolve().parent.parent\\nsys.path.append(str(project_root))\\n\\n# Import necessary components\\nfrom helpers impor",
-  "full_hash": "6dfb2719b99267db773d5a49d546381d6438d8aeb0ef5b2ead632a7f12787393",
-  "generated_at": 1764703804.2373703,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\07_hop_rendering.golden.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"golden_content\": \"{\\n  \\\"file_path\\\": \\\"C:\\\\\\\\Git\\\\\\\\Resume Engine Archive\\\\\\\\v8.0\\\\\\\\agent_swarm_v8_0.py\\\",\\n  \\\"file_hash\\\": \\\"070953db565cd81a8659d7e1eb4aff63211a672fdf4b39c33683dd6487d64987\\\",\\n  \\\"size_bytes\\\": 55761,\\n  \\\"last_modified\\\": \\\"2025-12-01T12:27:42.231414\\\",\\n  \\\"engine\\\": \\\"RG\\\",\\n  \\\"archive_version\\\": \\\"v8.0\\\",\\n  \\\"file_extension\\\": \\\".py\\\"\\n}\",\n  \"full_hash\": \"a73a9b8b993ecafeee836f53c052b0dcd9414bd84ab7128328e5cf5541453e33\",\n  \"generated_at\": 1764702849.5573113,\n  \"source_file\": \"C:\\\\Git\\\\Agentic-Workflow\\\\06_data\\\\semantic_cache\\\\resume_engine\\\\v8.0\\\\070953db565cd81a8659d7e1eb4aff63211a672fdf4b39c33683dd6487d64987.ast.meta.json\"\n}",
-  "full_hash": "9b4e46df949c02f4abedfedc2a955d5eb5493986e5144644be1c8464ee937cd4",
-  "generated_at": 1764703169.5937648,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\070953db565cd81a8659d7e1eb4aff63211a672fdf4b39c33683dd6487d64987.ast.meta.golden.json"
-}

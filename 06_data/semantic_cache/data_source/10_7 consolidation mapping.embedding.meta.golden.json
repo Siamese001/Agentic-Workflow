@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"word_count\": 188,\n  \"unique_words\": 142,\n  \"generated_at\": 1764702987.346854,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_7_main\\\\10_7 consolidation mapping.md\"\n}",
-  "full_hash": "8b01fb13f818857999c825f66cf0565696a1abf2137aa435fa9b65c273c82943",
-  "generated_at": 1764703737.9378123,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_7_main\\10_7 consolidation mapping.embedding.meta.json"
-}

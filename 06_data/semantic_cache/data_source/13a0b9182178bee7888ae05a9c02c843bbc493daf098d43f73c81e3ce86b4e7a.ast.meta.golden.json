@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_path\": \"C:\\\\Git\\\\Resume Engine Archive\\\\v6.0\\\\core_v6_0.py\",\n  \"file_hash\": \"13a0b9182178bee7888ae05a9c02c843bbc493daf098d43f73c81e3ce86b4e7a\",\n  \"size_bytes\": 34198,\n  \"last_modified\": \"2025-12-01T12:27:36.966040\",\n  \"engine\": \"RG\",\n  \"archive_version\": \"v6.0\",\n  \"file_extension\": \".py\"\n}",
-  "full_hash": "f7ef7a0949b1ac4b6f4c7afd22291ae3c01b6c8e7a6e5a31413f6645c74f5547",
-  "generated_at": 1764703919.359972,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\v6.0\\13a0b9182178bee7888ae05a9c02c843bbc493daf098d43f73c81e3ce86b4e7a.ast.meta.json"
-}

@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"word_count\": 107,\n  \"unique_words\": 75,\n  \"generated_at\": 1764702986.3946433,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Agentic-Workflow-10_11\\\\windsurf_rules\\\\08_prompt_rag_governance.md\"\n}",
-  "full_hash": "2644d0450770b0354c6fa8047de81030b4376ba7ad1ce2be4a31a1673e3e309d",
-  "generated_at": 1764703654.6055136,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Agentic-Workflow-10_11\\08_prompt_rag_governance.embedding.meta.json"
-}

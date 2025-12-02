@@ -1,6 +1,0 @@
-{
-  "golden_content": "\"\"\"\nL5 Agentic Core - Plan Layer - check_config_compliance\nImplements L1 Cognitive Planning Layer for check config compliance operations\n\"\"\"\n\nfrom typing import Dict, List, Optional, Any, Union\nfrom dataclasses import dataclass, field\nfrom enum import Enum\nimport logging\nfrom abc import ABC, abstractmethod\n\n# Configure logging for L5 observability\nlogging.basicConfig(level=logging.INFO)\nlogger = logging.getLogger(__name__)\n\nclass CheckConfigCompliancePlanType(Enum):\n    \"\"\"L5 Typed enumeration for deterministic behavior\"\"\"\n    DEFAULT = \"default\"\n    CORE = \"core\"\n    SYSTEM = \"system\"\n\n@dataclass\nclass CheckConfigCompliancePlanConstraints:\n    \"\"\"L5 Safety constraints - fail-closed behavior\"\"\"\n    max_depth: int = 5\n    allowed_operations: List[str] = field(default_factory=lambda: [\"read\", \"validate\", \"filter\"])\n    safety_level: str = \"strict\"\n    requires_approval: bool = True\n\n@dataclass\nclass CheckConfigCompliancePlanResult:\n    \"\"\"L5 Result structure with full type safety\"\"\"\n    ",
-  "full_hash": "a023079f4f6553d5430d9ac5cece50571a0eb53d2ce0536bedbd4f40c48c8f80",
-  "generated_at": 1764703110.4773307,
-  "source_file": "C:\\Git\\Agentic-Workflow\\05_config\\plan-layer\\validate-phase\\check-config-structure\\policy\\check-safety\\check_config_compliance.py"
-}

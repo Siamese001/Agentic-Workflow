@@ -1,9 +1,0 @@
-{
-  "has_executable_calls": false,
-  "has_file_operations": false,
-  "has_network_calls": false,
-  "has_system_calls": false,
-  "line_count": 9,
-  "generated_at": 1764703191.7550266,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\data_source\\163242a4af64d2cc1ab7c765c885c60ccac36744473cec0d984535fd6415d051.golden.safety.json"
-}

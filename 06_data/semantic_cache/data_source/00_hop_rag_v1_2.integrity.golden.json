@@ -1,6 +1,0 @@
-{
-  "golden_content": "{\n  \"file_hash\": \"ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3\",\n  \"file_size\": 31987,\n  \"generated_at\": 1764702990.7620623,\n  \"source_file\": \"C:\\\\Git\\\\Resume Engine Archive\\\\Microservices Model\\\\00_hop_rag_v1_2.py\",\n  \"verified\": true\n}",
-  "full_hash": "6b31aebde89aa422e61dc375784ab824fe2d36d40f88eba2a14ab467a2c19f60",
-  "generated_at": 1764703802.3310964,
-  "source_file": "C:\\Git\\Agentic-Workflow\\06_data\\semantic_cache\\resume_engine\\Microservices Model\\00_hop_rag_v1_2.integrity.json"
-}

@@ -1,7 +1,0 @@
-{
-  "canonical_form": "\"\"\"Top-level retrieval facade module.\nRe-exports META retrieval orchestration entrypoints so that callers can import\nfrom the project root directly. All retrieval logic is centralized in\n``meta.retrieval.retrieval`` following L2 execution-layer conventions.\n\"\"\"\nfrom __future__ import annotations\nfrom meta.retrieval.retrieval import orchestrate_retrieval # noqa: F401\nfrom meta.retrieval.retrieval import run_rag_retrieval # noqa: F401\n__all__ = [\"orchestrate_retrieval\", \"run_rag_retrieval\"]",
-  "normalized_signature": "",
-  "core_functionality": "module_imports",
-  "interface_contract": "public_methods:",
-  "test_coverage": []
-}
