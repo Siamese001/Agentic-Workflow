@@ -27,12 +27,12 @@ class DiagnosticLevel(Enum):
 
 @dataclass
 class DiagnosticMetric:
-    """Schema for individual diagnostic metric."""
     metric_name: str
     value: Union[int, float, str]
-    unit: Optional[str] = None
     timestamp: str
+    unit: Optional[str] = None
     threshold: Optional[float] = None
+    """Schema for individual diagnostic metric."""
 
 
 @dataclass

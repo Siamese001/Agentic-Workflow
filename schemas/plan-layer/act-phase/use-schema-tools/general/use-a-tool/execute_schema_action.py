@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any
 from enum import Enum
 
 
@@ -47,10 +47,10 @@ class ActionContext:
 
 @dataclass
 class ActionExecutionResult:
-    """Schema for action execution results."""
     execution_id: str
     action_type: ActionType
     status: str
+    execution_time_ms: int
     result_data: Optional[Dict[str, Any]] = None
     error_details: Optional[str] = None
-    execution_time_ms: int
+    """Schema for action execution results."""

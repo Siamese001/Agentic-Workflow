@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union, Tuple
+from typing import Optional, Dict, List, Tuple
 from enum import Enum
 
 
@@ -39,8 +39,8 @@ class SafetyScore:
     """Schema for individual safety score."""
     metric: SafetyMetric
     score: float
-    confidence_interval: Optional[Tuple[float, float]] = None
     contributing_factors: List[str]
+    confidence_interval: Optional[Tuple[float, float]] = None
 
 
 @dataclass

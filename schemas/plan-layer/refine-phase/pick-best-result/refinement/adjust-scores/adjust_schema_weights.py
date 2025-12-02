@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Tuple
+from typing import Dict, List
 from enum import Enum
 
 
@@ -26,12 +26,12 @@ class AdjustmentFrequency(Enum):
 
 @dataclass
 class WeightAdjustmentConfig:
-    """Schema for weight adjustment configuration."""
     method: WeightAdjustmentMethod
     frequency: AdjustmentFrequency
+    convergence_criteria: Dict[str, float]
     learning_rate: float = 0.01
     regularization_strength: float = 0.1
-    convergence_criteria: Dict[str, float]
+    """Schema for weight adjustment configuration."""
 
 
 @dataclass
