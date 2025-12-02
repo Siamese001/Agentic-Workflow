@@ -1,0 +1,45 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\import_mapping_strategy.py",
+    "file_hash": "4ead6603c58aed7d3c4fe15b4287420a6cefc65044c0b673b553f9a7c8251131",
+    "size_bytes": 5668,
+    "last_modified": "2025-12-01T12:27:37.810906",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "apply_import_mappings",
+      "line_number": 80,
+      "docstring": "Applies import mappings to maintain clean code architecture.\n\nEnsures resume generation system remains properly structured\nfor improved maintainability and easier enhancements.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "open",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "os": [
+      "line_87"
+    ],
+    "re": [
+      "line_88"
+    ]
+  },
+  "function_signatures": {
+    "apply_import_mappings": "apply_import_mappings"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 12,
+    "cognitive_complexity": 4,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

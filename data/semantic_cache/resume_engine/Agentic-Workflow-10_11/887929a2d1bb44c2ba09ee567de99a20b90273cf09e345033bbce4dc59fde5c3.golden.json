@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\n\"\"\"Facade for DAG engine primitives used by orchestration layers.\nThis package re-exports the existing infra.dag_engine models and\nexecutor so that callers can import from\n``orchestration.dag_engine`` without changing the underlying\nimplementation.\n\"\"\"\nfrom infra.dag_engine.models import Graph, Node, Edge # noqa: F401\nfrom infra.dag_engine.executor import DAGExecutor # noqa: F401\n__all__ = [\n\"Graph\",\n\"Node\",\n\"Edge\",\n\"DAGExecutor\",\n]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

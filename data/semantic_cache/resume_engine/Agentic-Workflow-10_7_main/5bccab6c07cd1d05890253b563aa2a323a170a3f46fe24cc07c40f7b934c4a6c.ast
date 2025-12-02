@@ -1,0 +1,161 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tools\\flatten_tests.py",
+    "file_hash": "5bccab6c07cd1d05890253b563aa2a323a170a3f46fe24cc07c40f7b934c4a6c",
+    "size_bytes": 4738,
+    "last_modified": "2025-12-01T12:27:42.122244",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_discover_sources",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_flat_filename",
+      "line_number": 24,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_quote_literal",
+      "line_number": 31,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "repr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render_file",
+      "line_number": 41,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_quote_literal",
+        "dedent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_write_file",
+      "line_number": 105,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_clean_existing",
+      "line_number": 109,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_files",
+      "line_number": 116,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_write_file",
+        "_flat_filename",
+        "_render_file"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_ensure_init_file",
+      "line_number": 128,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 135,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len",
+        "_generate_files",
+        "_clean_existing",
+        "str",
+        "print",
+        "Path",
+        "_discover_sources",
+        "_ensure_init_file"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "argparse": [
+      "line_3"
+    ],
+    "json": [
+      "line_4"
+    ],
+    "from_pathlib": [
+      "line_5"
+    ],
+    "from_textwrap": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ]
+  },
+  "function_signatures": {
+    "_discover_sources": "_discover_sources",
+    "_flat_filename": "_flat_filename",
+    "_quote_literal": "_quote_literal",
+    "_render_file": "_render_file",
+    "_write_file": "_write_file",
+    "_clean_existing": "_clean_existing",
+    "_generate_files": "_generate_files",
+    "_ensure_init_file": "_ensure_init_file",
+    "main": "main"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 9,
+    "cognitive_complexity": 6,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

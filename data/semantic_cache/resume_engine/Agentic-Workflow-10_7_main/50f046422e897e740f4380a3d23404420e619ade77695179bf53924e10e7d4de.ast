@@ -1,0 +1,112 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_baseline_schema_diff_v10_7.py",
+    "file_hash": "50f046422e897e740f4380a3d23404420e619ade77695179bf53924e10e7d4de",
+    "size_bytes": 5188,
+    "last_modified": "2025-12-01T12:27:41.642490",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_load_baseline",
+      "line_number": 12,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_baseline_files_exist",
+      "line_number": 18,
+      "docstring": "Sanity check so a missing baseline file fails with a clear message,\nnot a cryptic JSON/IO error.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_top_level_sections_preserved",
+      "line_number": 27,
+      "docstring": "API envelope invariant:\nAll top-level sections that existed previously must still exist in v10.7.\n\nExample from your baselines:\n  previous: {\"strategy\": {...}, \"qa\": {...}}\n  v10.7:    {\"strategy\": {...}, \"qa\": {...}}",
+      "imports": [],
+      "dependencies": [
+        "_load_baseline",
+        "sorted",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_strategy_schema_evolution_superset",
+      "line_number": 51,
+      "docstring": "Strategy schema evolution:\n\nprevious:\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\"],\n    \"version\": \"legacy\"\n  }\n\nv10.7:\n  \"strategy\": {\n    \"fields\": [\"steps\", \"goal\", \"context\"],\n    \"version\": \"v10.7\",\n    ...\n  }\n\nInvariants:\n  - All previous fields are still present.\n  - New fields may be added (e.g., \"context\").\n  - Version must change (no accidental reuse of \"legacy\").",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "sorted",
+        "_load_baseline"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_qa_schema_evolution_superset",
+      "line_number": 97,
+      "docstring": "QA schema evolution:\n\nprevious:\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\"],\n    \"version\": \"legacy\"\n  }\n\nv10.7:\n  \"qa\": {\n    \"fields\": [\"confidence\", \"summary\", \"issues\"],\n    \"version\": \"v10.7\",\n    ...\n  }\n\nInvariants:\n  - All previous fields are still present.\n  - New 'issues' field is required in v10.7.\n  - Version must change.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "sorted",
+        "_load_baseline"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_no_contract_regression_on_fields",
+      "line_number": 143,
+      "docstring": "Global contract check:\n\nFor every top-level section that has a 'fields' array in the previous\nbaseline, ensure that:\n\n  - v10.7 still has that section\n  - v10.7 still has all of those fields (superset)",
+      "imports": [],
+      "dependencies": [
+        "_load_baseline",
+        "sorted",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_1"
+    ],
+    "from_pathlib": [
+      "line_2"
+    ]
+  },
+  "function_signatures": {
+    "_load_baseline": "_load_baseline",
+    "test_baseline_files_exist": "test_baseline_files_exist",
+    "test_top_level_sections_preserved": "test_top_level_sections_preserved",
+    "test_strategy_schema_evolution_superset": "test_strategy_schema_evolution_superset",
+    "test_qa_schema_evolution_superset": "test_qa_schema_evolution_superset",
+    "test_no_contract_regression_on_fields": "test_no_contract_regression_on_fields"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

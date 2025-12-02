@@ -1,0 +1,116 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\datasets.py",
+    "file_hash": "aeeeab172d9ee347c0973d0b9e452eeadbbbff20d54b0d58045ee260e8d597cb",
+    "size_bytes": 2339,
+    "last_modified": "2025-12-01T12:27:38.038125",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_load_json",
+      "line_number": 14,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_golden_inputs",
+      "line_number": 22,
+      "docstring": "Return a small, deterministic set of golden test cases.\n\nFor now this is hard-coded but can be extended to read from files.",
+      "imports": [],
+      "dependencies": [
+        "GoldenStateTestCase"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_baseline_scores",
+      "line_number": 44,
+      "docstring": "Load baseline scores used for gating, or an empty dict if missing.",
+      "imports": [],
+      "dependencies": [
+        "_load_json"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_exemplar_prompts",
+      "line_number": 51,
+      "docstring": "Load exemplar prompts used as reference, or an empty dict if missing.",
+      "imports": [],
+      "dependencies": [
+        "_load_json"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_golden_cases",
+      "line_number": 58,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "load_golden_inputs",
+        "GoldenCase"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_golden_baseline_scores",
+      "line_number": 73,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "load_baseline_scores"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "json": [
+      "line_3"
+    ],
+    "from_pathlib": [
+      "line_4"
+    ],
+    "from_typing": [
+      "line_5"
+    ],
+    "from_eval.golden_state.models": [
+      "line_7"
+    ]
+  },
+  "function_signatures": {
+    "_load_json": "_load_json",
+    "load_golden_inputs": "load_golden_inputs",
+    "load_baseline_scores": "load_baseline_scores",
+    "load_exemplar_prompts": "load_exemplar_prompts",
+    "load_golden_cases": "load_golden_cases",
+    "load_golden_baseline_scores": "load_golden_baseline_scores"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

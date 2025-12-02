@@ -1,0 +1,103 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\retrievers\\bm25(1).py",
+    "file_hash": "458030b24dc1c3c8604d3704fdc058019bcd2b34e37070a482072e787c09d2fc",
+    "size_bytes": 2668,
+    "last_modified": "2025-12-01T12:27:38.881042",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "BM25ClientError",
+      "line_number": 24,
+      "docstring": "Raised when rank-bm25 cannot be imported or used.",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_import_bm25",
+      "line_number": 28,
+      "docstring": "Import BM25Okapi lazily from rank_bm25.",
+      "imports": [],
+      "dependencies": [
+        "BM25ClientError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BM25Config",
+      "line_number": 39,
+      "docstring": "Configuration for BM25 retrieval.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_tokenize",
+      "line_number": 47,
+      "docstring": "Very simple whitespace tokenizer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "bm25_search",
+      "line_number": 53,
+      "docstring": "Run BM25 search over an in-memory corpus.\n\nParameters\n----------\nquery:\n    Query string.\ncorpus:\n    Sequence of dict items; each must contain a ``text`` field.\ncfg:\n    BM25Config with k1 / b / max_hits.\n\nReturns\n-------\nList[Dict[str, Any]]\n    Items annotated with ``score`` and sorted by descending score.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "zip",
+        "_tokenize",
+        "BM25Okapi",
+        "_import_bm25",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_18"
+    ],
+    "from_dataclasses": [
+      "line_20"
+    ],
+    "from_typing": [
+      "line_21"
+    ],
+    "from_rank_bm25": [
+      "line_32"
+    ]
+  },
+  "function_signatures": {
+    "_import_bm25": "_import_bm25",
+    "_tokenize": "_tokenize",
+    "bm25_search": "bm25_search"
+  },
+  "class_signatures": {
+    "BM25ClientError": "BM25ClientError",
+    "BM25Config": "BM25Config"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

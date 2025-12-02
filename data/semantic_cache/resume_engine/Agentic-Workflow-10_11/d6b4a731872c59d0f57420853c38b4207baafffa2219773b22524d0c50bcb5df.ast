@@ -1,0 +1,55 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\sandbox\\test_network_isolation.py",
+    "file_hash": "d6b4a731872c59d0f57420853c38b4207baafffa2219773b22524d0c50bcb5df",
+    "size_bytes": 553,
+    "last_modified": "2025-12-01T12:27:40.807672",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_default_network_policy_denies_all",
+      "line_number": 4,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "is_destination_allowed",
+        "default_network_policy"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_allowlist_allows_specific_host",
+      "line_number": 9,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "is_destination_allowed",
+        "default_network_policy"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_infra.sandbox.networking": [
+      "line_1"
+    ]
+  },
+  "function_signatures": {
+    "test_default_network_policy_denies_all": "test_default_network_policy_denies_all",
+    "test_allowlist_allows_specific_host": "test_allowlist_allows_specific_host"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -10,7 +10,7 @@ Produces StatePatch outputs only.
 """
 from __future__ import annotations
 
-from typing import Dict, List
+from typing import Dict
 
 from l5_policy import PolicyRule, SafetyConfig, load_default_safety_config
 from utils_types import StatePatch

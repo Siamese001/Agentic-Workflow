@@ -1,0 +1,9 @@
+{
+  "canonical_form": "- Treat the Explorer root as `Agentic-Workflow-10_11/`.\n- Operate ONLY inside this directory.\n- Existing files \u2192 modify via apply_patch only.\n- New files \u2192 use write_to_file with absolute Windows path.\n- Never mix creation + modification in the same patch.\n- No `.py` allowed under `refactoring/**`.\n- Never stop, ask questions, or explain.\n- Only apply_patch + write_to_file allowed.\n- Ambiguity \u2192 choose the most reasonable safe interpretation.\n- Errors \u2192 auto-correct via additional diffs.\n- Active until: `RESET WIND SURF`.\n- L1: Planning only; no IO, network, randomness, or tools.\n- L2: Tool execution only; no planning.\n- L3: Orchestration only; DAG control only.\n- L4: State + memory only; no logic.\n- L5: Safety + policy only; no functional output.\n- Cognitive agents must be thin L1\u2192L2 shims only.\n- Each agent implements a single capability.\n- Agents must be deterministic, stateless, side-effect free.\n- Agents >25 logical lines must be decomposed into micro-agents.\n- Typed boundaries required: InputSchema / OutputSchema / FailureModes / Invariants.\n- Agents must not retain memory; all persistent data is L4.\nStructural: layering, boundaries, typed contracts, typed DAGs\nBehavioral: capability maturity, reasoning models, context, tools\nOperational: safety, observability, cost, testing, prompt governance, sandbox",
+  "normalized_signature": "",
+  "core_functionality": "configuration_or_data",
+  "interface_contract": "public_methods:",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

@@ -4,7 +4,7 @@ Outreach Engine Routing - Lift & Shift from LIC
 Route determination and constraint application
 """
 
-from typing import Dict, List, Optional, Tuple, Any
+from typing import Dict, List, Optional, Any
 import re
 
 from ..models import (

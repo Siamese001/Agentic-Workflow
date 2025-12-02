@@ -1,0 +1,242 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\journal.py",
+    "file_hash": "4b906576c2c5194a52c1144af02ee4c777ac058a9dc70e845b33668db89a46a8",
+    "size_bytes": 9277,
+    "last_modified": "2025-12-01T12:27:41.002192",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "CorrectionType",
+      "line_number": 20,
+      "docstring": "Correction types for resume workflow state management.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "JournalEntry",
+      "line_number": 28,
+      "docstring": "Single entry in resume workflow state journal.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Correction",
+      "line_number": 40,
+      "docstring": "Represents correction to resume workflow state change.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StateJournal",
+      "line_number": 53,
+      "docstring": "Maintains resume workflow state journal with corrections support.\n\nProvides complete audit trail of state changes for job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_global_journal",
+      "line_number": 236,
+      "docstring": "Gets or creates global resume workflow state journal.",
+      "imports": [],
+      "dependencies": [
+        "StateJournal"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_transition",
+      "line_number": 243,
+      "docstring": "Records resume workflow state transition in global journal.",
+      "imports": [],
+      "dependencies": [
+        "get_global_journal"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 60,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record",
+      "line_number": 65,
+      "docstring": "Records resume workflow state transition in journal.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "correct",
+      "line_number": 103,
+      "docstring": "Records correction to resume workflow journal entry.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_entry",
+      "line_number": 140,
+      "docstring": "Gets resume workflow journal entry by ID.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_correction",
+      "line_number": 144,
+      "docstring": "Gets resume workflow correction by ID.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_correlation_chain",
+      "line_number": 148,
+      "docstring": "Gets resume workflow journal entries for correlation ID.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_entries_since",
+      "line_number": 153,
+      "docstring": "Gets resume workflow journal entries since timestamp.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_entries_for_path",
+      "line_number": 165,
+      "docstring": "Gets resume workflow journal entries for given path.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_path_matches",
+      "line_number": 182,
+      "docstring": "Checks if resume workflow paths match with wildcards.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_audit_trail",
+      "line_number": 194,
+      "docstring": "Generates audit trail of resume workflow state changes.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_6"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_dataclasses": [
+      "line_8"
+    ],
+    "from_datetime": [
+      "line_9"
+    ],
+    "uuid": [
+      "line_10"
+    ],
+    "logging": [
+      "line_11"
+    ],
+    "from_enum": [
+      "line_12"
+    ],
+    "from_types": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "get_global_journal": "get_global_journal",
+    "record_transition": "record_transition",
+    "__init__": "__init__",
+    "record": "record",
+    "correct": "correct",
+    "get_entry": "get_entry",
+    "get_correction": "get_correction",
+    "get_correlation_chain": "get_correlation_chain",
+    "get_entries_since": "get_entries_since",
+    "get_entries_for_path": "get_entries_for_path",
+    "_path_matches": "_path_matches",
+    "get_audit_trail": "get_audit_trail"
+  },
+  "class_signatures": {
+    "CorrectionType": "CorrectionType",
+    "JournalEntry": "JournalEntry",
+    "Correction": "Correction",
+    "StateJournal": "StateJournal"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 14,
+    "cognitive_complexity": 10,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\drafting_execution.py",
+    "file_hash": "cb0b7eb63324b79a2cf4e9edd22d8d071b3015610685b1681ca5eaa93cb2e7ed",
+    "size_bytes": 6395,
+    "last_modified": "2025-12-01T12:27:41.092780",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DraftingExecutionStack",
+      "line_number": 17,
+      "docstring": "Applies a DraftPlan by invoking deterministic drafting specialists.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ComplianceEditorAgent",
+        "StateAdapterStack",
+        "getattr",
+        "super",
+        "NarrativeStylistAgent",
+        "StructureLeadAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_plan_from_state",
+      "line_number": 86,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_strategy_from_state",
+      "line_number": 94,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "StrategyPlan",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_append_agent_note",
+      "line_number": 111,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_plan_structure",
+      "line_number": 123,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "json": [
+      "line_5"
+    ],
+    "from_typing": [
+      "line_6"
+    ],
+    "from_core_v10_7": [
+      "line_8"
+    ],
+    "from_agent_stacks_v10_8.components.drafting": [
+      "line_9"
+    ],
+    "from_agent_stacks_v10_8.state_adapter_stack": [
+      "line_14"
+    ],
+    "from_draft_orchestration": [
+      "line_143"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "_plan_from_state": "_plan_from_state",
+    "_strategy_from_state": "_strategy_from_state",
+    "_append_agent_note": "_append_agent_note",
+    "_apply_plan_structure": "_apply_plan_structure"
+  },
+  "class_signatures": {
+    "DraftingExecutionStack": "DraftingExecutionStack"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 11,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

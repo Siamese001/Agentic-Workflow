@@ -1,0 +1,374 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tools\\runtime_utils.py",
+    "file_hash": "6f9e6c32d832278febdf1c4b6517a63dd79b32066fd008395ffce017e9863777",
+    "size_bytes": 20082,
+    "last_modified": "2025-12-01T12:27:37.832404",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ValidationError",
+      "line_number": 71,
+      "docstring": "Malformed state, plan, or configuration (runtime-level).",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ToolExecutionError",
+      "line_number": 75,
+      "docstring": "Execution error during tool / sandboxed operation.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ModelClientError",
+      "line_number": 79,
+      "docstring": "Low-level model provider call failure (OpenAI/Anthropic error).",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyException",
+      "line_number": 83,
+      "docstring": "Safety-related error at runtime (e.g., policy violations).",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "LLMInvocationError",
+      "line_number": 87,
+      "docstring": "Raised when an LLM invocation fails.",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitBreaker",
+      "line_number": 97,
+      "docstring": "Minimal circuit breaker with CLOSED / OPEN / HALF_OPEN states.\n\nThis is intentionally simple and process-local; higher-level\norchestration (e.g. batch runner) is responsible for coordinating\nbreakers across workers if needed.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_breaker",
+      "line_number": 150,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CircuitBreaker"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_classify_exception",
+      "line_number": 158,
+      "docstring": "Map a Python exception to a typed resilience error descriptor.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "PermanentError",
+        "isinstance",
+        "TransientError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_backoff_ms",
+      "line_number": 173,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SandboxConfig",
+      "line_number": 278,
+      "docstring": "Logical sandbox configuration for tool/LLM invocations.\n\nActual isolation is provided by the surrounding environment (e.g.,\ncontainer). This object provides *logical* constraints:\n\n    \u2022 allow_network: whether network calls are permitted.\n    \u2022 request_timeout_s: per-call timeout.\n    \u2022 max_tokens_per_call: cap on LLM token generation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_sandbox",
+      "line_number": 296,
+      "docstring": "Return a non-None SandboxConfig, falling back to defaults.",
+      "imports": [],
+      "dependencies": [
+        "SandboxConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PredictiveCacheManager",
+      "line_number": 309,
+      "docstring": "Lightweight in-memory predictive/semantic cache.\n\nIntended use:\n    \u2022 Cache expensive L2 operations (RAG, cognitive agent calls).\n    \u2022 Keyed by (domain, plan, context signature).\n\nBehavior:\n    \u2022 In-memory only.\n    \u2022 Evicts oldest entry when capacity exceeded.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_infer_provider",
+      "line_number": 391,
+      "docstring": "Infer provider from model string.\n\nHeuristics (deterministic):\n\n    \u2022 If \"claude\" in model \u2192 \"anthropic\"\n    \u2022 If \"gemini\" or \"google\" in model \u2192 \"google\"\n    \u2022 Else \u2192 \"openai\"",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_redis_client_for_llm_cache",
+      "line_number": 411,
+      "docstring": "Return a shared Redis client for LLM caching, or None if disabled.\n\nThis uses REDIS_URL and LLM_CACHE_ENABLED=1 to decide whether to\nattempt a connection. Failures are logged but do not raise.",
+      "imports": [],
+      "dependencies": [
+        "record_exception",
+        "init_redis_client"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "invoke_model",
+      "line_number": 439,
+      "docstring": "Unified LLM invocation for v10_10.\n\nParameters:\n    model:       model ID selected by RoutingPolicy (e.g. \"gpt-5.1-codex\").\n    prompt:      final rendered prompt text.\n    sandbox:     SandboxConfig (request_timeout_s, max_tokens_per_call).\n    temperature: sampling temperature.\n    max_tokens:  requested max tokens (will be clamped to sandbox).",
+      "imports": [],
+      "dependencies": [
+        "get_llm_cache",
+        "select_model",
+        "LLMInvocationError",
+        "str",
+        "CostEvent",
+        "run_llm_google",
+        "_get_redis_client_for_llm_cache",
+        "run_llm_anthropic",
+        "set_llm_cache",
+        "RoutingContext",
+        "record_event",
+        "isinstance",
+        "len",
+        "getattr",
+        "int",
+        "record_exception",
+        "append_agentic_event",
+        "run_llm_openai",
+        "ToolExecutionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "can_execute",
+      "line_number": 115,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_success",
+      "line_number": 133,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_failure",
+      "line_number": 140,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "make_key",
+      "line_number": 325,
+      "docstring": "Build a stable cache key based on:\n    - domain         (e.g., \"rag\", \"strategy\", \"drafting\")\n    - plan           (serialized in a stable way)\n    - selected ctx fields (e.g., job id, resume id)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_safe_serialize",
+      "line_number": 342,
+      "docstring": "Convert objects into a JSON-serializable structure where possible.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 357,
+      "docstring": "Retrieve a cached value or None if not present.",
+      "imports": [],
+      "dependencies": [
+        "record_event"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 372,
+      "docstring": "Insert or replace a cache entry, evicting oldest if full.",
+      "imports": [],
+      "dependencies": [
+        "record_event",
+        "min",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_23"
+    ],
+    "asyncio": [
+      "line_25"
+    ],
+    "hashlib": [
+      "line_26"
+    ],
+    "json": [
+      "line_27"
+    ],
+    "os": [
+      "line_28"
+    ],
+    "random": [
+      "line_29"
+    ],
+    "time": [
+      "line_30"
+    ],
+    "from_dataclasses": [
+      "line_31"
+    ],
+    "from_typing": [
+      "line_32"
+    ],
+    "from_orchestration.model_routing": [
+      "line_34"
+    ],
+    "from_runtime.observability.agentic_events": [
+      "line_35"
+    ],
+    "from_runtime.observability.agentic_collectors": [
+      "line_36"
+    ],
+    "from_core.models.models": [
+      "line_37"
+    ],
+    "from_observability": [
+      "line_45"
+    ],
+    "from_providers.openai_client": [
+      "line_46"
+    ],
+    "from_providers.anthropic_client": [
+      "line_47"
+    ],
+    "from_providers.google_genai_client": [
+      "line_48"
+    ],
+    "from_meta.cache.redis_cache": [
+      "line_51"
+    ]
+  },
+  "function_signatures": {
+    "_get_breaker": "_get_breaker",
+    "_classify_exception": "_classify_exception",
+    "_calculate_backoff_ms": "_calculate_backoff_ms",
+    "get_sandbox": "get_sandbox",
+    "_infer_provider": "_infer_provider",
+    "_get_redis_client_for_llm_cache": "_get_redis_client_for_llm_cache",
+    "invoke_model": "invoke_model",
+    "can_execute": "can_execute",
+    "record_success": "record_success",
+    "record_failure": "record_failure",
+    "make_key": "make_key",
+    "_safe_serialize": "_safe_serialize",
+    "get": "get",
+    "set": "set"
+  },
+  "class_signatures": {
+    "ValidationError": "ValidationError",
+    "ToolExecutionError": "ToolExecutionError",
+    "ModelClientError": "ModelClientError",
+    "SafetyException": "SafetyException",
+    "LLMInvocationError": "LLMInvocationError",
+    "CircuitBreaker": "CircuitBreaker",
+    "SandboxConfig": "SandboxConfig",
+    "PredictiveCacheManager": "PredictiveCacheManager"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 43,
+    "cognitive_complexity": 35,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,498 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_MERGED_COMPLETE_v3_0_NO_LIMITS.py",
+    "file_hash": "30e0eef26d2b35da8bb9ff86a57f47b6f504621480ad55fd8ffa698940b10070",
+    "size_bytes": 62380,
+    "last_modified": "2025-12-01T12:27:35.954196",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 49,
+      "docstring": "Amit Ayer's complete master resume - merged from v1.0, v1.2, v2.0, v2.1\nSource: Master_Resume_V2.14.json\n\nNO NEED TO UPLOAD RESUME - Already embedded!",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SaaSRoleProfiles",
+      "line_number": 207,
+      "docstring": "SaaS executive role profiles with signal expectations.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerSchema",
+      "line_number": 313,
+      "docstring": "Application tracking system schema with full workflow.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerQA",
+      "line_number": 389,
+      "docstring": "Application tracker quality assurance with 5 validation gates.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HyphenationRules",
+      "line_number": 471,
+      "docstring": "Formatting and hyphenation rules for consistent resume formatting.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalCalibrationConfig",
+      "line_number": 517,
+      "docstring": "Signal calibration configuration with weighted targets.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "K1ExecutiveSummaryGenerator",
+      "line_number": 582,
+      "docstring": "Generates role-tailored executive summaries.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletWordCountValidator",
+      "line_number": 630,
+      "docstring": "Validates bullet word counts and consistency.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetrics",
+      "line_number": 682,
+      "docstring": "Baseline metrics for resume validation and comparison.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerationEngine",
+      "line_number": 770,
+      "docstring": "Complete 9-HOP resume generation engine with all v2.1 + v1.2 features.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_summary_stats",
+      "line_number": 189,
+      "docstring": "Generate summary statistics about the master resume.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_all_bullets",
+      "line_number": 195,
+      "docstring": "Get all bullets from all roles.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_role",
+      "line_number": 299,
+      "docstring": "Get a specific role profile.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_all_roles",
+      "line_number": 304,
+      "docstring": "Get all role profiles.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_application_id",
+      "line_number": 372,
+      "docstring": "Generate unique application ID.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_valid_next_statuses",
+      "line_number": 380,
+      "docstring": "Get valid next statuses for current status.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_application",
+      "line_number": 422,
+      "docstring": "Validate an application entry.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format_phone",
+      "line_number": 483,
+      "docstring": "Format phone number to +1-XXX-XXX-XXXX.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_phone",
+      "line_number": 491,
+      "docstring": "Validate phone format.",
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format_currency",
+      "line_number": 496,
+      "docstring": "Format currency with commas.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format_percentage",
+      "line_number": 501,
+      "docstring": "Format percentage.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "format_date",
+      "line_number": 506,
+      "docstring": "Format date to 'Month YYYY' format.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_weighted_signal",
+      "line_number": 539,
+      "docstring": "Calculate weighted signal average.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_summary",
+      "line_number": 589,
+      "docstring": "Generate executive summary tailored to role and JD.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_key_themes",
+      "line_number": 615,
+      "docstring": "Extract key themes from JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_bullet",
+      "line_number": 639,
+      "docstring": "Validate a single bullet.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_bullets",
+      "line_number": 663,
+      "docstring": "Validate multiple bullets.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_wordcount",
+      "line_number": 720,
+      "docstring": "Validate a section's word count.",
+      "imports": [],
+      "dependencies": [
+        "abs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_total_wordcount",
+      "line_number": 746,
+      "docstring": "Validate total resume word count.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 773,
+      "docstring": "Initialize the engine with all components.",
+      "imports": [],
+      "dependencies": [
+        "SignalCalibrationConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 785,
+      "docstring": "Execute full 9-HOP pipeline with intelligent word count auto-adjustment.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_auto_adjust_word_counts",
+      "line_number": 848,
+      "docstring": "Auto-adjust word distribution across sections to fit 982-1082 range.\n\nConstraints:\n- Exec summary: 100-150 words (hard constraint)\n- Unify/IBM ratio: 1.1-1.4 (Unify words / IBM words)\n- EY & early_career: flexible if signal improves materially\n- Frozen sections (name, headline): cannot change\n\nLogic:\n- If total < 982: expand lower sections while maintaining signal\n- If total > 1082: trim higher sections while maintaining signal",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_word_count_adjustments",
+      "line_number": 984,
+      "docstring": "Apply actual word count adjustments to resume text by extending/trimming bullets.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_formatted_resume",
+      "line_number": 1009,
+      "docstring": "Build formatted resume string.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_word_counts",
+      "line_number": 1047,
+      "docstring": "Calculate word counts by section.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_baseline_metrics",
+      "line_number": 1071,
+      "docstring": "Validate against baseline metrics.",
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_section_signals",
+      "line_number": 1086,
+      "docstring": "Calculate signal scores for each section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_signal_calibration",
+      "line_number": 1100,
+      "docstring": "Generate signal calibration output.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_qa_tables",
+      "line_number": 1129,
+      "docstring": "Generate all QA validation tables.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "re": [
+      "line_25"
+    ],
+    "from_typing": [
+      "line_26"
+    ],
+    "from_dataclasses": [
+      "line_27"
+    ],
+    "from_datetime": [
+      "line_28"
+    ]
+  },
+  "function_signatures": {
+    "generate_summary_stats": "generate_summary_stats",
+    "get_all_bullets": "get_all_bullets",
+    "get_role": "get_role",
+    "get_all_roles": "get_all_roles",
+    "generate_application_id": "generate_application_id",
+    "get_valid_next_statuses": "get_valid_next_statuses",
+    "validate_application": "validate_application",
+    "format_phone": "format_phone",
+    "validate_phone": "validate_phone",
+    "format_currency": "format_currency",
+    "format_percentage": "format_percentage",
+    "format_date": "format_date",
+    "calculate_weighted_signal": "calculate_weighted_signal",
+    "generate_summary": "generate_summary",
+    "_extract_key_themes": "_extract_key_themes",
+    "validate_bullet": "validate_bullet",
+    "validate_bullets": "validate_bullets",
+    "validate_wordcount": "validate_wordcount",
+    "validate_total_wordcount": "validate_total_wordcount",
+    "__init__": "__init__",
+    "execute_pipeline": "execute_pipeline",
+    "_auto_adjust_word_counts": "_auto_adjust_word_counts",
+    "_apply_word_count_adjustments": "_apply_word_count_adjustments",
+    "_build_formatted_resume": "_build_formatted_resume",
+    "_calculate_word_counts": "_calculate_word_counts",
+    "_validate_baseline_metrics": "_validate_baseline_metrics",
+    "_calculate_section_signals": "_calculate_section_signals",
+    "_generate_signal_calibration": "_generate_signal_calibration",
+    "_generate_qa_tables": "_generate_qa_tables"
+  },
+  "class_signatures": {
+    "MasterResume": "MasterResume",
+    "SaaSRoleProfiles": "SaaSRoleProfiles",
+    "AppTrackerSchema": "AppTrackerSchema",
+    "AppTrackerQA": "AppTrackerQA",
+    "HyphenationRules": "HyphenationRules",
+    "SignalCalibrationConfig": "SignalCalibrationConfig",
+    "K1ExecutiveSummaryGenerator": "K1ExecutiveSummaryGenerator",
+    "BulletWordCountValidator": "BulletWordCountValidator",
+    "BaselineResumeMetrics": "BaselineResumeMetrics",
+    "ResumeGenerationEngine": "ResumeGenerationEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 50,
+    "cognitive_complexity": 34,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

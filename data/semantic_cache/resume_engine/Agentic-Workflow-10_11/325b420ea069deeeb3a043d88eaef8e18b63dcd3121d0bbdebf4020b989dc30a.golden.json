@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict\nfrom meta.ranking import bm25_score, dense_score, merge_scores, normalize_scores\nfrom core.models.models import Evidence\ndef _make_item(text: str) -> Dict[str, Any]:\nreturn {\"text\": text}\ndef test_bm25_score_prefers_important_tokens() -> None:\nlow = bm25_score(_make_item(\"foo bar\"))\nhigh = bm25_score(_make_item(\"llm resume experience\"))\nassert high >= low\ndef test_dense_score_is_deterministic() -> None:\na1 = dense_score(_make_item(\"some text\"))\na2 = dense_score(_make_item(\"some text\"))\nb = dense_score(_make_item(\"different text\"))\nassert a1 == a2\nassert a1 != b\ndef test_normalize_scores_range_and_relative_order() -> None:\ne1 = Evidence(text=\"a\", score=1.0, source=\"s\", metadata={})\ne2 = Evidence(text=\"b\", score=3.0, source=\"s\", metadata={})\ne3 = Evidence(text=\"c\", score=2.0, source=\"s\", metadata={})\nout = normalize_scores([e1, e2, e3])\nscores = [e.score for e in out]\nassert all(0.0 <= s <= 1.0 for s in scores)\nassert max(scores) == 1.0\ndef test_merge_scores_deduplicates_by_source_and_text() -> None:\ne1 = Evidence(text=\"x\", score=1.0, source=\"job\", metadata={})\ne2 = Evidence(text=\"x\", score=0.5, source=\"job\", metadata={})\ne3 = Evidence(text=\"x\", score=0.2, source=\"resume\", metadata={})\nmerged = merge_scores([e1, e2, e3])\nassert merged[0].source == \"job\"\nassert merged[0].text == \"x\"\nassert merged[1].source == \"resume\"\nassert len(merged) == 2",
+  "normalized_signature": "func:_make_item;func:test_bm25_score_prefers_important_tokens;func:test_dense_score_is_deterministic;func:test_normalize_scores_range_and_relative_order;func:test_merge_scores_deduplicates_by_source_and_text",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_bm25_score_prefers_important_tokens,test_dense_score_is_deterministic,test_normalize_scores_range_and_relative_order,test_merge_scores_deduplicates_by_source_and_text",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

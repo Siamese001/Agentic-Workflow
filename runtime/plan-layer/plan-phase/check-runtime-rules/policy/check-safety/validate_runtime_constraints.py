@@ -3,7 +3,7 @@ L5 Agentic Core - Plan Layer - validate_runtime_constraints
 Implements L1 Cognitive Planning Layer for validate runtime constraints operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

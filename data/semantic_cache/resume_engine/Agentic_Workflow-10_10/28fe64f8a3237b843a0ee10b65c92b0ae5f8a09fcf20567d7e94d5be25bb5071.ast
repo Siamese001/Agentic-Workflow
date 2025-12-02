@@ -1,0 +1,104 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\retrieval.py",
+    "file_hash": "28fe64f8a3237b843a0ee10b65c92b0ae5f8a09fcf20567d7e94d5be25bb5071",
+    "size_bytes": 5713,
+    "last_modified": "2025-12-01T15:36:20.810106",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_run_bm25",
+      "line_number": 46,
+      "docstring": "Real BM25 retriever \u2014 already implemented in your codebase.\nDeterministic, uses integrated scoring functions.",
+      "imports": [],
+      "dependencies": [
+        "bm25_search"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_dense",
+      "line_number": 60,
+      "docstring": "Real dense retriever \u2014 uses your actual vector index.\nDeterministic due to seeded search paths.",
+      "imports": [],
+      "dependencies": [
+        "dense_search"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_council_weights",
+      "line_number": 73,
+      "docstring": "Apply post-fusion weighting according to QA-council decision.\n\nSelected-ID receives a ~12% boost.\nOthers receive slight demotion.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_rag_retrieval",
+      "line_number": 106,
+      "docstring": "Primary production retrieval entrypoint.\n\nSteps:\n    1. Select effective query (HYDE if provided)\n    2. Emit attempt telemetry\n    3. Run BM25 (isolated)\n    4. Run Dense (isolated)\n    5. Fuse via weighted RRF\n    6. Apply QA-council evidence weighting\n    7. Emit success/failure events per retriever\n\nDeterministic unless HYDE is enabled (HYDE generated in L2).",
+      "imports": [],
+      "dependencies": [
+        "emit_retrieval_success",
+        "len",
+        "_run_dense",
+        "start_span",
+        "emit_retrieval_attempt",
+        "_run_bm25",
+        "_apply_council_weights",
+        "str",
+        "emit_retrieval_failure",
+        "end_span"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_19"
+    ],
+    "from_typing": [
+      "line_20"
+    ],
+    "from_models": [
+      "line_22"
+    ],
+    "from_observability": [
+      "line_30"
+    ],
+    "ranking": [
+      "line_39"
+    ],
+    "from_retrievers.bm25": [
+      "line_51"
+    ],
+    "from_retrievers.dense": [
+      "line_65"
+    ]
+  },
+  "function_signatures": {
+    "_run_bm25": "_run_bm25",
+    "_run_dense": "_run_dense",
+    "_apply_council_weights": "_apply_council_weights",
+    "run_rag_retrieval": "run_rag_retrieval"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

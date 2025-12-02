@@ -1,0 +1,496 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_6_0_ENHANCED.py",
+    "file_hash": "6d378242d6802d72f0289d4b00a55f0aa7348c1c668a664ff3da244a43907414",
+    "size_bytes": 42984,
+    "last_modified": "2025-12-01T12:27:35.906561",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 30,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SaaSRoles",
+      "line_number": 40,
+      "docstring": "Complete SaaS organizational hierarchy with 1,993 roles.\nEmbedded from SaaS_Roles.json",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerSchema",
+      "line_number": 117,
+      "docstring": "Application Tracker Schema v4 with 54 fields.\nEmbedded from App_Schema_v4.json",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AppTrackerQA",
+      "line_number": 164,
+      "docstring": "Application Tracker QA v5 with R1-R23 validation rules.\nEmbedded from App_Tracker_QA_v5.json",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HyphenationRules",
+      "line_number": 244,
+      "docstring": "Comprehensive hyphenation and style enforcement rules.\nEmbedded from Hyphenation_Rules.json",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SkillsPool",
+      "line_number": 313,
+      "docstring": "K.11 Technical Skills Pool for JD-aligned selection.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_master_resume",
+      "line_number": 436,
+      "docstring": "Load the master resume from JSON file.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerationEngine",
+      "line_number": 460,
+      "docstring": "Main engine for generating customized resumes.\nv4.6.0: Enhanced with embedded modules",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_role",
+      "line_number": 99,
+      "docstring": "Get role details by key.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_roles_by_level",
+      "line_number": 104,
+      "docstring": "Get all roles at a specific level (1-4).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_roles_by_org",
+      "line_number": 109,
+      "docstring": "Get all roles in a specific org (CFO, CMO, CTO, etc.).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_empty_record",
+      "line_number": 147,
+      "docstring": "Create an empty application record.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_record",
+      "line_number": 152,
+      "docstring": "Validate a record has all required fields.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_pipeline_status",
+      "line_number": 206,
+      "docstring": "Validate Pipeline Status (R2).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_outreach_channel",
+      "line_number": 213,
+      "docstring": "Validate Outreach Channel (R3).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_closure_reason",
+      "line_number": 220,
+      "docstring": "Validate Closure Reason based on Pipeline Status (R4, R13-R15).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_date_format",
+      "line_number": 231,
+      "docstring": "Validate date format MM/DD/YYYY (R10-R12).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_hyphenation_rules",
+      "line_number": 275,
+      "docstring": "Apply all hyphenation rules to text.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fix_spacing",
+      "line_number": 286,
+      "docstring": "Fix spacing issues around punctuation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "simplify_jargon",
+      "line_number": 297,
+      "docstring": "Simplify corporate jargon.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L4",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "select_skills_for_jd",
+      "line_number": 377,
+      "docstring": "Select top 12 skills based on JD keyword matching.\nReturns numbered list (1-12) for K.11 section.",
+      "imports": [],
+      "dependencies": [
+        "enumerate",
+        "len",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 466,
+      "docstring": "Initialize the engine with all components.",
+      "imports": [],
+      "dependencies": [
+        "AppTrackerQA",
+        "load_master_resume",
+        "SaaSRoles",
+        "HyphenationRules",
+        "AppTrackerSchema",
+        "SkillsPool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_resume",
+      "line_number": 475,
+      "docstring": "Generate a complete resume with all 4 outputs.\n\nArgs:\n    jd_text: Job description text\n    target_role: Target role key (e.g., \"vp_presales\")\n    temperature: Temperature mode for generation\n    \nReturns:\n    Dictionary with 4 outputs",
+      "imports": [],
+      "dependencies": [
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_sections",
+      "line_number": 517,
+      "docstring": "Generate all resume sections.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_customize_headline",
+      "line_number": 570,
+      "docstring": "Generate customized headline based on JD and role.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_contact_info",
+      "line_number": 585,
+      "docstring": "Format contact information.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_executive_summary",
+      "line_number": 590,
+      "docstring": "Generate 6-sentence executive summary (150 words target).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_role_intro",
+      "line_number": 610,
+      "docstring": "Generate role introduction paragraph.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_bullets",
+      "line_number": 621,
+      "docstring": "Select and customize bullets for a role.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_education",
+      "line_number": 640,
+      "docstring": "Format education section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_certifications",
+      "line_number": 644,
+      "docstring": "Format certifications section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_competencies",
+      "line_number": 648,
+      "docstring": "Select competencies based on JD.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_metrics",
+      "line_number": 656,
+      "docstring": "Calculate resume metrics.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_qa_validation",
+      "line_number": 683,
+      "docstring": "Run QA validation gates.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "bool",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_resume",
+      "line_number": 730,
+      "docstring": "Format OUTPUT 1: Complete resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_word_count_table",
+      "line_number": 820,
+      "docstring": "Format OUTPUT 2: Word count table.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_signal_calibration",
+      "line_number": 877,
+      "docstring": "Format OUTPUT 3: Signal calibration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_qa_validation",
+      "line_number": 895,
+      "docstring": "Format OUTPUT 4: QA validation.",
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_16"
+    ],
+    "re": [
+      "line_17"
+    ],
+    "from_typing": [
+      "line_18"
+    ],
+    "from_enum": [
+      "line_19"
+    ],
+    "random": [
+      "line_20"
+    ],
+    "from_datetime": [
+      "line_21"
+    ],
+    "from_dataclasses": [
+      "line_22"
+    ]
+  },
+  "function_signatures": {
+    "load_master_resume": "load_master_resume",
+    "get_role": "get_role",
+    "get_roles_by_level": "get_roles_by_level",
+    "get_roles_by_org": "get_roles_by_org",
+    "create_empty_record": "create_empty_record",
+    "validate_record": "validate_record",
+    "validate_pipeline_status": "validate_pipeline_status",
+    "validate_outreach_channel": "validate_outreach_channel",
+    "validate_closure_reason": "validate_closure_reason",
+    "validate_date_format": "validate_date_format",
+    "apply_hyphenation_rules": "apply_hyphenation_rules",
+    "fix_spacing": "fix_spacing",
+    "simplify_jargon": "simplify_jargon",
+    "select_skills_for_jd": "select_skills_for_jd",
+    "__init__": "__init__",
+    "generate_resume": "generate_resume",
+    "_generate_sections": "_generate_sections",
+    "_customize_headline": "_customize_headline",
+    "_format_contact_info": "_format_contact_info",
+    "_generate_executive_summary": "_generate_executive_summary",
+    "_generate_role_intro": "_generate_role_intro",
+    "_select_bullets": "_select_bullets",
+    "_format_education": "_format_education",
+    "_format_certifications": "_format_certifications",
+    "_select_competencies": "_select_competencies",
+    "_calculate_metrics": "_calculate_metrics",
+    "_run_qa_validation": "_run_qa_validation",
+    "_format_resume": "_format_resume",
+    "_format_word_count_table": "_format_word_count_table",
+    "_format_signal_calibration": "_format_signal_calibration",
+    "_format_qa_validation": "_format_qa_validation"
+  },
+  "class_signatures": {
+    "TemperatureMode": "TemperatureMode",
+    "SaaSRoles": "SaaSRoles",
+    "AppTrackerSchema": "AppTrackerSchema",
+    "AppTrackerQA": "AppTrackerQA",
+    "HyphenationRules": "HyphenationRules",
+    "SkillsPool": "SkillsPool",
+    "ResumeGenerationEngine": "ResumeGenerationEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 45,
+    "cognitive_complexity": 25,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

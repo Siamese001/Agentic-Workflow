@@ -1,0 +1,826 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\conftest.py",
+    "file_hash": "358d19fc896560a7875479de9e0ccf0cc9bcedc1e30ffd6a519618927d9fa00f",
+    "size_bytes": 20928,
+    "last_modified": "2025-12-01T12:27:39.326800",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_session_id",
+      "line_number": 29,
+      "docstring": "Unique identifier for the test session.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_llm_factory",
+      "line_number": 35,
+      "docstring": "Factory for creating consistent LLM mocks across tests.",
+      "imports": [],
+      "dependencies": [
+        "AsyncMock",
+        "LLMMockFactory"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_external_services",
+      "line_number": 97,
+      "docstring": "Session-level mock for external services.",
+      "imports": [],
+      "dependencies": [
+        "Mock",
+        "ExternalServicesMock"
+      ],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_memory_store",
+      "line_number": 141,
+      "docstring": "Mock memory store with thread-safe operations.",
+      "imports": [],
+      "dependencies": [
+        "MockMemoryStore"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_safety_policy",
+      "line_number": 179,
+      "docstring": "Mock safety policy with configurable rules.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "str",
+        "rule_func",
+        "MockSafetyPolicy"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_workflow_context",
+      "line_number": 239,
+      "docstring": "Create a mock workflow context for individual tests.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "temporary_test_data",
+      "line_number": 255,
+      "docstring": "Provide temporary test data that's cleaned up after each test.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "performance_tracker",
+      "line_number": 271,
+      "docstring": "Track performance metrics for individual tests.",
+      "imports": [],
+      "dependencies": [
+        "PerformanceTracker"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_resume_generator",
+      "line_number": 314,
+      "docstring": "Generate test resumes with configurable properties.",
+      "imports": [],
+      "dependencies": [
+        "ResumeTestData"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_job_generator",
+      "line_number": 342,
+      "docstring": "Generate test job descriptions with configurable properties.",
+      "imports": [],
+      "dependencies": [
+        "JobDescriptionTestData"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_execution_engine",
+      "line_number": 386,
+      "docstring": "Create a mock execution engine for L2 testing.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "MockExecutionEngine"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_orchestrator",
+      "line_number": 439,
+      "docstring": "Create a mock orchestrator for L3 testing.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "MockOrchestrator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_config",
+      "line_number": 482,
+      "docstring": "Provide test configuration with sensible defaults.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_test_environment",
+      "line_number": 509,
+      "docstring": "Automatically set up test environment for all tests.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_configure",
+      "line_number": 529,
+      "docstring": "Configure custom pytest markers.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pytest_collection_modifyitems",
+      "line_number": 566,
+      "docstring": "Modify test collection to add markers automatically.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "LLMMockFactory",
+      "line_number": 38,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExternalServicesMock",
+      "line_number": 100,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MockMemoryStore",
+      "line_number": 144,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MockSafetyPolicy",
+      "line_number": 182,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "injection_rule",
+      "line_number": 216,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "pii_rule",
+      "line_number": 222,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_data",
+      "line_number": 259,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_data",
+      "line_number": 262,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PerformanceTracker",
+      "line_number": 274,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_resume",
+      "line_number": 317,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ResumeTestData"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_job",
+      "line_number": 345,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "JobDescriptionTestData"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MockExecutionEngine",
+      "line_number": 389,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MockOrchestrator",
+      "line_number": 442,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 39,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_mock_llm",
+      "line_number": 44,
+      "docstring": "Create a mock LLM with predefined responses.",
+      "imports": [],
+      "dependencies": [
+        "AsyncMock"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_call_count",
+      "line_number": 85,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "reset_call_count",
+      "line_number": 89,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 101,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_api_mock",
+      "line_number": 106,
+      "docstring": "Create a mock API service.",
+      "imports": [],
+      "dependencies": [
+        "Mock"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_request_log",
+      "line_number": 125,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "clear_request_log",
+      "line_number": 129,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 145,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "store_triplets",
+      "line_number": 150,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "query_triplets",
+      "line_number": 156,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "store_data",
+      "line_number": 160,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_data",
+      "line_number": 164,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "clear",
+      "line_number": 168,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 183,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_rule",
+      "line_number": 188,
+      "docstring": "Add a validation rule.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_input",
+      "line_number": 193,
+      "docstring": "Validate input against all rules.",
+      "imports": [],
+      "dependencies": [
+        "rule_func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "block_content",
+      "line_number": 203,
+      "docstring": "Add content to blocklist.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_content_blocked",
+      "line_number": 208,
+      "docstring": "Check if content is blocked.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 275,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "start_timer",
+      "line_number": 279,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "end_timer",
+      "line_number": 282,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "increment_counter",
+      "line_number": 289,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_timing",
+      "line_number": 292,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_counter",
+      "line_number": 295,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_summary",
+      "line_number": 298,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 390,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_tool",
+      "line_number": 394,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "simulate_failure",
+      "line_number": 422,
+      "docstring": "Configure failure simulation for a tool.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_execution_log",
+      "line_number": 429,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "clear_log",
+      "line_number": 432,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 443,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_execution_plan",
+      "line_number": 447,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_node",
+      "line_number": 458,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_plan_history",
+      "line_number": 468,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_node_results",
+      "line_number": 471,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_request",
+      "line_number": 110,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_8"
+    ],
+    "from_typing": [
+      "line_9"
+    ],
+    "from_unittest.mock": [
+      "line_10"
+    ],
+    "json": [
+      "line_11"
+    ],
+    "uuid": [
+      "line_12"
+    ],
+    "from_datetime": [
+      "line_13"
+    ],
+    "threading": [
+      "line_14"
+    ],
+    "time": [
+      "line_15"
+    ],
+    "from_tests.shared.fixtures.test_data_fixtures": [
+      "line_18"
+    ],
+    "random": [
+      "line_512"
+    ],
+    "logging": [
+      "line_516"
+    ]
+  },
+  "function_signatures": {
+    "test_session_id": "test_session_id",
+    "mock_llm_factory": "mock_llm_factory",
+    "mock_external_services": "mock_external_services",
+    "mock_memory_store": "mock_memory_store",
+    "mock_safety_policy": "mock_safety_policy",
+    "mock_workflow_context": "mock_workflow_context",
+    "temporary_test_data": "temporary_test_data",
+    "performance_tracker": "performance_tracker",
+    "test_resume_generator": "test_resume_generator",
+    "test_job_generator": "test_job_generator",
+    "mock_execution_engine": "mock_execution_engine",
+    "mock_orchestrator": "mock_orchestrator",
+    "test_config": "test_config",
+    "setup_test_environment": "setup_test_environment",
+    "pytest_configure": "pytest_configure",
+    "pytest_collection_modifyitems": "pytest_collection_modifyitems",
+    "injection_rule": "injection_rule",
+    "pii_rule": "pii_rule",
+    "add_data": "add_data",
+    "get_data": "get_data",
+    "create_resume": "create_resume",
+    "create_job": "create_job",
+    "__init__": "__init__",
+    "create_mock_llm": "create_mock_llm",
+    "get_call_count": "get_call_count",
+    "reset_call_count": "reset_call_count",
+    "create_api_mock": "create_api_mock",
+    "get_request_log": "get_request_log",
+    "clear_request_log": "clear_request_log",
+    "store_triplets": "store_triplets",
+    "query_triplets": "query_triplets",
+    "store_data": "store_data",
+    "clear": "clear",
+    "add_rule": "add_rule",
+    "validate_input": "validate_input",
+    "block_content": "block_content",
+    "is_content_blocked": "is_content_blocked",
+    "start_timer": "start_timer",
+    "end_timer": "end_timer",
+    "increment_counter": "increment_counter",
+    "get_timing": "get_timing",
+    "get_counter": "get_counter",
+    "get_summary": "get_summary",
+    "execute_tool": "execute_tool",
+    "simulate_failure": "simulate_failure",
+    "get_execution_log": "get_execution_log",
+    "clear_log": "clear_log",
+    "create_execution_plan": "create_execution_plan",
+    "execute_node": "execute_node",
+    "get_plan_history": "get_plan_history",
+    "get_node_results": "get_node_results",
+    "mock_request": "mock_request"
+  },
+  "class_signatures": {
+    "LLMMockFactory": "LLMMockFactory",
+    "ExternalServicesMock": "ExternalServicesMock",
+    "MockMemoryStore": "MockMemoryStore",
+    "MockSafetyPolicy": "MockSafetyPolicy",
+    "PerformanceTracker": "PerformanceTracker",
+    "MockExecutionEngine": "MockExecutionEngine",
+    "MockOrchestrator": "MockOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 38,
+    "cognitive_complexity": 20,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

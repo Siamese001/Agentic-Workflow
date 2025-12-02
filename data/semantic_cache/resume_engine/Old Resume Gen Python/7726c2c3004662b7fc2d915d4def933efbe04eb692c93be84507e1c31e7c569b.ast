@@ -1,0 +1,19 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5_65.py",
+    "file_hash": "7726c2c3004662b7fc2d915d4def933efbe04eb692c93be84507e1c31e7c569b",
+    "size_bytes": 350851,
+    "last_modified": "2025-12-01T12:27:35.559825",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "error": "syntax_error",
+    "line": 6661
+  }
+}

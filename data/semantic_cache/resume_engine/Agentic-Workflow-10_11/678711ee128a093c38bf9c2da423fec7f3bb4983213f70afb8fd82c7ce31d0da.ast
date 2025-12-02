@@ -1,0 +1,352 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\multi_agent.py",
+    "file_hash": "678711ee128a093c38bf9c2da423fec7f3bb4983213f70afb8fd82c7ce31d0da",
+    "size_bytes": 13710,
+    "last_modified": "2025-12-01T12:27:39.171811",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "AgentNode",
+      "line_number": 47,
+      "docstring": "Minimal agent node representation for r\u00e9sum\u00e9 processing META layer coordination.\n\nStructural analog of v10_9 AgentNode optimized for r\u00e9sum\u00e9 enhancement workflow coordination.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentGraph",
+      "line_number": 59,
+      "docstring": "Minimal agent graph representation for r\u00e9sum\u00e9 processing workflows.\n\nCoordinates agent interactions for comprehensive r\u00e9sum\u00e9 enhancement operations.\n\nnodes: mapping of node_id -> AgentNode\nedges: mapping of node_id -> list[node_id]\nmetadata: arbitrary graph-level metadata for r\u00e9sum\u00e9 processing",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_graph",
+      "line_number": 75,
+      "docstring": "Returns lightweight summary of r\u00e9sum\u00e9 processing agent graph.\n\nProvides deterministic summary for r\u00e9sum\u00e9 enhancement workflow coordination.",
+      "imports": [],
+      "dependencies": [
+        "list",
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentPattern",
+      "line_number": 89,
+      "docstring": "Conceptual patterns for r\u00e9sum\u00e9 processing multi-agent coordination graphs.\n\nDefines standard interaction patterns for comprehensive r\u00e9sum\u00e9 enhancement workflows.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_linear_pipeline",
+      "line_number": 107,
+      "docstring": "Builds linear pipeline for r\u00e9sum\u00e9 processing agent coordination.\n\nCreates sequential agent flow: r0 \u2192 r1 \u2192 r2 \u2192 ... for r\u00e9sum\u00e9 enhancement workflows.",
+      "imports": [],
+      "dependencies": [
+        "AgentNode",
+        "len",
+        "AgentGraph",
+        "range",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_star_hub",
+      "line_number": 129,
+      "docstring": "Build a star-hub graph: hub \u2194 each spoke.",
+      "imports": [],
+      "dependencies": [
+        "AgentNode",
+        "AgentGraph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_council",
+      "line_number": 149,
+      "docstring": "Build a role-homogeneous council of size N.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "AgentNode",
+        "AgentGraph",
+        "int",
+        "range",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_committee",
+      "line_number": 166,
+      "docstring": "Build a committee: each role appears once, no directed edges.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "AgentNode",
+        "AgentGraph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentRole",
+      "line_number": 178,
+      "docstring": "Canonical multi-agent roles.\n\nThese mirror the conceptual roles from v10_9 but are defined\nlocally to keep this module self-contained.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "can_delegate",
+      "line_number": 194,
+      "docstring": "Deterministic delegation rules (v10_9-compatible).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "delegation_metadata",
+      "line_number": 210,
+      "docstring": "Return structured metadata describing permitted/blocked delegation.",
+      "imports": [],
+      "dependencies": [
+        "can_delegate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "deterministic_vote",
+      "line_number": 225,
+      "docstring": "Simple deterministic vote: highest score, tie-broken by id.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "council_vote",
+      "line_number": 246,
+      "docstring": "Deterministic council voting given candidate scores.",
+      "imports": [],
+      "dependencies": [
+        "summarize_graph",
+        "deterministic_vote"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_council_result",
+      "line_number": 265,
+      "docstring": "Build a typed MultiAgentCouncilResult for downstream layers.",
+      "imports": [],
+      "dependencies": [
+        "MultiAgentVote",
+        "str",
+        "float",
+        "MultiAgentCouncilResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentCoordinator",
+      "line_number": 298,
+      "docstring": "High-level meta-layer coordinator for multi-agent behaviors.\n\nResponsibilities:\n    \u2022 route_message() \u2014 determine routing metadata\n    \u2022 run_council()  \u2014 run role-specific councils\n    \u2022 build_patch()  \u2014 create L4-ready patch blocks (NOT applied)\n    \u2022 summarize()    \u2014 full graph summary\n\nMUST NOT mutate state. MUST NOT call L1\u2013L5.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentSimulation",
+      "line_number": 355,
+      "docstring": "Pure simulation for debugging multi-agent routing and councils.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "extract_council_arbitration",
+      "line_number": 374,
+      "docstring": "Return a normalized arbitration summary from a run_council result.\n\nThis helper is META-layer only and intended for evaluation/simulation.\nIt does not mutate input or depend on runtime layers.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize",
+      "line_number": 312,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "summarize_graph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "route_message",
+      "line_number": 315,
+      "docstring": "Compute routing metadata for conceptual messages.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "dict",
+        "can_delegate",
+        "delegation_metadata"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_council",
+      "line_number": 334,
+      "docstring": "Wrapper for council voting returning both raw + typed results.",
+      "imports": [],
+      "dependencies": [
+        "council_vote",
+        "build_council_result"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_patch",
+      "line_number": 343,
+      "docstring": "Return a dict representing an L4-ready patch: {block_name: payload}.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "simulate_routing",
+      "line_number": 360,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AgentMessage"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "simulate_council",
+      "line_number": 364,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_24"
+    ],
+    "from_dataclasses": [
+      "line_26"
+    ],
+    "from_enum": [
+      "line_27"
+    ],
+    "from_typing": [
+      "line_28"
+    ],
+    "from_core.models.models": [
+      "line_30"
+    ]
+  },
+  "function_signatures": {
+    "summarize_graph": "summarize_graph",
+    "build_linear_pipeline": "build_linear_pipeline",
+    "build_star_hub": "build_star_hub",
+    "build_council": "build_council",
+    "build_committee": "build_committee",
+    "can_delegate": "can_delegate",
+    "delegation_metadata": "delegation_metadata",
+    "deterministic_vote": "deterministic_vote",
+    "council_vote": "council_vote",
+    "build_council_result": "build_council_result",
+    "extract_council_arbitration": "extract_council_arbitration",
+    "summarize": "summarize",
+    "route_message": "route_message",
+    "run_council": "run_council",
+    "build_patch": "build_patch",
+    "simulate_routing": "simulate_routing",
+    "simulate_council": "simulate_council"
+  },
+  "class_signatures": {
+    "AgentNode": "AgentNode",
+    "AgentGraph": "AgentGraph",
+    "MultiAgentPattern": "MultiAgentPattern",
+    "AgentRole": "AgentRole",
+    "MultiAgentCoordinator": "MultiAgentCoordinator",
+    "MultiAgentSimulation": "MultiAgentSimulation"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 14,
+    "cognitive_complexity": 7,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\infra\\sandbox\\networking.py",
+    "file_hash": "0605ad84742ca0843cb220e096a46c92e09a37523a825cb536e88dbcc0f2056e",
+    "size_bytes": 588,
+    "last_modified": "2025-12-01T12:27:38.513091",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "default_network_policy",
+      "line_number": 6,
+      "docstring": "Return the default network policy for sandboxed execution.\n\nBy default all outbound network access is disabled.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_destination_allowed",
+      "line_number": 18,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {
+    "default_network_policy": "default_network_policy",
+    "is_destination_allowed": "is_destination_allowed"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

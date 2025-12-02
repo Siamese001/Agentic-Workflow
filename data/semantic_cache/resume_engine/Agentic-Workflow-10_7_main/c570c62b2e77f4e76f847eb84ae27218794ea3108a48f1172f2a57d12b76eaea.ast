@@ -1,0 +1,67 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\constants.py",
+    "file_hash": "c570c62b2e77f4e76f847eb84ae27218794ea3108a48f1172f2a57d12b76eaea",
+    "size_bytes": 3235,
+    "last_modified": "2025-12-01T12:27:41.247759",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_normalize",
+      "line_number": 57,
+      "docstring": "Normalize punctuation, whitespace, and case for consistent matching.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "legacy_model_alias",
+      "line_number": 70,
+      "docstring": "Convert a modern model name to its legacy identifier when needed.\nUsed mainly when older APIs or fallback SDK paths require backwards compatibility.",
+      "imports": [],
+      "dependencies": [
+        "_normalize"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "canonical_model_name",
+      "line_number": 79,
+      "docstring": "Convert any model variant (legacy, inconsistent, alias, HF-like)\ninto your workflow's canonical model identifier.\n\nGuaranteed invariants:\n  \u2022 canonical_model_name(x) is always lowercase\n  \u2022 hyphens normalized\n  \u2022 legacy variants resolved\n  \u2022 always stable for caching, semantic cache, and MCP routing",
+      "imports": [],
+      "dependencies": [
+        "_normalize"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_13"
+    ]
+  },
+  "function_signatures": {
+    "_normalize": "_normalize",
+    "legacy_model_alias": "legacy_model_alias",
+    "canonical_model_name": "canonical_model_name"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

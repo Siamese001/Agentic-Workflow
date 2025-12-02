@@ -1,0 +1,682 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_2.py",
+    "file_hash": "3d2f246f6cca4d35098c460dc9e73c2670227f9e7ab37c7090eebe96153b163d",
+    "size_bytes": 79995,
+    "last_modified": "2025-12-01T12:27:35.952187",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 74,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 85,
+      "docstring": "Amit Ayer's complete master resume - merged from v1.0, v1.2, v2.0, v2.1\nSource: Master_Resume_V2.14.json\n\nNO NEED TO UPLOAD RESUME - Already embedded!",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PerSectionTolerance",
+      "line_number": 200,
+      "docstring": "Per-section tolerance bands replacing global \u00b150.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalElasticityModel",
+      "line_number": 230,
+      "docstring": "Signal-to-word-count elasticity: words drive signal up to cap.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionCoherenceScorer",
+      "line_number": 270,
+      "docstring": "Penalize outlier sections based on coefficient of variation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalPreservationScorer",
+      "line_number": 314,
+      "docstring": "Drop lowest signal_density bullets first when trimming.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetricsV4",
+      "line_number": 365,
+      "docstring": "Baseline metrics with per-section tolerance bands.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionPriorityAllocator",
+      "line_number": 469,
+      "docstring": "Dynamic priority based on signal deficit.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalCalibrationConfigV4",
+      "line_number": 523,
+      "docstring": "Signal calibration with elasticity, coherence, and temperature modes.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SaaSRoleProfiles",
+      "line_number": 604,
+      "docstring": "Predefined role profiles for signal calibration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "K1ExecutiveSummaryGenerator",
+      "line_number": 633,
+      "docstring": "Generate K1 executive summary with elasticity constraints.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletWordCountValidator",
+      "line_number": 659,
+      "docstring": "Validate bullets against word count targets and signal preservation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QAValidationGates",
+      "line_number": 683,
+      "docstring": "NEW in v4.1: Comprehensive QA validation with enforcement.\nFixes v4.0 bugs where gates displayed results but never rejected.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerationEngineV4",
+      "line_number": 895,
+      "docstring": "Full resume generation with all 8 optimizations + v4.1 QA enforcement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_tolerance_band",
+      "line_number": 209,
+      "docstring": "Return (min, max) word count for this section.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_signal_range",
+      "line_number": 215,
+      "docstring": "Return (floor, ceiling) for signal.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_within_tolerance",
+      "line_number": 219,
+      "docstring": "Check if word count is within tolerance band.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_elasticity_multiplier",
+      "line_number": 239,
+      "docstring": "Calculate elasticity multiplier based on words vs baseline.\n\nIf Unify at baseline (203): multiplier = 1.0, signal = 0.74\nIf Unify at +20 words (223): multiplier = 1.03, signal = 0.762 (+2.9%)\nIf Unify at -20 words (183): multiplier = 0.97, signal = 0.718 (-3.0%)",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal",
+      "line_number": 257,
+      "docstring": "Calculate signal based on elasticity curve + temperature bonus.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_cv",
+      "line_number": 277,
+      "docstring": "Calculate coefficient of variation for all sections including headline & exec.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_coherence_penalty",
+      "line_number": 300,
+      "docstring": "Return signal penalty if CV > target.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_signal_density",
+      "line_number": 318,
+      "docstring": "Score: signal_contribution / word_count.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "rank_bullets_by_density",
+      "line_number": 326,
+      "docstring": "Rank bullets by signal density (density, index, bullet).\nReturns list of (index, bullet, density) sorted by density descending.",
+      "imports": [],
+      "dependencies": [
+        "enumerate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "trim_to_budget",
+      "line_number": 341,
+      "docstring": "Trim bullets to target word count, dropping lowest signal_density bullets first.",
+      "imports": [],
+      "dependencies": [
+        "set",
+        "len",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_priorities",
+      "line_number": 482,
+      "docstring": "Adjust priorities based on signal deficit.\n\nIf K5_unify=0.70 (below 0.80 max): prioritize Unify expansion (40% \u2192 50%)\nIf K6_ibm=0.72 (mid-range): normal priority (35%)\nIf K7_ey=0.65 (well below 0.75 max): increase EY from 15% \u2192 25% if signal improves >0.68",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_elasticity_models",
+      "line_number": 536,
+      "docstring": "Get elasticity models for all sections including headline and exec.",
+      "imports": [],
+      "dependencies": [
+        "SignalElasticityModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_coherence_scorer",
+      "line_number": 571,
+      "docstring": "Get coherence scorer with adaptive CV target based on role priority skew.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min",
+        "SectionCoherenceScorer"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_temperature_config",
+      "line_number": 595,
+      "docstring": "Get configuration for current temperature mode.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 636,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate",
+      "line_number": 640,
+      "docstring": "Generate executive summary within tolerance band.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_words",
+      "line_number": 663,
+      "docstring": "Count words in text.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_section",
+      "line_number": 668,
+      "docstring": "Validate section meets word count and signal targets.",
+      "imports": [],
+      "dependencies": [
+        "sum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 689,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_gate_1_signal_health",
+      "line_number": 697,
+      "docstring": "FIXED in v4.1: Gate 1 now validates signal against floor/ceiling.\nv4.0 BUG: Only displayed signal, never validated.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_gate_2_tolerance_bands",
+      "line_number": 725,
+      "docstring": "Gate 2: Tolerance band compliance - already working in v4.0.\nKept for completeness.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_gate_3_elasticity",
+      "line_number": 749,
+      "docstring": "Gate 3: Elasticity multipliers within bounds.\nv4.0 worked; kept for completeness.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_gate_4_production_readiness",
+      "line_number": 773,
+      "docstring": "FIXED in v4.1: Gate 4 now implements ALL 5 production readiness checks.\nv4.0 BUG: Hardcoded \u2713 PASS for all checks.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_gate_5_baseline",
+      "line_number": 836,
+      "docstring": "Gate 5: Baseline metrics validation.\nv4.0 worked; kept for completeness.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_gate_6_coherence",
+      "line_number": 845,
+      "docstring": "FIXED in v4.1: Gate 6 now enforces coherence penalties with adaptive CV target.\nv4.0 BUG: Calculated penalty but never applied to signal.\n\nPATCHED: Relaxed to allow realistic section-length variation.\nResume inherently has different section lengths (Exp > Summary > EY > Early).\nAllow CV up to 0.90 (realistic for 5-section resumes with natural length variance).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_all_gates",
+      "line_number": 872,
+      "docstring": "Run all 6 QA gates and return pass/fail status.\nEnforces rejection if any gate fails.",
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 898,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaselineResumeMetricsV4",
+        "SaaSRoleProfiles",
+        "MasterResume"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 903,
+      "docstring": "Execute 9-HOP pipeline with all 8 optimizations + v4.1 QA ENFORCEMENT.\n\nv4.1 CHANGES:\n- Added temperature bonus application (line: signal += bonus)\n- Added ratio penalty application (line: signal += penalty)\n- Added coherence penalty application (line: signal += penalty)\n- Added full QA gate validation with rejection\n- Added exception throwing on gate failures\n\nReturns:\n    Dict with 5 outputs:\n    - output1_resume: Formatted resume\n    - output2_word_count: Word count table with per-section bands\n    - output3_signal_calibration: Signal calibration with elasticity\n    - output4_qa_tables: 6 QA gates (NOW ENFORCED)\n    - output5_optimization_report: Elasticity, priority, coherence analysis",
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "QAValidationGates",
+        "len",
+        "SignalCalibrationConfigV4"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_word_count_table",
+      "line_number": 1047,
+      "docstring": "Build word count data with COUPLED elasticity (v4.1 PATCH).\n\nInstead of independent per-section multipliers, apply a single global\nexpansion factor modulated by section priorities. This ensures sections\nexpand/contract in sync, keeping CV tight and coherent.",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_ratio_penalty",
+      "line_number": 1118,
+      "docstring": "Calculate penalty for Unify/IBM ratio outside soft band (OPT 4).\n\nIdeal: 1.25 (no penalty)\nAcceptable: 1.15\u20131.35 (\u22125 per 0.05 deviation)\nFail: <1.1 or >1.4",
+      "imports": [],
+      "dependencies": [
+        "max"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_preserve_high_signal_bullets",
+      "line_number": 1153,
+      "docstring": "Apply signal preservation scoring (OPT 8) to rank bullets.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_final_signals",
+      "line_number": 1184,
+      "docstring": "NEW in v4.1: Calculate final signals with all bonuses/penalties applied.\n\nv4.0 BUG: Penalties/bonuses calculated but never applied.\nv4.1 FIX: Apply temperature bonus, ratio penalty, coherence penalty.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_role_aware_headline",
+      "line_number": 1223,
+      "docstring": "Generate role-aware headline in XYZ format (X | Y | Z).\nFixed: 60\u201390 characters, NO elasticity.\nFormat: [Role/Positioning] | [Domain] | [Related Competency & Related Competency]",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_formatted_resume",
+      "line_number": 1245,
+      "docstring": "Build formatted resume from preserved bullets with role-aware headline.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_word_count_table",
+      "line_number": 1282,
+      "docstring": "Generate detailed word count table with per-section tolerance bands.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_signal_calibration",
+      "line_number": 1327,
+      "docstring": "Generate signal calibration with elasticity and temperature details.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_qa_tables",
+      "line_number": 1385,
+      "docstring": "Generate 6 QA validation tables with v4.1 enforcement results.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_optimization_report",
+      "line_number": 1510,
+      "docstring": "Generate comprehensive optimization report.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "re": [
+      "line_42"
+    ],
+    "from_typing": [
+      "line_43"
+    ],
+    "from_dataclasses": [
+      "line_44"
+    ],
+    "from_datetime": [
+      "line_45"
+    ],
+    "from_enum": [
+      "line_46"
+    ],
+    "math": [
+      "line_47"
+    ]
+  },
+  "function_signatures": {
+    "get_tolerance_band": "get_tolerance_band",
+    "get_signal_range": "get_signal_range",
+    "is_within_tolerance": "is_within_tolerance",
+    "calculate_elasticity_multiplier": "calculate_elasticity_multiplier",
+    "calculate_signal": "calculate_signal",
+    "calculate_cv": "calculate_cv",
+    "get_coherence_penalty": "get_coherence_penalty",
+    "calculate_signal_density": "calculate_signal_density",
+    "rank_bullets_by_density": "rank_bullets_by_density",
+    "trim_to_budget": "trim_to_budget",
+    "calculate_priorities": "calculate_priorities",
+    "get_elasticity_models": "get_elasticity_models",
+    "get_coherence_scorer": "get_coherence_scorer",
+    "get_temperature_config": "get_temperature_config",
+    "__init__": "__init__",
+    "generate": "generate",
+    "count_words": "count_words",
+    "validate_section": "validate_section",
+    "validate_gate_1_signal_health": "validate_gate_1_signal_health",
+    "validate_gate_2_tolerance_bands": "validate_gate_2_tolerance_bands",
+    "validate_gate_3_elasticity": "validate_gate_3_elasticity",
+    "validate_gate_4_production_readiness": "validate_gate_4_production_readiness",
+    "validate_gate_5_baseline": "validate_gate_5_baseline",
+    "validate_gate_6_coherence": "validate_gate_6_coherence",
+    "run_all_gates": "run_all_gates",
+    "execute_pipeline": "execute_pipeline",
+    "_build_word_count_table": "_build_word_count_table",
+    "_calculate_ratio_penalty": "_calculate_ratio_penalty",
+    "_preserve_high_signal_bullets": "_preserve_high_signal_bullets",
+    "_calculate_final_signals": "_calculate_final_signals",
+    "_generate_role_aware_headline": "_generate_role_aware_headline",
+    "_build_formatted_resume": "_build_formatted_resume",
+    "_generate_word_count_table": "_generate_word_count_table",
+    "_generate_signal_calibration": "_generate_signal_calibration",
+    "_generate_qa_tables": "_generate_qa_tables",
+    "_generate_optimization_report": "_generate_optimization_report"
+  },
+  "class_signatures": {
+    "TemperatureMode": "TemperatureMode",
+    "MasterResume": "MasterResume",
+    "PerSectionTolerance": "PerSectionTolerance",
+    "SignalElasticityModel": "SignalElasticityModel",
+    "SectionCoherenceScorer": "SectionCoherenceScorer",
+    "SignalPreservationScorer": "SignalPreservationScorer",
+    "BaselineResumeMetricsV4": "BaselineResumeMetricsV4",
+    "SectionPriorityAllocator": "SectionPriorityAllocator",
+    "SignalCalibrationConfigV4": "SignalCalibrationConfigV4",
+    "SaaSRoleProfiles": "SaaSRoleProfiles",
+    "K1ExecutiveSummaryGenerator": "K1ExecutiveSummaryGenerator",
+    "BulletWordCountValidator": "BulletWordCountValidator",
+    "QAValidationGates": "QAValidationGates",
+    "ResumeGenerationEngineV4": "ResumeGenerationEngineV4"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 69,
+    "cognitive_complexity": 44,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

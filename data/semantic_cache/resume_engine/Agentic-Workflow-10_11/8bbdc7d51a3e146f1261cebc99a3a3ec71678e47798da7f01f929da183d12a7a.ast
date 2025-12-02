@@ -1,0 +1,172 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_integration_security.py",
+    "file_hash": "8bbdc7d51a3e146f1261cebc99a3a3ec71678e47798da7f01f929da183d12a7a",
+    "size_bytes": 5932,
+    "last_modified": "2025-12-01T12:27:40.116336",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TestBasicSecurityIntegration",
+      "line_number": 16,
+      "docstring": "Test basic integration between security components.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestEndToEndSecurityFlow",
+      "line_number": 87,
+      "docstring": "Test end-to-end security validation flows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_method",
+      "line_number": 19,
+      "docstring": "Set up test fixtures.",
+      "imports": [],
+      "dependencies": [
+        "create_injection_safety_policy",
+        "InjectionDetector",
+        "initialize_default_services"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_detector_policy_integration",
+      "line_number": 25,
+      "docstring": "Test that detector and policy work together.",
+      "imports": [],
+      "dependencies": [
+        "SafetyContext",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_di_with_security_components",
+      "line_number": 45,
+      "docstring": "Test that DI container provides security components.",
+      "imports": [],
+      "dependencies": [
+        "SafetyContext",
+        "get_service"
+      ],
+      "responsibility_level": "L2",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_context_injection_with_security",
+      "line_number": 67,
+      "docstring": "Test that inject_dependencies works with security context.",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "inject_dependencies",
+        "Mock",
+        "delattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_method",
+      "line_number": 90,
+      "docstring": "Set up test fixtures.",
+      "imports": [],
+      "dependencies": [
+        "initialize_default_services"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_injection_attack_prevention",
+      "line_number": 94,
+      "docstring": "Test that injection attacks are prevented end-to-end.",
+      "imports": [],
+      "dependencies": [
+        "create_injection_safety_policy",
+        "InjectionDetector",
+        "SafetyContext",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_safe_content_allowed",
+      "line_number": 125,
+      "docstring": "Test that safe content is allowed through security checks.",
+      "imports": [],
+      "dependencies": [
+        "create_injection_safety_policy",
+        "InjectionDetector",
+        "SafetyContext",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_7"
+    ],
+    "from_unittest.mock": [
+      "line_8"
+    ],
+    "from_datetime": [
+      "line_9"
+    ],
+    "from_l5.injection_detection": [
+      "line_11"
+    ],
+    "from_l5.types": [
+      "line_12"
+    ],
+    "from_infra.di_container": [
+      "line_13",
+      "line_47"
+    ],
+    "from_l5.policy": [
+      "line_48"
+    ]
+  },
+  "function_signatures": {
+    "setup_method": "setup_method",
+    "test_detector_policy_integration": "test_detector_policy_integration",
+    "test_di_with_security_components": "test_di_with_security_components",
+    "test_context_injection_with_security": "test_context_injection_with_security",
+    "test_injection_attack_prevention": "test_injection_attack_prevention",
+    "test_safe_content_allowed": "test_safe_content_allowed"
+  },
+  "class_signatures": {
+    "TestBasicSecurityIntegration": "TestBasicSecurityIntegration",
+    "TestEndToEndSecurityFlow": "TestEndToEndSecurityFlow"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

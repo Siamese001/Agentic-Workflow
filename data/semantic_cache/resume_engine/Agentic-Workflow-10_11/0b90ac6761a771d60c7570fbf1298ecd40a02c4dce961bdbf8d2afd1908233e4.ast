@@ -1,0 +1,46 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\config\\context_profile.py",
+    "file_hash": "0b90ac6761a771d60c7570fbf1298ecd40a02c4dce961bdbf8d2afd1908233e4",
+    "size_bytes": 325,
+    "last_modified": "2025-12-01T12:27:39.091347",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ContextProfile",
+      "line_number": 8,
+      "docstring": "Profile capturing context budget hints used by planning and routing.",
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_pydantic": [
+      "line_3"
+    ],
+    "from_core.models.models": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "ContextProfile": "ContextProfile"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

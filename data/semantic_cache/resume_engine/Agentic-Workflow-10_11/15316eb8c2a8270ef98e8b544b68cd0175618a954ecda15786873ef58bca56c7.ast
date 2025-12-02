@@ -1,0 +1,400 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\metacognition\\test_meta_retrieval_orchestrator.py",
+    "file_hash": "15316eb8c2a8270ef98e8b544b68cd0175618a954ecda15786873ef58bca56c7",
+    "size_bytes": 10415,
+    "last_modified": "2025-12-01T12:27:39.826352",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "_DummyCtx",
+      "line_number": 10,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_make_ev",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Evidence"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_orchestrate_retrieval_combines_bm25_and_dense_hits",
+      "line_number": 19,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "_DummyCtx",
+        "_make_ev",
+        "RetrievalConfig",
+        "orchestrate_retrieval"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_orchestrate_retrieval_sets_used_hyde_flag",
+      "line_number": 64,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CouncilVote",
+        "_DummyCtx",
+        "_make_ev",
+        "RetrievalConfig",
+        "orchestrate_retrieval"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_orchestrate_retrieval_includes_chroma_hits",
+      "line_number": 105,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_DummyCtx",
+        "_Cfg",
+        "_make_ev",
+        "orchestrate_retrieval"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_orchestrate_retrieval_passes_council_vote_to_fuse",
+      "line_number": 148,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "list",
+        "CouncilVote",
+        "_DummyCtx",
+        "RAGResult",
+        "_make_ev",
+        "RetrievalConfig",
+        "orchestrate_retrieval"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_orchestrate_retrieval_isolates_bm25_failure",
+      "line_number": 198,
+      "docstring": "If BM25 fails, dense results should still be used.",
+      "imports": [],
+      "dependencies": [
+        "_DummyCtx",
+        "_make_ev",
+        "RuntimeError",
+        "RetrievalConfig",
+        "orchestrate_retrieval"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_orchestrate_retrieval_handles_no_hits",
+      "line_number": 236,
+      "docstring": "If all retrievers return no hits, orchestrator returns empty evidence.",
+      "imports": [],
+      "dependencies": [
+        "RetrievalConfig",
+        "_DummyCtx",
+        "isinstance",
+        "orchestrate_retrieval"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 11,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_bm25",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_dense",
+      "line_number": 29,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_chroma",
+      "line_number": 32,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_bm25",
+      "line_number": 67,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_make_ev"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_dense",
+      "line_number": 70,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_chroma",
+      "line_number": 73,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_bm25",
+      "line_number": 108,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_dense",
+      "line_number": 111,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_chroma",
+      "line_number": 114,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_make_ev"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "_Cfg",
+      "line_number": 126,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_bm25",
+      "line_number": 151,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_make_ev"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_dense",
+      "line_number": 154,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_chroma",
+      "line_number": 157,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_fuse",
+      "line_number": 162,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "RAGResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_failing_bm25",
+      "line_number": 203,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_dense",
+      "line_number": 206,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_make_ev"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fake_chroma",
+      "line_number": 209,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_empty",
+      "line_number": 241,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 127,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "types": [
+      "line_4"
+    ],
+    "from_meta.retrieval": [
+      "line_6"
+    ],
+    "from_core.models.models": [
+      "line_7"
+    ],
+    "meta.retrieval": [
+      "line_21",
+      "line_65",
+      "line_106",
+      "line_149",
+      "line_201",
+      "line_239"
+    ]
+  },
+  "function_signatures": {
+    "_make_ev": "_make_ev",
+    "test_orchestrate_retrieval_combines_bm25_and_dense_hits": "test_orchestrate_retrieval_combines_bm25_and_dense_hits",
+    "test_orchestrate_retrieval_sets_used_hyde_flag": "test_orchestrate_retrieval_sets_used_hyde_flag",
+    "test_orchestrate_retrieval_includes_chroma_hits": "test_orchestrate_retrieval_includes_chroma_hits",
+    "test_orchestrate_retrieval_passes_council_vote_to_fuse": "test_orchestrate_retrieval_passes_council_vote_to_fuse",
+    "test_orchestrate_retrieval_isolates_bm25_failure": "test_orchestrate_retrieval_isolates_bm25_failure",
+    "test_orchestrate_retrieval_handles_no_hits": "test_orchestrate_retrieval_handles_no_hits",
+    "__init__": "__init__",
+    "_fake_bm25": "_fake_bm25",
+    "_fake_dense": "_fake_dense",
+    "_fake_chroma": "_fake_chroma",
+    "_fake_fuse": "_fake_fuse",
+    "_failing_bm25": "_failing_bm25",
+    "_empty": "_empty"
+  },
+  "class_signatures": {
+    "_DummyCtx": "_DummyCtx",
+    "_Cfg": "_Cfg"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

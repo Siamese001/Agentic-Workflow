@@ -1,0 +1,346 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_8_core\\v10_8_multi_agent_system.py",
+    "file_hash": "252b4cb3d6df9a10c47538bd76e3b30970b7a55cf5b8d72d7e045d4059e48e80",
+    "size_bytes": 9746,
+    "last_modified": "2025-12-01T12:27:36.214780",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_8_core",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "AgentMessage",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "route_to_specialist",
+      "line_number": 33,
+      "docstring": "Deterministic routing:\n- Finds first node whose role matches message.recipient.\n- No execution, no side effects.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentRole",
+      "line_number": 51,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentNode",
+      "line_number": 61,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentGraph",
+      "line_number": 67,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_graph",
+      "line_number": 99,
+      "docstring": "Deterministic summary of graph nodes and edges.",
+      "imports": [],
+      "dependencies": [
+        "_role_value",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "can_delegate",
+      "line_number": 113,
+      "docstring": "Deterministic fixed delegation policy.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "delegation_metadata",
+      "line_number": 128,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "can_delegate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "deterministic_vote",
+      "line_number": 137,
+      "docstring": "Deterministic selection:\n- Highest score wins\n- Ties broken by smallest id",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "float",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentOrchestrator",
+      "line_number": 156,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentMessage",
+      "line_number": 194,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "route_to_specialist",
+      "line_number": 201,
+      "docstring": "Deterministic routing:\n- Finds first node whose role matches message.recipient.\n- No execution, no side effects.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentRole",
+      "line_number": 219,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentNode",
+      "line_number": 229,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "AgentGraph",
+      "line_number": 235,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summarize_graph",
+      "line_number": 267,
+      "docstring": "Deterministic summary of graph nodes and edges.",
+      "imports": [],
+      "dependencies": [
+        "_role_value",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MultiAgentOrchestrator",
+      "line_number": 283,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "apply_hil_feedback",
+      "line_number": 320,
+      "docstring": "Return a deep-copied state updated with human-in-the-loop feedback.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_role_value",
+      "line_number": 103,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 157,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dispatch",
+      "line_number": 161,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "summarize_graph",
+        "delegation_metadata",
+        "StatePatch",
+        "route_to_specialist",
+        "deterministic_vote"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_role_value",
+      "line_number": 271,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 284,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "dispatch",
+      "line_number": 288,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "summarize_graph",
+        "delegation_metadata",
+        "StatePatch",
+        "route_to_specialist",
+        "deterministic_vote"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_dataclasses": [
+      "line_8",
+      "line_47"
+    ],
+    "from_enum": [
+      "line_9",
+      "line_46"
+    ],
+    "from_multi_agent": [
+      "line_10",
+      "line_11",
+      "line_12",
+      "line_13",
+      "line_14"
+    ],
+    "from_typing": [
+      "line_15",
+      "line_16",
+      "line_48",
+      "line_110",
+      "line_134",
+      "line_151"
+    ],
+    "from_utils_types": [
+      "line_17",
+      "line_153"
+    ],
+    "copy": [
+      "line_18"
+    ]
+  },
+  "function_signatures": {
+    "route_to_specialist": "route_to_specialist",
+    "summarize_graph": "summarize_graph",
+    "can_delegate": "can_delegate",
+    "delegation_metadata": "delegation_metadata",
+    "deterministic_vote": "deterministic_vote",
+    "apply_hil_feedback": "apply_hil_feedback",
+    "_role_value": "_role_value",
+    "__init__": "__init__",
+    "dispatch": "dispatch"
+  },
+  "class_signatures": {
+    "AgentMessage": "AgentMessage",
+    "AgentRole": "AgentRole",
+    "AgentNode": "AgentNode",
+    "AgentGraph": "AgentGraph",
+    "MultiAgentOrchestrator": "MultiAgentOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 12,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

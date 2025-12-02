@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Retrieval META package for v10_10.\nCanonical entrypoints:\n- meta.retrieval.retrieval\n- meta.retrieval.hybrid_ranker\nThe package-level surface also exposes ``run_rag_retrieval`` so callers can\nimport it directly from ``meta.retrieval``.\n\"\"\"\nfrom .retrieval import orchestrate_retrieval, run_rag_retrieval # noqa: F401\nfrom .hybrid_ranker import fuse_and_rank # noqa: F401\n__all__ = [\"orchestrate_retrieval\", \"run_rag_retrieval\", \"fuse_and_rank\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

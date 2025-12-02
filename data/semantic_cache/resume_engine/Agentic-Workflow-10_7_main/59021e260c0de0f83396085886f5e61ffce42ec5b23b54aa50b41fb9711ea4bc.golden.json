@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Expose the vendored pydantic stub as a package.\"\"\"\nfrom vendor.pydantic_stub import * # noqa: F401,F403",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

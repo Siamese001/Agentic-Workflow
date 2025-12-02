@@ -1,0 +1,38 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\chromadb\\__init__.py",
+    "file_hash": "daf61b844b0e6fc829549cce8adede9636c5274cf0cfdbf0121d639e46467ced",
+    "size_bytes": 484,
+    "last_modified": "2025-12-01T12:27:42.040098",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "utils",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_vendor.chromadb_stub": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "utils": "utils"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

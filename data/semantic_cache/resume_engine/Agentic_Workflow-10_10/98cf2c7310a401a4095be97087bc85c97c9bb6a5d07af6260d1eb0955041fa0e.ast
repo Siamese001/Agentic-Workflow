@@ -1,0 +1,142 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\routing.py",
+    "file_hash": "98cf2c7310a401a4095be97087bc85c97c9bb6a5d07af6260d1eb0955041fa0e",
+    "size_bytes": 13339,
+    "last_modified": "2025-12-01T15:36:20.815981",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RoutingPolicy",
+      "line_number": 78,
+      "docstring": "v10_10 RoutingPolicy: pure model-selection logic.\n\nFields:\n    prefer_anthropic: Prefer Anthropic models if True.\n    prefer_openai:    Prefer OpenAI models if True.\n    allow_heavy:      Allow heavy models (deep reasoning).\n    enforce_low_cost: Prefer light models when possible.\n\nNotes:\n    - MetaProfileSnapshot can override provider preference based on\n      recent QA / correction rates.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "classify_skill_profile",
+      "line_number": 210,
+      "docstring": "Deterministic, rule-based skill classifier (non-LLM).\n\nUses simple keyword / structural heuristics on job + resume to\nderive a coarse skill profile. This is intentionally conservative\nbut stable for routing and complexity decisions.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "getattr",
+        "len",
+        "str",
+        "SkillClassifierResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "classify_domain_profile",
+      "line_number": 259,
+      "docstring": "Deterministic domain / industry classifier (non-LLM).",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "getattr",
+        "hasattr",
+        "str",
+        "DomainClassifierResult"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "classify_complexity",
+      "line_number": 304,
+      "docstring": "Heuristic classifier used by L1 to estimate ComplexityLevel.\n\nThis version incorporates:\n    \u2022 Job seniority / requirements\n    \u2022 Resume length\n    \u2022 QA / correction rates from meta_profile\n    \u2022 Deterministic skill and domain classifiers (non-LLM)\n\nAll logic is deterministic and side-effect free.",
+      "imports": [],
+      "dependencies": [
+        "classify_domain_profile",
+        "any",
+        "getattr",
+        "len",
+        "str",
+        "classify_skill_profile"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_choose_provider",
+      "line_number": 101,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "get_all_events",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "strategy_branches_for",
+      "line_number": 138,
+      "docstring": "Number of branches StrategyLLMAgent should explore.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "select_model",
+      "line_number": 151,
+      "docstring": "Select the appropriate model for a given task and complexity.\n\ntask:\n    A string identifier describing the logical task, e.g.:\n        - \"strategy_generate_branch\"\n        - \"strategy_select_branch\"\n        - \"drafting_structure\"\n        - \"drafting_narrative\"\n        - \"drafting_compliance\"\n        - \"qa_semantic_check\"\n        - \"safety_check\"\n\ncomplexity:\n    L1-estimated ComplexityLevel for the workload.\n\nmeta_profile:\n    Optional MetaProfileSnapshot influencing provider choice.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_28"
+    ],
+    "from_dataclasses": [
+      "line_30"
+    ],
+    "from_typing": [
+      "line_31"
+    ],
+    "from_models": [
+      "line_33"
+    ],
+    "from_meta_profile": [
+      "line_34"
+    ],
+    "from_observability": [
+      "line_35"
+    ]
+  },
+  "function_signatures": {
+    "classify_skill_profile": "classify_skill_profile",
+    "classify_domain_profile": "classify_domain_profile",
+    "classify_complexity": "classify_complexity",
+    "_choose_provider": "_choose_provider",
+    "strategy_branches_for": "strategy_branches_for",
+    "select_model": "select_model"
+  },
+  "class_signatures": {
+    "RoutingPolicy": "RoutingPolicy"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 46,
+    "cognitive_complexity": 39,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

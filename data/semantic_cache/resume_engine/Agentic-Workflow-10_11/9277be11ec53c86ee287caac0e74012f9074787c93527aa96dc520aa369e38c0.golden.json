@@ -1,0 +1,7 @@
+{
+  "canonical_form": "from __future__ import annotations\nfrom typing import Any, Dict\nfrom pydantic import BaseModel\nclass SimScenario(BaseModel):\nid: str\ndescription: str\ninitial_context: Dict[str, Any]\nexecution_profile_name: str\nrun_count: int\nclass SimOutcome(BaseModel):\nscenario_id: str\naverage_scores: Dict[str, float]\nsafety_incidents: int\nagent_conflict_count: int",
+  "normalized_signature": "class:SimScenario;class:SimOutcome",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

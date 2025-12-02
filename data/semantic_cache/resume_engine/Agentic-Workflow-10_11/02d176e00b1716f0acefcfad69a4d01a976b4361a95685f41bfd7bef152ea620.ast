@@ -1,0 +1,178 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\errors.py",
+    "file_hash": "02d176e00b1716f0acefcfad69a4d01a976b4361a95685f41bfd7bef152ea620",
+    "size_bytes": 3138,
+    "last_modified": "2025-12-01T12:27:40.868549",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ErrorSeverity",
+      "line_number": 15,
+      "docstring": "Severity levels for workflow errors.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowErrorCode",
+      "line_number": 23,
+      "docstring": "Standard error codes for workflow operations.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ErrorContext",
+      "line_number": 36,
+      "docstring": "Context information for workflow errors.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowError",
+      "line_number": 45,
+      "docstring": "Base class for all workflow-related errors.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NodeExecutionError",
+      "line_number": 61,
+      "docstring": "Raised when a node execution fails.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyViolationError",
+      "line_number": 78,
+      "docstring": "Raised when safety validation fails.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StateTransitionError",
+      "line_number": 96,
+      "docstring": "Raised when state transition fails.",
+      "imports": [],
+      "dependencies": [
+        "WorkflowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 48,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super",
+        "ErrorContext"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 64,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 81,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 99,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_enum": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_dataclasses": [
+      "line_12"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__"
+  },
+  "class_signatures": {
+    "ErrorSeverity": "ErrorSeverity",
+    "WorkflowErrorCode": "WorkflowErrorCode",
+    "ErrorContext": "ErrorContext",
+    "WorkflowError": "WorkflowError",
+    "NodeExecutionError": "NodeExecutionError",
+    "SafetyViolationError": "SafetyViolationError",
+    "StateTransitionError": "StateTransitionError"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

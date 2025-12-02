@@ -1,0 +1,487 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v5.7.py",
+    "file_hash": "be8f2b170c26e8d41ec8ed4dfe5a037b0dbe5b775858816ca1aec38287401efb",
+    "size_bytes": 36421,
+    "last_modified": "2025-12-01T12:27:35.872586",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "load_master_resume",
+      "line_number": 113,
+      "docstring": "Load master resume with fallback to mock data.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "open",
+        "_get_mock_master_resume"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_mock_master_resume",
+      "line_number": 125,
+      "docstring": "Return mock master resume for demonstration.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopStatus",
+      "line_number": 233,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationSeverity",
+      "line_number": 238,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GateDecision",
+      "line_number": 243,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationResult",
+      "line_number": 252,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HopCheckpoint",
+      "line_number": 260,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CompetitiveIntelligence",
+      "line_number": 271,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ThematicAnalysis",
+      "line_number": 278,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SectionLengthMetrics",
+      "line_number": 290,
+      "docstring": "v5.7: Track word counts for section length validation",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WordDistributionMetrics",
+      "line_number": 301,
+      "docstring": "v5.7: Track word distribution across resume",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "count_words_in_text",
+      "line_number": 316,
+      "docstring": "Count words in text, excluding dates and special characters.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "calculate_section_words",
+      "line_number": 325,
+      "docstring": "Calculate word count for a section (intro + bullets only).",
+      "imports": [],
+      "dependencies": [
+        "count_words_in_text",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_master_section_words",
+      "line_number": 341,
+      "docstring": "Get word count from master resume for specific company.",
+      "imports": [],
+      "dependencies": [
+        "calculate_section_words"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_section_length_v57",
+      "line_number": 348,
+      "docstring": "v5.7: Validate section length is within \u00b1tolerance of master resume.",
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "asdict",
+        "calculate_section_words",
+        "ValidationResult",
+        "get_master_section_words",
+        "SectionLengthMetrics",
+        "count_words_in_text"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_word_distribution_v57",
+      "line_number": 405,
+      "docstring": "v5.7: Validate word distribution rules.",
+      "imports": [],
+      "dependencies": [
+        "ValidationResult",
+        "asdict",
+        "WordDistributionMetrics",
+        "calculate_section_words"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_headline_v57",
+      "line_number": 467,
+      "docstring": "v5.7: Validate headline meets character constraints.",
+      "imports": [],
+      "dependencies": [
+        "ValidationResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_master_copy_v57",
+      "line_number": 483,
+      "docstring": "v5.7: Validate required fields are copied from master resume.",
+      "imports": [],
+      "dependencies": [
+        "ValidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationEngine",
+      "line_number": 532,
+      "docstring": "Comprehensive validation engine with v5.7 constraints.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerator",
+      "line_number": 577,
+      "docstring": "Generate tailored resume with v5.7 constraints.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "WorkflowOrchestrator",
+      "line_number": 650,
+      "docstring": "Main workflow orchestrator with v5.7 constraints.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 837,
+      "docstring": "Main execution function.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "WorkflowOrchestrator",
+        "len"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 535,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_resume_v57",
+      "line_number": 538,
+      "docstring": "Run all v5.7 validations.",
+      "imports": [],
+      "dependencies": [
+        "validate_master_copy_v57",
+        "validate_headline_v57",
+        "validate_word_distribution_v57",
+        "validate_section_length_v57"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_output_count",
+      "line_number": 560,
+      "docstring": "v5.7: Ensure exactly 4 output files.",
+      "imports": [],
+      "dependencies": [
+        "ValidationResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 580,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_headline",
+      "line_number": 583,
+      "docstring": "Generate headline optimized for signal and temperature (60-90 chars).",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "tailor_section",
+      "line_number": 605,
+      "docstring": "Tailor section maintaining \u00b110% word count.",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "calculate_section_words"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_resume",
+      "line_number": 627,
+      "docstring": "Generate complete tailored resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 653,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValidationEngine",
+        "ResumeGenerator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_workflow",
+      "line_number": 660,
+      "docstring": "Execute complete workflow with v5.7 constraints.",
+      "imports": [],
+      "dependencies": [
+        "validate_headline_v57",
+        "asdict",
+        "len",
+        "Exception",
+        "str",
+        "print"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_job_description",
+      "line_number": 735,
+      "docstring": "Analyze job description for themes.",
+      "imports": [],
+      "dependencies": [
+        "CompetitiveIntelligence",
+        "ThematicAnalysis"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_outputs",
+      "line_number": 763,
+      "docstring": "Generate exactly 4 output files.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "asdict",
+        "len",
+        "print",
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_39"
+    ],
+    "re": [
+      "line_40"
+    ],
+    "hashlib": [
+      "line_41"
+    ],
+    "math": [
+      "line_42"
+    ],
+    "from_typing": [
+      "line_43"
+    ],
+    "from_enum": [
+      "line_44"
+    ],
+    "from_datetime": [
+      "line_45"
+    ],
+    "from_dataclasses": [
+      "line_46"
+    ],
+    "from_pathlib": [
+      "line_47"
+    ],
+    "copy": [
+      "line_48"
+    ]
+  },
+  "function_signatures": {
+    "load_master_resume": "load_master_resume",
+    "_get_mock_master_resume": "_get_mock_master_resume",
+    "count_words_in_text": "count_words_in_text",
+    "calculate_section_words": "calculate_section_words",
+    "get_master_section_words": "get_master_section_words",
+    "validate_section_length_v57": "validate_section_length_v57",
+    "validate_word_distribution_v57": "validate_word_distribution_v57",
+    "validate_headline_v57": "validate_headline_v57",
+    "validate_master_copy_v57": "validate_master_copy_v57",
+    "main": "main",
+    "__init__": "__init__",
+    "validate_resume_v57": "validate_resume_v57",
+    "validate_output_count": "validate_output_count",
+    "generate_headline": "generate_headline",
+    "tailor_section": "tailor_section",
+    "generate_resume": "generate_resume",
+    "execute_workflow": "execute_workflow",
+    "_analyze_job_description": "_analyze_job_description",
+    "_generate_outputs": "_generate_outputs"
+  },
+  "class_signatures": {
+    "HopStatus": "HopStatus",
+    "ValidationSeverity": "ValidationSeverity",
+    "GateDecision": "GateDecision",
+    "ValidationResult": "ValidationResult",
+    "HopCheckpoint": "HopCheckpoint",
+    "CompetitiveIntelligence": "CompetitiveIntelligence",
+    "ThematicAnalysis": "ThematicAnalysis",
+    "SectionLengthMetrics": "SectionLengthMetrics",
+    "WordDistributionMetrics": "WordDistributionMetrics",
+    "ValidationEngine": "ValidationEngine",
+    "ResumeGenerator": "ResumeGenerator",
+    "WorkflowOrchestrator": "WorkflowOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 46,
+    "cognitive_complexity": 28,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

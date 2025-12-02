@@ -1,0 +1,280 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v4_5_0_JSON_sourced.py",
+    "file_hash": "2fd0e0ccb7bb71d1ffb6c6cd4fd76e3376204378a3a51a5018571823f536239b",
+    "size_bytes": 29922,
+    "last_modified": "2025-12-01T12:27:35.920209",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TemperatureMode",
+      "line_number": 29,
+      "docstring": "Temperature modes for constraint relaxation and signal adjustment.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_master_resume",
+      "line_number": 39,
+      "docstring": "Load the master resume from JSON file.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetrics",
+      "line_number": 48,
+      "docstring": "Baseline word count targets from the 1,032-word baseline resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "RoleProfiles",
+      "line_number": 84,
+      "docstring": "Different role types for resume customization.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BulletScorer",
+      "line_number": 124,
+      "docstring": "Score bullets based on relevance to JD and role.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerationEngine",
+      "line_number": 162,
+      "docstring": "Main engine for generating customized resumes from JSON master.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "score_bullet",
+      "line_number": 128,
+      "docstring": "Score a bullet based on keyword matches and metrics.",
+      "imports": [],
+      "dependencies": [
+        "min"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 165,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BulletScorer",
+        "load_master_resume",
+        "RoleProfiles",
+        "BaselineResumeMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_resume",
+      "line_number": 171,
+      "docstring": "Generate all 4 outputs for the resume.",
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_resume_sections",
+      "line_number": 198,
+      "docstring": "Build customized resume sections from master data.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_executive_summary",
+      "line_number": 261,
+      "docstring": "Generate role-specific executive summary (100-150 words).",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_bullets",
+      "line_number": 310,
+      "docstring": "Select top bullets based on relevance scoring.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_competencies",
+      "line_number": 322,
+      "docstring": "Extract key competency terms from verbose descriptions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_calculate_metrics",
+      "line_number": 340,
+      "docstring": "Calculate word counts and other metrics.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_qa_validation",
+      "line_number": 364,
+      "docstring": "Run QA validation checks.",
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_resume",
+      "line_number": 417,
+      "docstring": "Format OUTPUT 1: Complete resume.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_word_count_table",
+      "line_number": 492,
+      "docstring": "Format OUTPUT 2: Word count table.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "str",
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_signal_calibration",
+      "line_number": 557,
+      "docstring": "Format OUTPUT 3: Signal calibration with ASCII bar chart.",
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_qa_validation",
+      "line_number": 602,
+      "docstring": "Format OUTPUT 4: QA validation gates.",
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "json": [
+      "line_17"
+    ],
+    "re": [
+      "line_18"
+    ],
+    "from_typing": [
+      "line_19"
+    ],
+    "from_enum": [
+      "line_20"
+    ],
+    "random": [
+      "line_21"
+    ]
+  },
+  "function_signatures": {
+    "load_master_resume": "load_master_resume",
+    "score_bullet": "score_bullet",
+    "__init__": "__init__",
+    "generate_resume": "generate_resume",
+    "_build_resume_sections": "_build_resume_sections",
+    "_generate_executive_summary": "_generate_executive_summary",
+    "_select_bullets": "_select_bullets",
+    "_extract_competencies": "_extract_competencies",
+    "_calculate_metrics": "_calculate_metrics",
+    "_run_qa_validation": "_run_qa_validation",
+    "_format_resume": "_format_resume",
+    "_format_word_count_table": "_format_word_count_table",
+    "_format_signal_calibration": "_format_signal_calibration",
+    "_format_qa_validation": "_format_qa_validation"
+  },
+  "class_signatures": {
+    "TemperatureMode": "TemperatureMode",
+    "BaselineResumeMetrics": "BaselineResumeMetrics",
+    "RoleProfiles": "RoleProfiles",
+    "BulletScorer": "BulletScorer",
+    "ResumeGenerationEngine": "ResumeGenerationEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 36,
+    "cognitive_complexity": 22,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

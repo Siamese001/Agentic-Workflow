@@ -1,0 +1,231 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\meta_profile.py",
+    "file_hash": "2fa1d708664c07f4497c635645ebfc31d285ee6db42ff1918291a5c8361dd2bf",
+    "size_bytes": 14339,
+    "last_modified": "2025-12-01T12:27:36.872761",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RoutingBias",
+      "line_number": 45,
+      "docstring": "Routing-level preferences for L2/L5.\n\nFields:\n    prefer_fast:             prefer cheaper/faster models\n    prefer_robust_retrieval: bias toward more robust RAG settings\n    prefer_long_context:     bias toward long-context models",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PlanningBias",
+      "line_number": 60,
+      "docstring": "Planning (L1 reasoning) preferences.\n\nFields:\n    conservative:           reduce branching / depth\n    exploratory:            allow more branches / alternatives\n    deterministic_recovery: bias toward structured recovery plans",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QaBias",
+      "line_number": 75,
+      "docstring": "QA-related preferences and signals.\n\nFields:\n    recent_failures:    QA has recently failed often\n    require_extra_pass: bias toward extra QA passes",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyBias",
+      "line_number": 88,
+      "docstring": "Safety-related preferences.\n\nFields:\n    heightened_caution:     bias toward stricter safety paths\n    human_review_important: HIL review is frequently beneficial",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaUpdate",
+      "line_number": 101,
+      "docstring": "Single meta-update record used in history.\n\nFields:\n    source:    \"spans\" | \"self_correction\" | \"run_summary\" | ...\n    payload:   arbitrary context information\n    deltas:    snapshot of bias fields that changed",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetaProfile",
+      "line_number": 116,
+      "docstring": "Global meta-configuration for adaptive behavior.\n\nFields:\n    \u2022 routing_bias:    knobs influencing model routing.\n    \u2022 planning_bias:   knobs influencing L1 planners.\n    \u2022 qa_bias:         knobs based on QA outcomes.\n    \u2022 safety_bias:     knobs based on safety outcomes.\n    \u2022 history:         recent meta-updates (for inspection and tests).\n\nAll fields are *soft hints* only. L1\u2013L3\u2013L5 are free to ignore them.\nThis object is pure data; update_* helpers below mutate it.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_from_spans",
+      "line_number": 179,
+      "docstring": "Update META_PROFILE from a list of span dicts, each of form:\n\n    {\"name\": \"planning\"|\"execution\"|..., \"duration_ms\": float}\n\nHeuristics (restored from v10_8 behavior):\n\n    \u2022 If planning consistently slower than execution \u2192 routing_bias.prefer_fast = True.\n    \u2022 Else \u2192 routing_bias.prefer_fast = False.\n\nThis is a META-only adjustment; it does not mutate L1\u2013L5 directly.",
+      "imports": [],
+      "dependencies": [
+        "float",
+        "next"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_from_self_correction",
+      "line_number": 226,
+      "docstring": "Update META_PROFILE from a self_correction block, typically derived\nfrom self_correction.CorrectionRecommendation.to_dict().\n\nExample block:\n\n    {\n      \"needed\": True,\n      \"surface\": \"qa_recheck\",\n      \"rationale\": \"...\",\n      \"metadata\": {...}\n    }\n\nHeuristics (restored v10_8 semantics, but typed):\n\n    \u2022 surface == \"qa_recheck\":\n        planning_bias.conservative = True\n        qa_bias.recent_failures = True\n\n    \u2022 surface == \"strategy_replan\":\n        planning_bias.exploratory = True\n\n    \u2022 surface == \"hil_escalation\":\n        safety_bias.human_review_important = True\n\n    \u2022 surface == \"rag_retry\":\n        routing_bias.prefer_robust_retrieval = True\n\n    \u2022 surface == \"checkpoint_recovery\":\n        planning_bias.deterministic_recovery = True",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "update_from_run_summary",
+      "line_number": 312,
+      "docstring": "Optional hook: update META_PROFILE from a run_summary as produced\nby observability.summarize_run().\n\nShape:\n\n    {\n      \"workflow_id\": str,\n      \"phases\": [...],\n      \"timings\": {...},\n      \"counts\": {...},\n      \"issues\": {\n        \"qa\": [...],\n        \"safety\": [...],\n        \"hil\": [...],\n        ...\n      },\n    }\n\nHeuristics (restored from v10_8 + extended):\n\n    \u2022 Many QA issues \u2192 conservative planning, qa.recent_failures = True.\n    \u2022 Many safety issues \u2192 safety_bias.heightened_caution = True.\n    \u2022 Many HIL issues \u2192 safety_bias.human_review_important = True.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_routing_bias",
+      "line_number": 381,
+      "docstring": "Return a copy of the current routing bias block.\n\nTypical usage:\n    criteria = RoutingCriteria(...)\n    if get_routing_bias().get(\"prefer_fast\"):\n        criteria.latency_target_ms = min(criteria.latency_target_ms, 1000)",
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_planning_bias",
+      "line_number": 393,
+      "docstring": "Return a copy of the current planning bias block.\n\nTypical usage:\n    bias = get_planning_bias()\n    if bias.get(\"conservative\"):\n        # L1 planners may reduce branching_factor.\n        ...",
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_qa_bias",
+      "line_number": 406,
+      "docstring": "Return a copy of the current QA bias block.\n\nTypical usage:\n    bias = get_qa_bias()\n    if bias.get(\"recent_failures\"):\n        # L1/L2 or meta layers may run additional QA passes.\n        ...",
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_safety_bias",
+      "line_number": 419,
+      "docstring": "Return a copy of the current safety bias block.\n\nTypical usage:\n    bias = get_safety_bias()\n    if bias.get(\"heightened_caution\"):\n        # L5 or routing may use stricter models or thresholds.\n        ...",
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_meta_profile_snapshot",
+      "line_number": 432,
+      "docstring": "Return a full snapshot of the meta profile for logging or debugging.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "snapshot",
+      "line_number": 137,
+      "docstring": "Return a snapshot safe for logging or inspection.\nOnly the last N history entries are preserved to bound size.",
+      "imports": [],
+      "dependencies": [
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_record_update",
+      "line_number": 157,
+      "docstring": "Internal helper to append a MetaUpdate to history.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "MetaUpdate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_33"
+    ],
+    "from_dataclasses": [
+      "line_35"
+    ],
+    "from_typing": [
+      "line_36"
+    ]
+  },
+  "function_signatures": {
+    "update_from_spans": "update_from_spans",
+    "update_from_self_correction": "update_from_self_correction",
+    "update_from_run_summary": "update_from_run_summary",
+    "get_routing_bias": "get_routing_bias",
+    "get_planning_bias": "get_planning_bias",
+    "get_qa_bias": "get_qa_bias",
+    "get_safety_bias": "get_safety_bias",
+    "get_meta_profile_snapshot": "get_meta_profile_snapshot",
+    "snapshot": "snapshot",
+    "_record_update": "_record_update"
+  },
+  "class_signatures": {
+    "RoutingBias": "RoutingBias",
+    "PlanningBias": "PlanningBias",
+    "QaBias": "QaBias",
+    "SafetyBias": "SafetyBias",
+    "MetaUpdate": "MetaUpdate",
+    "MetaProfile": "MetaProfile"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 28,
+    "cognitive_complexity": 27,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

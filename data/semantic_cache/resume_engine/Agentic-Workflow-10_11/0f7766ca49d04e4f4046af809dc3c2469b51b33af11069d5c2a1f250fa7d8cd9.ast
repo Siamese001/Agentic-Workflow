@@ -1,0 +1,145 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\execution.py",
+    "file_hash": "0f7766ca49d04e4f4046af809dc3c2469b51b33af11069d5c2a1f250fa7d8cd9",
+    "size_bytes": 22443,
+    "last_modified": "2025-12-01T12:27:38.770833",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_safe_getattr",
+      "line_number": 62,
+      "docstring": "Safely accesses object attributes for reliable resume processing.\n\nPrevents errors in resume job alignment workflows.",
+      "imports": [],
+      "dependencies": [
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_base_query",
+      "line_number": 74,
+      "docstring": "Constructs search query from job and resume data.\n\nCreates focused queries for resume job alignment evidence.",
+      "imports": [],
+      "dependencies": [
+        "_safe_getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_compute_council_vote_from_qa",
+      "line_number": 106,
+      "docstring": "Derives quality assessment vote from QA findings.\n\nEnsures consistent evaluation of resume job alignment quality.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "getattr",
+        "len",
+        "list",
+        "CouncilVote",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_run_latent_thinking",
+      "line_number": 140,
+      "docstring": "Records thinking trace for resume improvement analysis.\n\nMaintains observability of resume job alignment decisions.",
+      "imports": [],
+      "dependencies": [
+        "record_event",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_workflow_plans",
+      "line_number": 645,
+      "docstring": "Run the full execution pipeline from synchronous code.\n\nThis helper exists for callers that are not async-aware. It invokes\n:func:`run_l2` under the hood and returns the same structured bundle of\nresults: updated strategy, retrieved evidence, drafted sections, QA\nfindings, and safety findings.\n\nIn business terms, it provides a simple, blocking way for other systems to\nrequest a fully processed resume without needing to manage asynchronous\nworkflows themselves.",
+      "imports": [],
+      "dependencies": [
+        "run_l2",
+        "validate_schema_version"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_10"
+    ],
+    "asyncio": [
+      "line_12"
+    ],
+    "from_typing": [
+      "line_13",
+      "line_37"
+    ],
+    "from_core.models.models": [
+      "line_15"
+    ],
+    "from_runtime.observability": [
+      "line_32"
+    ],
+    "from_meta.schema_validation": [
+      "line_33"
+    ],
+    "meta.retrieval": [
+      "line_34"
+    ],
+    "from_infra.di_container": [
+      "line_35"
+    ],
+    "from_l5.policy": [
+      "line_36"
+    ],
+    "from_eval.health.adapter": [
+      "line_47"
+    ],
+    "from_eval.health.failure_detector": [
+      "line_48"
+    ],
+    "from_eval.health.repair_policies": [
+      "line_49"
+    ],
+    "from_agents": [
+      "line_40",
+      "line_175",
+      "line_209",
+      "line_314",
+      "line_369",
+      "line_412",
+      "line_461"
+    ],
+    "from_l5.types": [
+      "line_480"
+    ]
+  },
+  "function_signatures": {
+    "_safe_getattr": "_safe_getattr",
+    "_build_base_query": "_build_base_query",
+    "_compute_council_vote_from_qa": "_compute_council_vote_from_qa",
+    "_run_latent_thinking": "_run_latent_thinking",
+    "execute_workflow_plans": "execute_workflow_plans"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 34,
+    "cognitive_complexity": 17,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

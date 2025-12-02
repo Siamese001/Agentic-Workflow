@@ -1,0 +1,19 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\03_hop_artist.py",
+    "file_hash": "cac6899632d569cef8d15be5652882663b7aa076d490de7d7682f7fff97505d9",
+    "size_bytes": 20064,
+    "last_modified": "2025-12-01T12:27:36.388209",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "error": "syntax_error",
+    "line": 438
+  }
+}

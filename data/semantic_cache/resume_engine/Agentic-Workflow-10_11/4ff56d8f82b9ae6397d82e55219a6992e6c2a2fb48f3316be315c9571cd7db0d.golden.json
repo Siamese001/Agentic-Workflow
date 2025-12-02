@@ -1,0 +1,9 @@
+{
+  "canonical_form": "from __future__ import annotations\n\"\"\"AIS health metrics helpers.\nSimple aggregation utilities over error / success events that can be\nused by tests or higher-level evaluation code.\n\"\"\"\nfrom typing import Dict, List, Any\ndef compute_error_rate(events: List[Dict[str, Any]]) -> float:\n\"\"\"Return fraction of events marked as errors.\nEvents are dicts with an optional \"event_type\" == \"error\" flag.\n\"\"\"\nif not events:\nreturn 0.0\nerrors = sum(1 for evt in events if evt.get(\"event_type\") == \"error\")\nreturn errors / float(len(events))\ndef count_failures_by_code(events: List[Dict[str, Any]]) -> Dict[str, int]:\n\"\"\"Aggregate error events by their error_code field.\"\"\"\ncounts: Dict[str, int] = {}\nfor evt in events:\nif evt.get(\"event_type\") != \"error\":\ncontinue\ncode = str(evt.get(\"error_code\") or \"unknown\")\ncounts[code] = counts.get(code, 0) + 1\nreturn counts",
+  "normalized_signature": "func:compute_error_rate;func:count_failures_by_code",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:compute_error_rate,count_failures_by_code",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

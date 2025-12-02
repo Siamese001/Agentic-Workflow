@@ -1,0 +1,366 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\l3.py",
+    "file_hash": "ba5211f7dfa43c99b259396b99c7a4ed0ec5a221603ca3dfd1d6b584dfb44289",
+    "size_bytes": 22166,
+    "last_modified": "2025-12-01T12:27:36.920547",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DAGValidationError",
+      "line_number": 68,
+      "docstring": "Raised when a DAG is structurally invalid (missing nodes, cycles, etc.).",
+      "imports": [],
+      "dependencies": [
+        "ValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ControlFlowError",
+      "line_number": 72,
+      "docstring": "Raised when orchestration cannot make progress due to misconfigured DAG.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "NodeExecutionError",
+      "line_number": 76,
+      "docstring": "Raised when a node fails irrecoverably after retries.",
+      "imports": [],
+      "dependencies": [
+        "Exception"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DAGNode",
+      "line_number": 86,
+      "docstring": "Single node in the orchestration DAG.\n\nFields:\n    name:                  unique node identifier\n    mode:                  L2 executor mode (strategy, rag, etc.)\n    plan:                  PlanObject or plan dict for this node\n    depends_on:            upstream node names\n    fallback:              fallback node names (declared in DAG, not executed here)\n    parallel_group:        logical parallel group (metadata only)\n    max_retries:           max retries before marking node ERROR\n    predictive_cache_key:  hint for external caching (metadata only)\n    surfaces:              self-correction surfaces (for journaling)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DAGModel",
+      "line_number": 114,
+      "docstring": "In-memory representation of a workflow DAG.\n\nnodes: mapping of node_name -> DAGNode",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_dag_from_plan",
+      "line_number": 188,
+      "docstring": "Construct a DAGModel from an L1 PlanObject.\n\nExpected plan structure:\n\n    plan[\"dag\"] = {\n        \"nodes\": [\n            {\n                \"name\": \"strategy\",\n                \"mode\": \"strategy\",\n                \"depends_on\": [],\n                \"fallback\": [],\n                \"parallel_group\": null,\n                \"max_retries\": 0,\n                \"predictive_cache_key\": {...},\n                \"surfaces\": [...]\n            },\n            ...\n        ]\n    }\n\nIf no \"dag\" block is present, we construct a minimal single-node DAG\nrepresenting the plan itself (backwards-compatible with simple flows).",
+      "imports": [],
+      "dependencies": [
+        "PlanObject",
+        "DAGModel",
+        "int",
+        "str",
+        "DAGValidationError",
+        "DAGNode"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "PhaseMachine",
+      "line_number": 274,
+      "docstring": "Minimal phase machine for WorkflowPhase transitions.\n\nThis is local to L3 and does not replace any richer PhaseMachine you\nmay have elsewhere.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostTracker",
+      "line_number": 294,
+      "docstring": "Extremely simple cost tracker for L3-level accounting.\n\nFull cost/latency dashboards live elsewhere; this only aggregates\nper-node usage tokens and allows L3 to attach them to WorkflowState.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DAGExecutor",
+      "line_number": 317,
+      "docstring": "Deterministic executor for DAG nodes with:\n\n    \u2022 Parallel execution of independent nodes.\n    \u2022 Fallback-friendly error handling (DAG-level).\n    \u2022 Per-node retries according to DAGNode.max_retries.\n    \u2022 Predictive cache hinting (metadata only).\n    \u2022 NodeResult metadata emission.\n    \u2022 Route trace and correction journal surfaces.\n\nAll durable state writes must go through the provided StateAdapter\n(L4). L3 does NOT mutate state directly.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate",
+      "line_number": 123,
+      "docstring": "Validate basic DAG invariants:\n\n    \u2022 Node keys must match node.name.\n    \u2022 All dependencies and fallback targets must exist.\n    \u2022 Graph must be acyclic.",
+      "imports": [],
+      "dependencies": [
+        "DAGValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_ensure_acyclic",
+      "line_number": 151,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len",
+        "DAGValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dependents_of",
+      "line_number": 171,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "root_nodes",
+      "line_number": 178,
+      "docstring": "Nodes with no dependencies.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 282,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set",
+      "line_number": 286,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "current_value",
+      "line_number": 290,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 302,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record",
+      "line_number": 306,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 332,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_ready_nodes",
+      "line_number": 344,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_payload_to_state",
+      "line_number": 353,
+      "docstring": "Normalize payload from ExecutionResult into state using L4.StateAdapter.",
+      "imports": [],
+      "dependencies": [
+        "StatePatch",
+        "hasattr",
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_record_route",
+      "line_number": 389,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "RouteTraceEntry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_record_corrections",
+      "line_number": 400,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CorrectionJournalEntry"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run",
+      "line_number": 478,
+      "docstring": "Execute full L3 orchestration for a single L1 PlanObject.\n\nThis is a synchronous API; higher layers may wrap it with asyncio\nas needed. Internally, this uses asyncio.run to call the async L2\nroute_executor.",
+      "imports": [],
+      "dependencies": [
+        "get_routing_bias",
+        "dict",
+        "sorted",
+        "WorkflowState",
+        "len",
+        "_run_async",
+        "zip",
+        "isinstance",
+        "str",
+        "build_dag_from_plan",
+        "NodeResult",
+        "CostTracker",
+        "get_meta_profile_snapshot",
+        "set",
+        "PhaseMachine",
+        "get_safety_bias",
+        "ControlFlowError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_39"
+    ],
+    "asyncio": [
+      "line_41"
+    ],
+    "time": [
+      "line_42"
+    ],
+    "from_dataclasses": [
+      "line_43"
+    ],
+    "from_typing": [
+      "line_44"
+    ],
+    "from_models": [
+      "line_46"
+    ],
+    "from_exceptions": [
+      "line_57"
+    ],
+    "from_l4": [
+      "line_58"
+    ],
+    "from_l2": [
+      "line_59"
+    ],
+    "from_meta_profile": [
+      "line_60"
+    ]
+  },
+  "function_signatures": {
+    "build_dag_from_plan": "build_dag_from_plan",
+    "validate": "validate",
+    "_ensure_acyclic": "_ensure_acyclic",
+    "_dependents_of": "_dependents_of",
+    "root_nodes": "root_nodes",
+    "__init__": "__init__",
+    "set": "set",
+    "current_value": "current_value",
+    "record": "record",
+    "_ready_nodes": "_ready_nodes",
+    "_apply_payload_to_state": "_apply_payload_to_state",
+    "_record_route": "_record_route",
+    "_record_corrections": "_record_corrections",
+    "run": "run"
+  },
+  "class_signatures": {
+    "DAGValidationError": "DAGValidationError",
+    "ControlFlowError": "ControlFlowError",
+    "NodeExecutionError": "NodeExecutionError",
+    "DAGNode": "DAGNode",
+    "DAGModel": "DAGModel",
+    "PhaseMachine": "PhaseMachine",
+    "CostTracker": "CostTracker",
+    "DAGExecutor": "DAGExecutor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 51,
+    "cognitive_complexity": 31,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

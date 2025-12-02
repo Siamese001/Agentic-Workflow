@@ -1,0 +1,683 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\golden_eval.py",
+    "file_hash": "6df1948bc1cd80929f9f218f6e9beef9188a40bc2aff350c7f9f00f87d1b7a50",
+    "size_bytes": 53202,
+    "last_modified": "2025-12-01T15:36:20.749083",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ModelLike",
+      "line_number": 64,
+      "docstring": "Lightweight drop\u2011in replacement for a small subset of the Pydantic\nBaseModel API used elsewhere in the codebase.\n\nAll evaluation models in this module are simple dataclasses that\ninherit from ModelLike, which provides:\n\n    \u2022 model_dump() -> dict\n    \u2022 model_dump_json(indent=2, by_alias=False) -> str\n\nThis keeps golden_eval completely independent from Pydantic while\npreserving the familiar interface expected by upstream tooling.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_as_mapping",
+      "line_number": 93,
+      "docstring": "Best\u2011effort view of an arbitrary object as a mapping.",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "dict",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_safe_get_attr_or_item",
+      "line_number": 118,
+      "docstring": "Helper that tries both attribute and mapping access.",
+      "imports": [],
+      "dependencies": [
+        "hasattr",
+        "getattr",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_dotted_get",
+      "line_number": 131,
+      "docstring": "Generic dotted\u2011path lookup against nested dicts / models.\n\nExample:\n    _dotted_get(patch, \"config.knobs.hyde_enabled\")",
+      "imports": [],
+      "dependencies": [
+        "_safe_get_attr_or_item",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_normalize_title",
+      "line_number": 153,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_count_where",
+      "line_number": 157,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "predicate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "Comparator",
+      "line_number": 166,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "FieldExpectation",
+      "line_number": 185,
+      "docstring": "Generic field\u2011level expectation expressed as a dotted path into\nthe state patch.\n\nExample JSON shape (for load_expectations):\n\n    {\n      \"path\": \"config.knobs.hyde_enabled\",\n      \"comparator\": \"eq\",\n      \"expected\": true,\n      \"weight\": 2.0,\n      \"hard_fail\": true,\n      \"description\": \"HYDE enabled in knob config\"\n    }",
+      "imports": [],
+      "dependencies": [
+        "ModelLike"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GoldenExpectation",
+      "line_number": 224,
+      "docstring": "Declarative description of what a single workflow run is expected\nto look like under a specific golden scenario.\n\nThe expectation is intentionally high\u2011level and tolerant of minor\nimplementation details; it focuses on invariants that should hold\nif the Phase\u20113 capabilities (G1\u2013G37) are wired correctly.",
+      "imports": [],
+      "dependencies": [
+        "ModelLike"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ScenarioKnobs",
+      "line_number": 280,
+      "docstring": "Minimal, string\u2011only description of Phase\u20113 knob settings for a\nscenario.  This mirrors Phase3Knobs from main_v10_10 but avoids\nimporting runtime modules.\n\nThese values are intended to be passed directly into\nmain_v10_10.run_workflow by simulation.py.",
+      "imports": [],
+      "dependencies": [
+        "ModelLike"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "GoldenScenario",
+      "line_number": 299,
+      "docstring": "Complete description of a golden scenario used by simulation.py.\n\n    \u2022 knobs      \u2192 how to configure main_v10_10 / run_batch_v10_10\n    \u2022 expectation \u2192 how to evaluate the resulting state patch",
+      "imports": [],
+      "dependencies": [
+        "ModelLike"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EvalMetric",
+      "line_number": 319,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ModelLike"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EvalReport",
+      "line_number": 330,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ModelLike"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_default_scenarios",
+      "line_number": 372,
+      "docstring": "Canonical golden scenarios used in Phase\u20113 testing.\n\nThese are intentionally generic and only talk about knobs and\nobservable invariants \u2014 they do not encode any specific user\nprompts or corpus content.",
+      "imports": [],
+      "dependencies": [
+        "GoldenExpectation",
+        "list",
+        "GoldenScenario",
+        "FieldExpectation",
+        "ScenarioKnobs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_sections",
+      "line_number": 616,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_as_mapping",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_rag_evidence",
+      "line_number": 634,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_as_mapping",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_correction_state",
+      "line_number": 651,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_as_mapping"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_knob",
+      "line_number": 661,
+      "docstring": "Attempt to recover a Phase\u20113 knob value from the patch by checking\nseveral common locations.",
+      "imports": [],
+      "dependencies": [
+        "_safe_get_attr_or_item"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_telemetry",
+      "line_number": 702,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_cost_snapshot",
+      "line_number": 716,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_detect_correction_audit",
+      "line_number": 728,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "bool"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_sections",
+      "line_number": 741,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "_normalize_title",
+        "len",
+        "EvalMetric",
+        "str",
+        "min",
+        "_extract_sections",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_rag_and_hyde",
+      "line_number": 772,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max",
+        "bool",
+        "len",
+        "EvalMetric",
+        "_safe_get_attr_or_item",
+        "min",
+        "_extract_rag_evidence"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_rrf_and_council",
+      "line_number": 828,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "int",
+        "EvalMetric",
+        "str",
+        "_extract_knob",
+        "_dotted_get"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_correction_loop",
+      "line_number": 897,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "EvalMetric",
+        "_extract_correction_state"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_qa",
+      "line_number": 953,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max",
+        "bool",
+        "isinstance",
+        "len",
+        "_as_mapping",
+        "_count_where",
+        "EvalMetric"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_safety",
+      "line_number": 989,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max",
+        "bool",
+        "isinstance",
+        "_as_mapping",
+        "_count_where",
+        "EvalMetric"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_telemetry_and_cost",
+      "line_number": 1052,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "_detect_cost_snapshot",
+        "EvalMetric",
+        "_detect_correction_audit",
+        "str",
+        "_detect_telemetry",
+        "_extract_knob",
+        "_dotted_get"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_metric_field_expectations",
+      "line_number": 1144,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "EvalMetric",
+        "_dotted_get",
+        "_apply_comparator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_comparator",
+      "line_number": 1187,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "abs",
+        "bool",
+        "len",
+        "isinstance",
+        "int",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_patch",
+      "line_number": 1284,
+      "docstring": "Evaluate a single state patch (typically final_state_patch from L3/L4)\nagainst a GoldenExpectation.\n\nThe `state_patch` is expected to be shaped approximately like:\n\n    {\n        \"strategy_text\": str | None,\n        \"rag_evidence\": [ { \"text\": ..., \"score\": ..., \"source\": ... }, ... ],\n        \"drafted_sections\": [ { \"title\": ..., \"text\": ..., ... }, ... ],\n        \"qa_findings\": [ { \"id\": ..., \"passed\": bool, ... }, ... ],\n        \"safety_findings\": [ { \"id\": ..., \"category\": ..., \"blocking\": bool, ... }, ... ],\n        \"correction_loop_state\": {\n            \"iteration\": int,\n            \"max_iterations\": int,\n            \"surfaces_triggered\": [...],\n            \"last_signal\": str | None,\n            \"terminated_reason\": str | None,\n        },\n        \"safety_passed\": bool,\n        \"telemetry_summary\": ...,\n        \"cost_snapshot\": ...,\n    }\n\nExact keys are not required; the evaluator uses best\u2011effort extraction\nand will mark missing data as failing individual metrics with an\nexplanatory reason.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "_metric_rag_and_hyde",
+        "_as_mapping",
+        "_metric_sections",
+        "_metric_safety",
+        "_metric_qa",
+        "_metric_telemetry_and_cost",
+        "_metric_field_expectations",
+        "_extract_sections",
+        "_extract_rag_evidence",
+        "_metric_rrf_and_council",
+        "_metric_correction_loop"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_suite",
+      "line_number": 1365,
+      "docstring": "Evaluate a mapping of scenario_id \u2192 patch against a collection of\nGoldenExpectation objects.\n\nAny expectation without a matching patch will be marked as a failed\nreport with zero score.",
+      "imports": [],
+      "dependencies": [
+        "EvalMetric",
+        "evaluate_patch"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_expectations",
+      "line_number": 1415,
+      "docstring": "Load GoldenExpectation objects from a JSON file.\n\nSupported shapes:\n\n    1) JSON array of expectation objects:\n        [\n          { \"scenario_id\": \"...\", ... },\n          { \"scenario_id\": \"...\", ... }\n        ]\n\n    2) JSON object mapping scenario_id \u2192 expectation object:\n        {\n          \"scenario_a\": { \"required_sections\": [...], ... },\n          \"scenario_b\": { ... }\n        }\n\nIn the second form the scenario_id key will be injected into the\nexpectation object if missing.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "isinstance",
+        "ValueError",
+        "str",
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "save_report",
+      "line_number": 1462,
+      "docstring": "Save an EvalReport to a JSON file.",
+      "imports": [],
+      "dependencies": [
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_expectation",
+      "line_number": 1475,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_load_patch",
+      "line_number": 1496,
+      "docstring": "Load a patch JSON file.\n\nSupported shapes:\n    \u2022 Single JSON object \u2192 returned as\u2011is.\n    \u2022 JSON object mapping scenario_id \u2192 patch \u2192 caller should\n      select by scenario_id before passing to evaluate_patch.",
+      "imports": [],
+      "dependencies": [
+        "Path",
+        "ValueError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_cli",
+      "line_number": 1512,
+      "docstring": "Simple CLI intended for CI pipelines.\n\nExample:\n\n    python -m golden_eval             --patch state_patch.json             --expectation golden_expectations.json             --scenario-id hyde_on_rrf_weighted_council3             --out eval_report.json\n\nIf --expectation is omitted or set to the literal string \"builtin\",\nthe built\u2011in GOLDEN_SCENARIOS registry is used.",
+      "imports": [],
+      "dependencies": [
+        "load_expectations",
+        "_select_expectation",
+        "ValueError",
+        "evaluate_patch",
+        "_load_patch",
+        "save_report",
+        "print",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_dump",
+      "line_number": 80,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "asdict",
+        "dict",
+        "is_dataclass"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "model_dump_json",
+      "line_number": 85,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "from_dict",
+      "line_number": 210,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "Comparator",
+        "cls",
+        "isinstance",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "from_dict",
+      "line_number": 265,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "cls",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "from_metrics",
+      "line_number": 340,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "cls",
+        "list",
+        "min",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_46"
+    ],
+    "from_dataclasses": [
+      "line_48"
+    ],
+    "from_enum": [
+      "line_49"
+    ],
+    "from_pathlib": [
+      "line_50"
+    ],
+    "from_typing": [
+      "line_51"
+    ],
+    "json": [
+      "line_53"
+    ],
+    "sys": [
+      "line_54"
+    ],
+    "argparse": [
+      "line_1527"
+    ]
+  },
+  "function_signatures": {
+    "_as_mapping": "_as_mapping",
+    "_safe_get_attr_or_item": "_safe_get_attr_or_item",
+    "_dotted_get": "_dotted_get",
+    "_normalize_title": "_normalize_title",
+    "_count_where": "_count_where",
+    "_build_default_scenarios": "_build_default_scenarios",
+    "_extract_sections": "_extract_sections",
+    "_extract_rag_evidence": "_extract_rag_evidence",
+    "_extract_correction_state": "_extract_correction_state",
+    "_extract_knob": "_extract_knob",
+    "_detect_telemetry": "_detect_telemetry",
+    "_detect_cost_snapshot": "_detect_cost_snapshot",
+    "_detect_correction_audit": "_detect_correction_audit",
+    "_metric_sections": "_metric_sections",
+    "_metric_rag_and_hyde": "_metric_rag_and_hyde",
+    "_metric_rrf_and_council": "_metric_rrf_and_council",
+    "_metric_correction_loop": "_metric_correction_loop",
+    "_metric_qa": "_metric_qa",
+    "_metric_safety": "_metric_safety",
+    "_metric_telemetry_and_cost": "_metric_telemetry_and_cost",
+    "_metric_field_expectations": "_metric_field_expectations",
+    "_apply_comparator": "_apply_comparator",
+    "evaluate_patch": "evaluate_patch",
+    "evaluate_suite": "evaluate_suite",
+    "load_expectations": "load_expectations",
+    "save_report": "save_report",
+    "_select_expectation": "_select_expectation",
+    "_load_patch": "_load_patch",
+    "_cli": "_cli",
+    "model_dump": "model_dump",
+    "model_dump_json": "model_dump_json",
+    "from_dict": "from_dict",
+    "from_metrics": "from_metrics"
+  },
+  "class_signatures": {
+    "ModelLike": "ModelLike",
+    "Comparator": "Comparator",
+    "FieldExpectation": "FieldExpectation",
+    "GoldenExpectation": "GoldenExpectation",
+    "ScenarioKnobs": "ScenarioKnobs",
+    "GoldenScenario": "GoldenScenario",
+    "EvalMetric": "EvalMetric",
+    "EvalReport": "EvalReport"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 110,
+    "cognitive_complexity": 85,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

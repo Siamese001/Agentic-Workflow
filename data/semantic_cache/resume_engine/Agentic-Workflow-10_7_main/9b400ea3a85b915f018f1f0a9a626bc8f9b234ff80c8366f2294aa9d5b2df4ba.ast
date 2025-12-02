@@ -1,0 +1,66 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\tests\\v10_7\\test_flat__policy__test_policy_stack_basic.py",
+    "file_hash": "9b400ea3a85b915f018f1f0a9a626bc8f9b234ff80c8366f2294aa9d5b2df4ba",
+    "size_bytes": 2768,
+    "last_modified": "2025-12-01T12:27:41.631352",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_ensure_import_roots",
+      "line_number": 59,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "list",
+        "str",
+        "getattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_materialize_module",
+      "line_number": 71,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "compile",
+        "exec"
+      ],
+      "responsibility_level": "L2",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_4"
+    ],
+    "sys": [
+      "line_6"
+    ],
+    "types": [
+      "line_7"
+    ],
+    "from_pathlib": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "_ensure_import_roots": "_ensure_import_roots",
+    "_materialize_module": "_materialize_module"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 5,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

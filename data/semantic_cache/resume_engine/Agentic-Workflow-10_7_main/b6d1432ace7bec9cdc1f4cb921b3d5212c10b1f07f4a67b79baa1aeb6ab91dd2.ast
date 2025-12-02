@@ -1,0 +1,144 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\config.py",
+    "file_hash": "b6d1432ace7bec9cdc1f4cb921b3d5212c10b1f07f4a67b79baa1aeb6ab91dd2",
+    "size_bytes": 2491,
+    "last_modified": "2025-12-01T12:27:41.157657",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ConfigV10_7",
+      "line_number": 13,
+      "docstring": "Configuration loader for v10.7",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ConfigSection",
+      "line_number": 45,
+      "docstring": "Wrapper for nested config sections",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 16,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValueError",
+        "get_schema"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 31,
+      "docstring": "Dynamic attribute access for nested config",
+      "imports": [],
+      "dependencies": [
+        "ConfigSection",
+        "AttributeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 48,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__getattr__",
+      "line_number": 51,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ConfigSection",
+        "AttributeError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__setattr__",
+      "line_number": 66,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get",
+      "line_number": 74,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__contains__",
+      "line_number": 77,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "logging": [
+      "line_5"
+    ],
+    "from_typing": [
+      "line_6"
+    ],
+    "from_mcp": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "__getattr__": "__getattr__",
+    "__setattr__": "__setattr__",
+    "get": "get",
+    "__contains__": "__contains__"
+  },
+  "class_signatures": {
+    "ConfigV10_7": "ConfigV10_7",
+    "ConfigSection": "ConfigSection"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 10,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

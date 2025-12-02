@@ -1,0 +1,249 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\safety_validator.py",
+    "file_hash": "a11c012de48aabca2397ffdefcce3563e96aa3d8b2ce13e65d7879968cc57698",
+    "size_bytes": 11006,
+    "last_modified": "2025-12-01T12:27:38.911955",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "LayerSafetyPolicy",
+      "line_number": 30,
+      "docstring": "Concrete safety policy implementation for resume workflow layers.",
+      "imports": [],
+      "dependencies": [
+        "SafetyPolicy"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyConstraintType",
+      "line_number": 71,
+      "docstring": "Types of safety constraints enforced by L5.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "L5SafetyValidator",
+      "line_number": 82,
+      "docstring": "Centralized L5 safety validation for resume job alignment workflows.\n\nEnforces safety constraints and ethical guidelines for resume enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 33,
+      "docstring": "Initializes safety policy for resume workflow layer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "policy_id",
+      "line_number": 40,
+      "docstring": "Unique identifier for resume workflow safety policy.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "description",
+      "line_number": 45,
+      "docstring": "Human-readable description of resume workflow safety policy.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate",
+      "line_number": 49,
+      "docstring": "Evaluates resume workflow context against safety policy.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "len",
+        "PolicyDecision",
+        "hasattr",
+        "str",
+        "PolicyEvaluationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 89,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_load_safety_constraints",
+      "line_number": 93,
+      "docstring": "Loads safety constraints for resume workflow enforcement.",
+      "imports": [],
+      "dependencies": [
+        "SafetyConstraint"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_layer_input",
+      "line_number": 135,
+      "docstring": "Validates input for any layer using centralized L5 safety rules.\n\nEnsures consistent safety enforcement across all architectural layers.",
+      "imports": [],
+      "dependencies": [
+        "SafetyFinding",
+        "SafetyResult",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_constraint",
+      "line_number": 180,
+      "docstring": "Checks if resume workflow content violates safety constraint.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_content_safety",
+      "line_number": 197,
+      "docstring": "Checks content safety violations in resume workflow data.",
+      "imports": [],
+      "dependencies": [
+        "SafetyViolation"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_privacy_rules",
+      "line_number": 213,
+      "docstring": "Checks privacy rule violations in resume workflow data.",
+      "imports": [],
+      "dependencies": [
+        "SafetyViolation"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_bias",
+      "line_number": 229,
+      "docstring": "Checks for biased content in resume workflow data.",
+      "imports": [],
+      "dependencies": [
+        "SafetyViolation"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_timestamp",
+      "line_number": 245,
+      "docstring": "Gets timestamp for resume workflow audit trail.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_safety_policy_for_layer",
+      "line_number": 250,
+      "docstring": "Gets safety policy for resume workflow layer enhancement.",
+      "imports": [],
+      "dependencies": [
+        "LayerSafetyPolicy"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "from_typing": [
+      "line_9"
+    ],
+    "from_enum": [
+      "line_10"
+    ],
+    "logging": [
+      "line_11"
+    ],
+    "from_l5.interfaces": [
+      "line_13"
+    ],
+    "from_l5.types": [
+      "line_25"
+    ],
+    "from_datetime": [
+      "line_247"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "policy_id": "policy_id",
+    "description": "description",
+    "evaluate": "evaluate",
+    "_load_safety_constraints": "_load_safety_constraints",
+    "validate_layer_input": "validate_layer_input",
+    "_check_constraint": "_check_constraint",
+    "_check_content_safety": "_check_content_safety",
+    "_check_privacy_rules": "_check_privacy_rules",
+    "_check_bias": "_check_bias",
+    "_get_timestamp": "_get_timestamp",
+    "get_safety_policy_for_layer": "get_safety_policy_for_layer"
+  },
+  "class_signatures": {
+    "LayerSafetyPolicy": "LayerSafetyPolicy",
+    "SafetyConstraintType": "SafetyConstraintType",
+    "L5SafetyValidator": "L5SafetyValidator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 23,
+    "cognitive_complexity": 13,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

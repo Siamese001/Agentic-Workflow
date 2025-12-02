@@ -1,0 +1,180 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\07_hop_rendering.py",
+    "file_hash": "2d8588c8087077deb97771c8b1ff4596df0681fe0232043d8c98c54a8ea46d56",
+    "size_bytes": 14288,
+    "last_modified": "2025-12-01T12:27:36.388209",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "DynamicMarkdownRenderer",
+      "line_number": 86,
+      "docstring": "Renders a markdown resume based on a render spec.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HighSignalAppTracker",
+      "line_number": 174,
+      "docstring": "Generates a rich app tracker entry with performance data.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_hop_7",
+      "line_number": 226,
+      "docstring": "Executes the HOP-7 rendering logic.",
+      "imports": [],
+      "dependencies": [
+        "DynamicMarkdownRenderer",
+        "setup_workflow_logging",
+        "len",
+        "exit",
+        "HopExecutionError",
+        "HighSignalAppTracker",
+        "print",
+        "open",
+        "Path"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 89,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_apply_formatting",
+      "line_number": 109,
+      "docstring": "Applies final typography and hyphenation rules.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_dynamic_content",
+      "line_number": 119,
+      "docstring": "Fetches data from HOP-0 ThematicAnalysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "render",
+      "line_number": 126,
+      "docstring": "Iterates the spec and builds the markdown string.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 177,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_find_validation_detail",
+      "line_number": 185,
+      "docstring": "Helper to find specific validation results.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_entry",
+      "line_number": 192,
+      "docstring": "Builds the app tracker JSON string.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_15"
+    ],
+    "argparse": [
+      "line_17"
+    ],
+    "json": [
+      "line_18"
+    ],
+    "logging": [
+      "line_19"
+    ],
+    "re": [
+      "line_20"
+    ],
+    "sys": [
+      "line_21"
+    ],
+    "from_datetime": [
+      "line_22"
+    ],
+    "from_pathlib": [
+      "line_23"
+    ],
+    "from_typing": [
+      "line_24"
+    ],
+    "from_helpers": [
+      "line_31"
+    ]
+  },
+  "function_signatures": {
+    "run_hop_7": "run_hop_7",
+    "__init__": "__init__",
+    "_apply_formatting": "_apply_formatting",
+    "_get_dynamic_content": "_get_dynamic_content",
+    "render": "render",
+    "_find_validation_detail": "_find_validation_detail",
+    "build_entry": "build_entry"
+  },
+  "class_signatures": {
+    "DynamicMarkdownRenderer": "DynamicMarkdownRenderer",
+    "HighSignalAppTracker": "HighSignalAppTracker"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 21,
+    "cognitive_complexity": 10,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

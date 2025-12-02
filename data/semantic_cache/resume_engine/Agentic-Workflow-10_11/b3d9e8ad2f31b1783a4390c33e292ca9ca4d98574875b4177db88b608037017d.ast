@@ -1,0 +1,105 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\orchestration\\agent_bus.py",
+    "file_hash": "b3d9e8ad2f31b1783a4390c33e292ca9ca4d98574875b4177db88b608037017d",
+    "size_bytes": 3138,
+    "last_modified": "2025-12-01T12:27:40.903793",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "AgentBus",
+      "line_number": 16,
+      "docstring": "Acts as an in-memory mailbox so agents can pass results and insights, keeping later resume steps aware of earlier decisions and preserving a coherent story for the candidate.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "send_message",
+      "line_number": 21,
+      "docstring": "Deliver a message to the agent responsible for the next step.\n\nEach message typically carries context or results from an earlier\nstage of the workflow. Routing it through this bus means downstream\nagents can pick up exactly what they need to refine, review, or score\nthe resume without redoing work or guessing about prior decisions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_messages_for",
+      "line_number": 33,
+      "docstring": "Retrieve all messages waiting for a given agent.\n\nIn practice this lets an agent see everything that earlier steps have\ndiscovered or decided about the candidate and role. That shared view\nsupports better judgments about what to highlight, clarify, or remove\nin the resume.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "clear",
+      "line_number": 44,
+      "docstring": "Reset all agent queues.\n\nThis is mainly used when starting a fresh workflow run or cleaning up\nbetween tests, so each resume is processed independently without\nleaking information from previous runs.\n\nThis helps to ensure that each resume is produced in isolation, without\nany residual information from previous runs that could impact its quality.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "send",
+      "line_number": 59,
+      "docstring": "Compatibility alias that forwards to ``send_message``.\n\nThis keeps older code paths working while still benefiting from the\nsame, predictable message handling that newer parts of the workflow\nrely on to coordinate resume improvements.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_for",
+      "line_number": 69,
+      "docstring": "Compatibility alias that forwards to ``get_messages_for``.\n\nOlder callers can still retrieve all messages for an agent without\nbeing aware of newer APIs. This helps maintain stability as the\nworkflow evolves, which is important for keeping resume outputs\nconsistent over time.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_dataclasses": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_4"
+    ],
+    "from_core.models.models": [
+      "line_6"
+    ]
+  },
+  "function_signatures": {
+    "send_message": "send_message",
+    "get_messages_for": "get_messages_for",
+    "clear": "clear",
+    "send": "send",
+    "get_for": "get_for"
+  },
+  "class_signatures": {
+    "AgentBus": "AgentBus"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
