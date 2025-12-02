@@ -4,7 +4,7 @@ Contains only type definitions and data models - no execution logic.
 """
 
 from dataclasses import dataclass
-from typing import Optional, Dict, Any, List, Union
+from typing import Optional, Dict, Any, List
 from enum import Enum
 
 
@@ -45,9 +45,9 @@ class ProcessingConfiguration:
 
 @dataclass
 class ProcessedResponse:
-    """Schema for processed response data."""
     original_response: Dict[str, Any]
-    processed_data: Optional[Dict[str, Any]] = None
     processing_actions: List[ProcessingAction]
     metadata: ResponseMetadata
     processing_timestamp: str
+    processed_data: Optional[Dict[str, Any]] = None
+    """Schema for processed response data."""
