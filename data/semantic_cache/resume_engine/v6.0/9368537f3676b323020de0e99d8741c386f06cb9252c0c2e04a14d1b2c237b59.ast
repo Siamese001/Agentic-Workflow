@@ -369,8 +369,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "ValueError"
+        "ValueError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -571,8 +571,8 @@
       "dependencies": [
         "set",
         "len",
-        "ValidationResult",
-        "list"
+        "list",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -670,9 +670,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "list",
         "enumerate",
         "len",
+        "list",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -685,10 +685,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "set",
         "ValidationResult",
-        "len",
-        "list"
+        "set",
+        "list",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -733,8 +733,8 @@
       "docstring": "Factory method to create expert instances.",
       "imports": [],
       "dependencies": [
-        "ValueError",
-        "expert_class"
+        "expert_class",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -746,11 +746,11 @@
       "docstring": "Execute all experts and aggregate results.",
       "imports": [],
       "dependencies": [
+        "str",
         "len",
-        "MoEDecision",
-        "ValidationResult",
         "MoEExpertResult",
-        "str"
+        "MoEDecision",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -798,10 +798,10 @@
       "docstring": "Helper to load and build an AtomicAgentConfig from CONFIG.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "ValueError",
         "getattr",
-        "AtomicAgentConfig"
+        "AtomicAgentConfig",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -814,10 +814,10 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "ValueError",
-        "hasattr",
         "router_class",
-        "MoERouterConfig"
+        "MoERouterConfig",
+        "ValueError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

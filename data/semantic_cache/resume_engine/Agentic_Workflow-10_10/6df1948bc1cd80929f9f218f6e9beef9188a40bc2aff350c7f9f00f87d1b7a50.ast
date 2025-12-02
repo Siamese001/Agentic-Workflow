@@ -26,9 +26,9 @@
       "docstring": "Best\u2011effort view of an arbitrary object as a mapping.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "dict",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -40,9 +40,9 @@
       "docstring": "Helper that tries both attribute and mapping access.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "getattr",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -90,8 +90,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -175,11 +175,11 @@
       "docstring": "Canonical golden scenarios used in Phase\u20113 testing.\n\nThese are intentionally generic and only talk about knobs and\nobservable invariants \u2014 they do not encode any specific user\nprompts or corpus content.",
       "imports": [],
       "dependencies": [
+        "FieldExpectation",
+        "ScenarioKnobs",
         "GoldenExpectation",
         "list",
-        "GoldenScenario",
-        "FieldExpectation",
-        "ScenarioKnobs"
+        "GoldenScenario"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -277,15 +277,15 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "str",
         "sum",
-        "max",
-        "_normalize_title",
         "len",
         "EvalMetric",
-        "str",
-        "min",
         "_extract_sections",
-        "sorted"
+        "_normalize_title",
+        "sorted",
+        "max",
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -297,13 +297,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
         "bool",
+        "_extract_rag_evidence",
         "len",
         "EvalMetric",
-        "_safe_get_attr_or_item",
+        "max",
         "min",
-        "_extract_rag_evidence"
+        "_safe_get_attr_or_item"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -315,11 +315,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "int",
-        "EvalMetric",
         "str",
+        "int",
         "_extract_knob",
-        "_dotted_get"
+        "_dotted_get",
+        "EvalMetric"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -344,13 +344,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
         "bool",
         "isinstance",
         "len",
+        "EvalMetric",
         "_as_mapping",
-        "_count_where",
-        "EvalMetric"
+        "max",
+        "_count_where"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -362,12 +362,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
         "bool",
         "isinstance",
+        "EvalMetric",
         "_as_mapping",
-        "_count_where",
-        "EvalMetric"
+        "max",
+        "_count_where"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -379,13 +379,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_detect_cost_snapshot",
-        "EvalMetric",
-        "_detect_correction_audit",
         "str",
-        "_detect_telemetry",
         "_extract_knob",
-        "_dotted_get"
+        "_dotted_get",
+        "EvalMetric",
+        "_detect_telemetry",
+        "_detect_correction_audit",
+        "_detect_cost_snapshot"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -398,8 +398,8 @@
       "imports": [],
       "dependencies": [
         "EvalMetric",
-        "_dotted_get",
-        "_apply_comparator"
+        "_apply_comparator",
+        "_dotted_get"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -411,12 +411,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "abs",
         "bool",
-        "len",
-        "isinstance",
+        "float",
         "int",
-        "float"
+        "isinstance",
+        "len",
+        "abs"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -428,18 +428,18 @@
       "docstring": "Evaluate a single state patch (typically final_state_patch from L3/L4)\nagainst a GoldenExpectation.\n\nThe `state_patch` is expected to be shaped approximately like:\n\n    {\n        \"strategy_text\": str | None,\n        \"rag_evidence\": [ { \"text\": ..., \"score\": ..., \"source\": ... }, ... ],\n        \"drafted_sections\": [ { \"title\": ..., \"text\": ..., ... }, ... ],\n        \"qa_findings\": [ { \"id\": ..., \"passed\": bool, ... }, ... ],\n        \"safety_findings\": [ { \"id\": ..., \"category\": ..., \"blocking\": bool, ... }, ... ],\n        \"correction_loop_state\": {\n            \"iteration\": int,\n            \"max_iterations\": int,\n            \"surfaces_triggered\": [...],\n            \"last_signal\": str | None,\n            \"terminated_reason\": str | None,\n        },\n        \"safety_passed\": bool,\n        \"telemetry_summary\": ...,\n        \"cost_snapshot\": ...,\n    }\n\nExact keys are not required; the evaluator uses best\u2011effort extraction\nand will mark missing data as failing individual metrics with an\nexplanatory reason.",
       "imports": [],
       "dependencies": [
-        "len",
-        "_metric_rag_and_hyde",
-        "_as_mapping",
-        "_metric_sections",
-        "_metric_safety",
-        "_metric_qa",
-        "_metric_telemetry_and_cost",
         "_metric_field_expectations",
-        "_extract_sections",
         "_extract_rag_evidence",
         "_metric_rrf_and_council",
-        "_metric_correction_loop"
+        "len",
+        "_metric_rag_and_hyde",
+        "_metric_safety",
+        "_metric_correction_loop",
+        "_as_mapping",
+        "_extract_sections",
+        "_metric_qa",
+        "_metric_sections",
+        "_metric_telemetry_and_cost"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -464,10 +464,10 @@
       "docstring": "Load GoldenExpectation objects from a JSON file.\n\nSupported shapes:\n\n    1) JSON array of expectation objects:\n        [\n          { \"scenario_id\": \"...\", ... },\n          { \"scenario_id\": \"...\", ... }\n        ]\n\n    2) JSON object mapping scenario_id \u2192 expectation object:\n        {\n          \"scenario_a\": { \"required_sections\": [...], ... },\n          \"scenario_b\": { ... }\n        }\n\nIn the second form the scenario_id key will be injected into the\nexpectation object if missing.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "isinstance",
-        "ValueError",
         "str",
+        "isinstance",
+        "dict",
+        "ValueError",
         "Path"
       ],
       "responsibility_level": "L5",
@@ -505,8 +505,8 @@
       "docstring": "Load a patch JSON file.\n\nSupported shapes:\n    \u2022 Single JSON object \u2192 returned as\u2011is.\n    \u2022 JSON object mapping scenario_id \u2192 patch \u2192 caller should\n      select by scenario_id before passing to evaluate_patch.",
       "imports": [],
       "dependencies": [
-        "Path",
         "ValueError",
+        "Path",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -519,14 +519,14 @@
       "docstring": "Simple CLI intended for CI pipelines.\n\nExample:\n\n    python -m golden_eval             --patch state_patch.json             --expectation golden_expectations.json             --scenario-id hyde_on_rrf_weighted_council3             --out eval_report.json\n\nIf --expectation is omitted or set to the literal string \"builtin\",\nthe built\u2011in GOLDEN_SCENARIOS registry is used.",
       "imports": [],
       "dependencies": [
-        "load_expectations",
-        "_select_expectation",
-        "ValueError",
-        "evaluate_patch",
-        "_load_patch",
-        "save_report",
         "print",
-        "sorted"
+        "load_expectations",
+        "evaluate_patch",
+        "sorted",
+        "_load_patch",
+        "ValueError",
+        "_select_expectation",
+        "save_report"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -539,8 +539,8 @@
       "imports": [],
       "dependencies": [
         "asdict",
-        "dict",
-        "is_dataclass"
+        "is_dataclass",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -562,11 +562,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dict",
-        "Comparator",
-        "cls",
+        "str",
         "isinstance",
-        "str"
+        "dict",
+        "cls",
+        "Comparator"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -578,8 +578,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "dict",
         "cls",
+        "dict",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -594,10 +594,10 @@
       "dependencies": [
         "sum",
         "max",
-        "cls",
         "list",
-        "min",
-        "all"
+        "all",
+        "cls",
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []

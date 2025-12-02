@@ -48,8 +48,8 @@
       "docstring": "Create v6 prompt for L1 QA planner with examples.\n\nArgs:\n    include_examples: Whether to include many-shot examples\n    \nReturns:\n    Rendered prompt string",
       "imports": [],
       "dependencies": [
-        "LayerContent",
-        "create_l1_planner_prompt"
+        "create_l1_planner_prompt",
+        "LayerContent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -61,8 +61,8 @@
       "docstring": "Create v6 prompt for L1 safety planner with examples.\n\nArgs:\n    include_examples: Whether to include many-shot examples\n    \nReturns:\n    Rendered prompt string",
       "imports": [],
       "dependencies": [
-        "LayerContent",
-        "create_l1_planner_prompt"
+        "create_l1_planner_prompt",
+        "LayerContent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -74,10 +74,10 @@
       "docstring": "Create v6 prompt for L2 strategy executor with examples.\n\nArgs:\n    include_examples: Whether to include many-shot examples\n    \nReturns:\n    Rendered prompt string",
       "imports": [],
       "dependencies": [
-        "get_examples",
         "format_examples_for_prompt",
-        "LayerContent",
-        "create_l2_executor_prompt"
+        "create_l2_executor_prompt",
+        "get_examples",
+        "LayerContent"
       ],
       "responsibility_level": "L5",
       "children": []

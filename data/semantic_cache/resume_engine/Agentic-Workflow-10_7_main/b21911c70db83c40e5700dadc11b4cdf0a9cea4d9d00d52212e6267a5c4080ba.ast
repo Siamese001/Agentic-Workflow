@@ -16,8 +16,8 @@
       "docstring": "Return the last ``limit`` lines of ``path`` and a count of entries.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "open"
+        "open",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_read_log_tail",
-        "getattr"
+        "getattr",
+        "_read_log_tail"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -42,10 +42,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "callable",
+        "getattr",
         "ping_fn",
-        "getattr"
+        "callable",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -195,20 +195,20 @@
       "docstring": "Build complete async meta-learning graph",
       "imports": [],
       "dependencies": [
+        "AsyncToolCritiqueAgent",
+        "GeneratedToolWriterAgent",
+        "LogReaderAgent",
+        "AsyncHypothesisGeneratorAgent",
         "max",
-        "check_proposal_type",
         "AsyncProposalCritiqueAgent",
+        "AsyncToolGeneratorAgent",
         "StateGraph",
+        "check_proposal_type",
+        "check_tool_critique",
+        "AsyncProposalDrafterAgent",
         "AsyncLogSummarizerAgent",
         "AsyncPatternFinderAgent",
-        "AsyncProposalDrafterAgent",
-        "GeneratedToolWriterAgent",
-        "HotReloadRuleManager",
-        "AsyncToolGeneratorAgent",
-        "AsyncToolCritiqueAgent",
-        "check_tool_critique",
-        "LogReaderAgent",
-        "AsyncHypothesisGeneratorAgent"
+        "HotReloadRuleManager"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -255,9 +255,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "track_metrics",
-        "open"
+        "open",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

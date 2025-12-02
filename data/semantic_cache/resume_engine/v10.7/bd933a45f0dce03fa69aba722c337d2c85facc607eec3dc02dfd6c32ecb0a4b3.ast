@@ -77,10 +77,10 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "MCPClientSpec",
+        "str",
         "isinstance",
-        "ValueError",
-        "str"
+        "MCPClientSpec",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -92,14 +92,14 @@
       "docstring": "Create an MCP client instance from a validated spec.",
       "imports": [],
       "dependencies": [
+        "redis_cls",
         "getattr",
-        "redis_module",
-        "AttributeError",
         "MCPClientStub",
         "callable",
         "persistent_cls",
-        "redis_cls",
-        "client_cls"
+        "redis_module",
+        "client_cls",
+        "AttributeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -590,11 +590,11 @@
       "docstring": "v10.7: Decorator for async node functions.",
       "imports": [],
       "dependencies": [
-        "max",
-        "func",
-        "wraps",
+        "range",
         "WorkflowError",
-        "range"
+        "wraps",
+        "max",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -607,9 +607,9 @@
       "imports": [],
       "dependencies": [
         "float",
-        "WorkflowTimeoutError",
         "func",
-        "wraps"
+        "wraps",
+        "WorkflowTimeoutError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -621,8 +621,8 @@
       "docstring": "Compatibility wrapper retained for orchestration helpers.",
       "imports": [],
       "dependencies": [
-        "int",
-        "async_timeout"
+        "async_timeout",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -658,11 +658,11 @@
       "docstring": "Decorator that ensures MCP clients are initialised for node handlers.",
       "imports": [],
       "dependencies": [
-        "func",
         "wraps",
         "_extract_workflow_context",
+        "update_context",
         "wrap_mcp",
-        "update_context"
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -694,11 +694,11 @@
       "docstring": "v10.7: Decorator for agent/tool run/run_async methods.",
       "imports": [],
       "dependencies": [
-        "func",
-        "dict",
+        "str",
         "wraps",
-        "hasattr",
-        "str"
+        "dict",
+        "func",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -888,23 +888,23 @@
       "docstring": "v10.7 REFACTOR: Centralized Composition Root.",
       "imports": [],
       "dependencies": [
-        "ProposedRulesLoader",
-        "MetricsCollector",
+        "WorkflowContext",
         "getattr",
         "SemanticValidator",
-        "FeedbackLogReader",
-        "client_ctor",
-        "ContextBudgetManager",
-        "http_ctor",
-        "MCPClientStub",
-        "callable",
-        "embedding_ctor",
-        "ResponseValidator",
-        "redis_ctor",
-        "CostTracker",
         "CacheManager",
+        "ContextBudgetManager",
+        "callable",
+        "ProposedRulesLoader",
+        "MCPClientStub",
+        "http_ctor",
         "persistent_ctor",
-        "WorkflowContext",
+        "redis_ctor",
+        "MetricsCollector",
+        "client_ctor",
+        "ResponseValidator",
+        "CostTracker",
+        "FeedbackLogReader",
+        "embedding_ctor",
         "PromptTemplateManager"
       ],
       "responsibility_level": "L5",
@@ -927,10 +927,10 @@
       "docstring": "Centralized bias detection service shared by agents and tools.",
       "imports": [],
       "dependencies": [
-        "isinstance",
+        "sorted",
         "str",
-        "len",
-        "sorted"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1244,11 +1244,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
-        "func",
-        "wraps",
+        "range",
         "WorkflowError",
-        "range"
+        "wraps",
+        "max",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1261,9 +1261,9 @@
       "imports": [],
       "dependencies": [
         "float",
-        "WorkflowTimeoutError",
         "func",
-        "wraps"
+        "wraps",
+        "WorkflowTimeoutError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1367,11 +1367,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "dict",
+        "str",
         "wraps",
-        "hasattr",
-        "str"
+        "dict",
+        "func",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1494,12 +1494,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "issubclass",
-        "JSONParsingError",
-        "isinstance",
-        "type",
         "str",
-        "PydanticSchemaError"
+        "isinstance",
+        "PydanticSchemaError",
+        "issubclass",
+        "type",
+        "JSONParsingError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1564,8 +1564,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ProposedRule",
-        "open"
+        "open",
+        "ProposedRule"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1764,9 +1764,9 @@
       "docstring": "v10.7 (Fix #15): Gets model client.\nRoutes based on complexity, cost, and latency.",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "_legacy_model_alias",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1830,11 +1830,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_canonical_model_name",
-        "ValueError",
-        "OpenAIAsyncClient",
+        "AnthropicAsyncClient",
         "GeminiAsyncClient",
-        "AnthropicAsyncClient"
+        "_canonical_model_name",
+        "OpenAIAsyncClient",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1846,10 +1846,10 @@
       "docstring": "Pre-process MCP configuration into typed specs.",
       "imports": [],
       "dependencies": [
-        "bool",
-        "isinstance",
         "_parse_mcp_client_specs",
+        "bool",
         "str",
+        "isinstance",
         "MCPClientInitializationError"
       ],
       "responsibility_level": "L5",
@@ -1942,20 +1942,20 @@
       "docstring": "v10.7: Custom deserializer to reconstruct nested Pydantic models.",
       "imports": [],
       "dependencies": [
-        "FeedbackContext",
-        "HILContext",
-        "cls",
-        "StrategyContext",
-        "isinstance",
-        "JobContext",
         "BulletContext",
-        "A2AContext",
-        "QAContext",
-        "PromptContext",
-        "DraftContext",
-        "ResumeContext",
-        "SafetyContext",
         "ArtifactContext",
+        "isinstance",
+        "StrategyContext",
+        "DraftContext",
+        "SafetyContext",
+        "cls",
+        "FeedbackContext",
+        "JobContext",
+        "QAContext",
+        "HILContext",
+        "ResumeContext",
+        "A2AContext",
+        "PromptContext",
         "MetadataContext"
       ],
       "responsibility_level": "L5",
@@ -1968,11 +1968,11 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "dict",
+        "str",
         "wraps",
-        "hasattr",
-        "str"
+        "dict",
+        "func",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -243,8 +243,8 @@
       "docstring": "Return a deterministic snapshot of spans:\n\n    {\"spans\": [{\"name\": str, \"duration_ms\": float}, ...]}",
       "imports": [],
       "dependencies": [
-        "max",
-        "sorted"
+        "sorted",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -268,8 +268,8 @@
       "docstring": "Normalize retrieval items into canonical:\n\n    {\"query\": str, \"evidence\": str, \"rank\": int}\n\nMissing keys are defaulted to safe values.",
       "imports": [],
       "dependencies": [
-        "int",
-        "str"
+        "str",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -305,8 +305,8 @@
       "docstring": "Merge multiple retrieval lists into a single normalized list,\nsorted by (query, rank).",
       "imports": [],
       "dependencies": [
-        "dict",
-        "sorted"
+        "sorted",
+        "dict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -402,8 +402,8 @@
       "docstring": "Normalize a list of RAG items into the canonical structure:\n\n    {\"query\": str, \"evidence\": str, \"rank\": int, \"metadata\": {...}}",
       "imports": [],
       "dependencies": [
-        "int",
-        "str"
+        "str",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -415,12 +415,12 @@
       "docstring": "Fuse results from multiple queries into a single, deduplicated,\nranked list.\n\nSteps:\n    1. Flatten all sources.\n    2. Deduplicate by (query.lower(), evidence.lower()).\n    3. Assign a fusion score combining rank and evidence length.\n    4. Sort by fusion score descending.\n    5. Reassign ranks deterministically.",
       "imports": [],
       "dependencies": [
-        "dict",
-        "len",
-        "list",
+        "str",
         "enumerate",
         "int",
-        "str"
+        "len",
+        "dict",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

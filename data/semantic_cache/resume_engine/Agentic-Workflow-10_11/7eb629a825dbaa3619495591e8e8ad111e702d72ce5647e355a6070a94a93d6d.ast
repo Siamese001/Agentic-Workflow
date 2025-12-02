@@ -26,8 +26,8 @@
       "docstring": "Initializes resume workflow state manager for job alignment.\n\nArgs:\n    initial_state: The initial state of the application\n    max_history: Maximum number of historical snapshots to keep in memory\n    max_age_days: Maximum age of snapshots to keep in memory\n    persistence_path: Optional path for persistent storage",
       "imports": [],
       "dependencies": [
-        "timedelta",
-        "str"
+        "str",
+        "timedelta"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -82,9 +82,9 @@
       "docstring": "Rollbacks resume workflow state for job alignment recovery.\n\nArgs:\n    target_state_id: The ID of the target state to roll back to\n    \nReturns:\n    The state snapshot after rollback\n    \nRaises:\n    StateRollbackError: If the target state cannot be found",
       "imports": [],
       "dependencies": [
+        "StatePath",
         "reversed",
-        "StateRollbackError",
-        "StatePath"
+        "StateRollbackError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -98,8 +98,8 @@
       "dependencies": [
         "StatePath",
         "int",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -111,8 +111,8 @@
       "docstring": "Removes old resume workflow snapshots for job alignment.",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "max",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",
@@ -125,8 +125,8 @@
       "docstring": "Persists resume workflow snapshot for job alignment.",
       "imports": [],
       "dependencies": [
-        "str",
-        "open"
+        "open",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -139,10 +139,10 @@
       "imports": [],
       "dependencies": [
         "any",
-        "len",
-        "open",
         "StateOperation",
-        "sorted"
+        "len",
+        "sorted",
+        "open"
       ],
       "responsibility_level": "L5",
       "children": []

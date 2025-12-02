@@ -60,8 +60,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -73,8 +73,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -86,8 +86,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -99,9 +99,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
         "callable",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -113,9 +113,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
         "callable",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -127,9 +127,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "AttributeError",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

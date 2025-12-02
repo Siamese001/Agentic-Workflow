@@ -16,8 +16,8 @@
       "docstring": "Fixes import statements in a single file for architectural consistency.\n\nEnsures resume generation modules maintain proper import structure\nfor improved code organization and easier maintenance.",
       "imports": [],
       "dependencies": [
-        "print",
-        "open"
+        "open",
+        "print"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,11 +29,11 @@
       "docstring": "Fixes all Python files in the repository for architectural consistency.\n\nEnsures resume generation system maintains clean import structure\nfor improved code organization and easier maintenance.",
       "imports": [],
       "dependencies": [
-        "fix_file",
-        "len",
-        "str",
         "print",
-        "sorted"
+        "str",
+        "len",
+        "sorted",
+        "fix_file"
       ],
       "responsibility_level": "L1",
       "children": []

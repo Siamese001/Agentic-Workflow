@@ -106,9 +106,9 @@
       "docstring": "Construct a typed MetaProfileSnapshot for the given profile name.\n\nThis provides a stable, read-only view for L1 and routing that\nexposes both meta biases and derived profile inference signals.",
       "imports": [],
       "dependencies": [
-        "list",
         "bool",
-        "MetaProfileSnapshot"
+        "MetaProfileSnapshot",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

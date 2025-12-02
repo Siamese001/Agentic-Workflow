@@ -384,8 +384,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "AttributeError",
-        "type"
+        "type",
+        "AttributeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -529,8 +529,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "list",
-        "asdict"
+        "asdict",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

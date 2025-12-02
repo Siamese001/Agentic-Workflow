@@ -38,10 +38,10 @@
       "docstring": "Create a uniquely identified span and record the start time.\n\nReturns a span record dict that must be passed to end_span().",
       "imports": [],
       "dependencies": [
-        "str",
-        "TelemetryEvent",
+        "_log",
         "_now_ms",
-        "_log"
+        "TelemetryEvent",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -53,9 +53,9 @@
       "docstring": "Close a previously-started span.\n\nIf the span is not in the stack (already closed or unknown), this\nis a no-op.",
       "imports": [],
       "dependencies": [
+        "_log",
         "_now_ms",
-        "TelemetryEvent",
-        "_log"
+        "TelemetryEvent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -67,9 +67,9 @@
       "docstring": "Node-level events for L3 orchestration visibility.\n\nExample:\n    emit_node_event(\"strategy\", \"start\")\n    emit_node_event(\"strategy\", \"success\")",
       "imports": [],
       "dependencies": [
+        "_log",
         "_now_ms",
-        "TelemetryEvent",
-        "_log"
+        "TelemetryEvent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -81,9 +81,9 @@
       "docstring": "General-purpose event emission for arbitrary telemetry use cases.",
       "imports": [],
       "dependencies": [
+        "_log",
         "_now_ms",
-        "TelemetryEvent",
-        "_log"
+        "TelemetryEvent"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -95,10 +95,10 @@
       "docstring": "Emit an error-level telemetry event for exceptions.",
       "imports": [],
       "dependencies": [
+        "_log",
         "_now_ms",
-        "str",
         "TelemetryEvent",
-        "_log"
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -182,9 +182,9 @@
       "docstring": "Used by L2 after Strategy/Drafting/QA/Safety completes.\n\nThe CostSnapshot is converted into telemetry attributes.",
       "imports": [],
       "dependencies": [
+        "_log",
         "_now_ms",
-        "TelemetryEvent",
-        "_log"
+        "TelemetryEvent"
       ],
       "responsibility_level": "L5",
       "children": []

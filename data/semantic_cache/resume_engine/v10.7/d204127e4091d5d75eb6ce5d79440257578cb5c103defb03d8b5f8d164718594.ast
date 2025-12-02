@@ -28,10 +28,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "ChromaDBSearchTool",
         "HyDETool",
         "super",
-        "BM25SearchTool"
+        "BM25SearchTool",
+        "ChromaDBSearchTool"
       ],
       "responsibility_level": "L5",
       "children": []

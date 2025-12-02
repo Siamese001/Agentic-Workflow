@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\pydantic.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\pydantic.py",
     "file_hash": "7c39e2007c249404cfceac690c6e88858f5b9dadfe63a347c02c840bd70d6555",
     "size_bytes": 1460,
-    "last_modified": "2025-12-01T12:27:37.121663",
+    "last_modified": "2025-12-01T12:27:37.357389",
     "engine": "RG",
     "archive_version": "v10.7",
     "file_extension": ".py"
@@ -50,10 +50,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "setattr",
-        "hasattr",
+        "getattr",
         "ValidationError",
-        "getattr"
+        "setattr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

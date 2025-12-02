@@ -28,8 +28,8 @@
       "docstring": "Strategy for Reciprocal Rank Fusion in retrieval / evidence fusion.\n\nExposed at the entrypoint so that experiments can be performed without\nchanging internal modules.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -41,8 +41,8 @@
       "docstring": "How routing decisions incorporate telemetry (for dynamic routing, G15\u2013G18).",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -64,12 +64,12 @@
       "docstring": "Resolves r\u00e9sum\u00e9 processing profile by name.\n\nEnsures optimal configuration strategy for comprehensive r\u00e9sum\u00e9 improvement scenarios.",
       "imports": [],
       "dependencies": [
-        "get_profile",
         "getattr",
-        "cast",
-        "ValueError",
         "callable",
-        "RuntimeError"
+        "RuntimeError",
+        "get_profile",
+        "ValueError",
+        "cast"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -82,11 +82,11 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "cast",
-        "ValueError",
-        "callable",
         "get_policy",
-        "RuntimeError"
+        "callable",
+        "RuntimeError",
+        "ValueError",
+        "cast"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -99,11 +99,11 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "cast",
-        "get_sandbox",
-        "ValueError",
         "callable",
-        "RuntimeError"
+        "get_sandbox",
+        "RuntimeError",
+        "ValueError",
+        "cast"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -116,11 +116,11 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "cast",
         "callable",
+        "RuntimeError",
         "snapshot_cls",
         "build_snapshot",
-        "RuntimeError"
+        "cast"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -145,11 +145,11 @@
       "docstring": "Creates lightweight summary of r\u00e9sum\u00e9 improvement request.\n\nPreserves essential information while maintaining efficient metadata tracking.",
       "imports": [],
       "dependencies": [
-        "map",
-        "len",
         "isinstance",
-        "type",
-        "sorted"
+        "len",
+        "sorted",
+        "map",
+        "type"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -162,17 +162,17 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "cast",
-        "isinstance",
-        "_build_workflow_metadata",
-        "_resolve_meta_profile_snapshot",
-        "_resolve_routing_policy",
-        "hasattr",
-        "callable",
         "ExecutionContext",
-        "_resolve_sandbox_config",
+        "callable",
+        "isinstance",
+        "_resolve_meta_profile_snapshot",
+        "build_ctx",
+        "hasattr",
+        "_build_workflow_metadata",
         "_resolve_execution_profile",
-        "build_ctx"
+        "_resolve_routing_policy",
+        "cast",
+        "_resolve_sandbox_config"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -184,10 +184,10 @@
       "docstring": "Discovers appropriate layer function for r\u00e9sum\u00e9 processing workflow.\n\nEnsures robust layer coordination across the r\u00e9sum\u00e9 improvement pipeline.",
       "imports": [],
       "dependencies": [
-        "AttributeError",
-        "callable",
+        "RuntimeError",
         "getattr",
-        "RuntimeError"
+        "callable",
+        "AttributeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -199,16 +199,16 @@
       "docstring": "Executes comprehensive r\u00e9sum\u00e9 improvement workflow.\n\nOrchestrates all processing layers to deliver optimal r\u00e9sum\u00e9 enhancement results.",
       "imports": [],
       "dependencies": [
-        "l1_fn",
-        "Phase3Knobs",
-        "cast",
-        "l4_fn",
-        "l2_fn",
         "str",
-        "_build_execution_context",
+        "l4_fn",
         "_discover_layer_fn",
-        "l3_fn",
-        "l5_fn"
+        "l1_fn",
+        "l2_fn",
+        "l5_fn",
+        "cast",
+        "Phase3Knobs",
+        "_build_execution_context",
+        "l3_fn"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -230,8 +230,8 @@
       "docstring": "Parses RRF weight parameters for r\u00e9sum\u00e9 evidence fusion.\n\nConfigures retrieval strategy weights for optimal r\u00e9sum\u00e9 improvement results.",
       "imports": [],
       "dependencies": [
-        "float",
-        "ValueError"
+        "ValueError",
+        "float"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -243,13 +243,13 @@
       "docstring": "Command-line interface for r\u00e9sum\u00e9 improvement workflow execution.\n\nProvides accessible entry point for comprehensive r\u00e9sum\u00e9 enhancement processing.",
       "imports": [],
       "dependencies": [
+        "run_workflow",
+        "print",
         "TelemetryRoutingMode",
         "_parse_rrf_weights",
-        "hasattr",
-        "print",
         "RRFStrategy",
         "_parse_args",
-        "run_workflow"
+        "hasattr"
       ],
       "responsibility_level": "L1",
       "children": []

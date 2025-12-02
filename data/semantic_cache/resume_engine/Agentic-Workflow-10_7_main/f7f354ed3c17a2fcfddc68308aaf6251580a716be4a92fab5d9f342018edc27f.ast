@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\rag_execution_stack.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_stacks_v10_8\\rag_execution_stack.py",
     "file_hash": "f7f354ed3c17a2fcfddc68308aaf6251580a716be4a92fab5d9f342018edc27f",
     "size_bytes": 163,
-    "last_modified": "2025-12-01T12:27:41.110997",
+    "last_modified": "2025-12-01T12:27:42.081477",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"

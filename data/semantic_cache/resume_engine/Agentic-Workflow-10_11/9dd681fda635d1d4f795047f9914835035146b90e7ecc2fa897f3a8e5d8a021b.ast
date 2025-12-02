@@ -66,8 +66,8 @@
       "docstring": "Checks if timestamp is within resume processing window.",
       "imports": [],
       "dependencies": [
-        "timedelta",
-        "int"
+        "int",
+        "timedelta"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -143,10 +143,10 @@
       "docstring": "Retrieves resume workflow state for job alignment processing.\n\nRestores previous state for resume enhancement workflows.",
       "imports": [],
       "dependencies": [
-        "WorkflowState",
-        "ProceduralMemory",
         "TemporalContext",
         "open",
+        "ProceduralMemory",
+        "WorkflowState",
         "EpisodicMemory"
       ],
       "responsibility_level": "L5",

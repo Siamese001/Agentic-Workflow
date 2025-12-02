@@ -36,10 +36,10 @@
       "docstring": "Executes resume quality assurance analysis using LLM models.\n\nValidates resume content for accuracy, clarity, and\njob alignment effectiveness for better applications.",
       "imports": [],
       "dependencies": [
-        "len",
         "record_event",
         "invoke_model",
-        "record_exception"
+        "record_exception",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

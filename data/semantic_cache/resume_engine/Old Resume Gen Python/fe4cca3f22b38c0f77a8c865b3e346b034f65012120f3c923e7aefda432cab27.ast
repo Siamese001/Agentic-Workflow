@@ -58,12 +58,12 @@
       "docstring": "Example workflow showing v5.46 validation and blocking.",
       "imports": [],
       "dependencies": [
+        "generate_signal_table_v546",
         "generate_provenance_table_v546",
         "generate_token_usage_table_v546",
         "ValueError",
         "QATableValidator_V546",
-        "generate_word_count_table_v546",
-        "generate_signal_table_v546"
+        "generate_word_count_table_v546"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -99,8 +99,8 @@
       "docstring": "Example generation of NEW QA Table 2 (token usage).",
       "imports": [],
       "dependencies": [
-        "sum",
-        "QAFormatter_V546"
+        "QAFormatter_V546",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -137,9 +137,9 @@
       "docstring": "Validate QA Provenance table with Provenance Category.\n\nv5.46: NEW REQUIREMENT - Every bullet must have category classification.",
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "QAValidationResult",
         "any",
+        "QAValidationResult",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",
@@ -152,8 +152,8 @@
       "docstring": "Validate NEW QA Table 2 (Token Usage & Temperature).\n\nv5.46: CRITICAL - Verifies LLM API calls were actually made.\nBlocks output if any API call unverified.",
       "imports": [],
       "dependencies": [
-        "enumerate",
         "QAValidationResult",
+        "enumerate",
         "len"
       ],
       "responsibility_level": "L5",
@@ -166,11 +166,11 @@
       "docstring": "Validate QA Table 3 (Signal Compliance by Section).\n\nv5.46: ENHANCED - Must include section-level detail, not just total.",
       "imports": [],
       "dependencies": [
-        "QAValidationResult",
         "any",
-        "len",
+        "QAValidationResult",
+        "enumerate",
         "int",
-        "enumerate"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -195,8 +195,8 @@
       "docstring": "Wrapper that blocks output delivery if validation fails.\n\nv5.46: This is the enforcement mechanism. If any critical\nvalidation fails, output is not delivered to user.\n\nReturns:\n    full_output if valid, None if blocked",
       "imports": [],
       "dependencies": [
-        "print",
-        "any"
+        "any",
+        "print"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -28,9 +28,9 @@
       "dependencies": [
         "any",
         "getattr",
-        "len",
         "str",
-        "SkillClassifierResult"
+        "SkillClassifierResult",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -44,9 +44,9 @@
       "dependencies": [
         "any",
         "getattr",
-        "hasattr",
         "str",
-        "DomainClassifierResult"
+        "DomainClassifierResult",
+        "hasattr"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -58,12 +58,12 @@
       "docstring": "Heuristic classifier used by L1 to estimate ComplexityLevel.\n\nThis version incorporates:\n    \u2022 Job seniority / requirements\n    \u2022 Resume length\n    \u2022 QA / correction rates from meta_profile\n    \u2022 Deterministic skill and domain classifiers (non-LLM)\n\nAll logic is deterministic and side-effect free.",
       "imports": [],
       "dependencies": [
-        "classify_domain_profile",
         "any",
         "getattr",
-        "len",
         "str",
-        "classify_skill_profile"
+        "len",
+        "classify_skill_profile",
+        "classify_domain_profile"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -75,8 +75,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_all_events",
-        "getattr"
+        "getattr",
+        "get_all_events"
       ],
       "responsibility_level": "L5",
       "children": []

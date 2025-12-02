@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\main_v10_7.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\main_v10_7.py",
     "file_hash": "56d404ab037b4d9be5523fcbff2f6330ed2c1ad17350e5820d0782b289f2a08e",
     "size_bytes": 11014,
-    "last_modified": "2025-12-01T12:27:37.106014",
+    "last_modified": "2025-12-01T12:27:37.394763",
     "engine": "RG",
     "archive_version": "v10.7",
     "file_extension": ".py"
@@ -26,8 +26,8 @@
       "docstring": "Load job input JSON",
       "imports": [],
       "dependencies": [
-        "FileIOError",
-        "open"
+        "open",
+        "FileIOError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -39,9 +39,9 @@
       "docstring": "Main CLI entry point",
       "imports": [],
       "dependencies": [
-        "ConfigV10_7",
         "setup_logging",
         "print",
+        "ConfigV10_7",
         "run_workflow_async"
       ],
       "responsibility_level": "L1",

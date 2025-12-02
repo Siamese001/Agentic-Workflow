@@ -16,8 +16,8 @@
       "docstring": "Applies import mappings to maintain clean code architecture.\n\nEnsures resume generation system remains properly structured\nfor improved maintainability and easier enhancements.",
       "imports": [],
       "dependencies": [
-        "print",
         "open",
+        "print",
         "len"
       ],
       "responsibility_level": "L5",

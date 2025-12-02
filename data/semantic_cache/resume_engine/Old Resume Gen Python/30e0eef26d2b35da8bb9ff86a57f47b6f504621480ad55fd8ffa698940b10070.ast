@@ -348,8 +348,8 @@
       "docstring": "Auto-adjust word distribution across sections to fit 982-1082 range.\n\nConstraints:\n- Exec summary: 100-150 words (hard constraint)\n- Unify/IBM ratio: 1.1-1.4 (Unify words / IBM words)\n- EY & early_career: flexible if signal improves materially\n- Frozen sections (name, headline): cannot change\n\nLogic:\n- If total < 982: expand lower sections while maintaining signal\n- If total > 1082: trim higher sections while maintaining signal",
       "imports": [],
       "dependencies": [
-        "int",
-        "max"
+        "max",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []

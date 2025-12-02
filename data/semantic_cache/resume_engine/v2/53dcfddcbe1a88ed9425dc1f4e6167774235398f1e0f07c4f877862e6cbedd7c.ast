@@ -39,21 +39,21 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "defaultdict",
-        "ContextRelayLayer",
-        "PolicyAgent",
-        "QAReportGenerator",
         "CostRouter",
-        "ValueError",
+        "CritiqueTool",
         "str",
-        "JDEnforcementValidator",
-        "HIL_Interface",
+        "TraceRegistry",
+        "QAReportGenerator",
         "open",
+        "PolicyAgent",
         "ManifestManager",
         "FileNotFoundError",
+        "HIL_Interface",
+        "JDEnforcementValidator",
+        "ValueError",
         "CodeInterpreterTool",
-        "CritiqueTool",
-        "TraceRegistry",
+        "defaultdict",
+        "ContextRelayLayer",
         "PreFlightValidator"
       ],
       "responsibility_level": "L5",
@@ -66,13 +66,13 @@
       "docstring": "V2 Ingestion Phase: Runs Hops 0, 1, 2 to populate in-memory state.\n\nThis replaces the old hop-by-hop file serialization approach.\nState flows into memory (self.thematic_analysis, self.enriched_scaffold).",
       "imports": [],
       "dependencies": [
-        "len",
         "DataEnricher",
-        "MasterResumeIndex",
+        "str",
+        "ArtistGenerator",
+        "len",
         "CompetitiveAnalysisConfig",
         "HopExecutionError",
-        "str",
-        "ArtistGenerator"
+        "MasterResumeIndex"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -131,8 +131,8 @@
       "imports": [],
       "dependencies": [
         "ValidationResult",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

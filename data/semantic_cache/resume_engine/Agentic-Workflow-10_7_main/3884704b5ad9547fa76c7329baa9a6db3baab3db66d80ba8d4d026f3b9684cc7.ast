@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\draft_planning.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\draft_planning.py",
     "file_hash": "3884704b5ad9547fa76c7329baa9a6db3baab3db66d80ba8d4d026f3b9684cc7",
     "size_bytes": 3787,
-    "last_modified": "2025-12-01T12:27:41.217361",
+    "last_modified": "2025-12-01T12:27:41.997306",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -40,9 +40,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "extract_resume_profile",
+        "DraftPlan",
         "extract_job_profile",
-        "DraftPlan"
+        "extract_resume_profile"
       ],
       "responsibility_level": "L5",
       "children": []

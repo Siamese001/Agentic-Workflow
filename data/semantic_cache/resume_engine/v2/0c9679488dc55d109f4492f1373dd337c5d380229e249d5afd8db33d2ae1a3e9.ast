@@ -28,11 +28,11 @@
       "docstring": "V2 INTEGRATION: Builds context dictionary for ContextRelayLayer.\n\nThis function centralizes context building logic that the CRL can call.\nReturns a dictionary of context variables ready for prompt formatting.\n\nArgs:\n    section_name: Section identifier (e.g., \"K0_HEADLINE\")\n    thematic_analysis: ThematicAnalysis object\n    enriched_scaffold: Enriched data scaffold\n    **kwargs: Additional context (company_name, job_description, etc.)\n    \nReturns:\n    Dictionary of context variables",
       "imports": [],
       "dependencies": [
-        "_build_headline_context_dict",
-        "_build_competencies_context_dict",
-        "_build_bullets_context_dict",
-        "_build_executive_summary_context_dict",
         "_build_narrative_context_dict",
+        "_build_executive_summary_context_dict",
+        "_build_competencies_context_dict",
+        "_build_headline_context_dict",
+        "_build_bullets_context_dict",
         "_build_cover_letter_context_dict",
         "_build_skills_context_dict"
       ],
@@ -46,9 +46,9 @@
       "docstring": "Build context dictionary for headline generation.",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "isinstance",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -60,9 +60,9 @@
       "docstring": "Build context dictionary for executive summary.",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "isinstance",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -74,8 +74,8 @@
       "docstring": "Build context dictionary for skills list.",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -87,8 +87,8 @@
       "docstring": "Build context dictionary for cover letter.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "getattr",
+        "isinstance",
         "_extract_experience_snippets_for_cl",
         "get_expected_signature",
         "hasattr"
@@ -103,14 +103,14 @@
       "docstring": "Build context dictionary for narrative generation.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "getattr",
-        "list",
-        "HopExecutionError",
-        "hasattr",
+        "set",
         "str",
+        "isinstance",
+        "list",
         "next",
-        "set"
+        "HopExecutionError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -261,8 +261,8 @@
       "docstring": "Helper to format resume index for prompt context.",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "sorted"
+        "sorted",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -274,10 +274,10 @@
       "docstring": "Build Phase 1 RAG prompt with Librarian context integration.\nEnhanced with high-signal extraction patterns.",
       "imports": [],
       "dependencies": [
-        "_format_resume_index_summary",
-        "hasattr",
+        "_get_prompt_template",
         "chr",
-        "_get_prompt_template"
+        "_format_resume_index_summary",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -289,8 +289,8 @@
       "docstring": "Build Phase 2 RAG prompt with enhanced signal extraction.\nFocuses on identifying gaps and overlaps for positioning strategy.",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "_get_prompt_template"
+        "_get_prompt_template",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -302,8 +302,8 @@
       "docstring": "Build Phase 3 RAG prompt with competitive intelligence focus.\nEnhanced with Librarian insights and differentiator extraction.",
       "imports": [],
       "dependencies": [
-        "_format_resume_index_summary",
-        "_get_prompt_template"
+        "_get_prompt_template",
+        "_format_resume_index_summary"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -315,9 +315,9 @@
       "docstring": "Build Phase 4 RAG prompt for problem-solution narrative extraction.",
       "imports": [],
       "dependencies": [
-        "list",
+        "set",
         "_get_prompt_template",
-        "set"
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -329,9 +329,9 @@
       "docstring": "Builds the prompt for generating tailored bullets.",
       "imports": [],
       "dependencies": [
-        "list",
+        "set",
         "_get_prompt_template",
-        "set"
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -391,9 +391,9 @@
       "docstring": "Builds prompt for Validator to perform high-signal factual checks.\nUsed in HOP-5 to detect strategic/factual failures that trigger Slow Loop.",
       "imports": [],
       "dependencies": [
-        "isinstance",
+        "getattr",
         "_get_prompt_template",
-        "getattr"
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []

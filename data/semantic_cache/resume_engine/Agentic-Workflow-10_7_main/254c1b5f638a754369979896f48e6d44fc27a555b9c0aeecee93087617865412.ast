@@ -53,8 +53,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "getattr"
+        "getattr",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -76,10 +76,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "setattr",
-        "hasattr",
         "getattr",
-        "SimpleNamespace"
+        "SimpleNamespace",
+        "setattr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

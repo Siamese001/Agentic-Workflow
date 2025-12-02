@@ -139,9 +139,9 @@
       "docstring": "Count words in a list of strings, stripping markdown.\n\nArgs:\n    items: List of strings\n    \nReturns:\n    Total word count across all items",
       "imports": [],
       "dependencies": [
+        "count_words_clean",
         "sum",
-        "isinstance",
-        "count_words_clean"
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -585,10 +585,10 @@
       "docstring": "Calculate word count for a section.\nv5.21: Counts ALL content including company/title/dates/location.",
       "imports": [],
       "dependencies": [
-        "isinstance",
+        "count_words_clean",
         "str",
-        "len",
-        "count_words_clean"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -600,9 +600,9 @@
       "docstring": "Validate section length against master resume with tolerance.\nv5.21: All content counts (company/title/dates/location included).",
       "imports": [],
       "dependencies": [
+        "calculate_section_words",
         "int",
-        "ValidationResult",
-        "calculate_section_words"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -614,8 +614,8 @@
       "docstring": "Validate word distribution: (Unify + IBM) = 35-45% of total.\nv5.21: Includes overview + bullets for both roles.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
-        "calculate_section_words"
+        "calculate_section_words",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -627,8 +627,8 @@
       "docstring": "Validate Unify/IBM word ratio: 1.1 - 1.3.\nv5.21: Includes overview + bullets for both roles.",
       "imports": [],
       "dependencies": [
-        "ValidationResult",
-        "calculate_section_words"
+        "calculate_section_words",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -640,10 +640,10 @@
       "docstring": "Validate headline constraints.\nv5.21: 60-90 chars, 8-12 words, X|Y|Z components 2-4 words each.",
       "imports": [],
       "dependencies": [
-        "enumerate",
+        "count_words_clean",
         "ValidationResult",
-        "len",
-        "count_words_clean"
+        "enumerate",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -655,9 +655,9 @@
       "docstring": "v5.21: Validate overview word count against master \u00b1tolerance%.",
       "imports": [],
       "dependencies": [
+        "count_words_clean",
         "int",
-        "ValidationResult",
-        "count_words_clean"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -669,12 +669,12 @@
       "docstring": "v5.21: Validate bullet word counts against master average \u00b1tolerance%.",
       "imports": [],
       "dependencies": [
+        "enumerate",
+        "int",
         "sum",
         "len",
-        "int",
-        "enumerate",
-        "ValidationResult",
-        "count_words_clean"
+        "count_words_clean",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -790,12 +790,12 @@
       "docstring": "Enhanced main function with v5.22 monitoring and optimization.",
       "imports": [],
       "dependencies": [
-        "EnhancedSignalOptimizer",
-        "PerformanceMonitor",
         "print",
         "OutputVerificationSystem",
         "AdvancedQualityAssurance",
-        "main"
+        "main",
+        "EnhancedSignalOptimizer",
+        "PerformanceMonitor"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -1155,10 +1155,10 @@
       "docstring": "Count words in content (string or list)",
       "imports": [],
       "dependencies": [
-        "sum",
+        "count_words_clean",
         "str",
-        "isinstance",
-        "count_words_clean"
+        "sum",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1291,12 +1291,12 @@
       "imports": [],
       "dependencies": [
         "getattr",
-        "AttributeError",
-        "ValueError",
-        "str",
         "print",
+        "str",
+        "RuntimeError",
+        "ValueError",
         "generator_method",
-        "RuntimeError"
+        "AttributeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1308,8 +1308,8 @@
       "docstring": "Generate all resume sections.\n\nArgs:\n    enriched_scaffold: Master resume scaffold\n    job_description: Target job description\n    thematic_analysis: Job analysis results\n\nReturns:\n    Dictionary mapping section IDs to generated content",
       "imports": [],
       "dependencies": [
-        "str",
-        "print"
+        "print",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1367,9 +1367,9 @@
       "imports": [],
       "dependencies": [
         "bool",
-        "len",
+        "JDEnforcementResult",
         "isinstance",
-        "JDEnforcementResult"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1381,10 +1381,10 @@
       "docstring": "GATE-2: Validate ThematicAnalysis uses JD.\nEnforces: E6, E7",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str",
         "any",
-        "JDEnforcementResult"
+        "str",
+        "JDEnforcementResult",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1397,10 +1397,10 @@
       "imports": [],
       "dependencies": [
         "any",
+        "str",
         "JDEnforcementResult",
-        "len",
         "isinstance",
-        "str"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1412,8 +1412,8 @@
       "docstring": "GATE-4: Validate artist receives and uses JD.\nEnforces: E8, E9, E14",
       "imports": [],
       "dependencies": [
-        "str",
         "any",
+        "str",
         "JDEnforcementResult",
         "len"
       ],
@@ -1427,9 +1427,9 @@
       "docstring": "GATE-5: Validate pre-flight checks JD.\nEnforces: E9, E11, E14",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "len",
         "JDEnforcementResult",
-        "len"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1454,8 +1454,8 @@
       "docstring": "GATE-8: Validate QA report verifies JD.\nEnforces: E13, E15",
       "imports": [],
       "dependencies": [
-        "sum",
         "JDEnforcementResult",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -1564,8 +1564,8 @@
       "docstring": "Validate complete app tracker data.\nReturns PASSED or BLOCKED JSON outcome.",
       "imports": [],
       "dependencies": [
-        "list",
-        "enumerate"
+        "enumerate",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1577,9 +1577,9 @@
       "docstring": "Validate single tracker row against R2-R22.",
       "imports": [],
       "dependencies": [
+        "range",
         "bool",
-        "len",
-        "range"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1591,8 +1591,8 @@
       "docstring": "Validate R5a-R5d channel gating requirements.",
       "imports": [],
       "dependencies": [
-        "any",
-        "range"
+        "range",
+        "any"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1726,8 +1726,8 @@
       "dependencies": [
         "set",
         "sum",
-        "len",
-        "min"
+        "min",
+        "len"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -1783,9 +1783,9 @@
       "docstring": "Execute function with circuit breaker protection.",
       "imports": [],
       "dependencies": [
-        "timedelta",
         "func",
-        "CircuitBreakerOpenError"
+        "CircuitBreakerOpenError",
+        "timedelta"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1807,10 +1807,10 @@
       "docstring": "Execute a phase with retry logic and optional simplified fallback.\n\nArgs:\n    phase_func: Main phase function to execute\n    phase_name: Name for logging\n    fallback_func: Optional simplified version to try if main fails\n\nReturns:\n    Result from phase_func or fallback_func\n\nRaises:\n    PhaseTimeoutError, Exception from phase execution",
       "imports": [],
       "dependencies": [
-        "type",
         "ValueError",
+        "range",
         "RuntimeError",
-        "range"
+        "type"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1822,9 +1822,9 @@
       "docstring": "Execute function with timeout.\nNote: Signal-based timeout only works on Unix. Falls back to direct call on Windows.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "func",
-        "PhaseTimeoutError"
+        "PhaseTimeoutError",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1922,9 +1922,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "RAGConfig",
         "CircuitBreaker",
-        "ImportError",
-        "RAGConfig"
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1937,8 +1937,8 @@
       "imports": [],
       "dependencies": [
         "type",
-        "RuntimeError",
-        "range"
+        "range",
+        "RuntimeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -1985,8 +1985,8 @@
       "docstring": "Attempt to repair common JSON formatting errors.\nv5.59: Multiple repair strategies for robustness.",
       "imports": [],
       "dependencies": [
-        "repair_func",
-        "ord"
+        "ord",
+        "repair_func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2042,8 +2042,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "PhaseExecutor",
-        "RAGConfig"
+        "RAGConfig",
+        "PhaseExecutor"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2135,10 +2135,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "WebSearchRAG",
-        "RAGConfig",
         "TelemetryLogger",
+        "RAGConfig",
         "ClaudeWebSearchClient",
+        "WebSearchRAG",
         "JDCacheManager"
       ],
       "responsibility_level": "L5",
@@ -2161,11 +2161,11 @@
       "docstring": "v5.59: Enhanced analysis with 4-tier fallback strategy and telemetry.\n\nStrategy:\n1. Try full 3-phase RAG\n2. On partial failure, synthesize with available phases\n3. On full failure, try hybrid local+web\n4. On all failure, pure local NLP",
       "imports": [],
       "dependencies": [
-        "asdict",
-        "type",
         "str",
+        "PartialRAGResult",
         "RAGTelemetry",
-        "PartialRAGResult"
+        "type",
+        "asdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2177,10 +2177,10 @@
       "docstring": "v5.59: Synthesize analysis from partial RAG results + local NLP fill-in.\n\nStrategy:\n- Use successful phase data\n- Fill missing phases with local NLP\n- Mark retrieval sources to indicate hybrid approach",
       "imports": [],
       "dependencies": [
-        "ThematicTheme",
-        "RetrievalSource",
+        "ThematicAnalysis",
         "CompetitiveIntelligence",
-        "ThematicAnalysis"
+        "RetrievalSource",
+        "ThematicTheme"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2212,9 +2212,9 @@
       "docstring": "Synthesize three-phase web RAG results into ThematicAnalysis.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
         "CompetitiveIntelligence",
         "ThematicAnalysis",
+        "RetrievalSource",
         "len"
       ],
       "responsibility_level": "L5",
@@ -2237,9 +2237,9 @@
       "docstring": "Convert cached dict back to ThematicAnalysis object.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
         "CompetitiveIntelligence",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2251,8 +2251,8 @@
       "docstring": "Fallback analysis using local NLP (v5.52 implementation).\nThis remains UNCHANGED from your original file.",
       "imports": [],
       "dependencies": [
-        "RetrievalSource",
-        "ThematicAnalysis"
+        "ThematicAnalysis",
+        "RetrievalSource"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2289,8 +2289,8 @@
       "docstring": "Generate primary theme from highest scoring domain.",
       "imports": [],
       "dependencies": [
-        "list",
-        "max"
+        "max",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2314,10 +2314,10 @@
       "docstring": "Extract competitive intelligence from keywords.",
       "imports": [],
       "dependencies": [
-        "max",
-        "float",
         "CompetitiveIntelligence",
-        "sorted"
+        "float",
+        "sorted",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2435,8 +2435,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "VerbCanonicalizer",
-        "DuplicateDetector"
+        "DuplicateDetector",
+        "VerbCanonicalizer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2473,8 +2473,8 @@
       "docstring": "Find bullets with cosine similarity >= threshold.\nReturns: List of (index1, index2, similarity_score)",
       "imports": [],
       "dependencies": [
-        "len",
-        "range"
+        "range",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2486,10 +2486,10 @@
       "docstring": "Calculate TF-IDF cosine similarity between two texts.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "zip",
         "sorted",
-        "set"
+        "zip",
+        "set",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2514,13 +2514,13 @@
       "docstring": "Compute 78-check pairwise similarity matrix across all sections.\nReturns comprehensive matrix with all pairwise comparisons.",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "isinstance",
-        "list",
+        "range",
         "enumerate",
-        "round",
-        "range"
+        "isinstance",
+        "len",
+        "max",
+        "list",
+        "round"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2532,12 +2532,12 @@
       "docstring": "Compute cosine similarity between overview and each bullet.\nPer v1.9.2: K.5B/K.6B must have cosine <0.6 to their bullets.",
       "imports": [],
       "dependencies": [
-        "max",
+        "enumerate",
         "isinstance",
         "len",
-        "round",
-        "enumerate",
-        "count_words_clean"
+        "count_words_clean",
+        "max",
+        "round"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2620,13 +2620,13 @@
       "docstring": "Generate K.5A Unify bullets (7 bullets).\nv5.58: NOW USES LLM TO SELECT AND REORDER BY JD RELEVANCE (was: first 7).",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "enumerate",
-        "ValueError",
         "print",
-        "next",
-        "set"
+        "set",
+        "enumerate",
+        "len",
+        "max",
+        "ValueError",
+        "next"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2650,13 +2650,13 @@
       "docstring": "Generate K.6A IBM bullets (6 bullets).\nv5.58: NOW USES LLM TO SELECT AND REORDER BY JD RELEVANCE (was: first 6).",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "enumerate",
-        "ValueError",
         "print",
-        "next",
-        "set"
+        "set",
+        "enumerate",
+        "len",
+        "max",
+        "ValueError",
+        "next"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2724,11 +2724,11 @@
       "docstring": "Generate K.8 Competencies (6 competencies).\nv5.58: NOW USES LLM TO SELECT AND REORDER BY JD THEMES (was: first 6).",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "enumerate",
         "print",
-        "set"
+        "set",
+        "enumerate",
+        "len",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -2740,8 +2740,8 @@
       "docstring": "Generate K.9 cover letter using LLM API.\nRESTORED from v5.43 - was accidentally deleted in v5.55 refactoring.\n\nGenerates professional 3-paragraph cover letter tailored to JD:\n- Paragraph 1 (85-100 words): Interest + relevant experience\n- Paragraph 2 (85-100 words): Achievements matching JD requirements  \n- Paragraph 3 (85-100 words): Value proposition + call to action",
       "imports": [],
       "dependencies": [
-        "str",
         "print",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -2811,8 +2811,8 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "ValidationResult",
-        "isinstance"
+        "isinstance",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3001,15 +3001,15 @@
       "docstring": "Validate all word count constraints (v5.34 updated).\nv5.34: Fixed comprehensive word counting to prevent false positives.",
       "imports": [],
       "dependencies": [
-        "validate_headline_v57",
         "isinstance",
-        "calculate_section_words",
-        "validate_bullet_tolerance_v521",
-        "ValidationResult",
         "validate_overview_tolerance_v521",
-        "next",
+        "calculate_section_words",
         "count_words_clean",
-        "count_words_comprehensive"
+        "validate_bullet_tolerance_v521",
+        "next",
+        "validate_headline_v57",
+        "count_words_comprehensive",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3021,8 +3021,8 @@
       "docstring": "Validate TraderSense/EY/Early Career section lengths (\u00b110%).",
       "imports": [],
       "dependencies": [
-        "int",
         "next",
+        "int",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -3035,8 +3035,8 @@
       "docstring": "Validate word distributions.",
       "imports": [],
       "dependencies": [
-        "validate_unify_ibm_ratio_v57",
-        "validate_word_distribution_v57"
+        "validate_word_distribution_v57",
+        "validate_unify_ibm_ratio_v57"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3048,8 +3048,8 @@
       "docstring": "Validate structural requirements.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "len",
+        "isinstance",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -3097,11 +3097,11 @@
       "docstring": "Render all output files.\n\nReturns:\n    (file_paths, validation_results)",
       "imports": [],
       "dependencies": [
-        "len",
-        "ValidationResult",
-        "str",
         "print",
-        "AppTrackerQAValidator"
+        "str",
+        "len",
+        "AppTrackerQAValidator",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3139,11 +3139,11 @@
       "docstring": "Render skills with JD alignment scoring (v5.57).\nReturns JSON with skills ordered by JD relevance.\nv5.58: Fixed JDAlignmentScorer instantiation bug.\nv5.60: CRITICAL FIX - Load 12 competencies from MASTER_RESUME_JSON instead of K.11 certifications.\n\nRoot Cause (v5.59 bug):\n- K.11 staging buffer key was hard-coded to certifications (4 items)\n- generate_k11_skills() returns only certifications list\n- JDAlignmentScorer was scoring certifications instead of competencies\n\nFix (v5.60):\n- Bypass K.11 staging buffer entirely\n- Load 6 strategic + 6 technical competencies directly from MASTER_RESUME_JSON\n- Pass all 12 competencies to JDAlignmentScorer for proper scoring",
       "imports": [],
       "dependencies": [
-        "JDAlignmentScorer",
+        "print",
+        "enumerate",
         "len",
         "round",
-        "enumerate",
-        "print"
+        "JDAlignmentScorer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3156,12 +3156,12 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "abs",
-        "len",
-        "round",
         "isinstance",
+        "len",
         "count_words_clean",
-        "count_words"
+        "round",
+        "count_words",
+        "abs"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3195,20 +3195,20 @@
       "docstring": "Execute complete 10-hop workflow.\n\nReturns:\n    Dict with status, file_paths, validation_results, etc.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "asdict",
-        "PreFlightValidator",
-        "len",
         "DataEnricher",
-        "FileRenderer",
+        "print",
         "range",
         "str",
-        "print",
-        "ClerkExtractor",
-        "TextSanitizer",
+        "sum",
         "ArtistGenerator",
+        "ClerkExtractor",
+        "len",
+        "ImmutableStagingBuffer",
         "GateDecisionEngine",
-        "ImmutableStagingBuffer"
+        "TextSanitizer",
+        "FileRenderer",
+        "asdict",
+        "PreFlightValidator"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3232,8 +3232,8 @@
       "docstring": "Create hop checkpoint.",
       "imports": [],
       "dependencies": [
-        "str",
         "HopCheckpoint",
+        "str",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -3247,8 +3247,8 @@
       "imports": [],
       "dependencies": [
         "print",
-        "len",
-        "Exception"
+        "Exception",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3272,13 +3272,13 @@
       "docstring": "Generate comprehensive QA report (8-section format from v5.18).\nReturns: (validation_results, qa_report_text)",
       "imports": [],
       "dependencies": [
-        "ascii_bar",
-        "len",
         "enumerate",
         "int",
-        "ValidationResult",
+        "ascii_bar",
+        "len",
+        "sorted",
         "hasattr",
-        "sorted"
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3314,8 +3314,8 @@
       "docstring": "Calculate the balance between creativity and keyword optimization.",
       "imports": [],
       "dependencies": [
-        "set",
         "isinstance",
+        "set",
         "min",
         "len"
       ],
@@ -3381,8 +3381,8 @@
       "docstring": "Generate performance metrics report.",
       "imports": [],
       "dependencies": [
-        "sum",
         "enumerate",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -3460,8 +3460,8 @@
       "docstring": "Check formatting compliance.",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3653,8 +3653,8 @@
       "imports": [],
       "dependencies": [
         "calculate_section_words",
-        "isinstance",
-        "count_words_clean"
+        "count_words_clean",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -3666,10 +3666,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "count_words_clean",
         "sum",
-        "count_words",
         "isinstance",
-        "count_words_clean"
+        "count_words"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -181,13 +181,13 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "list",
-        "int",
-        "RAGExternalStats",
-        "RAGDocument",
+        "float",
         "str",
-        "float"
+        "int",
+        "len",
+        "RAGExternalStats",
+        "list",
+        "RAGDocument"
       ],
       "responsibility_level": "L5",
       "children": []

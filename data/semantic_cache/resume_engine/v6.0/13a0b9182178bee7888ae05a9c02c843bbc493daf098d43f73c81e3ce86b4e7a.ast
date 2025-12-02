@@ -613,9 +613,9 @@
       "docstring": "Helper to safely get a prompt template from CONFIG.\nREFACTORED: Fails fast if prompt is missing.",
       "imports": [],
       "dependencies": [
-        "isinstance",
         "getattr",
         "KeyError",
+        "isinstance",
         "ValueError",
         "hasattr"
       ],
@@ -639,8 +639,8 @@
       "docstring": "Format a prompt template with provided context.\nHandles both simple string formatting and complex context injection.",
       "imports": [],
       "dependencies": [
-        "fence_data",
-        "_get_prompt_template"
+        "_get_prompt_template",
+        "fence_data"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -664,8 +664,8 @@
       "docstring": "Generate a prompt for a specific RAG phase.",
       "imports": [],
       "dependencies": [
-        "fence_data",
-        "_get_prompt_template"
+        "_get_prompt_template",
+        "fence_data"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -677,8 +677,8 @@
       "docstring": "Generate a prompt for a specific specialist agent.",
       "imports": [],
       "dependencies": [
-        "fence_data",
-        "_get_prompt_template"
+        "_get_prompt_template",
+        "fence_data"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -690,8 +690,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "setattr",
-        "getattr"
+        "getattr",
+        "setattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -751,8 +751,8 @@
       "docstring": "Load configuration from JSON file.",
       "imports": [],
       "dependencies": [
-        "FileNotFoundError",
-        "open"
+        "open",
+        "FileNotFoundError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -764,8 +764,8 @@
       "docstring": "Recursively convert dicts to simple namespace-like objects for dot notation.",
       "imports": [],
       "dependencies": [
-        "setattr",
         "type",
+        "setattr",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -788,9 +788,9 @@
       "docstring": "Allow dot notation access to section names.",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "AttributeError",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -814,9 +814,9 @@
       "docstring": "Allow dot notation access to rules.",
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "getattr",
         "AttributeError",
-        "getattr"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -882,10 +882,10 @@
       "docstring": "Extract top keywords from text.",
       "imports": [],
       "dependencies": [
-        "defaultdict",
-        "len",
         "sorted",
-        "TfidfVectorizer"
+        "defaultdict",
+        "TfidfVectorizer",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -898,10 +898,10 @@
       "imports": [],
       "dependencies": [
         "cosine_similarity",
-        "len",
-        "TfidfVectorizer",
+        "float",
         "set",
-        "float"
+        "len",
+        "TfidfVectorizer"
       ],
       "responsibility_level": "L5",
       "children": []

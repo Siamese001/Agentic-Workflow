@@ -16,8 +16,8 @@
       "docstring": "Load all uploaded JSON resources.",
       "imports": [],
       "dependencies": [
-        "print",
         "open",
+        "print",
         "len"
       ],
       "responsibility_level": "L5",
@@ -186,8 +186,8 @@
       "docstring": "Validate total resume word count.\n\nArgs:\n    section_word_counts: Dict of section names to word counts\n    temperature: Temperature mode\n    \nReturns:\n    Dict with total validation results",
       "imports": [],
       "dependencies": [
-        "sum",
-        "int"
+        "int",
+        "sum"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -232,9 +232,9 @@
       "docstring": "Select top 12 skills based on JD keyword matching.",
       "imports": [],
       "dependencies": [
+        "sorted",
         "enumerate",
-        "len",
-        "sorted"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -246,12 +246,12 @@
       "docstring": "Initialize pipeline with all components including JSON resources.",
       "imports": [],
       "dependencies": [
-        "len",
-        "BaselineResumeMetrics",
-        "HyphenationRules",
-        "print",
         "MasterResume",
+        "print",
         "SkillsPool",
+        "len",
+        "HyphenationRules",
+        "BaselineResumeMetrics",
         "SaaSRoleProfiles"
       ],
       "responsibility_level": "L5",
@@ -279,8 +279,8 @@
       "dependencies": [
         "set",
         "max",
-        "len",
-        "list"
+        "list",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -292,8 +292,8 @@
       "docstring": "HOP-2: Map JD requirements to master resume content.",
       "imports": [],
       "dependencies": [
-        "sum",
         "max",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -332,8 +332,8 @@
       "docstring": "HOP-5: Calculate signal percentages for each section.",
       "imports": [],
       "dependencies": [
-        "sum",
         "max",
+        "sum",
         "min",
         "len"
       ],
@@ -347,9 +347,9 @@
       "docstring": "HOP-6: Run comprehensive validation using BaselineResumeMetrics.",
       "imports": [],
       "dependencies": [
+        "all",
         "max",
-        "len",
-        "all"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

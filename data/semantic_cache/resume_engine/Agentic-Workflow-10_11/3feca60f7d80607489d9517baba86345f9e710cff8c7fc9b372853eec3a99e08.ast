@@ -38,8 +38,8 @@
       "docstring": "Creates dependency injection decorator for r\u00e9sum\u00e9 processing functions.\n\nEnables automatic service resolution for modular r\u00e9sum\u00e9 improvement workflows.",
       "imports": [],
       "dependencies": [
-        "func",
-        "get_service"
+        "get_service",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -63,8 +63,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "get_service"
+        "get_service",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -76,8 +76,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "get_service"
+        "get_service",
+        "func"
       ],
       "responsibility_level": "L5",
       "children": []

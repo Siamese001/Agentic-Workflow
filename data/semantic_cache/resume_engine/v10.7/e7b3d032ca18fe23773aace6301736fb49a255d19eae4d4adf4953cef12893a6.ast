@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\agent_orchestration_v10_7.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\agent_orchestration_v10_7.py",
     "file_hash": "e7b3d032ca18fe23773aace6301736fb49a255d19eae4d4adf4953cef12893a6",
     "size_bytes": 41927,
-    "last_modified": "2025-12-01T12:27:37.121663",
+    "last_modified": "2025-12-01T12:27:37.392733",
     "engine": "RG",
     "archive_version": "v10.7",
     "file_extension": ".py"
@@ -16,13 +16,13 @@
       "docstring": "v10.7 (Fix #6): Creates a decorator bound to an explicit timeout.",
       "imports": [],
       "dependencies": [
-        "func",
-        "wraps",
+        "float",
         "getattr",
-        "hasattr",
-        "repr",
         "WorkflowTimeoutError",
-        "float"
+        "wraps",
+        "func",
+        "repr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -34,13 +34,13 @@
       "docstring": "v10.7 (Fix #7): Scans the generated_tools_path and dynamically\nloads any valid BaseTool subclasses.",
       "imports": [],
       "dependencies": [
-        "issubclass",
         "getattr",
+        "MCPClientStub",
         "isinstance",
-        "obj",
         "WorkflowError",
-        "ImportError",
-        "MCPClientStub"
+        "issubclass",
+        "obj",
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -171,11 +171,11 @@
       "docstring": "Build complete LangGraph workflow with v10.7 resilience.",
       "imports": [],
       "dependencies": [
-        "add_async_node",
-        "timeout_wrapper",
+        "get_timeout_decorator",
         "StateGraph",
         "partial",
-        "get_timeout_decorator"
+        "timeout_wrapper",
+        "add_async_node"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -187,12 +187,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "func",
-        "wraps",
         "getattr",
-        "hasattr",
+        "WorkflowTimeoutError",
+        "wraps",
+        "func",
         "repr",
-        "WorkflowTimeoutError"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -204,24 +204,24 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
+        "QANarrativeThreadTool",
+        "QASemanticEntailmentTool",
+        "QAJDSkillsValidatorTool",
+        "QABiasDetectorTool",
+        "QAMissedOpportunityTool",
         "QAWordCountValidatorTool",
         "CircuitBreaker",
-        "QAJDSkillsValidatorTool",
-        "QAThematicAlignmentTool",
-        "QASignalScoreValidatorTool",
-        "QATenureValidatorTool",
-        "QASemanticEntailmentTool",
-        "QANarrativeThreadTool",
-        "UIFireEventTool",
-        "QAAdversarialReviewerTool",
-        "QABiasDetectorTool",
         "WorkflowError",
-        "super",
-        "load_dynamic_tools",
-        "QAToneValidatorTool",
         "UIUpdateElementTool",
-        "QAMissedOpportunityTool",
-        "QAClaimValidatorTool"
+        "QATenureValidatorTool",
+        "QAThematicAlignmentTool",
+        "QAAdversarialReviewerTool",
+        "QAToneValidatorTool",
+        "super",
+        "QASignalScoreValidatorTool",
+        "load_dynamic_tools",
+        "QAClaimValidatorTool",
+        "UIFireEventTool"
       ],
       "responsibility_level": "L5",
       "children": []

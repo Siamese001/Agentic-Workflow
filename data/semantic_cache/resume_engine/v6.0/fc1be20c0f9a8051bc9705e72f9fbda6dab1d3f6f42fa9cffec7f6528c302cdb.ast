@@ -36,8 +36,8 @@
       "docstring": "Load job input from JSON file.",
       "imports": [],
       "dependencies": [
-        "ValueError",
-        "open"
+        "open",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -87,14 +87,14 @@
       "docstring": "Main entry point for V5.9 Batch Harness Workflow.\nREFACTORED: Reads defaults from CONFIG. Now importable for batch processing.",
       "imports": [],
       "dependencies": [
-        "WorkflowV60",
-        "load_job_input",
-        "globals",
-        "str",
-        "setup_logging",
         "print",
+        "str",
+        "globals",
+        "load_job_input",
         "open",
-        "print_summary"
+        "print_summary",
+        "setup_logging",
+        "WorkflowV60"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -106,8 +106,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "getattr"
+        "getattr",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -144,9 +144,9 @@
       "docstring": "Load master resume from file or use default.\nREFACTORED: Reads fallback paths from CONFIG.",
       "imports": [],
       "dependencies": [
-        "Path",
         "vars",
-        "open"
+        "open",
+        "Path"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -170,9 +170,9 @@
       "docstring": "Save workflow artifacts to output directory.",
       "imports": [],
       "dependencies": [
-        "len",
-        "isinstance",
         "str",
+        "isinstance",
+        "len",
         "open",
         "Path"
       ],

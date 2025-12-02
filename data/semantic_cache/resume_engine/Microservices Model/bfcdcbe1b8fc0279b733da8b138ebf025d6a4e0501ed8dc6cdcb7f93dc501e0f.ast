@@ -36,15 +36,15 @@
       "docstring": "Executes the HOP-2 enrichment logic.",
       "imports": [],
       "dependencies": [
-        "default_serializer",
+        "DataEnricher",
+        "print",
         "setup_workflow_logging",
         "len",
-        "DataEnricher",
-        "exit",
-        "HopExecutionError",
-        "print",
         "open",
-        "Path"
+        "exit",
+        "default_serializer",
+        "Path",
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []

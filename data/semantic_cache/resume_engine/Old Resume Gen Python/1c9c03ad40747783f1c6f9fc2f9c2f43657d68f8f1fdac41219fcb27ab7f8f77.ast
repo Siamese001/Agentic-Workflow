@@ -264,8 +264,8 @@
       "docstring": "Extract required technical and business skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -277,8 +277,8 @@
       "docstring": "Extract preferred/nice-to-have skills.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -346,8 +346,8 @@
       "docstring": "Extract seniority signals from JD.",
       "imports": [],
       "dependencies": [
-        "int",
-        "bool"
+        "bool",
+        "int"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -471,9 +471,9 @@
       "docstring": "Rank #3: Cross-encoder re-ranking for precision.",
       "imports": [],
       "dependencies": [
+        "sorted",
         "sum",
-        "len",
-        "sorted"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -530,8 +530,8 @@
       "docstring": "Extract seed entities for graph traversal from JD.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -543,8 +543,8 @@
       "docstring": "Identify coverage gaps between JD requirements and retrieved content.",
       "imports": [],
       "dependencies": [
-        "set",
         "any",
+        "set",
         "list"
       ],
       "responsibility_level": "L5",
@@ -557,8 +557,8 @@
       "docstring": "Calculate coverage score (0.0 to 1.0).",
       "imports": [],
       "dependencies": [
-        "set",
         "any",
+        "set",
         "sum",
         "len"
       ],
@@ -586,10 +586,10 @@
       "docstring": "Cross-encoder scoring (simplified).",
       "imports": [],
       "dependencies": [
+        "abs",
         "max",
         "min",
-        "len",
-        "abs"
+        "len"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -601,9 +601,9 @@
       "docstring": "Extract bigrams from text.",
       "imports": [],
       "dependencies": [
+        "range",
         "set",
-        "len",
-        "range"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -615,9 +615,9 @@
       "docstring": "Extract trigrams from text.",
       "imports": [],
       "dependencies": [
+        "range",
         "set",
-        "len",
-        "range"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -629,8 +629,8 @@
       "docstring": "Get parent section context for a bullet.",
       "imports": [],
       "dependencies": [
-        "int",
         "RetrievalResult",
+        "int",
         "len"
       ],
       "responsibility_level": "L5",
@@ -643,12 +643,12 @@
       "docstring": "Get sibling bullets within window.",
       "imports": [],
       "dependencies": [
-        "max",
-        "len",
-        "int",
         "range",
-        "min",
-        "RetrievalResult"
+        "int",
+        "len",
+        "max",
+        "RetrievalResult",
+        "min"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -661,10 +661,10 @@
       "imports": [],
       "dependencies": [
         "any",
-        "list",
+        "set",
         "enumerate",
-        "RetrievalResult",
-        "set"
+        "list",
+        "RetrievalResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -676,8 +676,8 @@
       "docstring": "Extract technical skills and keywords from text.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -701,10 +701,10 @@
       "docstring": "Calculate overall retrieval quality score.",
       "imports": [],
       "dependencies": [
+        "set",
         "sum",
         "min",
-        "len",
-        "set"
+        "len"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -716,11 +716,11 @@
       "docstring": "Build knowledge graph from master resume.",
       "imports": [],
       "dependencies": [
-        "len",
-        "KnowledgeGraph",
-        "enumerate",
         "range",
+        "enumerate",
+        "len",
         "GraphNode",
+        "KnowledgeGraph",
         "GraphEdge"
       ],
       "responsibility_level": "L5",
@@ -859,12 +859,12 @@
       "docstring": "Execute complete workflow with JD-driven generation.",
       "imports": [],
       "dependencies": [
-        "sum",
-        "JDParser",
-        "AgenticRAGRetriever",
-        "len",
-        "str",
         "print",
+        "str",
+        "sum",
+        "len",
+        "AgenticRAGRetriever",
+        "JDParser",
         "HallucinationDetector"
       ],
       "responsibility_level": "L5",
@@ -947,10 +947,10 @@
       "docstring": "Generate 6 output files with actual content.",
       "imports": [],
       "dependencies": [
-        "sum",
         "open",
-        "len",
-        "range"
+        "range",
+        "sum",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -242,9 +242,9 @@
       "imports": [],
       "dependencies": [
         "RAG_SearchAgent",
+        "RAG_CritiqueAgent",
         "RAG_QueryGeneratorAgent",
-        "get_blackboard",
-        "RAG_CritiqueAgent"
+        "get_blackboard"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -256,8 +256,8 @@
       "docstring": "v9.0 Node: Runs the new Advanced Bullet Swarm (Req #2)",
       "imports": [],
       "dependencies": [
-        "get_blackboard",
-        "ProvenanceRouterAgent"
+        "ProvenanceRouterAgent",
+        "get_blackboard"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -283,8 +283,8 @@
       "imports": [],
       "dependencies": [
         "DraftingConductorAgent",
-        "get_blackboard",
-        "PromptStackAgent"
+        "PromptStackAgent",
+        "get_blackboard"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -296,10 +296,10 @@
       "docstring": "Node: Runs Step 4: QA (LLM and Logic)",
       "imports": [],
       "dependencies": [
+        "FeedbackLoggerAgent",
+        "AtomicQASwarmLogic",
         "len",
         "QAConductorAgent",
-        "AtomicQASwarmLogic",
-        "FeedbackLoggerAgent",
         "get_blackboard"
       ],
       "responsibility_level": "L5",
@@ -312,8 +312,8 @@
       "docstring": "Node: Runs Step 3 (SC Paths): Re-Planner",
       "imports": [],
       "dependencies": [
-        "get_blackboard",
-        "WorkflowRePlannerAgent"
+        "WorkflowRePlannerAgent",
+        "get_blackboard"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -400,8 +400,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -426,8 +426,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -452,8 +452,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
         "super",
+        "get_model_client",
         "GraphDatabaseClient"
       ],
       "responsibility_level": "L5",
@@ -466,12 +466,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "len",
-        "HopExecutionError",
         "range",
         "str",
-        "tool_callable"
+        "isinstance",
+        "len",
+        "tool_callable",
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -515,8 +515,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
-        "sorted"
+        "sorted",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -572,8 +572,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -621,8 +621,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -644,8 +644,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -704,8 +704,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -729,8 +729,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -754,8 +754,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "list",
-        "HopExecutionError"
+        "HopExecutionError",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -767,8 +767,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -780,8 +780,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "HopExecutionError",
         "RAG_SearchAgent",
+        "HopExecutionError",
         "Exception"
       ],
       "responsibility_level": "L5",
@@ -794,8 +794,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -819,9 +819,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "list",
-        "str",
         "HopExecutionError",
+        "str",
+        "list",
         "len"
       ],
       "responsibility_level": "L5",
@@ -880,8 +880,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -893,10 +893,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "list",
-        "str",
+        "open",
         "HopExecutionError",
-        "open"
+        "str",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

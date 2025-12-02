@@ -222,9 +222,9 @@
       "docstring": "Select top 12 skills based on JD keyword matching.\nReturns numbered list (1-12) for K.11 section.",
       "imports": [],
       "dependencies": [
+        "sorted",
         "enumerate",
-        "len",
-        "sorted"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -237,11 +237,11 @@
       "imports": [],
       "dependencies": [
         "AppTrackerQA",
-        "load_master_resume",
-        "SaaSRoles",
-        "HyphenationRules",
+        "SkillsPool",
         "AppTrackerSchema",
-        "SkillsPool"
+        "HyphenationRules",
+        "load_master_resume",
+        "SaaSRoles"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -355,10 +355,10 @@
       "docstring": "Calculate resume metrics.",
       "imports": [],
       "dependencies": [
+        "all",
         "sum",
-        "len",
         "isinstance",
-        "all"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -370,8 +370,8 @@
       "docstring": "Run QA validation gates.",
       "imports": [],
       "dependencies": [
-        "sum",
         "bool",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",

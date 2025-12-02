@@ -328,9 +328,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "AttributeError",
+        "getattr",
         "float",
-        "getattr"
+        "AttributeError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -414,8 +414,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "enumerate",
-        "BM25Okapi"
+        "BM25Okapi",
+        "enumerate"
       ],
       "responsibility_level": "L5",
       "children": []

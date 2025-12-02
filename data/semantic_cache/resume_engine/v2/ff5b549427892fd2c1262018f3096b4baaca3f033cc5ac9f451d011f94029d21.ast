@@ -26,9 +26,9 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "hasattr",
+        "DuplicateDetector",
         "AttributeError",
-        "DuplicateDetector"
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

@@ -16,8 +16,8 @@
       "docstring": "Correction types for resume workflow state management.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -105,8 +105,8 @@
       "docstring": "Records correction to resume workflow journal entry.",
       "imports": [],
       "dependencies": [
-        "str",
-        "ValueError"
+        "ValueError",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -180,8 +180,8 @@
       "docstring": "Generates audit trail of resume workflow state changes.",
       "imports": [],
       "dependencies": [
-        "str",
-        "sorted"
+        "sorted",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

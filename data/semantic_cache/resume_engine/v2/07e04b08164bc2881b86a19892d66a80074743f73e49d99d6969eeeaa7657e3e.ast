@@ -153,8 +153,8 @@
       "docstring": "Selects the optimal model for a given task.\n\nArgs:\n    section_enum: The resume section being generated\n    attempt: The attempt number (1-indexed)\n    force_premium: Force premium model selection\n    \nReturns:\n    Model identifier string",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str"
+        "str",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -201,9 +201,9 @@
       "docstring": "Builds the complete context envelope for the Writer.\n\nV2: Uses prompts_RES_v2 for sophisticated context building when available.\n\nArgs:\n    section_enum: Section to generate\n    thematic_analysis: ThematicAnalysis object\n    enriched_scaffold: Enriched data scaffold\n    model: Model identifier\n    reasoning_config: Reasoning configuration\n    temperature: Generation temperature\n    critique_context: Optional critique from previous attempt\n    \nReturns:\n    Context envelope dictionary with prompt, system_prompt, config, etc.",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "str",
-        "isinstance"
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -312,8 +312,8 @@
       "docstring": "Notifies human for review and waits for decision.\n\nIn production, this would:\n1. Send notification to review queue\n2. Present draft and context via UI\n3. Block until human decision received\n\nCurrent implementation: Auto-approve with warnings and logging.\n\nArgs:\n    section_enum: Section that failed\n    drafts: Current draft dictionary\n    critique_context: Critique context\n    \nReturns:\n    Decision dictionary with action and draft",
       "imports": [],
       "dependencies": [
-        "hasattr",
-        "str"
+        "str",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -357,8 +357,8 @@
       "docstring": "Logs a structured trace event.\n\nArgs:\n    level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)\n    message: Log message\n    metadata: Optional metadata dictionary",
       "imports": [],
       "dependencies": [
-        "log_func",
-        "getattr"
+        "getattr",
+        "log_func"
       ],
       "responsibility_level": "L5",
       "children": []

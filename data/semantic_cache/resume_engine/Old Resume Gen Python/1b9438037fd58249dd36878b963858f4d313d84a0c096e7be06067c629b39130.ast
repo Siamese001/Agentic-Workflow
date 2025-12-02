@@ -92,10 +92,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "BulletScorer",
-        "load_master_resume",
         "RoleProfiles",
-        "BaselineResumeMetrics"
+        "BulletScorer",
+        "BaselineResumeMetrics",
+        "load_master_resume"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -129,9 +129,9 @@
       "docstring": "Generate role-specific executive summary using v2.1 6-sentence narrative approach.\nTarget: 100-150 words (relaxed from v2.1's 118-135).\n\nStructure:\n1. Role positioning + years experience + domain expertise\n2. Current role quantified achievement\n3. Technical/platform depth\n4. Previous role impact (IBM)\n5. Strategic value/partnerships\n6. Unique differentiator for target role",
       "imports": [],
       "dependencies": [
+        "range",
         "max",
-        "len",
-        "range"
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -164,8 +164,8 @@
       "imports": [],
       "dependencies": [
         "sum",
-        "len",
-        "isinstance"
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -200,10 +200,10 @@
       "docstring": "Format OUTPUT 2: Word count table.",
       "imports": [],
       "dependencies": [
-        "sum",
         "str",
-        "len",
-        "isinstance"
+        "sum",
+        "isinstance",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

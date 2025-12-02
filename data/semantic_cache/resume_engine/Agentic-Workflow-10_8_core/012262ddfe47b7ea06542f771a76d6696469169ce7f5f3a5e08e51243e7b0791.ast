@@ -183,8 +183,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "max",
-        "sorted"
+        "sorted",
+        "max"
       ],
       "responsibility_level": "L5",
       "children": []

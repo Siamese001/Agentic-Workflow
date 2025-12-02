@@ -36,10 +36,10 @@
       "docstring": "Executes resume safety validation using LLM models.\n\nEnsures content compliance and protection for secure resume\nimprovement processes and job alignment.",
       "imports": [],
       "dependencies": [
-        "len",
         "record_event",
         "invoke_model",
-        "record_exception"
+        "record_exception",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []

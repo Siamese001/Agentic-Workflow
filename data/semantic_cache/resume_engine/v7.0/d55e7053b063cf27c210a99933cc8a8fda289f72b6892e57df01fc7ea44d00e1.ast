@@ -204,9 +204,9 @@
       "imports": [],
       "dependencies": [
         "RAG_SearchAgent",
+        "RAG_CritiqueAgent",
         "RAG_QueryGeneratorAgent",
-        "get_blackboard",
-        "RAG_CritiqueAgent"
+        "get_blackboard"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -220,8 +220,8 @@
       "dependencies": [
         "AdversarialDraftingRouter",
         "BulletSwarmAgent",
-        "get_blackboard",
-        "PromptStackAgent"
+        "PromptStackAgent",
+        "get_blackboard"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -233,10 +233,10 @@
       "docstring": "Node: Runs Step 4: QA (LLM and Logic)",
       "imports": [],
       "dependencies": [
-        "len",
+        "FeedbackLoggerAgent",
         "AtomicQASwarmLLM",
         "AtomicQASwarmLogic",
-        "FeedbackLoggerAgent",
+        "len",
         "get_blackboard"
       ],
       "responsibility_level": "L5",
@@ -249,8 +249,8 @@
       "docstring": "Node: Runs Step 3 (SC Paths): Re-Planner",
       "imports": [],
       "dependencies": [
-        "get_blackboard",
-        "WorkflowRePlannerAgent"
+        "WorkflowRePlannerAgent",
+        "get_blackboard"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -284,8 +284,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -310,8 +310,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -324,8 +324,8 @@
       "imports": [],
       "dependencies": [
         "HopExecutionError",
-        "len",
-        "Exception"
+        "Exception",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -337,8 +337,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -350,14 +350,14 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "asdict",
-        "isinstance",
-        "HopExecutionError",
-        "ReActTrace",
         "range",
         "str",
+        "isinstance",
+        "action",
+        "ReActTrace",
+        "HopExecutionError",
         "ToolCall",
-        "action"
+        "asdict"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -403,8 +403,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "isinstance",
-        "sorted"
+        "sorted",
+        "isinstance"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -448,8 +448,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -559,8 +559,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "get_model_client",
-        "super"
+        "super",
+        "get_model_client"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -610,8 +610,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "HopExecutionError",
+        "str",
         "len",
         "all"
       ],

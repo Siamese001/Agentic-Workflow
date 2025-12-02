@@ -26,8 +26,8 @@
       "docstring": "Factory for creating consistent LLM mocks across tests.",
       "imports": [],
       "dependencies": [
-        "AsyncMock",
-        "LLMMockFactory"
+        "LLMMockFactory",
+        "AsyncMock"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -65,9 +65,9 @@
       "imports": [],
       "dependencies": [
         "set",
-        "str",
         "rule_func",
-        "MockSafetyPolicy"
+        "MockSafetyPolicy",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -150,8 +150,8 @@
       "docstring": "Create a mock orchestrator for L3 testing.",
       "imports": [],
       "dependencies": [
-        "str",
-        "MockOrchestrator"
+        "MockOrchestrator",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []

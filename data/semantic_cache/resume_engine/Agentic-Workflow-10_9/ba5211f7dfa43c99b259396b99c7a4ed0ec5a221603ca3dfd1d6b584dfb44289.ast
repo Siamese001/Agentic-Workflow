@@ -72,11 +72,11 @@
       "docstring": "Construct a DAGModel from an L1 PlanObject.\n\nExpected plan structure:\n\n    plan[\"dag\"] = {\n        \"nodes\": [\n            {\n                \"name\": \"strategy\",\n                \"mode\": \"strategy\",\n                \"depends_on\": [],\n                \"fallback\": [],\n                \"parallel_group\": null,\n                \"max_retries\": 0,\n                \"predictive_cache_key\": {...},\n                \"surfaces\": [...]\n            },\n            ...\n        ]\n    }\n\nIf no \"dag\" block is present, we construct a minimal single-node DAG\nrepresenting the plan itself (backwards-compatible with simple flows).",
       "imports": [],
       "dependencies": [
+        "str",
+        "int",
+        "DAGValidationError",
         "PlanObject",
         "DAGModel",
-        "int",
-        "str",
-        "DAGValidationError",
         "DAGNode"
       ],
       "responsibility_level": "L5",
@@ -131,8 +131,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "len",
-        "DAGValidationError"
+        "DAGValidationError",
+        "len"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -238,10 +238,10 @@
       "docstring": "Normalize payload from ExecutionResult into state using L4.StateAdapter.",
       "imports": [],
       "dependencies": [
-        "StatePatch",
-        "hasattr",
         "str",
-        "isinstance"
+        "StatePatch",
+        "isinstance",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -277,23 +277,23 @@
       "docstring": "Execute full L3 orchestration for a single L1 PlanObject.\n\nThis is a synchronous API; higher layers may wrap it with asyncio\nas needed. Internally, this uses asyncio.run to call the async L2\nroute_executor.",
       "imports": [],
       "dependencies": [
-        "get_routing_bias",
-        "dict",
+        "get_meta_profile_snapshot",
+        "str",
+        "set",
+        "_run_async",
+        "len",
+        "build_dag_from_plan",
+        "isinstance",
         "sorted",
         "WorkflowState",
-        "len",
-        "_run_async",
+        "dict",
         "zip",
-        "isinstance",
-        "str",
-        "build_dag_from_plan",
-        "NodeResult",
         "CostTracker",
-        "get_meta_profile_snapshot",
-        "set",
-        "PhaseMachine",
         "get_safety_bias",
-        "ControlFlowError"
+        "NodeResult",
+        "PhaseMachine",
+        "ControlFlowError",
+        "get_routing_bias"
       ],
       "responsibility_level": "L5",
       "children": []

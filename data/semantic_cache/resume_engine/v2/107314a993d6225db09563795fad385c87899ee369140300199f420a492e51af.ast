@@ -170,8 +170,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "_load_json_config",
         "cls",
+        "_load_json_config",
         "str"
       ],
       "responsibility_level": "L5",
@@ -184,9 +184,9 @@
       "docstring": "Load ValidatorConfig from JSON files.",
       "imports": [],
       "dependencies": [
+        "cls",
         "set",
         "_load_json_config",
-        "cls",
         "str"
       ],
       "responsibility_level": "L5",
@@ -199,8 +199,8 @@
       "docstring": "Load prompts from JSON file.",
       "imports": [],
       "dependencies": [
-        "_load_json_config",
         "cls",
+        "_load_json_config",
         "str"
       ],
       "responsibility_level": "L5",
@@ -213,8 +213,8 @@
       "docstring": "Load hyphenation rules from JSON.",
       "imports": [],
       "dependencies": [
-        "_load_json_config",
         "cls",
+        "_load_json_config",
         "str"
       ],
       "responsibility_level": "L5",

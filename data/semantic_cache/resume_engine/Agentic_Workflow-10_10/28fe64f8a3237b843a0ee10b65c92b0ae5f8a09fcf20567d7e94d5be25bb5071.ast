@@ -50,16 +50,16 @@
       "docstring": "Primary production retrieval entrypoint.\n\nSteps:\n    1. Select effective query (HYDE if provided)\n    2. Emit attempt telemetry\n    3. Run BM25 (isolated)\n    4. Run Dense (isolated)\n    5. Fuse via weighted RRF\n    6. Apply QA-council evidence weighting\n    7. Emit success/failure events per retriever\n\nDeterministic unless HYDE is enabled (HYDE generated in L2).",
       "imports": [],
       "dependencies": [
-        "emit_retrieval_success",
-        "len",
-        "_run_dense",
         "start_span",
-        "emit_retrieval_attempt",
-        "_run_bm25",
-        "_apply_council_weights",
         "str",
+        "_apply_council_weights",
+        "emit_retrieval_attempt",
+        "len",
+        "emit_retrieval_success",
         "emit_retrieval_failure",
-        "end_span"
+        "_run_bm25",
+        "end_span",
+        "_run_dense"
       ],
       "responsibility_level": "L5",
       "children": []

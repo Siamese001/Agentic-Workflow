@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\00_hop_rag_v1_2.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\hop_0_rag_v1_1.py",
     "file_hash": "ef519fd1140d465c0039ada7611e6579e611e133ede2ed8bc94f5bafeb36a7f3",
     "size_bytes": 31987,
-    "last_modified": "2025-12-01T12:27:36.388209",
+    "last_modified": "2025-12-01T12:27:36.407796",
     "engine": "RG",
     "archive_version": "Microservices Model",
     "file_extension": ".py"
@@ -146,18 +146,18 @@
       "docstring": "Executes the HOP-0 RAG analysis logic.",
       "imports": [],
       "dependencies": [
-        "EmbeddingClient",
-        "default_serializer",
-        "setup_workflow_logging",
-        "getattr",
-        "RAGConfig",
-        "SemanticCacheManager",
-        "exit",
-        "HopExecutionError",
         "print",
+        "SemanticCacheManager",
+        "getattr",
+        "setup_workflow_logging",
+        "RAGConfig",
         "open",
-        "EnhancedJobDescriptionAnalyzer",
-        "Path"
+        "exit",
+        "default_serializer",
+        "EmbeddingClient",
+        "Path",
+        "HopExecutionError",
+        "EnhancedJobDescriptionAnalyzer"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -433,8 +433,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "GeminiWebSearchClient",
         "WebSearchRAG",
+        "GeminiWebSearchClient",
         "RAGConfig"
       ],
       "responsibility_level": "L5",
@@ -470,9 +470,9 @@
       "imports": [],
       "dependencies": [
         "ThematicAnalysis",
+        "range",
         "RAGState",
-        "RAGCritique",
-        "range"
+        "RAGCritique"
       ],
       "responsibility_level": "L5",
       "children": []

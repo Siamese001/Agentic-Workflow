@@ -53,9 +53,9 @@
       "docstring": "Normalize arbitrary world facts into a consistent schema.\n\nEach fact has the form:\n\n    {\n        \"category\": \"entity\" | \"event\" | \"relation\",\n        \"origin\": \"retrieval\" | \"user\" | \"system\",\n        \"content\": \"...\",\n    }\n\nThis is a pure function; it does not touch StateAdapter or phases.",
       "imports": [],
       "dependencies": [
-        "_coerce_category",
         "_coerce_origin",
         "_coerce_content",
+        "_coerce_category",
         "isinstance"
       ],
       "responsibility_level": "L5",
@@ -202,8 +202,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "sum",
         "str",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -216,8 +216,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "sum",
         "str",
+        "sum",
         "len"
       ],
       "responsibility_level": "L5",
@@ -325,8 +325,8 @@
       "docstring": "Apply a StatePatch and reconcile + validate.\n\nSemantics:\n\n    \u2022 If both existing state[key] and patch.value are dicts,\n      perform shallow merge.\n    \u2022 If both are lists, append.\n    \u2022 Else replace the top-level key with patch.value.",
       "imports": [],
       "dependencies": [
-        "list",
-        "validate_state"
+        "validate_state",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -338,9 +338,9 @@
       "docstring": "Append a message to state['messages'] and reconcile.",
       "imports": [],
       "dependencies": [
-        "list",
         "str",
-        "validate_state"
+        "validate_state",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -352,8 +352,8 @@
       "docstring": "Append an item to state['rag_history'] and reconcile.",
       "imports": [],
       "dependencies": [
-        "list",
-        "validate_state"
+        "validate_state",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -365,9 +365,9 @@
       "docstring": "Record a correction event in the CORRECTION_JOURNAL.",
       "imports": [],
       "dependencies": [
-        "list",
         "str",
-        "validate_state"
+        "validate_state",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -379,8 +379,8 @@
       "docstring": "Append an event to state['episodic'] and reconcile.",
       "imports": [],
       "dependencies": [
-        "list",
-        "validate_state"
+        "validate_state",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -392,9 +392,9 @@
       "docstring": "Append a checkpoint record to state['checkpoints'] and reconcile.",
       "imports": [],
       "dependencies": [
-        "list",
         "str",
-        "validate_state"
+        "validate_state",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

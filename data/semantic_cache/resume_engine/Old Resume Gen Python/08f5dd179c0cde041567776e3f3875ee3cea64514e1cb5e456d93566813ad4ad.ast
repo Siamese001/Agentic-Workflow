@@ -48,8 +48,8 @@
       "docstring": "Test function to verify both APIs work.",
       "imports": [],
       "dependencies": [
-        "MultiLLMProvider",
-        "print"
+        "print",
+        "MultiLLMProvider"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -97,11 +97,11 @@
       "docstring": "Make HTTP request with exponential backoff retry logic.\n\nArgs:\n    url: API endpoint URL\n    headers: Request headers\n    payload: Request payload\n    provider_type: \"claude\" or \"gemini\" for response parsing\n\nReturns:\n    Generated text from API\n\nRaises:\n    Exception: If all retry attempts fail",
       "imports": [],
       "dependencies": [
-        "len",
-        "ValueError",
-        "Exception",
         "range",
-        "str"
+        "str",
+        "Exception",
+        "len",
+        "ValueError"
       ],
       "responsibility_level": "L5",
       "children": []

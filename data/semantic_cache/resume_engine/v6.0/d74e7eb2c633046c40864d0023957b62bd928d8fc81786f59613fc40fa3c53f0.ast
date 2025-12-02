@@ -16,9 +16,9 @@
       "docstring": "Main batch processing loop.\nProcesses all .json files in batch_queue/ directory.",
       "imports": [],
       "dependencies": [
-        "str",
-        "WorkflowV60",
         "open",
+        "WorkflowV60",
+        "str",
         "len"
       ],
       "responsibility_level": "L5",

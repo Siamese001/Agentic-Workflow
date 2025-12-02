@@ -73,8 +73,8 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "str",
         "any",
+        "str",
         "describe_experience",
         "isinstance"
       ],
@@ -290,10 +290,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "describe_experience",
-        "extract_resume_profile",
         "extract_job_profile",
-        "RAGPlan"
+        "RAGPlan",
+        "extract_resume_profile",
+        "describe_experience"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -316,12 +316,12 @@
       "imports": [],
       "dependencies": [
         "DraftPlan",
+        "extract_job_profile",
         "getattr",
         "describe_experience",
         "extract_resume_profile",
-        "missing_requirements",
         "collect_sections",
-        "extract_job_profile"
+        "missing_requirements"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -343,12 +343,12 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "detect_metrics",
+        "extract_job_profile",
         "describe_experience",
-        "BulletPlan",
         "extract_resume_profile",
+        "BulletPlan",
         "collect_sections",
-        "extract_job_profile"
+        "detect_metrics"
       ],
       "responsibility_level": "L5",
       "children": []

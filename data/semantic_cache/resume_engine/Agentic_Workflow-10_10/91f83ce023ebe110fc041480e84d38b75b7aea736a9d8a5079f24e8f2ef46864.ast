@@ -118,14 +118,14 @@
       "docstring": "Unified LLM invocation for v10_10.\n\nParameters:\n    model:       model ID selected by RoutingPolicy (e.g. \"gpt-5.1-codex\").\n    prompt:      final rendered prompt text.\n    sandbox:     SandboxConfig (request_timeout_s, max_tokens_per_call).\n    temperature: sampling temperature.\n    max_tokens:  requested max tokens (will be clamped to sandbox).",
       "imports": [],
       "dependencies": [
-        "ModelClientError",
-        "len",
         "getattr",
-        "record_exception",
+        "_infer_provider",
         "LLMInvocationError",
-        "record_event",
         "ToolExecutionError",
-        "_infer_provider"
+        "record_event",
+        "len",
+        "record_exception",
+        "ModelClientError"
       ],
       "responsibility_level": "L5",
       "children": []

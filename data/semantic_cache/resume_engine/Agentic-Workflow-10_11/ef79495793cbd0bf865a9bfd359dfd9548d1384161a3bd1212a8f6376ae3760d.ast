@@ -102,9 +102,9 @@
       "docstring": "Creates resume workflow triplet from storage dictionary.",
       "imports": [],
       "dependencies": [
-        "TemporalType",
         "cls",
-        "TripletStatus"
+        "TripletStatus",
+        "TemporalType"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -170,8 +170,8 @@
       "docstring": "Gets all objects for resume workflow subject-predicate pair.",
       "imports": [],
       "dependencies": [
-        "list",
-        "set"
+        "set",
+        "list"
       ],
       "responsibility_level": "L5",
       "children": []

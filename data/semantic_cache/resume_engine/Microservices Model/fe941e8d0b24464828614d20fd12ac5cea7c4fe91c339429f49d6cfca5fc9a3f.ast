@@ -36,15 +36,15 @@
       "docstring": "Executes the HOP-5 validation logic.",
       "imports": [],
       "dependencies": [
-        "default_serializer",
+        "print",
+        "ValidationEngine",
         "setup_workflow_logging",
         "len",
-        "exit",
-        "HopExecutionError",
-        "print",
         "open",
+        "exit",
+        "default_serializer",
         "Path",
-        "ValidationEngine"
+        "HopExecutionError"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -126,12 +126,12 @@
       "docstring": "Runs all validation rules.",
       "imports": [],
       "dependencies": [
-        "rule",
-        "len",
         "getattr",
-        "ValidationResult",
+        "rule",
         "callable",
-        "dir"
+        "len",
+        "dir",
+        "ValidationResult"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -156,8 +156,8 @@
       "docstring": "[HIGH-SIGNAL] Checks what percentage of HOP-0 keywords\nare present in the final generated text.",
       "imports": [],
       "dependencies": [
-        "list",
         "len",
+        "list",
         "ValidationResult"
       ],
       "responsibility_level": "L5",
@@ -170,9 +170,9 @@
       "docstring": "[HIGH-SIGNAL] Checks if problem/solution narratives from HOP-0\nare reflected in the text. (Simple keyword check)",
       "imports": [],
       "dependencies": [
+        "getattr",
         "ValidationResult",
-        "any",
-        "getattr"
+        "any"
       ],
       "responsibility_level": "L5",
       "children": []

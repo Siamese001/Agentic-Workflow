@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\policy(1).py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l5\\policy.py",
     "file_hash": "a8518a8d244d422f69f54656a278af7342689e0608c40e56596c185d3fd1f09c",
     "size_bytes": 9084,
-    "last_modified": "2025-12-01T12:27:38.892806",
+    "last_modified": "2025-12-01T12:27:38.914953",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_11",
     "file_extension": ".py"
@@ -143,13 +143,13 @@
       "docstring": "Evaluates resume workflow context against relevant safety policies.\n\nArgs:\n    context: Safety context for resume enhancement evaluation\n    policy_ids: Optional policy IDs to evaluate against\n    severity_threshold: Minimum severity for blocking operations\n\nReturns:\n    PolicyResult with the combined results of all policy evaluations",
       "imports": [],
       "dependencies": [
-        "sum",
-        "len",
-        "list",
-        "SafetyFinding",
-        "PolicyDecision",
         "PolicyResult",
-        "str"
+        "sum",
+        "str",
+        "len",
+        "PolicyDecision",
+        "list",
+        "SafetyFinding"
       ],
       "responsibility_level": "L5",
       "children": []

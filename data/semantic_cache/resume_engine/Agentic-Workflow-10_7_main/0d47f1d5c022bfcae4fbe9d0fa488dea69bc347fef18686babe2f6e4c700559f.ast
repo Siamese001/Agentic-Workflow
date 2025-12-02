@@ -519,10 +519,10 @@
       "docstring": null,
       "imports": [],
       "dependencies": [
-        "PromptInjectionDetectorAgent",
+        "ConstitutionalReviewerAgent",
         "BiasDetectorAgent",
         "PIISanitizerAgent",
-        "ConstitutionalReviewerAgent"
+        "PromptInjectionDetectorAgent"
       ],
       "responsibility_level": "L5",
       "children": []

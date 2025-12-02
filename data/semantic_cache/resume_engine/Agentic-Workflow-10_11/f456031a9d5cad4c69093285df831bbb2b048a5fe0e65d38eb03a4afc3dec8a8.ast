@@ -16,9 +16,9 @@
       "docstring": "Run an Anthropic message completion and return the response text.",
       "imports": [],
       "dependencies": [
+        "RuntimeError",
         "getattr",
-        "ImportError",
-        "RuntimeError"
+        "ImportError"
       ],
       "responsibility_level": "L5",
       "children": []

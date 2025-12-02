@@ -16,8 +16,8 @@
       "docstring": "Coarse-grained complexity buckets for planning.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -29,8 +29,8 @@
       "docstring": "Preferred reasoning mode for L2 / downstream layers.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -84,9 +84,9 @@
       "docstring": "Heuristic domain tagging from job/resume content.",
       "imports": [],
       "dependencies": [
-        "set",
+        "sorted",
         "any",
-        "sorted"
+        "set"
       ],
       "responsibility_level": "L1",
       "children": []
@@ -98,9 +98,9 @@
       "docstring": "Rough skill clustering based on keyword families.",
       "imports": [],
       "dependencies": [
-        "set",
+        "sorted",
         "any",
-        "sorted"
+        "set"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -125,11 +125,11 @@
       "docstring": "Public entry point for L1 profile inference.",
       "imports": [],
       "dependencies": [
-        "ProfileSignals",
+        "_infer_risk_flags",
         "_infer_domains",
-        "_infer_skill_clusters",
+        "ProfileSignals",
         "_infer_seniority",
-        "_infer_risk_flags"
+        "_infer_skill_clusters"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -141,9 +141,9 @@
       "docstring": "Estimate problem complexity from simple heuristics plus meta-biases.\n\nBase heuristic: token count of job + resume.\nMeta-bias adjustments (from meta_profile):\n\n    \u2022 planning_bias.conservative  \u2192 push complexity upward.\n    \u2022 planning_bias.exploratory   \u2192 pull complexity downward.\n    \u2022 routing_bias.prefer_fast    \u2192 lean toward lower complexity.",
       "imports": [],
       "dependencies": [
-        "get_routing_bias",
+        "len",
         "get_planning_bias",
-        "len"
+        "get_routing_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -155,9 +155,9 @@
       "docstring": "Map complexity + risk + meta-biases into a reasoning strategy hint.\n\nMeta-bias influence:\n\n    \u2022 planning_bias.conservative     \u2192 prefer COT_WITH_CRITIQUE.\n    \u2022 planning_bias.exploratory      \u2192 prefer TOT_WITH_CRITIQUE.\n    \u2022 planning_bias.deterministic_recovery \u2192 prefer TOT_WITH_CRITIQUE.\n    \u2022 qa_bias.recent_failures        \u2192 prefer critique variants.",
       "imports": [],
       "dependencies": [
-        "get_qa_bias",
+        "bool",
         "get_planning_bias",
-        "bool"
+        "get_qa_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -169,8 +169,8 @@
       "docstring": "Construct QA, safety, context, and optimization hints for downstream layers.\n\nHint sources:\n    \u2022 profile (seniority, domains, risk_flags)\n    \u2022 complexity\n    \u2022 safety_profile\n    \u2022 meta safety/planning biases",
       "imports": [],
       "dependencies": [
-        "PlanningHints",
-        "get_safety_bias"
+        "get_safety_bias",
+        "PlanningHints"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -204,17 +204,17 @@
       "docstring": "Build a PLAN for the \"strategy\" mode with meta-aware adjustments.",
       "imports": [],
       "dependencies": [
-        "PlanObject",
-        "asdict",
-        "infer_profile_signals",
-        "estimate_task_complexity",
-        "build_planning_hints",
-        "get_planning_bias",
         "select_reasoning_strategy",
+        "estimate_task_complexity",
         "build_cross_mode_dependencies",
-        "get_qa_bias",
+        "PlanObject",
+        "build_planning_hints",
+        "_linear_strategy_steps",
+        "infer_profile_signals",
+        "asdict",
         "get_safety_bias",
-        "_linear_strategy_steps"
+        "get_planning_bias",
+        "get_qa_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -226,8 +226,8 @@
       "docstring": "Plan retrieval queries and evidence targets.\n\nRestores v10_8 RAG planning behavior with meta-aware tweaks.",
       "imports": [],
       "dependencies": [
-        "get_routing_bias",
-        "PlanObject"
+        "PlanObject",
+        "get_routing_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -239,9 +239,9 @@
       "docstring": "Plan drafting structure (sections, tone, personalization).",
       "imports": [],
       "dependencies": [
+        "bool",
         "PlanObject",
-        "get_planning_bias",
-        "bool"
+        "get_planning_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -266,8 +266,8 @@
       "docstring": "Plan QA checks and surfaces (v10_8 correction framework).",
       "imports": [],
       "dependencies": [
-        "get_qa_bias",
-        "PlanObject"
+        "PlanObject",
+        "get_qa_bias"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -279,8 +279,8 @@
       "docstring": "Plan safety surfaces and escalation paths.",
       "imports": [],
       "dependencies": [
-        "PlanObject",
-        "get_safety_bias"
+        "get_safety_bias",
+        "PlanObject"
       ],
       "responsibility_level": "L5",
       "children": []
@@ -317,18 +317,18 @@
       "docstring": "Public L1 planning entrypoint.\n\nSupported modes:\n\n    \u2022 \"strategy\"\n    \u2022 \"rag\"\n    \u2022 \"drafting\"\n    \u2022 \"bullets\"\n    \u2022 \"qa\"\n    \u2022 \"safety\"\n    \u2022 \"meta_learning\"\n    \u2022 \"prompt_engineering\"",
       "imports": [],
       "dependencies": [
-        "build_bullets_plan",
-        "build_strategy_plan",
-        "infer_profile_signals",
-        "ValueError",
-        "build_prompt_engineering_plan",
-        "estimate_task_complexity",
-        "build_drafting_plan",
         "build_qa_plan",
-        "build_planning_hints",
+        "build_strategy_plan",
+        "build_prompt_engineering_plan",
+        "build_drafting_plan",
+        "estimate_task_complexity",
+        "build_rag_plan",
+        "ValueError",
         "build_safety_plan",
+        "build_planning_hints",
         "build_meta_learning_plan",
-        "build_rag_plan"
+        "build_bullets_plan",
+        "infer_profile_signals"
       ],
       "responsibility_level": "L5",
       "children": []

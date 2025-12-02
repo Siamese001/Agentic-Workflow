@@ -1,9 +1,9 @@
 {
   "signature": {
-    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agents.py",
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\core_v10_7\\agents.py",
     "file_hash": "d4bc968c073deb9a05e753b8111afea9707dcde269a7fc66c0b35ef19c22f5fe",
     "size_bytes": 9504,
-    "last_modified": "2025-12-01T12:27:41.220377",
+    "last_modified": "2025-12-01T12:27:41.989481",
     "engine": "RG",
     "archive_version": "Agentic-Workflow-10_7_main",
     "file_extension": ".py"
@@ -102,9 +102,9 @@
       "docstring": "v10.7 dynamic model routing.\nApplies:\n  - complexity-based routing\n  - latency fallback\n  - global failure injection (Fix #19/#24)",
       "imports": [],
       "dependencies": [
-        "hasattr",
         "getattr",
-        "legacy_model_alias"
+        "legacy_model_alias",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

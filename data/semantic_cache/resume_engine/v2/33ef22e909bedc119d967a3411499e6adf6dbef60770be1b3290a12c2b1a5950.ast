@@ -38,12 +38,12 @@
       "dependencies": [
         "sum",
         "len",
-        "ValidationResult",
-        "hasattr",
-        "next",
-        "AppTrackerQAValidator",
         "sorted",
-        "all"
+        "all",
+        "next",
+        "ValidationResult",
+        "AppTrackerQAValidator",
+        "hasattr"
       ],
       "responsibility_level": "L5",
       "children": []

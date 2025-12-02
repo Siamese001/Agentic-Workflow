@@ -16,8 +16,8 @@
       "docstring": "Reasons for resume fact invalidation in job alignment workflows.",
       "imports": [],
       "dependencies": [
-        "str",
-        "Enum"
+        "Enum",
+        "str"
       ],
       "responsibility_level": "L5",
       "children": []
