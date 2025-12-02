@@ -1,0 +1,1214 @@
+{
+  "files": {
+    "__init__.py": {
+      "sha256": "3f5378f62d35405cbfd2bc459f459f92cb8ceb1f66489bdd3f0abf7d2c17ad9a",
+      "size_bytes": 32
+    },
+    "__pycache__/__init__.cpython-313.pyc": {
+      "sha256": "a8159724502c561f87748e2554b3404497b354761ceb24fa2a6b6df3093ea1a0",
+      "size_bytes": 184
+    },
+    "exec-layer/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/act-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/act-phase/use-core-tools/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/act-phase/use-core-tools/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/act-phase/use-core-tools/general/use-a-tool/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/execute_core_execution.cpython-313.pyc": {
+      "sha256": "03a4e06582692ad57f825059d47eb6d04614f40fbeac784c48f54a5640ec7a48",
+      "size_bytes": 27002
+    },
+    "exec-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/invoke_core_tool.cpython-313.pyc": {
+      "sha256": "df5f83cd46ffc66249261e75ac26f76f73b4e37e40874753bb7071b4111b7446",
+      "size_bytes": 26641
+    },
+    "exec-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/perform_core_operation.cpython-313.pyc": {
+      "sha256": "5650d884a4e255829482c39e4084770c887cf37478f2a94b29f5f5ca02258b58",
+      "size_bytes": 27002
+    },
+    "exec-layer/act-phase/use-core-tools/general/use-a-tool/execute_core_execution.py": {
+      "sha256": "46812c852ff8c66200fad8edb0a92cc08ece41ea314baddb5a66daa5aedf512b",
+      "size_bytes": 29266
+    },
+    "exec-layer/act-phase/use-core-tools/general/use-a-tool/invoke_core_tool.py": {
+      "sha256": "b8fc81c7793f45b478e96a5682fb54f250e90fb82da9fc0801182e8a30414566",
+      "size_bytes": 29152
+    },
+    "exec-layer/act-phase/use-core-tools/general/use-a-tool/perform_core_operation.py": {
+      "sha256": "21e04e322dd98e7029dd7b16256344860427f0a872ecb3ebd91f61910f3a5f7e",
+      "size_bytes": 29266
+    },
+    "exec-layer/act-phase/use-core-tools/utility/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/act-phase/use-core-tools/utility/prepare-information/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/act-phase/use-core-tools/utility/prepare-information/__pycache__/format_execution_request.cpython-313.pyc": {
+      "sha256": "6b69899aabf79330bea25016bff45acaf2ebf01143e8ecac45c9c69c97eaaa7c",
+      "size_bytes": 27131
+    },
+    "exec-layer/act-phase/use-core-tools/utility/prepare-information/__pycache__/prepare_execution_payload.cpython-313.pyc": {
+      "sha256": "16bcfb11e89d292844e9c5f45b748f003c131df1193e0bec0c0f71023a18c90c",
+      "size_bytes": 27191
+    },
+    "exec-layer/act-phase/use-core-tools/utility/prepare-information/__pycache__/serialize_execution_params.cpython-313.pyc": {
+      "sha256": "64df21647fa3f5683a0dbf8f8b15a434cce7efd21871c75b4e932ab0d644d8fa",
+      "size_bytes": 27251
+    },
+    "exec-layer/act-phase/use-core-tools/utility/prepare-information/format_execution_request.py": {
+      "sha256": "59daf360da0bb84bdd672b4fc8efeac5469b6b302fb3504d65e00f28b10fb3cb",
+      "size_bytes": 29304
+    },
+    "exec-layer/act-phase/use-core-tools/utility/prepare-information/prepare_execution_payload.py": {
+      "sha256": "3e0eeefda32a0f432c4803fc306a7fb693dcd0955a9b454702394230c776e1fe",
+      "size_bytes": 29323
+    },
+    "exec-layer/act-phase/use-core-tools/utility/prepare-information/serialize_execution_params.py": {
+      "sha256": "b3b41832cae571294782b3c625ac20a091b151c33e6c2ad3bf59d8c6e8524639",
+      "size_bytes": 29342
+    },
+    "exec-layer/safety-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/safety-phase/check-core-rules/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/apply_execution_safety.cpython-313.pyc": {
+      "sha256": "12c1d49b3eeac61ca592e6e7b4f4a210bed825a8d9f301aa7617164390e26f3c",
+      "size_bytes": 27008
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/enforce_execution_policy.cpython-313.pyc": {
+      "sha256": "c79a9740adf8f7983d8ff9a5dad7fcfb2f2500cdc0353a6aed2c2f5f9518c832",
+      "size_bytes": 27128
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/validate_execution_ethics.cpython-313.pyc": {
+      "sha256": "6d06b8876102d3ff5e7e0d4286704cca1c75d4a0a1e9270b66ec24765d48ac70",
+      "size_bytes": 27188
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/check-safety/apply_execution_safety.py": {
+      "sha256": "a4804c02f8df6968666fe7f85caac92ee33847fdac09934274d60cf84dbd009d",
+      "size_bytes": 29266
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/check-safety/enforce_execution_policy.py": {
+      "sha256": "e032de0b647529ac84f53a62811d38f03727f4c3ef7a24a26082a1c7921ed848",
+      "size_bytes": 29304
+    },
+    "exec-layer/safety-phase/check-core-rules/policy/check-safety/validate_execution_ethics.py": {
+      "sha256": "311d14a7293bee210e0d013fd323dd4c69d085a9f396fb9de844af0a86559bd0",
+      "size_bytes": 29323
+    },
+    "exec-layer/validate-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/validate-phase/check-core-structure/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/check-safety/__pycache__/check_execution_compliance.cpython-313.pyc": {
+      "sha256": "b48675f7e545c490016b08d7b2b133c83d7cba0680c4166b01d56782fc9e8eab",
+      "size_bytes": 27254
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/check-safety/__pycache__/enforce_execution_contracts.cpython-313.pyc": {
+      "sha256": "b08ecfc13d46a9d53af02c5efbb2cbec9cf3fa697a30b476fbe42ad0fddbfce7",
+      "size_bytes": 27315
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/check-safety/__pycache__/validate_execution_schema.cpython-313.pyc": {
+      "sha256": "f72caaf467ce9ef9377149dd4ab08e262f418759b8360a722bc63da868c518b1",
+      "size_bytes": 27194
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/check-safety/check_execution_compliance.py": {
+      "sha256": "c0d95c7bdc57207f50f3d8848f1f1ffe6efc5de85d50d215954b79126d8efdac",
+      "size_bytes": 29342
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/check-safety/enforce_execution_contracts.py": {
+      "sha256": "9dcee030ebea138aed23a9c28e14e27269720e67fd84aca3e38f62c61b6d839f",
+      "size_bytes": 29361
+    },
+    "exec-layer/validate-phase/check-core-structure/policy/check-safety/validate_execution_schema.py": {
+      "sha256": "275c0904ec742e9dd321080061e21726b2e7fa97afeeae4964429c2d9c18fdba",
+      "size_bytes": 29323
+    },
+    "mem-layer/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/retrieve-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/retrieve-phase/get-core-info/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__pycache__/find_core_context.cpython-313.pyc": {
+      "sha256": "83f023b578d7e999c3cbd10f9357bdbe876cf6ad3bab126b220517b446b6b85d",
+      "size_bytes": 26678
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__pycache__/match_core_patterns.cpython-313.pyc": {
+      "sha256": "d75e0cc27ce7a1ff1c7bd98f76529449c9c09669648eae6dd39d4b45d1917c3e",
+      "size_bytes": 26799
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__pycache__/search_core_vectors.cpython-313.pyc": {
+      "sha256": "877a35e6a27bef377e13fac04e34e071b41d88b230923be88186a08a2d5bf80c",
+      "size_bytes": 26799
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/compare-meaning/find_core_context.py": {
+      "sha256": "06cd126f2978b82736a35d7129678510ae5267a0e327e95a345cd0dcc3897afa",
+      "size_bytes": 29162
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/compare-meaning/match_core_patterns.py": {
+      "sha256": "05ae83e069cb3ef5b35906ac8a11bf4123d11d4e26dd62faaa7875bd3117f382",
+      "size_bytes": 29200
+    },
+    "mem-layer/retrieve-phase/get-core-info/embedding/compare-meaning/search_core_vectors.py": {
+      "sha256": "4adac20d4bcd3276e81884aeaa9fff66e6deda0396e17e25357d3245d80d46ee",
+      "size_bytes": 29200
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/understand-request/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/understand-request/__pycache__/fetch_core_history.cpython-313.pyc": {
+      "sha256": "45f2f7179cdf7b145a5ddc201ade66544ce76e0208ad2f9fe435756807b77838",
+      "size_bytes": 26740
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/understand-request/__pycache__/query_core_state.cpython-313.pyc": {
+      "sha256": "a78c7ae023bb822773fec43ae2354369d7ffe08bd839eb99d7158edc4fdbdf28",
+      "size_bytes": 26619
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/understand-request/__pycache__/retrieve_core_memory.cpython-313.pyc": {
+      "sha256": "5907be548f2463f11736f0304b7baf37bc4eb2a6a05889df264bcdf6944a33ed",
+      "size_bytes": 26860
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/understand-request/fetch_core_history.py": {
+      "sha256": "aac51eacd3d268aeb662b9b1efbfc88241322c61a976364f97077ac2e0a5e6fa",
+      "size_bytes": 29181
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/understand-request/query_core_state.py": {
+      "sha256": "3864341dd31bd8632ba3a885c750963aa49be24132cc80398d409e845ff7ac83",
+      "size_bytes": 29143
+    },
+    "mem-layer/retrieve-phase/get-core-info/general/understand-request/retrieve_core_memory.py": {
+      "sha256": "edb8bdc6a52f22e7e42b3e3b5818793795acf5e34a7db879c0d3cb6c5d5b9cd5",
+      "size_bytes": 29219
+    },
+    "mem-layer/safety-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/safety-phase/check-core-rules/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/apply_memory_safety.cpython-313.pyc": {
+      "sha256": "3dee43a3ed5d9d5ad29946089b23c0bacf90f4064f00b9303b9139224ecfb6cb",
+      "size_bytes": 26794
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/enforce_memory_policy.cpython-313.pyc": {
+      "sha256": "9ff0e72ae6d7dab7891f7344741b2ff217669caeb6352cd94f3dba4ccda729a9",
+      "size_bytes": 26914
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/validate_memory_ethics.cpython-313.pyc": {
+      "sha256": "dbc90190628b9d4357eba3f772948e5ab5b63271f5712fb59f0810c372e13023",
+      "size_bytes": 26974
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/check-safety/apply_memory_safety.py": {
+      "sha256": "780ffe9f89689ee264124c28337d6a90b1b2ad19215cf4d73867db333b2bd77b",
+      "size_bytes": 29200
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/check-safety/enforce_memory_policy.py": {
+      "sha256": "3a2efaca46e289e56ec3be56a345308becdf9d3e18aa94a04687fe24f7b82e2b",
+      "size_bytes": 29238
+    },
+    "mem-layer/safety-phase/check-core-rules/policy/check-safety/validate_memory_ethics.py": {
+      "sha256": "728db06e5f13a000e3936b8263c45dc2d529886cc67e30520d5ecfb218529610",
+      "size_bytes": 29257
+    },
+    "orc-layer/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/act-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/act-phase/use-core-tools/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/act-phase/use-core-tools/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/act-phase/use-core-tools/general/use-a-tool/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/call_orchestration_api.cpython-313.pyc": {
+      "sha256": "a626d5012becf56faa08b8fc74f6faabc7ba6dfffe29cce83736256cd7f53291",
+      "size_bytes": 26989
+    },
+    "orc-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/dispatch_orchestration_tools.cpython-313.pyc": {
+      "sha256": "b24ec1acb371eaf1f0d634a4cd3e4bce47c37274d65102cb95b7c3da603c809c",
+      "size_bytes": 27350
+    },
+    "orc-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/invoke_orchestration_service.cpython-313.pyc": {
+      "sha256": "f67473e8938840a6656b212b032a25616b1b14659d3fb40324d701119b6d3fc9",
+      "size_bytes": 27350
+    },
+    "orc-layer/act-phase/use-core-tools/general/use-a-tool/call_orchestration_api.py": {
+      "sha256": "348c4c1cfd87b8a3eddb52839b01fa731f7bcb00f148ada618fe0f418e6ab3b7",
+      "size_bytes": 29222
+    },
+    "orc-layer/act-phase/use-core-tools/general/use-a-tool/dispatch_orchestration_tools.py": {
+      "sha256": "9ad6e2623313408676d8582b14f14fedb9e42f04e454fdc859132c8f599280df",
+      "size_bytes": 29336
+    },
+    "orc-layer/act-phase/use-core-tools/general/use-a-tool/invoke_orchestration_service.py": {
+      "sha256": "f2932daae3a6d3c027baaeadf7a02858e4f4683e4a4a46950a3129ef6a5aa35c",
+      "size_bytes": 29336
+    },
+    "orc-layer/act-phase/use-core-tools/routing/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/act-phase/use-core-tools/routing/retry-task/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/act-phase/use-core-tools/routing/retry-task/__pycache__/handle_orchestration_failures.cpython-313.pyc": {
+      "sha256": "037a18a3622e91b5f515f944baddaf5e81f078c23bf68de882edacb8106540be",
+      "size_bytes": 27410
+    },
+    "orc-layer/act-phase/use-core-tools/routing/retry-task/__pycache__/implement_orchestration_fallback.cpython-313.pyc": {
+      "sha256": "c91b004804b8e379da77e3757375a5cea190c3eae2d6f5178f8b795a70d89f81",
+      "size_bytes": 27593
+    },
+    "orc-layer/act-phase/use-core-tools/routing/retry-task/__pycache__/retry_orchestration_operations.cpython-313.pyc": {
+      "sha256": "17198dd739ba807d7d5eb9e64a61f538bb0e5abfc778420182114148735600a2",
+      "size_bytes": 27470
+    },
+    "orc-layer/act-phase/use-core-tools/routing/retry-task/handle_orchestration_failures.py": {
+      "sha256": "07a00561224034a291af846f05899237fda1a7629fc9c95c143014720f234391",
+      "size_bytes": 29355
+    },
+    "orc-layer/act-phase/use-core-tools/routing/retry-task/implement_orchestration_fallback.py": {
+      "sha256": "e34dd09db8f6f0959728a2ee740a9caef2083952b059b62d138a3f578ee33424",
+      "size_bytes": 29412
+    },
+    "orc-layer/act-phase/use-core-tools/routing/retry-task/retry_orchestration_operations.py": {
+      "sha256": "92921100063b4d332924d6be93d478b0d44fb803f82fc7b16c70ef7ecaebe60f",
+      "size_bytes": 29374
+    },
+    "orc-layer/plan-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/plan-phase/get-core-info/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/plan-phase/get-core-info/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/plan-phase/get-core-info/general/understand-request/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/plan-phase/get-core-info/general/understand-request/__pycache__/coordinate_core_queries.cpython-313.pyc": {
+      "sha256": "7c9b5c1663a5771bff8153d406ba5ca534cf3ba19151e89594664439c98a1c34",
+      "size_bytes": 27057
+    },
+    "orc-layer/plan-phase/get-core-info/general/understand-request/__pycache__/manage_core_context.cpython-313.pyc": {
+      "sha256": "a51b69468dfe641978ca93fa0d0b55e7bfb5bc43d7a5c7e521bd87a52531cded",
+      "size_bytes": 26817
+    },
+    "orc-layer/plan-phase/get-core-info/general/understand-request/__pycache__/orchestrate_core_planning.cpython-313.pyc": {
+      "sha256": "f2801c099d5c50e11c3b772214f7a353e3bc4094b68b5185644073e5842dee2c",
+      "size_bytes": 27177
+    },
+    "orc-layer/plan-phase/get-core-info/general/understand-request/coordinate_core_queries.py": {
+      "sha256": "a5e3bc862766f819c1eef1f76e40a3a1180c3ac37e739e3ad239fc4fd299c9cc",
+      "size_bytes": 29241
+    },
+    "orc-layer/plan-phase/get-core-info/general/understand-request/manage_core_context.py": {
+      "sha256": "404477ac5c010ac308d6a224e4d39a9410a19dc4ebaa2306164cc640e9569d77",
+      "size_bytes": 29165
+    },
+    "orc-layer/plan-phase/get-core-info/general/understand-request/orchestrate_core_planning.py": {
+      "sha256": "dd8709e387625d031eb80ebe50b33238e03a72451357c406ec2425682bcd3e4f",
+      "size_bytes": 29279
+    },
+    "orc-layer/safety-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/safety-phase/check-core-rules/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/apply_orchestration_safety.cpython-313.pyc": {
+      "sha256": "bccedcdd695d18b11b1ca7bc54f63ce566fdac320fd69556723db41d0be555e8",
+      "size_bytes": 27235
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/enforce_orchestration_policy.cpython-313.pyc": {
+      "sha256": "ba061804f0237e7149c42377749d3b40eec58b9ba41ced2c308bb26908d40966",
+      "size_bytes": 27356
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/validate_orchestration_ethics.cpython-313.pyc": {
+      "sha256": "d061e453a7529aaa2791af8de85cd821efaaab0251638ec0008f80f2fafd9d8c",
+      "size_bytes": 27416
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/check-safety/apply_orchestration_safety.py": {
+      "sha256": "2668854bd790e7a98a36924dcd4b98fa055db16e34ea9a35b0625e1b88886734",
+      "size_bytes": 29298
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/check-safety/enforce_orchestration_policy.py": {
+      "sha256": "5e42d07d52073a6b4ea20ccbb346cd576b3899d7f4b8ec2337db7829af52e225",
+      "size_bytes": 29336
+    },
+    "orc-layer/safety-phase/check-core-rules/policy/check-safety/validate_orchestration_ethics.py": {
+      "sha256": "ec5efd49f12bc551ce2c43bb414369b508a6d1dc6f697c1bc9caab1ba82a8385",
+      "size_bytes": 29355
+    },
+    "plan-layer/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/act-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/act-phase/use-core-tools/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/act-phase/use-core-tools/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/act-phase/use-core-tools/general/use-a-tool/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/execute_core_action.cpython-313.pyc": {
+      "sha256": "69faa5b1625ae97a5e4e9ca16ccb0f398e07bcbb5d05f9101ee9c73943ce9182",
+      "size_bytes": 26834
+    },
+    "plan-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/invoke_core_service.cpython-313.pyc": {
+      "sha256": "49e3aadc43fc96d64d149baea1801720ebcc72b1f62ae73908bcf68b9ea3e4fe",
+      "size_bytes": 26834
+    },
+    "plan-layer/act-phase/use-core-tools/general/use-a-tool/__pycache__/process_core_response.cpython-313.pyc": {
+      "sha256": "b1079839ceebdd823518a066cfe1a158714a0b167531eaaf95ef6caf44a1efb7",
+      "size_bytes": 26954
+    },
+    "plan-layer/act-phase/use-core-tools/general/use-a-tool/execute_core_action.py": {
+      "sha256": "eb654a0ebce6d3481693b4579572c89e7b89147106bdec3c06bf59e0d4e7a97f",
+      "size_bytes": 29201
+    },
+    "plan-layer/act-phase/use-core-tools/general/use-a-tool/invoke_core_service.py": {
+      "sha256": "8ec07441e83422152c698d0afbcf26df22eb7a5b291271558b7f1247b741d82a",
+      "size_bytes": 29201
+    },
+    "plan-layer/act-phase/use-core-tools/general/use-a-tool/process_core_response.py": {
+      "sha256": "fa50382b6fb336556973fbdc764fb656757f6c93084e929eca6eac1fbd048cab",
+      "size_bytes": 29239
+    },
+    "plan-layer/act-phase/use-core-tools/routing/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/act-phase/use-core-tools/routing/retry-task/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/act-phase/use-core-tools/routing/retry-task/__pycache__/apply_core_backoff.cpython-313.pyc": {
+      "sha256": "d167e92bfd95d72eaf5a25c687151d465f34d42edcc859088a89cfecfdd3f5a1",
+      "size_bytes": 26774
+    },
+    "plan-layer/act-phase/use-core-tools/routing/retry-task/__pycache__/handle_core_failures.cpython-313.pyc": {
+      "sha256": "19d0efd0c3b8c6fa199b448d1e39061ad5d8ba1eb42fc00a90ba76fcef75e727",
+      "size_bytes": 26894
+    },
+    "plan-layer/act-phase/use-core-tools/routing/retry-task/__pycache__/implement_core_retry.cpython-313.pyc": {
+      "sha256": "2f403bd20e0645927fe0b03c38ed838b38e0b6cbd5eabb06b4a6682ad983b7d3",
+      "size_bytes": 26894
+    },
+    "plan-layer/act-phase/use-core-tools/routing/retry-task/apply_core_backoff.py": {
+      "sha256": "cfe88028fa66ce500687152e753139315e43863b64c3d4d44edbfaa207b3778b",
+      "size_bytes": 29182
+    },
+    "plan-layer/act-phase/use-core-tools/routing/retry-task/handle_core_failures.py": {
+      "sha256": "5413deac800d10a15a8e1bb7347d5ad3794b62246ccdaa37826ddd2471b73f6a",
+      "size_bytes": 29220
+    },
+    "plan-layer/act-phase/use-core-tools/routing/retry-task/implement_core_retry.py": {
+      "sha256": "74c98599be436b785c4ce416e44aed6b6b4670bb95a40e8588f99e98165fffc7",
+      "size_bytes": 29220
+    },
+    "plan-layer/agg-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/agg-phase/update-core-state/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/agg-phase/update-core-state/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/agg-phase/update-core-state/general/update-memory/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/agg-phase/update-core-state/general/update-memory/__pycache__/aggregate_core_state.cpython-313.pyc": {
+      "sha256": "b385c5d276362a2d491cf71405e99f35d3ddd61fee0f0259e679dc9ecc44a67c",
+      "size_bytes": 26900
+    },
+    "plan-layer/agg-phase/update-core-state/general/update-memory/__pycache__/consolidate_core_updates.cpython-313.pyc": {
+      "sha256": "cd531d00aea9a38da92c508c658ede414a499c7fd514369d91721af0af942f7f",
+      "size_bytes": 27140
+    },
+    "plan-layer/agg-phase/update-core-state/general/update-memory/__pycache__/merge_core_contexts.cpython-313.pyc": {
+      "sha256": "4511c72b9b6e3f51df1d940cdb3be284d40225f78f47b0c2d8f0468ee74688d8",
+      "size_bytes": 26840
+    },
+    "plan-layer/agg-phase/update-core-state/general/update-memory/aggregate_core_state.py": {
+      "sha256": "7faf559f6a3a715001c9b2ca17f73ece1752bbe21fea461a80ca140eb01a9233",
+      "size_bytes": 29220
+    },
+    "plan-layer/agg-phase/update-core-state/general/update-memory/consolidate_core_updates.py": {
+      "sha256": "dc05387f9a5c6d1e7dbd8f6c0a7b7e9588abb98991d5d59310fde564f07f71ed",
+      "size_bytes": 29296
+    },
+    "plan-layer/agg-phase/update-core-state/general/update-memory/merge_core_contexts.py": {
+      "sha256": "508e3a6df4def4d0948f5ff54f5d3a6300700ddda938351ef42f48994916f2b4",
+      "size_bytes": 29201
+    },
+    "plan-layer/agg-phase/update-core-state/utility/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/agg-phase/update-core-state/utility/prepare-information/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/agg-phase/update-core-state/utility/prepare-information/__pycache__/format_core_payload.cpython-313.pyc": {
+      "sha256": "17081ceb63291a50e840363a82e05526683cc2c8a9fc9be065e4d016b90b0302",
+      "size_bytes": 26846
+    },
+    "plan-layer/agg-phase/update-core-state/utility/prepare-information/__pycache__/prepare_core_snapshot.cpython-313.pyc": {
+      "sha256": "754468bd7e8d394deac4598a4f31f3bf0b1be308a23da76fee719bdc5af029b4",
+      "size_bytes": 26966
+    },
+    "plan-layer/agg-phase/update-core-state/utility/prepare-information/__pycache__/serialize_core_state.cpython-313.pyc": {
+      "sha256": "583e4612317e31df7f7a92ad1973af94c27d2dc41743d7abd299235971c7760a",
+      "size_bytes": 26906
+    },
+    "plan-layer/agg-phase/update-core-state/utility/prepare-information/format_core_payload.py": {
+      "sha256": "66da90125c7134f50e644ac6f3f123458c3fb01d91a39e49f1b4992b951bf9dd",
+      "size_bytes": 29201
+    },
+    "plan-layer/agg-phase/update-core-state/utility/prepare-information/prepare_core_snapshot.py": {
+      "sha256": "0bbf332c805270d6d412a84d3ab125c03bae698f505edcf59a51db1840166cb1",
+      "size_bytes": 29239
+    },
+    "plan-layer/agg-phase/update-core-state/utility/prepare-information/serialize_core_state.py": {
+      "sha256": "710e66fdcffe842dd3a45304af95161a3a7b2021d9714e5cee6b08c4e8f5e292",
+      "size_bytes": 29220
+    },
+    "plan-layer/expand-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/expand-phase/convert-core-content/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/compare-meaning/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/compare-meaning/__pycache__/calculate_core_similarity.cpython-313.pyc": {
+      "sha256": "51777523b4f71ef5dd018069e85e90a31537ce834b506fb7abcccd794f126579",
+      "size_bytes": 27210
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/compare-meaning/__pycache__/compute_core_embeddings.cpython-313.pyc": {
+      "sha256": "9e3a26fec7d5100b669fd350e1a2ab46206aa0cdc75b3e91511f3b0b4d54244c",
+      "size_bytes": 27090
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/compare-meaning/__pycache__/normalize_core_vectors.cpython-313.pyc": {
+      "sha256": "16a8ab4f8b88ebbc82ea8df8b4ee0551dc868efc3fdd8f52f7f600f6e1f99b21",
+      "size_bytes": 27030
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/compare-meaning/calculate_core_similarity.py": {
+      "sha256": "fc3183aa423e71705c631314e6c69408df4a837dabae6c85159bcbfa3da98543",
+      "size_bytes": 29315
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/compare-meaning/compute_core_embeddings.py": {
+      "sha256": "af88aa92d31fcbc072d0c5d8f1026b4315fc6f34c89d36fb14f46ae9767d87c9",
+      "size_bytes": 29277
+    },
+    "plan-layer/expand-phase/convert-core-content/embedding/compare-meaning/normalize_core_vectors.py": {
+      "sha256": "6993b9586039ab78fb1e3274a2bc94d045cf19f840d6bf1fff7e00636ad5def4",
+      "size_bytes": 29258
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/adjust-scores/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/adjust-scores/__pycache__/apply_core_weights.cpython-313.pyc": {
+      "sha256": "e9b99f3419698575cca6835d024569077483de675c7d3334845714f06b3e9a75",
+      "size_bytes": 26787
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/adjust-scores/__pycache__/compute_core_confidence.cpython-313.pyc": {
+      "sha256": "6886a999222e31b260f34019079e747826b67b62741feb7c1261f673ef748163",
+      "size_bytes": 27087
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/adjust-scores/__pycache__/normalize_core_scores.cpython-313.pyc": {
+      "sha256": "929ff93b50092871fb8da9c34f2b84735a435e6cadca919f0b2f994c8bf63503",
+      "size_bytes": 26967
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/adjust-scores/apply_core_weights.py": {
+      "sha256": "0d6068d996d7ba2f333a91f5d56d34b158551cd13bfa4c7794c131cb8ae5db36",
+      "size_bytes": 29182
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/adjust-scores/compute_core_confidence.py": {
+      "sha256": "1434570a5d65449b83878e29d6ec728cbf83978004fda1d881bb9e550e889ba5",
+      "size_bytes": 29277
+    },
+    "plan-layer/expand-phase/convert-core-content/semantic/adjust-scores/normalize_core_scores.py": {
+      "sha256": "fa557b2308f311da2fb0902d6b1a53f664ec8eb759c7e2b412866dce38b6e0e4",
+      "size_bytes": 29239
+    },
+    "plan-layer/inspect-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/inspect-phase/find-core-problems/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/update-memory/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/update-memory/__pycache__/capture_core_diagnostics.cpython-313.pyc": {
+      "sha256": "c29aecb2d9d6100eb14b5fc1adc76a52d88377ad8c380a6fe28295a7470ee62e",
+      "size_bytes": 27145
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/update-memory/__pycache__/inspect_core_state.cpython-313.pyc": {
+      "sha256": "4ff0278c7aeb656122430a5bd84c2864babe03c9f8d14ad29a488c0bec94dd8c",
+      "size_bytes": 26785
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/update-memory/__pycache__/log_core_inspection.cpython-313.pyc": {
+      "sha256": "9c661f1372650be21ab2993f9bbc2ad46ed0478d2c74c1fee6dc349562ef696a",
+      "size_bytes": 26845
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/update-memory/capture_core_diagnostics.py": {
+      "sha256": "3cb2e1c90de39ec0739b23701a40c87480ed65b56fd6feb7edcf3edd3ba7aa7f",
+      "size_bytes": 29296
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/update-memory/inspect_core_state.py": {
+      "sha256": "eb5f074560b1844e2811bc6c62f8fb32e647fa1db7c513f791a05662a69c4068",
+      "size_bytes": 29182
+    },
+    "plan-layer/inspect-phase/find-core-problems/general/update-memory/log_core_inspection.py": {
+      "sha256": "763ecf7d0030f804887f2c8b535a70f149d3b5f3b34e4a819b292e65c6e4742c",
+      "size_bytes": 29201
+    },
+    "plan-layer/plan-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/check-core-rules/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/check-safety/__pycache__/check_registry_policy.cpython-313.pyc": {
+      "sha256": "6fe5df683a29d8cb4b2064bd59957b9d8826bc0b246e075e61f9ae22fd7731b6",
+      "size_bytes": 26958
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/check-safety/__pycache__/enforce_core_boundaries.cpython-313.pyc": {
+      "sha256": "5a2b99417503d5709e374fea547bbe933cd8cd7e067f90a7cfcb1aa8b8c8c12b",
+      "size_bytes": 27078
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/check-safety/__pycache__/validate_core_constraints.cpython-313.pyc": {
+      "sha256": "807200b004c7ea8c2fc0457ad6b8a24c1822689c3f196cb921ed3f9d4f7d39c0",
+      "size_bytes": 27198
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/check-safety/check_registry_policy.py": {
+      "sha256": "f04b2c1a39c03cfe5b88e4bfa3955987bf662be52d44865629dfa4376af9adc3",
+      "size_bytes": 29239
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/check-safety/enforce_core_boundaries.py": {
+      "sha256": "d85a95398624338ae7f20c8f3507421bf1b4b76401e523f596378c62fe8ea98f",
+      "size_bytes": 29277
+    },
+    "plan-layer/plan-phase/check-core-rules/policy/check-safety/validate_core_constraints.py": {
+      "sha256": "6c294eaac6503039eabba5ef1edd7cc673bb6d9fe22f5dd4da831b8720749101",
+      "size_bytes": 29315
+    },
+    "plan-layer/plan-phase/get-core-info/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/get-core-info/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/get-core-info/general/understand-request/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/get-core-info/general/understand-request/__pycache__/build_core_query.cpython-313.pyc": {
+      "sha256": "179e7c8bd00be069eecd2cee3ac9e888184feda735d2ba3fb64cc49bb408c49b",
+      "size_bytes": 26661
+    },
+    "plan-layer/plan-phase/get-core-info/general/understand-request/__pycache__/extract_layer_parameters.cpython-313.pyc": {
+      "sha256": "4ab33102f103b1730ba7ce0811d2059f11e57fe3c6abb04bf444248bb8320e77",
+      "size_bytes": 27142
+    },
+    "plan-layer/plan-phase/get-core-info/general/understand-request/__pycache__/parse_registry_intent.cpython-313.pyc": {
+      "sha256": "d210a17ca8151a6cc9d3f0b51714f57f0309db0945a6e3e46c96ead55593fbc5",
+      "size_bytes": 26962
+    },
+    "plan-layer/plan-phase/get-core-info/general/understand-request/build_core_query.py": {
+      "sha256": "886dec7df040bf8de5a211d4b93ea8cd9a802f67f2a9d4cca2890e4fd39e2c00",
+      "size_bytes": 29144
+    },
+    "plan-layer/plan-phase/get-core-info/general/understand-request/extract_layer_parameters.py": {
+      "sha256": "39ce3513cd736e500fd611f8d6358a3b8185137867de8f8ebc44badc4cfead93",
+      "size_bytes": 29296
+    },
+    "plan-layer/plan-phase/get-core-info/general/understand-request/parse_registry_intent.py": {
+      "sha256": "2ceb31cab5e9c58fc2c96720d07dd0668feb4fa6f492c3447b3473455cff776f",
+      "size_bytes": 29239
+    },
+    "plan-layer/plan-phase/get-core-info/utility/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/get-core-info/utility/prepare-information/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/plan-phase/get-core-info/utility/prepare-information/__pycache__/build_core_filters.cpython-313.pyc": {
+      "sha256": "74d2da29a88c538b461b4f1880fa3ae5c7c2c60d8880097efdcfb026058df2f0",
+      "size_bytes": 26783
+    },
+    "plan-layer/plan-phase/get-core-info/utility/prepare-information/__pycache__/format_registry_context.cpython-313.pyc": {
+      "sha256": "9640359c1fd4753d12d210bcc833fae88eecae4e60422422ac7b1b8cc8366a73",
+      "size_bytes": 27083
+    },
+    "plan-layer/plan-phase/get-core-info/utility/prepare-information/__pycache__/prepare_core_payload.cpython-313.pyc": {
+      "sha256": "ccfee06f4c1c28e0e90cd4c92704e5f1ba4e7154f46c55bfdef280e7953f5d9b",
+      "size_bytes": 26903
+    },
+    "plan-layer/plan-phase/get-core-info/utility/prepare-information/build_core_filters.py": {
+      "sha256": "63f21b3db33252f6f5f962041c9754ea338c1e78d63c00f02c99b628719fc41a",
+      "size_bytes": 29182
+    },
+    "plan-layer/plan-phase/get-core-info/utility/prepare-information/format_registry_context.py": {
+      "sha256": "e902549802c136a01bde53a903b2ec3d6c631a269e46109e09db81c7b1ff3ab9",
+      "size_bytes": 29277
+    },
+    "plan-layer/plan-phase/get-core-info/utility/prepare-information/prepare_core_payload.py": {
+      "sha256": "75296c50345b82f70e63874cdbb14bd0d08d33aa7e0e2db61d6f7469634f6ee7",
+      "size_bytes": 29220
+    },
+    "plan-layer/refine-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/refine-phase/pick-best-result/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/refine-phase/pick-best-result/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/refine-phase/pick-best-result/general/understand-request/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/refine-phase/pick-best-result/general/understand-request/__pycache__/apply_core_algorithm.cpython-313.pyc": {
+      "sha256": "daada804e8c9d4591c0c761f25ad64f98e633baa770db53f1b64bf925cd25fb5",
+      "size_bytes": 26907
+    },
+    "plan-layer/refine-phase/pick-best-result/general/understand-request/__pycache__/rank_core_components.cpython-313.pyc": {
+      "sha256": "a63e7831c0e03c470432e07743f78ee901352947a6a6277e1eedbc7cfea9b0c1",
+      "size_bytes": 26907
+    },
+    "plan-layer/refine-phase/pick-best-result/general/understand-request/__pycache__/sort_core_results.cpython-313.pyc": {
+      "sha256": "8313b43c270c126a2203fd9838295ae06de34e8cd383bec1429c0dbd9868d4fe",
+      "size_bytes": 26726
+    },
+    "plan-layer/refine-phase/pick-best-result/general/understand-request/apply_core_algorithm.py": {
+      "sha256": "638265b2589b3871dc869f9fba2459c226615bd485d372429c90f1faa9fad8fb",
+      "size_bytes": 29220
+    },
+    "plan-layer/refine-phase/pick-best-result/general/understand-request/rank_core_components.py": {
+      "sha256": "111715ff177ec3d5bb8f4be00f62676e6bb36fefb50bf18f59dc5431de9ffc0b",
+      "size_bytes": 29220
+    },
+    "plan-layer/refine-phase/pick-best-result/general/understand-request/sort_core_results.py": {
+      "sha256": "bc6886d6cf5b4fd9584bfe7e963d75470076cfd71c956cbbc2dbc75f63e1ac82",
+      "size_bytes": 29163
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/__pycache__/adjust_core_weights.cpython-313.pyc": {
+      "sha256": "4718684bee2e53d7008a97a5045c5d4291177332cb3a27b2bfc6435a31d20fd9",
+      "size_bytes": 26845
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/__pycache__/optimize_core_order.cpython-313.pyc": {
+      "sha256": "3ee40d6085820144c4b0a66254dca143ef7db755df3ab4982049aa5512d9d9ce",
+      "size_bytes": 26845
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/__pycache__/refine_core_ranking.cpython-313.pyc": {
+      "sha256": "d8fce6299639c161404939b63056c1c59732bae83f48241127304f6ec54ef012",
+      "size_bytes": 26845
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/adjust_core_weights.py": {
+      "sha256": "fcf904f1298aa3c589ac79416a69182ef0c11c8055b8d339a8d1d180379b87d6",
+      "size_bytes": 29201
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/optimize_core_order.py": {
+      "sha256": "596d435a73323426ee26cf4765d18dd01c765114f0ebb9c8782fe87ce7a23199",
+      "size_bytes": 29201
+    },
+    "plan-layer/refine-phase/pick-best-result/refinement/adjust-scores/refine_core_ranking.py": {
+      "sha256": "c233e24bb4a58084800292b1361d6a4825c5c603d0c7a3aa577c68d9aed41362",
+      "size_bytes": 29201
+    },
+    "plan-layer/retrieve-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/retrieve-phase/get-core-info/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__pycache__/match_core_context.cpython-313.pyc": {
+      "sha256": "22443949d57db0c05093c302aba1352a06f7c8156c79f3ce7720b7e6ab16d6dc",
+      "size_bytes": 26785
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__pycache__/retrieve_core_similarity.cpython-313.pyc": {
+      "sha256": "89a3a9bd0ad390c2ebc7c55417369d2d811225f04230745ba80e3577fcbd1690",
+      "size_bytes": 27145
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/compare-meaning/__pycache__/search_core_vectors.cpython-313.pyc": {
+      "sha256": "e3125db6650e79e5e8cf56782f71f2e74ea264bf280c32ce41b03ebbc9d4412d",
+      "size_bytes": 26845
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/compare-meaning/match_core_context.py": {
+      "sha256": "d3c9cc7484c64d56b23bb57b5f73a495854aa946f5a512134d7af838ee5e5ddb",
+      "size_bytes": 29182
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/compare-meaning/retrieve_core_similarity.py": {
+      "sha256": "fc25b9a245f842eb5d7a09c5053c2ab05b81e9824b8bbc89f66da00750ef43a9",
+      "size_bytes": 29296
+    },
+    "plan-layer/retrieve-phase/get-core-info/embedding/compare-meaning/search_core_vectors.py": {
+      "sha256": "aeac45545d3b988195a314d146141ba0c4198528e5ac2abc4e555a3bcd430a10",
+      "size_bytes": 29201
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/understand-request/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/understand-request/__pycache__/fetch_core_history.cpython-313.pyc": {
+      "sha256": "f5a031d07c7e668ddc1558cbe8d44154db886c0ac4bc98979a0020666935bfdd",
+      "size_bytes": 26786
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/understand-request/__pycache__/query_core_store.cpython-313.pyc": {
+      "sha256": "c09d8eacf881b6ec255fbef6f9737640c246b77025ca276e35210cb17b3b7f18",
+      "size_bytes": 26665
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/understand-request/__pycache__/retrieve_core_context.cpython-313.pyc": {
+      "sha256": "f9df2984fc246929f04aa196afd5e4b4925109fb8ea7985b7821ecc7f388d4f2",
+      "size_bytes": 26966
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/understand-request/fetch_core_history.py": {
+      "sha256": "6fda733d60d366bf5b9a69887fe4b29c3c9ecebc0e1cda13cfebe9f7e4f6823d",
+      "size_bytes": 29182
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/understand-request/query_core_store.py": {
+      "sha256": "5ed8503eba884c5b463dc3f25c684aa94c7fdc2fc66c6b9cfc0172d4a74358ca",
+      "size_bytes": 29144
+    },
+    "plan-layer/retrieve-phase/get-core-info/general/understand-request/retrieve_core_context.py": {
+      "sha256": "25caa9c268069abb677533618e104855dfdff4c537226f4fc46ed12666b3725c",
+      "size_bytes": 29239
+    },
+    "plan-layer/safety-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/safety-phase/check-core-rules/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/apply_core_safety.cpython-313.pyc": {
+      "sha256": "3413370eed550debe3ce7d8ea7c0f8488ed5c11268dbab5662a6f6b980f6feec",
+      "size_bytes": 26719
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/enforce_core_filters.cpython-313.pyc": {
+      "sha256": "f06c82c9b97d40737080ec7a3fe3a7652cfbda9c58ec3675b6f414828820ac7c",
+      "size_bytes": 26900
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/validate_core_ethics.cpython-313.pyc": {
+      "sha256": "41260e4af5d4438eef84909e458eaf4527686c89466569202b63f571f57bd503",
+      "size_bytes": 26900
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/check-safety/apply_core_safety.py": {
+      "sha256": "b72be5a29fc1e4bc45cb2c8328edb6dc4055f4034adab3cdcff69857e78e3cc2",
+      "size_bytes": 29163
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/check-safety/enforce_core_filters.py": {
+      "sha256": "c6547a05cc9fb286dbcc1684dfbe474595f0d0936d4822148b92c2ada6f1522d",
+      "size_bytes": 29220
+    },
+    "plan-layer/safety-phase/check-core-rules/policy/check-safety/validate_core_ethics.py": {
+      "sha256": "f7b0576daaa8153d3bedb3fd470069ceaf817975adfeb3413c00a96720bf034e",
+      "size_bytes": 29220
+    },
+    "plan-layer/safety-phase/manage-core-costs/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/update-memory/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/update-memory/__pycache__/enforce_core_limits.cpython-313.pyc": {
+      "sha256": "9252a94bf71e4363386af5e95071a71fb24bf73fac09bc7e201204e9a26987bd",
+      "size_bytes": 26843
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/update-memory/__pycache__/track_core_usage.cpython-313.pyc": {
+      "sha256": "f92824786468b4652cf6412e5918a4fa1b7fa9a0b6449a5e913050a7e0a414e5",
+      "size_bytes": 26662
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/update-memory/__pycache__/update_core_budget.cpython-313.pyc": {
+      "sha256": "b05e70651296a3d869fac6f6374f28af638f4625c1bd634d4efd254fed7ecefd",
+      "size_bytes": 26783
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/update-memory/enforce_core_limits.py": {
+      "sha256": "0cf21a6bc5c473eb514f6681f076c0a96687ac5d816f5d3ff7dc134101570437",
+      "size_bytes": 29201
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/update-memory/track_core_usage.py": {
+      "sha256": "5300eed64f26622b4dd5e9f42d413b1881684c18b56aa3fff4b80a02594be446",
+      "size_bytes": 29144
+    },
+    "plan-layer/safety-phase/manage-core-costs/general/update-memory/update_core_budget.py": {
+      "sha256": "75c0dfd7cd6145902ed6fd4cd198b1039098d2a32de15869c85db0de1e2e81b1",
+      "size_bytes": 29182
+    },
+    "plan-layer/validate-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/validate-phase/check-core-structure/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/check-safety/__pycache__/check_core_compliance.cpython-313.pyc": {
+      "sha256": "f0053b5f3203650cdc79f242c2f310a13a97e840c00594b0c86c711215cdce74",
+      "size_bytes": 26966
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/check-safety/__pycache__/enforce_core_contracts.cpython-313.pyc": {
+      "sha256": "75b5ff1b3751b699a40ef18fdd318931e436b2683f640171c3d7abdc37a82853",
+      "size_bytes": 27026
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/check-safety/__pycache__/validate_core_schema.cpython-313.pyc": {
+      "sha256": "5669e3b3c96cd9cbc257692e55d9569e782d759f61e7948700559159ab0e0f74",
+      "size_bytes": 26906
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/check-safety/check_core_compliance.py": {
+      "sha256": "4c6d11112169949245d9db9fbe4253b9fe59bacb524c4c5515919060d072fc3d",
+      "size_bytes": 29239
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/check-safety/enforce_core_contracts.py": {
+      "sha256": "c0f3149bd83de085881e058b72ca98a134568e28c52c2b9f23e10f3aa4f26365",
+      "size_bytes": 29258
+    },
+    "plan-layer/validate-phase/check-core-structure/policy/check-safety/validate_core_schema.py": {
+      "sha256": "a8eff83667cfa6c80e83dc601ebb231a8bc8bc0964a539b042ddca5a1115b327",
+      "size_bytes": 29220
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/adjust-scores/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/adjust-scores/__pycache__/assess_core_confidence.cpython-313.pyc": {
+      "sha256": "0352f82c883860bb60f624d9a5f5919b8a8cf8c08964be98e1be5b6687fe563c",
+      "size_bytes": 27029
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/adjust-scores/__pycache__/compute_core_validation.cpython-313.pyc": {
+      "sha256": "068b5d29b7808976148ee7511a419c0ddaff94c241946c4e0dd0de56d86ac3b7",
+      "size_bytes": 27089
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/adjust-scores/__pycache__/validate_core_quality.cpython-313.pyc": {
+      "sha256": "af9fd1cb8838e3794f4bf36d8eab532e89400105288d18cc36c0696bc6d4dd2d",
+      "size_bytes": 26969
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/adjust-scores/assess_core_confidence.py": {
+      "sha256": "75da967854f9973a577da1104d14ef3fdaab1b53c9c2bd5741bc4599396877a2",
+      "size_bytes": 29258
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/adjust-scores/compute_core_validation.py": {
+      "sha256": "2304093b5a29b3efe17117edc4af1f0af41d8687be71b1da5bf09393852bacad",
+      "size_bytes": 29277
+    },
+    "plan-layer/validate-phase/check-core-structure/semantic/adjust-scores/validate_core_quality.py": {
+      "sha256": "36ab89af090478a339a0f4d0194ea223d767aeab12cee94dce37a917dd18adbf",
+      "size_bytes": 29239
+    },
+    "safe-layer/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/check-core-rules/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/check-safety/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/apply_safety_policy.cpython-313.pyc": {
+      "sha256": "af9667400f3186ff0b2ee85efbb7a8747eb06138931eab7adeb9a21cb4a34fe3",
+      "size_bytes": 26723
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/enforce_safety_filters.cpython-313.pyc": {
+      "sha256": "0a4b27fe901768470c6324c9f471790d0cb74d3691a1929f248a1c86721de001",
+      "size_bytes": 26903
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/check-safety/__pycache__/validate_safety_ethics.cpython-313.pyc": {
+      "sha256": "103282e1dd57561d392a5c3d1ae95a3913e7b8e8e1d23ef8d4cf093ddcc1622d",
+      "size_bytes": 26903
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/check-safety/apply_safety_policy.py": {
+      "sha256": "f0ce9efdb76739fbc4b8311c885bcb322257fdc5ba1d493999eb24e66ea161b6",
+      "size_bytes": 29080
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/check-safety/enforce_safety_filters.py": {
+      "sha256": "0662e8500bd9a56ee7785f674efa3b6ae084a1e32794cb6ca609ec4b02ae1281",
+      "size_bytes": 29137
+    },
+    "safe-layer/safety-phase/check-core-rules/policy/check-safety/validate_safety_ethics.py": {
+      "sha256": "16b6d217b3306c75b636282293a659b1fc283d6f3def7ebd9368bb3a25011cd7",
+      "size_bytes": 29137
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/adjust-scores/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/adjust-scores/__pycache__/assess_safety_risk.cpython-313.pyc": {
+      "sha256": "4f72407633733636dcf9a6b57b7c7092efbcc83ce671fe52209d0a9f82a8d4bb",
+      "size_bytes": 26666
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/adjust-scores/__pycache__/compute_safety_score.cpython-313.pyc": {
+      "sha256": "2a3b30353d5616a9b5682e86cdf52dc86661b44415c57a3fcb1b95c96b5500db",
+      "size_bytes": 26786
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/adjust-scores/__pycache__/evaluate_safety_compliance.cpython-313.pyc": {
+      "sha256": "58e25e9bfcfdbbf33da36365306113c906f0a0b7807d6455cefbefd62ca8649d",
+      "size_bytes": 27146
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/adjust-scores/assess_safety_risk.py": {
+      "sha256": "77304af064e9880e215840e5149d2924e07145a2a59e422453a8757913dfa77e",
+      "size_bytes": 29061
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/adjust-scores/compute_safety_score.py": {
+      "sha256": "aa1b20a57e08fa4dd54a4649a1850870e775f0295393403a415d910014af76f9",
+      "size_bytes": 29099
+    },
+    "safe-layer/safety-phase/check-core-rules/semantic/adjust-scores/evaluate_safety_compliance.py": {
+      "sha256": "cef031e9e65169d4be05d84cfd7cf96f80d0d75cb8110bc64085f5cdd648b0db",
+      "size_bytes": 29213
+    },
+    "safe-layer/safety-phase/manage-core-costs/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/update-memory/__init__.py": {
+      "sha256": "5b352c195b9d994f735cdc176c6063d6ed0fb67446ac050cf18c37a8fb8fce09",
+      "size_bytes": 31
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/update-memory/__pycache__/enforce_safety_budget.cpython-313.pyc": {
+      "sha256": "c73f0428c9ae7077d936abaa77e85b3ac5a7c1eccf85a87b784f01faac4c70a4",
+      "size_bytes": 26846
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/update-memory/__pycache__/track_safety_cost.cpython-313.pyc": {
+      "sha256": "9b050fd47f92bde6d4db7321e8a9fe02a6b386d2a394b00ad05ec5501f6d076a",
+      "size_bytes": 26605
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/update-memory/__pycache__/update_safety_usage.cpython-313.pyc": {
+      "sha256": "67dc3742c63394ced0fc014532192ba87266a608df7e855004a8f69ad3f6d13a",
+      "size_bytes": 26726
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/update-memory/enforce_safety_budget.py": {
+      "sha256": "5ffe1fdd0d573bdb5cedb65ec0c64cd0829112fcdbf23ea68f26722de887fe5e",
+      "size_bytes": 29118
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/update-memory/track_safety_cost.py": {
+      "sha256": "65bf8095bfaf7a8fac35a421a0152de9082657a801320bc8b83a4b739269e87b",
+      "size_bytes": 29042
+    },
+    "safe-layer/safety-phase/manage-core-costs/general/update-memory/update_safety_usage.py": {
+      "sha256": "0aeb52d1cb6e4e39e3187716fb00c0cec006dcf7971c795e08ceec4f201f70e2",
+      "size_bytes": 29080
+    }
+  },
+  "root": "agentic_core/",
+  "schema_version": "v1"
+}
