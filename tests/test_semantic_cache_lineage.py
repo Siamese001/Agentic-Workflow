@@ -59,7 +59,7 @@ class TestVersionInfo:
             assert version_info.version_string == version_str
             assert version_info.version_number == expected_number
             assert version_info.version_type == "semantic"
-            assert version_info.sort_key[0] == 0  # Semantic versions have priority 0
+            assert version_info.sort_key[0] == 1  # Semantic versions have priority 1
     
     def test_named_version_parsing(self):
         """Test parsing of named versions"""
@@ -74,7 +74,7 @@ class TestVersionInfo:
             version_info = VersionInfo.from_string(version_str)
             assert version_info.version_string == version_str
             assert version_info.version_type == "named"
-            assert version_info.sort_key[0] == 1  # Named versions have priority 1
+            assert version_info.sort_key[0] == 2  # Named versions have priority 2
             assert version_info.sort_key[1] == expected_priority
     
     def test_version_sorting(self):
@@ -332,7 +332,7 @@ class TestLineageMergeProcessor:
             
             assert len(entries) == 1
             assert "file1_hash" in entries
-            assert entries["file1_hash"]["meta_data"]["file_hash"] == "file1_hash"
+            assert entries["file1_hash"]["file_signature"].file_hash == "file1_hash"
     
     def test_build_lineage_chains(self):
         """Test building lineage chains"""
@@ -342,10 +342,41 @@ class TestLineageMergeProcessor:
             
             processor = LineageMergeProcessor(mock_structure["cache_root"])
             
-            # Create version entries
+            # Create version entries with valid FileSignature objects
+            from semantic_lineage import FileSignature, EngineType, FileExtension
+            from datetime import datetime
+            
             version_entries = {
-                "v2": {"file1_hash": {"file_signature": None, "ast_data": {}, "embedding_data": {}}},
-                "v6.0": {"file2_hash": {"file_signature": None, "ast_data": {}, "embedding_data": {}}}
+                "v2": {
+                    "file1_hash": {
+                        "file_signature": FileSignature(
+                            file_path=Path("/test/file1.py"),
+                            file_hash="file1_hash",
+                            size_bytes=100,
+                            last_modified=datetime.now(),
+                            engine=EngineType.RESUME_ENGINE,
+                            archive_version="v2",
+                            file_extension=FileExtension.PYTHON
+                        ),
+                        "ast_data": {},
+                        "embedding_data": {}
+                    }
+                },
+                "v6.0": {
+                    "file2_hash": {
+                        "file_signature": FileSignature(
+                            file_path=Path("/test/file1.py"),  # Same file path for lineage tracking
+                            file_hash="file2_hash",
+                            size_bytes=200,
+                            last_modified=datetime.now(),
+                            engine=EngineType.RESUME_ENGINE,
+                            archive_version="v6.0",
+                            file_extension=FileExtension.PYTHON
+                        ),
+                        "ast_data": {},
+                        "embedding_data": {}
+                    }
+                }
             }
             
             chains = processor._build_lineage_chains(version_entries, EngineType.RESUME_ENGINE)

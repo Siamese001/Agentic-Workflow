@@ -276,7 +276,7 @@ class TestSemanticLineageValidator:
         
         ast_signature = ASTSignature(
             signature=file_signature,
-            root_nodes=[],
+            root_nodes=["class_def", "function_def"],  # Valid AST with nodes
             import_graph={},
             function_signatures={},
             class_signatures={},
@@ -515,12 +515,13 @@ class TestCacheCompleteness:
             # Test invalid separation (mixed versions)
             (rg_dir / "Agentic-LIC").mkdir()  # LIC version in RG directory
             
-            # This would be detected by proper validation logic
-            rg_versions = set([d.name for d in rg_dir.iterdir() if d.is_dir()])
-            lic_versions = set([d.name for d in lic_dir.iterdir() if d.is_dir()])
+            # Use proper validation logic
+            validator = SemanticLineageValidator()
+            errors = validator.validate_engine_separation(cache_root)
             
-            overlap = rg_versions.intersection(lic_versions)
-            assert len(overlap) == 0  # Should be no overlap in proper separation
+            # Should detect the overlap violation
+            assert len(errors) > 0
+            assert "Engine separation violation" in errors[0]
     
     def test_artifact_integrity_validation(self):
         """Test validation of artifact integrity"""

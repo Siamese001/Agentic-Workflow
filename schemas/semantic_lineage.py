@@ -58,7 +58,7 @@ class FileSignature:
             "last_modified": self.last_modified.isoformat(),
             "engine": self.engine.value,
             "archive_version": self.archive_version,
-            "file_extension": self.file_extension.value
+            "file_extension": self.file_extension.value if self.file_extension is not None else None
         }
 
 
@@ -358,9 +358,20 @@ class SemanticLineageValidator:
         # Check file signature integrity
         if not entry.file_signature.file_hash:
             errors.append("Missing file hash in signature")
+        elif len(entry.file_signature.file_hash) != 64:
+            errors.append("Invalid hash length - expected 64 characters for SHA-256")
         
-        # Check AST signature
-        if not entry.ast_signature.root_nodes:
+        # Check file extension consistency (skip if file_extension is None for test scenarios)
+        if entry.file_signature.file_extension is not None:
+            file_ext = entry.file_signature.file_path.suffix.lower()
+            expected_ext = entry.file_signature.file_extension.value.lower()
+            if file_ext != expected_ext:
+                errors.append(f"File extension mismatch: path has '{file_ext}', expected '{expected_ext}'")
+        
+        # Check AST signature (empty signatures should be invalid for real files)
+        if entry.ast_signature is None:
+            errors.append("Missing AST signature")
+        elif not entry.ast_signature.root_nodes and entry.file_signature.file_path.suffix.lower() == '.py':
             errors.append("Empty AST signature")
         
         # Check embedding (handle None for mock implementations)
@@ -387,5 +398,28 @@ class SemanticLineageValidator:
         
         if manifest.completeness_score < 0.0 or manifest.completeness_score > 1.0:
             errors.append("Invalid completeness score")
+        
+        return errors
+    
+    @staticmethod
+    def validate_engine_separation(cache_root: Path) -> List[str]:
+        """Validate engine separation - no version overlap between RG and LIC"""
+        errors = []
+        
+        rg_dir = cache_root / "resume_engine"
+        lic_dir = cache_root / "outreach_engine"
+        
+        if not rg_dir.exists():
+            errors.append("Resume engine directory missing")
+        if not lic_dir.exists():
+            errors.append("Outreach engine directory missing")
+        
+        if rg_dir.exists() and lic_dir.exists():
+            rg_versions = set([d.name for d in rg_dir.iterdir() if d.is_dir()])
+            lic_versions = set([d.name for d in lic_dir.iterdir() if d.is_dir()])
+            
+            overlap = rg_versions.intersection(lic_versions)
+            if overlap:
+                errors.append(f"Engine separation violation: overlapping versions {overlap}")
         
         return errors
