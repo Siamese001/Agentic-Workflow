@@ -1,0 +1,111 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\contracts\\test_typed_contracts.py",
+    "file_hash": "1288a0b5d6dbf367c71dd11d7fea4889f935aab0170e861a4a75d11b2707f68e",
+    "size_bytes": 2761,
+    "last_modified": "2025-12-01T12:27:39.435835",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_core_models_have_v1_schema_version_defaults",
+      "line_number": 24,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "QAResult",
+        "cls",
+        "StrategyPlan",
+        "getattr",
+        "DraftingResult",
+        "WorkflowPlanBundle",
+        "DraftingPlan",
+        "RAGResult",
+        "SafetyPlan",
+        "RAGPlan",
+        "QAPlan",
+        "SafetyResult",
+        "L2ResultBundle",
+        "StrategyResult"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_validate_schema_version_accepts_matching_models",
+      "line_number": 67,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "StrategyPlan",
+        "DraftingPlan",
+        "SafetyPlan",
+        "WorkflowPlanBundle",
+        "RAGPlan",
+        "validate_schema_version",
+        "QAPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_validate_schema_version_rejects_mismatched_version",
+      "line_number": 80,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str",
+        "DummyModel",
+        "validate_schema_version",
+        "AssertionError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "DummyModel",
+      "line_number": 81,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "BaseModel"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "from_pydantic": [
+      "line_5"
+    ],
+    "from_meta.schema_validation": [
+      "line_7"
+    ],
+    "from_core.models.models": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "test_core_models_have_v1_schema_version_defaults": "test_core_models_have_v1_schema_version_defaults",
+    "test_validate_schema_version_accepts_matching_models": "test_validate_schema_version_accepts_matching_models",
+    "test_validate_schema_version_rejects_mismatched_version": "test_validate_schema_version_rejects_mismatched_version"
+  },
+  "class_signatures": {
+    "DummyModel": "DummyModel"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

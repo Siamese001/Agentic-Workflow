@@ -1,0 +1,12 @@
+{
+  "safety_checks": [
+    "input_validation",
+    "sanitization"
+  ],
+  "policy_compliance": [
+    "regulatory_compliance"
+  ],
+  "security_patterns": [],
+  "data_handling": [],
+  "access_controls": []
+}

@@ -1,0 +1,56 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\workflow_graph.py",
+    "file_hash": "20a1bdd70a663ae9de9e59d5096baeba516da84e5399c6b9c470dd177e9b531c",
+    "size_bytes": 11611,
+    "last_modified": "2025-12-01T15:36:20.833965",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "Node",
+      "line_number": 71,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_29"
+    ],
+    "asyncio": [
+      "line_31"
+    ],
+    "from_typing": [
+      "line_32"
+    ],
+    "from_models": [
+      "line_34"
+    ],
+    "from_observability": [
+      "line_44"
+    ],
+    "from_l2": [
+      "line_50"
+    ],
+    "from_self_correction": [
+      "line_60"
+    ]
+  },
+  "function_signatures": {},
+  "class_signatures": {
+    "Node": "Node"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 13,
+    "cognitive_complexity": 8,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

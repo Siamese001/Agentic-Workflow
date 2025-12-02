@@ -1,0 +1,215 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l2\\invalidation_executor.py",
+    "file_hash": "61326ff1d683d5c6aabc5b548bf5ac2e44bff1357a863e1a3abfb0b6c06a471d",
+    "size_bytes": 13932,
+    "last_modified": "2025-12-01T12:27:38.772840",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "InvalidationReason",
+      "line_number": 18,
+      "docstring": "Reasons for resume fact invalidation in job alignment workflows.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "InvalidationRule",
+      "line_number": 29,
+      "docstring": "Rule for automatic resume fact invalidation in job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "InvalidationResult",
+      "line_number": 57,
+      "docstring": "Result of invalidation check for resume fact management.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "InvalidationPlan",
+      "line_number": 68,
+      "docstring": "Plan for invalidation execution in resume processing workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "InvalidationExecutor",
+      "line_number": 80,
+      "docstring": "Executor for resume fact invalidation in job alignment workflows.\n\nChecks and marks outdated or contradictory facts for accurate resume enhancement.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_invalidation_plan",
+      "line_number": 352,
+      "docstring": "Creates invalidation plan for resume fact management.\n\nConfigures fact invalidation for resume job alignment accuracy.",
+      "imports": [],
+      "dependencies": [
+        "InvalidationPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "matches_triplet",
+      "line_number": 44,
+      "docstring": "Checks if invalidation rule applies to a r\u00e9sum\u00e9 processing triplet.\n\nEnsures proper fact validation for accurate r\u00e9sum\u00e9 enhancement workflows.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 87,
+      "docstring": "Initializes resume fact invalidation executor for job alignment.\n\nArgs:\n    triplet_store: L4 TripletStore for resume workflow coordination",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_default_rules",
+      "line_number": 97,
+      "docstring": "Builds default invalidation rules for resume fact management.",
+      "imports": [],
+      "dependencies": [
+        "InvalidationRule"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute",
+      "line_number": 133,
+      "docstring": "Executes resume fact invalidation based on plan.\n\nReturns invalidation results for accurate resume job alignment.",
+      "imports": [],
+      "dependencies": [
+        "TripletQuery"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_triplet",
+      "line_number": 165,
+      "docstring": "Checks single resume triplet for invalidation.\n\nReturns invalidation result for resume job alignment accuracy.",
+      "imports": [],
+      "dependencies": [
+        "InvalidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_find_superseding_triplet",
+      "line_number": 241,
+      "docstring": "Finds resume triplet that supersedes the given triplet.\n\nReturns superseding triplet for resume job alignment accuracy.",
+      "imports": [],
+      "dependencies": [
+        "TripletQuery"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_find_contradiction",
+      "line_number": 265,
+      "docstring": "Finds resume triplet that contradicts the given triplet.\n\nDetects conflicts for resume job alignment accuracy.",
+      "imports": [],
+      "dependencies": [
+        "TripletQuery"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "invalidate_by_subject",
+      "line_number": 322,
+      "docstring": "Invalidates all resume triplets for a subject entity.\n\nReturns invalidation results for resume job alignment cleanup.",
+      "imports": [],
+      "dependencies": [
+        "TripletQuery",
+        "InvalidationResult"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_datetime": [
+      "line_12"
+    ],
+    "from_enum": [
+      "line_13"
+    ],
+    "from_l4.triplet_store": [
+      "line_15"
+    ]
+  },
+  "function_signatures": {
+    "create_invalidation_plan": "create_invalidation_plan",
+    "matches_triplet": "matches_triplet",
+    "__init__": "__init__",
+    "_build_default_rules": "_build_default_rules",
+    "execute": "execute",
+    "_check_triplet": "_check_triplet",
+    "_find_superseding_triplet": "_find_superseding_triplet",
+    "_find_contradiction": "_find_contradiction",
+    "invalidate_by_subject": "invalidate_by_subject"
+  },
+  "class_signatures": {
+    "InvalidationReason": "InvalidationReason",
+    "InvalidationRule": "InvalidationRule",
+    "InvalidationResult": "InvalidationResult",
+    "InvalidationPlan": "InvalidationPlan",
+    "InvalidationExecutor": "InvalidationExecutor"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 29,
+    "cognitive_complexity": 21,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

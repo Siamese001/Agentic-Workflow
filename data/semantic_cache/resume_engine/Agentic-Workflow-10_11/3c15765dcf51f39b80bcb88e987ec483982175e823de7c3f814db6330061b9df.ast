@@ -1,0 +1,215 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l4\\state_validation.py",
+    "file_hash": "3c15765dcf51f39b80bcb88e987ec483982175e823de7c3f814db6330061b9df",
+    "size_bytes": 8904,
+    "last_modified": "2025-12-01T12:27:41.029475",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "ValidationLevel",
+      "line_number": 20,
+      "docstring": "Security validation levels for resume workflow state data.\n\nEnsures appropriate protection for resume job alignment processing.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ValidationRule",
+      "line_number": 34,
+      "docstring": "Configures validation rules for resume workflow state security.\n\nProtects resume data integrity for job alignment processing.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "StateValidator",
+      "line_number": 50,
+      "docstring": "Validates resume workflow state data for job alignment security.\n\nEnsures safe resume enhancement processing through validation checks.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SecureStateManagerConfig",
+      "line_number": 238,
+      "docstring": "Configuration for resume workflow secure state manager.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_state_validator",
+      "line_number": 247,
+      "docstring": "Creates resume workflow state validator with configuration.",
+      "imports": [],
+      "dependencies": [
+        "StateValidator"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 106,
+      "docstring": "Initializes resume workflow state validator for job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_rules_for_level",
+      "line_number": 111,
+      "docstring": "Retrieves validation rules for resume workflow security level.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_write",
+      "line_number": 124,
+      "docstring": "Validates resume workflow state write operations for security.",
+      "imports": [],
+      "dependencies": [
+        "is_dataclass"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_key",
+      "line_number": 139,
+      "docstring": "Validates resume workflow state keys for injection security.",
+      "imports": [],
+      "dependencies": [
+        "StateValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_value",
+      "line_number": 162,
+      "docstring": "Validates resume workflow state values for type and size constraints.",
+      "imports": [],
+      "dependencies": [
+        "any",
+        "enumerate",
+        "isinstance",
+        "len",
+        "StateValidationError",
+        "type"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_check_patterns",
+      "line_number": 188,
+      "docstring": "Checks resume workflow state values against security patterns.",
+      "imports": [],
+      "dependencies": [
+        "StateValidationError",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_validate_dataclass",
+      "line_number": 199,
+      "docstring": "Validates resume workflow dataclass structures for security compliance.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "is_dataclass",
+        "StateValidationError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sanitize_input",
+      "line_number": 212,
+      "docstring": "Sanitizes input value for resume workflow security processing.",
+      "imports": [],
+      "dependencies": [
+        "isinstance",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_7"
+    ],
+    "re": [
+      "line_9"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_dataclasses": [
+      "line_11"
+    ],
+    "from_enum": [
+      "line_12"
+    ],
+    "logging": [
+      "line_13"
+    ],
+    "from_types": [
+      "line_15"
+    ]
+  },
+  "function_signatures": {
+    "create_state_validator": "create_state_validator",
+    "__init__": "__init__",
+    "_get_rules_for_level": "_get_rules_for_level",
+    "validate_write": "validate_write",
+    "_validate_key": "_validate_key",
+    "_validate_value": "_validate_value",
+    "_check_patterns": "_check_patterns",
+    "_validate_dataclass": "_validate_dataclass",
+    "sanitize_input": "sanitize_input"
+  },
+  "class_signatures": {
+    "ValidationLevel": "ValidationLevel",
+    "ValidationRule": "ValidationRule",
+    "StateValidator": "StateValidator",
+    "SecureStateManagerConfig": "SecureStateManagerConfig"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 26,
+    "cognitive_complexity": 17,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

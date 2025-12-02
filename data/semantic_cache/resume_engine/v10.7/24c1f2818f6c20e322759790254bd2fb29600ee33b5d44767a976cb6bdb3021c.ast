@@ -1,0 +1,118 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\vendor\\langgraph\\graph.py",
+    "file_hash": "24c1f2818f6c20e322759790254bd2fb29600ee33b5d44767a976cb6bdb3021c",
+    "size_bytes": 1783,
+    "last_modified": "2025-12-01T12:27:37.309716",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "StateGraph",
+      "line_number": 3,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 4,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_node",
+      "line_number": 9,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "set_entry_point",
+      "line_number": 12,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_edge",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_conditional_edges",
+      "line_number": 18,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "compile",
+      "line_number": 21,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "App",
+        "func",
+        "isinstance",
+        "selector",
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "App",
+      "line_number": 24,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {},
+  "function_signatures": {
+    "__init__": "__init__",
+    "add_node": "add_node",
+    "set_entry_point": "set_entry_point",
+    "add_edge": "add_edge",
+    "add_conditional_edges": "add_conditional_edges",
+    "compile": "compile"
+  },
+  "class_signatures": {
+    "StateGraph": "StateGraph",
+    "App": "App"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 4,
+    "cognitive_complexity": 2,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

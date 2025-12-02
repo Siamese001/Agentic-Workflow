@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Strategy stack shim for v10.8.\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, Optional\nfrom agent_stacks_v10_8.components.strategy import (\nQueryComplexityClassifier,\nToTStrategistAgent,\n)\nclass StrategyStackV10_8:\n\"\"\"Layer-pure facade around the v10.7 strategy agents.\"\"\"\ndef __init__(self, context: Any, debug_mode: bool = False) -> None:\nself.context = context\nself.debug_mode = debug_mode\nself._complexity_classifier = QueryComplexityClassifier(context, debug_mode)\nself._strategist = ToTStrategistAgent(context, debug_mode)\nasync def classify_complexity_async(\nself, job_description: str, workflow_id: str\n) -> str:\n\"\"\"Delegate complexity classification to the v10.7 classifier.\"\"\"\nreturn await self._complexity_classifier.run_async(job_description, workflow_id)\nasync def plan_strategy_async(\nself,\njob_context: Dict[str, Any],\nworkflow_id: str,\nstate: Optional[Dict[str, Any]] = None,\n) -> Dict[str, Any]:\n\"\"\"Delegate strategy planning to the v10.7 Tree-of-Thought strategist.\"\"\"\nreturn await self._strategist.run_async(job_context, workflow_id, state)",
+  "normalized_signature": "func:__init__;class:StrategyStackV10_8",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

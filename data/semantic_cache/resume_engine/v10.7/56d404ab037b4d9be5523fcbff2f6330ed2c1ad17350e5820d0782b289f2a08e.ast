@@ -1,0 +1,100 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\Agentic-Workflow\\main_v10_7.py",
+    "file_hash": "56d404ab037b4d9be5523fcbff2f6330ed2c1ad17350e5820d0782b289f2a08e",
+    "size_bytes": 11014,
+    "last_modified": "2025-12-01T12:27:37.394763",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "setup_logging",
+      "line_number": 49,
+      "docstring": "Configure logging, now accepts a config object.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_job_input",
+      "line_number": 77,
+      "docstring": "Load job input JSON",
+      "imports": [],
+      "dependencies": [
+        "open",
+        "FileIOError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "main",
+      "line_number": 229,
+      "docstring": "Main CLI entry point",
+      "imports": [],
+      "dependencies": [
+        "setup_logging",
+        "print",
+        "ConfigV10_7",
+        "run_workflow_async"
+      ],
+      "responsibility_level": "L1",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "sys": [
+      "line_2",
+      "line_27"
+    ],
+    "os": [
+      "line_3",
+      "line_26"
+    ],
+    "json": [
+      "line_28"
+    ],
+    "logging": [
+      "line_29"
+    ],
+    "asyncio": [
+      "line_30"
+    ],
+    "argparse": [
+      "line_31"
+    ],
+    "uuid": [
+      "line_32"
+    ],
+    "from_datetime": [
+      "line_33"
+    ],
+    "from_typing": [
+      "line_34"
+    ],
+    "from_core_v10_7": [
+      "line_37"
+    ],
+    "from_agent_orchestration_v10_7": [
+      "line_44"
+    ]
+  },
+  "function_signatures": {
+    "setup_logging": "setup_logging",
+    "load_job_input": "load_job_input",
+    "main": "main"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 26,
+    "cognitive_complexity": 17,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

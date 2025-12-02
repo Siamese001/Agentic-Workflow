@@ -1,0 +1,195 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l3\\unified_workflow_orchestrator.py",
+    "file_hash": "59359bef4f6f87e81ea28e923f03ef3f1b1358aff37754852fea0e57a201b38d",
+    "size_bytes": 4866,
+    "last_modified": "2025-12-01T12:27:38.173639",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "StateManagerInterface",
+      "line_number": 25,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Protocol"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SafetyValidatorInterface",
+      "line_number": 29,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "Protocol"
+      ],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "UnifiedWorkflowOrchestrator",
+      "line_number": 33,
+      "docstring": "Pure orchestration for resume job alignment layer coordination.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "save_state",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "load_state",
+      "line_number": 27,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_safe",
+      "line_number": 30,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_content",
+      "line_number": 31,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 36,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "DraftOrchestrator",
+        "QAOrchestrator",
+        "StrategyOrchestrator",
+        "DraftExecutor",
+        "LLMCaller",
+        "QAExecutor",
+        "SafetyOrchestrator",
+        "StrategyExecutor",
+        "SafetyExecutor"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "orchestrate_full_workflow",
+      "line_number": 54,
+      "docstring": "Orchestrates complete resume workflow for job alignment processing.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "plan_qa",
+        "record_event",
+        "plan_drafting",
+        "ValueError",
+        "plan_strategy",
+        "plan_safety",
+        "ResultParser"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_typing": [
+      "line_7"
+    ],
+    "from_l1.strategy_planning": [
+      "line_8"
+    ],
+    "from_l1.draft_planning": [
+      "line_9"
+    ],
+    "from_l1.qa_planning": [
+      "line_10"
+    ],
+    "from_l1.safety_planning": [
+      "line_11"
+    ],
+    "from_l1.result_parser": [
+      "line_12"
+    ],
+    "from_l2.llm_caller": [
+      "line_13"
+    ],
+    "from_l2.strategy_executor": [
+      "line_14"
+    ],
+    "from_l2.draft_executor": [
+      "line_15"
+    ],
+    "from_l2.qa_executor": [
+      "line_16"
+    ],
+    "from_l2.safety_executor": [
+      "line_17"
+    ],
+    "from_l3.strategy_orchestrator": [
+      "line_18"
+    ],
+    "from_l3.draft_orchestrator": [
+      "line_19"
+    ],
+    "from_l3.qa_orchestrator": [
+      "line_20"
+    ],
+    "from_l3.safety_orchestrator": [
+      "line_21"
+    ],
+    "from_runtime.observability": [
+      "line_22"
+    ]
+  },
+  "function_signatures": {
+    "save_state": "save_state",
+    "load_state": "load_state",
+    "is_safe": "is_safe",
+    "validate_content": "validate_content",
+    "__init__": "__init__",
+    "orchestrate_full_workflow": "orchestrate_full_workflow"
+  },
+  "class_signatures": {
+    "StateManagerInterface": "StateManagerInterface",
+    "SafetyValidatorInterface": "SafetyValidatorInterface",
+    "UnifiedWorkflowOrchestrator": "UnifiedWorkflowOrchestrator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

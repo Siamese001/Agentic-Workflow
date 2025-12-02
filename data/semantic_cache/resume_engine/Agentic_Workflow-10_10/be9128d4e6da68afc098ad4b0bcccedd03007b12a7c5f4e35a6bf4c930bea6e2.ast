@@ -1,0 +1,72 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\registry.py",
+    "file_hash": "be9128d4e6da68afc098ad4b0bcccedd03007b12a7c5f4e35a6bf4c930bea6e2",
+    "size_bytes": 3753,
+    "last_modified": "2025-12-01T15:36:20.808098",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RAGStrategyDefinition",
+      "line_number": 43,
+      "docstring": "Canonical definition of a RAG strategy used by the registry.\n\nFields:\n    name: Human-readable name of the strategy.\n    description: Short description.\n    retrieval_mode: \"bm25\" | \"dense\" | \"hybrid\"\n    use_hyde: Whether HYDE expansion should be used.\n    use_rrf: Whether RRF fusion should be applied.\n    top_k: Max hits to retrieve.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_rag_strategy",
+      "line_number": 99,
+      "docstring": "Return a RAGStrategyDefinition by name.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_retrieval_config",
+      "line_number": 111,
+      "docstring": "Convert a RAGStrategyDefinition \u2192 RetrievalConfig (Phase 3).\n\nMapping:\n    retrieval_mode \u2192 RetrievalConfig.strategy\n    use_hyde      \u2192 RetrievalConfig.allow_hyde\n    use_rrf       \u2192 RetrievalConfig.use_rrf\n    top_k         \u2192 RetrievalConfig.max_hits",
+      "imports": [],
+      "dependencies": [
+        "RetrievalConfig"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_23"
+    ],
+    "from_dataclasses": [
+      "line_25"
+    ],
+    "from_typing": [
+      "line_26"
+    ],
+    "from_models": [
+      "line_28"
+    ]
+  },
+  "function_signatures": {
+    "get_rag_strategy": "get_rag_strategy",
+    "build_retrieval_config": "build_retrieval_config"
+  },
+  "class_signatures": {
+    "RAGStrategyDefinition": "RAGStrategyDefinition"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

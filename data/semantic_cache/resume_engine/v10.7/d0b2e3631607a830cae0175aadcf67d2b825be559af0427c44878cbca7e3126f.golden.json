@@ -1,0 +1,11 @@
+{
+  "canonical_form": "import pytest\nfrom workflow.runner import run_workflow\n@pytest.mark.integration\ndef test_full_resume_generation_pipeline():\nctx = {\"resume\": \"Jane Doe\", \"jd\": \"Chief AI Officer\"}\noutput = run_workflow(ctx)\nassert output[\"status\"] == \"success\"\nassert \"summary\" in output\n@pytest.mark.integration\ndef test_ambiguity_triggers_tot_branching():\nctx = {\"resume\": \"ambiguous input\"}\nout = run_workflow(ctx)\nassert \"ToT\" in out[\"events\"]\n@pytest.mark.integration\ndef test_low_confidence_triggers_retry():\nctx = {\"resume\": \"low_confidence_case\"}\nout = run_workflow(ctx)\nassert \"retry\" in out[\"events\"]\n@pytest.mark.xfail(reason=\"Add 17 more integration tests for all stacks\", strict=False)\ndef test_placeholder():\npytest.xfail(\"Add 17 more integration tests for all stacks\")",
+  "normalized_signature": "func:test_full_resume_generation_pipeline;func:test_ambiguity_triggers_tot_branching;func:test_low_confidence_triggers_retry;func:test_placeholder",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_full_resume_generation_pipeline,test_ambiguity_triggers_tot_branching,test_low_confidence_triggers_retry,test_placeholder",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions",
+    "uses_testing_framework"
+  ]
+}

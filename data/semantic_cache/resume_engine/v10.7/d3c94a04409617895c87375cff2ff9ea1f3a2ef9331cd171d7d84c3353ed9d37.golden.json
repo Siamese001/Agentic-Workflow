@@ -1,0 +1,9 @@
+{
+  "canonical_form": "\"\"\"Workflow execution helpers exposed for tests and scripts.\"\"\"\nfrom .runner import run_workflow\n__all__ = [\"run_workflow\"]",
+  "normalized_signature": "",
+  "core_functionality": "module_imports",
+  "interface_contract": "public_methods:",
+  "test_coverage": [
+    "contains_tests"
+  ]
+}

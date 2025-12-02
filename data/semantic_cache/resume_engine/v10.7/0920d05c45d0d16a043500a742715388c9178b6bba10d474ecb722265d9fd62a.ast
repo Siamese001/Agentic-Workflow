@@ -1,0 +1,57 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v10.7\\chromadb\\utils\\__init__.py",
+    "file_hash": "0920d05c45d0d16a043500a742715388c9178b6bba10d474ecb722265d9fd62a",
+    "size_bytes": 213,
+    "last_modified": "2025-12-01T12:27:37.264590",
+    "engine": "RG",
+    "archive_version": "v10.7",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "embedding_functions",
+      "line_number": 1,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "EmbeddingFunction",
+      "line_number": 2,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__call__",
+      "line_number": 3,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {},
+  "function_signatures": {
+    "__call__": "__call__"
+  },
+  "class_signatures": {
+    "embedding_functions": "embedding_functions",
+    "EmbeddingFunction": "EmbeddingFunction"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

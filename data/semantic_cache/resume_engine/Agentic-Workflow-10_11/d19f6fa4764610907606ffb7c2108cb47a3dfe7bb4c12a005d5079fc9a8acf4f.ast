@@ -1,0 +1,61 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_agent_registry_basic.py",
+    "file_hash": "d19f6fa4764610907606ffb7c2108cb47a3dfe7bb4c12a005d5079fc9a8acf4f",
+    "size_bytes": 1095,
+    "last_modified": "2025-12-01T12:27:40.114028",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_agent_registry_register_and_lookup",
+      "line_number": 6,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AgentRegistry",
+        "AgentCard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_agent_registry_find_by_capability",
+      "line_number": 22,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "AgentRegistry",
+        "AgentCard"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_orchestration.agent_registry": [
+      "line_1"
+    ],
+    "from_config.agent_profile": [
+      "line_2"
+    ],
+    "from_core.models.models": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {
+    "test_agent_registry_register_and_lookup": "test_agent_registry_register_and_lookup",
+    "test_agent_registry_find_by_capability": "test_agent_registry_find_by_capability"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

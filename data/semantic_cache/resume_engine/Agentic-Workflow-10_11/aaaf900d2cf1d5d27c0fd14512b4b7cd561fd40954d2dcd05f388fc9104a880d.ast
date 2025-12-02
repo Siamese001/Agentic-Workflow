@@ -1,0 +1,110 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\meta\\retrieval\\hybrid_ranker.py",
+    "file_hash": "aaaf900d2cf1d5d27c0fd14512b4b7cd561fd40954d2dcd05f388fc9104a880d",
+    "size_bytes": 3912,
+    "last_modified": "2025-12-01T12:27:39.185517",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_apply_council_weights",
+      "line_number": 8,
+      "docstring": "Apply QA-council post-fusion weighting to Evidence scores.\n\nSelected id receives a small boost; all others are slightly demoted.\nThis mirrors the behavior previously implemented in retrieval.py\nbut lives here so that all evidence-level ranking logic is contained\nwithin the META retrieval/ranking layer.",
+      "imports": [],
+      "dependencies": [
+        "list"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_canonical_key",
+      "line_number": 31,
+      "docstring": "Canonical key for deduplication across retrievers.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_fuse_groups_rrf",
+      "line_number": 41,
+      "docstring": "Evidence-level Reciprocal Rank Fusion.\n\nscore(ev) = \u03a3_i w_i / (k + rank_i)\nwhere weights come from cfg.rrf_weights if present; otherwise 1.0.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "getattr",
+        "list",
+        "enumerate",
+        "_canonical_key",
+        "float",
+        "_weight_for_group"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "fuse_and_rank",
+      "line_number": 90,
+      "docstring": "Fuse lexical and dense retrieval results and return a RAGResult.\n\nResponsibilities:\n    * RRF fusion of lexical and dense groups.\n    * Evidence-level deduplication and sorting.\n    * Truncation according to RetrievalConfig.max_hits.\n    * Optional QA-council post-fusion weighting.",
+      "imports": [],
+      "dependencies": [
+        "_fuse_groups_rrf",
+        "getattr",
+        "isinstance",
+        "list",
+        "RAGResult",
+        "_apply_council_weights"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_weight_for_group",
+      "line_number": 55,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "float",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ],
+    "from_core.models.models": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "_apply_council_weights": "_apply_council_weights",
+    "_canonical_key": "_canonical_key",
+    "_fuse_groups_rrf": "_fuse_groups_rrf",
+    "fuse_and_rank": "fuse_and_rank",
+    "_weight_for_group": "_weight_for_group"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 14,
+    "cognitive_complexity": 7,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

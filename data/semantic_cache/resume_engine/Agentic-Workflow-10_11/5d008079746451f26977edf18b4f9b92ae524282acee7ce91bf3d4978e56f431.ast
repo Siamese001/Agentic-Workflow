@@ -1,0 +1,45 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\_deprecated\\test_prompt_compiler.py",
+    "file_hash": "5d008079746451f26977edf18b4f9b92ae524282acee7ce91bf3d4978e56f431",
+    "size_bytes": 622,
+    "last_modified": "2025-12-01T12:27:40.102052",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_compile_prompt_produces_string",
+      "line_number": 5,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "compile_prompt",
+        "PromptSchema",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_l1.cms.schemas": [
+      "line_1"
+    ],
+    "from_l1.cms.compiler": [
+      "line_2"
+    ]
+  },
+  "function_signatures": {
+    "test_compile_prompt_produces_string": "test_compile_prompt_produces_string"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

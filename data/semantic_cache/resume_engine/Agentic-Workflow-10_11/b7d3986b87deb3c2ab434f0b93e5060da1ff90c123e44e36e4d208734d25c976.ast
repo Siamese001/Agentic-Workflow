@@ -1,0 +1,90 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\rag_planning.py",
+    "file_hash": "b7d3986b87deb3c2ab434f0b93e5060da1ff90c123e44e36e4d208734d25c976",
+    "size_bytes": 2105,
+    "last_modified": "2025-12-01T12:27:38.236423",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RAGReasoningPlan",
+      "line_number": 18,
+      "docstring": "Defines evidence analysis structure for resume improvement.\n\nEnsures systematic processing of retrieved data for comprehensive\nresume enhancement and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HydePlan",
+      "line_number": 30,
+      "docstring": "Structures hypothetical document query planning.\n\nCreates enhanced search strategies for better resume\nevidence retrieval and job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_rag_reasoning",
+      "line_number": 41,
+      "docstring": "Creates evidence analysis plan for resume improvement.\n\nStructures approach to process retrieved data for comprehensive\nresume enhancement and job alignment.",
+      "imports": [],
+      "dependencies": [
+        "RAGReasoningPlan",
+        "build_rag_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_hyde_query",
+      "line_number": 65,
+      "docstring": "Plans enhanced query generation for r\u00e9sum\u00e9 evidence retrieval.\n\nCreates hypothetical documents to improve search relevance for r\u00e9sum\u00e9 improvement.",
+      "imports": [],
+      "dependencies": [
+        "build_hyde_prompt",
+        "HydePlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_core.models.models": [
+      "line_13"
+    ],
+    "from_l1.builders.prompt_builder": [
+      "line_14"
+    ]
+  },
+  "function_signatures": {
+    "plan_rag_reasoning": "plan_rag_reasoning",
+    "plan_hyde_query": "plan_hyde_query"
+  },
+  "class_signatures": {
+    "RAGReasoningPlan": "RAGReasoningPlan",
+    "HydePlan": "HydePlan"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

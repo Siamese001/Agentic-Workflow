@@ -1,0 +1,196 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_9\\run_batch_v10_9.py",
+    "file_hash": "b3f675cd3f51aaea82b693c6ca85a231e9322b39b647842ee73a5199d848255e",
+    "size_bytes": 10457,
+    "last_modified": "2025-12-01T12:27:36.906721",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_9",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "CircuitBreaker",
+      "line_number": 45,
+      "docstring": "Batch-level circuit breaker.\n\nBehavior:\n    \u2022 record_success(): resets failure count\n    \u2022 record_failure(): increments failure count\n    \u2022 check(): raises CircuitBreakerOpenError if breaker is \"open\"\n\nTrigger:\n    - When failures >= failure_threshold\n\nThis is NOT part of the agentic runtime (L1\u2013L5).\nIt is META-only resilience infrastructure.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CircuitBreakerOpenError",
+      "line_number": 81,
+      "docstring": "Raised when the batch-level circuit breaker is open.",
+      "imports": [],
+      "dependencies": [
+        "RuntimeError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BatchFeedbackAggregator",
+      "line_number": 91,
+      "docstring": "Aggregates results across a batch.\n\nFields:\n    \u2022 results: list of successful workflow outputs\n    \u2022 failed:  # of jobs that raised exceptions at batch level\n    \u2022 breaker_open: True if breaker opened during processing\n\nDerived properties:\n    \u2022 total_jobs: results + failed\n    \u2022 successful: len(results)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_batch_sync",
+      "line_number": 266,
+      "docstring": "Synchronous wrapper around run_batch_async \u2014 for CLI, scripts,\nnotebooks, or local developer runs.",
+      "imports": [],
+      "dependencies": [
+        "run_batch_async"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_success",
+      "line_number": 65,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_failure",
+      "line_number": 69,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "check",
+      "line_number": 74,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "CircuitBreakerOpenError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_result",
+      "line_number": 109,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_failure",
+      "line_number": 112,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "total_jobs",
+      "line_number": 116,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "successful",
+      "line_number": 120,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "summary",
+      "line_number": 123,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_example_meta_callback",
+      "line_number": 313,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "print",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_31"
+    ],
+    "asyncio": [
+      "line_33"
+    ],
+    "from_dataclasses": [
+      "line_34"
+    ],
+    "from_typing": [
+      "line_35"
+    ],
+    "from_main_v10_9": [
+      "line_37"
+    ]
+  },
+  "function_signatures": {
+    "run_batch_sync": "run_batch_sync",
+    "record_success": "record_success",
+    "record_failure": "record_failure",
+    "check": "check",
+    "add_result": "add_result",
+    "add_failure": "add_failure",
+    "total_jobs": "total_jobs",
+    "successful": "successful",
+    "summary": "summary",
+    "_example_meta_callback": "_example_meta_callback"
+  },
+  "class_signatures": {
+    "CircuitBreaker": "CircuitBreaker",
+    "CircuitBreakerOpenError": "CircuitBreakerOpenError",
+    "BatchFeedbackAggregator": "BatchFeedbackAggregator"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 14,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

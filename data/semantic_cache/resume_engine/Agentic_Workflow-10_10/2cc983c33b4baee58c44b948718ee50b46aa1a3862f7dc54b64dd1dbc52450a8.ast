@@ -1,0 +1,239 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic_Workflow-10_10\\l1.py",
+    "file_hash": "2cc983c33b4baee58c44b948718ee50b46aa1a3862f7dc54b64dd1dbc52450a8",
+    "size_bytes": 19541,
+    "last_modified": "2025-12-01T15:36:20.753098",
+    "engine": "RG",
+    "archive_version": "Agentic_Workflow-10_10",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_normalize_text",
+      "line_number": 67,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_job_text",
+      "line_number": 73,
+      "docstring": "Aggregate job fields into a single planning surface.",
+      "imports": [],
+      "dependencies": [
+        "_normalize_text"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_extract_resume_text",
+      "line_number": 92,
+      "docstring": "Aggregate resume fields into a single planning surface.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "_normalize_text"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_map_meta_profile_to_routing_hint",
+      "line_number": 120,
+      "docstring": "Convert MetaProfileSnapshot into a simple dict used as RoutingHint.metadata.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_classify_complexity",
+      "line_number": 147,
+      "docstring": "Map the combined text + profile + meta-profile signals into LOW/MEDIUM/HIGH.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_choose_reasoning_mode",
+      "line_number": 182,
+      "docstring": "Choose the reasoning mode for this workflow.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_to_execution_profile",
+      "line_number": 203,
+      "docstring": "Map an ExecutionProfileSpec (config) into the simpler ExecutionProfile\nmodel used at L1 planning time.\n\nThis object (ExecutionProfile) is what gets carried inside RoutingHint,\nand is the primary top-level knob carrier for Phase-3 features like:\n    \u2022 HYDE (rag_allow_hyde)\n    \u2022 RRF strategy\n    \u2022 QA council size\n    \u2022 Correction loop configuration\n    \u2022 Telemetry routing mode",
+      "imports": [],
+      "dependencies": [
+        "ExecutionProfile"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_strategy_plan",
+      "line_number": 240,
+      "docstring": "Build a simple, interpretable strategy plan.",
+      "imports": [],
+      "dependencies": [
+        "StrategyPlan",
+        "StrategyStep"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_rag_plan",
+      "line_number": 310,
+      "docstring": "Build a RAGPlan describing which retrieval surfaces to use.\n\nPhase-3 invariants:\n    \u2022 HYDE is controlled by config/profile flags (rag_allow_hyde).\n    \u2022 Hybrid vs non-hybrid is determined by RetrievalConfig.strategy.\n    \u2022 Hints describe job / resume / hybrid focus surfaces.\n    \u2022 strategy_hint links to the configured retrieval strategy, which\n      downstream retrieval/ranking can use.",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "RAGPlan",
+        "RAGQueryHint",
+        "min"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_select_drafting_mode",
+      "line_number": 376,
+      "docstring": "Choose drafting mode (e.g., bullet-heavy vs narrative).",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_drafting_plan",
+      "line_number": 394,
+      "docstring": "Build a DraftingPlan describing which sections to generate.",
+      "imports": [],
+      "dependencies": [
+        "DraftingPlan",
+        "_select_drafting_mode",
+        "DraftSectionPlan"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_qa_plan",
+      "line_number": 459,
+      "docstring": "Build a QAPlan describing which checks to run.",
+      "imports": [],
+      "dependencies": [
+        "QAPlan",
+        "QACheck"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_safety_plan",
+      "line_number": 528,
+      "docstring": "Build a SafetyPlan describing which safety checks to run.",
+      "imports": [],
+      "dependencies": [
+        "SafetyPlan",
+        "SafetyCheck"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "build_workflow_plan_bundle",
+      "line_number": 578,
+      "docstring": "Top-level L1 entrypoint.\n\nProduces a WorkflowPlanBundle containing:\n\n    \u2022 strategy: StrategyPlan\n    \u2022 rag:      RAGPlan\n    \u2022 drafting: DraftingPlan\n    \u2022 qa:       QAPlan\n    \u2022 safety:   SafetyPlan\n    \u2022 routing_hint: RoutingHint carrying ExecutionProfile + MetaProfile",
+      "imports": [],
+      "dependencies": [
+        "_build_strategy_plan",
+        "_build_safety_plan",
+        "_build_drafting_plan",
+        "RoutingHint",
+        "_choose_reasoning_mode",
+        "_build_qa_plan",
+        "get_profile",
+        "WorkflowPlanBundle",
+        "_extract_job_text",
+        "_classify_complexity",
+        "_build_rag_plan",
+        "_extract_resume_text",
+        "_to_execution_profile",
+        "_map_meta_profile_to_routing_hint"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_33"
+    ],
+    "from_typing": [
+      "line_35"
+    ],
+    "from_models": [
+      "line_37"
+    ],
+    "from_config_profiles_v10_10": [
+      "line_58"
+    ],
+    "from_meta_profile": [
+      "line_59"
+    ]
+  },
+  "function_signatures": {
+    "_normalize_text": "_normalize_text",
+    "_extract_job_text": "_extract_job_text",
+    "_extract_resume_text": "_extract_resume_text",
+    "_map_meta_profile_to_routing_hint": "_map_meta_profile_to_routing_hint",
+    "_classify_complexity": "_classify_complexity",
+    "_choose_reasoning_mode": "_choose_reasoning_mode",
+    "_to_execution_profile": "_to_execution_profile",
+    "_build_strategy_plan": "_build_strategy_plan",
+    "_build_rag_plan": "_build_rag_plan",
+    "_select_drafting_mode": "_select_drafting_mode",
+    "_build_drafting_plan": "_build_drafting_plan",
+    "_build_qa_plan": "_build_qa_plan",
+    "_build_safety_plan": "_build_safety_plan",
+    "build_workflow_plan_bundle": "build_workflow_plan_bundle"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 31,
+    "cognitive_complexity": 27,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

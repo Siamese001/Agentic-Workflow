@@ -1,0 +1,90 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\runtime\\observability\\spans.py",
+    "file_hash": "3c963105842cf4ff0f61af7e70e88359216417fbe4862f4b6401438565891c6a",
+    "size_bytes": 1787,
+    "last_modified": "2025-12-01T12:27:37.747938",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "_now_ms",
+      "line_number": 11,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "int"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "start_span",
+      "line_number": 15,
+      "docstring": "Create a uniquely identified span and record the start time.",
+      "imports": [],
+      "dependencies": [
+        "append_event",
+        "str",
+        "_now_ms",
+        "TelemetryEvent",
+        "push_span"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "end_span",
+      "line_number": 43,
+      "docstring": "Close a previously-started span; no-op if unknown.",
+      "imports": [],
+      "dependencies": [
+        "append_event",
+        "_now_ms",
+        "TelemetryEvent",
+        "span_stack",
+        "pop_span"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "time": [
+      "line_3"
+    ],
+    "uuid": [
+      "line_4"
+    ],
+    "from_typing": [
+      "line_5"
+    ],
+    "from_core.models.models": [
+      "line_7"
+    ],
+    "from_runtime.observability.collectors": [
+      "line_8",
+      "line_46"
+    ]
+  },
+  "function_signatures": {
+    "_now_ms": "_now_ms",
+    "start_span": "start_span",
+    "end_span": "end_span"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 2,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

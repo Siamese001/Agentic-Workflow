@@ -1,0 +1,488 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\observability\\test_telemetry_collection.py",
+    "file_hash": "71e931b6a4398702b1e7893c81b10d61fe484b6848ae1944147b91d002267deb",
+    "size_bytes": 34743,
+    "last_modified": "2025-12-01T12:27:39.700480",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "MetricType",
+      "line_number": 21,
+      "docstring": "Types of metrics collected.",
+      "imports": [],
+      "dependencies": [
+        "Enum"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "MetricPoint",
+      "line_number": 30,
+      "docstring": "Single metric data point.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ExecutionMetrics",
+      "line_number": 41,
+      "docstring": "Metrics collected from test execution.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "QualityMetrics",
+      "line_number": 55,
+      "docstring": "Quality metrics from scoring harness.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SystemMetrics",
+      "line_number": 66,
+      "docstring": "System-level metrics.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TelemetryCollector",
+      "line_number": 78,
+      "docstring": "Collects and aggregates telemetry data from test executions.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestTelemetryCollection",
+      "line_number": 397,
+      "docstring": "Test telemetry collection functionality.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TestObservabilityIntegration",
+      "line_number": 636,
+      "docstring": "Test observability integration with existing test infrastructure.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 81,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_invalidate_caches",
+      "line_number": 101,
+      "docstring": "Invalidate caches when underlying metrics change.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_metric",
+      "line_number": 107,
+      "docstring": "Record a single metric point.",
+      "imports": [],
+      "dependencies": [
+        "MetricPoint"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_test_execution",
+      "line_number": 131,
+      "docstring": "Record test execution metrics.",
+      "imports": [],
+      "dependencies": [
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_quality_metrics",
+      "line_number": 159,
+      "docstring": "Record quality scoring metrics.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_aggregate_metric",
+      "line_number": 188,
+      "docstring": "Aggregate metric for statistical analysis.",
+      "imports": [],
+      "dependencies": [
+        "sorted",
+        "hash",
+        "tuple"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_system_metrics",
+      "line_number": 205,
+      "docstring": "Calculate current system metrics with caching.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "max",
+        "SystemMetrics",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_metric_statistics",
+      "line_number": 268,
+      "docstring": "Get statistical summary for a specific metric with caching.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "tuple",
+        "len",
+        "hash",
+        "sorted"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_percentile_fast",
+      "line_number": 345,
+      "docstring": "Fast percentile calculation for pre-sorted values.",
+      "imports": [],
+      "dependencies": [
+        "int",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "export_metrics",
+      "line_number": 362,
+      "docstring": "Export all collected metrics for analysis.",
+      "imports": [],
+      "dependencies": [
+        "asdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "clear_metrics",
+      "line_number": 382,
+      "docstring": "Clear all collected metrics and caches.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "setup_method",
+      "line_number": 400,
+      "docstring": "Setup fresh telemetry collector for each test.",
+      "imports": [],
+      "dependencies": [
+        "TelemetryCollector"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_metric_recording_and_aggregation",
+      "line_number": 404,
+      "docstring": "Test basic metric recording and aggregation.",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_test_execution_metrics",
+      "line_number": 466,
+      "docstring": "Test test execution metrics collection.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_quality_metrics_collection",
+      "line_number": 492,
+      "docstring": "Test quality metrics collection from scoring harness.",
+      "imports": [],
+      "dependencies": [
+        "QualityMetrics",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_system_metrics_calculation",
+      "line_number": 514,
+      "docstring": "Test system metrics calculation across multiple test executions.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_trend_analysis_simulation",
+      "line_number": 542,
+      "docstring": "Test trend analysis across multiple time periods.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics",
+        "range"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_metric_export_and_analysis",
+      "line_number": 594,
+      "docstring": "Test metric export and analysis capabilities.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics",
+        "QualityMetrics",
+        "len",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_unit_test_observability_wrapper",
+      "line_number": 639,
+      "docstring": "Test observability wrapper for unit tests.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics",
+        "mock_unit_test",
+        "TelemetryCollector",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_e2e_workflow_observability",
+      "line_number": 688,
+      "docstring": "Test observability integration with E2E workflow.",
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics",
+        "mock_e2e_phase",
+        "TelemetryCollector",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_quality_scoring_observability",
+      "line_number": 744,
+      "docstring": "Test observability integration with quality scoring.",
+      "imports": [],
+      "dependencies": [
+        "len",
+        "TelemetryCollector",
+        "mock_quality_scoring",
+        "QualityMetrics",
+        "all"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_observability_dashboard_simulation",
+      "line_number": 809,
+      "docstring": "Test observability dashboard data simulation.",
+      "imports": [],
+      "dependencies": [
+        "max",
+        "len",
+        "TelemetryCollector",
+        "range",
+        "min",
+        "ExecutionMetrics",
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_unit_test",
+      "line_number": 644,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_e2e_phase",
+      "line_number": 693,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ExecutionMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "mock_quality_scoring",
+      "line_number": 749,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "QualityMetrics"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "pytest": [
+      "line_8"
+    ],
+    "time": [
+      "line_9"
+    ],
+    "json": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_dataclasses": [
+      "line_12"
+    ],
+    "from_enum": [
+      "line_13"
+    ],
+    "from_datetime": [
+      "line_14"
+    ],
+    "threading": [
+      "line_15"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "_invalidate_caches": "_invalidate_caches",
+    "record_metric": "record_metric",
+    "record_test_execution": "record_test_execution",
+    "record_quality_metrics": "record_quality_metrics",
+    "_aggregate_metric": "_aggregate_metric",
+    "get_system_metrics": "get_system_metrics",
+    "get_metric_statistics": "get_metric_statistics",
+    "_percentile_fast": "_percentile_fast",
+    "export_metrics": "export_metrics",
+    "clear_metrics": "clear_metrics",
+    "setup_method": "setup_method",
+    "test_metric_recording_and_aggregation": "test_metric_recording_and_aggregation",
+    "test_test_execution_metrics": "test_test_execution_metrics",
+    "test_quality_metrics_collection": "test_quality_metrics_collection",
+    "test_system_metrics_calculation": "test_system_metrics_calculation",
+    "test_trend_analysis_simulation": "test_trend_analysis_simulation",
+    "test_metric_export_and_analysis": "test_metric_export_and_analysis",
+    "test_unit_test_observability_wrapper": "test_unit_test_observability_wrapper",
+    "test_e2e_workflow_observability": "test_e2e_workflow_observability",
+    "test_quality_scoring_observability": "test_quality_scoring_observability",
+    "test_observability_dashboard_simulation": "test_observability_dashboard_simulation",
+    "mock_unit_test": "mock_unit_test",
+    "mock_e2e_phase": "mock_e2e_phase",
+    "mock_quality_scoring": "mock_quality_scoring"
+  },
+  "class_signatures": {
+    "MetricType": "MetricType",
+    "MetricPoint": "MetricPoint",
+    "ExecutionMetrics": "ExecutionMetrics",
+    "QualityMetrics": "QualityMetrics",
+    "SystemMetrics": "SystemMetrics",
+    "TelemetryCollector": "TelemetryCollector",
+    "TestTelemetryCollection": "TestTelemetryCollection",
+    "TestObservabilityIntegration": "TestObservabilityIntegration"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 34,
+    "cognitive_complexity": 21,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

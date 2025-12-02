@@ -1,0 +1,85 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\graph_store_neo4j.py",
+    "file_hash": "4a01dc9bd5c65786efb7f590b728462b16acc0da9d7915d504b074ff690c2441",
+    "size_bytes": 761,
+    "last_modified": "2025-12-01T12:27:37.674802",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "Neo4jGraphStore",
+      "line_number": 9,
+      "docstring": "Stub graph store class used when Neo4j is not installed.\nProvides import-safe behavior only.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ImportError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "write_node",
+      "line_number": 20,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "write_relationship",
+      "line_number": 23,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "close",
+      "line_number": 26,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_neo4j": [
+      "line_5"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "write_node": "write_node",
+    "write_relationship": "write_relationship",
+    "close": "close"
+  },
+  "class_signatures": {
+    "Neo4jGraphStore": "Neo4jGraphStore"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 3,
+    "cognitive_complexity": 1,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

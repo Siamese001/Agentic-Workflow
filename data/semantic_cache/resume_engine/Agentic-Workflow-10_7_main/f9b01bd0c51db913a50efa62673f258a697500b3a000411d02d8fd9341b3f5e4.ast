@@ -1,0 +1,58 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\prompt_renderer_stack.py",
+    "file_hash": "f9b01bd0c51db913a50efa62673f258a697500b3a000411d02d8fd9341b3f5e4",
+    "size_bytes": 1297,
+    "last_modified": "2025-12-01T12:27:42.017722",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PromptRendererStack",
+      "line_number": 10,
+      "docstring": "L2 stack responsible for rendering prompts from a PromptEnvelope.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_render",
+      "line_number": 32,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_5"
+    ],
+    "from_core_v10_7": [
+      "line_7"
+    ]
+  },
+  "function_signatures": {
+    "_render": "_render"
+  },
+  "class_signatures": {
+    "PromptRendererStack": "PromptRendererStack"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

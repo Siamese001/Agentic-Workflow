@@ -1,0 +1,216 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Old Resume Gen Python\\Resume_Generation_v1.0_COMPLETE.py",
+    "file_hash": "c4220c297b1d23763ac6c4a9b813769bbb15c217e4f287558ca77e68f9fc07d6",
+    "size_bytes": 38558,
+    "last_modified": "2025-12-01T12:27:35.969177",
+    "engine": "RG",
+    "archive_version": "Old Resume Gen Python",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "MasterResume",
+      "line_number": 41,
+      "docstring": "Amit Ayer's complete master resume\u2014embedded, no upload needed.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SaaSRoleProfiles",
+      "line_number": 176,
+      "docstring": "SaaS leadership role definitions with signal calibration targets.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "BaselineResumeMetrics",
+      "line_number": 207,
+      "docstring": "Baseline resume metrics for QA validation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalTarget",
+      "line_number": 233,
+      "docstring": "Signal target configuration for a resume section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "SignalCalibrationConfig",
+      "line_number": 240,
+      "docstring": "Signal calibration targets for each section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ResumeGenerationEngine",
+      "line_number": 270,
+      "docstring": "Complete 9-HOP orchestration for resume generation.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L1",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_technical_skills_flat",
+      "line_number": 165,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "find_role_by_title",
+      "line_number": 196,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 273,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "execute_pipeline",
+      "line_number": 279,
+      "docstring": "Execute 9-HOP pipeline and generate 4 outputs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_execute_hops",
+      "line_number": 293,
+      "docstring": "Execute all 9 HOPs.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_resume",
+      "line_number": 320,
+      "docstring": "Generate complete resume text.",
+      "imports": [],
+      "dependencies": [
+        "range",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_word_count_table",
+      "line_number": 441,
+      "docstring": "Generate word count comparison table.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_signal_calibration",
+      "line_number": 482,
+      "docstring": "Generate signal calibration table with variance commentary.",
+      "imports": [],
+      "dependencies": [
+        "abs"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_qa_tables",
+      "line_number": 581,
+      "docstring": "Generate relevant QA tables (excluding NA word count comparisons).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "re": [
+      "line_19"
+    ],
+    "json": [
+      "line_20"
+    ],
+    "from_typing": [
+      "line_21"
+    ],
+    "from_dataclasses": [
+      "line_22"
+    ],
+    "from_datetime": [
+      "line_23"
+    ],
+    "from_enum": [
+      "line_24"
+    ]
+  },
+  "function_signatures": {
+    "get_technical_skills_flat": "get_technical_skills_flat",
+    "find_role_by_title": "find_role_by_title",
+    "__init__": "__init__",
+    "execute_pipeline": "execute_pipeline",
+    "_execute_hops": "_execute_hops",
+    "_generate_resume": "_generate_resume",
+    "_generate_word_count_table": "_generate_word_count_table",
+    "_generate_signal_calibration": "_generate_signal_calibration",
+    "_generate_qa_tables": "_generate_qa_tables"
+  },
+  "class_signatures": {
+    "MasterResume": "MasterResume",
+    "SaaSRoleProfiles": "SaaSRoleProfiles",
+    "BaselineResumeMetrics": "BaselineResumeMetrics",
+    "SignalTarget": "SignalTarget",
+    "SignalCalibrationConfig": "SignalCalibrationConfig",
+    "ResumeGenerationEngine": "ResumeGenerationEngine"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 20,
+    "cognitive_complexity": 7,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

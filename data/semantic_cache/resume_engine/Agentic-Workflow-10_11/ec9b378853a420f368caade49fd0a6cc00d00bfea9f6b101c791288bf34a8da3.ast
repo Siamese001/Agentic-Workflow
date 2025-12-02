@@ -1,0 +1,18 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\requirements.txt",
+    "file_hash": "ec9b378853a420f368caade49fd0a6cc00d00bfea9f6b101c791288bf34a8da3",
+    "size_bytes": 23,
+    "last_modified": "2025-12-01T12:27:39.326800",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".txt"
+  },
+  "root_nodes": [],
+  "import_graph": {},
+  "function_signatures": {},
+  "class_signatures": {},
+  "complexity_metrics": {
+    "file_type": "non_python"
+  }
+}

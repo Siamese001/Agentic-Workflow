@@ -1,0 +1,125 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\v6_prompt_integration.py",
+    "file_hash": "6e419c774f63d9d734d580f5ddc981a0ab2cf54b31ff1708897e1a4f05c85d8b",
+    "size_bytes": 12420,
+    "last_modified": "2025-12-01T12:27:38.305645",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "create_strategy_planner_prompt",
+      "line_number": 36,
+      "docstring": "Creates v6 prompt for L1 strategy planner with resume examples.\n\nGenerates structured approach for optimal resume job alignment\nand enhanced content quality.\n    ",
+      "imports": [],
+      "dependencies": [
+        "get_examples",
+        "format_examples_for_prompt",
+        "LayerContent",
+        "create_l1_planner_prompt",
+        "add_cot_extension"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_rag_planner_prompt",
+      "line_number": 120,
+      "docstring": "Create v6 prompt for L1 RAG planner with examples.\n\nArgs:\n    include_examples: Whether to include many-shot examples\n    rag_config: RAG configuration (top_k, filters, etc.)\n    \nReturns:\n    Rendered prompt string",
+      "imports": [],
+      "dependencies": [
+        "get_examples",
+        "format_examples_for_prompt",
+        "LayerContent",
+        "create_l1_planner_prompt",
+        "add_rag_extension"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_qa_planner_prompt",
+      "line_number": 192,
+      "docstring": "Create v6 prompt for L1 QA planner with examples.\n\nArgs:\n    include_examples: Whether to include many-shot examples\n    \nReturns:\n    Rendered prompt string",
+      "imports": [],
+      "dependencies": [
+        "create_l1_planner_prompt",
+        "LayerContent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_safety_planner_prompt",
+      "line_number": 255,
+      "docstring": "Create v6 prompt for L1 safety planner with examples.\n\nArgs:\n    include_examples: Whether to include many-shot examples\n    \nReturns:\n    Rendered prompt string",
+      "imports": [],
+      "dependencies": [
+        "create_l1_planner_prompt",
+        "LayerContent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_strategy_executor_prompt",
+      "line_number": 312,
+      "docstring": "Create v6 prompt for L2 strategy executor with examples.\n\nArgs:\n    include_examples: Whether to include many-shot examples\n    \nReturns:\n    Rendered prompt string",
+      "imports": [],
+      "dependencies": [
+        "format_examples_for_prompt",
+        "create_l2_executor_prompt",
+        "get_examples",
+        "LayerContent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "validate_v6_prompt",
+      "line_number": 371,
+      "docstring": "Validate a v6 prompt for completeness and correctness.\n\nArgs:\n    prompt: InstructionalPrompt to validate\n    \nReturns:\n    List of validation issues (empty if valid)",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_instructional_injection_v6": [
+      "line_12"
+    ],
+    "from_many_shot_examples": [
+      "line_24"
+    ]
+  },
+  "function_signatures": {
+    "create_strategy_planner_prompt": "create_strategy_planner_prompt",
+    "create_rag_planner_prompt": "create_rag_planner_prompt",
+    "create_qa_planner_prompt": "create_qa_planner_prompt",
+    "create_safety_planner_prompt": "create_safety_planner_prompt",
+    "create_strategy_executor_prompt": "create_strategy_executor_prompt",
+    "validate_v6_prompt": "validate_v6_prompt"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 13,
+    "cognitive_complexity": 12,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

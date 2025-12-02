@@ -1,0 +1,86 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\agent_stacks_v10_8\\safety_stack.py",
+    "file_hash": "b021c776ac56e912ac16ba6227b282af2dda69ef7e3469d685f93d303ec72343",
+    "size_bytes": 3263,
+    "last_modified": "2025-12-01T12:27:42.092177",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SafetyStackV10_8",
+      "line_number": 16,
+      "docstring": "Wrapper that exposes safety-only capabilities.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 19,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ConstitutionalReviewerAgent",
+        "BiasDetectorAgent",
+        "PIISanitizerAgent",
+        "PromptInjectionDetectorAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "sanitize_resume",
+      "line_number": 31,
+      "docstring": "Run the legacy PII sanitizer.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "detect_bias",
+      "line_number": 36,
+      "docstring": "Run the local bias detector.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "json": [
+      "line_5"
+    ],
+    "from_typing": [
+      "line_6"
+    ],
+    "from_agent_stacks_v10_8.components.safety": [
+      "line_8"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "sanitize_resume": "sanitize_resume",
+    "detect_bias": "detect_bias"
+  },
+  "class_signatures": {
+    "SafetyStackV10_8": "SafetyStackV10_8"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 9,
+    "cognitive_complexity": 8,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

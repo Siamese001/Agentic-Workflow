@@ -1,0 +1,59 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\eval\\golden_state\\gating.py",
+    "file_hash": "a5616f47ffab3febc340b4cf4e9f0a9d514619fb1d90d6c20f824db7d1aaaebe",
+    "size_bytes": 1297,
+    "last_modified": "2025-12-01T12:27:38.043324",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "gate_experiment",
+      "line_number": 6,
+      "docstring": "Return True if the experiment meets or exceeds baseline.\n\nFor now we only enforce that avg_score is not worse and that\npass_count is not lower when both metrics are present.",
+      "imports": [],
+      "dependencies": [
+        "float"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "gate_against_baseline",
+      "line_number": 30,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "max",
+        "dict",
+        "float",
+        "gate_experiment"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_1"
+    ],
+    "from_typing": [
+      "line_3"
+    ]
+  },
+  "function_signatures": {
+    "gate_experiment": "gate_experiment",
+    "gate_against_baseline": "gate_against_baseline"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 6,
+    "cognitive_complexity": 5,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

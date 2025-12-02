@@ -1,0 +1,494 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\v2\\governor.py",
+    "file_hash": "07e04b08164bc2881b86a19892d66a80074743f73e49d99d6969eeeaa7657e3e",
+    "size_bytes": 33854,
+    "last_modified": "2025-12-01T12:27:37.021569",
+    "engine": "RG",
+    "archive_version": "v2",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "PolicyAgent",
+      "line_number": 75,
+      "docstring": "Production PolicyAgent: Decides retry strategies based on failure analysis.\n\nResponsibilities:\n- Classify failure severity and type\n- Select appropriate retry strategy\n- Decide when to escalate to HIL\n- Track success patterns for adaptive learning",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CostRouter",
+      "line_number": 253,
+      "docstring": "Production CostRouter: Selects optimal model based on task complexity and budget.\n\nResponsibilities:\n- Select model tier based on section complexity\n- Escalate to premium models on retry\n- Balance cost vs. quality\n- Track spend and optimize",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "ContextRelayLayer",
+      "line_number": 354,
+      "docstring": "Production ContextRelayLayer: Centralizes all prompt construction logic.\n\nResponsibilities:\n- Build context for each section type\n- Format prompts with data\n- Inject critique from previous attempts\n- Return complete context envelope for Writer\n\nV2: Delegates to prompts_RES_v2.py for sophisticated context building.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "CritiqueTool",
+      "line_number": 491,
+      "docstring": "Production CritiqueTool: Generates actionable feedback from validation failures.\n\nResponsibilities:\n- Analyze validation failures\n- Generate specific, actionable critiques\n- Provide guidance for improvement\n- Vary tone based on strategy",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "HIL_Interface",
+      "line_number": 666,
+      "docstring": "Production HIL Interface: Manages human-in-the-loop escalations.\n\nResponsibilities:\n- Notify human reviewers of failures\n- Present context and draft for review\n- Capture human decisions\n- Log HIL events for feedback pipeline",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L3",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TraceRegistry",
+      "line_number": 764,
+      "docstring": "Production TraceRegistry: Centralized structured event logging system (ATI).\n\nResponsibilities:\n- Log all L1/L2/L3 events\n- Maintain complete audit trail\n- Support QA report generation\n- Enable debugging and monitoring",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 86,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "defaultdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_failure_strategy",
+      "line_number": 97,
+      "docstring": "Determines the next action based on failure analysis.\n\nArgs:\n    node: Node name (section identifier)\n    failure_type: Type of failure (CREATIVE, MECHANICAL, STRATEGIC)\n    retries: Number of retries already attempted\n    \nReturns:\n    Strategy dictionary with action and parameters",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_first_failure_strategy",
+      "line_number": 140,
+      "docstring": "Strategy for first failure attempt.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_second_failure_strategy",
+      "line_number": 182,
+      "docstring": "Strategy for second failure attempt - more aggressive.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "record_outcome",
+      "line_number": 226,
+      "docstring": "Record strategy outcome for adaptive learning.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_effectiveness_report",
+      "line_number": 238,
+      "docstring": "Generate effectiveness report for Meta-Planner.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 264,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "defaultdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_model_for_task",
+      "line_number": 273,
+      "docstring": "Selects the optimal model for a given task.\n\nArgs:\n    section_enum: The resume section being generated\n    attempt: The attempt number (1-indexed)\n    force_premium: Force premium model selection\n    \nReturns:\n    Model identifier string",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_section_complexity",
+      "line_number": 327,
+      "docstring": "Determine complexity level of a section from artist_specs config.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_cost_report",
+      "line_number": 338,
+      "docstring": "Generate cost analysis report.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "dict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 367,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "ValueError"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_context_envelope",
+      "line_number": 383,
+      "docstring": "Builds the complete context envelope for the Writer.\n\nV2: Uses prompts_RES_v2 for sophisticated context building when available.\n\nArgs:\n    section_enum: Section to generate\n    thematic_analysis: ThematicAnalysis object\n    enriched_scaffold: Enriched data scaffold\n    model: Model identifier\n    reasoning_config: Reasoning configuration\n    temperature: Generation temperature\n    critique_context: Optional critique from previous attempt\n    \nReturns:\n    Context envelope dictionary with prompt, system_prompt, config, etc.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_get_prompt_metadata",
+      "line_number": 468,
+      "docstring": "Get prompt key and system prompt for a section.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 502,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "generate_critique",
+      "line_number": 505,
+      "docstring": "Generates a natural language critique with specific guidance.\n\nArgs:\n    draft: The failed draft text\n    validation_results: List of validation results\n    strategy_params: Strategy parameters from PolicyAgent\n    \nReturns:\n    Detailed critique text",
+      "imports": [],
+      "dependencies": [
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_categorize_failures",
+      "line_number": 559,
+      "docstring": "Categorize validation failures into groups.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_opening",
+      "line_number": 588,
+      "docstring": "Generate opening statement based on strategy.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_strategic_guidance",
+      "line_number": 598,
+      "docstring": "Generate strategic guidance based on strategy and failures.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_generate_requirements_checklist",
+      "line_number": 631,
+      "docstring": "Generate a checklist of requirements to meet.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_format_details",
+      "line_number": 647,
+      "docstring": "Format details dictionary into readable string.",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "isinstance"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 677,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "notify",
+      "line_number": 682,
+      "docstring": "Notifies human for review and waits for decision.\n\nIn production, this would:\n1. Send notification to review queue\n2. Present draft and context via UI\n3. Block until human decision received\n\nCurrent implementation: Auto-approve with warnings and logging.\n\nArgs:\n    section_enum: Section that failed\n    drafts: Current draft dictionary\n    critique_context: Critique context\n    \nReturns:\n    Decision dictionary with action and draft",
+      "imports": [],
+      "dependencies": [
+        "str",
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_log_to_feedback_pipeline",
+      "line_number": 746,
+      "docstring": "Log HIL decision to feedback pipeline (stub for now).",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_hil_summary",
+      "line_number": 751,
+      "docstring": "Generate summary of HIL activity.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 775,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "defaultdict"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "log",
+      "line_number": 784,
+      "docstring": "Logs a structured trace event.\n\nArgs:\n    level: Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)\n    message: Log message\n    metadata: Optional metadata dictionary",
+      "imports": [],
+      "dependencies": [
+        "getattr",
+        "log_func"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_full_trace",
+      "line_number": 809,
+      "docstring": "Returns the complete trace log.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_events_by_level",
+      "line_number": 813,
+      "docstring": "Get all events of a specific level.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_events_by_node",
+      "line_number": 817,
+      "docstring": "Get all events related to a specific node.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_summary_stats",
+      "line_number": 824,
+      "docstring": "Generate summary statistics of trace events.",
+      "imports": [],
+      "dependencies": [
+        "dict",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "export_to_json",
+      "line_number": 834,
+      "docstring": "Export trace log to JSON file.",
+      "imports": [],
+      "dependencies": [
+        "open"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "logging": [
+      "line_5"
+    ],
+    "json": [
+      "line_6",
+      "line_836"
+    ],
+    "from_typing": [
+      "line_7"
+    ],
+    "from_collections": [
+      "line_8"
+    ],
+    "from_datetime": [
+      "line_9"
+    ],
+    "from_enum": [
+      "line_10"
+    ],
+    "from_models_RES": [
+      "line_14"
+    ],
+    "from_config_RES_v2": [
+      "line_24"
+    ],
+    "from_prompts_RES_v2": [
+      "line_377"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "get_failure_strategy": "get_failure_strategy",
+    "_first_failure_strategy": "_first_failure_strategy",
+    "_second_failure_strategy": "_second_failure_strategy",
+    "record_outcome": "record_outcome",
+    "get_effectiveness_report": "get_effectiveness_report",
+    "get_model_for_task": "get_model_for_task",
+    "_get_section_complexity": "_get_section_complexity",
+    "get_cost_report": "get_cost_report",
+    "get_context_envelope": "get_context_envelope",
+    "_get_prompt_metadata": "_get_prompt_metadata",
+    "generate_critique": "generate_critique",
+    "_categorize_failures": "_categorize_failures",
+    "_generate_opening": "_generate_opening",
+    "_generate_strategic_guidance": "_generate_strategic_guidance",
+    "_generate_requirements_checklist": "_generate_requirements_checklist",
+    "_format_details": "_format_details",
+    "notify": "notify",
+    "_log_to_feedback_pipeline": "_log_to_feedback_pipeline",
+    "get_hil_summary": "get_hil_summary",
+    "log": "log",
+    "get_full_trace": "get_full_trace",
+    "get_events_by_level": "get_events_by_level",
+    "get_events_by_node": "get_events_by_node",
+    "get_summary_stats": "get_summary_stats",
+    "export_to_json": "export_to_json"
+  },
+  "class_signatures": {
+    "PolicyAgent": "PolicyAgent",
+    "CostRouter": "CostRouter",
+    "ContextRelayLayer": "ContextRelayLayer",
+    "CritiqueTool": "CritiqueTool",
+    "HIL_Interface": "HIL_Interface",
+    "TraceRegistry": "TraceRegistry"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 49,
+    "cognitive_complexity": 35,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

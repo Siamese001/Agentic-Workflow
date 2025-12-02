@@ -1,0 +1,132 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Microservices Model\\06_hop_gate.py",
+    "file_hash": "4f7e6f86a7a60f1550de222af8cb30910b0a82c42049104166970c67a97a28c3",
+    "size_bytes": 10924,
+    "last_modified": "2025-12-01T12:27:36.388209",
+    "engine": "RG",
+    "archive_version": "Microservices Model",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RiskAwareGate",
+      "line_number": 58,
+      "docstring": "Evaluates validation results using a dynamic, risk-based model.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "run_hop_6",
+      "line_number": 175,
+      "docstring": "Executes the HOP-6 gate decision logic.",
+      "imports": [],
+      "dependencies": [
+        "print",
+        "setup_workflow_logging",
+        "len",
+        "open",
+        "exit",
+        "Path",
+        "HopExecutionError",
+        "RiskAwareGate"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 61,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_analyze_results",
+      "line_number": 80,
+      "docstring": "First pass: categorize failures and find input signal quality.",
+      "imports": [],
+      "dependencies": [
+        "any"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "evaluate_decision",
+      "line_number": 104,
+      "docstring": "Runs the full evaluation logic.\nReturns the final decision and a metadata dictionary.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_metadata",
+      "line_number": 154,
+      "docstring": "Helper to assemble the final output metadata block.",
+      "imports": [],
+      "dependencies": [
+        "sum",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_12"
+    ],
+    "argparse": [
+      "line_14"
+    ],
+    "json": [
+      "line_15"
+    ],
+    "logging": [
+      "line_16"
+    ],
+    "sys": [
+      "line_17"
+    ],
+    "from_datetime": [
+      "line_18"
+    ],
+    "from_pathlib": [
+      "line_19"
+    ],
+    "from_typing": [
+      "line_20"
+    ],
+    "from_helpers": [
+      "line_27"
+    ]
+  },
+  "function_signatures": {
+    "run_hop_6": "run_hop_6",
+    "__init__": "__init__",
+    "_analyze_results": "_analyze_results",
+    "evaluate_decision": "evaluate_decision",
+    "_build_metadata": "_build_metadata"
+  },
+  "class_signatures": {
+    "RiskAwareGate": "RiskAwareGate"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 16,
+    "cognitive_complexity": 9,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

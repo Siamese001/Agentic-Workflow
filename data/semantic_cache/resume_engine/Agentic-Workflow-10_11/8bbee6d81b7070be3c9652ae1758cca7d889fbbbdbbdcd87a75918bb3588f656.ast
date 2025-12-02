@@ -1,0 +1,259 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\temporal_kg_injection.py",
+    "file_hash": "8bbee6d81b7070be3c9652ae1758cca7d889fbbbdbbdcd87a75918bb3588f656",
+    "size_bytes": 9182,
+    "last_modified": "2025-12-01T12:27:38.280722",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "TemporalRelation",
+      "line_number": 18,
+      "docstring": "Types of temporal relationships for resume timeline analysis.\n\nDefines temporal patterns for accurate resume context understanding.",
+      "imports": [],
+      "dependencies": [
+        "Enum",
+        "str"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TemporalFact",
+      "line_number": 35,
+      "docstring": "A fact with temporal context for resume timeline analysis.\n\nEnsures accurate temporal reasoning for resume job alignment.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TemporalFactRelation",
+      "line_number": 74,
+      "docstring": "Relationship between temporal facts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TemporalKnowledgeGraph",
+      "line_number": 85,
+      "docstring": "Manages temporal facts and relationships for enhanced reasoning.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "class",
+      "name": "TemporalInjectionProvider",
+      "line_number": 160,
+      "docstring": "Provides temporal knowledge graph injection for V6 prompts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "create_temporal_injection_provider",
+      "line_number": 249,
+      "docstring": "Create a temporal injection provider.",
+      "imports": [],
+      "dependencies": [
+        "TemporalInjectionProvider"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "is_valid_at",
+      "line_number": 49,
+      "docstring": "Checks if resume fact is valid at the given time.\n\nEnsures temporal accuracy for resume job alignment analysis.",
+      "imports": [],
+      "dependencies": [
+        "timedelta"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "to_dict",
+      "line_number": 58,
+      "docstring": "Converts temporal fact to dictionary for resume processing.\n\nEnables structured data handling for resume timeline analysis.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 88,
+      "docstring": "Initialize the temporal knowledge graph.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_fact",
+      "line_number": 94,
+      "docstring": "Add a temporal fact to the knowledge graph.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_relation",
+      "line_number": 105,
+      "docstring": "Add a temporal relation between facts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_facts_at_time",
+      "line_number": 109,
+      "docstring": "Get all facts valid at the given time.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "search_facts",
+      "line_number": 120,
+      "docstring": "Search for facts matching the query.",
+      "imports": [],
+      "dependencies": [
+        "sorted",
+        "set"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "get_temporal_context",
+      "line_number": 137,
+      "docstring": "Get temporal context formatted for prompts.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 163,
+      "docstring": "Initialize the temporal injection provider.",
+      "imports": [],
+      "dependencies": [
+        "TemporalKnowledgeGraph"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_initialize_default_facts",
+      "line_number": 168,
+      "docstring": "Initialize with some default temporal facts.",
+      "imports": [],
+      "dependencies": [
+        "TemporalFact",
+        "datetime"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "add_temporal_extension",
+      "line_number": 198,
+      "docstring": "Add temporal knowledge graph as a V6 extension.\n\nArgs:\n    prompt_extensions: Existing prompt extensions\n    query: Query to find relevant temporal facts\n    current_time: Current time for context\n    \nReturns:\n    Updated extensions with temporal context",
+      "imports": [],
+      "dependencies": [
+        "ExtensionContent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "inject_temporal_facts",
+      "line_number": 226,
+      "docstring": "Inject relevant temporal facts into execution context.\n\nArgs:\n    ctx: Execution context\n    query: Query for finding relevant facts\n    \nReturns:\n    List of relevant temporal facts",
+      "imports": [],
+      "dependencies": [
+        "hasattr"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_typing": [
+      "line_10"
+    ],
+    "from_dataclasses": [
+      "line_11"
+    ],
+    "from_datetime": [
+      "line_12"
+    ],
+    "from_enum": [
+      "line_13"
+    ],
+    "from_l1.instructional_injection_v6": [
+      "line_15"
+    ]
+  },
+  "function_signatures": {
+    "create_temporal_injection_provider": "create_temporal_injection_provider",
+    "is_valid_at": "is_valid_at",
+    "to_dict": "to_dict",
+    "__init__": "__init__",
+    "add_fact": "add_fact",
+    "add_relation": "add_relation",
+    "get_facts_at_time": "get_facts_at_time",
+    "search_facts": "search_facts",
+    "get_temporal_context": "get_temporal_context",
+    "_initialize_default_facts": "_initialize_default_facts",
+    "add_temporal_extension": "add_temporal_extension",
+    "inject_temporal_facts": "inject_temporal_facts"
+  },
+  "class_signatures": {
+    "TemporalRelation": "TemporalRelation",
+    "TemporalFact": "TemporalFact",
+    "TemporalFactRelation": "TemporalFactRelation",
+    "TemporalKnowledgeGraph": "TemporalKnowledgeGraph",
+    "TemporalInjectionProvider": "TemporalInjectionProvider"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 12,
+    "cognitive_complexity": 7,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

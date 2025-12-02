@@ -1,0 +1,7 @@
+{
+  "canonical_form": "\"\"\"Prompt building stack for v10.8 that wraps the legacy prompt engineer.\"\"\"\nfrom __future__ import annotations\nfrom typing import Any, Dict, Optional\nfrom agent_stacks_v10_8.components.prompting import PromptEngineerAgent\nclass PromptBuilderStack:\n\"\"\"Layer-isolated facade for prompt engineering.\"\"\"\ndef __init__(self, context: Any, debug_mode: bool = False) -> None:\nself.context = context\nself.debug_mode = debug_mode\nself._prompt_agent = PromptEngineerAgent(context, debug_mode)\nasync def run_async(\nself,\nstrategy_plan: Any,\ncomplexity: str,\nworkflow_id: str,\nstate: Optional[Dict[str, Any]] = None,\n) -> Dict[str, Any]:\n\"\"\"Execute prompt engineering and emit a structured state patch.\"\"\"\nprompts_result = await self._prompt_agent.run_async(\nstrategy_plan,\ncomplexity,\nworkflow_id,\nstate,\n)\nprompts_payload: Dict[str, Any] = {}\nprompts_model = prompts_result.get(\"prompts\") if isinstance(prompts_result, dict) else None\nif prompts_model is None:\nprompts_payload = prompts_result if isinstance(prompts_result, dict) else {}\nelif hasattr(prompts_model, \"model_dump\"):\nprompts_payload = prompts_model.model_dump()\nelif isinstance(prompts_model, dict):\nprompts_payload = prompts_model\nreturn {\"prompts\": {\"prompts\": prompts_payload}}",
+  "normalized_signature": "func:__init__;class:PromptBuilderStack",
+  "core_functionality": "object_oriented_with_methods",
+  "interface_contract": "public_methods:",
+  "test_coverage": []
+}

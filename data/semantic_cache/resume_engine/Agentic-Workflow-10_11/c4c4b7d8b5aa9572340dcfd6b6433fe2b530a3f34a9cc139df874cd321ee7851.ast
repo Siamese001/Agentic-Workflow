@@ -1,0 +1,53 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\tests\\golden_state\\test_gating.py",
+    "file_hash": "c4c4b7d8b5aa9572340dcfd6b6433fe2b530a3f34a9cc139df874cd321ee7851",
+    "size_bytes": 628,
+    "last_modified": "2025-12-01T12:27:40.312401",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "function",
+      "name": "test_gate_experiment_allows_without_baseline",
+      "line_number": 4,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "gate_experiment"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "test_gate_experiment_enforces_avg_and_pass_count",
+      "line_number": 8,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "gate_experiment"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from_eval.golden_state.gating": [
+      "line_1"
+    ]
+  },
+  "function_signatures": {
+    "test_gate_experiment_allows_without_baseline": "test_gate_experiment_allows_without_baseline",
+    "test_gate_experiment_enforces_avg_and_pass_count": "test_gate_experiment_enforces_avg_and_pass_count"
+  },
+  "class_signatures": {},
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

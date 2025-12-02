@@ -1,0 +1,136 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_7_main\\stacks_v10_8\\rag_planning.py",
+    "file_hash": "1d634517b61b37d159bb24e257ed9bfe0cbc482b9a173f1b599b1caed3f36192",
+    "size_bytes": 4414,
+    "last_modified": "2025-12-01T12:27:42.024205",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_7_main",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "RAGPlanningStack",
+      "line_number": 12,
+      "docstring": "Produces a lightweight retrieval plan without calling any tools.",
+      "imports": [],
+      "dependencies": [
+        "BaseAgent"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "__init__",
+      "line_number": 15,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "super"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_build_plan",
+      "line_number": 24,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "extract_job_profile",
+        "RAGPlan",
+        "extract_resume_profile"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_goal_statement",
+      "line_number": 42,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_context_inputs",
+      "line_number": 51,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_queries",
+      "line_number": 68,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [
+        "describe_experience",
+        "len"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_prioritization",
+      "line_number": 91,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "_risk_checks",
+      "line_number": 106,
+      "docstring": null,
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_3"
+    ],
+    "from_typing": [
+      "line_5"
+    ],
+    "from_core_v10_7": [
+      "line_7"
+    ],
+    "from_planning_utils": [
+      "line_9"
+    ]
+  },
+  "function_signatures": {
+    "__init__": "__init__",
+    "_build_plan": "_build_plan",
+    "_goal_statement": "_goal_statement",
+    "_context_inputs": "_context_inputs",
+    "_queries": "_queries",
+    "_prioritization": "_prioritization",
+    "_risk_checks": "_risk_checks"
+  },
+  "class_signatures": {
+    "RAGPlanningStack": "RAGPlanningStack"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 13,
+    "cognitive_complexity": 12,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}

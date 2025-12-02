@@ -1,0 +1,10 @@
+{
+  "canonical_form": "from eval.golden_state.datasets import load_golden_inputs, load_baseline_scores, load_exemplar_prompts\ndef test_load_golden_inputs_minimum_cases():\ncases = load_golden_inputs()\nassert len(cases) >= 2\nids = {c.id for c in cases}\nassert \"gs_basic_1\" in ids\nassert \"gs_safety_1\" in ids\ndef test_load_baselines_and_exemplars_present():\nbaselines = load_baseline_scores()\nexemplars = load_exemplar_prompts()\nassert \"avg_score\" in baselines\nassert \"gs_basic_1\" in exemplars",
+  "normalized_signature": "func:test_load_golden_inputs_minimum_cases;func:test_load_baselines_and_exemplars_present",
+  "core_functionality": "procedural_functions",
+  "interface_contract": "public_methods:test_load_golden_inputs_minimum_cases,test_load_baselines_and_exemplars_present",
+  "test_coverage": [
+    "contains_tests",
+    "contains_assertions"
+  ]
+}

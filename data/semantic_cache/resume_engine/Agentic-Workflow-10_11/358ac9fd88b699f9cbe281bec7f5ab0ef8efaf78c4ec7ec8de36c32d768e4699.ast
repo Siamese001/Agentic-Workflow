@@ -1,0 +1,79 @@
+{
+  "signature": {
+    "file_path": "C:\\Git\\Resume Engine Archive\\Agentic-Workflow-10_11\\l1\\safety_planning.py",
+    "file_hash": "358ac9fd88b699f9cbe281bec7f5ab0ef8efaf78c4ec7ec8de36c32d768e4699",
+    "size_bytes": 2180,
+    "last_modified": "2025-12-01T12:27:38.233330",
+    "engine": "RG",
+    "archive_version": "Agentic-Workflow-10_11",
+    "file_extension": ".py"
+  },
+  "root_nodes": [
+    {
+      "node_type": "class",
+      "name": "SafetyPlan",
+      "line_number": 23,
+      "docstring": "Defines safety validation structure for resume content.\n\nEnsures professional standards and compliance in resume\nimprovement recommendations for job applications.",
+      "imports": [],
+      "dependencies": [],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_safety_review",
+      "line_number": 34,
+      "docstring": "Creates comprehensive safety plan for resume validation.\n\nStructures evaluation approach to ensure professional\nresume enhancement standards for job applications.",
+      "imports": [],
+      "dependencies": [
+        "SafetyPlan",
+        "build_safety_prompt"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    },
+    {
+      "node_type": "function",
+      "name": "plan_safety",
+      "line_number": 61,
+      "docstring": "Plan safety validation for the given content.\n\nArgs:\n    content: Content to validate for safety\n    ctx: Execution context\n    model_tier: Model tier to use\n    \nReturns:\n    Safety plan with validation checks",
+      "imports": [],
+      "dependencies": [
+        "SafetyPlan",
+        "plan_safety_review"
+      ],
+      "responsibility_level": "L5",
+      "children": []
+    }
+  ],
+  "import_graph": {
+    "from___future__": [
+      "line_8"
+    ],
+    "from_dataclasses": [
+      "line_10"
+    ],
+    "from_typing": [
+      "line_11"
+    ],
+    "from_core.models.models": [
+      "line_13"
+    ],
+    "from_l1.builders.prompt_builder": [
+      "line_19"
+    ]
+  },
+  "function_signatures": {
+    "plan_safety_review": "plan_safety_review",
+    "plan_safety": "plan_safety"
+  },
+  "class_signatures": {
+    "SafetyPlan": "SafetyPlan"
+  },
+  "complexity_metrics": {
+    "cyclomatic_complexity": 1,
+    "cognitive_complexity": 0,
+    "nesting_depth": 0,
+    "lines_of_code": 0
+  }
+}
