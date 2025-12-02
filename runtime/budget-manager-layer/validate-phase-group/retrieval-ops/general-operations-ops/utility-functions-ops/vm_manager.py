@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from infra.sandbox.microvm import MicroVM, create_vm, teardown_vm, exec_in_vm
+from infra.sandbox.microvm import create_vm, teardown_vm, exec_in_vm
 from infra.sandbox.models import ToolCallRequest, ToolCallResult
 
 

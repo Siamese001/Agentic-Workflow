@@ -3,7 +3,7 @@ L5 Agentic Core - Plan Layer - log_runtime_metrics
 Implements L1 Cognitive Planning Layer for log runtime metrics operations
 """
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, field
 from enum import Enum
 import logging

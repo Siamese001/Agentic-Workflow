@@ -5,13 +5,12 @@
 __version__ = "13.0"
 
 import json
-import re
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Any, Optional, Tuple
+from typing import Dict, List, Any, Tuple
 
-from models_LIC import ValidationSeverity, ValidationResult, AgentStatus
+from models_LIC import AgentStatus
 from state_manager_LIC import StateManager
 from tools_LIC import ValidationToolkit, CodeInterpreterTool
 
@@ -135,9 +134,9 @@ class HOP6_ValidationAgent:
         output_path = state_mgr.write_state("HOP-6", output_state)
         
         if passed:
-            print(f"\n✓ Validation PASSED")
+            print("\n✓ Validation PASSED")
         else:
-            print(f"\n✗ Validation FAILED")
+            print("\n✗ Validation FAILED")
         
         print(f"  Critical: {critical_issues}")
         print(f"  High: {high_issues}")
@@ -289,7 +288,7 @@ class HOP6_ValidationAgent:
 
         except Exception as e:
             print(f"  ✗ ERROR executing rule {rule_id}: {e}")
-            return False, {"error": str(e), "message": f"Rule execution failed."}
+            return False, {"error": str(e), "message": "Rule execution failed."}
 
     def _format_result(self, passed: bool, config: Dict[str, Any], details: Dict[str, Any]) -> Dict[str, Any]:
         """Formats a validation result dictionary."""
@@ -389,10 +388,10 @@ class HOP8_QAReportAgent:
         lines = []
         
         # Header
-        lines.append(f"# LIC v13.0 QA Report")
+        lines.append("# LIC v13.0 QA Report")
         lines.append(f"\n**Mission ID**: `{mission_id}`")
         lines.append(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        lines.append(f"\n---\n")
+        lines.append("\n---\n")
         
         # 1. Executive Summary
         lines.append("## 1. Executive Summary\n")
